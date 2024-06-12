@@ -1,18 +1,20 @@
 import React, { useEffect } from 'react';
 import { Container } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 import DataTable from 'react-data-table-component';
 import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import PageHeader from '../../../components/Common/PageHeader';
 import { getTestCaseReviewListThunk } from '../../../redux/services/testCases/testCaseReview';
-import { useDispatch, useSelector } from 'react-redux';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function TestCaseReviewComponent() {
   // // initial state
   const dispatch = useDispatch();
 
-  const { testCaseReviewList, isLoading } = useSelector((state) => state?.testCaseReview);
+  const { testCaseReviewList, isLoading } = useSelector(
+    (state) => state?.testCaseReview
+  );
 
   const columns = [
     {

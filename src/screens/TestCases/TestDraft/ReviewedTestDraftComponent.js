@@ -1,10 +1,11 @@
 import React, { useEffect, useReducer, useState } from 'react';
-import { Container, Modal } from 'react-bootstrap';
+import { Container, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
+import { useNavigate, useParams } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { Astrick } from '../../../components/Utilities/Style';
 import PageHeader from '../../../components/Common/PageHeader';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
-import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
 import { _base } from '../../../settings/constants';
 import EditTestCaseModal from './EditTestCaseModal';
 import DownloadFormatFileModal from './DownloadFormatFileModal';
@@ -13,7 +14,6 @@ import {
   getDraftTestCaseList,
   sendTestCaseReviewerThunk
 } from '../../../redux/services/testCases/downloadFormatFile';
-import { useDispatch, useSelector } from 'react-redux';
 import { getEmployeeData } from '../../Dashboard/DashboardAction';
 import Select from 'react-select';
 import { getReviewCommentMasterListThunk } from '../../../redux/services/testCases/reviewCommentMaster';
@@ -22,13 +22,10 @@ function ReviewedTestDraftComponent() {
   const { id } = useParams();
 
   const dispatch = useDispatch();
-
-  const { allReviewDraftTestListDataByID } = useSelector(
-    (state) => state?.downloadFormat
-  );
-
   const navigate = useNavigate();
 
+  const { allReviewDraftTestListDataByID, allReviewDraftTestListData } =
+    useSelector((state) => state?.downloadFormat);
   const [paginationData, setPaginationData] = useReducer(
     (prevState, nextState) => {
       return { ...prevState, ...nextState };
@@ -40,19 +37,6 @@ function ReviewedTestDraftComponent() {
     (state) => state?.reviewCommentMaster
   );
 
-  const generateOptions = (options) => {
-    return options.map((option) => (
-      <option key={option.value} value={option.value}>
-        {option.label}
-      </option>
-    ));
-  };
-  const [addEditTestCasesModal, setAddEditTestCasesModal] = useState({
-    type: '',
-    data: '',
-    open: false
-  });
-
   const [downloadmodal, setDownloadModal] = useState({
     showModal: false,
     modalData: '',
@@ -62,6 +46,23 @@ function ReviewedTestDraftComponent() {
   const testerData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.getAllTesterDataList
   );
+  const [addEditTestCasesModal, setAddEditTestCasesModal] = useState({
+    type: '',
+    data: '',
+    open: false
+  });
+  const generateOptions = (options) => {
+    return [
+      <option key="default" value="" disabled>
+        Select Reviewer comment
+      </option>,
+      ...options.map((option) => (
+        <option key={option.value} value={option.value}>
+          {option.label}
+        </option>
+      ))
+    ];
+  };
   const handleDownloadModal = (data) => {
     setDownloadModal(data);
   };
@@ -152,42 +153,164 @@ function ReviewedTestDraftComponent() {
     {
       name: 'Module',
       selector: (row) => row.module_name,
-      sortable: false,
-      width: '100px'
+      width: '10rem',
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.module_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.module_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.module_name && row.module_name.length < 20
+                    ? row.module_name
+                    : row.module_name.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
 
     {
       name: 'Submodule',
       selector: (row) => row.sub_module_name,
-      sortable: false,
-      width: '100px'
+      width: '10rem',
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.sub_module_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.sub_module_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.sub_module_name && row.sub_module_name.length < 20
+                    ? row.sub_module_name
+                    : row.sub_module_name.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
+
     {
       name: 'Function',
       selector: (row) => row.function_name,
-      sortable: false,
-      width: '100px'
+      width: '7rem',
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.function_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.function_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.function_name && row.function_name.length < 20
+                    ? row.function_name
+                    : row.function_name.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
+
     {
-      name: 'field',
+      name: 'Field',
       selector: (row) => row.field,
-      sortable: false,
-      width: '100px'
+      width: '7rem',
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.field && (
+            <OverlayTrigger overlay={<Tooltip>{row.field} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.field && row.field.length < 20
+                    ? row.field
+                    : row.field.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
+
     {
       name: 'Testing Type',
       selector: (row) => row.type_name,
-      sortable: false,
-      width: '100px'
+      width: '10rem',
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.type_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.type_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.type_name && row.type_name.length < 20
+                    ? row.type_name
+                    : row.type_name.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
 
     {
       name: 'Testing Group',
       selector: (row) => row.group_name,
-      sortable: false,
-      width: '100px'
+      width: '10rem',
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.group_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.group_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.group_name && row.type_name.length < 20
+                    ? row.group_name
+                    : row.group_name.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
-
     {
       name: 'Test ID',
       selector: (row) => row.id,
@@ -200,25 +323,87 @@ function ReviewedTestDraftComponent() {
       sortable: false,
       width: '100px'
     },
-
     {
       name: 'Test Description',
       selector: (row) => row.test_description,
-      sortable: false,
-      width: '100px'
+      width: '10rem',
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.test_description && (
+            <OverlayTrigger
+              overlay={<Tooltip>{row.test_description} </Tooltip>}
+            >
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.test_description && row.test_description.length < 20
+                    ? row.test_description
+                    : row.test_description.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
+
     {
       name: 'Steps',
       selector: (row) => row.steps,
-      sortable: false,
-      width: '100px'
+      width: '10rem',
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.steps && (
+            <OverlayTrigger overlay={<Tooltip>{row.steps} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.steps && row.steps.length < 20
+                    ? row.steps
+                    : row.steps.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
 
     {
       name: 'Expected Result',
       selector: (row) => row.expected_result,
-      sortable: false,
-      width: '100px'
+      width: '10rem',
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.expected_result && (
+            <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.expected_result && row.expected_result.length < 20
+                    ? row.expected_result
+                    : row.expected_result.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
 
     {
@@ -265,25 +450,86 @@ function ReviewedTestDraftComponent() {
         />
       )
     },
+
     {
       name: 'Project',
       selector: (row) => row.project_name,
-      sortable: false,
-      width: '100px'
+      width: '10rem',
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.project_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.project_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.project_name && row.project_name.length < 20
+                    ? row.project_name
+                    : row.project_name.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
 
     {
       name: 'Created At',
       selector: (row) => row.created_at,
-      sortable: false,
-      width: '100px'
+      width: '7rem',
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.created_at && (
+            <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.created_at && row.created_at.length < 20
+                    ? row.created_at
+                    : row.created_at.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
 
     {
       name: 'Created By',
       selector: (row) => row.created_by,
-      sortable: false,
-      width: '100px'
+      width: '7rem',
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.created_by && (
+            <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.created_by && row.created_by.length < 20
+                    ? row.created_by
+                    : row.created_by.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     }
   ];
 
@@ -395,16 +641,16 @@ function ReviewedTestDraftComponent() {
           pagination
           selectableRows={false}
           paginationServer
-          paginationTotalRows={
-            allReviewDraftTestListDataByID?.total?.total_count
-          }
-          paginationDefaultPage={paginationData.currentPage}
+          paginationTotalRows={allReviewDraftTestListData?.total}
+          paginationDefaultPage={paginationData?.currentPage}
           onChangePage={(page) => setPaginationData({ currentPage: page })}
           onChangeRowsPerPage={(newPageSize) => {
             setPaginationData({ rowPerPage: newPageSize });
             setPaginationData({ currentPage: 1 });
           }}
-          paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
+          paginationRowsPerPageOptions={[
+            50, 100, 150, 200, 300, 500, 700, 1000
+          ]}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
         />
@@ -474,11 +720,10 @@ function ReviewedTestDraftComponent() {
             </b>
           </label>
           <Select
-            type="text"
-            className="form-control form-control-sm"
             id="reviewer_id"
             name="reviewer_id"
             options={testerData}
+            required={true}
             onChange={(e) => {
               const selectedId = e?.value;
               setReviewerID(selectedId);

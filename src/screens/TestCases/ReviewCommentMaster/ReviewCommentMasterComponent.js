@@ -1,22 +1,24 @@
 import React, { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
+import { Col, Row } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
 import PageHeader from '../../../components/Common/PageHeader';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
-import ReviewCommentMasterModal from './Validation/ReviewCommentMasterModal';
-import { useDispatch, useSelector } from 'react-redux';
 import { getReviewCommentMasterListThunk } from '../../../redux/services/testCases/reviewCommentMaster';
 import { customSearchHandler } from '../../../utils/customFunction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import { Col, Row } from 'react-bootstrap';
-
+import AddEditReviewCommentMaster from './Validation/AddEditReviewCommentMaster';
 function ReviewCommentMasterComponent() {
   const dispatch = useDispatch();
 
   // // redux state
-  const { reviewCommentMasterList, isLoading } = useSelector((state) => state?.reviewCommentMaster);
+  const { reviewCommentMasterList, isLoading } = useSelector(
+    (state) => state?.reviewCommentMaster
+  );
 
   const [searchValue, setSearchValue] = useState('');
-  const [filteredReviewCommentMasterList, setFilteredReviewCommentMasterList] = useState([]);
+  const [filteredReviewCommentMasterList, setFilteredReviewCommentMasterList] =
+    useState([]);
 
   const [addEditReviewCommentModal, setAddEditReviewCommentModal] = useState({
     type: '',
@@ -26,7 +28,10 @@ function ReviewCommentMasterComponent() {
 
   // Function to handle search button click
   const handleSearch = () => {
-    const filteredList = customSearchHandler(reviewCommentMasterList, searchValue);
+    const filteredList = customSearchHandler(
+      reviewCommentMasterList,
+      searchValue
+    );
     setFilteredReviewCommentMasterList(filteredList);
   };
 
@@ -67,8 +72,12 @@ function ReviewCommentMasterComponent() {
       sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && <span className="badge bg-primary">Active</span>}
-          {row.is_active == 0 && <span className="badge bg-danger">DeActive</span>}
+          {row.is_active == 1 && (
+            <span className="badge bg-primary">Active</span>
+          )}
+          {row.is_active == 0 && (
+            <span className="badge bg-danger">DeActive</span>
+          )}
         </div>
       ),
       width: '100px'
@@ -161,11 +170,24 @@ function ReviewCommentMasterComponent() {
             className="form-control"
           />
         </Col>
-        <Col xs={12} md={5} xxl={4} className="d-flex justify-content-sm-end btn_container">
-          <button className="btn btn-warning text-white" type="button" onClick={handleSearch}>
+        <Col
+          xs={12}
+          md={5}
+          xxl={4}
+          className="d-flex justify-content-sm-end btn_container"
+        >
+          <button
+            className="btn btn-warning text-white"
+            type="button"
+            onClick={handleSearch}
+          >
             <i className="icofont-search-1 " /> Search
           </button>
-          <button className="btn btn-info text-white" type="button" onClick={handleReset}>
+          <button
+            className="btn btn-info text-white"
+            type="button"
+            onClick={handleReset}
+          >
             <i className="icofont-refresh text-white" /> Reset
           </button>
           <ExportToExcel
@@ -188,7 +210,7 @@ function ReviewCommentMasterComponent() {
         progressPending={isLoading?.getReviewCommentMasterList}
         progressComponent={<TableLoadingSkelton />}
       />
-      <ReviewCommentMasterModal
+      <AddEditReviewCommentMaster
         show={addEditReviewCommentModal?.open}
         type={addEditReviewCommentModal?.type}
         currentReviewCommentData={addEditReviewCommentModal?.data}

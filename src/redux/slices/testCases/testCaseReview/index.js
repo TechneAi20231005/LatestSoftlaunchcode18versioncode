@@ -10,6 +10,7 @@ const initialState = {
   testCaseReviewList: [],
   testPlanIdData: [],
   approveRejectData: [],
+  allTestPlanIDData: [],
   isLoading: {
     testCaseReviewList: false,
     testPlanIdData: false
@@ -17,12 +18,14 @@ const initialState = {
   errorMsg: {
     testCaseReviewList: '',
     testPlanIdData: '',
-    approveRejectData: ''
+    approveRejectData: '',
+    allTestPlanIDData: ''
   },
   successMsg: {
     testCaseReviewList: '',
     testPlanIdData: '',
-    approveRejectData: ''
+    approveRejectData: '',
+    allTestPlanIDData: ''
   }
 };
 const testCaseReviewSlice = createSlice({
@@ -53,6 +56,7 @@ const testCaseReviewSlice = createSlice({
       .addCase(getByTestPlanIDListThunk.fulfilled, (state, action) => {
         state.isLoading.testPlanIdData = false;
         state.testPlanIdData = action?.payload?.data?.data;
+        state.allTestPlanIDData = action?.payload?.data;
 
         state.successMsg.testPlanIdData = action?.payload?.message;
       })

@@ -172,7 +172,11 @@ export default function TestDraftComponent({ close }) {
     { title: 'Updated At', field: 'updated_at' }
   ];
 
-  const handleExportData = () => {
+  useEffect(() => {
+    dispatch(getProjectModuleMasterThunk());
+    dispatch(getModuleMasterThunk());
+    dispatch(getSubModuleMasterThunk());
+    dispatch(importTestDraftThunk());
     dispatch(
       getAllDraftTestCaseList({
         type: 'ALL',
@@ -180,14 +184,7 @@ export default function TestDraftComponent({ close }) {
         page: paginationData.currentPage
       })
     );
-  };
-
-  useEffect(() => {
-    dispatch(getProjectModuleMasterThunk());
-    dispatch(getModuleMasterThunk());
-    dispatch(getSubModuleMasterThunk());
-    dispatch(importTestDraftThunk());
-    dispatch(getAllReviewTestDraftList());
+    // dispatch(getAllReviewTestDraftList());
   }, []);
   return (
     <div className="container-xxl">
@@ -222,7 +219,6 @@ export default function TestDraftComponent({ close }) {
               </button>
               <ExportToExcel
                 className="btn btn-danger"
-                onClick={handleExportData}
                 apiData={
                   currentTab === 'test_summary'
                     ? allDraftTestListData
@@ -239,8 +235,10 @@ export default function TestDraftComponent({ close }) {
                     : 'Review Test Draft Records'
                 }
                 disabled={
-                  !allDraftTestListData?.length ||
-                  !allReviewDraftTestListData?.length
+                  currentTab === 'review_test_draft' ||
+                  allDraftTestListData?.length <= 0
+                    ? true
+                    : false
                 }
               />
             </div>
@@ -259,7 +257,7 @@ export default function TestDraftComponent({ close }) {
         <TestDraftDetails />
       </RenderIf>
       <RenderIf render={currentTab === 'review_test_draft'}>
-        <ReviewedTestDraftDetails />
+        {currentTab === 'review_test_draft' && <ReviewedTestDraftDetails />}
       </RenderIf>
 
       {downloadmodal.showModal === true && (

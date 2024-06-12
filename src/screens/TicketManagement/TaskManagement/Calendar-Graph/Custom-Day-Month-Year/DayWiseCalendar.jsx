@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from "react";
-import Avatar from "react-avatar";
-import "./custom-style.css";
-import { Link, useNavigate } from "react-router-dom";
-import { _base } from "../../../../../settings/constants";
+import React, { useEffect, useState } from 'react';
+import Avatar from 'react-avatar';
+import './custom-style.css';
+import { Link, useNavigate } from 'react-router-dom';
+import { _base } from '../../../../../settings/constants';
 
 const DayWiseCalendar = (props) => {
   const navigate = useNavigate();
   // console.log("navigate", navigate());
   const { data: dayWiseData, bgColor, presentDate } = props;
   const [calendarData, setCalendarData] = useState([]);
-  const [tooltipContent, setTooltipContent] = useState("");
+  const [tooltipContent, setTooltipContent] = useState('');
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
   const handleMouseEnter = (event, data) => {
@@ -21,21 +21,21 @@ const DayWiseCalendar = (props) => {
       startDate,
       endDate,
       actualWorked,
-      actualStatus,
+      actualStatus
     } = data;
     const tooltipText = `Sprint Name: ${sprintName}\nTask Name: ${taskName}\nBasket Name: ${basketName}\nStart Date:${startDate}\nEnd Date:${endDate}\nScheduled Hours: ${scheduledHours}\nActual Worked: ${
-      actualWorked ? actualWorked : "00:00:00"
+      actualWorked ? actualWorked : '00:00:00'
     }\nStatus:${actualStatus}`;
     setTooltipContent(tooltipText);
 
-    const tooltip = document.getElementById("custom-tooltip");
+    const tooltip = document.getElementById('custom-tooltip');
     const xPos = event.clientX + 5;
     const yPos = event.clientY - 5;
     setTooltipPosition({ x: xPos, y: yPos });
   };
 
   const handleMouseLeave = () => {
-    setTooltipContent("");
+    setTooltipContent('');
     // tooltip.style.display = "none";
   };
 
@@ -60,7 +60,7 @@ const DayWiseCalendar = (props) => {
             actualStatus: dayWiseData[i].task_data[j].task_status,
             startDate: dayWiseData[i].task_data[j].task_start_Date,
             endDate: dayWiseData[i].task_data[j].task_end_date,
-            taskOwners: dayWiseData[i].task_data[j].taskOwners,
+            taskOwners: dayWiseData[i].task_data[j].taskOwners
           };
           newTaskSprintData.push(payload);
           setCalendarData((prevState) => [...prevState, payload]);
@@ -69,6 +69,13 @@ const DayWiseCalendar = (props) => {
     }
     return newTaskSprintData;
   };
+  function goPrevTab() {
+    let prevTab = localStorage.getItem('PreviosTab');
+    localStorage.removeItem('PreviosTab');
+    if (prevTab) {
+      window.location.href = prevTab;
+    }
+  }
 
   useEffect(() => {
     filterTaskAsPerAsSprint();
@@ -103,17 +110,12 @@ const DayWiseCalendar = (props) => {
                 </h5>
                 <h5 className="col-3 fw-bold">{data.basketName}</h5>
                 <div className="col-6">
-                  <Link to={`${_base}/Ticket/Task`}>
-                    <p
-                      className="mb-0 fw-bold"
-                      // onClick={() => navigate(`${_base}`, { replace: true })}
-                    >
-                      {data.taskName}
-                    </p>
-                  </Link>
+                  <p className="mb-0 fw-bold" onClick={goPrevTab}>
+                    {data.taskName}
+                  </p>
 
                   <span className="me-3">
-                    {data?.actualWorked ? data?.actualWorked : "00:00:00"}
+                    {data?.actualWorked ? data?.actualWorked : '00:00:00'}
                   </span>
                   <span>{data.scheduledHours}</span>
                 </div>
@@ -134,7 +136,7 @@ const DayWiseCalendar = (props) => {
       ) : (
         <div
           className="text-center mt-4 p-2 text-white rounded-1"
-          style={{ backgroundColor: "#484C7F" }}
+          style={{ backgroundColor: '#484C7F' }}
         >
           No Tasks For Current Date
         </div>

@@ -31,7 +31,6 @@ function EditTestCaseModal({
   id,
   payloadType
 }) {
-  console.log('id==>', payloadType);
   // // initial state
   const severityData = [
     {

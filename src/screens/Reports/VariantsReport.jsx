@@ -16,11 +16,13 @@ import TableLoadingSkelton from '../../components/custom/loader/TableLoadingSkel
 
 export default function ResourcePlanningReportComponent() {
   const dispatch = useDispatch();
-  const checkRole = useSelector((DashboardSlice) =>
+  const isMenuRoleChecked = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 38)
   );
   const [userData, setUserData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [searchPerformed, setSearchPerformed] = useState(false);
+
   const [data, setData] = useState(null);
   const [exportData, setExportData] = useState(null);
 
@@ -154,6 +156,7 @@ export default function ResourcePlanningReportComponent() {
           if (res.status === 200) {
             setIsLoading(false);
             setShowLoaderModal(false);
+            setSearchPerformed(true);
             if (res.data.status === 1) {
               let sr = 1;
               const data = res.data.data;
@@ -232,7 +235,7 @@ export default function ResourcePlanningReportComponent() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[0]?.can_read === 0) {
+    if (isMenuRoleChecked && isMenuRoleChecked[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, []);
@@ -298,14 +301,14 @@ export default function ResourcePlanningReportComponent() {
                   className="btn btn-sm btn-warning text-white"
                   type="submit"
                 >
-                  <i className="icofont-search-1 "></i> Search
+                  <i className="icofont-search-1 " /> Search
                 </button>
                 <button
                   className="btn btn-sm btn-info text-white"
                   type="button"
                   onClick={() => window.location.reload(false)}
                 >
-                  <i className="icofont-refresh text-white"></i> Reset
+                  <i className="icofont-refresh text-white" /> Reset
                 </button>
               </div>
               <div className="col-md-6 d-flex justify-content-end">
@@ -328,18 +331,26 @@ export default function ResourcePlanningReportComponent() {
             <div className="col-sm-12">
               {isLoading ? (
                 <TableLoadingSkelton />
-              ) : data && data.length > 0 ? (
-                <DataTable
-                  columns={columns}
-                  data={data}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                />
               ) : (
-                <div className="text-center">No data found</div>
+                <>
+                  {data && data.length > 0 ? (
+                    <DataTable
+                      columns={columns}
+                      data={data}
+                      defaultSortField="title"
+                      pagination
+                      selectableRows={false}
+                      className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                      highlightOnHover={true}
+                    />
+                  ) : (
+                    <>
+                      {searchPerformed && !isLoading && (
+                        <div className="text-center">No data found</div>
+                      )}
+                    </>
+                  )}
+                </>
               )}
             </div>
           </div>

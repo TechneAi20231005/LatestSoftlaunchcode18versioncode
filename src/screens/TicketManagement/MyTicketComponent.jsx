@@ -2831,19 +2831,24 @@ export default function MyTicketComponent() {
                         )}
                         {isLoading && <TableLoadingSkelton />}
 
-                        {!isLoading && searchResult && (
-                          <DataTable
-                            columns={searchResultColumns}
-                            data={searchResult}
-                            defaultSortField="title"
-                            paginations
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={'500px'}
-                            selectableRows={false}
-                            className="table msyDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                            highlightOnHover={true}
-                          />
-                        )}
+                        {!isLoading &&
+                          (searchResult && searchResult.length > 0 ? (
+                            <DataTable
+                              columns={searchResultColumns}
+                              data={searchResult}
+                              defaultSortField="title"
+                              pagination
+                              fixedHeader={true}
+                              fixedHeaderScrollHeight={'500px'}
+                              selectableRows={false}
+                              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                              highlightOnHover={true}
+                            />
+                          ) : (
+                            <div className="text-center no-data-message">
+                              No data found
+                            </div>
+                          ))}
                       </div>
                     </div>
                   </Tab>
@@ -2861,18 +2866,24 @@ export default function MyTicketComponent() {
                         )}
                         {isLoading && <TableLoadingSkelton />}
 
-                        {!isLoading && assignedToMe && (
-                          <DataTable
-                            columns={assignedToMeColumns}
-                            data={assignedToMe}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={'700px'}
-                            selectableRows={false}
-                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                            highlightOnHover={true}
-                          />
-                        )}
+                        {!isLoading &&
+                          (assignedToMe && assignedToMe.length > 0 ? (
+                            <DataTable
+                              columns={assignedToMeColumns}
+                              data={assignedToMe}
+                              defaultSortField="title"
+                              fixedHeader={true}
+                              fixedHeaderScrollHeight={'700px'}
+                              selectableRows={false}
+                              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                              highlightOnHover={true}
+                            />
+                          ) : (
+                            <div className="text-center no-data-message">
+                              No data found
+                            </div>
+                          ))}
+
                         <div className="back-to-top pull-right mt-2 mx-2">
                           <label className="mx-2">rows per page</label>
                           <select
@@ -2925,19 +2936,25 @@ export default function MyTicketComponent() {
                       )}
 
                       {isLoading && <TableLoadingSkelton />}
-                      {!isLoading && createdByMe && (
-                        <DataTable
-                          customStyles={customStyles}
-                          columns={createdByMeColumns}
-                          data={createdByMe}
-                          defaultSortField="title"
-                          fixedHeader={true}
-                          fixedHeaderScrollHeight={'500px'}
-                          selectableRows={false}
-                          highlightOnHover={true}
-                          responsive={true}
-                        />
-                      )}
+                      {!isLoading &&
+                        (createdByMe && createdByMe.length > 0 ? (
+                          <DataTable
+                            customStyles={customStyles}
+                            columns={createdByMeColumns}
+                            data={createdByMe}
+                            defaultSortField="title"
+                            fixedHeader={true}
+                            fixedHeaderScrollHeight={'500px'}
+                            selectableRows={false}
+                            highlightOnHover={true}
+                            responsive={true}
+                          />
+                        ) : (
+                          <div className="text-center no-data-message">
+                            No data found
+                          </div>
+                        ))}
+
                       <div className="back-to-top pull-right mt-6 mx-2">
                         <label className="mx-2">rows per page</label>
                         <select
@@ -2992,18 +3009,25 @@ export default function MyTicketComponent() {
                         )}
                         {isLoading && <TableLoadingSkelton />}
 
-                        {!isLoading && departmentwiseTicket && (
-                          <DataTable
-                            columns={departmentwisetTicketColumns}
-                            data={departmentwiseTicket}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={'800px'}
-                            selectableRows={false}
-                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                            highlightOnHover={true}
-                          />
-                        )}
+                        {!isLoading &&
+                          (departmentwiseTicket &&
+                          departmentwiseTicket.length > 0 ? (
+                            <DataTable
+                              columns={departmentwisetTicketColumns}
+                              data={departmentwiseTicket}
+                              defaultSortField="title"
+                              fixedHeader={true}
+                              fixedHeaderScrollHeight={'800px'}
+                              selectableRows={false}
+                              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                              highlightOnHover={true}
+                            />
+                          ) : (
+                            <div className="text-center no-data-message">
+                              No data found
+                            </div>
+                          ))}
+
                         <div className="back-to-top pull-right mt-2 mx-2">
                           <label className="mx-2">rows per page</label>
                           <select
@@ -3056,18 +3080,24 @@ export default function MyTicketComponent() {
                           />
                         )}
                         {isLoading && <TableLoadingSkelton />}
-                        {!isLoading && yourTask && (
-                          <DataTable
-                            columns={yourTaskColumns}
-                            data={yourTask}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={'500px'}
-                            selectableRows={false}
-                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                            highlightOnHover={true}
-                          />
-                        )}
+                        {!isLoading &&
+                          (yourTask && yourTask.length > 0 ? (
+                            <DataTable
+                              columns={yourTaskColumns}
+                              data={yourTask}
+                              defaultSortField="title"
+                              fixedHeader={true}
+                              fixedHeaderScrollHeight={'500px'}
+                              selectableRows={false}
+                              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                              highlightOnHover={true}
+                            />
+                          ) : (
+                            <div className="text-center no-data-message">
+                              No data found
+                            </div>
+                          ))}
+
                         <div className="back-to-top pull-right mt-2 mx-2">
                           <label className="mx-2">rows per page</label>
                           <select
@@ -3178,18 +3208,22 @@ export default function MyTicketComponent() {
 
                       {isLoading && <TableLoadingSkelton />}
 
-                      {!isLoading && unpassedTickets && (
-                        <DataTable
-                          columns={unpassedColumns}
-                          data={unpassedTickets}
-                          defaultSortField="title"
-                          fixedHeader={true}
-                          fixedHeaderScrollHeight={'500px'}
-                          selectableRows={false}
-                          className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                          highlightOnHover={true}
-                        />
-                      )}
+                      {!isLoading &&
+                        (unpassedTickets && unpassedTickets.length > 0 ? (
+                          <DataTable
+                            columns={unpassedColumns}
+                            data={unpassedTickets}
+                            defaultSortField="title"
+                            fixedHeader={true}
+                            fixedHeaderScrollHeight={'500px'}
+                            selectableRows={false}
+                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                            highlightOnHover={true}
+                          />
+                        ) : (
+                          <div className="text-center">No data found</div>
+                        ))}
+
                       <div className="back-to-top pull-right mt-2 mx-2">
                         <label className="mx-2">rows per page</label>
                         <select

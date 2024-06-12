@@ -15,10 +15,22 @@ import EditTestCaseModal from './EditTestCaseModal';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import CustomFilterModal from '../Modal/CustomFilterModal';
 function TestDraftDetails(props) {
   const data = props.data;
 
   // // initial state
+
+  const { getDraftTestListData, allDraftListData, isLoading } = useSelector(
+    (state) => state?.downloadFormat
+  );
+
+  const [paginationData, setPaginationData] = useReducer(
+    (prevState, nextState) => {
+      return { ...prevState, ...nextState };
+    },
+    { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
+  );
 
   const [addEditTestCasesModal, setAddEditTestCasesModal] = useState({
     type: '',
@@ -31,18 +43,6 @@ function TestDraftDetails(props) {
     modalData: '',
     modalHeader: ''
   });
-
-  const { getDraftTestListData, isLoading } = useSelector(
-    (state) => state?.downloadFormat
-  );
-
-  const [paginationData, setPaginationData] = useReducer(
-    (prevState, nextState) => {
-      return { ...prevState, ...nextState };
-    },
-    { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
-  );
-
   const dispatch = useDispatch();
   const testerData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.getAllTesterDataList
@@ -77,19 +77,179 @@ function TestDraftDetails(props) {
       }
     });
   };
+  const [modalIsOpen, setModalIsOpen] = useState(false);
+  const [filterColumn, setFilterColumn] = useState(null);
+  const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
+  const [selectedFilters, setSelectedFilters] = useState([]);
+  const [filteredData, setFilteredData] = useState(
+    Array?.isArray(getDraftTestListData) ? getDraftTestListData : []
+  );
+  const [searchTerm, setSearchTerm] = useState('');
+  // const closeModal = () => {
+  //   setModalIsOpen(false);
+  //   setFilterColumn(null);
+  // };
 
-  // Handle updates to dropdowns and input fields
-  const handleInputChange = (id, field, value) => {
-    setUpdatedData((prevData) => ({
-      ...prevData,
-      [id]: {
-        ...prevData[id],
-        [field]: value
-      }
-    }));
+  // const handleFilterClick = (event, column) => {
+  //   const rect = event.target.getBoundingClientRect();
+  //   setModalPosition({ top: rect.bottom, left: rect.left });
+  //   setFilterColumn(column);
+  //   setModalIsOpen(true);
+  // };
+
+  // const handleApplyFilter = () => {
+  //   let newData = filterDraftTestListData;
+  //   if (selectedFilters.length > 0 && filterColumn) {
+  //     newData = filterDraftTestListData.filter((row) =>
+  //       selectedFilters.includes(row[filterColumn])
+  //     );
+  //   }
+  //   setFilteredData(newData);
+  //   closeModal();
+  // };
+
+  // const handleSelectAll = (event, uniqueValues) => {
+  //   if (event.target.checked) {
+  //     setSelectedFilters(uniqueValues);
+  //   } else {
+  //     setSelectedFilters([]);
+  //   }
+  // };
+
+  // const filterDraftTestListData = getDraftTestListData
+  //   .filter((project) => project.is_active === 1)
+  //   .map((project) => ({
+  //     value: project.id,
+  //     label: project.module_name
+  //   }));
+
+  // const filteredUniqueValues = filterColumn
+  //   ? Array.from(
+  //       new Set(filterDraftTestListData.map((row) => row[filterColumn]))
+  //     ).filter((value) =>
+  //       value.toLowerCase().includes(searchTerm.toLowerCase())
+  //     )
+  //   : [];
+
+  // const handleFilterClick = (event, column) => {
+  //   const rect = event.target.getBoundingClientRect();
+  //   setModalPosition({ top: rect.bottom, left: rect.left });
+  //   setFilterColumn(column);
+  //   setModalIsOpen(true);
+  // };
+
+  // const closeModal = () => {
+  //   setModalIsOpen(false);
+  //   setFilterColumn(null);
+  // };
+
+  // const handleApplyFilter = () => {
+  //   let newData = getDraftTestListData.filter(
+  //     (project) => project.is_active === 1
+  //   );
+  //   if (selectedFilters.length > 0 && filterColumn) {
+  //     newData = newData.filter((row) =>
+  //       selectedFilters.includes(row[filterColumn])
+  //     );
+  //   }
+  //   setFilteredData(newData);
+  //   closeModal();
+  // };
+
+  // const handleSelectAll = (event, uniqueValues) => {
+  //   if (event.target.checked) {
+  //     setSelectedFilters(uniqueValues);
+  //   } else {
+  //     setSelectedFilters([]);
+  //   }
+  // };
+
+  // const filteredUniqueValues = filterColumn
+  //   ? Array.from(
+  //       new Set(
+  //         getDraftTestListData
+  //           .filter((project) => project.is_active === 1)
+  //           .map((row) => row[filterColumn])
+  //       )
+  //     ).filter((value) =>
+  //       value.toLowerCase().includes(searchTerm.toLowerCase())
+  //     )
+  //   : [];
+
+  const handleFilterClick = (event, column) => {
+    const rect = event.target.getBoundingClientRect();
+    setModalPosition({ top: rect.bottom, left: rect.left });
+    setFilterColumn(column);
+    setModalIsOpen(true);
   };
 
-  const [updatedData, setUpdatedData] = useState({});
+  const closeModal = () => {
+    setModalIsOpen(false);
+    setFilterColumn(null);
+    setSearchTerm('');
+    setSelectedFilters([]);
+  };
+
+  // const handleApplyFilter = () => {
+  //   let newData = getDraftTestListData.filter(
+  //     (project) => project.is_active === 1
+  //   );
+  //   if (selectedFilters.length > 0 && filterColumn) {
+  //     newData = newData.filter((row) =>
+  //       selectedFilters.includes(row[filterColumn])
+  //     );
+  //   }
+  //   setFilteredData(newData);
+  //   closeModal();
+  // };
+
+  const handleApplyFilter = () => {
+    let newData = getDraftTestListData;
+    if (selectedFilters.length > 0 && filterColumn) {
+      newData = getDraftTestListData.filter((row) =>
+        selectedFilters.includes(row[filterColumn])
+      );
+    }
+    setFilteredData(newData);
+    setSearchTerm(''); // Reset search term if needed
+    setSelectedFilters([]); // Reset selected filters if needed
+    setModalIsOpen(false); // Close modal after applying filters
+  };
+
+  const handleSelectAll = (event, uniqueValues) => {
+    if (event.target.checked) {
+      setSelectedFilters(uniqueValues);
+    } else {
+      setSelectedFilters([]);
+    }
+  };
+
+  const handleFilterCheckboxChange = (event, value) => {
+    if (event.target.checked) {
+      setSelectedFilters((prev) => [...prev, value]);
+    } else {
+      setSelectedFilters((prev) => prev.filter((filter) => filter !== value));
+    }
+  };
+
+  const filteredUniqueValues = filterColumn
+    ? Array.from(
+        new Set(
+          getDraftTestListData
+            .filter((project) => project.is_active === 1)
+            .map((row) => row[filterColumn])
+        )
+      ).filter((value) =>
+        value.toLowerCase().includes(searchTerm.toLowerCase())
+      )
+    : [];
+
+  // const filteredData =
+  //   selectedFilters.length > 0 && filterColumn
+  //     ? getDraftTestListData.filter((row) =>
+  //         selectedFilters.includes(row[filterColumn])
+  //       )
+  //     : getDraftTestListData;
 
   const columns = [
     {
@@ -143,7 +303,16 @@ function TestDraftDetails(props) {
     },
 
     {
-      name: 'Module',
+      name: (
+        <div className="d-flex align-items-center">
+          <span>Module</span>
+          <i
+            onClick={(e) => handleFilterClick(e, 'module_name')}
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
+
       selector: (row) => row.module_name,
       width: '10rem',
       sortable: true,
@@ -165,6 +334,12 @@ function TestDraftDetails(props) {
               </div>
             </OverlayTrigger>
           )}
+        </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
         </div>
       )
     },
@@ -320,7 +495,7 @@ function TestDraftDetails(props) {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.group_name && row.type_name.length < 20
+                  {row.group_name && row.group_name.length < 20
                     ? row.group_name
                     : row.group_name.substring(0, 50) + '....'}
                 </span>
@@ -330,6 +505,33 @@ function TestDraftDetails(props) {
         </div>
       )
     },
+
+    // {
+    //   name: 'Testing Id',
+    //   selector: (row) => row.id,
+    //   width: '7rem',
+    //   sortable: true,
+    //   cell: (row) => (
+    //     <div
+    //       className="btn-group"
+    //       role="group"
+    //       aria-label="Basic outlined example"
+    //     >
+    //       {row.id && (
+    //         <OverlayTrigger overlay={<Tooltip>{row.id} </Tooltip>}>
+    //           <div>
+    //             <span className="ms-1">
+    //               {' '}
+    //               {row.id && row.id.length < 20
+    //                 ? row.id
+    //                 : row.id.substring(0, 50) + '....'}
+    //             </span>
+    //           </div>
+    //         </OverlayTrigger>
+    //       )}
+    //     </div>
+    //   )
+    // },
 
     {
       name: 'Steps',
@@ -604,6 +806,14 @@ function TestDraftDetails(props) {
       })
     );
   }, [paginationData.rowPerPage, paginationData.currentPage]);
+
+  useEffect(() => {
+    // Update the filteredData state when fetchedData changes
+    if (Array?.isArray(getDraftTestListData)) {
+      setFilteredData(getDraftTestListData);
+    }
+  }, [getDraftTestListData]);
+
   return (
     <>
       <Container fluid className="employee_joining_details_container">
@@ -611,18 +821,21 @@ function TestDraftDetails(props) {
         <hr className="primary_divider mt-1" />
         <DataTable
           columns={columns}
-          data={getDraftTestListData}
+          // data={getDraftTestListData}
+          data={filteredData}
           defaultSortField="role_id"
           pagination
           paginationServer
-          paginationTotalRows={getDraftTestListData?.total?.total_count}
-          paginationDefaultPage={paginationData.currentPage}
+          paginationTotalRows={allDraftListData?.total}
+          paginationDefaultPage={paginationData?.currentPage}
           onChangePage={(page) => setPaginationData({ currentPage: page })}
           onChangeRowsPerPage={(newPageSize) => {
             setPaginationData({ rowPerPage: newPageSize });
             setPaginationData({ currentPage: 1 });
           }}
-          paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
+          paginationRowsPerPageOptions={[
+            50, 100, 150, 200, 300, 500, 700, 1000
+          ]}
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
@@ -716,6 +929,38 @@ function TestDraftDetails(props) {
           paginationData={paginationData}
           id={addEditTestCasesModal.id}
           payloadType={'DRAFT'}
+        />
+      )}
+
+      {/* {modalIsOpen && (
+        <CustomFilterModal
+          show={modalIsOpen}
+          handleClose={closeModal}
+          handleApply={handleApplyFilter}
+          position={modalPosition}
+          filterColumn={filterColumn}
+          handleCheckboxChange={handleCheckboxChange}
+          selectedFilters={selectedFilters}
+          handleSelectAll={handleSelectAll}
+          uniqueValues={filteredUniqueValues}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
+        />
+      )} */}
+
+      {modalIsOpen && (
+        <CustomFilterModal
+          show={modalIsOpen}
+          handleClose={closeModal}
+          handleApply={handleApplyFilter}
+          position={modalPosition}
+          filterColumn={filterColumn}
+          handleCheckboxChange={handleFilterCheckboxChange}
+          selectedFilters={selectedFilters}
+          handleSelectAll={handleSelectAll}
+          uniqueValues={filteredUniqueValues}
+          searchTerm={searchTerm}
+          setSearchTerm={setSearchTerm}
         />
       )}
     </>

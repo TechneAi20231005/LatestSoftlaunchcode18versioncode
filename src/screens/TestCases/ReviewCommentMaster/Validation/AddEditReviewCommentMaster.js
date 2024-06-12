@@ -1,44 +1,44 @@
-import React, { useState } from "react";
-import { Field, Form, Formik } from "formik";
-import { Col, Row } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import { addReviewCommentValidation } from "./AddReviewComment";
-import CustomModal from "../../../../components/custom/modal/CustomModal";
+import React, { useState } from 'react';
+import { Field, Form, Formik } from 'formik';
+import { Col, Row } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { addReviewCommentValidation } from './AddReviewComment';
+import CustomModal from '../../../../components/custom/modal/CustomModal';
 import {
   CustomInput,
-  CustomRadioButton,
-} from "../../../../components/custom/inputs/CustomInputs";
+  CustomRadioButton
+} from '../../../../components/custom/inputs/CustomInputs';
 import {
   addReviewCommentMasterThunk,
   editReviewCommentMasterThunk,
-  getReviewCommentMasterListThunk,
-} from "../../../../redux/services/testCases/reviewCommentMaster";
-import { RenderIf } from "../../../../utils";
+  getReviewCommentMasterListThunk
+} from '../../../../redux/services/testCases/reviewCommentMaster';
+import { RenderIf } from '../../../../utils';
 
-function ReviewCommentMasterModal({
+function AddEditReviewCommentMaster({
   show,
   close,
   type,
-  currentReviewCommentData,
+  currentReviewCommentData
 }) {
   const dispatch = useDispatch();
   const addEditReviewCommentInitialValue = {
     reviewer_comment:
-      type === "EDIT" ? currentReviewCommentData?.reviewer_comment : "",
-    remark: type === "EDIT" ? currentReviewCommentData?.remark || "" : "",
+      type === 'EDIT' ? currentReviewCommentData?.reviewer_comment : '',
+    remark: type === 'EDIT' ? currentReviewCommentData?.remark || '' : '',
     is_active:
-      type === "EDIT" ? currentReviewCommentData?.is_active?.toString() : 1,
+      type === 'EDIT' ? currentReviewCommentData?.is_active?.toString() : 1
   };
 
   // // local state
   const [openConfirmModal, setOpenConfirmModal] = useState({
     open: false,
-    formData: "",
+    formData: ''
   });
   // // function
 
   const handelAddEditReviewComment = ({ formData }) => {
-    if (type === "ADD") {
+    if (type === 'ADD') {
       dispatch(
         addReviewCommentMasterThunk({
           formData: formData,
@@ -49,7 +49,7 @@ function ReviewCommentMasterModal({
           },
           onErrorHandler: () => {
             setOpenConfirmModal({ open: false });
-          },
+          }
         })
       );
     } else {
@@ -64,7 +64,7 @@ function ReviewCommentMasterModal({
           },
           onErrorHandler: () => {
             setOpenConfirmModal({ open: false });
-          },
+          }
         })
       );
     }
@@ -74,7 +74,7 @@ function ReviewCommentMasterModal({
     <>
       <CustomModal
         show={show}
-        title={`${type === "ADD" ? "Add" : "Edit"} Reviewer Comment`}
+        title={`${type === 'ADD' ? 'Add' : 'Edit'} Reviewer Comment`}
         width="md"
       >
         <Formik
@@ -105,7 +105,7 @@ function ReviewCommentMasterModal({
                   />
                 </Col>
 
-                <RenderIf render={type === "EDIT"}>
+                <RenderIf render={type === 'EDIT'}>
                   <div className="d-flex align-items-center mt-3">
                     <p className="mb-2 pe-2">
                       Status<span className="mendatory_sign">*</span> :
@@ -136,7 +136,7 @@ function ReviewCommentMasterModal({
                   type="submit"
                   disabled={!dirty}
                 >
-                  {type === "ADD" ? "Save" : "Update"}
+                  {type === 'ADD' ? 'Save' : 'Update'}
                 </button>
                 <button
                   onClick={() => close()}
@@ -168,4 +168,4 @@ function ReviewCommentMasterModal({
   );
 }
 
-export default ReviewCommentMasterModal;
+export default AddEditReviewCommentMaster;

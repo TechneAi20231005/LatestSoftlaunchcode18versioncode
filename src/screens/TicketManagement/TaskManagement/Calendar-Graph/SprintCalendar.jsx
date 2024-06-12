@@ -6,6 +6,7 @@ import DayWiseCalendar from './Custom-Day-Month-Year/DayWiseCalendar';
 import WeekwiseCalendar from './Custom-Day-Month-Year/WeekwiseCalendar';
 import { CalendarYearWise } from './Custom-Day-Month-Year/CalendarYearWise';
 import Alert from '../../../../components/Common/Alert';
+import TicketCollapse from '../../../../components/Common/TicketCollapse';
 
 const SprintCalendar = () => {
   const params = useParams();
@@ -24,6 +25,7 @@ const SprintCalendar = () => {
   const [weekData, setWeekData] = useState([]);
   const [yearData, setYearData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [open, setOpen] = useState(false);
   const [taskStatus, setTaskStatus] = useState([
     { id: 1, statusName: 'TO_DO', color: '#C3F5FF' },
     { id: 2, statusName: 'IN_PROGRESS', color: '#FFECB3' },
@@ -219,6 +221,9 @@ const SprintCalendar = () => {
       setYearData([]);
     }
   };
+  function toggleOpen() {
+    setOpen(!open);
+  }
 
   useEffect(() => {
     fetchCalendarData();
@@ -257,22 +262,7 @@ const SprintCalendar = () => {
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Manage Task" paddingStart="3" />
-      <div className="card mt-3">
-        <div className="card-body">
-          <div>
-            <div className="d-flex ">
-              <h4 className="col-md-3">
-                <strong className="text-primary"> </strong>
-                <i
-                  className="icofont-eye-blocked"
-                  style={{ fontSize: '27px' }}
-                ></i>{' '}
-              </h4>
-            </div>
-          </div>
-        </div>
-      </div>
-
+      <TicketCollapse ticket={'TT-19994'} open={open} toggleOpen={toggleOpen} />
       <div className="card p-3 mt-3">
         <div className="d-flex justify-content-between justify-content-md-end ">
           {taskStatus?.map((statusName) => (

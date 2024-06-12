@@ -1,7 +1,11 @@
 import { toast } from 'react-toastify';
 
 export default function errorHandler(response = '') {
-  if (response !== undefined && response !== undefined && response.status !== undefined) {
+  if (
+    response !== undefined &&
+    response !== undefined &&
+    response.status !== undefined
+  ) {
     if (response.status === 200 && response.data.status === 0) {
       toast.error(response.data.message);
     }
