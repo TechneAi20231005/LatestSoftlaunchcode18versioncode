@@ -1,68 +1,68 @@
-import React, { useEffect, useState, useRef, useCallback } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { Spinner, Modal, Table } from "react-bootstrap";
-import Alert from "../../components/Common/Alert";
-import { userSessionData, _base } from "../../settings/constants";
-import Attachment from "../../components/Common/Attachment";
-import * as Validation from "../../components/Utilities/Validation";
-import { _attachmentUrl } from "../../settings/constants";
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Spinner, Modal, Table } from 'react-bootstrap';
+import Alert from '../../components/Common/Alert';
+import { userSessionData, _base } from '../../settings/constants';
+import Attachment from '../../components/Common/Attachment';
+import * as Validation from '../../components/Utilities/Validation';
+import { _attachmentUrl } from '../../settings/constants';
 import {
   getAttachment,
-  deleteAttachment,
-} from "../../services/OtherService/AttachmentService";
-import DatePicker from "react-date-picker";
-import ErrorLogService from "../../services/ErrorLogService";
-import MyTicketService from "../../services/TicketService/MyTicketService";
-import editorStyles from "./SimpleMentionEditor.module.css";
-import DynamicFormDropdownMasterService from "../../services/MastersService/DynamicFormDropdownMasterService";
-import UserService from "../../services/MastersService/UserService";
-import PageHeader from "../../components/Common/PageHeader";
-import Select from "react-select";
-import { getCurrentDate } from "../../components/Utilities/Functions";
-import { UserDropdown } from "../Masters/UserMaster/UserComponent";
-import { DepartmentDropdown } from "../Masters/DepartmentMaster/DepartmentComponent";
-import { StatusDropdown } from "../Masters/StatusMaster/StatusComponent";
-import { QueryTypeDropdown } from "../Masters/QueryTypeMaster/QueryTypeComponent";
-import { ProjectDropdown } from "../ProjectManagement/ProjectMaster/ProjectComponent";
-import { ModuleDropdown } from "../ProjectManagement/ModuleMaster/ModuleComponent";
-import { SubModuleDropdown } from "../ProjectManagement/SubModuleMaster/SubModuleComponent";
-import { Astrick } from "../../components/Utilities/Style";
-import { userSessionData as user } from "../../settings/constants";
-import RenderDynamicForm from "./TaskManagement/RenderDynamicForm";
-import CommentData from "./CommentData";
+  deleteAttachment
+} from '../../services/OtherService/AttachmentService';
+import DatePicker from 'react-date-picker';
+import ErrorLogService from '../../services/ErrorLogService';
+import MyTicketService from '../../services/TicketService/MyTicketService';
+import editorStyles from './SimpleMentionEditor.module.css';
+import DynamicFormDropdownMasterService from '../../services/MastersService/DynamicFormDropdownMasterService';
+import UserService from '../../services/MastersService/UserService';
+import PageHeader from '../../components/Common/PageHeader';
+import Select from 'react-select';
+import { getCurrentDate } from '../../components/Utilities/Functions';
+import { UserDropdown } from '../Masters/UserMaster/UserComponent';
+import { DepartmentDropdown } from '../Masters/DepartmentMaster/DepartmentComponent';
+import { StatusDropdown } from '../Masters/StatusMaster/StatusComponent';
+import { QueryTypeDropdown } from '../Masters/QueryTypeMaster/QueryTypeComponent';
+import { ProjectDropdown } from '../ProjectManagement/ProjectMaster/ProjectComponent';
+import { ModuleDropdown } from '../ProjectManagement/ModuleMaster/ModuleComponent';
+import { SubModuleDropdown } from '../ProjectManagement/SubModuleMaster/SubModuleComponent';
+import { Astrick } from '../../components/Utilities/Style';
+import { userSessionData as user } from '../../settings/constants';
+import RenderDynamicForm from './TaskManagement/RenderDynamicForm';
+import CommentData from './CommentData';
 
-import DepartmentService from "../../services/MastersService/DepartmentService";
-import QueryTypeService from "../../services/MastersService/QueryTypeService";
-import CustomerMappingService from "../../services/SettingService/CustomerMappingService";
+import DepartmentService from '../../services/MastersService/DepartmentService';
+import QueryTypeService from '../../services/MastersService/QueryTypeService';
+import CustomerMappingService from '../../services/SettingService/CustomerMappingService';
 
-import ProjectService from "../../services/ProjectManagementService/ProjectService";
-import ModuleService from "../../services/ProjectManagementService/ModuleService";
-import SubModuleService from "../../services/ProjectManagementService/SubModuleService";
-import DesignationService from "../../services/MastersService/DesignationService";
+import ProjectService from '../../services/ProjectManagementService/ProjectService';
+import ModuleService from '../../services/ProjectManagementService/ModuleService';
+import SubModuleService from '../../services/ProjectManagementService/SubModuleService';
+import DesignationService from '../../services/MastersService/DesignationService';
 
-import StatusService from "../../services/MastersService/StatusService";
-import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
-import { Mention, MentionsInput } from "react-mentions";
-import Chatbox from "./NewChatBox";
-import Shimmer from "./ShimmerComponent";
-import { UseDispatch, useDispatch, useSelector } from "react-redux";
-import ProjectMasterSlice from "../ProjectManagement/ProjectMaster/ProjectMasterSlice";
-import { getprojectData } from "../ProjectManagement/ProjectMaster/ProjectMasterAction";
-import ModuleSlice from "../ProjectManagement/ModuleMaster/ModuleSlice";
-import { moduleMaster } from "../ProjectManagement/ModuleMaster/ModuleAction";
-import SubModuleMasterSlice from "../ProjectManagement/SubModuleMaster/SubModuleMasterSlice";
+import StatusService from '../../services/MastersService/StatusService';
+import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
+import { Mention, MentionsInput } from 'react-mentions';
+import Chatbox from './NewChatBox';
+import Shimmer from './ShimmerComponent';
+import { UseDispatch, useDispatch, useSelector } from 'react-redux';
+import ProjectMasterSlice from '../ProjectManagement/ProjectMaster/ProjectMasterSlice';
+import { getprojectData } from '../ProjectManagement/ProjectMaster/ProjectMasterAction';
+import ModuleSlice from '../ProjectManagement/ModuleMaster/ModuleSlice';
+import { moduleMaster } from '../ProjectManagement/ModuleMaster/ModuleAction';
+import SubModuleMasterSlice from '../ProjectManagement/SubModuleMaster/SubModuleMasterSlice';
 import {
   getSubModuleById,
-  subModuleMaster,
-} from "../ProjectManagement/SubModuleMaster/SubModuleMasterAction";
-import StatusComponentSlice from "../Masters/StatusMaster/StatusComponentSlice";
-import { getStatusData } from "../Masters/StatusMaster/StatusComponentAction";
-import QueryTypeComponetSlice from "../Masters/QueryTypeMaster/QueryTypeComponetSlice";
-import { queryType } from "../Masters/QueryTypeMaster/QueryTypeComponetAction";
-import { departmentData } from "../Masters/DepartmentMaster/DepartmentMasterAction";
-import { getUserForMyTicketsData } from "./MyTicketComponentAction";
-import { getRoles } from "../Dashboard/DashboardAction";
-import TaskTicketTypeService from "../../services/MastersService/TaskTicketTypeService";
+  subModuleMaster
+} from '../ProjectManagement/SubModuleMaster/SubModuleMasterAction';
+import StatusComponentSlice from '../Masters/StatusMaster/StatusComponentSlice';
+import { getStatusData } from '../Masters/StatusMaster/StatusComponentAction';
+import QueryTypeComponetSlice from '../Masters/QueryTypeMaster/QueryTypeComponetSlice';
+import { queryType } from '../Masters/QueryTypeMaster/QueryTypeComponetAction';
+import { departmentData } from '../Masters/DepartmentMaster/DepartmentMasterAction';
+import { getUserForMyTicketsData } from './MyTicketComponentAction';
+import { getRoles } from '../Dashboard/DashboardAction';
+import TaskTicketTypeService from '../../services/MastersService/TaskTicketTypeService';
 
 export default function EditTicketComponent({ match }) {
   const history = useNavigate();
@@ -78,7 +78,7 @@ export default function EditTicketComponent({ match }) {
   const [allUsersString, setAllUsersString] = useState();
   const [projectData, setProjectData] = useState();
   const [statusValue, setStatusValue] = useState();
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = sessionStorage.getItem('role_id');
 
   const dispatch = useDispatch();
 
@@ -114,13 +114,13 @@ export default function EditTicketComponent({ match }) {
   const current = new Date();
   const todayDate = `${current.getFullYear()}-${
     current.getMonth() + 1 < 10
-      ? "0" + current.getMonth() + 1
+      ? '0' + current.getMonth() + 1
       : current.getMonth() + 1
   }-${current.getDate()}`;
   const [defaults, setDefaults] = useState(null);
   const [customerMapping, setCustomerMapping] = useState();
-  const [userName, setUserName] = useState("");
-  const [defaultUserName, setDefaultUserName] = useState("");
+  const [userName, setUserName] = useState('');
+  const [defaultUserName, setDefaultUserName] = useState('');
 
   const [ba, setBa] = useState(null);
   const [dev, setDev] = useState(null);
@@ -143,7 +143,7 @@ export default function EditTicketComponent({ match }) {
   const handleTicketStatus = (e) => {
     setData((prev) => {
       const newPrev = { ...prev };
-      newPrev["status_id"] = e.value;
+      newPrev['status_id'] = e.value;
       return newPrev;
     });
     if (e.value == 3) {
@@ -180,7 +180,7 @@ export default function EditTicketComponent({ match }) {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status == 1) {
-              setNotify({ type: "success", message: "Otp has been sent !!!" });
+              setNotify({ type: 'success', message: 'Otp has been sent !!!' });
               setConfirmationModalDetails(null);
               setConfirmationModalDetails(res.data);
             }
@@ -202,9 +202,9 @@ export default function EditTicketComponent({ match }) {
             loadData();
             setProceed(true);
             setConfirmationModal(false);
-            setNotify({ type: "success", message: res.data.message });
+            setNotify({ type: 'success', message: res.data.message });
           } else {
-            setNotify({ type: "danger", message: res.data.message });
+            setNotify({ type: 'danger', message: res.data.message });
             setProceed(false);
           }
         }
@@ -215,7 +215,7 @@ export default function EditTicketComponent({ match }) {
   const handleDependent = (e, name) => {
     setData({
       ...data,
-      [name]: e.value,
+      [name]: e.value
     });
   };
 
@@ -223,23 +223,23 @@ export default function EditTicketComponent({ match }) {
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const status = formData.getAll("status_id");
-    if (status.includes("3")) {
+    const status = formData.getAll('status_id');
+    if (status.includes('3')) {
       setExpectedTrue(true);
     }
-    formData.delete("attachment[]");
+    formData.delete('attachment[]');
     if (selectedFile) {
       for (var i = 0; i < selectedFile.length; i++) {
-        formData.append("attachment[]", selectedFile[i].file);
+        formData.append('attachment[]', selectedFile[i].file);
       }
     }
 
-    formData.append("parent_id", selectedOptionId);
+    formData.append('parent_id', selectedOptionId);
 
     if (
       data.status_id == 3 &&
       proceed == false &&
-      (data.confirmation_required == 1 || data.confirmation_required == "1")
+      (data.confirmation_required == 1 || data.confirmation_required == '1')
     ) {
       await handleConfirmationModal(true, data);
     } else {
@@ -253,24 +253,24 @@ export default function EditTicketComponent({ match }) {
             if (res.data.status === 1) {
               history(
                 {
-                  pathname: `/${_base}/Ticket`,
+                  pathname: `/${_base}/Ticket`
                 },
                 {
                   state: {
-                    type: "success",
-                    message: res.data.message,
-                  },
+                    type: 'success',
+                    message: res.data.message
+                  }
                 }
               );
             } else {
-              setNotify({ type: "danger", message: res.data.message });
+              setNotify({ type: 'danger', message: res.data.message });
             }
           } else {
-            setNotify({ type: "danger", message: res.message });
+            setNotify({ type: 'danger', message: res.message });
             new ErrorLogService().sendErrorLog(
-              "Ticket",
-              "Update_Ticket",
-              "INSERT",
+              'Ticket',
+              'Update_Ticket',
+              'INSERT',
               res.message
             );
           }
@@ -279,11 +279,11 @@ export default function EditTicketComponent({ match }) {
           setShowLoaderModal(false);
           const { response } = error;
           const { request, ...errorObject } = response;
-          setNotify({ type: "danger", message: "Request Error !!!" });
+          setNotify({ type: 'danger', message: 'Request Error !!!' });
           new ErrorLogService().sendErrorLog(
-            "Ticket",
-            "Update_Ticket",
-            "INSERT",
+            'Ticket',
+            'Update_Ticket',
+            'INSERT',
             errorObject.data.message
           );
         });
@@ -314,14 +314,14 @@ export default function EditTicketComponent({ match }) {
     return (
       <div
         style={{
-          padding: "8px",
-          cursor: "pointer",
+          padding: '8px',
+          cursor: 'pointer'
         }}
         onClick={handleClick}
       >
         {label}
         {expanded && options && (
-          <div style={{ marginLeft: "20px" }}>
+          <div style={{ marginLeft: '20px' }}>
             {options.map((option) => (
               <CustomOptionTicket
                 key={option.label}
@@ -339,14 +339,14 @@ export default function EditTicketComponent({ match }) {
   };
 
   const CustomMenuListTicket = ({ options, onSelect }) => {
-    const [searchTerm, setSearchTerm] = useState("");
+    const [searchTerm, setSearchTerm] = useState('');
     const [openOptions, setOpenOptions] = useState([]);
     const [selectedOption, setSelectedOption] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(null);
 
     const handleKeyDown = (e) => {
-      if (e.key === "Enter") {
+      if (e.key === 'Enter') {
         setOpenOptions(true);
       }
     };
@@ -392,14 +392,14 @@ export default function EditTicketComponent({ match }) {
         <React.Fragment key={option.label}>
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              padding: "0.4rem",
+              display: 'flex',
+              alignItems: 'center',
+              padding: '0.4rem',
               backgroundColor:
                 hoveredIndex === option.label
-                  ? "rgba(79, 184, 201, 0.5)"
-                  : "white",
-              transition: "background-color 0.3s",
+                  ? 'rgba(79, 184, 201, 0.5)'
+                  : 'white',
+              transition: 'background-color 0.3s'
             }}
             onMouseEnter={() => handleMouseEnter(option.label)}
             onMouseLeave={handleMouseLeave}
@@ -407,12 +407,12 @@ export default function EditTicketComponent({ match }) {
             <i
               className={
                 openOptions.includes(option.label) && option.options.length > 0
-                  ? "icofont-rounded-down"
-                  : "icofont-rounded-right"
+                  ? 'icofont-rounded-down'
+                  : 'icofont-rounded-right'
               }
               style={{
-                marginRight: "5px",
-                cursor: "pointer",
+                marginRight: '5px',
+                cursor: 'pointer'
               }}
               onClick={() => toggleOptions(option.label)}
             ></i>
@@ -420,8 +420,8 @@ export default function EditTicketComponent({ match }) {
             <div
               onClick={() => handleSelect(option.label, option.ID)}
               style={{
-                cursor: "pointer",
-                transition: "color 0.3s",
+                cursor: 'pointer',
+                transition: 'color 0.3s'
               }}
             >
               {option.label}
@@ -432,8 +432,8 @@ export default function EditTicketComponent({ match }) {
             openOptions.length > 0 &&
             openOptions.includes(option.label) &&
             option.options && (
-              <div style={{ marginLeft: "1rem" }}>
-                <div style={{ marginLeft: "1rem" }}>
+              <div style={{ marginLeft: '1rem' }}>
+                <div style={{ marginLeft: '1rem' }}>
                   {renderOptions(option.options)}
                 </div>
               </div>
@@ -448,17 +448,17 @@ export default function EditTicketComponent({ match }) {
         {isMenuOpen === false && (
           <div
             style={{
-              position: "relative",
-              width: "100%",
+              position: 'relative',
+              width: '100%',
               zIndex: 1000,
-              maxHeight: "300px",
-              overflowY: "auto",
-              border: "1px solid #ccc",
-              borderWidth: "2px",
-              boxShadow: "0 2px 4px rgba(0, 0, 0, 0.1)",
-              backgroundColor: "white",
-              borderBottomRightRadius: "4px",
-              borderBottomLeftRadius: "4px",
+              maxHeight: '300px',
+              overflowY: 'auto',
+              border: '1px solid #ccc',
+              borderWidth: '2px',
+              boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+              backgroundColor: 'white',
+              borderBottomRightRadius: '4px',
+              borderBottomLeftRadius: '4px'
             }}
             tabIndex={0}
             onKeyDown={handleKeyDown}
@@ -467,14 +467,14 @@ export default function EditTicketComponent({ match }) {
               type="text"
               placeholder="Search..."
               style={{
-                padding: "8px",
-                border: "none",
-                width: "100%",
-                boxSizing: "border-box",
+                padding: '8px',
+                border: 'none',
+                width: '100%',
+                boxSizing: 'border-box'
               }}
               onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <div style={{ overflowY: "auto" }}>
+            <div style={{ overflowY: 'auto' }}>
               {renderOptions(filteredOptions)}
             </div>
           </div>
@@ -491,10 +491,10 @@ export default function EditTicketComponent({ match }) {
 
     if (dependanceDropdownName) {
       var formdata = new FormData();
-      formdata.append("key", key);
-      formdata.append("value", e.value);
-      formdata.append("dropdownName", dependanceDropdownName);
-      formdata.append("dropdownId", currentData[0].inputAddOn.inputDataSource);
+      formdata.append('key', key);
+      formdata.append('value', e.value);
+      formdata.append('dropdownName', dependanceDropdownName);
+      formdata.append('dropdownId', currentData[0].inputAddOn.inputDataSource);
 
       var dropdown = [];
       await new DynamicFormDropdownMasterService()
@@ -505,7 +505,7 @@ export default function EditTicketComponent({ match }) {
               var temp = [];
               dropdown = res.data.data.dropdown.map((d) => ({
                 value: d.id,
-                label: d.label,
+                label: d.label
               }));
             }
           }
@@ -545,24 +545,24 @@ export default function EditTicketComponent({ match }) {
     setShowLoaderModal(true);
 
     const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id";
+      'id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id';
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
       if (res.payload.status == 200) {
         if (res.payload.data.status == 1) {
           const data = res.payload.data.data.filter(
-            (d) => d.is_active == 1 && d.account_for === "SELF"
+            (d) => d.is_active == 1 && d.account_for === 'SELF'
           );
           const select = res.payload.data.data
-            .filter((d) => d.is_active == 1 && d.account_for === "SELF")
+            .filter((d) => d.is_active == 1 && d.account_for === 'SELF')
             .map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name,
+              label: d.first_name + ' ' + d.last_name
             }));
           setUser(data);
 
           setEmailData(
             res.payload.data.data.filter(
-              (d) => d.is_active == 1 && d.account_for === "SELF"
+              (d) => d.is_active == 1 && d.account_for === 'SELF'
             )
           );
           emilData?.filter((d) => d.id === data?.created_by);
@@ -591,7 +591,7 @@ export default function EditTicketComponent({ match }) {
           const returnedData = [];
           const filteredArray = dynamicForm.filter(
             (formInstance) =>
-              formInstance.inputType === "select" &&
+              formInstance.inputType === 'select' &&
               formInstance.inputAddOn.inputDataSource
           );
 
@@ -611,7 +611,7 @@ export default function EditTicketComponent({ match }) {
                     var temp = [];
                     temp = resu.data.data.dropdown.map((d) => ({
                       value: d.id,
-                      label: d.label,
+                      label: d.label
                     }));
                     tempResponse.push(temp);
                   }
@@ -619,7 +619,7 @@ export default function EditTicketComponent({ match }) {
               });
 
               dynamicForm.forEach((d, i) => {
-                if (d.inputType === "select") {
+                if (d.inputType === 'select') {
                   if (tempResponse.length > 0) {
                     dynamicForm[i].inputAddOn.inputDataSourceData =
                       tempResponse[0];
@@ -641,19 +641,19 @@ export default function EditTicketComponent({ match }) {
           setBa(
             deta.BA.filter((d) => d.is_active === 1).map((d) => ({
               value: d.id,
-              label: d.first_name + "-" + d.last_name + " (" + d.id + ")",
+              label: d.first_name + '-' + d.last_name + ' (' + d.id + ')'
             }))
           );
           setDev(
             deta.DEV.filter((d) => d.is_active === 1).map((d) => ({
               value: d.id,
-              label: d.first_name + "-" + d.last_name + " (" + d.id + ")",
+              label: d.first_name + '-' + d.last_name + ' (' + d.id + ')'
             }))
           );
           setTester(
             deta.TESTER.filter((d) => d.is_active === 1).map((d) => ({
               value: d.id,
-              label: d.first_name + "-" + d.last_name + " (" + d.id + ")",
+              label: d.first_name + '-' + d.last_name + ' (' + d.id + ')'
             }))
           );
         }
@@ -764,7 +764,7 @@ export default function EditTicketComponent({ match }) {
   const filteredData = emilData?.filter((d) => d.id === data?.created_by);
 
   function transformDataTicket(ticketsData, hasPrimaryLabel = false) {
-    const primaryLabel = "Primary";
+    const primaryLabel = 'Primary';
     const options = [];
 
     // Push the primary label if it hasn't been pushed before
@@ -773,7 +773,7 @@ export default function EditTicketComponent({ match }) {
         ID: null,
         label: primaryLabel,
         isStatic: true,
-        options: [],
+        options: []
       });
       hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
     }
@@ -789,7 +789,7 @@ export default function EditTicketComponent({ match }) {
           label: label,
           options: item.children
             ? transformDataTicket(item.children, hasPrimaryLabel)
-            : [],
+            : []
         });
       }
     });
@@ -832,7 +832,7 @@ export default function EditTicketComponent({ match }) {
   // };
 
   const handleDateChange = (e) => {
-    if (e.target.value === "") {
+    if (e.target.value === '') {
       setDateErr(true);
     } else {
       setDateErr(false);
@@ -848,13 +848,13 @@ export default function EditTicketComponent({ match }) {
       userDepRef.current.clearValue();
     }
 
-    console.log("userDepRef", userDepRef);
+    console.log('userDepRef', userDepRef);
     if (e) {
       const select = user
         .filter((d) => d.department_id == e.value)
         .map((d) => ({
           value: d.id,
-          label: d.first_name + " " + d.last_name + "(" + d.id + ")",
+          label: d.first_name + ' ' + d.last_name + '(' + d.id + ')'
         }));
 
       setUserDropdown(select);
@@ -864,17 +864,17 @@ export default function EditTicketComponent({ match }) {
 
   const clearValue = (name) => {
     switch (name) {
-      case "module_id":
+      case 'module_id':
         if (moduleIdRef.current) {
           moduleIdRef.current.clearValue();
         }
         break;
-      case "submodule_id":
+      case 'submodule_id':
         if (subModuleIdRef.current) {
           subModuleIdRef.current.clearValue();
         }
         break;
-      case "ticket_reviewer":
+      case 'ticket_reviewer':
         if (reviewerIdRef.current) {
           reviewerIdRef.current.clearValue();
         }
@@ -885,9 +885,9 @@ export default function EditTicketComponent({ match }) {
   };
 
   const handleProjectChange = async (e) => {
-    clearValue("module_id");
-    clearValue("submodule_id");
-    clearValue("ticket_reviewer");
+    clearValue('module_id');
+    clearValue('submodule_id');
+    clearValue('ticket_reviewer');
 
     setModuleDropdown(null);
     setModuleDropdown(
@@ -901,7 +901,7 @@ export default function EditTicketComponent({ match }) {
           setReviewerData(
             res.data.data.map((d) => ({
               value: d.user_id,
-              label: d.employee_name,
+              label: d.employee_name
             }))
           );
         }
@@ -935,32 +935,32 @@ export default function EditTicketComponent({ match }) {
   };
 
   const uploadAttachmentHandler = (e, type, id = null) => {
-    if (type === "UPLOAD") {
+    if (type === 'UPLOAD') {
       var tempSelectedFile = [];
       for (var i = 0; i < e.target.files.length; i++) {
         tempSelectedFile.push({
           file: e.target.files[i],
           show_to_customer: 0,
-          show_to_project_owner: 0,
+          show_to_project_owner: 0
         });
       }
-      fileInputRef.current.value = "";
+      fileInputRef.current.value = '';
       setSelectedFile(tempSelectedFile);
-    } else if (type === "DELETE") {
+    } else if (type === 'DELETE') {
       let filteredFileArray = selectedFile.filter(
         (item, index) => id !== index
       );
       setSelectedFile(filteredFileArray);
-    } else if (type === "CUSTOMER") {
+    } else if (type === 'CUSTOMER') {
       var file = selectedFile;
       file[id].show_to_customer = file[id].show_to_customer ? 0 : 1;
       setSelectedFile(file);
-    } else if (type === "PROJECT_OWNER") {
+    } else if (type === 'PROJECT_OWNER') {
       var file = selectedFile;
       file[id].show_to_project_owner = file[id].show_to_project_owner ? 0 : 1;
       setSelectedFile(file);
     } else {
-      alert("Invalid Option");
+      alert('Invalid Option');
     }
   };
   const handleDeleteAttachment = (e, id) => {
@@ -973,13 +973,13 @@ export default function EditTicketComponent({ match }) {
   }, [loadComments]);
   const option = [
     {
-      value: "Priyanka Dupargude",
-      label: "Priyanka Dupargude",
-    },
+      value: 'Priyanka Dupargude',
+      label: 'Priyanka Dupargude'
+    }
   ];
 
-  const [selectedValue, setSelectedValue] = useState("");
-  const [selectedCheckBoxValue, setSelectedCheckBoxValue] = useState("");
+  const [selectedValue, setSelectedValue] = useState('');
+  const [selectedCheckBoxValue, setSelectedCheckBoxValue] = useState('');
 
   const handleRadioChange = (event) => {
     setSelectedValue(event.target.value);
@@ -999,7 +999,7 @@ export default function EditTicketComponent({ match }) {
     if (user && data !== null) {
       const userData = user.map((d) => ({
         value: d.id,
-        label: d.first_name + " " + d.last_name,
+        label: d.first_name + ' ' + d.last_name
       }));
       setUserName(userData.filter((d) => d.value == data.assign_to_user_id));
       setUserDropdown(
@@ -1007,7 +1007,7 @@ export default function EditTicketComponent({ match }) {
           .filter((d) => d.department_id == data.assign_to_department_id)
           .map((d) => ({
             value: d.id,
-            label: d.first_name + " " + d.last_name,
+            label: d.first_name + ' ' + d.last_name
           }))
       );
     }
@@ -1018,16 +1018,16 @@ export default function EditTicketComponent({ match }) {
     currentDate.getMonth() + 1
   )
     .toString()
-    .padStart(2, "0")}-${currentDate
+    .padStart(2, '0')}-${currentDate
     .getDate()
     .toString()
-    .padStart(2, "0")} ${currentDate
+    .padStart(2, '0')} ${currentDate
     .getHours()
     .toString()
-    .padStart(2, "0")}:${currentDate
+    .padStart(2, '0')}:${currentDate
     .getMinutes()
     .toString()
-    .padStart(2, "0")}:${currentDate.getSeconds().toString().padStart(2, "0")}`;
+    .padStart(2, '0')}:${currentDate.getSeconds().toString().padStart(2, '0')}`;
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_update === 0) {
@@ -1039,7 +1039,7 @@ export default function EditTicketComponent({ match }) {
 
   return (
     <div className="container-xxl">
-      <PageHeader headerTitle={`Edit Ticket - ${data ? data.ticket_id : ""}`} />
+      <PageHeader headerTitle={`Edit Ticket - ${data ? data.ticket_id : ''}`} />
       <div className="row">
         <div className="col-md-8">
           {notify && <Alert alertData={notify} />}
@@ -1084,36 +1084,36 @@ export default function EditTicketComponent({ match }) {
                       <label className="col-form-label">
                         <b>Confirmation Required: </b>
                       </label>
-                      <p style={{ fontSize: "20px", fontWeight: "600" }}>
+                      <p style={{ fontSize: '20px', fontWeight: '600' }}>
                         {data && data.confirmation_required === 1
-                          ? "YES"
-                          : "NO"}
+                          ? 'YES'
+                          : 'NO'}
                       </p>
                     </div>
                     <div className="col-sm-4">
                       <p
                         style={
-                          data.passed_status == "UNPASS"
+                          data.passed_status == 'UNPASS'
                             ? {
-                                color: "red",
-                                fontWeight: "600",
-                                fontSize: "20px",
+                                color: 'red',
+                                fontWeight: '600',
+                                fontSize: '20px'
                               }
                             : {
-                                color: "green",
-                                fontWeight: "600",
-                                fontSize: "20px",
+                                color: 'green',
+                                fontWeight: '600',
+                                fontSize: '20px'
                               }
                         }
                       >
                         {data.passed_status}
                       </p>
-                      {data.passed_status == "PASS" && (
+                      {data.passed_status == 'PASS' && (
                         <p
                           style={{
-                            color: "green",
-                            fontWeight: "600",
-                            fontSize: "15px",
+                            color: 'green',
+                            fontWeight: '600',
+                            fontSize: '15px'
                           }}
                         >
                           {data.passed_status_remark}
@@ -1144,11 +1144,11 @@ export default function EditTicketComponent({ match }) {
                     <div className="col-sm-4">
                       <label className="col-form-label">
                         <b>
-                          Expected Solve Date :{" "}
+                          Expected Solve Date :{' '}
                           {expectedTrue && expectedTrue == true ? (
                             <Astrick color="red" size="13px" />
                           ) : (
-                            ""
+                            ''
                           )}
                         </b>
                       </label>
@@ -1158,7 +1158,7 @@ export default function EditTicketComponent({ match }) {
                         id="expected_solve_date"
                         name="expected_solve_date"
                         min={data.ticket_date}
-                        max={"2100-12-31"}
+                        max={'2100-12-31'}
                         onFocus={(e) => {
                           handleDateChange(e);
                         }}
@@ -1168,7 +1168,7 @@ export default function EditTicketComponent({ match }) {
                         }
                       />
                       {dateErr && dateErr == true && expectedTrue == true && (
-                        <span style={{ color: "red" }}>Please Select Date</span>
+                        <span style={{ color: 'red' }}>Please Select Date</span>
                       )}
                     </div>
                     <div className="col-sm-4">
@@ -1237,7 +1237,7 @@ export default function EditTicketComponent({ match }) {
                         defaultValue={
                           filteredData?.length > 0
                             ? filteredData[0]?.email_id
-                            : ""
+                            : ''
                         }
                         readOnly
                         name="email"
@@ -1268,9 +1268,9 @@ export default function EditTicketComponent({ match }) {
                       <div>
                         <div
                           style={{
-                            position: "relative",
-                            display: "inline-block",
-                            width: "100%",
+                            position: 'relative',
+                            display: 'inline-block',
+                            width: '100%'
                           }}
                         >
                           <div
@@ -1291,7 +1291,7 @@ export default function EditTicketComponent({ match }) {
                               ? selectedOption
                               : data?.parent_name !== null
                               ? data?.parent_name
-                              : "Primary"}
+                              : 'Primary'}
                           </div>
                           {isMenuOpen && (
                             <div
@@ -1309,17 +1309,17 @@ export default function EditTicketComponent({ match }) {
                               //   },
                               // }}
                               style={{
-                                position: "absolute",
-                                width: "100%", // Set the width to 100% to match the parent's width
-                                top: "100%", // Position the menu at the top of the parent element
-                                zIndex: "1", // Ensure the menu is on top of other elements
-                                maxHeight: "150px", // Adjust the maxHeight here as needed
+                                position: 'absolute',
+                                width: '100%', // Set the width to 100% to match the parent's width
+                                top: '100%', // Position the menu at the top of the parent element
+                                zIndex: '1', // Ensure the menu is on top of other elements
+                                maxHeight: '150px', // Adjust the maxHeight here as needed
                                 // overflowY: "auto", // Enable vertical scrolling
                                 // scrollbarWidth: "none", // Hide scrollbar in Firefox
-                                msOverflowStyle: "none", // Hide scrollbar in IE/Edge
-                                "&::-webkit-scrollbar": {
-                                  display: "none", // Hide scrollbar in Webkit browsers
-                                },
+                                msOverflowStyle: 'none', // Hide scrollbar in IE/Edge
+                                '&::-webkit-scrollbar': {
+                                  display: 'none' // Hide scrollbar in Webkit browsers
+                                }
                               }}
                             >
                               <CustomMenuListTicket
@@ -1432,7 +1432,7 @@ export default function EditTicketComponent({ match }) {
                           data &&
                           data.ticket_users.REVIEWER.map((d) => ({
                             value: d.id,
-                            label: d.name,
+                            label: d.name
                           }))
                         }
                       />
@@ -1441,14 +1441,14 @@ export default function EditTicketComponent({ match }) {
                 </div>
               </div>
 
-              {data && data.passed_status == "PASS" && (
+              {data && data.passed_status == 'PASS' && (
                 <div className="card mt-2">
                   <div className="card-body">
                     <div className="form-group row ">
                       <div className="col-sm-3">
                         <label className=" col-form-label">
                           <b>
-                            Assign Department :{" "}
+                            Assign Department :{' '}
                             <Astrick color="red" size="13px" />
                           </b>
                         </label>
@@ -1543,30 +1543,30 @@ export default function EditTicketComponent({ match }) {
               {rows && rows.length > 0 && (
                 <div className="row">
                   {rows.map((data, index) => {
-                    var range = "";
+                    var range = '';
 
                     return (
                       <div className={`${data.inputWidth} mt-2`}>
                         <label>
                           <b>
-                            {data.inputLabel}{" "}
+                            {data.inputLabel}{' '}
                             {data.inputMandatory == true ? (
                               <Astrick color="red" size="13px" />
                             ) : (
-                              ""
+                              ''
                             )}
                             :
                           </b>
                         </label>
-                        {data.inputType === "text" && (
+                        {data.inputType === 'text' && (
                           <input
                             type={data.inputType}
                             id={
                               data.inputName
                                 ? data.inputName
-                                    .replace(/ /g, "_")
+                                    .replace(/ /g, '_')
                                     .toLowerCase()
-                                : ""
+                                : ''
                             }
                             name={data.inputName}
                             defaultValue={data.inputDefaultValue}
@@ -1578,14 +1578,14 @@ export default function EditTicketComponent({ match }) {
                             className="form-control form-control-sm"
                           />
                         )}
-                        {data.inputType === "textarea" && (
+                        {data.inputType === 'textarea' && (
                           <textarea
                             id={
                               data.inputName
                                 ? data.inputName
-                                    .replace(/ /g, "_")
+                                    .replace(/ /g, '_')
                                     .toLowerCase()
-                                : ""
+                                : ''
                             }
                             readOnly
                             name={data.inputName}
@@ -1593,7 +1593,7 @@ export default function EditTicketComponent({ match }) {
                             defaultValue={
                               selectedDropdown
                                 ? selectedDropdown[data.inputName]
-                                : ""
+                                : ''
                             }
                             onChange={dynamicChangeHandle}
                             required={
@@ -1604,7 +1604,7 @@ export default function EditTicketComponent({ match }) {
                           </textarea>
                         )}
 
-                        {data.inputType === "date" && (
+                        {data.inputType === 'date' && (
                           <div className="form-control">
                             <input
                               type="text"
@@ -1612,11 +1612,11 @@ export default function EditTicketComponent({ match }) {
                               required={data && data.inputMandatory === true}
                               disabled
                               defaultValue={data?.inputDefaultValue}
-                              style={{ width: "100%" }}
+                              style={{ width: '100%' }}
                             />
                           </div>
                         )}
-                        {data.inputType === "datetime-local" && (
+                        {data.inputType === 'datetime-local' && (
                           <div className="form-control">
                             <input
                               type="text"
@@ -1629,20 +1629,20 @@ export default function EditTicketComponent({ match }) {
                               disabled
                               onChange={dynamicChangeHandle}
                               defaultValue={data.inputDefaultValue}
-                              style={{ width: "100%" }}
+                              style={{ width: '100%' }}
                             />
                           </div>
                         )}
 
-                        {data.inputType === "time" && (
+                        {data.inputType === 'time' && (
                           <input
                             type={data.inputType}
                             id={
                               data.inputName
                                 ? data.inputName
-                                    .replace(/ /g, "_")
+                                    .replace(/ /g, '_')
                                     .toLowerCase()
-                                : ""
+                                : ''
                             }
                             readOnly
                             name={data.inputName}
@@ -1660,7 +1660,7 @@ export default function EditTicketComponent({ match }) {
                           />
                         )}
 
-                        {data.inputType == "radio" && data.inputAddOn.inputRadio
+                        {data.inputType == 'radio' && data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
                               return (
                                 <div>
@@ -1684,9 +1684,9 @@ export default function EditTicketComponent({ match }) {
                                 </div>
                               );
                             })
-                          : ""}
+                          : ''}
 
-                        {data.inputType == "checkbox" &&
+                        {data.inputType == 'checkbox' &&
                         data.inputAddOn.inputRadio
                           ? data.inputAddOn.inputRadio.map((d) => {
                               return (
@@ -1714,17 +1714,17 @@ export default function EditTicketComponent({ match }) {
                                 </div>
                               );
                             })
-                          : ""}
+                          : ''}
 
-                        {data.inputType === "number" && (
+                        {data.inputType === 'number' && (
                           <input
                             type={data.inputType}
                             id={
                               data.inputName
                                 ? data.inputName
-                                    .replace(/ /g, "_")
+                                    .replace(/ /g, '_')
                                     .toLowerCase()
-                                : ""
+                                : ''
                             }
                             name={data.inputName}
                             defaultValue={data.value}
@@ -1733,20 +1733,20 @@ export default function EditTicketComponent({ match }) {
                             }
                             readOnly
                             onChange={dynamicChangeHandle}
-                            min={data.inputAddOn.inputRange ? range[0] : ""}
-                            max={data.inputAddOn.inputRange ? range[1] : ""}
+                            min={data.inputAddOn.inputRange ? range[0] : ''}
+                            max={data.inputAddOn.inputRange ? range[1] : ''}
                             className="form-control form-control-sm"
                           />
                         )}
-                        {data.inputType === "decimal" && (
+                        {data.inputType === 'decimal' && (
                           <input
                             type="number"
                             id={
                               data.inputName
                                 ? data.inputName
-                                    .replace(/ /g, "_")
+                                    .replace(/ /g, '_')
                                     .toLowerCase()
-                                : ""
+                                : ''
                             }
                             required={
                               data.inputMandatory == true ? true : false
@@ -1788,14 +1788,14 @@ export default function EditTicketComponent({ match }) {
                           />
                         )} */}
 
-                        {data.inputType === "select" && (
+                        {data.inputType === 'select' && (
                           <select
                             id={
                               data.inputName
                                 ? data.inputName
-                                    .replace(/ /g, "_")
+                                    .replace(/ /g, '_')
                                     .toLowerCase()
-                                : ""
+                                : ''
                             }
                             disabled
                             defaultValue={data.value}
@@ -1857,14 +1857,14 @@ export default function EditTicketComponent({ match }) {
                           </select>
                         )} */}
 
-                        {data.inputType === "select-master" && (
+                        {data.inputType === 'select-master' && (
                           <select
                             id={
                               data.inputName
                                 ? data.inputName
-                                    .replace(/ /g, "_")
+                                    .replace(/ /g, '_')
                                     .toLowerCase()
-                                : ""
+                                : ''
                             }
                             defaultValue={data.value}
                             name={data.inputName}
@@ -1931,7 +1931,7 @@ export default function EditTicketComponent({ match }) {
                     multiple
                     ref={fileInputRef}
                     onChange={(e) => {
-                      uploadAttachmentHandler(e, "UPLOAD", "");
+                      uploadAttachmentHandler(e, 'UPLOAD', '');
                     }}
                   />
                 </div>
@@ -1959,12 +1959,12 @@ export default function EditTicketComponent({ match }) {
                                   className="btn btn-danger text-white btn-sm p-0 px-1 mt-0"
                                   type="button"
                                   onClick={(e) => {
-                                    uploadAttachmentHandler(e, "DELETE", i);
+                                    uploadAttachmentHandler(e, 'DELETE', i);
                                   }}
                                 >
                                   <i
                                     className="icofont-ui-delete"
-                                    style={{ fontSize: "12px" }}
+                                    style={{ fontSize: '12px' }}
                                   ></i>
                                 </button>
                               </td>
@@ -1979,7 +1979,7 @@ export default function EditTicketComponent({ match }) {
 
               <div
                 className="d-flex justify-content-start mt-2"
-                style={{ overflowX: "auto" }}
+                style={{ overflowX: 'auto' }}
               >
                 {data.attachment &&
                   data.attachment.map((attach, index) => (
@@ -1987,28 +1987,28 @@ export default function EditTicketComponent({ match }) {
                       className="justify-content-start"
                       key={index}
                       style={{
-                        marginRight: "20px",
-                        padding: "0px",
-                        width: "200px",
+                        marginRight: '20px',
+                        padding: '0px',
+                        width: '200px'
                       }}
                     >
                       <div
                         className="card"
-                        style={{ backgroundColor: "#EBF5FB" }}
+                        style={{ backgroundColor: '#EBF5FB' }}
                       >
                         <div className="card-header">
-                          <p style={{ fontSize: "12px" }}>
+                          <p style={{ fontSize: '12px' }}>
                             <b>{attach.name}</b>
                           </p>
                           <div className="d-flex justify-content-end p-0">
                             <a
-                              href={`${_attachmentUrl + "/" + attach.path}`}
+                              href={`${_attachmentUrl + '/' + attach.path}`}
                               target="_blank"
                               className="btn btn-warning btn-sm p-0 px-1"
                             >
                               <i
                                 className="icofont-download"
-                                style={{ fontSize: "12px", height: "15px" }}
+                                style={{ fontSize: '12px', height: '15px' }}
                               ></i>
                             </a>
                             <button
@@ -2020,7 +2020,7 @@ export default function EditTicketComponent({ match }) {
                             >
                               <i
                                 className="icofont-ui-delete"
-                                style={{ fontSize: "12px" }}
+                                style={{ fontSize: '12px' }}
                               ></i>
                             </button>
                           </div>
@@ -2030,7 +2030,7 @@ export default function EditTicketComponent({ match }) {
                   ))}
               </div>
 
-              <div className="mt-3" style={{ textAlign: "right" }}>
+              <div className="mt-3" style={{ textAlign: 'right' }}>
                 {isSolved == false && (
                   <button type="submit" className="btn btn-sm btn-primary">
                     Submit
@@ -2142,7 +2142,7 @@ export default function EditTicketComponent({ match }) {
                   <button
                     type="submit"
                     className="btn btn-primary text-white"
-                    style={{ backgroundColor: "#484C7F" }}
+                    style={{ backgroundColor: '#484C7F' }}
                   >
                     Submit
                   </button>
