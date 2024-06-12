@@ -23,10 +23,11 @@ import CityService from '../../../services/MastersService/CityService';
 
 import { UseDispatch, useDispatch, useSelector } from 'react-redux';
 
-import { getCountryDataSort, getEmployeeData, getRoles } from '../../Dashboard/DashboardAction';
-
-
-
+import {
+  getCountryDataSort,
+  getEmployeeData,
+  getRoles
+} from '../../Dashboard/DashboardAction';
 
 import RoleService from '../../../services/MastersService/RoleService';
 function EditUserComponent({ match }) {
@@ -38,20 +39,18 @@ function EditUserComponent({ match }) {
 
   const dispatch = useDispatch();
 
-  const CountryData = useSelector(DashbordSlice => DashbordSlice.dashboard.filteredCountryData);
-  const checkRole = useSelector(DashbordSlice =>
-    DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 3),
+  const CountryData = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.filteredCountryData
   );
-
-
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
+  );
 
   const { id } = useParams();
   const userId = parseInt(id);
 
   const [data, setData] = useState(null);
   const [accountFor, setAccountFor] = useState(null);
-
-
 
   const [state, setState] = useState(null);
   const [stateDropdown, setStateDropdown] = useState(null);
@@ -67,13 +66,13 @@ function EditUserComponent({ match }) {
 
   const options = [
     { value: 'MY_TICKETS', label: 'My Tickets' },
-    { value: 'DEPARTMENT_TICKETS', label: 'Department Tickets' },
+    { value: 'DEPARTMENT_TICKETS', label: 'Department Tickets' }
   ];
   const mappingData = {
     department_id: null,
     ticket_passing_authority: null,
     ticket_show_type: null,
-    is_default: 0,
+    is_default: 0
   };
 
   const [rows, setRows] = useState([
@@ -81,8 +80,8 @@ function EditUserComponent({ match }) {
       department_id: [],
       ticket_show_type: null,
       ticket_passing_authority: 0,
-      is_default: 0,
-    },
+      is_default: 0
+    }
   ]);
 
   const [designationDropdown, setDesignationDropdown] = useState(null);
@@ -113,7 +112,7 @@ function EditUserComponent({ match }) {
   const [passwordError, setPasswordError] = useState(null);
   const [passwordValid, setPasswordValid] = useState(false);
 
-  const handlePasswordValidation = e => {
+  const handlePasswordValidation = (e) => {
     if (e.target.value === '') {
       setInputState({ ...state, passwordErr: 'Please enter Password' });
     } else {
@@ -156,7 +155,7 @@ function EditUserComponent({ match }) {
     designationErr: '',
     departmentErr: '',
     ticketTypeShowErr: '',
-    PinCodeErr: '',
+    PinCodeErr: ''
   });
 
   function checkingValidation(form) {
@@ -202,7 +201,7 @@ function EditUserComponent({ match }) {
     } else if (selectContactNo.length > 10) {
       setInputState({
         ...state,
-        contactNoErr: 'contact length should be equal to 10',
+        contactNoErr: 'contact length should be equal to 10'
       });
       flag = 1;
     } else if (contactValid == true) {
@@ -220,14 +219,15 @@ function EditUserComponent({ match }) {
   const [emailError, setEmailError] = useState(null);
   const [mailError, setMailError] = useState(false);
 
-  const handleEmail = e => {
+  const handleEmail = (e) => {
     if (e.target.value === '') {
       setInputState({ ...state, emailErr: 'Please enter valid Email' });
     } else {
       setInputState({ ...state, emailErr: '' });
     }
     const email = e.target.value;
-    const emailRegex = /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
+    const emailRegex =
+      /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
     if (emailRegex.test(email) === false) {
       setEmailError('Invalid Email');
       setMailError(true);
@@ -240,7 +240,7 @@ function EditUserComponent({ match }) {
   const [contactNumber, setContactNumber] = useState(null);
 
   const [contactValid, setContactValid] = useState(false);
-  const handleContactValidation = e => {
+  const handleContactValidation = (e) => {
     const contactValidation = e.target.value;
     if (
       contactValidation.charAt(0) == '9' ||
@@ -263,7 +263,7 @@ function EditUserComponent({ match }) {
   const [whatsappNumber, setWhatsappNumber] = useState(null);
 
   const [whatsappValid, setWhatsappValid] = useState(false);
-  const handleWhatsappValidation = e => {
+  const handleWhatsappValidation = (e) => {
     const whatsappValidation = e.target.value;
     if (
       whatsappValidation.charAt(0) == '9' ||
@@ -286,14 +286,11 @@ function EditUserComponent({ match }) {
   const handleDependent = (e, name) => {
     setData({
       ...data,
-      [name]: e.value,
+      [name]: e.value
     });
   };
 
-
-
-
-  const handleForm = async e => {
+  const handleForm = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
     if (isReadOnly) {
@@ -304,8 +301,6 @@ function EditUserComponent({ match }) {
 
     var flag = 1;
     setNotify(null);
-
-
 
     const formValidation = checkingValidation(form);
     if (formValidation === 1) {
@@ -326,7 +321,7 @@ function EditUserComponent({ match }) {
     if (selectTicketTypeShow == '') {
       setInputState({
         ...state,
-        ticketTypeShowErr: ' Please Select Ticket Type Show',
+        ticketTypeShowErr: ' Please Select Ticket Type Show'
       });
       return false;
     }
@@ -334,7 +329,7 @@ function EditUserComponent({ match }) {
     if (flag === 1) {
       await new UserService()
         .updateUser(userId, form)
-        .then(res => {
+        .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
               setNotify({ type: 'success', message: res.data.message });
@@ -344,8 +339,8 @@ function EditUserComponent({ match }) {
               setTimeout(() => {
                 navigate(`/${_base}/User`, {
                   state: {
-                    alert: { type: 'success', message: res.data.message },
-                  },
+                    alert: { type: 'success', message: res.data.message }
+                  }
                 });
               }, 3000);
             } else {
@@ -353,17 +348,22 @@ function EditUserComponent({ match }) {
             }
           } else {
             setNotify({ type: 'danger', message: res.message });
-            new ErrorLogService().sendErrorLog('User', 'Create_User', 'INSERT', res.message);
+            new ErrorLogService().sendErrorLog(
+              'User',
+              'Create_User',
+              'INSERT',
+              res.message
+            );
           }
         })
-        .catch(error => {
+        .catch((error) => {
           if (error.response) {
             const { request, ...errorObject } = error.response;
             new ErrorLogService().sendErrorLog(
               'User',
               'Create_User',
               'INSERT',
-              errorObject.data.message,
+              errorObject.data.message
             );
           } else {
           }
@@ -374,12 +374,12 @@ function EditUserComponent({ match }) {
 
   const sortSlefRole =
     roleDropdown &&
-    roleDropdown?.filter(d => {
+    roleDropdown?.filter((d) => {
       return d.label?.toLowerCase() !== 'user';
     });
-  const filterSelfRole = sortSlefRole?.map(d => ({
+  const filterSelfRole = sortSlefRole?.map((d) => ({
     value: d.value,
-    label: d.label,
+    label: d.label
   }));
   const orderedSelfRoleData = filterSelfRole?.sort(function (a, b) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
@@ -387,28 +387,28 @@ function EditUserComponent({ match }) {
 
   const customerSort =
     roleDropdown &&
-    roleDropdown?.filter(d => {
+    roleDropdown?.filter((d) => {
       return d.label?.toLowerCase() === 'user';
     });
-  const filterCutomerRole = customerSort?.map(d => ({
+  const filterCutomerRole = customerSort?.map((d) => ({
     value: d.value,
-    label: d.label,
+    label: d.label
   }));
   const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
 
   const [selectRole, setSelctRole] = useState(null);
-  const handleSelectRole = e => {
+  const handleSelectRole = (e) => {
     const newValue = e;
     setSelctRole(newValue);
   };
 
-  const accountForChange = async account_for => {
+  const accountForChange = async (account_for) => {
     setSelctRole(null);
     setAccountFor(account_for);
     const accountFor = account_for;
-    const filteredAsAccountFor = roleDropdown.filter(filterData => {
+    const filteredAsAccountFor = roleDropdown.filter((filterData) => {
       if (accountFor === 'SELF') {
         return filterData.label?.toLowerCase() !== 'user';
       } else if (accountFor === 'CUSTOMER') {
@@ -419,100 +419,96 @@ function EditUserComponent({ match }) {
   };
 
   const loadData = async () => {
-    await new StateService().getState().then(res => {
+    await new StateService().getState().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          setState(res.data.data.filter(d => d.is_active === 1));
+          setState(res.data.data.filter((d) => d.is_active === 1));
 
           setStateDropdown(
             res.data.data
-              .filter(d => d.is_active === 1)
-              .map(d => ({
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({
                 value: d.id,
                 label: d.state,
-                country_id: d.country_id,
-              })),
+                country_id: d.country_id
+              }))
           );
         }
       }
     });
 
     //  ************************** city load data**************************************
-    await new CityService().getCity().then(res => {
+    await new CityService().getCity().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          setCity(res.data.data.filter(d => d.is_active === 1));
+          setCity(res.data.data.filter((d) => d.is_active === 1));
           setCityDropdown(
             res.data.data
-              .filter(d => d.is_active === 1)
-              .map(d => ({
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({
                 value: d.id,
-                label: d.city,
+                label: d.city
                 // state_id: d.state_id,
-              })),
+              }))
           );
         }
       }
     });
 
-    await new DepartmentService().getDepartment().then(res => {
+    await new DepartmentService().getDepartment().then((res) => {
       if (res.status == 200) {
         const temp = [];
         if (res.data.status == 1) {
           setDepartmentDropdown(
             res.data.data
-              .filter(d => d.is_active === 1)
-              .map(d => ({ value: d.id, label: d.department })),
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({ value: d.id, label: d.department }))
           );
         }
       }
     });
 
-
-
-
-    await new DesignationService().getDesignation().then(res => {
+    await new DesignationService().getDesignation().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
-
-
           setDesignationDropdown(
             res.data.data
-              .filter(d => d.is_active === 1)
-              .map(d => ({ value: d.id, label: d.designation })),
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({ value: d.id, label: d.designation }))
           );
         }
       }
     });
-
-
 
     await new UserService()
       .getUserById(userId)
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
             const temp = res.data.data;
-            setSelctRole(roleDropdown && roleDropdown.filter(d => d.value == temp?.role_id));
+            setSelctRole(
+              roleDropdown &&
+                roleDropdown.filter((d) => d.value == temp?.role_id)
+            );
 
             setAccountFor(temp.account_for);
             setIsReadOnly();
 
-            const tempDept = temp.department.map(d => ({
+            const tempDept = temp.department.map((d) => ({
               value: d.department_id,
-              label: d.department_name,
+              label: d.department_name
             }));
             setDefaultDepartmentDropdown(tempDept);
-            const tempUserDept = temp.department.map(d => ({
+            const tempUserDept = temp.department.map((d) => ({
               value: d.department_id,
-              label: d.department_name,
+              label: d.department_name
             }));
             setUserDepartment(tempUserDept);
             const tempDefaultDept = temp.department
-              .filter(d => d.is_default == 1)
-              .map(d => ({
+              .filter((d) => d.is_default == 1)
+              .map((d) => ({
                 value: d.department_id,
-                label: d.department_name,
+                label: d.department_name
               }));
             setDefaultDepartment(tempDefaultDept);
             setData(null);
@@ -521,43 +517,47 @@ function EditUserComponent({ match }) {
           }
         }
       })
-      .catch(error => {
+      .catch((error) => {
         const { response } = error;
         const { request, ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
           'Status',
           'Get_Status',
           'INSERT',
-          errorObject.data.message,
+          errorObject.data.message
         );
       });
 
-    await new DepartmentMappingService().getDepartmentMappingByEmployeeId(userId).then(res => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const temp = [];
-          res.data.data.forEach(d => {
-            temp.push({
-              department_id: d.department_id,
-              ticket_passing_authority: d.ticket_passing_authority,
-              ticket_show_type: d.ticket_show_type,
-              is_default: d.is_default,
+    await new DepartmentMappingService()
+      .getDepartmentMappingByEmployeeId(userId)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            const temp = [];
+            res.data.data.forEach((d) => {
+              temp.push({
+                department_id: d.department_id,
+                ticket_passing_authority: d.ticket_passing_authority,
+                ticket_show_type: d.ticket_show_type,
+                is_default: d.is_default
+              });
             });
-          });
 
-          setRows(temp);
+            setRows(temp);
+          } else {
+            setRows([mappingData]);
+          }
         } else {
           setRows([mappingData]);
         }
-      } else {
-        setRows([mappingData]);
-      }
-    });
+      });
   };
   const handleDependentChange = (e, type) => {
     if (type == 'COUNTRY') {
       setStateDropdown(
-        state.filter(d => d.country_id == e.value).map(d => ({ value: d.id, label: d.state })),
+        state
+          .filter((d) => d.country_id == e.value)
+          .map((d) => ({ value: d.id, label: d.state }))
       );
       const newStatus = { ...updateStatus, statedrp: 1 };
       setUpdateStatus(newStatus);
@@ -567,7 +567,9 @@ function EditUserComponent({ match }) {
     }
     if (type == 'STATE') {
       setCityDropdown(
-        city.filter(d => d.state_id == e.value).map(d => ({ value: d.id, label: d.city })),
+        city
+          .filter((d) => d.state_id == e.value)
+          .map((d) => ({ value: d.id, label: d.city }))
       );
       const newStatus = { ...updateStatus, citydrp: 1 };
       setUpdateStatus(newStatus);
@@ -580,11 +582,13 @@ function EditUserComponent({ match }) {
     const selectedDepartmentId = selectedOptions.value;
 
     const isDepartmentAlreadySelected = rows.some(
-      row => row.department_id === selectedDepartmentId,
+      (row) => row.department_id === selectedDepartmentId
     );
 
     if (isDepartmentAlreadySelected) {
-      alert('This Department is already selected. Please select another Department.');
+      alert(
+        'This Department is already selected. Please select another Department.'
+      );
       return;
     }
 
@@ -594,13 +598,10 @@ function EditUserComponent({ match }) {
 
     updatedAssign[index] = {
       ...updatedAssign[index],
-      department_id: selectedUserIds,
+      department_id: selectedUserIds
     };
 
     setRows(updatedAssign);
-
-
-
   };
 
   const handleTickeTypeShowSelect = (selectedOptions, index) => {
@@ -611,19 +612,15 @@ function EditUserComponent({ match }) {
 
     updatedAssign[index] = {
       ...updatedAssign[index],
-      ticket_show_type: selectedUserIds,
+      ticket_show_type: selectedUserIds
     };
 
     setRows(updatedAssign);
-
-
-
   };
 
   const handleAddRow = async () => {
     setNotify(null);
     let flag = 1;
-
 
     if (flag === 1) {
       setRows([...rows, mappingData]);
@@ -632,18 +629,13 @@ function EditUserComponent({ match }) {
     }
   };
 
-  const handleRemoveSpecificRow = idx => () => {
+  const handleRemoveSpecificRow = (idx) => () => {
     if (idx > 0) {
       setRows(rows.filter((_, i) => i !== idx));
     }
   };
 
-
-
-
   const handleCheckInput = (e, id, type) => {
-
-
     let flag = 1;
     if (type == 'DEPARTMENT') {
       rows.forEach((d, i) => {
@@ -668,7 +660,8 @@ function EditUserComponent({ match }) {
       } else if (type == 'TICKET_SHOW') {
         temp_element.ticket_show_type = e.value;
       } else if (type == 'TICKET_PASSING_AUTHORITY') {
-        temp_element.ticket_passing_authority = e.target.checked == true ? 1 : 0;
+        temp_element.ticket_passing_authority =
+          e.target.checked == true ? 1 : 0;
       } else if (type == 'IS_DEFAULT') {
         temp_element.is_default = e.target.checked == true ? 1 : 0;
         temp_state.forEach((d, i) => {
@@ -680,15 +673,8 @@ function EditUserComponent({ match }) {
     }
   };
 
-
-
-
-
-
-
   const [value, setValue] = useState('');
 
-  ;
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_update === 0) {
       // alert("Rushi")
@@ -713,10 +699,10 @@ function EditUserComponent({ match }) {
       try {
         const res = await new RoleService().getRole();
         if (res.status === 200 && res.data.status === 1) {
-          const data = res.data.data.filter(d => d.is_active === 1);
-          const dropdownData = data.map(d => ({
+          const data = res.data.data.filter((d) => d.is_active === 1);
+          const dropdownData = data.map((d) => ({
             value: d.id,
-            label: d.role,
+            label: d.role
           }));
           setRoleDropdown(dropdownData);
         }
@@ -733,11 +719,21 @@ function EditUserComponent({ match }) {
   }, [roleDropdown]);
 
   useEffect(() => {
-    if (data !== null && stateDropdown !== null && updateStatus.statedrp === undefined) {
-      setStateDropdown(prev => prev.filter(stateItem => stateItem.country_id === data.country_id));
+    if (
+      data !== null &&
+      stateDropdown !== null &&
+      updateStatus.statedrp === undefined
+    ) {
+      setStateDropdown((prev) =>
+        prev.filter((stateItem) => stateItem.country_id === data.country_id)
+      );
       const newStatus = { ...updateStatus, statedrp: 1 };
       setUpdateStatus(newStatus);
-      setStateName(data && stateDropdown && stateDropdown.filter(d => d.value == data.state_id));
+      setStateName(
+        data &&
+          stateDropdown &&
+          stateDropdown.filter((d) => d.value == data.state_id)
+      );
     }
   }, [data, stateDropdown]);
 
@@ -751,19 +747,31 @@ function EditUserComponent({ match }) {
     } else {
       setIsReadOnly(false);
     }
-    var text1 = e.target.checked ? document.getElementById('contact_no').value : '';
+    var text1 = e.target.checked
+      ? document.getElementById('contact_no').value
+      : '';
     setCopyData(text1);
   }
 
   useEffect(() => {
-    if (data !== null && cityDropdown !== null && updateStatus.citydrp === undefined) {
-      setCityDropdown(prev => prev.filter(stateItem => stateItem.state_id === data.state_id));
+    if (
+      data !== null &&
+      cityDropdown !== null &&
+      updateStatus.citydrp === undefined
+    ) {
+      setCityDropdown((prev) =>
+        prev.filter((stateItem) => stateItem.state_id === data.state_id)
+      );
       const newStatus = { ...updateStatus, citydrp: 1 };
       setUpdateStatus(newStatus);
       setCityName(
-        data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id)
-          ? data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id)
-          : cityName,
+        data &&
+          cityDropdown &&
+          cityDropdown.filter((d) => d.value == data.city_id)
+          ? data &&
+              cityDropdown &&
+              cityDropdown.filter((d) => d.value == data.city_id)
+          : cityName
       );
     }
   }, [data, cityDropdown]);
@@ -773,11 +781,16 @@ function EditUserComponent({ match }) {
       <PageHeader headerTitle="Edit User" />
       {notify && <Alert alertData={notify} />}
 
-      <form onSubmit={handleForm} ref={userForm} encType="multipart/form-data" method="post">
+      <form
+        onSubmit={handleForm}
+        ref={userForm}
+        encType="multipart/form-data"
+        method="post"
+      >
         <Tabs
           defaultActiveKey={tabKey}
           activeKey={tabKey}
-          onSelect={k => setTabKey(k)}
+          onSelect={(k) => setTabKey(k)}
           transition={false}
           id="noanim-tab-example1"
           className=" tab-body-header rounded d-inline-flex"
@@ -799,9 +812,9 @@ function EditUserComponent({ match }) {
                             className="form-control form-control-sm"
                             id="account_for"
                             name="account_for"
-                            dispatch
+                            disabled
                             value={accountFor ? accountFor : ''}
-                            onChange={e => accountForChange(e.target.value)}
+                            onChange={(e) => accountForChange(e.target.value)}
                           >
                             <option value="SELF">SELF</option>
                             <option value="CUSTOMER">CUSTOMER</option>
@@ -821,7 +834,9 @@ function EditUserComponent({ match }) {
                             <CustomerDropdown
                               id="customer_id"
                               name="customer_id"
-                              defaultValue={data.customer_id ? data.customer_id : ''}
+                              defaultValue={
+                                data.customer_id ? data.customer_id : ''
+                              }
                               readOnly={true}
                               required={true}
                             />
@@ -843,15 +858,17 @@ function EditUserComponent({ match }) {
                             name="first_name"
                             placeholder="First Name"
                             maxLength={30}
-                            defaultValue={data.first_name ? data.first_name : ''}
-                            onKeyPress={e => {
+                            defaultValue={
+                              data.first_name ? data.first_name : ''
+                            }
+                            onKeyPress={(e) => {
                               Validation.Characters(e);
                             }}
-                            onChange={event => {
+                            onChange={(event) => {
                               if (event.target.value === '') {
                                 setInputState({
                                   ...state,
-                                  firstNameErr: 'First Name Required',
+                                  firstNameErr: 'First Name Required'
                                 });
                               } else {
                                 setInputState({ ...state, firstNameErr: '' });
@@ -861,7 +878,7 @@ function EditUserComponent({ match }) {
                           {inputState && (
                             <small
                               style={{
-                                color: 'red',
+                                color: 'red'
                               }}
                             >
                               {inputState.firstNameErr}
@@ -876,15 +893,17 @@ function EditUserComponent({ match }) {
                             name="middle_name"
                             placeholder="Middle Name"
                             maxLength={30}
-                            defaultValue={data.middle_name ? data.middle_name : ''}
-                            onKeyPress={e => {
+                            defaultValue={
+                              data.middle_name ? data.middle_name : ''
+                            }
+                            onKeyPress={(e) => {
                               Validation.Characters(e);
                             }}
-                            onChange={event => {
+                            onChange={(event) => {
                               if (event.target.value === '') {
                                 setInputState({
                                   ...state,
-                                  middleNameErr: 'Middle Name Required',
+                                  middleNameErr: 'Middle Name Required'
                                 });
                               } else {
                                 setInputState({ ...state, middleNameErr: '' });
@@ -894,7 +913,7 @@ function EditUserComponent({ match }) {
                           {inputState && (
                             <small
                               style={{
-                                color: 'red',
+                                color: 'red'
                               }}
                             >
                               {inputState.middleNameErr}
@@ -910,14 +929,14 @@ function EditUserComponent({ match }) {
                             placeholder="Last Name"
                             maxLength={30}
                             defaultValue={data.last_name ? data.last_name : ''}
-                            onKeyPress={e => {
+                            onKeyPress={(e) => {
                               Validation.Characters(e);
                             }}
-                            onChange={event => {
+                            onChange={(event) => {
                               if (event.target.value === '') {
                                 setInputState({
                                   ...state,
-                                  lastNameErr: 'Last Name Required',
+                                  lastNameErr: 'Last Name Required'
                                 });
                               } else {
                                 setInputState({ ...state, lastNameErr: '' });
@@ -928,7 +947,7 @@ function EditUserComponent({ match }) {
                           {inputState && (
                             <small
                               style={{
-                                color: 'red',
+                                color: 'red'
                               }}
                             >
                               {inputState.lastNameErr}
@@ -952,16 +971,16 @@ function EditUserComponent({ match }) {
                             placeholder="Email Address"
                             defaultValue={data.email_id ? data.email_id : ''}
                             // onChange={handleEmail}
-                            onChange={event => {
+                            onChange={(event) => {
                               const email = event.target.value;
                               if (
                                 !email.match(
-                                  /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/,
+                                  /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
                                 )
                               ) {
                                 setInputState({
                                   ...state,
-                                  emailErr: 'Please enter a valid email address',
+                                  emailErr: 'Please enter a valid email address'
                                 });
                               } else {
                                 setInputState({ ...state, emailErr: '' });
@@ -972,7 +991,7 @@ function EditUserComponent({ match }) {
                           {inputState && (
                             <small
                               style={{
-                                color: 'red',
+                                color: 'red'
                               }}
                             >
                               {emailError}
@@ -993,15 +1012,15 @@ function EditUserComponent({ match }) {
                             name="user_name"
                             placeholder="Username"
                             maxLength={30}
-                            onKeyPress={e => {
+                            onKeyPress={(e) => {
                               Validation.CharactersNumbersOnly(e);
                             }}
                             defaultValue={data.user_name ? data.user_name : ''}
-                            onChange={event => {
+                            onChange={(event) => {
                               if (event.target.value === '') {
                                 setInputState({
                                   ...state,
-                                  userNameErr: 'Please enter username',
+                                  userNameErr: 'Please enter username'
                                 });
                               } else {
                                 setInputState({ ...state, userNameErr: '' });
@@ -1011,7 +1030,7 @@ function EditUserComponent({ match }) {
                           {inputState && (
                             <small
                               style={{
-                                color: 'red',
+                                color: 'red'
                               }}
                             >
                               {inputState.userNameErr}
@@ -1038,16 +1057,18 @@ function EditUserComponent({ match }) {
                             maxLength="10"
                             minLength="10"
                             placeholder="Contact Number"
-                            defaultValue={data.contact_no ? data.contact_no : ''}
+                            defaultValue={
+                              data.contact_no ? data.contact_no : ''
+                            }
                             onChange={handleContactValidation}
-                            onKeyPress={e => {
+                            onKeyPress={(e) => {
                               Validation.mobileNumbersOnly(e);
                             }}
                           />
                           {inputState && (
                             <small
                               style={{
-                                color: 'red',
+                                color: 'red'
                               }}
                             >
                               {inputState.contactNoErr}
@@ -1064,7 +1085,9 @@ function EditUserComponent({ match }) {
                             type="checkbox"
                             id="check1"
                             defaultChecked={
-                              data.contact_no == data.whats_app_contact_no ? true : false
+                              data.contact_no == data.whats_app_contact_no
+                                ? true
+                                : false
                             }
                             onChange={copyTextValue}
                             style={{ position: 'absolute', top: '32%' }}
@@ -1084,15 +1107,15 @@ function EditUserComponent({ match }) {
                                 readOnly={isReadOnly}
                                 minLength={10}
                                 maxLength={10}
-                                onKeyPress={e => {
+                                onKeyPress={(e) => {
                                   Validation.mobileNumbersOnly(e);
                                 }}
                                 onChange={handleWhatsappValidation}
-                                onPaste={e => {
+                                onPaste={(e) => {
                                   e.preventDefault();
                                   return false;
                                 }}
-                                onCopy={e => {
+                                onCopy={(e) => {
                                   e.preventDefault();
                                   return false;
                                 }}
@@ -1100,7 +1123,7 @@ function EditUserComponent({ match }) {
                               {inputState && (
                                 <small
                                   style={{
-                                    color: 'red',
+                                    color: 'red'
                                   }}
                                 >
                                   {inputState.whatsappErr}
@@ -1128,15 +1151,15 @@ function EditUserComponent({ match }) {
                                 readOnly={isReadOnly}
                                 minLength={10}
                                 maxLength={10}
-                                onKeyPress={e => {
+                                onKeyPress={(e) => {
                                   Validation.mobileNumbersOnly(e);
                                 }}
                                 onChange={handleWhatsappValidation}
-                                onPaste={e => {
+                                onPaste={(e) => {
                                   e.preventDefault();
                                   return false;
                                 }}
-                                onCopy={e => {
+                                onCopy={(e) => {
                                   e.preventDefault();
                                   return false;
                                 }}
@@ -1144,7 +1167,7 @@ function EditUserComponent({ match }) {
                               {inputState && (
                                 <small
                                   style={{
-                                    color: 'red',
+                                    color: 'red'
                                   }}
                                 >
                                   {inputState.whatsappErr}
@@ -1162,7 +1185,10 @@ function EditUserComponent({ match }) {
                             Password : <Astrick color="red" />
                           </b>
                         </label>
-                        <div className="col-sm-3" style={{ position: 'relative', display: 'flex' }}>
+                        <div
+                          className="col-sm-3"
+                          style={{ position: 'relative', display: 'flex' }}
+                        >
                           <InputGroup className="">
                             <input
                               typeof="password"
@@ -1171,21 +1197,24 @@ function EditUserComponent({ match }) {
                               name="password"
                               placeholder="Password"
                               type={passwordShown ? 'text' : 'password'}
-                              onKeyPress={e => {
+                              onKeyPress={(e) => {
                                 Validation.password(e);
                               }}
-                              onPaste={e => {
+                              onPaste={(e) => {
                                 e.preventDefault();
                                 return false;
                               }}
-                              onCopy={e => {
+                              onCopy={(e) => {
                                 e.preventDefault();
                                 return false;
                               }}
                             />
 
                             <InputGroup.Text>
-                              <i className="bi bi-eye-fill" onClick={togglePasswordVisiblity}></i>
+                              <i
+                                className="bi bi-eye-fill"
+                                onClick={togglePasswordVisiblity}
+                              ></i>
                             </InputGroup.Text>
                           </InputGroup>
 
@@ -1194,7 +1223,7 @@ function EditUserComponent({ match }) {
                               style={{
                                 color: 'red',
                                 position: 'absolute',
-                                top: '95%',
+                                top: '95%'
                               }}
                             >
                               {inputState.passwordErr}
@@ -1207,7 +1236,10 @@ function EditUserComponent({ match }) {
                             Confirmed Password :<Astrick color="red" />{' '}
                           </b>
                         </label>
-                        <div className="col-sm-3" style={{ position: 'relative', display: 'flex' }}>
+                        <div
+                          className="col-sm-3"
+                          style={{ position: 'relative', display: 'flex' }}
+                        >
                           <InputGroup>
                             <input
                               className="form-control form-control-sm "
@@ -1217,17 +1249,20 @@ function EditUserComponent({ match }) {
                               ref={confirmedPasswordRef}
                               // onChange={handleConfirmedPassword}
                               type={passwordShown1 ? 'text' : 'Password'}
-                              onPaste={e => {
+                              onPaste={(e) => {
                                 e.preventDefault();
                                 return false;
                               }}
-                              onCopy={e => {
+                              onCopy={(e) => {
                                 e.preventDefault();
                                 return false;
                               }}
                             />
                             <InputGroup.Text>
-                              <i className="bi bi-eye-fill" onClick={togglePasswordVisiblity1}></i>
+                              <i
+                                className="bi bi-eye-fill"
+                                onClick={togglePasswordVisiblity1}
+                              ></i>
                             </InputGroup.Text>
                           </InputGroup>
 
@@ -1236,7 +1271,7 @@ function EditUserComponent({ match }) {
                               style={{
                                 color: 'red',
                                 position: 'absolute',
-                                top: '95%',
+                                top: '95%'
                               }}
                             >
                               {inputState.confirmed_PassErr}
@@ -1248,7 +1283,7 @@ function EditUserComponent({ match }) {
                             style={{
                               color: 'red',
                               position: 'relative',
-                              left: '67%',
+                              left: '67%'
                             }}
                           >
                             Password Not matched
@@ -1279,7 +1314,7 @@ function EditUserComponent({ match }) {
                               //   )
                               // }
                               value={selectRole}
-                              onChange={e => handleSelectRole(e)}
+                              onChange={(e) => handleSelectRole(e)}
                             />
                           )}
 
@@ -1287,7 +1322,7 @@ function EditUserComponent({ match }) {
                             <small
                               style={{
                                 color: 'red',
-                                position: 'relative',
+                                position: 'relative'
                               }}
                             >
                               {inputState.roleErr}
@@ -1295,7 +1330,10 @@ function EditUserComponent({ match }) {
                           )}
                         </div>
 
-                        <label className="col-sm-3 col-form-label " style={{ textAlign: 'right' }}>
+                        <label
+                          className="col-sm-3 col-form-label "
+                          style={{ textAlign: 'right' }}
+                        >
                           <b>
                             Select Designation : <Astrick color="red" />
                           </b>
@@ -1309,7 +1347,9 @@ function EditUserComponent({ match }) {
                               defaultValue={
                                 data &&
                                 designationDropdown &&
-                                designationDropdown.filter(d => d.value == data.designation_id)
+                                designationDropdown.filter(
+                                  (d) => d.value == data.designation_id
+                                )
                               }
                             />
                           </div>
@@ -1318,7 +1358,7 @@ function EditUserComponent({ match }) {
                           <small
                             style={{
                               color: 'red',
-                              position: 'relative',
+                              position: 'relative'
                             }}
                           >
                             {inputState.designationErr}
@@ -1342,9 +1382,14 @@ function EditUserComponent({ match }) {
                                   name="is_active"
                                   id="is_active_1"
                                   value="1"
-                                  defaultChecked={data && data.is_active === 1 ? true : false}
+                                  defaultChecked={
+                                    data && data.is_active === 1 ? true : false
+                                  }
                                 />
-                                <label className="form-check-label" htmlFor="is_active_1">
+                                <label
+                                  className="form-check-label"
+                                  htmlFor="is_active_1"
+                                >
                                   Active
                                 </label>
                               </div>
@@ -1357,9 +1402,14 @@ function EditUserComponent({ match }) {
                                   name="is_active"
                                   id="is_active_0"
                                   value="0"
-                                  defaultChecked={data && data.is_active === 0 ? true : false}
+                                  defaultChecked={
+                                    data && data.is_active === 0 ? true : false
+                                  }
                                 />
-                                <label className="form-check-label" htmlFor="is_active_0">
+                                <label
+                                  className="form-check-label"
+                                  htmlFor="is_active_0"
+                                >
                                   Deactive
                                 </label>
                               </div>
@@ -1389,7 +1439,7 @@ function EditUserComponent({ match }) {
                             placeholder="Enter maximum 250 character"
                             rows="4"
                             maxLength={250}
-                            onKeyPress={e => {
+                            onKeyPress={(e) => {
                               Validation.addressFieldOnly(e);
                             }}
                             defaultValue={data.address ? data.address : ''}
@@ -1410,10 +1460,10 @@ function EditUserComponent({ match }) {
                             defaultValue={data.pincode ? data.pincode : ''}
                             minLength={6}
                             maxLength={6}
-                            onKeyPress={e => {
+                            onKeyPress={(e) => {
                               Validation.NumbersOnly(e);
                             }}
-                            onChange={event => {
+                            onChange={(event) => {
                               const pincode = event.target.value.trim();
 
                               const pincodeRegex = /^\d{6}$/; // regular expression to match 6 digits
@@ -1421,22 +1471,22 @@ function EditUserComponent({ match }) {
                               if (pincode === '') {
                                 setInputState({
                                   ...state,
-                                  PinCodeErr: '',
+                                  PinCodeErr: ''
                                 });
                               } else if (!pincodeRegex.test(pincode)) {
                                 setInputState({
                                   ...state,
-                                  PinCodeErr: ' Enter a 6 digit pin code.',
+                                  PinCodeErr: ' Enter a 6 digit pin code.'
                                 });
                               } else {
                                 setInputState({ ...state, PinCodeErr: '' });
                               }
                             }}
-                            onPaste={e => {
+                            onPaste={(e) => {
                               e.preventDefault();
                               return false;
                             }}
-                            onCopy={e => {
+                            onCopy={(e) => {
                               e.preventDefault();
                               return false;
                             }}
@@ -1444,7 +1494,7 @@ function EditUserComponent({ match }) {
                           {inputState && (
                             <small
                               style={{
-                                color: 'red',
+                                color: 'red'
                               }}
                             >
                               {inputState.PinCodeErr}
@@ -1452,7 +1502,10 @@ function EditUserComponent({ match }) {
                           )}
                         </div>
 
-                        <label className="col-sm-2 col-form-label" style={{ textAlign: 'right' }}>
+                        <label
+                          className="col-sm-2 col-form-label"
+                          style={{ textAlign: 'right' }}
+                        >
                           <b>Country : </b>
                         </label>
                         <div className="col-sm-4">
@@ -1463,9 +1516,13 @@ function EditUserComponent({ match }) {
                             defaultValue={
                               data &&
                               CountryData &&
-                              CountryData.filter(d => d.value == data.country_id)
+                              CountryData.filter(
+                                (d) => d.value == data.country_id
+                              )
                             }
-                            onChange={e => handleDependentChange(e, 'COUNTRY')}
+                            onChange={(e) =>
+                              handleDependentChange(e, 'COUNTRY')
+                            }
                           />
                         </div>
                       </div>
@@ -1476,38 +1533,55 @@ function EditUserComponent({ match }) {
                         </label>
                         <div className="col-sm-4">
                           <Select
-                            options={updateStatus.statedrp !== undefined ? stateDropdown : []}
+                            options={
+                              updateStatus.statedrp !== undefined
+                                ? stateDropdown
+                                : []
+                            }
                             id="state_id"
                             name="state_id"
                             defaultValue={
                               data &&
                               stateDropdown &&
-                              stateDropdown.filter(d => d.value == data.state_id)
+                              stateDropdown.filter(
+                                (d) => d.value == data.state_id
+                              )
                             }
-                            onChange={e => handleDependentChange(e, 'STATE')}
+                            onChange={(e) => handleDependentChange(e, 'STATE')}
                           />
                         </div>
 
-                        <label className="col-sm-2 col-form-label" style={{ textAlign: 'right' }}>
+                        <label
+                          className="col-sm-2 col-form-label"
+                          style={{ textAlign: 'right' }}
+                        >
                           <b>City : </b>
                         </label>
 
                         {cityDropdown && (
                           <div className="col-sm-4">
                             <Select
-                              options={updateStatus.citydrp !== undefined ? cityDropdown : []}
+                              options={
+                                updateStatus.citydrp !== undefined
+                                  ? cityDropdown
+                                  : []
+                              }
                               id="city_id"
                               name="city_id"
                               defaultValue={
                                 data &&
                                 cityDropdown &&
-                                cityDropdown.filter(d => d.value == data.city_id)
+                                cityDropdown.filter(
+                                  (d) => d.value == data.city_id
+                                )
                                   ? data &&
                                     cityDropdown &&
-                                    cityDropdown.filter(d => d.value == data.city_id)
+                                    cityDropdown.filter(
+                                      (d) => d.value == data.city_id
+                                    )
                                   : cityName
                               }
-                              onChange={e => setCityName(e)}
+                              onChange={(e) => setCityName(e)}
                             />
                           </div>
                         )}
@@ -1523,30 +1597,51 @@ function EditUserComponent({ match }) {
               <div className="card-body">
                 {rows && (
                   <div className="">
-                    <table className="table table-bordered table-responsive mt-5" id="tab_logic">
+                    <table
+                      className="table table-bordered table-responsive mt-5"
+                      id="tab_logic"
+                    >
                       <thead>
                         <tr>
-                          <th className="text-center" style={{ width: '100px' }}>
+                          <th
+                            className="text-center"
+                            style={{ width: '100px' }}
+                          >
                             {' '}
                             SR No{' '}
                           </th>
-                          <th className="text-center" style={{ width: '300px' }}>
+                          <th
+                            className="text-center"
+                            style={{ width: '300px' }}
+                          >
                             {' '}
                             Department
                           </th>
-                          <th className="text-center" style={{ width: '300px' }}>
+                          <th
+                            className="text-center"
+                            style={{ width: '300px' }}
+                          >
                             {' '}
                             Ticket Type Show{' '}
                           </th>
-                          <th className="text-center" style={{ width: '300px' }}>
+                          <th
+                            className="text-center"
+                            style={{ width: '300px' }}
+                          >
                             {' '}
                             Ticket Passing Authority{' '}
                           </th>
-                          <th className="text-center" style={{ width: '300px' }}>
+                          <th
+                            className="text-center"
+                            style={{ width: '300px' }}
+                          >
                             {' '}
                             Make Default{' '}
                           </th>
-                          <th className="text-center" style={{ width: '100px' }}>
+                          <th
+                            className="text-center"
+                            style={{ width: '100px' }}
+                          >
                             {' '}
                             Action
                           </th>
@@ -1569,15 +1664,17 @@ function EditUserComponent({ match }) {
                                   options={departmentDropdown}
                                   value={
                                     departmentDropdown &&
-                                    departmentDropdown?.filter(d =>
+                                    departmentDropdown?.filter((d) =>
                                       Array.isArray(item.department_id)
                                         ? item.department_id.includes(d.value)
-                                        : item.department_id === d.value,
+                                        : item.department_id === d.value
                                     )
                                   }
                                   required
                                   style={{ zIndex: '100' }}
-                                  onChange={selectedOption => handleUserSelect(selectedOption, idx)}
+                                  onChange={(selectedOption) =>
+                                    handleUserSelect(selectedOption, idx)
+                                  }
                                 />
                               </td>
 
@@ -1588,15 +1685,20 @@ function EditUserComponent({ match }) {
                                   name="ticket_show_type_id[]"
                                   value={
                                     options &&
-                                    options?.filter(d =>
+                                    options?.filter((d) =>
                                       Array.isArray(item.ticket_show_type)
-                                        ? item.ticket_show_type.includes(d.value)
-                                        : item.ticket_show_type === d.value,
+                                        ? item.ticket_show_type.includes(
+                                            d.value
+                                          )
+                                        : item.ticket_show_type === d.value
                                     )
                                   }
                                   required
-                                  onChange={selectedOption =>
-                                    handleTickeTypeShowSelect(selectedOption, idx)
+                                  onChange={(selectedOption) =>
+                                    handleTickeTypeShowSelect(
+                                      selectedOption,
+                                      idx
+                                    )
                                   }
                                 />
                               </td>
@@ -1616,8 +1718,12 @@ function EditUserComponent({ match }) {
                                   type="checkbox"
                                   id={`ticket_passing_authority_` + idx}
                                   checked={item.ticket_passing_authority == 1}
-                                  onChange={e =>
-                                    handleCheckInput(e, idx, 'TICKET_PASSING_AUTHORITY')
+                                  onChange={(e) =>
+                                    handleCheckInput(
+                                      e,
+                                      idx,
+                                      'TICKET_PASSING_AUTHORITY'
+                                    )
                                   }
                                 />
                               </td>
@@ -1631,7 +1737,9 @@ function EditUserComponent({ match }) {
                                   type="checkbox"
                                   id={`is_default_` + idx}
                                   checked={item.is_default == 1}
-                                  onChange={e => handleCheckInput(e, idx, 'IS_DEFAULT')}
+                                  onChange={(e) =>
+                                    handleCheckInput(e, idx, 'IS_DEFAULT')
+                                  }
                                 />
                               </td>
 
@@ -1669,7 +1777,7 @@ function EditUserComponent({ match }) {
                 style={{
                   color: 'red',
                   position: 'absolute',
-                  right: '70%',
+                  right: '70%'
                 }}
               >
                 {inputState.departmentErr}
@@ -1680,7 +1788,7 @@ function EditUserComponent({ match }) {
                 style={{
                   color: 'red',
                   position: 'absolute',
-                  right: '70%',
+                  right: '70%'
                 }}
               >
                 {inputState.ticketTypeShowErr}
@@ -1712,7 +1820,10 @@ function EditUserComponent({ match }) {
           )}
 
           {tabKey == 'User_Settings' && (
-            <button onClick={() => setTabKey('All_Tickets')} className="btn btn-primary">
+            <button
+              onClick={() => setTabKey('All_Tickets')}
+              className="btn btn-primary"
+            >
               Back
             </button>
           )}
