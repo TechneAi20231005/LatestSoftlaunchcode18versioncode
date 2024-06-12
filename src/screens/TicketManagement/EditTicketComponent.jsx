@@ -1123,7 +1123,6 @@ export default function EditTicketComponent({ match }) {
                       <label className="col-form-label">
                         <b>Entry user email : </b>
                       </label>
-
                       <input
                         className="form-control form-control-sm"
                         type="text"
