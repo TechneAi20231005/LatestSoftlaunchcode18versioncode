@@ -2,34 +2,24 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Spinner, Modal, Table } from 'react-bootstrap';
 import Alert from '../../components/Common/Alert';
-import { userSessionData, _base } from '../../settings/constants';
-import Attachment from '../../components/Common/Attachment';
+import { _base } from '../../settings/constants';
+
 import * as Validation from '../../components/Utilities/Validation';
 import { _attachmentUrl } from '../../settings/constants';
 import {
   getAttachment,
   deleteAttachment
 } from '../../services/OtherService/AttachmentService';
-import DatePicker from 'react-date-picker';
+
 import ErrorLogService from '../../services/ErrorLogService';
 import MyTicketService from '../../services/TicketService/MyTicketService';
-import editorStyles from './SimpleMentionEditor.module.css';
+
 import DynamicFormDropdownMasterService from '../../services/MastersService/DynamicFormDropdownMasterService';
-import UserService from '../../services/MastersService/UserService';
+
 import PageHeader from '../../components/Common/PageHeader';
 import Select from 'react-select';
-import { getCurrentDate } from '../../components/Utilities/Functions';
-import { UserDropdown } from '../Masters/UserMaster/UserComponent';
-import { DepartmentDropdown } from '../Masters/DepartmentMaster/DepartmentComponent';
-import { StatusDropdown } from '../Masters/StatusMaster/StatusComponent';
-import { QueryTypeDropdown } from '../Masters/QueryTypeMaster/QueryTypeComponent';
-import { ProjectDropdown } from '../ProjectManagement/ProjectMaster/ProjectComponent';
-import { ModuleDropdown } from '../ProjectManagement/ModuleMaster/ModuleComponent';
-import { SubModuleDropdown } from '../ProjectManagement/SubModuleMaster/SubModuleComponent';
+
 import { Astrick } from '../../components/Utilities/Style';
-import { userSessionData as user } from '../../settings/constants';
-import RenderDynamicForm from './TaskManagement/RenderDynamicForm';
-import CommentData from './CommentData';
 
 import DepartmentService from '../../services/MastersService/DepartmentService';
 import QueryTypeService from '../../services/MastersService/QueryTypeService';
@@ -41,25 +31,11 @@ import SubModuleService from '../../services/ProjectManagementService/SubModuleS
 import DesignationService from '../../services/MastersService/DesignationService';
 
 import StatusService from '../../services/MastersService/StatusService';
-import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
-import { Mention, MentionsInput } from 'react-mentions';
+
 import Chatbox from './NewChatBox';
 import Shimmer from './ShimmerComponent';
 import { UseDispatch, useDispatch, useSelector } from 'react-redux';
-import ProjectMasterSlice from '../ProjectManagement/ProjectMaster/ProjectMasterSlice';
-import { getprojectData } from '../ProjectManagement/ProjectMaster/ProjectMasterAction';
-import ModuleSlice from '../ProjectManagement/ModuleMaster/ModuleSlice';
-import { moduleMaster } from '../ProjectManagement/ModuleMaster/ModuleAction';
-import SubModuleMasterSlice from '../ProjectManagement/SubModuleMaster/SubModuleMasterSlice';
-import {
-  getSubModuleById,
-  subModuleMaster
-} from '../ProjectManagement/SubModuleMaster/SubModuleMasterAction';
-import StatusComponentSlice from '../Masters/StatusMaster/StatusComponentSlice';
-import { getStatusData } from '../Masters/StatusMaster/StatusComponentAction';
-import QueryTypeComponetSlice from '../Masters/QueryTypeMaster/QueryTypeComponetSlice';
-import { queryType } from '../Masters/QueryTypeMaster/QueryTypeComponetAction';
-import { departmentData } from '../Masters/DepartmentMaster/DepartmentMasterAction';
+
 import { getUserForMyTicketsData } from './MyTicketComponentAction';
 import { getRoles } from '../Dashboard/DashboardAction';
 import TaskTicketTypeService from '../../services/MastersService/TaskTicketTypeService';
@@ -70,15 +46,9 @@ export default function EditTicketComponent({ match }) {
 
   const { id } = useParams();
   const ticketId = id;
-  const [dateValue, setDateValue] = useState(new Date());
-  const editor = useRef(null);
-  const [idCount, setIdCount] = useState([]);
-  const [convertedContent, setConvertedContent] = useState(null);
-  const [allUsers, setAllUsers] = useState();
-  const [allUsersString, setAllUsersString] = useState();
+
   const [projectData, setProjectData] = useState();
   const [statusValue, setStatusValue] = useState();
-  const roleId = sessionStorage.getItem('role_id');
 
   const dispatch = useDispatch();
 
@@ -98,10 +68,8 @@ export default function EditTicketComponent({ match }) {
   const [rows, setRows] = useState();
 
   const [dynamicTicketData, setDynamicTicketData] = useState(null);
-  const [attachment, setAttachment] = useState(null);
 
   const [queryType, setQueryType] = useState();
-  const [queryTypeDropdown, setQueryTypeDropdown] = useState();
 
   const [department, setDepartment] = useState();
   const [departmentDropdown, setDepartmentDropdown] = useState();
@@ -111,16 +79,9 @@ export default function EditTicketComponent({ match }) {
   const [userDrp, setUserdrp] = useState(null);
 
   const [isSolved, setIsSolved] = useState(false);
-  const current = new Date();
-  const todayDate = `${current.getFullYear()}-${
-    current.getMonth() + 1 < 10
-      ? '0' + current.getMonth() + 1
-      : current.getMonth() + 1
-  }-${current.getDate()}`;
-  const [defaults, setDefaults] = useState(null);
+
   const [customerMapping, setCustomerMapping] = useState();
   const [userName, setUserName] = useState('');
-  const [defaultUserName, setDefaultUserName] = useState('');
 
   const [ba, setBa] = useState(null);
   const [dev, setDev] = useState(null);
@@ -129,10 +90,9 @@ export default function EditTicketComponent({ match }) {
   const [confirmationModal, setConfirmationModal] = useState(false);
   const [confirmationModalDetails, setConfirmationModalDetails] =
     useState(false);
-  const [isOtpVerified, setIsOtpVerified] = useState(false);
+
   const [ticketsData, setTicketsData] = useState([]);
 
-  const [updateStatus, setUpdateStatus] = useState({});
   const [dateErr, setDateErr] = useState(null);
 
   const [proceed, setProceed] = useState(true);
@@ -152,18 +112,18 @@ export default function EditTicketComponent({ match }) {
   };
 
   const handleConfirmationModal = async (type, data) => {
-    if (type && data.status_id == 3) {
+    if (type && data.status_id === 3) {
       setProceed(false);
       await new MyTicketService()
         .sendTicketConfirmationOtp(data.id)
         .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status == 1) {
+          if (res?.status === 200) {
+            if (res?.data?.status == 1) {
               setConfirmationModalDetails(null);
               setConfirmationModalDetails(res.data);
             } else {
               setNotify(null);
-              setNotify(res.data.message);
+              setNotify(res?.data?.message);
             }
           }
         });
@@ -173,13 +133,13 @@ export default function EditTicketComponent({ match }) {
 
   const handleResendOtp = async (type, data) => {
     setNotify(null);
-    if (ticketStatus == 3 && data) {
+    if (ticketStatus === 3 && data) {
       setProceed(false);
       await new MyTicketService()
         .sendTicketConfirmationOtp(data.id)
         .then((res) => {
           if (res.status === 200) {
-            if (res.data.status == 1) {
+            if (res.data.status === 1) {
               setNotify({ type: 'success', message: 'Otp has been sent !!!' });
               setConfirmationModalDetails(null);
               setConfirmationModalDetails(res.data);
@@ -198,7 +158,7 @@ export default function EditTicketComponent({ match }) {
       .verifyTicketConfirmationOtp(data.id, formData)
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status == 1) {
+          if (res.data.status === 1) {
             loadData();
             setProceed(true);
             setConfirmationModal(false);
@@ -212,12 +172,6 @@ export default function EditTicketComponent({ match }) {
   };
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const handleDependent = (e, name) => {
-    setData({
-      ...data,
-      [name]: e.value
-    });
-  };
 
   const [expectedTrue, setExpectedTrue] = useState();
   const handleForm = async (e) => {
@@ -531,7 +485,7 @@ export default function EditTicketComponent({ match }) {
   };
 
   const [isLoading, setIsLoading] = useState(false);
-  const [value, setValue] = useState();
+
   const [commentData, setCommentData] = useState();
   const [users, setUsers] = useState();
   const [projectId, setProjectId] = useState();
@@ -547,18 +501,19 @@ export default function EditTicketComponent({ match }) {
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id';
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
-      if (res.payload.status == 200) {
-        if (res.payload.data.status == 1) {
-          const data = res.payload.data.data.filter((d) => d.is_active == 1);
-          const select = res.payload.data.data
-            .filter((d) => d.is_active == 1)
+      if (res?.payload?.status === 200) {
+        if (res?.payload?.data?.status === 1) {
+          const getUserData = res?.payload?.data?.data;
+          const data = getUserData.filter((d) => d.is_active === 1);
+          const select = getUserData
+            .filter((d) => d.is_active === 1)
             .map((d) => ({
               value: d.id,
               label: d.first_name + ' ' + d.last_name
             }));
           setUser(data);
 
-          setEmailData(res.payload.data.data.filter((d) => d.is_active == 1));
+          setEmailData(getUserData.filter((d) => d.is_active === 1));
           emilData?.filter((d) => d.id === data?.created_by);
 
           setUserDropdown(select);
@@ -582,7 +537,8 @@ export default function EditTicketComponent({ match }) {
         // handleAttachment("GetAttachment", ticketId);
         if (rows) {
           var dynamicForm = res.data.data.dynamic_form;
-          const returnedData = [];
+
+
           const filteredArray = dynamicForm.filter(
             (formInstance) =>
               formInstance.inputType === 'select' &&
@@ -630,7 +586,7 @@ export default function EditTicketComponent({ match }) {
 
     await new DesignationService().getdesignatedDropdown().then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
+        if (res.data.status === 1) {
           const deta = res.data.data;
           setBa(
             deta.BA.filter((d) => d.is_active === 1).map((d) => ({
@@ -657,8 +613,6 @@ export default function EditTicketComponent({ match }) {
     await new CustomerMappingService()
       .getCustomerMappingSettings()
       .then((res) => {
-        const queryType = [];
-        const department = [];
         if (res.data.status === 1) {
           if (res.data.data) {
             const queryTypeTemp = [];
@@ -686,11 +640,11 @@ export default function EditTicketComponent({ match }) {
     });
 
     await new DepartmentService().getDepartment().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          const data = res.data.data.filter((d) => d.is_active == 1);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          const data = res.data.data.filter((d) => d.is_active === 1);
           const select = res.data.data
-            .filter((d) => d.is_active == 1)
+            .filter((d) => d.is_active === 1)
             .map((d) => ({ value: d.id, label: d.department }));
           setDepartment(data);
           setDepartmentDropdown(select);
@@ -700,8 +654,8 @@ export default function EditTicketComponent({ match }) {
 
     await new ProjectService().getProject().then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
-          const temp = res.data.data.filter((d) => d.is_active == 1);
+        if (res.data.status === 1) {
+          const temp = res.data.data.filter((d) => d.is_active === 1);
           setProjectData(temp);
           setProjectDropdown(
             temp.map((d) => ({ value: d.id, label: d.project_name }))
@@ -713,7 +667,7 @@ export default function EditTicketComponent({ match }) {
     await new ModuleService().getModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const temp = res.data.data.filter((d) => d.is_active == 1);
+          const temp = res.data.data.filter((d) => d.is_active === 1);
 
           setModuleData(temp);
           setModuleDropdown(
@@ -726,7 +680,7 @@ export default function EditTicketComponent({ match }) {
     await new SubModuleService().getSubModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const temp = res?.data?.data?.filter((d) => d.is_active == 1);
+          const temp = res?.data?.data?.filter((d) => d.is_active === 1);
           setSubModuleData(temp);
           setSubModuleDropdown(
             temp?.map((d) => ({ value: d.id, label: d.sub_module_name }))
@@ -736,9 +690,9 @@ export default function EditTicketComponent({ match }) {
     });
 
     await new StatusService().getStatus().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          const temp = res.data.data.filter((d) => d.is_active == 1);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          const temp = res.data.data.filter((d) => d.is_active === 1);
           setStatusValue(temp);
           const select = temp.map((d) => ({ value: d.id, label: d.status }));
           setStatusData(select);
@@ -804,27 +758,6 @@ export default function EditTicketComponent({ match }) {
     });
   };
 
-  // const handleAttachment = (type, ticket_id, attachmentId = null) => {
-  //   if (type === "GetAttachment") {
-  //     getAttachment(ticket_id, "TICKET").then((res) => {
-  //       if (res.status === 200) {
-  //         setAttachment(res.data.data);
-  //       }
-  //     });
-  //   }
-  //   if (type === "DeleteAttachment") {
-  //     deleteAttachment(attachmentId).then((res) => {
-  //       if (res.status === 200) {
-  //         getAttachment(ticket_id, "TICKET").then((resp) => {
-  //           if (resp.status === 200) {
-  //             setAttachment(resp.data.data);
-  //           }
-  //         });
-  //       }
-  //     });
-  //   }
-  // };
-
   const handleDateChange = (e) => {
     if (e.target.value === '') {
       setDateErr(true);
@@ -841,8 +774,6 @@ export default function EditTicketComponent({ match }) {
     if (userDepRef.current) {
       userDepRef.current.clearValue();
     }
-
-
 
     if (e) {
       const select = user
@@ -892,7 +823,7 @@ export default function EditTicketComponent({ match }) {
     );
     await new ProjectService().getReviewersByProject(e.value).then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
+        if (res.data.status === 1) {
           setReviewerData(
             res.data.data.map((d) => ({
               value: d.user_id,
@@ -917,16 +848,6 @@ export default function EditTicketComponent({ match }) {
 
   const loadAttachment = async () => {
     setNotify(null);
-    // if (ticketId) {
-    //   await getAttachment(ticketId, "TICKET").then((res) => {
-    //     if (res.status === 200) {
-    //       setAttachment(null);
-    //       setAttachment(res.data.data);
-    //     }
-    //   });
-    // } else {
-    //   setAttachment(null);
-    // }
   };
 
   const uploadAttachmentHandler = (e, type, id = null) => {
@@ -1210,8 +1131,6 @@ export default function EditTicketComponent({ match }) {
                         <b>Entry User : </b>
                       </label>
 
-
-
                       {userDrp && (
                         <Select
                           options={userDropdown}
@@ -1228,9 +1147,6 @@ export default function EditTicketComponent({ match }) {
                         <b>Entry user email : </b>
                       </label>
 
-
-                 
-
                       <input
                         className="form-control form-control-sm"
                         type="text"
@@ -1244,19 +1160,6 @@ export default function EditTicketComponent({ match }) {
                       />
                     </div>
 
-                    {/* <div className="col-sm-4">
-                      <label className="col-form-label">
-                        <b>Parent : </b>
-                      </label>
-
-                      <input
-                        className="form-control form-control-sm"
-                        type="text"
-                        defaultValue={data && data.parent_name}
-                        readOnly
-                        name="parent_id"
-                      />
-                    </div> */}
                     <div className="col-sm-3 mt-2">
                       <label
                         className="form-label font-weight-bold"
@@ -1274,19 +1177,9 @@ export default function EditTicketComponent({ match }) {
                           }}
                         >
                           <div
-                            // style={{
-                            //   padding: "8px",
-                            //   border: "1px solid #ccc",
-                            //   cursor: "pointer",
-                            //   width: "100%",
-                            //   borderRadius: "1px",
-                            // }}
                             className="form-control form-control-sm"
                             onClick={(e) => handleSelectOptionClick(e)}
                           >
-                            {/* {selectedOption
-                              ? selectedOption
-                              : modal?.modalData?.parent_name} */}
                             {selectedOption
                               ? selectedOption
                               : data?.parent_name !== null
@@ -1295,19 +1188,6 @@ export default function EditTicketComponent({ match }) {
                           </div>
                           {isMenuOpen && (
                             <div
-                              // style={{
-                              //   position: "absolute",
-                              //   width: "100%", // Set the width to 100% to match the parent's width
-                              //   top: "100%",
-
-                              //   maxHeight: "150px", // Adjust the maxHeight here as needed
-                              //   overflowY: "auto", // Enable vertical scrolling
-                              //   scrollbarWidth: "none", // Hide scrollbar in Firefox
-                              //   msOverflowStyle: "none", // Hide scrollbar in IE/Edge
-                              //   "&::-webkit-scrollbar": {
-                              //     display: "none", // Hide scrollbar in Webkit browsers
-                              //   },
-                              // }}
                               style={{
                                 position: 'absolute',
                                 width: '100%', // Set the width to 100% to match the parent's width
@@ -1361,6 +1241,7 @@ export default function EditTicketComponent({ match }) {
                           Project : <Astrick color="red" size="13px" />
                         </b>
                       </label>
+
                       {projectDropdown && data && (
                         <Select
                           id="project_id"
@@ -1369,7 +1250,7 @@ export default function EditTicketComponent({ match }) {
                           options={projectDropdown}
                           onChange={handleProjectChange}
                           defaultValue={projectDropdown.filter(
-                            (d) => d.value == data.project_id
+                            (d) => d.value === data.project_id
                           )}
                         />
                       )}
