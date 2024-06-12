@@ -1,0 +1,13 @@
+.page_header_container {
+  .back_icon_btn {
+    margin-top: 5px;
+    margin-right: 5px;
+    padding: 3px 5px 3px 3px;
+    transition: all ease-in-out 0.25s;
+    border-radius: 50%;
+    &:hover {
+      background-color: var(--color-300);
+      cursor: pointer;
+    }
+  }
+}
