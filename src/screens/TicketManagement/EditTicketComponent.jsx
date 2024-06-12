@@ -2,24 +2,34 @@ import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Spinner, Modal, Table } from 'react-bootstrap';
 import Alert from '../../components/Common/Alert';
-import { _base } from '../../settings/constants';
-
+import { userSessionData, _base } from '../../settings/constants';
+import Attachment from '../../components/Common/Attachment';
 import * as Validation from '../../components/Utilities/Validation';
 import { _attachmentUrl } from '../../settings/constants';
 import {
   getAttachment,
   deleteAttachment
 } from '../../services/OtherService/AttachmentService';
-
+import DatePicker from 'react-date-picker';
 import ErrorLogService from '../../services/ErrorLogService';
 import MyTicketService from '../../services/TicketService/MyTicketService';
-
+import editorStyles from './SimpleMentionEditor.module.css';
 import DynamicFormDropdownMasterService from '../../services/MastersService/DynamicFormDropdownMasterService';
-
+import UserService from '../../services/MastersService/UserService';
 import PageHeader from '../../components/Common/PageHeader';
 import Select from 'react-select';
-
+import { getCurrentDate } from '../../components/Utilities/Functions';
+import { UserDropdown } from '../Masters/UserMaster/UserComponent';
+import { DepartmentDropdown } from '../Masters/DepartmentMaster/DepartmentComponent';
+import { StatusDropdown } from '../Masters/StatusMaster/StatusComponent';
+import { QueryTypeDropdown } from '../Masters/QueryTypeMaster/QueryTypeComponent';
+import { ProjectDropdown } from '../ProjectManagement/ProjectMaster/ProjectComponent';
+import { ModuleDropdown } from '../ProjectManagement/ModuleMaster/ModuleComponent';
+import { SubModuleDropdown } from '../ProjectManagement/SubModuleMaster/SubModuleComponent';
 import { Astrick } from '../../components/Utilities/Style';
+import { userSessionData as user } from '../../settings/constants';
+import RenderDynamicForm from './TaskManagement/RenderDynamicForm';
+import CommentData from './CommentData';
 
 import DepartmentService from '../../services/MastersService/DepartmentService';
 import QueryTypeService from '../../services/MastersService/QueryTypeService';
@@ -31,11 +41,25 @@ import SubModuleService from '../../services/ProjectManagementService/SubModuleS
 import DesignationService from '../../services/MastersService/DesignationService';
 
 import StatusService from '../../services/MastersService/StatusService';
-
+import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
+import { Mention, MentionsInput } from 'react-mentions';
 import Chatbox from './NewChatBox';
 import Shimmer from './ShimmerComponent';
 import { UseDispatch, useDispatch, useSelector } from 'react-redux';
-
+import ProjectMasterSlice from '../ProjectManagement/ProjectMaster/ProjectMasterSlice';
+import { getprojectData } from '../ProjectManagement/ProjectMaster/ProjectMasterAction';
+import ModuleSlice from '../ProjectManagement/ModuleMaster/ModuleSlice';
+import { moduleMaster } from '../ProjectManagement/ModuleMaster/ModuleAction';
+import SubModuleMasterSlice from '../ProjectManagement/SubModuleMaster/SubModuleMasterSlice';
+import {
+  getSubModuleById,
+  subModuleMaster
+} from '../ProjectManagement/SubModuleMaster/SubModuleMasterAction';
+import StatusComponentSlice from '../Masters/StatusMaster/StatusComponentSlice';
+import { getStatusData } from '../Masters/StatusMaster/StatusComponentAction';
+import QueryTypeComponetSlice from '../Masters/QueryTypeMaster/QueryTypeComponetSlice';
+import { queryType } from '../Masters/QueryTypeMaster/QueryTypeComponetAction';
+import { departmentData } from '../Masters/DepartmentMaster/DepartmentMasterAction';
 import { getUserForMyTicketsData } from './MyTicketComponentAction';
 import { getRoles } from '../Dashboard/DashboardAction';
 import TaskTicketTypeService from '../../services/MastersService/TaskTicketTypeService';
@@ -49,6 +73,7 @@ export default function EditTicketComponent({ match }) {
 
   const [projectData, setProjectData] = useState();
   const [statusValue, setStatusValue] = useState();
+  const roleId = sessionStorage.getItem('role_id');
 
   const dispatch = useDispatch();
 
@@ -79,9 +104,16 @@ export default function EditTicketComponent({ match }) {
   const [userDrp, setUserdrp] = useState(null);
 
   const [isSolved, setIsSolved] = useState(false);
-
+  const current = new Date();
+  const todayDate = `${current.getFullYear()}-${
+    current.getMonth() + 1 < 10
+      ? '0' + current.getMonth() + 1
+      : current.getMonth() + 1
+  }-${current.getDate()}`;
+  const [defaults, setDefaults] = useState(null);
   const [customerMapping, setCustomerMapping] = useState();
   const [userName, setUserName] = useState('');
+  const [defaultUserName, setDefaultUserName] = useState('');
 
   const [ba, setBa] = useState(null);
   const [dev, setDev] = useState(null);
@@ -172,6 +204,12 @@ export default function EditTicketComponent({ match }) {
   };
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
+  const handleDependent = (e, name) => {
+    setData({
+      ...data,
+      [name]: e.value
+    });
+  };
 
   const [expectedTrue, setExpectedTrue] = useState();
   const handleForm = async (e) => {
@@ -501,12 +539,11 @@ export default function EditTicketComponent({ match }) {
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id';
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
-      if (res?.payload?.status === 200) {
-        if (res?.payload?.data?.status === 1) {
-          const getUserData = res?.payload?.data?.data;
-          const data = getUserData.filter((d) => d.is_active === 1);
-          const select = getUserData
-            .filter((d) => d.is_active === 1)
+      if (res.payload.status == 200) {
+        if (res.payload.data.status == 1) {
+          const data = res.payload.data.data.filter((d) => d.is_active == 1);
+          const select = res.payload.data.data
+            .filter((d) => d.is_active == 1)
             .map((d) => ({
               value: d.id,
               label: d.first_name + ' ' + d.last_name
@@ -922,6 +959,22 @@ export default function EditTicketComponent({ match }) {
     }
   }, [user]);
 
+  const currentDate = new Date();
+  const formattedDate = `${currentDate.getFullYear()}-${(
+    currentDate.getMonth() + 1
+  )
+    .toString()
+    .padStart(2, '0')}-${currentDate
+    .getDate()
+    .toString()
+    .padStart(2, '0')} ${currentDate
+    .getHours()
+    .toString()
+    .padStart(2, '0')}:${currentDate
+    .getMinutes()
+    .toString()
+    .padStart(2, '0')}:${currentDate.getSeconds().toString().padStart(2, '0')}`;
+
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_update === 0) {
       // alert("Rushi")
@@ -1107,6 +1160,8 @@ export default function EditTicketComponent({ match }) {
                       <label className="col-form-label">
                         <b>Entry User : </b>
                       </label>
+                      {console.log('userDrp', userDrp)}
+                      {console.log('userDropdown', userDropdown)}
 
                       {userDrp && (
                         <Select
