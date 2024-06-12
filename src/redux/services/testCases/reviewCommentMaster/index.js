@@ -1,13 +1,13 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import { toast } from "react-toastify";
-import customAxios from "../../../../http/axios";
-import { errorHandler } from "../../../../utils";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import { toast } from 'react-toastify';
+import customAxios from '../../../../http/axios';
+import { errorHandler } from '../../../../utils';
 
 export const getReviewCommentMasterListThunk = createAsyncThunk(
-  "reviewCommentMaster/getReviewCommentMasterList",
+  'reviewCommentMaster/getReviewCommentMasterList',
   async () => {
     try {
-      const response = await customAxios.get(`testCases/getReviewerComment`);
+      const response = await customAxios.get(`testCases/getReviewerComment/0`);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };
@@ -23,7 +23,7 @@ export const getReviewCommentMasterListThunk = createAsyncThunk(
 );
 
 export const addReviewCommentMasterThunk = createAsyncThunk(
-  "reviewCommentMaster/addReviewComment",
+  'reviewCommentMaster/addReviewComment',
   async ({ formData, onSuccessHandler, onErrorHandler }) => {
     try {
       const response = await customAxios.post(
@@ -49,7 +49,7 @@ export const addReviewCommentMasterThunk = createAsyncThunk(
 );
 
 export const editReviewCommentMasterThunk = createAsyncThunk(
-  "reviewCommentMaster/editRemark",
+  'reviewCommentMaster/editRemark',
   async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
     try {
       const response = await customAxios.post(
