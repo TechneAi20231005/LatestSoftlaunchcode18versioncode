@@ -473,8 +473,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         }));
         setUserData(newData);
         setRatioTotal(sum);
-
-        
       }
     }
   };
@@ -912,7 +910,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
                   {data.approach !== 'SELF' &&
                     data.approach !== 'AU' &&
-                    userDropDownFilterData?.length > 0 && (
+                    userDropdown?.length > 0 && (
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
                           <b>
@@ -921,7 +919,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         </label>
                         {data &&
                           userDropdown &&
-                          userDropdown.length > 0 &&
+                          userDropdown?.length > 0 &&
                           data.approach !== 'RW' &&
                           data.approach && (
                             <div className="col-sm-4">
