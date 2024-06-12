@@ -18,8 +18,6 @@ import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel
 
 import Dropdown from 'react-bootstrap/Dropdown';
 
-
-
 import CustomerService from '../../../services/MastersService/CustomerService';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
@@ -30,7 +28,7 @@ function QueryTypeComponent() {
   const [notify, setNotify] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState(null);
-  console.log('data', data);
+
   const [dataa, setDataa] = useState(null);
   const [isActive, setIsActive] = useState(1);
 
@@ -57,8 +55,6 @@ function QueryTypeComponent() {
   // ***************************** Edit & View Popup*************************************
   const [queryGroupData, setQueryGroupData] = useState(null);
 
-  const [editData, setEditData] = useState(null);
-  const [filteredEmployees, setFilteredEmployees] = useState(modal.modalData);
   const [modalEditPopup, setModalEditPopup] = useState({
     showModalEditPopup: false,
     modalDataEditPopup: '',
@@ -482,7 +478,7 @@ function QueryTypeComponent() {
               updated_by: temp[key].updated_by
             });
           }
-          setData(null);
+
           setQueryGroupData(data);
 
           for (const i in data) {
@@ -639,7 +635,7 @@ function QueryTypeComponent() {
               query_group_data: temp[key].query_group_data
             });
           }
-          setData(null);
+
           setData(data);
           setDataa(data);
           setIsLoading(false);
@@ -885,12 +881,12 @@ function QueryTypeComponent() {
             </div>
           </div>
         </div>
-        {isLoading && <TableLoadingSkelton />}
 
         <div className="card mt-2">
           <div className="card-body">
             <div className="row clearfix g-3">
               <div className="col-sm-12">
+                {isLoading && <TableLoadingSkelton />}
                 {!isLoading && data && (
                   <DataTable
                     columns={columns}
@@ -1430,7 +1426,6 @@ function QueryTypeComponent() {
               <div className="card-body">
                 <div className="row clearfix g-3">
                   <div className="col-sm-12">
-                    {console.log('queryGroupData', queryGroupData)}
                     {data && (
                       <DataTable
                         columns={columnsEditPopup}
