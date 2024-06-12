@@ -1,0 +1,145 @@
+.custom-container {
+  position: absolute;
+  z-index: 1050;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 14px;
+  border-radius: 5px;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1), 0 0 20px 0 rgba(0, 0, 0, 0.1),
+    0 0 30px 0 rgba(0, 0, 0, 0.1);
+  width: auto;
+  max-width: 230px;
+  min-width: 200px;
+  max-height: 90%;
+  overflow: auto;
+}
+
+/* Media queries for responsiveness */
+@media (max-width: 600px) {
+  .custom-container {
+    position: fixed;
+    top: 10%;
+    left: 5%;
+    right: 5%;
+    bottom: auto;
+    max-width: 90%;
+    min-width: unset;
+    width: auto;
+    padding: 10px;
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.1), 0 0 10px 0 rgba(0, 0, 0, 0.1),
+      0 0 15px 0 rgba(0, 0, 0, 0.1);
+  }
+}
+
+.underline-gray {
+  border-bottom: 2px solid #dad0d0;
+  display: inline-block;
+  margin: 0px;
+}
+
+.text-custom {
+  color: #484c7f;
+}
+.Sort {
+  font-size: 15px;
+  color: gray;
+}
+.pointer {
+  cursor: pointer;
+}
+
+.filter-text {
+  font-size: 19px;
+}
+.bg-custom-color {
+  background-color: #484c7f;
+}
+.text-filters-container {
+  display: flex;
+  align-items: center;
+}
+.icon-spacing {
+  margin-left: auto; /* Pushes the icon to the far right */
+}
+.search-container {
+  position: relative;
+}
+
+.search-icon {
+  position: absolute;
+  margin-left: 230px;
+  bottom: 6px;
+}
+.check-box-size {
+  font-size: 25px;
+}
+
+.filter-item {
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px; /* Adjust as needed for spacing */
+}
+
+.check-box-size {
+  font-size: 25px; /* Adjust the size as needed */
+}
+
+.mx-3 {
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.fs-6 {
+  font-size: 1rem; /* Adjust the size as needed */
+}
+
+.mb-0 {
+  margin-bottom: 0;
+}
+.custom-toolkit {
+  position: absolute;
+  background-color: white;
+  padding: 2px 10px;
+  color: black;
+  margin-left: 15px;
+  margin-top: 120px;
+  border: 1px solid #ced4da;
+  height: auto;
+  box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1), 0 0 20px 0 rgba(0, 0, 0, 0.1),
+    0 0 30px 0 rgba(0, 0, 0, 0.1);
+  border-radius: 3px;
+  z-index: 1051; /* Higher than the modal */
+}
+
+/* Custom class to override Bootstrap modal-footer */
+.custom-container .modal-footer {
+  display: flex;
+  flex-wrap: wrap;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0.75rem;
+  border-top: none !important; /* Remove the border */
+  border-bottom-right-radius: 0; /* Remove border-radius */
+  border-bottom-left-radius: 0; /* Remove border-radius */
+}
+
+/* Override Bootstrap's styles using !important */
+.custom-modal .modal-content {
+  background-color: white !important; /* Or your custom background color */
+}
+.button-container {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 20px; /* Optional: Adjust the margin as needed */
+}
+
+.btn-small {
+  padding: 4px 8px; /* Decrease padding */
+  font-size: 0.875rem; /* Decrease font size */
+  height: auto; /* Ensure height adjusts to content */
+}
+
+.mt-3 {
+  margin-top: 0; /* Reset margin-top for button within the container */
+}
