@@ -9,8 +9,8 @@ export default function CardLoadingSkeleton() {
           key={index}
           className="col-xxl-4 col-xl-4 col-lg-4 col-md-4 col-sm-6 mb-4 mt-3"
         >
-          <div className="card">
-            <div className="card-body shadow-lg p-4">
+          <div className="card card-no-border">
+            <div className="card-body card-shadow p-4">
               <div className="d-flex align-items-center justify-content-between mt-3">
                 <div className="lesson_name">
                   <div className="project-block skeleton">
