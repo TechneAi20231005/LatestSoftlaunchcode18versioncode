@@ -48,23 +48,19 @@ export default function CurrentClientProject(props) {
             <div className="col-6">
               <div className="row">
                 <div className="col-12">
-                  <div className="d-flex align-items-center">
+                  <div className="item-container">
                     <i class="icofont-ticket"></i>
                     <Link to={`/${_base}/completedTickets/` + props.data.id}>
-                      <span className="ms-2">
-                        {props.data.details.ticket.COMPLETED} Completed Tickets
-                      </span>
+                      {props.data.details.ticket.COMPLETED} Completed Tickets
                     </Link>
                   </div>
-                </div>{' '}
+                </div>
                 {/* col */}
                 <div className="col-12">
-                  <div className="d-flex align-items-center">
+                  <div className="item-container">
                     <i class="icofont-sand-clock"></i>
                     <Link to={`/${_base}/pendingTickets/` + props.data.id}>
-                      <span className="ms-2">
-                        {props.data.details.ticket.PENDING} Pending Tickets
-                      </span>
+                      {props.data.details.ticket.PENDING} Pending Tickets
                     </Link>
                   </div>
                 </div>
@@ -75,23 +71,19 @@ export default function CurrentClientProject(props) {
             <div className="col-6">
               <div className="row">
                 <div className="col-12">
-                  <div className="d-flex align-items-center">
+                  <div className="item-container">
                     <i class="icofont-bomb"></i>
                     <Link to={`/${_base}/DelayedTasks/` + props.data.id}>
-                      <span className="ms-2">
-                        {props.data.details.task.DELAYED} Delayed Tasks
-                      </span>
+                      {props.data.details.task.DELAYED} Delayed Tasks
                     </Link>
                   </div>
                 </div>{' '}
                 {/* col */}
                 <div className="col-12">
-                  <div className="d-flex align-items-center">
+                  <div className="item-container">
                     <i class="icofont-tasks"></i>
                     <Link to={`/${_base}/PendingTasks/` + props.data.id}>
-                      <span className="ms-2">
-                        {props.data.details.task.PENDING} Pending Tasks
-                      </span>
+                      {props.data.details.task.PENDING} Pending Tasks
                     </Link>
                   </div>
                 </div>
