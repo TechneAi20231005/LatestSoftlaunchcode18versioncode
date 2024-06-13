@@ -192,6 +192,7 @@ function PoPreview() {
             className="btn btn-warning text-white px-4"
             type="button"
             onClick={handelCreatePo}
+            disabled={isLoading?.createPendingOrder}
           >
             {isLoading?.createPendingOrder ? (
               <Spinner animation="border" size="sm" />
