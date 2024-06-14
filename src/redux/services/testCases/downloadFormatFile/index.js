@@ -102,11 +102,20 @@ export const downloadFormatFileThunk = createAsyncThunk(
 ////get draft test case  data
 export const getDraftTestCaseList = createAsyncThunk(
   'draftTestCase/getDraftTestCaseList',
-  async ({ limit, page }) => {
+  async ({ limit, page, filter_testcase_data }) => {
     try {
       const response = await customAxios.get(
-        `testCases/getDraftTestCases/getTestCases?limit=${limit}&page=${page}`
+        // `testCases/getDraftTestCases/getTestCases?limit=${limit}&page=${page}&filter_testcase_data=${filter_testcase_data}`
+        `testCases/getDraftTestCases/getTestCases`,
+        {
+          params: {
+            limit: limit,
+            page: page,
+            filter_testcase_data: JSON.stringify(filter_testcase_data)
+          }
+        }
       );
+
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };

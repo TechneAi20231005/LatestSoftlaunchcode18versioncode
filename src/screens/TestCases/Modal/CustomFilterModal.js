@@ -1,6 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Overlay, Tooltip, Modal, Button } from 'react-bootstrap';
 import './CustomFilterStyle.css'; // Ensure this CSS file includes the .custom-container class
+import { getDraftTestCaseList } from '../../../redux/services/testCases/downloadFormatFile';
+import { useDispatch } from 'react-redux';
 
 const CustomFilterModal = ({
   show,
@@ -9,17 +11,26 @@ const CustomFilterModal = ({
   position,
   filterColumn,
   handleCheckboxChange,
+  handleBetweenValueChange,
   selectedFilters,
   handleSelectAll,
   uniqueValues,
   searchTerm,
-  setSearchTerm
+  setSearchTerm,
+  paginationData,
+  filterColumnId,
+  setFilterType,
+  setFilterText,
+  filterType,
+  columnName
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const target = useRef(null);
   const searchRef = useRef(null);
   const containerRef = useRef(null);
+  // const [filterType, setFilterType] = useState('');
+  // const [filterText, setFilterText] = useState('');
 
   useEffect(() => {
     const handleResize = () => {
@@ -45,6 +56,46 @@ const CustomFilterModal = ({
 
   const handleShow = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
+  const dispatch = useDispatch();
+
+  // const handleSubmit = () => {
+  //   const filterPayload = {
+  //     filter_testcase_data: [
+  //       {
+  //         column: filterColumnId,
+  //         searchText: filterText,
+  //         filter: filterType
+  //       }
+  //     ]
+  //   };
+
+  //   console.log('filterPayload', filterPayload);
+
+  //   // dispatch(
+  //   //   getDraftTestCaseList({
+  //   //     filter_testcase_data:filterPayload ,
+  //   //     limit: paginationData.rowPerPage,
+  //   //     page: paginationData.currentPage
+  //   //     // Spread the filter payload into the request payload
+  //   //   })
+  //   // );
+
+  //   dispatch(
+  //     getDraftTestCaseList({
+  //       limit: paginationData.rowPerPage,
+  //       page: paginationData.currentPage,
+  //       filter_testcase_data: [
+  //         {
+  //           column: filterColumnId,
+  //           searchText: filterText,
+  //           filter: filterType
+  //         }
+  //       ]
+  //     })
+  //   );
+
+  //   handleCloseModal();
+  // };
 
   if (!show) return null;
 
@@ -55,7 +106,7 @@ const CustomFilterModal = ({
       style={{ top: position.top, left: position.left }}
     >
       <div>
-        <b className="fs-6 text-custom">Submodule</b>
+        <b className="fs-6 text-custom">{columnName}</b>
         <hr className="my-2" />
 
         <p className="Sort mb-2">Sort</p>
@@ -70,7 +121,7 @@ const CustomFilterModal = ({
 
         <hr className="my-1" />
         <p className="fs-6 mb-0 ms-4 cursor-pointer text-filters-container">
-          Text Filters{' '}
+          {filterColumn === 'id' ? 'Number Filters' : 'Text Filters'}
           <i
             ref={target}
             className="icofont-rounded-right icon-spacing"
@@ -88,9 +139,63 @@ const CustomFilterModal = ({
           }) => (
             <div className="custom-toolkit" {...props}>
               <div className="my-3">
-                <p className="mb-2 pointer" onClick={handleShow}>
-                  Equals
-                </p>
+                {filterColumn === 'id' ? (
+                  <>
+                    <p className="mb-2 pointer" onClick={handleShow}>
+                      Equals
+                    </p>
+
+                    <p className="mb-2 pointer" onClick={handleShow}>
+                      Not Equal To
+                    </p>
+                    <hr className="my-1" />
+                    <p className="mb-2 pointer" onClick={handleShow}>
+                      Greater Than
+                    </p>
+                    <p className="mb-2 pointer" onClick={handleShow}>
+                      Greater Than Or Equal To
+                    </p>
+                    <hr className="my-1" />
+                    <p className="mb-2 pointer" onClick={handleShow}>
+                      Less Than
+                    </p>
+                    <p className="mb-2 pointer" onClick={handleShow}>
+                      Less Than Or Equal To
+                    </p>
+                    <hr className="my-1" />
+                    <p className="mb-2 pointer" onClick={handleShow}>
+                      Between
+                    </p>
+                  </>
+                ) : (
+                  <>
+                    <p className="mb-2 pointer" onClick={handleShow}>
+                      Equals
+                    </p>
+
+                    <p className="mb-2 pointer" onClick={handleShow}>
+                      Does Not Equals
+                    </p>
+                    <hr className="my-1" />
+
+                    <p className="mb-2 pointer" onClick={handleShow}>
+                      Begins with
+                    </p>
+                    <p className="mb-2 pointer" onClick={handleShow}>
+                      End with
+                    </p>
+                    <hr className="my-1" />
+                    <p className="mb-2 pointer" onClick={handleShow}>
+                      {' '}
+                      Contains
+                    </p>
+                    <p className="mb-2 pointer" onClick={handleShow}>
+                      Does Not Contain
+                    </p>
+                  </>
+                )}
+                <hr className="my-1 pointer" />
+
                 <Modal
                   show={showModal}
                   className="custom-modal"
@@ -100,7 +205,9 @@ const CustomFilterModal = ({
                 >
                   <Modal.Header closeButton>
                     <Modal.Title className="fs-5 text-custom">
-                      Custom Filter
+                      {filterColumn === 'id'
+                        ? 'Number Filters'
+                        : 'Text Filters'}
                     </Modal.Title>
                   </Modal.Header>
                   <Modal.Body className="fs-6">
@@ -110,27 +217,83 @@ const CustomFilterModal = ({
                         <select
                           className="form-select"
                           aria-label="Default select example"
+                          onChange={(e) => {
+                            setFilterType(e.target.value);
+                          }}
                         >
                           <option defaultValue>Open this select menu</option>
-                          <option value="1">Equals</option>
-                          <option value="2">Does Not Equals</option>
-                          <option value="3">Begins With</option>
+                          {filterColumn === 'id' ? (
+                            <>
+                              <option value="equals">Equals</option>
+                              <option value="not equal to">Not Equal To</option>
+                              <option value="greater than">
+                                {' '}
+                                Greater Than
+                              </option>
+                              <option value="greater than or equal to">
+                                Greater Than Or Equal To
+                              </option>
+                              <option value="less than"> Less Than</option>
+                              <option value="less than or equal to">
+                                Less Than Or Equal To
+                              </option>
+                              <option value="is between">Between</option>
+                            </>
+                          ) : (
+                            <>
+                              <option value="equals">Equals</option>
+                              <option value="does not equal">
+                                Does Not Equals
+                              </option>
+                              <option value="begins with">Begins With</option>
+                              <option value="begins with">End with</option>
+                              <option value="begins with"> Contains</option>
+                              <option value="begins with">
+                                Does Not Contain
+                              </option>
+                            </>
+                          )}
                         </select>
                       </div>
+                      {/* {filterType != 'is between' && ( */}
                       <div className="col">
                         <input
-                          type="text"
+                          type={filterColumn === 'id' ? 'number' : 'text'}
                           className="form-control"
                           placeholder="Type"
+                          onChange={(e) => setFilterText(e.target.value)}
                         />
                       </div>
+                      {/* )} */}
+                      {/* {filterType === 'is between' && (
+                        <>
+                          <div className="col">
+                            <input
+                              type={filterColumn === 'id' ? 'number' : 'text'}
+                              className="form-control"
+                              placeholder="Type"
+                              onChange={(e) =>
+                                handleBetweenValueChange(0, e.target.value)
+                              }
+                            />
+                          </div>
+                          <div className="col">
+                            <input
+                              type={filterColumn === 'id' ? 'number' : 'text'}
+                              className="form-control"
+                              placeholder="Type"
+                              // onChange={(e) => setFilterText(e.target.value)}
+                              onChange={(e) =>
+                                handleBetweenValueChange(1, e.target.value)
+                              }
+                            />
+                          </div>
+                        </>
+                      )} */}
                     </div>
                   </Modal.Body>
                   <Modal.Footer className="modal-footer custom-modal-footer">
-                    <Button
-                      className="bg-custom-color"
-                      onClick={handleCloseModal}
-                    >
+                    <Button className="bg-custom-color" onClick={handleApply}>
                       OK
                     </Button>
                     <Button variant="warning" onClick={handleClose}>
@@ -138,16 +301,6 @@ const CustomFilterModal = ({
                     </Button>
                   </Modal.Footer>
                 </Modal>
-                <p className="mb-2 pointer">Does Not Equals</p>
-                <hr className="my-1" />
-
-                <p className="mb-2 pointer">Begins with</p>
-                <p className="mb-2 pointer">End with</p>
-                <hr className="my-1" />
-                <p className="mb-2 pointer">Contains</p>
-                <p className="mb-2 pointer">Does Not Contain</p>
-                <hr className="my-1 pointer" />
-                <p className="mb-2 pointer">Custom filter</p>
               </div>
             </div>
           )}

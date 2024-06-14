@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getEmployeeData } from '../../Dashboard/DashboardAction';
 import {
   getDraftTestCaseList,
-  importTestDraftThunk,
   sendTestCaseReviewerThunk
 } from '../../../redux/services/testCases/downloadFormatFile';
 import EditTestCaseModal from './EditTestCaseModal';
@@ -79,106 +78,39 @@ function TestDraftDetails(props) {
   };
   const [modalIsOpen, setModalIsOpen] = useState(false);
   const [filterColumn, setFilterColumn] = useState(null);
+  const [filterColumnId, setFilterColumnId] = useState(null);
+
   const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
   const [selectedFilters, setSelectedFilters] = useState([]);
-  const [filteredData, setFilteredData] = useState(
-    Array?.isArray(getDraftTestListData) ? getDraftTestListData : []
-  );
+
   const [searchTerm, setSearchTerm] = useState('');
-  // const closeModal = () => {
-  //   setModalIsOpen(false);
-  //   setFilterColumn(null);
-  // };
 
-  // const handleFilterClick = (event, column) => {
-  //   const rect = event.target.getBoundingClientRect();
-  //   setModalPosition({ top: rect.bottom, left: rect.left });
-  //   setFilterColumn(column);
-  //   setModalIsOpen(true);
-  // };
+  const moduleMapping = {
+    module_name: 'module_id',
+    sub_module_name: 'submodule_id',
+    function_name: 'function_id',
+    field: 'field',
+    type_name: 'type_id',
+    id: 'id',
+    severity: 'severity',
+    group_name: 'group_id',
+    steps: 'steps',
+    expected_result: 'expected_result',
+    status: 'status',
+    project_name: 'project_id'
 
-  // const handleApplyFilter = () => {
-  //   let newData = filterDraftTestListData;
-  //   if (selectedFilters.length > 0 && filterColumn) {
-  //     newData = filterDraftTestListData.filter((row) =>
-  //       selectedFilters.includes(row[filterColumn])
-  //     );
-  //   }
-  //   setFilteredData(newData);
-  //   closeModal();
-  // };
+    // Add more mappings if needed
+  };
 
-  // const handleSelectAll = (event, uniqueValues) => {
-  //   if (event.target.checked) {
-  //     setSelectedFilters(uniqueValues);
-  //   } else {
-  //     setSelectedFilters([]);
-  //   }
-  // };
+  const handleFilterClick = (event, column, name) => {
+    setFilterText('');
+    // setFilterColumn('');
+    // setFilterColumnId('');
 
-  // const filterDraftTestListData = getDraftTestListData
-  //   .filter((project) => project.is_active === 1)
-  //   .map((project) => ({
-  //     value: project.id,
-  //     label: project.module_name
-  //   }));
-
-  // const filteredUniqueValues = filterColumn
-  //   ? Array.from(
-  //       new Set(filterDraftTestListData.map((row) => row[filterColumn]))
-  //     ).filter((value) =>
-  //       value.toLowerCase().includes(searchTerm.toLowerCase())
-  //     )
-  //   : [];
-
-  // const handleFilterClick = (event, column) => {
-  //   const rect = event.target.getBoundingClientRect();
-  //   setModalPosition({ top: rect.bottom, left: rect.left });
-  //   setFilterColumn(column);
-  //   setModalIsOpen(true);
-  // };
-
-  // const closeModal = () => {
-  //   setModalIsOpen(false);
-  //   setFilterColumn(null);
-  // };
-
-  // const handleApplyFilter = () => {
-  //   let newData = getDraftTestListData.filter(
-  //     (project) => project.is_active === 1
-  //   );
-  //   if (selectedFilters.length > 0 && filterColumn) {
-  //     newData = newData.filter((row) =>
-  //       selectedFilters.includes(row[filterColumn])
-  //     );
-  //   }
-  //   setFilteredData(newData);
-  //   closeModal();
-  // };
-
-  // const handleSelectAll = (event, uniqueValues) => {
-  //   if (event.target.checked) {
-  //     setSelectedFilters(uniqueValues);
-  //   } else {
-  //     setSelectedFilters([]);
-  //   }
-  // };
-
-  // const filteredUniqueValues = filterColumn
-  //   ? Array.from(
-  //       new Set(
-  //         getDraftTestListData
-  //           .filter((project) => project.is_active === 1)
-  //           .map((row) => row[filterColumn])
-  //       )
-  //     ).filter((value) =>
-  //       value.toLowerCase().includes(searchTerm.toLowerCase())
-  //     )
-  //   : [];
-
-  const handleFilterClick = (event, column) => {
     const rect = event.target.getBoundingClientRect();
     setModalPosition({ top: rect.bottom, left: rect.left });
+    const columnId = moduleMapping[column];
+    setFilterColumnId(columnId);
     setFilterColumn(column);
     setModalIsOpen(true);
   };
@@ -190,30 +122,55 @@ function TestDraftDetails(props) {
     setSelectedFilters([]);
   };
 
-  // const handleApplyFilter = () => {
-  //   let newData = getDraftTestListData.filter(
-  //     (project) => project.is_active === 1
-  //   );
-  //   if (selectedFilters.length > 0 && filterColumn) {
-  //     newData = newData.filter((row) =>
-  //       selectedFilters.includes(row[filterColumn])
-  //     );
-  //   }
-  //   setFilteredData(newData);
-  //   closeModal();
-  // };
+  const [filterType, setFilterType] = useState('');
+  const [filterText, setFilterText] = useState('');
+  const [filters, setFilters] = useState([]);
+  const [previousFilters, setPreviousFilters] = useState([]);
+  const handleApplyFilter = async () => {
+    // const newFilter = {
+    //   column: filterColumnId,
+    //   searchText: filterText,
+    //   filter: filterType
+    // };
 
-  const handleApplyFilter = () => {
-    let newData = getDraftTestListData;
-    if (selectedFilters.length > 0 && filterColumn) {
-      newData = getDraftTestListData.filter((row) =>
-        selectedFilters.includes(row[filterColumn])
+    // Update filters array with the new filter
+    // setFilters((prevFilters) => [...prevFilters, newFilter]);
+    const newFilter = {
+      column: filterColumnId,
+      searchText: filterText,
+      filter: filterType
+    };
+
+    // // Update filters array with the new filter
+    // setFilters([...filters, newFilter]);
+
+    const updatedFilters = [...filters, newFilter];
+    setFilters(updatedFilters);
+
+    try {
+      await dispatch(
+        getDraftTestCaseList({
+          limit: paginationData.rowPerPage,
+          page: paginationData.currentPage,
+          filter_testcase_data: updatedFilters
+          // filter_testcase_data: [
+          //   {
+          //     column: filterColumnId,
+          //     searchText: filterText,
+          //     filter: filterType
+          //   }
+          // ]
+        })
       );
+
+      setModalIsOpen(false); // Close modal after applying filters
+
+      setSearchTerm(''); // Reset search term if needed
+      setSelectedFilters([]); // Reset selected filters if needed
+    } catch (error) {
+      // Handle error if needed
+      console.error(error);
     }
-    setFilteredData(newData);
-    setSearchTerm(''); // Reset search term if needed
-    setSelectedFilters([]); // Reset selected filters if needed
-    setModalIsOpen(false); // Close modal after applying filters
   };
 
   const handleSelectAll = (event, uniqueValues) => {
@@ -236,20 +193,15 @@ function TestDraftDetails(props) {
     ? Array.from(
         new Set(
           getDraftTestListData
-            .filter((project) => project.is_active === 1)
-            .map((row) => row[filterColumn])
+            ?.filter((project) => project.is_active === 1)
+            ?.map((row) => row[filterColumn])
         )
-      ).filter((value) =>
-        value.toLowerCase().includes(searchTerm.toLowerCase())
+      )?.filter(
+        (value) =>
+          typeof value === 'string' &&
+          value?.toLowerCase()?.includes(searchTerm?.toLowerCase())
       )
     : [];
-
-  // const filteredData =
-  //   selectedFilters.length > 0 && filterColumn
-  //     ? getDraftTestListData.filter((row) =>
-  //         selectedFilters.includes(row[filterColumn])
-  //       )
-  //     : getDraftTestListData;
 
   const columns = [
     {
@@ -304,10 +256,10 @@ function TestDraftDetails(props) {
 
     {
       name: (
-        <div className="d-flex align-items-center">
+        <div>
           <span>Module</span>
           <i
-            onClick={(e) => handleFilterClick(e, 'module_name')}
+            onClick={(e) => handleFilterClick(e, 'module_name', 'Module')}
             className="icofont-filter ms-2"
           />
         </div>
@@ -315,7 +267,7 @@ function TestDraftDetails(props) {
 
       selector: (row) => row.module_name,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -345,10 +297,20 @@ function TestDraftDetails(props) {
     },
 
     {
-      name: 'Submodule',
+      name: (
+        <div>
+          <span>Submodule Name</span>
+          <i
+            onClick={(e) =>
+              handleFilterClick(e, 'sub_module_name', 'Submodule Name')
+            }
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
       selector: (row) => row.sub_module_name,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -368,14 +330,28 @@ function TestDraftDetails(props) {
             </OverlayTrigger>
           )}
         </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
       )
     },
 
     {
-      name: 'Platform',
+      name: (
+        <div>
+          <span>Platform</span>
+          <i
+            onClick={(e) => handleFilterClick(e, 'platform', 'Platform')}
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
       selector: (row) => row.platform,
       width: '7rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -395,14 +371,28 @@ function TestDraftDetails(props) {
             </OverlayTrigger>
           )}
         </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
       )
     },
 
     {
-      name: 'Function',
+      name: (
+        <div>
+          <span>Function</span>
+          <i
+            onClick={(e) => handleFilterClick(e, 'function_name', 'Function')}
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
       selector: (row) => row.function_name,
       width: '7rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -422,14 +412,28 @@ function TestDraftDetails(props) {
             </OverlayTrigger>
           )}
         </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
       )
     },
 
     {
-      name: 'Field',
+      name: (
+        <div>
+          <span>Field</span>
+          <i
+            onClick={(e) => handleFilterClick(e, 'field', 'Field')}
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
       selector: (row) => row.field,
       width: '7rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -449,14 +453,28 @@ function TestDraftDetails(props) {
             </OverlayTrigger>
           )}
         </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
       )
     },
 
     {
-      name: 'Testing Type',
+      name: (
+        <div>
+          <span>Testing Type</span>
+          <i
+            onClick={(e) => handleFilterClick(e, 'type_name', 'Testing Type')}
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
       selector: (row) => row.type_name,
-      width: '7rem',
-      sortable: true,
+      width: '10rem',
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -476,14 +494,28 @@ function TestDraftDetails(props) {
             </OverlayTrigger>
           )}
         </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
       )
     },
 
     {
-      name: 'Testing Group',
+      name: (
+        <div>
+          <span>Testing Group</span>
+          <i
+            onClick={(e) => handleFilterClick(e, 'group_name', 'Testing Group')}
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
       selector: (row) => row.group_name,
-      width: '7rem',
-      sortable: true,
+      width: '10rem',
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -503,41 +535,111 @@ function TestDraftDetails(props) {
             </OverlayTrigger>
           )}
         </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
       )
     },
 
-    // {
-    //   name: 'Testing Id',
-    //   selector: (row) => row.id,
-    //   width: '7rem',
-    //   sortable: true,
-    //   cell: (row) => (
-    //     <div
-    //       className="btn-group"
-    //       role="group"
-    //       aria-label="Basic outlined example"
-    //     >
-    //       {row.id && (
-    //         <OverlayTrigger overlay={<Tooltip>{row.id} </Tooltip>}>
-    //           <div>
-    //             <span className="ms-1">
-    //               {' '}
-    //               {row.id && row.id.length < 20
-    //                 ? row.id
-    //                 : row.id.substring(0, 50) + '....'}
-    //             </span>
-    //           </div>
-    //         </OverlayTrigger>
-    //       )}
-    //     </div>
-    //   )
-    // },
+    {
+      name: (
+        <div>
+          <span>Testing Id</span>
+          <i
+            onClick={(e) => handleFilterClick(e, 'id', 'Testing Id')}
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
+      selector: (row) => row.id,
+      width: '10rem',
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.id && (
+            <OverlayTrigger overlay={<Tooltip>{row.id} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {row.id}
+                  {/* {' '}
+                  {row.id && row.id.length < 20
+                    ? row.id
+                    : row.id.substring(0, 50) + '....'} */}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
+      )
+    },
 
     {
-      name: 'Steps',
+      name: (
+        <div>
+          <span>Severity</span>
+          <i
+            onClick={(e) => handleFilterClick(e, 'id', 'Severity')}
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
+      selector: (row) => row.severity,
+      width: '10rem',
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.severity && (
+            <OverlayTrigger overlay={<Tooltip>{row.severity} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {row.severity}
+                  {/* {' '}
+                  {row.id && row.id.length < 20
+                    ? row.id
+                    : row.id.substring(0, 50) + '....'} */}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
+      )
+    },
+    {
+      name: (
+        <div>
+          <span>Steps</span>
+          <i
+            onClick={(e) => handleFilterClick(e, 'steps', 'Steps')}
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
       selector: (row) => row.steps,
       width: '7rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -557,14 +659,30 @@ function TestDraftDetails(props) {
             </OverlayTrigger>
           )}
         </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
       )
     },
 
     {
-      name: 'Expected Result',
+      name: (
+        <div>
+          <span>Expected Result</span>
+          <i
+            onClick={(e) =>
+              handleFilterClick(e, 'expected_result', 'Expected Result')
+            }
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
       selector: (row) => row.expected_result,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -584,14 +702,28 @@ function TestDraftDetails(props) {
             </OverlayTrigger>
           )}
         </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
       )
     },
 
     {
-      name: 'Status',
+      name: (
+        <div>
+          <span>Status</span>
+          <i
+            onClick={(e) => handleFilterClick(e, 'status', 'Status')}
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
       selector: (row) => row.status,
       width: '7rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -611,14 +743,28 @@ function TestDraftDetails(props) {
             </OverlayTrigger>
           )}
         </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
       )
     },
 
     {
-      name: 'Project',
+      name: (
+        <div>
+          <span>Project</span>
+          <i
+            onClick={(e) => handleFilterClick(e, 'project_name', 'Project')}
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
       selector: (row) => row.project_name,
       width: '7rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -637,6 +783,12 @@ function TestDraftDetails(props) {
               </div>
             </OverlayTrigger>
           )}
+        </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
         </div>
       )
     },
@@ -788,7 +940,14 @@ function TestDraftDetails(props) {
           dispatch(
             getDraftTestCaseList({
               limit: paginationData.rowPerPage,
-              page: paginationData.currentPage
+              page: paginationData.currentPage,
+              filter_testcase_data: [
+                {
+                  column: filterColumnId,
+                  searchText: filterText,
+                  filter: filterType
+                }
+              ]
             })
           );
         },
@@ -798,6 +957,7 @@ function TestDraftDetails(props) {
       })
     );
   };
+
   useEffect(() => {
     dispatch(
       getDraftTestCaseList({
@@ -807,13 +967,6 @@ function TestDraftDetails(props) {
     );
   }, [paginationData.rowPerPage, paginationData.currentPage]);
 
-  useEffect(() => {
-    // Update the filteredData state when fetchedData changes
-    if (Array?.isArray(getDraftTestListData)) {
-      setFilteredData(getDraftTestListData);
-    }
-  }, [getDraftTestListData]);
-
   return (
     <>
       <Container fluid className="employee_joining_details_container">
@@ -821,8 +974,7 @@ function TestDraftDetails(props) {
         <hr className="primary_divider mt-1" />
         <DataTable
           columns={columns}
-          // data={getDraftTestListData}
-          data={filteredData}
+          data={getDraftTestListData}
           defaultSortField="role_id"
           pagination
           paginationServer
@@ -855,7 +1007,7 @@ function TestDraftDetails(props) {
               modalHeader: 'Send To Reviewer Modal'
             });
           }}
-          // disabled={!selectAllNames || selectedRows.length === 0}
+          disabled={getDraftTestListData?.length <= 0}
         >
           <i class="icofont-paper-plane fs-0.8"></i> {''}
           Send To Reviewer
@@ -932,22 +1084,6 @@ function TestDraftDetails(props) {
         />
       )}
 
-      {/* {modalIsOpen && (
-        <CustomFilterModal
-          show={modalIsOpen}
-          handleClose={closeModal}
-          handleApply={handleApplyFilter}
-          position={modalPosition}
-          filterColumn={filterColumn}
-          handleCheckboxChange={handleCheckboxChange}
-          selectedFilters={selectedFilters}
-          handleSelectAll={handleSelectAll}
-          uniqueValues={filteredUniqueValues}
-          searchTerm={searchTerm}
-          setSearchTerm={setSearchTerm}
-        />
-      )} */}
-
       {modalIsOpen && (
         <CustomFilterModal
           show={modalIsOpen}
@@ -955,12 +1091,16 @@ function TestDraftDetails(props) {
           handleApply={handleApplyFilter}
           position={modalPosition}
           filterColumn={filterColumn}
+          filterColumnId={filterColumnId}
           handleCheckboxChange={handleFilterCheckboxChange}
           selectedFilters={selectedFilters}
           handleSelectAll={handleSelectAll}
           uniqueValues={filteredUniqueValues}
           searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
+          paginationData={paginationData}
+          setFilterType={setFilterType}
+          setFilterText={setFilterText}
         />
       )}
     </>
