@@ -93,6 +93,8 @@ function AddEditInterviewMasterModal({
     formData: ''
   });
 
+  const [employeesName, setEmployeesName] = useState({});
+
   const [selectedDesignationData, setSelectedDesignationData] = useState({
     id: '',
     designationFor: ''
@@ -109,11 +111,11 @@ function AddEditInterviewMasterModal({
         value: item?.id
       })) || [])
   ];
-
   const designationType = [
     { label: 'Select', value: '', isDisabled: true },
     ...(designationMasterList
       ?.filter((item) => item?.is_active === 1)
+
       ?.map((item) => ({
         label: item?.designation,
         value: item?.id
@@ -189,6 +191,7 @@ function AddEditInterviewMasterModal({
       if (!employeeData?.length) {
         dispatch(getEmployeeData());
       }
+
       if (type !== 'ADD') {
         // Function to transform details into step_details structure
         const transformedEmployeeData = currentInterviewData?.details?.reduce(
@@ -217,6 +220,7 @@ function AddEditInterviewMasterModal({
         );
         setEmployeesName(transformedEmployeeData);
       }
+
     } else {
       setSelectedDesignationData({ id: '', designationFor: '' });
       setEmployeesName({});
