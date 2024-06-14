@@ -6,8 +6,8 @@ import { useLocation } from 'react-router-dom';
 
 // // static import
 import {
-  CustomDropdown,
-  CustomInput,
+  CustomReactSelect,
+  CustomInput
 } from '../../../../../../../../../components/custom/inputs/CustomInputs';
 import { getRemarkMasterListThunk } from '../../../../../../../../../redux/services/hrms/employeeJoining/remarkMaster';
 import { interViewProcessValidation } from './validation/interviewProcessValidation';
@@ -17,7 +17,7 @@ import InterviewLinkSendModal from './InterviewLinkSendModal';
 import { useCurrentInterviewStep } from '../../../../../../../../../hooks/hrms/employeeJoining';
 import {
   getInterviewProcessDataThunk,
-  updateInterviewProcessThunk,
+  updateInterviewProcessThunk
 } from '../../../../../../../../../redux/services/hrms/employeeJoining/interviewProcess';
 import './style.scss';
 
@@ -30,22 +30,25 @@ function InterviewProcessDetails() {
 
   // // redux state
   const { remarkMasterList, isLoading: remarkMasterListLoading } = useSelector(
-    state => state?.remarkMaster,
+    (state) => state?.remarkMaster
   );
-  const { isLoading } = useSelector(state => state?.interViewProcess);
+  const { isLoading } = useSelector((state) => state?.interViewProcess);
 
   // // local state
   const [showScheduleBtn, setShowScheduleBtn] = useState(false);
-  const [openInterviewScheduleModal, setOpenInterviewScheduleModal] = useState(false);
+  const [openInterviewScheduleModal, setOpenInterviewScheduleModal] =
+    useState(false);
   const [openInterviewLinkModal, setOpenInterviewLinkModal] = useState(false);
   const [clickFor, setClickFor] = useState('');
 
   // // dropdown data
   const remarkType = [
-    ...remarkMasterList
-      ?.filter(item => item?.is_active === 1)
-      ?.map(item => ({ label: item?.remark_description, value: item?.id })),
-    { label: 'Other', value: 0 },
+    { label: 'Select', value: '', isDisabled: true },
+    ...(remarkMasterList
+      ?.filter((item) => item?.is_active === 1)
+      ?.map((item) => ({ label: item?.remark_description, value: item?.id })) ||
+      []),
+    { label: 'Other', value: 0 }
   ];
 
   // // function
@@ -54,7 +57,7 @@ function InterviewProcessDetails() {
       ...formData,
       interview_id: currentCandidateId,
       application_status_id: currentInterviewStepData?.application_status_id,
-      is_reject: clickFor === 'PROCEED' ? 'N' : 'Y',
+      is_reject: clickFor === 'PROCEED' ? 'N' : 'Y'
     };
 
     if (currentInterviewStepData?.application_status_id === 2) {
@@ -66,10 +69,12 @@ function InterviewProcessDetails() {
         formData: apiData,
         currentId: currentCandidateId,
         onSuccessHandler: () => {
-          dispatch(getInterviewProcessDataThunk({ currentId: currentCandidateId }));
+          dispatch(
+            getInterviewProcessDataThunk({ currentId: currentCandidateId })
+          );
           resetFunc();
-        },
-      }),
+        }
+      })
     );
   };
 
@@ -97,7 +102,9 @@ function InterviewProcessDetails() {
           <div className="d-flex align-items-center gap-2 mb-4">
             <RenderIf render={currentInterviewStepData?.scheduled_datetime}>
               <p className="mb-0 interview_schedule_rescheduled">
-                {new Date(currentInterviewStepData?.scheduled_datetime)?.toLocaleString()}
+                {new Date(
+                  currentInterviewStepData?.scheduled_datetime
+                )?.toLocaleString()}
               </p>
             </RenderIf>
 
@@ -127,12 +134,14 @@ function InterviewProcessDetails() {
               <Row>
                 <Col sm={12}>
                   <Field
-                    component={CustomDropdown}
-                    data={remarkType}
+                    component={CustomReactSelect}
+                    options={remarkType}
                     name="remark_id"
                     label="Remark Title"
                     placeholder={
-                      remarkMasterListLoading?.getRemarkMasterList ? 'Loading...' : 'Select'
+                      remarkMasterListLoading?.getRemarkMasterList
+                        ? 'Loading...'
+                        : 'Select'
                     }
                     requiredField
                   />
