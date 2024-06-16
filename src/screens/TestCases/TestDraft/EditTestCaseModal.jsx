@@ -31,6 +31,22 @@ function EditTestCaseModal({
   id,
   payloadType
 }) {
+  const dispatch = useDispatch();
+  const { filterFunctionMasterList } = useSelector(
+    (state) => state?.functionMaster
+  );
+
+  const { filterTestingGroupMasterList } = useSelector(
+    (state) => state?.testingGroupMaster
+  );
+  const { filterTestingTypeMasterList } = useSelector(
+    (state) => state?.testingTypeMaster
+  );
+
+  const { getProjectModuleList, getModuleList, getSubModuleList } = useSelector(
+    (state) => state?.downloadFormat
+  );
+
   // // initial state
   const severityData = [
     {
@@ -46,22 +62,7 @@ function EditTestCaseModal({
       label: 'Medium'
     }
   ];
-  const dispatch = useDispatch();
 
-  const { filterFunctionMasterList } = useSelector(
-    (state) => state?.functionMaster
-  );
-
-  const { filterTestingGroupMasterList } = useSelector(
-    (state) => state?.testingGroupMaster
-  );
-  const { filterTestingTypeMasterList } = useSelector(
-    (state) => state?.testingTypeMaster
-  );
-
-  const { getProjectModuleList, getModuleList, getSubModuleList } = useSelector(
-    (state) => state?.downloadFormat
-  );
   const testCaseInitialValue = {
     project_id:
       type === 'EDIT' ? currentTestCasesData?.project_id?.toString() : '',

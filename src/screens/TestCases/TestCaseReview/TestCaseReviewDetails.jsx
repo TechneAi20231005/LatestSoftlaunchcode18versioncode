@@ -1,31 +1,30 @@
 import React, { useEffect, useReducer, useState } from 'react';
-import { Container, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
-import { useNavigate, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useParams } from 'react-router-dom';
 import { Astrick } from '../../../components/Utilities/Style';
 import PageHeader from '../../../components/Common/PageHeader';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
 import { _base } from '../../../settings/constants';
-import EditTestCaseModal from './EditTestCaseModal';
-import DownloadFormatFileModal from './DownloadFormatFileModal';
 import {
-  getByTestPlanIDReviewedListThunk,
-  getDraftTestCaseList,
-  sendTestCaseReviewerThunk
-} from '../../../redux/services/testCases/downloadFormatFile';
-import { getEmployeeData } from '../../Dashboard/DashboardAction';
-import Select from 'react-select';
+  approveRejectByReviewerMasterThunk,
+  getByTestPlanIDListThunk
+} from '../../../redux/services/testCases/testCaseReview';
 import { getReviewCommentMasterListThunk } from '../../../redux/services/testCases/reviewCommentMaster';
-
-function ReviewedTestDraftComponent() {
+import EditTestCaseModal from '../TestDraft/EditTestCaseModal';
+function TestCaseReviewDetails() {
   const { id } = useParams();
-
+  const planID = id;
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
-  const { allReviewDraftTestListDataByID, allReviewDraftTestListData } =
-    useSelector((state) => state?.downloadFormat);
+  const { testPlanIdData, allTestPlanIDData } = useSelector(
+    (state) => state?.testCaseReview
+  );
+
+  const { getFilterReviewCommentMasterList } = useSelector(
+    (state) => state?.reviewCommentMaster
+  );
   const [paginationData, setPaginationData] = useReducer(
     (prevState, nextState) => {
       return { ...prevState, ...nextState };
@@ -33,24 +32,18 @@ function ReviewedTestDraftComponent() {
     { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
   );
 
-  const { getFilterReviewCommentMasterList } = useSelector(
-    (state) => state?.reviewCommentMaster
-  );
+  const [selectAllNames, setSelectAllNames] = useState(false);
+  const [selectedRows, setSelectedRows] = useState([]);
 
-  const [downloadmodal, setDownloadModal] = useState({
-    showModal: false,
-    modalData: '',
-    modalHeader: ''
-  });
-
-  const testerData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.getAllTesterDataList
-  );
+  const [rowData, setRowData] = useState([]);
+  const [commonComment, setCommonComment] = useState('');
+  const [commonRemark, setCommonRemark] = useState('');
   const [addEditTestCasesModal, setAddEditTestCasesModal] = useState({
     type: '',
     data: '',
     open: false
   });
+
   const generateOptions = (options) => {
     return [
       <option key="default" value="" disabled>
@@ -63,37 +56,17 @@ function ReviewedTestDraftComponent() {
       ))
     ];
   };
-  const handleDownloadModal = (data) => {
-    setDownloadModal(data);
-  };
-  const [selectAllNames, setSelectAllNames] = useState(false);
-  const [selectedRows, setSelectedRows] = useState([]);
-  const [reviewerId, setReviewerID] = useState();
-
-  // Check if all rows are selected
-  const [sendToReviewerModal, setSendToReviewerModal] = useState({
-    showModal: false,
-    modalData: '',
-    modalHeader: ''
-  });
-
-  const handleSendToReviewerModal = (currentData) => {
-    setSendToReviewerModal(currentData);
-    dispatch(getEmployeeData());
-  };
-
   const handleSelectAllNamesChange = () => {
     const newSelectAllNames = !selectAllNames;
     setSelectAllNames(newSelectAllNames);
     if (newSelectAllNames) {
-      const draftRowIds = allReviewDraftTestListDataByID.map((row) => row.id);
-      setSelectedRows(draftRowIds);
+      const allRowIds = rowData.map((row) => row.id);
+      setSelectedRows(allRowIds);
     } else {
       setSelectedRows([]);
     }
   };
 
-  // Handles individual checkbox change
   const handleCheckboxChange = (row) => {
     setSelectedRows((prevSelectedRows) => {
       if (prevSelectedRows.includes(row.id)) {
@@ -103,6 +76,55 @@ function ReviewedTestDraftComponent() {
       }
     });
   };
+
+  const handleRowChange = (id, field, value) => {
+    setRowData((prevData) =>
+      prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row))
+    );
+  };
+
+  const handleSubmit = async (status) => {
+    // Create the payload
+
+    const updatedRows = rowData
+      .filter((row) => selectedRows.includes(row.id))
+      .map((row) => ({
+        id: row.id,
+        comment_id: row.comment_id !== '' ? row.comment_id : '',
+        other_remark: row.other_remark !== '' ? row.other_remark : ''
+      }));
+    const formData = {
+      review_testcase_data: updatedRows,
+      status: status, // Adjust as necessary
+      common_comment_id: commonComment,
+      common_remark: commonRemark
+    };
+    dispatch(
+      approveRejectByReviewerMasterThunk({
+        formData,
+
+        onSuccessHandler: () => {
+          setCommonComment('');
+          setCommonRemark('');
+          dispatch(
+            getByTestPlanIDListThunk({
+              id: id,
+              limit: paginationData.rowPerPage,
+              page: paginationData.currentPage
+            })
+          );
+          setRowData(testPlanIdData);
+        },
+        onErrorHandler: () => {}
+      })
+    );
+  };
+
+  useEffect(() => {
+    if (testPlanIdData) {
+      setRowData(testPlanIdData);
+    }
+  }, [testPlanIdData]);
 
   const columns = [
     {
@@ -311,6 +333,7 @@ function ReviewedTestDraftComponent() {
         </div>
       )
     },
+
     {
       name: 'Test ID',
       selector: (row) => row.id,
@@ -323,6 +346,7 @@ function ReviewedTestDraftComponent() {
       sortable: false,
       width: '100px'
     },
+
     {
       name: 'Test Description',
       selector: (row) => row.test_description,
@@ -405,7 +429,6 @@ function ReviewedTestDraftComponent() {
         </div>
       )
     },
-
     {
       name: 'Status',
       selector: (row) => row.status,
@@ -426,7 +449,9 @@ function ReviewedTestDraftComponent() {
           value={row.comment_id || ''}
           id="comment_id"
           name="comment_id"
-          disabled
+          onChange={(e) =>
+            handleRowChange(row.id, 'comment_id', e.target.value)
+          }
         >
           {generateOptions(getFilterReviewCommentMasterList)}
         </select>
@@ -445,12 +470,12 @@ function ReviewedTestDraftComponent() {
           name="other_remark"
           placeholder="Enter Remark"
           aria-label="default input example"
-          defaultValue={row.other_remark}
-          disabled
+          onChange={(e) =>
+            handleRowChange(row.id, 'other_remark', e.target.value)
+          }
         />
       )
     },
-
     {
       name: 'Project',
       selector: (row) => row.project_name,
@@ -550,82 +575,30 @@ function ReviewedTestDraftComponent() {
     { title: 'Updated At', field: 'updated_at' },
     { title: 'Updated By', field: 'updated_by' }
   ];
-  const handleSubmit = () => {
-    const formData = {
-      testcase_id: selectedRows,
-      reviewer_id: reviewerId
-    };
-
-    dispatch(
-      sendTestCaseReviewerThunk({
-        formData,
-        type: 'RESEND',
-        id: id,
-        onSuccessHandler: () => {
-          setSendToReviewerModal({ showModal: false });
-          setSelectedRows([]);
-          setSelectAllNames(false);
-          dispatch(
-            getDraftTestCaseList({
-              limit: paginationData.rowPerPage,
-              page: paginationData.currentPage
-            })
-          );
-          dispatch(
-            getByTestPlanIDReviewedListThunk({
-              id: id,
-              limit: paginationData.rowPerPage,
-              page: paginationData.currentPage
-            })
-          );
-        },
-        onErrorHandler: () => {}
-      })
-    );
-  };
 
   useEffect(() => {
-    dispatch(getReviewCommentMasterListThunk());
-
     dispatch(
-      getByTestPlanIDReviewedListThunk({
+      getByTestPlanIDListThunk({
         id: id,
         limit: paginationData.rowPerPage,
         page: paginationData.currentPage
       })
     );
+    dispatch(getReviewCommentMasterListThunk());
   }, [paginationData.rowPerPage, paginationData.currentPage]);
 
   return (
     <div className="container-xxl">
       <PageHeader
-        headerTitle="Test Draft"
+        headerTitle="Test Case Review"
         renderRight={() => {
           return (
             <div className="col-md-6 d-flex justify-content-end">
-              <button className="btn btn-primary text-white ">
-                Filter <i className="icofont-filter" />
-              </button>
-              <button
-                className="btn btn btn-set-task w-sm-100 bg-success text-white"
-                onClick={(e) => {
-                  handleDownloadModal({
-                    showModal: true,
-                    modalData: '', // You can add relevant data here
-                    modalHeader: 'Edit Test Case '
-                  });
-                }}
-              >
-                Download Format File
-              </button>
-              <button className="btn btn-warning btn-set-task w-sm-100 ">
-                Import Test Draft File
-              </button>
               <ExportToExcel
                 className="btn btn-sm btn-danger "
-                apiData={allReviewDraftTestListDataByID}
+                fileName="Test Case Review List"
+                apiData={testPlanIdData}
                 columns={exportColumns}
-                fileName="Reviewed Test Draft List"
               />
             </div>
           );
@@ -633,16 +606,15 @@ function ReviewedTestDraftComponent() {
       />
       <Container fluid className="employee_joining_details_container">
         <h5 className="mb-0 text-primary">Test Cases</h5>
-        <hr className="primary_divider mt-1" />
+        <hr className="primary_divider " />
         <DataTable
           columns={columns}
-          data={allReviewDraftTestListDataByID}
+          data={rowData}
           defaultSortField="role_id"
           pagination
-          selectableRows={false}
           paginationServer
-          paginationTotalRows={allReviewDraftTestListData?.total}
-          paginationDefaultPage={paginationData?.currentPage}
+          paginationTotalRows={allTestPlanIDData?.total}
+          paginationDefaultPage={rowData?.currentPage}
           onChangePage={(page) => setPaginationData({ currentPage: page })}
           onChangeRowsPerPage={(newPageSize) => {
             setPaginationData({ rowPerPage: newPageSize });
@@ -651,43 +623,65 @@ function ReviewedTestDraftComponent() {
           paginationRowsPerPageOptions={[
             50, 100, 150, 200, 300, 500, 700, 1000
           ]}
+          selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
         />
       </Container>
 
-      <div className="d-flex justify-content-end mt-3">
+      <div className="row mt-4">
+        <div className="col-md-3">
+          <label className="form-label font-weight-bold">
+            Content Type :<Astrick color="red" size="13px" />{' '}
+          </label>
+
+          <select
+            className="form-select"
+            value={commonComment}
+            id="common_comment_id"
+            name="common_comment_id"
+            onChange={(e) => setCommonComment(e.target.value)}
+          >
+            {generateOptions(getFilterReviewCommentMasterList)}
+          </select>
+        </div>
+        <div className="col-md-3">
+          <label className="form-label font-weight-bold">Remark :</label>
+          <input
+            className="form-control"
+            id="common_remark"
+            name="common_remark"
+            value={commonRemark}
+            onChange={(e) => setCommonRemark(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className=" d-flex  justify-content-end">
         <button
-          onClick={() =>
-            navigate(`/${_base}/TestDraft`, { state: 'review_test_draft' })
-          }
-          className="btn btn-primary text-white"
+          type="submit"
+          onClick={() => handleSubmit('RESEND')}
+          className="btn btn-sm btn-warning text-white"
         >
-          Back
+          <i class="icofont-paper-plane icon-large mx-2"></i>
+          Send For Modification
+        </button>
+        <button
+          onClick={() => handleSubmit('REJECTED')}
+          type="submit"
+          className="btn btn-lg btn-danger text-white "
+        >
+          Reject
         </button>
 
         <button
-          onClick={() => {
-            handleSendToReviewerModal({
-              showModal: true,
-              modalData: '',
-              modalHeader: 'Send To Reviewer Modal'
-            });
-          }}
           type="submit"
-          className="btn btn-sm btn bg-success text-white"
+          className="btn btn-lg  btn-success  text-white "
+          onClick={() => handleSubmit('APPROVED')}
         >
-          <i class="icofont-paper-plane"></i> {''}
-          Send To Reviewer
+          Approve
         </button>
       </div>
-      {downloadmodal.showModal === true && (
-        <DownloadFormatFileModal
-          show={downloadmodal}
-          close={() => setDownloadModal(false)}
-        />
-      )}
-
       {addEditTestCasesModal.open === true && (
         <EditTestCaseModal
           show={addEditTestCasesModal?.open}
@@ -695,69 +689,12 @@ function ReviewedTestDraftComponent() {
           currentTestCasesData={addEditTestCasesModal?.data}
           close={(prev) => setAddEditTestCasesModal({ ...prev, open: false })}
           paginationData={paginationData}
-          id={id}
-          payloadType={'ReviewTestDraft'}
+          id={planID}
+          payloadType={'TestCaseReview'}
         />
       )}
-
-      <Modal
-        centered
-        show={sendToReviewerModal.showModal}
-        size="sm"
-        onHide={(e) => {
-          handleSendToReviewerModal({
-            showModal: true,
-            modalData: '',
-            modalHeader: 'Send To Reviewer Modal'
-          });
-        }}
-      >
-        {' '}
-        <Modal.Body>
-          <label>
-            <b>
-              Reviewer : <Astrick color="red" size="13px" />
-            </b>
-          </label>
-          <Select
-            id="reviewer_id"
-            name="reviewer_id"
-            options={testerData}
-            required={true}
-            onChange={(e) => {
-              const selectedId = e?.value;
-              setReviewerID(selectedId);
-            }}
-            placeholder="select..."
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <button
-            type="submit"
-            className="btn btn-sm btn bg-success text-white"
-            onClick={() => handleSubmit()}
-          >
-            <i class="icofont-paper-plane "></i> {''}
-            Send To Reviewer
-          </button>
-
-          <button
-            type="button"
-            className="btn btn bg-white shadow p-2 text-black"
-            onClick={() => {
-              handleSendToReviewerModal({
-                showModal: false,
-                modalData: '',
-                modalHeader: 'Send To Reviewer Modal'
-              });
-            }}
-          >
-            Cancel
-          </button>
-        </Modal.Footer>
-      </Modal>
     </div>
   );
 }
 
-export default ReviewedTestDraftComponent;
+export default TestCaseReviewDetails;

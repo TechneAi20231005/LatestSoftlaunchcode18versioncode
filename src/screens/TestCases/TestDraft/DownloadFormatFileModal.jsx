@@ -74,7 +74,6 @@ function DownloadFormatFileModal({ show, close }) {
         onSuccessHandler: () => {
           close();
         }
-        // onErrorHandler: () => {}
       })
     );
   };

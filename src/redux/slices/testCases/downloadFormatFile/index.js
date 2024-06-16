@@ -11,7 +11,8 @@ import {
   getProjectModuleMasterThunk,
   getSubModuleMasterThunk,
   importTestDraftThunk,
-  sendTestCaseReviewerThunk
+  sendTestCaseReviewerThunk,
+  testDraftDetailsHistoryThunk
 } from '../../../services/testCases/downloadFormatFile';
 
 const initialState = {
@@ -28,6 +29,7 @@ const initialState = {
   getSubModuleData: [],
   getTestDraftData: [],
   allDraftListData: [],
+  testDraftHistory: [],
   editTestCase: false,
   sendTestCasesReviewer: false,
 
@@ -46,7 +48,8 @@ const initialState = {
     getSubModuleData: false,
     getSubModuleList: false,
     editTestCase: false,
-    sendTestCasesReviewer: false
+    sendTestCasesReviewer: false,
+    testDraftHistory: false
   },
   errorMsg: {
     getProjectModuleList: '',
@@ -64,7 +67,8 @@ const initialState = {
     allReviewDraftTestListData: '',
     allDraftListData: '',
     allReviewDraftTestListData: '',
-    allReviewDraftTestListDataByID: ''
+    allReviewDraftTestListDataByID: '',
+    testDraftHistory: false
   }
 };
 const downloadFormatSlice = createSlice({
@@ -204,8 +208,6 @@ const downloadFormatSlice = createSlice({
         let data = !action?.payload?.data?.data
           ? action?.payload?.data
           : action?.payload?.data?.data;
-        // console.log('action', action?.payload?.data);
-        console.log('action1', action?.payload?.data?.data);
 
         state.getDraftTestListData = data;
 
@@ -237,7 +239,7 @@ const downloadFormatSlice = createSlice({
       .addCase(getAllReviewTestDraftList.fulfilled, (state, action) => {
         state.isLoading.allReviewDraftTestListData = false;
         state.successMsg.allReviewDraftTestListData = action?.payload;
-        state.allReviewDraftTestListData = action?.payload?.data;
+        state.allReviewDraftTestListData = action?.payload?.data?.data;
       })
       .addCase(getAllReviewTestDraftList.rejected, (state, action) => {
         state.isLoading.allReviewDraftTestListData = false;
@@ -258,6 +260,21 @@ const downloadFormatSlice = createSlice({
       .addCase(getByTestPlanIDReviewedListThunk.rejected, (state, action) => {
         state.isLoading.allReviewDraftTestListDataByID = false;
         state.errorMsg.allReviewDraftTestListDataByID = action?.error?.message;
+      })
+
+      //// test draft history
+
+      .addCase(testDraftDetailsHistoryThunk.pending, (state, action) => {
+        state.isLoading.testDraftHistory = true;
+      })
+      .addCase(testDraftDetailsHistoryThunk.fulfilled, (state, action) => {
+        state.isLoading.testDraftHistory = false;
+        state.successMsg.testDraftHistory = action?.payload;
+        state.testDraftHistory = action?.payload?.data;
+      })
+      .addCase(testDraftDetailsHistoryThunk.rejected, (state, action) => {
+        state.isLoading.testDraftHistory = false;
+        state.errorMsg.testDraftHistory = action?.error?.message;
       });
   }
 });

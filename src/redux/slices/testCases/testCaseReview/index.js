@@ -41,7 +41,7 @@ const testCaseReviewSlice = createSlice({
       })
       .addCase(getTestCaseReviewListThunk.fulfilled, (state, action) => {
         state.isLoading.testCaseReviewList = false;
-        state.testCaseReviewList = action?.payload?.data;
+        state.testCaseReviewList = action?.payload?.data?.data;
         state.successMsg.testCaseReviewList = action?.payload?.message;
       })
       .addCase(getTestCaseReviewListThunk.rejected, (state, action) => {

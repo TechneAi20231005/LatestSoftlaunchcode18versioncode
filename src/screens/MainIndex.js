@@ -1,5 +1,11 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Switch, Redirect, Routes } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  Redirect,
+  Routes
+} from 'react-router-dom';
 import { _apiUrl, _base } from '../settings/constants';
 import Header from '../components/Common/Header';
 import Dashboard from './Dashboard/Dashboard';
@@ -210,29 +216,65 @@ class MainIndex extends React.Component {
         <div className="body d-flex py-lg-3 py-md-2">
           <Routes>
             <Route exact path={`/${_base}/Dashboard`} element={<Dashboard />} />
-            <Route exact path={`/${_base}/InsightsTasks`} element={<InsightsTasks />} />
+            <Route
+              exact
+              path={`/${_base}/InsightsTasks`}
+              element={<InsightsTasks />}
+            />
             <Route
               exact
               path={`/${_base}/InsightsCompletedTask`}
               element={<InsightsCompletedTask />}
             />
             <Route path={`/${_base}/Profile`} element={<Profile />} />
-            <Route exact path={`/${_base}/Notification`} element={<NotificationComponent />} />
+            <Route
+              exact
+              path={`/${_base}/Notification`}
+              element={<NotificationComponent />}
+            />
             <Route
               exact
               path={`/${_base}/ApprovedNotification`}
               element={<ApprovedNotificationComponent />}
             />
             <Route path={`/${_base}/Tenant`} element={<TenantComponent />} />
-            <Route exact path={`/${_base}/Tenant/Edit/:id`} element={<TenantForm />} />
-            <Route exact path={`/${_base}/Customer`} element={<CustomerComponent />} />
-            <Route exact path={`/${_base}/Customer/Create/`} element={<CreateCustomer />} />
+            <Route
+              exact
+              path={`/${_base}/Tenant/Edit/:id`}
+              element={<TenantForm />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Customer`}
+              element={<CustomerComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Customer/Create/`}
+              element={<CreateCustomer />}
+            />
             {/* <Route path={`/${_base}/Customer/Edit/:id" element={<EditCustomer} /> */}
-            <Route exact path={`/${_base}/Customer/Edit/:id`} element={<EditCustomer />} />
+            <Route
+              exact
+              path={`/${_base}/Customer/Edit/:id`}
+              element={<EditCustomer />}
+            />
             <Route path={`/${_base}/User`} element={<UserComponent />} />
-            <Route exact path={`/${_base}/User/Create`} element={<CreateUserComponent />} />
-            <Route exact path={`/${_base}/User/Edit/:id`} element={<EditUserComponent />} />
-            <Route exact path={`/${_base}/Country`} element={<CountryComponent />} />
+            <Route
+              exact
+              path={`/${_base}/User/Create`}
+              element={<CreateUserComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/User/Edit/:id`}
+              element={<EditUserComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Country`}
+              element={<CountryComponent />}
+            />
             <Route
               exact
               path={`/${_base}/TaskAndTicketTypeMaster`}
@@ -240,28 +282,68 @@ class MainIndex extends React.Component {
             />
             <Route path={`/${_base}/State`} element={<StateComponent />} />
             <Route path={`/${_base}/City`} element={<CityComponent />} />
-            <Route exact path={`/${_base}/Designation`} element={<DesignationComponent />} />
-            <Route exact path={`/${_base}/Department`} element={<DepartmentComponent />} />
+            <Route
+              exact
+              path={`/${_base}/Designation`}
+              element={<DesignationComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Department`}
+              element={<DepartmentComponent />}
+            />
             <Route path={`/${_base}/Role`} element={<RoleComponent />} />
             <Route path={`/${_base}/Status`} element={<StatusComponent />} />
-            <Route exact path={`/${_base}/CustomerType`} element={<CustomerTypeComponent />} />
-            <Route exact path={`/${_base}/DynamicForm`} element={<DynamicFormComponent />} />
-            <Route exact path={`/${_base}/DynamicForm/Create`} element={<CreateDynamicForm />} />
+            <Route
+              exact
+              path={`/${_base}/CustomerType`}
+              element={<CustomerTypeComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/DynamicForm`}
+              element={<DynamicFormComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/DynamicForm/Create`}
+              element={<CreateDynamicForm />}
+            />
             <Route
               exact
               path={`/${_base}/DynamicForm/Create/:id`}
               element={<CreateDynamicForm />}
             />
-            <Route exact path={`/${_base}/DynamicForm/Edit/:id`} element={<EditDynamicForm />} />
-            <Route exact path={`/${_base}/QueryType`} element={<QueryTypeComponent />} />
+            <Route
+              exact
+              path={`/${_base}/DynamicForm/Edit/:id`}
+              element={<EditDynamicForm />}
+            />
+            <Route
+              exact
+              path={`/${_base}/QueryType`}
+              element={<QueryTypeComponent />}
+            />
             <Route
               exact
               path={`/${_base}/QueryGroupMaster`}
               element={<QueryGroupMasterComponent />}
             />
-            <Route exact path={`/${_base}/Template`} element={<TemplateComponent />} />
-            <Route exact path={`/${_base}/Template/Create`} element={<CreateTemplateComponent />} />
-            <Route exact path={`/${_base}/Template/Edit/:id`} element={<EditTemplateComponent />} />
+            <Route
+              exact
+              path={`/${_base}/Template`}
+              element={<TemplateComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Template/Create`}
+              element={<CreateTemplateComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Template/Edit/:id`}
+              element={<EditTemplateComponent />}
+            />
             <Route
               exact
               path={`/${_base}/DepartmentMapping`}
@@ -277,13 +359,37 @@ class MainIndex extends React.Component {
               path={`/${_base}/DepartmentMapping/Edit/:id`}
               element={<EditDepartmentMappingComponent />}
             />
-            <Route exact path={`/${_base}/Project`} element={<ProjectComponent />} />
-            <Route exact path={`/${_base}/Project/Create`} element={<CreateProjectComponent />} />
-            <Route exact path={`/${_base}/Project/Edit/:id`} element={<EditProjectComponent />} />
+            <Route
+              exact
+              path={`/${_base}/Project`}
+              element={<ProjectComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Project/Create`}
+              element={<CreateProjectComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Project/Edit/:id`}
+              element={<EditProjectComponent />}
+            />
             <Route path={`/${_base}/Module`} element={<ModuleComponent />} />
-            <Route exact path={`/${_base}/Module/Create`} element={<CreateModuleComponent />} />
-            <Route exact path={`/${_base}/Module/Edit/:id`} element={<EditModuleComponent />} />
-            <Route exact path={`/${_base}/SubModule`} element={<SubModuleComponent />} />
+            <Route
+              exact
+              path={`/${_base}/Module/Create`}
+              element={<CreateModuleComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Module/Edit/:id`}
+              element={<EditModuleComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/SubModule`}
+              element={<SubModuleComponent />}
+            />
             <Route
               exact
               path={`/${_base}/SubModule/Create`}
@@ -294,20 +400,56 @@ class MainIndex extends React.Component {
               path={`/${_base}/SubModule/Edit/:id`}
               element={<EditSubModuleComponent />}
             />
-            <Route exact path={`/${_base}/UserTaskReport`} element={<UserTaskReportComponent />} />
-            <Route exact path={`/${_base}/TimelineReport`} element={<TimelineReportComponent />} />
+            <Route
+              exact
+              path={`/${_base}/UserTaskReport`}
+              element={<UserTaskReportComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/TimelineReport`}
+              element={<TimelineReportComponent />}
+            />
             <Route
               exact
               path={`/${_base}/ResourcePlanningReport`}
               element={<ResourcePlanningReportComponent />}
             />
-            <Route exact path={`/${_base}/VariantsReport`} element={<VariantsReport />} />
-            <Route exact path={`/${_base}/Ticket`} element={<MyTicketComponent />} />
-            <Route exact path={`/${_base}/Ticket/Create`} element={<CreateTicketComponent />} />
-            <Route exact path={`/${_base}/Ticket/Edit/:id`} element={<EditTicketComponent />} />
-            <Route exact path={`/${_base}/Ticket/View/:id`} element={<ViewTicketComponent />} />
-            <Route exact path={`/${_base}/Ticket/Basket/:id`} element={<BasketComponent />} />
-            <Route exact path={`/${_base}/Ticket/Task/:id`} element={<TaskComponent />} />
+            <Route
+              exact
+              path={`/${_base}/VariantsReport`}
+              element={<VariantsReport />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Ticket`}
+              element={<MyTicketComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Ticket/Create`}
+              element={<CreateTicketComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Ticket/Edit/:id`}
+              element={<EditTicketComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Ticket/View/:id`}
+              element={<ViewTicketComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Ticket/Basket/:id`}
+              element={<BasketComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Ticket/Task/:id`}
+              element={<TaskComponent />}
+            />
             {/* Sprint */}
             <Route
               exact
@@ -319,18 +461,42 @@ class MainIndex extends React.Component {
               path={`/${_base}/Ticket/Task/:id/sprint-graph/:date`}
               element={<GraphWeekWise />}
             />
-            <Route exact path={`/${_base}/TestCases/:ticketId/:taskId`} element={<TestCases />} />
-            <Route exact path={`/${_base}/GetAllTestCases/:id`} element={<GetAllTestCases />} />
+            <Route
+              exact
+              path={`/${_base}/TestCases/:ticketId/:taskId`}
+              element={<TestCases />}
+            />
+            <Route
+              exact
+              path={`/${_base}/GetAllTestCases/:id`}
+              element={<GetAllTestCases />}
+            />
             {/* <Route exact path={`/${_base}/TestBank`} element={<TestBankComponent />} /> */}
             <Route
               exact
               path={`/${_base}/TestCasesReviewerView/:ticketId/:taskId`}
               element={<TestCasesReviewerViewComponent />}
             />
-            <Route exact path={`/${_base}/TestingType`} element={<TestingTypeComponent />} />
-            <Route exact path={`/${_base}/TestCaseHistory/:id`} element={<TestCaseHistory />} />
-            <Route exact path={`/${_base}/TicketHistory/:id`} element={<TicketHistory />} />
-            <Route exact path={`/${_base}/TestSuite`} element={<TestSuiteComponent />} />
+            <Route
+              exact
+              path={`/${_base}/TestingType`}
+              element={<TestingTypeComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/TestCaseHistory/:id`}
+              element={<TestCaseHistory />}
+            />
+            <Route
+              exact
+              path={`/${_base}/TicketHistory/:id`}
+              element={<TicketHistory />}
+            />
+            <Route
+              exact
+              path={`/${_base}/TestSuite`}
+              element={<TestSuiteComponent />}
+            />
             <Route
               exact
               path={`/${_base}/CustomerMapping`}
@@ -347,20 +513,64 @@ class MainIndex extends React.Component {
               element={<EditCustomerMappingComponent />}
             />
             <Route path={`/${_base}/Menu/Create`} element={<CreateMenu />} />
-            <Route exact path={`/${_base}/ModuleSetting`} element={<ModuleSettings />} />
-            <Route exact path={`/${_base}/GeneralSettings`} element={<GeneralSettings />} />
+            <Route
+              exact
+              path={`/${_base}/ModuleSetting`}
+              element={<ModuleSettings />}
+            />
+            <Route
+              exact
+              path={`/${_base}/GeneralSettings`}
+              element={<GeneralSettings />}
+            />
             {/* Suyash */}
-            <Route exact path={`/${_base}/Connector/Sms`} element={<SmsComponent />} />
-            <Route exact path={`/${_base}/Connector/Email`} element={<EmailComponent />} />
-            <Route exact path={`/${_base}/Connector/Whatsapp`} element={<WhatsappComponent />} />
+            <Route
+              exact
+              path={`/${_base}/Connector/Sms`}
+              element={<SmsComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Connector/Email`}
+              element={<EmailComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Connector/Whatsapp`}
+              element={<WhatsappComponent />}
+            />
             {/* <Route path={`/${_base}/Testcase/:module_id/" element={<TestCase}/>
                     <Route path={`/${_base}/Testcase/:module_id/:submodule_id" element={<TestCase}/> */}
-            <Route exact path={`/${_base}/MenuManage/:id`} element={<MenuManagement />} />
-            <Route exact path={`/${_base}/TenantMaster`} element={<TenantComponent />} />
-            <Route exact path={`/${_base}/TenantMaster/Create`} element={<CreateTenant />} />
-            <Route exact path={`/${_base}/TenantMaster/Edit/:id`} element={<EditTenant />} />
-            <Route exact path={`/${_base}/QueryBuilder`} element={<QueryBuilder />} />
-            <Route exact path={`/${_base}/ConsolidatedView`} element={<ConsolidatedView />} />
+            <Route
+              exact
+              path={`/${_base}/MenuManage/:id`}
+              element={<MenuManagement />}
+            />
+            <Route
+              exact
+              path={`/${_base}/TenantMaster`}
+              element={<TenantComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/TenantMaster/Create`}
+              element={<CreateTenant />}
+            />
+            <Route
+              exact
+              path={`/${_base}/TenantMaster/Edit/:id`}
+              element={<EditTenant />}
+            />
+            <Route
+              exact
+              path={`/${_base}/QueryBuilder`}
+              element={<QueryBuilder />}
+            />
+            <Route
+              exact
+              path={`/${_base}/ConsolidatedView`}
+              element={<ConsolidatedView />}
+            />
             <Route
               exact
               path={`/${_base}/PendingTickets/:projectId`}
@@ -371,8 +581,16 @@ class MainIndex extends React.Component {
               path={`/${_base}/CompletedTickets/:projectId`}
               element={<CompletedTickets />}
             />
-            <Route exact path={`/${_base}/DelayedTasks/:projectId`} element={<DelayedTasks />} />
-            <Route exact path={`/${_base}/PendingTasks/:projectId`} element={<PendingTasks />} />
+            <Route
+              exact
+              path={`/${_base}/DelayedTasks/:projectId`}
+              element={<DelayedTasks />}
+            />
+            <Route
+              exact
+              path={`/${_base}/PendingTasks/:projectId`}
+              element={<PendingTasks />}
+            />
             <Route
               exact
               path={`/${_base}/PendingTask/:projectId/:moduleId`}
@@ -414,16 +632,36 @@ class MainIndex extends React.Component {
               element={<EditDropdownComponent />}
             />
             {/* BILL CHECKING */}
-            <Route exact path={`/${_base}/VendorMaster`} element={<VendorMaster />} />
+            <Route
+              exact
+              path={`/${_base}/VendorMaster`}
+              element={<VendorMaster />}
+            />
             <Route
               exact
               path={`/${_base}/PaymentTemplateMaster`}
               element={<PaymentTemplateMaster />}
             />
-            <Route exact path={`/${_base}/BillTypeMaster`} element={<BillTypeMaster />} />
-            <Route exact path={`/${_base}/CreateBillType`} element={<CreateBillTypeComponent />} />
-            <Route exact path={`/${_base}/EditBillType/:id`} element={<EditBillTypeComponent />} />
-            <Route exact path={`/${_base}/ViewBillType/:id`} element={<ViewBillTypeComponent />} />
+            <Route
+              exact
+              path={`/${_base}/BillTypeMaster`}
+              element={<BillTypeMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/CreateBillType`}
+              element={<CreateBillTypeComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/EditBillType/:id`}
+              element={<EditBillTypeComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/ViewBillType/:id`}
+              element={<ViewBillTypeComponent />}
+            />
             <Route
               exact
               path={`/${_base}/BillCheckingTransaction`}
@@ -444,22 +682,46 @@ class MainIndex extends React.Component {
               path={`/${_base}/ViewBillTransaction/:id`}
               element={<ViewBillTransaction />}
             />
-            <Route exact path={`/${_base}/PaymentDetails/:id`} element={<PaymentDetails />} />
+            <Route
+              exact
+              path={`/${_base}/PaymentDetails/:id`}
+              element={<PaymentDetails />}
+            />
             <Route
               exact
               path={`/${_base}/BillCheckingHistory/:id`}
               element={<BillCheckingHistory />}
             />
-            <Route exact path={`/${_base}/PaymentHistory/:id`} element={<PaymentHistory />} />
-            <Route exact path={`/${_base}/AssignedPerson/:id`} element={<AssignedPerson />} />
-            <Route exact path={`/${_base}/AuthorityMapping`} element={<AuthorityMapping />} />
+            <Route
+              exact
+              path={`/${_base}/PaymentHistory/:id`}
+              element={<PaymentHistory />}
+            />
+            <Route
+              exact
+              path={`/${_base}/AssignedPerson/:id`}
+              element={<AssignedPerson />}
+            />
+            <Route
+              exact
+              path={`/${_base}/AuthorityMapping`}
+              element={<AuthorityMapping />}
+            />
             <Route
               exact
               path={`/${_base}/AuthorityMappingviewdetails/:id`}
               element={<AuthorityMappingViewDetails />}
             ></Route>
-            <Route exact path={`/${_base}/BillPayments`} element={<BillPayments />} />
-            <Route exact path={`/${_base}/ViewVendorDetails/:id`} element={<ViewVendorDetails />} />
+            <Route
+              exact
+              path={`/${_base}/BillPayments`}
+              element={<BillPayments />}
+            />
+            <Route
+              exact
+              path={`/${_base}/ViewVendorDetails/:id`}
+              element={<ViewVendorDetails />}
+            />
             <Route
               exact
               path={`/${_base}/ViewPaymentTemplateDetails/:id`}
@@ -467,10 +729,22 @@ class MainIndex extends React.Component {
             />
             {/* HRMS  */} {/* Asmita */}
             <Route path={`/${_base}/Source`} element={<SourceComponent />} />
-            <Route exact path={`/${_base}/Source/Create`} element={<CreateSourceMaster />} />
+            <Route
+              exact
+              path={`/${_base}/Source/Create`}
+              element={<CreateSourceMaster />}
+            />
             <Route path={`/${_base}/Shift`} element={<ShiftComponent />} />
-            <Route exact path={`/${_base}/Salary`} element={<SalarySlipComponent />} />
-            <Route exact path={`/${_base}/Roasted/Create`} element={<CreateRoastedShiftMaster />} />
+            <Route
+              exact
+              path={`/${_base}/Salary`}
+              element={<SalarySlipComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Roasted/Create`}
+              element={<CreateRoastedShiftMaster />}
+            />
             <Route
               exact
               path={`/${_base}/SpecialDay/Create`}
@@ -481,19 +755,67 @@ class MainIndex extends React.Component {
               path={`/${_base}/SpecialDayMaster`}
               element={<SpecialDayMasterComponent />}
             />
-            <Route exact path={`/${_base}/rotationalShiftMaster`} element={<RoastedComponent />} />
-            <Route exact path={`/${_base}/Shift/Create`} element={<CreateShiftMaster />} />
-            <Route exact path={`/${_base}/EmployeeMaster`} element={<EmployeeMasterComponent />} />
-            <Route exact path={`/${_base}/Employee/Create`} element={<CreateEmployeeComponent />} />
-            <Route exact path={`/${_base}/CalendarMaster`} element={<CalenderMaster />} />
+            <Route
+              exact
+              path={`/${_base}/rotationalShiftMaster`}
+              element={<RoastedComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Shift/Create`}
+              element={<CreateShiftMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/EmployeeMaster`}
+              element={<EmployeeMasterComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/Employee/Create`}
+              element={<CreateEmployeeComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/CalendarMaster`}
+              element={<CalenderMaster />}
+            />
             {/* HRMS>> Employee Joining routes */}
-            <Route exact path={`/${_base}/InterviewMaster`} element={<InterviewMaster />} />
-            <Route exact path={`/${_base}/CandidateList`} element={<CandidateList />} />
-            <Route exact path={`/${_base}/CandidateList/:id`} element={<EmployeeJoining />} />
-            <Route exact path={`/${_base}/BranchMaster`} element={<BranchMaster />} />
-            <Route exact path={`/${_base}/SourceMaster`} element={<SourceMaster />} />
-            <Route exact path={`/${_base}/RemarkMaster`} element={<RemarkMaster />} />
-            <Route exact path={`/${_base}/SalaryMaster`} element={<SalaryMaster />} />
+            <Route
+              exact
+              path={`/${_base}/InterviewMaster`}
+              element={<InterviewMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/CandidateList`}
+              element={<CandidateList />}
+            />
+            <Route
+              exact
+              path={`/${_base}/CandidateList/:id`}
+              element={<EmployeeJoining />}
+            />
+            <Route
+              exact
+              path={`/${_base}/BranchMaster`}
+              element={<BranchMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/SourceMaster`}
+              element={<SourceMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/RemarkMaster`}
+              element={<RemarkMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/SalaryMaster`}
+              element={<SalaryMaster />}
+            />
             {/* <Route
               exact
               path={`/${_base}/rotationalShiftMaster`}
@@ -521,29 +843,73 @@ class MainIndex extends React.Component {
             />
 
             {/* Employee Joining routes */}
-            <Route exact path={`/${_base}/InterviewMaster`} element={<InterviewMaster />} />
-            <Route exact path={`/${_base}/CandidateList`} element={<CandidateList />} />
-            <Route exact path={`/${_base}/BranchMaster`} element={<BranchMaster />} />
-            <Route exact path={`/${_base}/SourceMaster`} element={<SourceMaster />} />
-            <Route exact path={`/${_base}/RemarkMaster`} element={<RemarkMaster />} />
-            <Route exact path={`/${_base}/SalaryMaster`} element={<SalaryMaster />} />
+            <Route
+              exact
+              path={`/${_base}/InterviewMaster`}
+              element={<InterviewMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/CandidateList`}
+              element={<CandidateList />}
+            />
+            <Route
+              exact
+              path={`/${_base}/BranchMaster`}
+              element={<BranchMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/SourceMaster`}
+              element={<SourceMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/RemarkMaster`}
+              element={<RemarkMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/SalaryMaster`}
+              element={<SalaryMaster />}
+            />
             {/* PO */}
             <Route
               exact
               path={`/${_base}/POGenerateRequisition`}
               element={<GenerateRequisition />}
             />
-            <Route exact path={`/${_base}/GeneratePO`} element={<GeneratePo />} />
-            <Route exact path={`/${_base}/GeneratePO/po`} element={<PendingOrder />} />
-            <Route exact path={`/${_base}/GeneratePO/po/preview`} element={<PoPreview />} />
+            <Route
+              exact
+              path={`/${_base}/GeneratePO`}
+              element={<GeneratePo />}
+            />
+            <Route
+              exact
+              path={`/${_base}/GeneratePO/po`}
+              element={<PendingOrder />}
+            />
+            <Route
+              exact
+              path={`/${_base}/GeneratePO/po/preview`}
+              element={<PoPreview />}
+            />
             <Route exact path={`/${_base}/POHistory`} element={<PoHistory />} />
-            <Route exact path={`/${_base}/POVendorExportReport`} element={<VendorExportReport />} />
+            <Route
+              exact
+              path={`/${_base}/POVendorExportReport`}
+              element={<VendorExportReport />}
+            />
             <Route
               exact
               path={`/${_base}/POOrderQuanitityReport`}
               element={<OrderQuantityReport />}
             />
-            <Route exact path={`/${_base}/TestDraft`} element={<TestDraftComponent />} />
+            <Route
+              exact
+              path={`/${_base}/TestDraft`}
+              element={<TestDraftComponent />}
+            />
             <Route
               exact
               path={`/${_base}/ReviewedTestDraftComponent/:id`}
@@ -554,7 +920,11 @@ class MainIndex extends React.Component {
               path={`/${_base}/ReviewedTestDraftDetails`}
               element={<ReviewedTestDraftDetails />}
             />
-            <Route exact path={`/${_base}/TestCaseReview`} element={<TestCaseReviewComponent />} />
+            <Route
+              exact
+              path={`/${_base}/TestCaseReview`}
+              element={<TestCaseReviewComponent />}
+            />
             <Route
               exact
               path={`/${_base}/TestCaseReviewDetails/:id`}
@@ -575,13 +945,21 @@ class MainIndex extends React.Component {
               path={`/${_base}/TestingGroupMaster`}
               element={<TestingGroupMasterComponent />}
             />
-            <Route exact path={`/${_base}/FunctionMaster`} element={<FunctionMasterComponent />} />
             <Route
               exact
-              path={`/${_base}/TestCaseHistoryComponent`}
+              path={`/${_base}/FunctionMaster`}
+              element={<FunctionMasterComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/TestCaseHistoryComponent/:id`}
               element={<TestCaseHistoryComponent />}
             />
-            <Route exact path={`/${_base}/TestBank`} element={<TestBankComponent />} />
+            <Route
+              exact
+              path={`/${_base}/TestBank`}
+              element={<TestBankComponent />}
+            />
           </Routes>
         </div>
       </div>

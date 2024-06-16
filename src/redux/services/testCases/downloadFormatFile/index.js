@@ -236,9 +236,18 @@ export const editTestCaseThunk = createAsyncThunk(
 
 export const getAllReviewTestDraftList = createAsyncThunk(
   'reviewDraftList/getAllReviewTestDraftList',
-  async () => {
+  async ({ limit, page, filter_testcase_data }) => {
     try {
-      const response = await customAxios.get(`testCases/getCount/getTestDraft`);
+      const response = await customAxios.get(
+        `testCases/getCount/getTestDraft`,
+        {
+          params: {
+            limit: limit,
+            page: page,
+            filter_testcase_data: JSON.stringify(filter_testcase_data)
+          }
+        }
+      );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };
@@ -259,6 +268,27 @@ export const getByTestPlanIDReviewedListThunk = createAsyncThunk(
     try {
       const response = await customAxios.get(
         `testCases/getDraftTestCases/getTestCases/${id}?limit=${limit}&page=${page}`
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          return { data: response?.data?.data, msg: response?.data?.message };
+        } else {
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
+);
+
+export const testDraftDetailsHistoryThunk = createAsyncThunk(
+  'testDraft/testDraftHistory',
+  async ({ id, limit, page }) => {
+    try {
+      const response = await customAxios.get(
+        `testCases/history/getTestcasesHistory/${id}?limit=${limit}&page=${page}`
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
