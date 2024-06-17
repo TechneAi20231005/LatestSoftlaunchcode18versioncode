@@ -374,7 +374,7 @@ const SprintCalendar = () => {
                       />
                     </svg>
                   </button>
-                  {selectedOption === 'day' && (
+                  {selectedOption === 'day' && !isLoading && (
                     <div className="col-8 text-center">
                       {formatDateString(currentDateRange[currentIndex]?.date)}
                     </div>
