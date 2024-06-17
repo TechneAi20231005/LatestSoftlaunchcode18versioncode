@@ -7,10 +7,11 @@ import WeekwiseCalendar from './Custom-Day-Month-Year/WeekwiseCalendar';
 import { CalendarYearWise } from './Custom-Day-Month-Year/CalendarYearWise';
 import Alert from '../../../../components/Common/Alert';
 import TicketCollapse from '../../../../components/Common/TicketCollapse';
+import WeekRangeSkeleton from './Custom-Day-Month-Year/Skeleton/WeekRangeSkeleton';
 
 const SprintCalendar = () => {
   const params = useParams();
-  const { id: ticketId } = params;
+  const { id: ticketId, date } = params;
   const [selectedOption, setSelectedOption] = useState('week');
   const [calendarData, setCalendarData] = useState([]);
   const [notify, setNotify] = useState({});
@@ -21,11 +22,13 @@ const SprintCalendar = () => {
   const [lastEndDate, setLasteEndDate] = useState('');
   const [withinRangeDates, setWithinRangeDates] = useState([]);
   const [dateArray, setDateArray] = useState([]);
+  const [daywiseData, setDaywiseData] = useState([]);
   const [currentDaywiseDate, setCurrentDaywiseDate] = useState({});
   const [weekData, setWeekData] = useState([]);
   const [yearData, setYearData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
+  const [ticketDetails, setTicketDetails] = useState({});
   const [taskStatus, setTaskStatus] = useState([
     { id: 1, statusName: 'TO_DO', color: '#C3F5FF' },
     { id: 2, statusName: 'IN_PROGRESS', color: '#FFECB3' },
@@ -51,13 +54,22 @@ const SprintCalendar = () => {
 
   const handleRadioChange = async (event) => {
     setSelectedOption(event.target.value);
+    setDaywiseData([]);
+    setWeekData([]);
     setCurrentIndex(0);
     if (event.target.value === 'day') {
+      getCalendarDataForWeek(date, date, 'day');
       const days = generateDateArray();
       setCurrentDateRange(days);
     }
     if (event.target.value === 'week') {
       setCurrentDateRange(withinRangeDates);
+
+      getCalendarDataForWeek(
+        formatDate(withinRangeDates[0]?.Monday),
+        formatDate(withinRangeDates[0]?.Sunday),
+        'week'
+      );
     }
   };
 
@@ -130,6 +142,7 @@ const SprintCalendar = () => {
         .then(async (res) => {
           if (res?.data?.status && res?.data?.data) {
             setCalendarData(res?.data?.data);
+
             setFirstStarDate(res?.data?.data[0]?.first_sprint_date);
             setLasteEndDate(res?.data?.data[0]?.last_sprint_date);
             if (selectedOption === 'week') {
@@ -165,10 +178,16 @@ const SprintCalendar = () => {
         prevIndex === currentDateRange.length - 1 ? 0 : prevIndex + 1;
       if (selectedOption === 'day') {
         setCurrentDaywiseDate(currentDateRange[nextIndex]);
+        getCalendarDataForWeek(
+          currentDateRange[nextIndex].date,
+          currentDateRange[nextIndex].date,
+          'day'
+        );
       } else if (selectedOption === 'week') {
         getCalendarDataForWeek(
           currentDateRange[nextIndex]?.Monday,
-          currentDateRange[nextIndex]?.Sunday
+          currentDateRange[nextIndex]?.Sunday,
+          'week'
         );
       }
       return nextIndex;
@@ -183,21 +202,34 @@ const SprintCalendar = () => {
       if (selectedOption === 'week') {
         getCalendarDataForWeek(
           currentDateRange[previousIndex]?.Monday,
-          currentDateRange[previousIndex]?.Sunday
+          currentDateRange[previousIndex]?.Sunday,
+          'week'
+        );
+      } else {
+        // setCurrentDaywiseDate(currentDateRange[prevIndex]);
+        getCalendarDataForWeek(
+          currentDateRange[previousIndex].date,
+          currentDateRange[previousIndex].date,
+          'day'
         );
       }
       return previousIndex;
     });
   };
-  const getCalendarDataForWeek = async (firstStartDate, lastEndDate) => {
-    const formatDate = (dates) => {
-      const date = new Date(dates);
-      const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      return `${year}-${month}-${day}`;
-    };
 
+  const formatDate = (dates) => {
+    const date = new Date(dates);
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  };
+  const getCalendarDataForWeek = async (
+    firstStartDate,
+    lastEndDate,
+    radioOption
+  ) => {
+    setIsLoading(true);
     try {
       const response = await new SprintService().getSprintCalendarDataForWeek(
         ticketId,
@@ -205,12 +237,19 @@ const SprintCalendar = () => {
         formatDate(lastEndDate)
       );
       if (response?.data?.data) {
-        setYearData(response?.data?.data);
-        setWeekData(response?.data?.data);
+        setTicketDetails(response?.data?.ticket_details);
+        if (radioOption === 'day') {
+          setDaywiseData(response?.data?.data[0].task_data);
+        } else {
+          setWeekData(response?.data?.data);
+          setYearData(response?.data?.data);
+        }
+        setIsLoading(false);
       } else {
         throw new Error('Something went wrong');
       }
     } catch (error) {
+      setIsLoading(false);
       setNotify({
         type: 'danger',
         message: `Status:${error.response.status}\nMessage:Error while fetching data`
@@ -230,11 +269,13 @@ const SprintCalendar = () => {
   }, []);
   useEffect(() => {
     if (selectedOption === 'day') {
+      //
       setComponentToRender(
         <DayWiseCalendar
-          data={calendarData}
+          data={daywiseData}
           bgColor={taskStatus}
           presentDate={currentDaywiseDate?.date}
+          isLoading={isLoading}
         />
       );
     } else if (selectedOption === 'week') {
@@ -243,8 +284,7 @@ const SprintCalendar = () => {
           data={weekData}
           bgColor={taskStatus}
           daysOfWeek={withinRangeDates}
-          firstDate={firstStartDate}
-          lastDate={lastEndDate}
+          isLoading={isLoading}
         />
       );
     } else if (selectedOption === 'month') {
@@ -256,13 +296,25 @@ const SprintCalendar = () => {
         />
       );
     }
-  }, [selectedOption, calendarData, taskStatus, currentDaywiseDate, weekData]);
+  }, [
+    selectedOption,
+    daywiseData,
+    taskStatus,
+    currentDaywiseDate,
+    weekData,
+    isLoading
+  ]);
 
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Manage Task" paddingStart="3" />
-      <TicketCollapse ticket={'TT-19994'} open={open} toggleOpen={toggleOpen} />
+      <TicketCollapse
+        ticket={ticketDetails.ticket_id}
+        details={ticketDetails.description}
+        open={open}
+        toggleOpen={toggleOpen}
+      />
       <div className="card p-3 mt-3">
         <div className="d-flex justify-content-between justify-content-md-end ">
           {taskStatus?.map((statusName) => (
@@ -327,7 +379,9 @@ const SprintCalendar = () => {
                       {formatDateString(currentDateRange[currentIndex]?.date)}
                     </div>
                   )}
-                  {selectedOption === 'week' && (
+                  {isLoading && <WeekRangeSkeleton />}
+                  {selectedOption === 'week' && !isLoading && (
+                    // {isLoading &}
                     <div className="col-8 text-center">{`${formatDateString(
                       currentDateRange[currentIndex]?.Monday
                     )} - ${formatDateString(
