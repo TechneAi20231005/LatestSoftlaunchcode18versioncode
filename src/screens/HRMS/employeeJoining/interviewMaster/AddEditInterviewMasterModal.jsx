@@ -99,7 +99,6 @@ function AddEditInterviewMasterModal({
     id: '',
     designationFor: ''
   });
-  const [employeesName, setEmployeesName] = useState({});
 
   // // dropdown data
   const departmentType = [
@@ -220,7 +219,6 @@ function AddEditInterviewMasterModal({
         );
         setEmployeesName(transformedEmployeeData);
       }
-
     } else {
       setSelectedDesignationData({ id: '', designationFor: '' });
       setEmployeesName({});
