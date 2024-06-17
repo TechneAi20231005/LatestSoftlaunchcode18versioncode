@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
 import menu from '../Data/menu.json';
 import menu2 from '../Data/menu2.json';
 import { _base } from '../../settings/constants';
 
-import { useDispatch, useSelector } from 'react-redux';
 import {
   getEmployeeListThunk,
   getMenuListThunk
@@ -15,12 +15,6 @@ const Sidebar = ({ activekey }) => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const { menuList, filterMenuList } = useSelector((state) => state?.sidebar);
-
-  const menuListData = menuList?.menu;
-
-  const [menuData, setMenuData] = useState(filterMenuList?.[0]);
-
   const [isSidebarMini, setIsSidebarMini] = useState(false);
 
   const [darkLightMode, setDarkLightMode] = useState('light');
@@ -28,14 +22,11 @@ const Sidebar = ({ activekey }) => {
   const [user_id, setUser_id] = useState(localStorage.getItem('id'));
   const [role_id, setRole_id] = useState(localStorage.getItem('role_id'));
   const [account_for, setAccount_for] = useState('');
+  const { menuList, filterMenuList } = useSelector((state) => state?.sidebar);
 
-  useEffect(() => {
-    dispatch(getEmployeeListThunk({ user_id: user_id }));
+  const menuListData = menuList?.menu;
 
-    dispatch(getMenuListThunk({ role_id: role_id }));
-
-    document.children[0].setAttribute('data-theme', 'light');
-  }, [user_id, role_id, account_for]);
+  const [menuData, setMenuData] = useState(filterMenuList?.[0]);
 
   const decodeToken = (token) => {
     const base64Url = token.split('.')[1];
@@ -155,6 +146,14 @@ const Sidebar = ({ activekey }) => {
   useEffect(() => {
     setMenuData(menuListData);
   }, [menuListData]);
+
+  useEffect(() => {
+    dispatch(getEmployeeListThunk({ user_id: user_id }));
+
+    dispatch(getMenuListThunk({ role_id: role_id }));
+
+    document.children[0].setAttribute('data-theme', 'light');
+  }, [user_id, role_id, account_for]);
 
   return (
     <div
