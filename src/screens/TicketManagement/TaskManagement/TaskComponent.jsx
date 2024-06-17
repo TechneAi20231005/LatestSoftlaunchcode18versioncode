@@ -278,9 +278,7 @@ export default function TaskComponent({ match }) {
   const handleShowGroupModal = (e, taskOwners, taskId, dataa) => {
     setGroupActivityModal(true);
     setGroupActivityModalData(null);
-
     const temp = [];
-
     taskOwners.forEach((user) => {
       let t = user;
       t = { ...t, status: null };
@@ -593,7 +591,7 @@ export default function TaskComponent({ match }) {
     if (new Date(startDate) > new Date(endDate)) {
       setNotify({
         type: 'danger',
-        message: 'Start Date should be greater than end date'
+        message: 'End Date should be greater than end date'
       });
       return;
     }
@@ -773,7 +771,7 @@ export default function TaskComponent({ match }) {
     let linkURL = `/${_base}/Ticket/Task/${ticketId}`;
     localStorage.setItem('PreviosTab', linkURL);
     module === 'calendar'
-      ? window.open(`${linkURL}/sprint-calendar`, '_blank')
+      ? window.open(`${linkURL}/sprint-calendar/${sprintFirstDate}`, '_blank')
       : window.open(
           `${linkURL}/sprint-graph/${sprintFirstDate}to${sprintLastDate}`,
           '_blank'
