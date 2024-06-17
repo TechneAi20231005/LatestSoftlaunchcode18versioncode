@@ -3,27 +3,25 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Card, CardBody, Dropdown, Modal } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import PageHeader from '../../../components/Common/PageHeader';
-import { _attachmentUrl, userSessionData } from '../../../settings/constants';
+import { userSessionData } from '../../../settings/constants';
 import Alert from '../../../components/Common/Alert';
-import ErrorLogService from '../../../services/ErrorLogService';
-import MyTicketService from '../../../services/TicketService/MyTicketService';
+
 import BasketService from '../../../services/TicketService/BasketService';
 import {
   getTaskData,
-  getTaskPlanner,
   getRegularizationTime,
   getTaskHistory,
   getTaskRegularizationTime
 } from '../../../services/TicketService/TaskService';
-import { getAttachment } from '../../../services/OtherService/AttachmentService';
+
 import BasketDetails from './components/BasketDetails';
 import TaskData from './components/TaskData';
 import TaskModal from './components/TaskModal';
 import ApproveRequestModal from './components/ApproveRequestModal';
 import ApproveTaskRequestModal from './components/ApproveTaskRequestModal';
-import ModuleSetting from '../../../services/SettingService/ModuleSetting';
+
 import { _base } from '../../../settings/constants';
-import TestCasesService from '../../../services/TicketService/TestCaseService';
+
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
@@ -33,24 +31,24 @@ import { Astrick } from '../../../components/Utilities/Style';
 import SprintService from '../../../services/TicketService/SprintService';
 import DataTable from 'react-data-table-component';
 import CardLoadingSkeleton from '../../../components/custom/loader/CardLoadingSkeleton';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  getBasketByIdListThunk,
+  getSettingByNameListThunk,
+  getTaskBytTicketListThunk,
+  getTicketByIdListThunk
+} from '../../../redux/services/ManageTask';
+import { resetGetBasketById } from '../../../redux/slices/ManageTask';
 
 export default function TaskComponent({ match }) {
+  const dispatch = useDispatch();
   const [notify, setNotify] = useState(null);
+
   const { id } = useParams();
   const ticketId = id;
-  const history = useNavigate();
 
-  const [moduleSetting, setModuleSetting] = useState();
-  //Ticket Related
-  const [ticketData, setTicketData] = useState();
-  const [attachment, setAttachment] = useState();
-  const [expectedSolveDate, setExpectedSolveDate] = useState();
-  const [ticketStartDate, setTicketStartDate] = useState();
   const [currentTaskStatus, setCurrentTaskStatus] = useState('PENDING');
 
-  //Basket Modal Related
-  const [basketModal, setBasketModal] = useState(false);
-  const [basketData, setBasketData] = useState(null);
   const [showBasketModal, setShowBasketModal] = useState(false);
 
   // SPrint State  Planning
@@ -67,44 +65,29 @@ export default function TaskComponent({ match }) {
     endDate: ''
   });
   const sprintDropDownRef = useRef();
-  const [sprintData, setSprintdata] = useState([]);
+
   const [sprintCardData, setSprintCardData] = useState([]);
   const [sprintDropDown, setSprintDropDown] = useState([]);
   const [currentSprintIndex, setCurrentSprintIndex] = useState(null);
   const [sprintReport, setSprintReport] = useState([]);
+  const [sprintData, setSprintdata] = useState([]);
   const [showSprintReport, setShowSprintReport] = useState(false);
   const [exportSprintData, setExportSprintData] = useState([]);
   const [sprintFirstDate, setSprintFirstDate] = useState('');
   const [sprintLastDate, setSprintLastDate] = useState('');
 
-  const getTicketData = async () => {
-    await new MyTicketService()
-      .getTicketById(ticketId)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            setTicketData(res.data.data);
-            setTicketStartDate(res.data.data.ticket_date);
-            setExpectedSolveDate(res.data.data.expected_solve_date);
-            // getAttachment(res.data.data.id, "TICKET").then((resp) => {
-            //   if (resp.status === 200) {
-            //     setAttachment(resp.data.data);
-            //   }
-            // });
-          }
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
+  const {
+    getTicketById,
+    getBasketById,
+    filterGetTaskByTicket,
+    getSettingByName
+  } = useSelector((state) => state?.manageTask);
 
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'Task',
-          'Get_Ticket',
-          'INSERT',
-          errorObject.data.message
-        );
-      });
+  const ticketStartDate = getTicketById?.ticket_date;
+  const expectedSolveDate = getTicketById?.expected_solve_date;
+
+  const getTicketData = async () => {
+    dispatch(getTicketByIdListThunk({ ticketId: ticketId }));
   };
 
   const handleCloseBasketModal = () => {
@@ -112,31 +95,12 @@ export default function TaskComponent({ match }) {
   };
 
   const handleShowBasketModal = async (id) => {
-    setBasketData(null);
+    dispatch(resetGetBasketById());
+
     if (id) {
-      await new BasketService()
-        .getBasketById(id)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setBasketData(null);
-              var temp = res?.data?.data;
-              setBasketData(temp);
-            }
-          }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          new ErrorLogService().sendErrorLog(
-            'Task',
-            'Get_Basket',
-            'INSERT',
-            errorObject.data.message
-          );
-        });
+      dispatch(getBasketByIdListThunk({ id: id }));
     } else {
-      setBasketData(null);
+      dispatch(resetGetBasketById());
     }
     setShowBasketModal(true);
   };
@@ -161,7 +125,7 @@ export default function TaskComponent({ match }) {
 
   const getBasketData = async (sprint_id, task_status) => {
     const tempAllTaskList = [];
-    const taskDataa = [];
+
     const tasksDataa = [];
     const sprintId = sprint_id ? sprint_id : 0;
     toast.clearWaitingQueue();
@@ -174,7 +138,7 @@ export default function TaskComponent({ match }) {
         render: `Fetching Latest Api Data... (${counter} sec)`
       });
     }, 1000);
-    // setIsLoading(true);
+
     try {
       await new BasketService()
         .getBasketTaskData(ticketId, sprintId, task_status)
@@ -185,12 +149,11 @@ export default function TaskComponent({ match }) {
             if (res.data.status === 1) {
               setIsLoading(false);
 
-              const temp = res.data.data;
               sortingArr = res.data.basket_id_array;
               setIsReviewer(res.data.is_reviewer);
               setOwnership(res.data.ownership);
               setBasketIdArray(res.data.basket_id_array);
-              // setIsRegularised(res.data.is_regularized)
+
               setData(null);
               res.data.data.sort(sortFunc);
 
@@ -232,7 +195,7 @@ export default function TaskComponent({ match }) {
               setAllTaskList([]);
               setAllTaskList(tempAllTaskList);
 
-              setIsLoading(false); // Loading finished
+              setIsLoading(false);
             }
           }
         });
@@ -386,23 +349,14 @@ export default function TaskComponent({ match }) {
   };
 
   const loadData = async () => {
-    await new ModuleSetting().getSettingByName('Ticket', 'Task').then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          setModuleSetting(res.data.data);
-        }
-      }
-    });
-    await new TestCasesService().getTaskBytTicket(ticketId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const temp = res.data.data;
-          setTaskDropdown(
-            temp.map((d) => ({ value: d.id, label: d.task_name }))
-          );
-        }
-      }
-    });
+    dispatch(
+      getSettingByNameListThunk({
+        module_name: 'Ticket',
+        submodule_name: 'Task'
+      })
+    );
+
+    dispatch(getTaskBytTicketListThunk({ ticketId: ticketId }));
 
     await new SprintService().getSprintByTicketId(ticketId).then((res) => {
       if (res?.data?.status === 1) {
@@ -543,7 +497,6 @@ export default function TaskComponent({ match }) {
       (sprint) => sprint.id === currentSprintCard[0].id
     );
 
-    console.log('selected option', sprintData[currentIndex + 1]);
     setCurrentSprintIndex(currentIndex);
     if (currentIndex !== -1 && currentIndex + 1 < sprintData?.length) {
       let payload = {
@@ -1042,12 +995,12 @@ export default function TaskComponent({ match }) {
                   <p className="p-0 m-0">
                     <strong>Details :</strong>
                   </p>
-                  <p>{ticketData && ticketData.description}</p>
+                  <p>{getTicketById && getTicketById.description}</p>
 
                   <div className="d-flex">
-                    {ticketData &&
-                      ticketData.attachment &&
-                      ticketData.attachment.map((attachment, index) => {
+                    {getTicketById &&
+                      getTicketById.attachment &&
+                      getTicketById.attachment.map((attachment, index) => {
                         return (
                           <div
                             key={index}
@@ -1592,20 +1545,20 @@ export default function TaskComponent({ match }) {
                       )
                     }
                     allTaskList={allTaskList}
-                    taskDropdown={taskDropdown}
+                    taskDropdown={filterGetTaskByTicket}
                     close={handleCloseTaskModal}
                     sprintId={sprintCardData[currentSprintIndex]?.id || 0}
-                    moduleSetting={moduleSetting}
+                    moduleSetting={getSettingByName}
                     expectedSolveDate={expectedSolveDate}
                     ticketStartDate={ticketStartDate}
                   />
                 )}
-                {ticketData && (
+                {getTicketById && (
                   <BasketDetails
                     ticketId={ticketId}
                     show={showBasketModal}
                     hide={handleCloseBasketModal}
-                    data={basketData}
+                    data={getBasketById}
                     loadData={() =>
                       getBasketData(
                         selectedOption?.value ? selectedOption?.value : 0,
