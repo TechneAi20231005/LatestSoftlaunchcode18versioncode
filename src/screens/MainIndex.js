@@ -453,7 +453,7 @@ class MainIndex extends React.Component {
             {/* Sprint */}
             <Route
               exact
-              path={`/${_base}/Ticket/Task/:id/sprint-calendar`}
+              path={`/${_base}/Ticket/Task/:id/sprint-calendar/:date`}
               element={<SprintCalendar />}
             />
             <Route
@@ -944,6 +944,11 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/TestingGroupMaster`}
               element={<TestingGroupMasterComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/FunctionMaster`}
+              element={<FunctionMasterComponent />}
             />
             <Route
               exact
