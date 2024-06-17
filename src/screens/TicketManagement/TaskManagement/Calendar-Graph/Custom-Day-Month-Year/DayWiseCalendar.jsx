@@ -114,7 +114,7 @@ const DayWiseCalendar = (props) => {
             <TaskSkeleton />
           </div>
         ))}
-      {dayWiseData && dayWiseData.length > 0 ? (
+      {dayWiseData && dayWiseData.length > 0 && !isLoading ? (
         dayWiseData.map((data) => {
           let actualStatus = data?.task_status;
           let filteredBgColor = bgColor?.filter(
