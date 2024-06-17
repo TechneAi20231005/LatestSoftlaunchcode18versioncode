@@ -6,11 +6,12 @@ import SprintService from '../../../../../services/TicketService/SprintService';
 import { useParams } from 'react-router-dom';
 
 export const CalendarYearWise = (props) => {
-  const { yearData } = props;
+  const { firstDate, lastDate } = props;
   const params = useParams();
   const { id: ticketId } = params;
   const [calendarEvent, setCalendarEvent] = useState([]);
   const [notify, setNotify] = useState({});
+
   const localizer = momentLocalizer(moment);
   const taskStatus = [
     { id: 1, statusName: 'TO_DO', color: '#C3F5FF' },
@@ -20,35 +21,61 @@ export const CalendarYearWise = (props) => {
     { id: 5, statusName: 'Min_Delay', color: '#FFC581' },
     { id: 6, statusName: 'Max_Delay', color: '#484C7F' }
   ];
-  const frameStructureForCalendar = () => {
-    setCalendarEvent([]);
-    const newCalendarEvents = [];
-    for (let i = 0; i < yearData?.length; i++) {
-      const yearItem = yearData[i];
-      if (yearItem?.task_data?.length > 0) {
-        for (let j = 0; j < yearItem.task_data.length; j++) {
-          const taskDataItem = yearItem.task_data[j];
-          console.log('taskDataItem', taskDataItem);
-          if (Object.keys(taskDataItem).length > 0) {
-            const newEvent = {
-              title: taskDataItem.sprint_name,
-              start: yearItem.date,
-              end: yearItem.date,
-              basketName: taskDataItem?.basket_name,
-              taskName: taskDataItem?.task_name,
-              totalScheduledHours: taskDataItem?.actual_task_scheduled_Hours,
-              scheduledHours: taskDataItem?.task_scheduled_Hours,
-              actualWorked: taskDataItem?.task_actual_worked,
-              priority: taskDataItem?.task_priority,
-              actualStatus: taskDataItem?.task_status,
-              taskOwners: taskDataItem?.taskOwners
-            };
-            newCalendarEvents.push(newEvent);
+  const frameStructureForCalendar = async () => {
+    const formatDate = (dates) => {
+      const date = new Date(dates);
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, '0');
+      const day = String(date.getDate()).padStart(2, '0');
+      return `${year}-${month}-${day}`;
+    };
+    try {
+      const res = await new SprintService().getSprintCalendarDataForWeek(
+        ticketId,
+        formatDate(firstDate),
+        formatDate(lastDate)
+      );
+      const { status, data } = res?.data;
+
+      if (status === 1) {
+        const yearData = data;
+        setCalendarEvent([]);
+        const newCalendarEvents = [];
+        for (let i = 0; i < yearData?.length; i++) {
+          const yearItem = yearData[i];
+          if (yearItem?.task_data?.length > 0) {
+            for (let j = 0; j < yearItem.task_data.length; j++) {
+              const taskDataItem = yearItem.task_data[j];
+              if (Object.keys(taskDataItem).length > 0) {
+                const newEvent = {
+                  title: taskDataItem.sprint_name,
+                  start: yearItem.date,
+                  end: yearItem.date,
+                  taskStartDate: taskDataItem?.task_start_Date,
+                  taskEndDate: taskDataItem?.task_end_date,
+                  basketName: taskDataItem?.basket_name,
+                  taskName: taskDataItem?.task_name,
+                  totalScheduledHours:
+                    taskDataItem?.actual_task_scheduled_Hours,
+                  scheduledHours: taskDataItem?.task_scheduled_Hours,
+                  actualWorked: taskDataItem?.task_actual_worked,
+                  priority: taskDataItem?.task_priority,
+                  actualStatus: taskDataItem?.task_status,
+                  taskOwners: taskDataItem?.taskOwners
+                };
+                newCalendarEvents.push(newEvent);
+              }
+            }
           }
         }
+
+        setCalendarEvent((prevState) => [...prevState, ...newCalendarEvents]);
+      } else {
+        setNotify({ type: 'danger', message: res?.data?.message });
       }
+    } catch (err) {
+      setNotify({ type: 'danger', message: err });
     }
-    setCalendarEvent((prevState) => [...prevState, ...newCalendarEvents]);
   };
 
   const eventPropGetter = (event) => {
@@ -71,13 +98,12 @@ export const CalendarYearWise = (props) => {
   };
 
   const tooltipAccessor = (event) => {
-    console.log('event', event);
     const {
       taskName,
       scheduledHours,
       basketName,
-      start,
-      end,
+      taskStartDate,
+      taskEndDate,
       actualWorked,
       actualStatus,
       taskOwners,
@@ -86,14 +112,13 @@ export const CalendarYearWise = (props) => {
     const users = taskOwners.join(',');
     const tooltipText = `Sprint Name: ${
       event.title
-    }\nTask Name: ${taskName}\nBasket Name: ${basketName}\nStart Date:${start}\nEnd Date:${end}\nTotal Scheduled hours:${totalScheduledHours}\nScheduled Hours: ${scheduledHours}\nActual Worked: ${
+    }\nTask Name: ${taskName}\nBasket Name: ${basketName}\nStart Date:${taskStartDate}\nEnd Date:${taskEndDate}\nTotal Scheduled hours:${totalScheduledHours}\nScheduled Hours: ${scheduledHours}\nActual Worked: ${
       actualWorked ? actualWorked : '00:00:00'
     }\nStatus:${actualStatus}\nTask Owners:${users}`;
     return tooltipText;
   };
 
   const CustomToolbar = (toolbar) => {
-    console.log('toolbar', toolbar);
     const goToBack = () => {
       toolbar.date.setMonth(toolbar.date.getMonth() - 1);
       toolbar.onNavigate('prev');
