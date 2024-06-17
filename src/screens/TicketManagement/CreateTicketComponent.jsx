@@ -19,7 +19,6 @@ import DynamicFormDropdownMasterService from '../../services/MastersService/Dyna
 import DepartmentService from '../../services/MastersService/DepartmentService';
 import QueryTypeService from '../../services/MastersService/QueryTypeService';
 import CustomerMappingService from '../../services/SettingService/CustomerMappingService';
-
 import DepartmentMappingService from '../../services/MastersService/DepartmentMappingService';
 import TaskTicketTypeService from '../../services/MastersService/TaskTicketTypeService';
 import { useDispatch, useSelector } from 'react-redux';
@@ -327,7 +326,7 @@ export default function CreateTicketComponent() {
       formData.append('dynamicForm', JSON.stringify(rows));
       var selectCountry = formData.getAll('customer_id');
       var selectQueryGroup = formData.getAll('query_group_id');
-
+      var selectgetAll = formData.get('ticket_type_id');
       if (selectCountry == '') {
         flag = 0;
       }
@@ -347,14 +346,14 @@ export default function CreateTicketComponent() {
         .then((res) => {
           if (res?.status === 200) {
             if (res?.data?.status === 1) {
+
               toast.success(res?.data?.message);
               navigate(`/${_base}/Ticket`);
-
+             
               setIsSubmitted(false);
             } else {
               if (formData.getAll('ticket_uploading') == 'REGULAR') {
                 toast.error(res?.data?.message);
-
                 setIsSubmitted(false);
               } else {
                 if (!res?.data?.data) {
@@ -364,6 +363,7 @@ export default function CreateTicketComponent() {
                   return;
                 }
                 toast.success(res?.data?.message);
+
 
                 let url = `${_attachmentUrl}` + res.data.data;
                 window.open(url, '_blank').focus();
@@ -377,6 +377,7 @@ export default function CreateTicketComponent() {
         })
         .catch((res) => {
           toast.success(res?.data?.message);
+
         });
     }
   };
@@ -827,6 +828,7 @@ export default function CreateTicketComponent() {
             newPrev['customer_mapping_id'] = mappingId[0];
             newPrev['confirmation_required'] =
               customerMapping[0]?.confirmation_required;
+
             newPrev['priority'] = x[0].priority;
             return newPrev;
           });
