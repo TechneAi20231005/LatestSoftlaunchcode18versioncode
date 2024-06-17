@@ -17,6 +17,7 @@ const CustomFilterModal = ({
   uniqueValues,
   searchTerm,
   setSearchTerm,
+  setSelectedFilters,
   paginationData,
   filterColumnId,
   setFilterType,
@@ -25,7 +26,8 @@ const CustomFilterModal = ({
   columnName,
   handleAscendingClick,
   handleDescendingClick,
-  type
+  type,
+  handleApplyButton
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -178,7 +180,7 @@ const CustomFilterModal = ({
       style={{ top: position.top, left: position.left }}
     >
       <div>
-        <b className="fs-6 text-custom">{columnName}</b>
+        <b className="fs-6 text-primary">{columnName}</b>
         <hr className="my-2" />
 
         <p className="Sort mb-2">Sort</p>
@@ -198,7 +200,7 @@ const CustomFilterModal = ({
         </span>
 
         <hr className="my-1" />
-        <p className="fs-6 mb-0 ms-4 cursor-pointer text-filters-container">
+        <p className="fs-6 mb-0 ms-4 text-filters-container">
           {type === 'number' ? 'Number Filters' : 'Text Filters'}
           <i
             ref={target}
@@ -222,7 +224,7 @@ const CustomFilterModal = ({
                     {numberFilterData.map((option) => (
                       <p
                         key={option.value}
-                        className="mb-2 pointer"
+                        className="mb-2 "
                         onClick={() => handleShow(option.value)}
                       >
                         {option.label}
@@ -234,7 +236,7 @@ const CustomFilterModal = ({
                     {textFilterData.map((option) => (
                       <p
                         key={option.value}
-                        className="mb-2 pointer"
+                        className="mb-2 cursor-pointer "
                         onClick={() => handleShow(option.value)}
                       >
                         {option.label}
@@ -253,7 +255,7 @@ const CustomFilterModal = ({
                 >
                   {console.log('type===>', type)}
                   <Modal.Header closeButton>
-                    <Modal.Title className="fs-5 text-custom">
+                    <Modal.Title className="fs-5 text-primary">
                       {type === 'number' ? 'Number Filters' : 'Text Filters'}
                     </Modal.Title>
                   </Modal.Header>
@@ -298,7 +300,6 @@ const CustomFilterModal = ({
                         </div>
                       )}
                       {/* )} */}
-                      {console.log('typeyy', type)}
                       {
                         // filterColumn === 'id' &&
                         //   (filterType === 'equals' ||
@@ -316,7 +317,6 @@ const CustomFilterModal = ({
                           </div>
                         )
                       }
-                      {console.log('filter', filterType)}
                       {(filterType === 'is between' ||
                         filterType === 'is not between') && (
                         <>
@@ -403,15 +403,13 @@ const CustomFilterModal = ({
         </div>
       ))}
       <div className="button-container">
-        <button className="btn btn-primary mt-3" onClick={handleApply}>
+        <button className="btn btn-primary mt-3" onClick={handleApplyButton}>
           Apply
         </button>
         <button className="btn btn-warning mt-3" onClick={handleClose}>
           Cancel
         </button>
-        <button className="btn btn-outline-dark mt-3" onClick={handleClose}>
-          Clear All
-        </button>
+        <button className="btn btn-outline-dark mt-3">Clear All</button>
       </div>
     </div>
   );

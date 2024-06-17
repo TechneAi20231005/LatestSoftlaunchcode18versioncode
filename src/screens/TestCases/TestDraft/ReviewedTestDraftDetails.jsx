@@ -5,7 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import CustomFilterModal from '../Modal/CustomFilterModal';
-import { getAllReviewTestDraftList } from '../../../redux/services/testCases/downloadFormatFile';
+import {
+  getAllReviewTestDraftList,
+  getDraftTestCaseList
+} from '../../../redux/services/testCases/downloadFormatFile';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function ReviewedTestDraftDetails() {
@@ -40,7 +43,7 @@ function ReviewedTestDraftDetails() {
 
   const moduleMapping = {
     test_plan_id: 'test_plan_id',
-    reviewer_name: 'reviewer_name',
+    reviewer_name: 'reviewer_id',
     total_testcases: 'total_testcases',
     reviewed_testcases: 'reviewed_testcases',
     total_rejected: 'total_rejected',
@@ -123,36 +126,41 @@ function ReviewedTestDraftDetails() {
   };
 
   const [betweenValues, setBetweenValues] = useState(['', '']);
-
   const handleBetweenValueChange = (index, value) => {
-    const newValues = [...betweenValues];
-    newValues[index] = value;
-    setBetweenValues(newValues);
+    if (filterType !== 'is not between' && filterType !== 'is between') {
+      setBetweenValues(Number(value));
+    } else {
+      const newValues = [...betweenValues];
+      newValues[index] = value;
+      setBetweenValues(newValues);
+    }
   };
 
   const getFilteredValues = () => {
-    if (filterType !== 'is not between' && filterType !== 'is between') {
-      return [Number(betweenValues[0])];
-    } else if (filterType === 'is not between' || filterType === 'is between') {
+    if (filterType === 'is not between' || filterType === 'is between') {
       return betweenValues.map((value) => Number(value));
     }
+    // return filterText;
+
     return filterText;
   };
 
   const handleApplyFilter = async () => {
     const newFilter =
-      type === 'number'
+      filterType === 'is not between' || filterType === 'is between'
         ? {
             column: filterColumnId,
             column_name: filterColumn,
             filter: filterType,
-            whereIn: getFilteredValues(),
+
+            searchText: getFilteredValues(),
+            //  getFilteredValues(),
             sort: sortOrder
           }
         : {
             column: filterColumnId,
-            searchText: filterText,
             column_name: filterColumn,
+            searchText: type === 'text' ? filterText : betweenValues,
             filter: filterType,
             sort: sortOrder
           };
@@ -176,6 +184,55 @@ function ReviewedTestDraftDetails() {
       setSearchTerm(''); // Reset search term if needed
       setSelectedFilters([]); // Reset selected filters if needed
     } catch (error) {}
+  };
+
+  const handleApplyButton = async () => {
+    const newFilter = {
+      column: filterColumnId,
+      column_name: filterColumn,
+
+      whereIn: selectedFilterIds,
+      //  getFilteredValues(),
+      sort: sortOrder
+    };
+    // filterType === 'is not between' || filterType === 'is between'
+    //   ? {
+    //       column: filterColumnId,
+    //       column_name: filterColumn,
+    //       filter: filterType,
+
+    //       searchText: getFilteredValues(),
+    //       //  getFilteredValues(),
+    //       sort: sortOrder
+    //     }
+    //   : {
+    //       column: filterColumnId,
+    //       column_name: filterColumn,
+    //       searchText: type === 'text' ? filterText : betweenValues,
+    //       filter: filterType,
+    //       sort: sortOrder
+    //     };
+    // // Update filters array with the new filter
+
+    const updatedFilters = [...filters, newFilter];
+    setFilters(updatedFilters);
+
+    try {
+      dispatch(
+        getDraftTestCaseList({
+          limit: paginationData.rowPerPage,
+          page: paginationData.currentPage,
+          filter_testcase_data: updatedFilters
+        })
+      );
+
+      setModalIsOpen(false); // Close modal after applying filters
+
+      setSearchTerm(''); // Reset search term if needed
+      setSelectedFilters([]); // Reset selected filters if needed
+    } catch (error) {
+      // Handle error if needed
+    }
   };
 
   const columns = [
@@ -500,6 +557,7 @@ function ReviewedTestDraftDetails() {
               handleBetweenValueChange={handleBetweenValueChange}
               columnName={columnName}
               type={type}
+              handleApplyButton={handleApplyButton}
             />
           )}
         </div>

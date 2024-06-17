@@ -9,6 +9,7 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import { getEmployeeData } from '../../Dashboard/DashboardAction';
 import {
+  getAllDraftTestCaseList,
   getDraftTestCaseList,
   sendTestCaseReviewerThunk
 } from '../../../redux/services/testCases/downloadFormatFile';
@@ -20,9 +21,12 @@ function TestDraftDetails(props) {
   // // initial state
   const dispatch = useDispatch();
 
-  const { getDraftTestListData, allDraftListData, isLoading } = useSelector(
-    (state) => state?.downloadFormat
-  );
+  const {
+    getDraftTestListData,
+    allDraftListData,
+    allDraftTestListData,
+    isLoading
+  } = useSelector((state) => state?.downloadFormat);
 
   const testerData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.getAllTesterDataList
@@ -94,6 +98,7 @@ function TestDraftDetails(props) {
       setSelectedRows([]);
     }
   };
+  console.log('select', selectedFilters);
 
   // Handles individual checkbox change
   const handleCheckboxChange = (row) => {
@@ -106,9 +111,13 @@ function TestDraftDetails(props) {
     });
   };
 
-  const handleFilterClick = (event, column, name, type) => {
+  const [columnId, setColumnId] = useState();
+
+  const handleFilterClick = (event, column, name, type, id) => {
+    console.log('oooo', event.value);
     setType(type);
     setColumnName(name);
+    // setColumnId(id);
     setFilterType('');
     setFilterText('');
 
@@ -134,13 +143,13 @@ function TestDraftDetails(props) {
   const handleDescendingClick = (order) => {
     setSortOrder(order);
   };
-
   const filteredUniqueValues =
     filterColumn &&
-    getDraftTestListData
+    allDraftTestListData &&
+    allDraftTestListData
       ?.map((row) => {
         return {
-          value: row.id,
+          value: row[columnId],
           label: row[filterColumn]
         };
       })
@@ -163,6 +172,7 @@ function TestDraftDetails(props) {
       ); // Remove the corresponding value from selectedFilterIds
     }
   };
+  console.log('filteredUniqueValues', selectedFilterIds);
 
   const handleSelectAll = (event) => {
     if (event.target.checked) {
@@ -173,42 +183,129 @@ function TestDraftDetails(props) {
       setSelectedFilterIds([]); // Clear selectedFilterIds
     }
   };
+  // const [betweenValues, setBetweenValues] = useState(['', '']);
+
+  // const handleBetweenValueChange = (index, value) => {
+  //   const newValues = [...betweenValues];
+  //   newValues[index] = value;
+  //   setBetweenValues(newValues);
+  // };
 
   const [betweenValues, setBetweenValues] = useState(['', '']);
-
   const handleBetweenValueChange = (index, value) => {
-    const newValues = [...betweenValues];
-    newValues[index] = value;
-    setBetweenValues(newValues);
+    if (filterType !== 'is not between' && filterType !== 'is between') {
+      setBetweenValues(Number(value));
+    } else {
+      const newValues = [...betweenValues];
+      newValues[index] = value;
+      setBetweenValues(newValues);
+    }
   };
 
   const getFilteredValues = () => {
-    if (type === 'number') {
-      return [Number(betweenValues[0])];
-    } else if (filterType === 'is not between' || filterType === 'is between') {
+    if (filterType === 'is not between' || filterType === 'is between') {
       return betweenValues.map((value) => Number(value));
     }
+    // return filterText;
+
     return filterText;
   };
 
+  // const getFilteredValues = () => {
+  //   if (type === 'number') {
+  //     return [Number(betweenValues[0])];
+  //   } else if (filterType === 'is not between' || filterType === 'is between') {
+  //     return betweenValues.map((value) => Number(value));
+  //   }
+  //   return filterText;
+  // };
+
   const handleApplyFilter = async () => {
+    // const newFilter =
+    //   filterColumn === 'id'
+    //     ? {
+    //         column: filterColumnId,
+    //         column_name: filterColumn,
+    //         filter: filterType,
+    //         whereIn: getFilteredValues(),
+    //         sort: sortOrder
+    //       }
+    //     : {
+    //         column: filterColumnId,
+    //         searchText: filterText,
+    //         column_name: filterColumn,
+    //         filter: filterType,
+    //         sort: sortOrder
+    //       };
+
     const newFilter =
-      filterColumn === 'id'
+      filterType === 'is not between' || filterType === 'is between'
         ? {
             column: filterColumnId,
             column_name: filterColumn,
             filter: filterType,
-            whereIn: getFilteredValues(),
+
+            searchText: getFilteredValues(),
+            //  getFilteredValues(),
             sort: sortOrder
           }
         : {
             column: filterColumnId,
-            searchText: filterText,
             column_name: filterColumn,
+            searchText: type === 'text' ? filterText : betweenValues,
             filter: filterType,
             sort: sortOrder
           };
+    // // Update filters array with the new filter
 
+    const updatedFilters = [...filters, newFilter];
+    setFilters(updatedFilters);
+
+    try {
+      dispatch(
+        getDraftTestCaseList({
+          limit: paginationData.rowPerPage,
+          page: paginationData.currentPage,
+          filter_testcase_data: updatedFilters
+        })
+      );
+
+      setModalIsOpen(false); // Close modal after applying filters
+
+      setSearchTerm(''); // Reset search term if needed
+      setSelectedFilters([]); // Reset selected filters if needed
+    } catch (error) {
+      // Handle error if needed
+    }
+  };
+
+  console.log('get', getDraftTestListData);
+  const handleApplyButton = async () => {
+    const newFilter = {
+      column: filterColumnId,
+      column_name: filterColumn,
+
+      whereIn: selectedFilterIds,
+      //  getFilteredValues(),
+      sort: sortOrder
+    };
+    // filterType === 'is not between' || filterType === 'is between'
+    //   ? {
+    //       column: filterColumnId,
+    //       column_name: filterColumn,
+    //       filter: filterType,
+
+    //       searchText: getFilteredValues(),
+    //       //  getFilteredValues(),
+    //       sort: sortOrder
+    //     }
+    //   : {
+    //       column: filterColumnId,
+    //       column_name: filterColumn,
+    //       searchText: type === 'text' ? filterText : betweenValues,
+    //       filter: filterType,
+    //       sort: sortOrder
+    //     };
     // // Update filters array with the new filter
 
     const updatedFilters = [...filters, newFilter];
@@ -288,7 +385,7 @@ function TestDraftDetails(props) {
         <div>
           <span>Module</span>
           <i
-            onClick={(e) =>
+            onClick={(e, row) =>
               handleFilterClick(e, 'module_name', 'Module', 'text')
             }
             className="icofont-filter ms-2"
@@ -332,7 +429,7 @@ function TestDraftDetails(props) {
         <div>
           <span>Submodule Name</span>
           <i
-            onClick={(e) =>
+            onClick={(e, row) =>
               handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
             }
             className="icofont-filter ms-2"
@@ -1001,6 +1098,16 @@ function TestDraftDetails(props) {
     );
   }, [paginationData.rowPerPage, paginationData.currentPage]);
 
+  useEffect(() => {
+    dispatch(
+      getAllDraftTestCaseList({
+        type: 'ALL',
+        limit: paginationData.rowPerPage,
+        page: paginationData.currentPage
+      })
+    );
+  }, []);
+
   return (
     <>
       <Container fluid className="employee_joining_details_container">
@@ -1141,6 +1248,8 @@ function TestDraftDetails(props) {
           handleBetweenValueChange={handleBetweenValueChange}
           columnName={columnName}
           type={type}
+          handleApplyButton={handleApplyButton}
+          setSelectedFilters={setSelectedFilters}
         />
       )}
     </>
