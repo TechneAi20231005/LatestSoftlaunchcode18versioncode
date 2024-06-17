@@ -12,39 +12,27 @@ import {
 } from '../../redux/services/Sidebar';
 
 const Sidebar = ({ activekey }) => {
+  // // initial state
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const user_id = localStorage.getItem('id');
+  const role_id = localStorage.getItem('role_id');
+  //Redux State
+  const { menuList, filterMenuList } = useSelector((state) => state?.sidebar);
+
+  const menuListData = menuList?.menu;
+
+  //local state
+
+  const [menuData, setMenuData] = useState(filterMenuList?.[0]);
 
   const [isSidebarMini, setIsSidebarMini] = useState(false);
 
   const [darkLightMode, setDarkLightMode] = useState('light');
   const [updateRtl, setUpdateRtl] = useState(false);
-  const [user_id, setUser_id] = useState(localStorage.getItem('id'));
-  const [role_id, setRole_id] = useState(localStorage.getItem('role_id'));
-  const [account_for, setAccount_for] = useState('');
-  const { menuList, filterMenuList } = useSelector((state) => state?.sidebar);
-
-  const menuListData = menuList?.menu;
-
-  const [menuData, setMenuData] = useState(filterMenuList?.[0]);
-
-  const decodeToken = (token) => {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(
-      atob(base64)
-        .split('')
-        .map((c) => {
-          return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-        })
-        .join('')
-    );
-
-    return JSON.parse(jsonPayload);
-  };
 
   const openChildren = (id) => {
-    var otherTabs = document.getElementsByClassName('has-children');
+    let otherTabs = document.getElementsByClassName('has-children');
     if (otherTabs) {
       for (var i = 0; i < otherTabs.length; i++) {
         if (otherTabs[i].id !== id) {
@@ -58,7 +46,7 @@ const Sidebar = ({ activekey }) => {
         }
       }
     }
-    var menutab = document.getElementById(id);
+    let menutab = document.getElementById(id);
     if (menutab) {
       if (menutab.classList.contains('show')) {
         menutab.classList.remove('show');
@@ -92,21 +80,6 @@ const Sidebar = ({ activekey }) => {
       menutab.classList.add('show');
       if (menutab.parentElement.children.length > 1) {
         menutab.parentElement.children[0].setAttribute('aria-expanded', 'true');
-      }
-    }
-  };
-
-  const closeChildren = () => {
-    var otherTabs = document.getElementsByClassName('has-children');
-    if (otherTabs) {
-      for (var i = 0; i < otherTabs.length; i++) {
-        otherTabs[i].className = otherTabs[i].className.replace(' show', '');
-        if (otherTabs[i].parentElement.children.length > 1) {
-          otherTabs[i].parentElement.children[0].setAttribute(
-            'aria-expanded',
-            'false'
-          );
-        }
       }
     }
   };
@@ -153,7 +126,7 @@ const Sidebar = ({ activekey }) => {
     dispatch(getMenuListThunk({ role_id: role_id }));
 
     document.children[0].setAttribute('data-theme', 'light');
-  }, [user_id, role_id, account_for]);
+  }, [user_id, role_id]);
 
   return (
     <div

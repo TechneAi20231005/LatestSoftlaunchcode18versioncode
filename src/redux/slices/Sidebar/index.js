@@ -3,18 +3,21 @@ import { createSlice } from '@reduxjs/toolkit';
 import { getEmployeeListThunk, getMenuListThunk } from '../../services/Sidebar';
 
 const initialState = {
-  employeeList: '',
-  getMenuList: '',
+  employeeList: [],
+  getMenuList: [],
   filterMenuList: [],
 
   isLoading: {
+    getMenuList: false,
     getEmployeeList: false
   },
   errorMsg: {
-    getEmployeeList: ''
+    getEmployeeList: '',
+    getMenuList: ''
   },
   successMsg: {
-    getEmployeeList: ''
+    getEmployeeList: '',
+    getMenuList: ''
   }
 };
 const sidebarSlice = createSlice({
@@ -62,11 +65,4 @@ const sidebarSlice = createSlice({
   }
 });
 
-// export const {
-//   addUserPendingOrderRequest,
-//   editUserPendingOrderRequest,
-//   deleteUserPendingOrderRequest,
-//   resetUserAddedOrderList,
-//   resetPendingOrderListData
-// } = generatePoSlice.actions;
 export default sidebarSlice.reducer;
