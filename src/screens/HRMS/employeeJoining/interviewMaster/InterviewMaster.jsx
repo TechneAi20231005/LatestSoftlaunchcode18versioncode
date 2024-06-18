@@ -68,7 +68,19 @@ function InterviewMaster() {
     },
     {
       name: 'Department',
-      selector: (row) => row?.department ?? '--',
+      selector: (row) =>
+        row?.department ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={
+              <Tooltip id={`tooltip-${row.id}`}>{row?.department}</Tooltip>
+            }
+          >
+            <span>{row?.department ?? '--'}</span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
       sortable: true,
       width: '150px'
     },
