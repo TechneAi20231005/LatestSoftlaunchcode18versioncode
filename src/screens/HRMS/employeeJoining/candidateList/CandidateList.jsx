@@ -77,9 +77,21 @@ function CandidateList() {
     },
     {
       name: 'Applied Position',
-      selector: (row) => row?.designation || '--',
+      selector: (row) =>
+        row?.designation ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={
+              <Tooltip id={`tooltip-${row.id}`}>{row?.designation}</Tooltip>
+            }
+          >
+            <span>{row?.designation || '--'}</span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
       sortable: true,
-      width: '150px'
+      width: '200px'
     },
     {
       name: 'Phone Number',

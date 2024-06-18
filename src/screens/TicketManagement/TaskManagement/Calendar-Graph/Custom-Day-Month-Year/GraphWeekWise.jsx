@@ -20,7 +20,7 @@ const GraphWeekWise = () => {
   const [dropDownData, setDropDownData] = useState([]);
   // const [weekRange, setWeekRange] = useState([]);
   const [selectedDropDown, setSelectedDropdown] = useState(null);
-
+  // const allBasketNames = ['Amit', 'Sprint basket', 'Priyans'];
   const [chartData, setChartData] = useState({
     series: [
       {
@@ -132,7 +132,8 @@ const GraphWeekWise = () => {
       },
       yaxis: {
         show: true,
-        showForNullSeries: false
+        showForNullSeries: false,
+        categories: []
       }
     }
   });
@@ -218,6 +219,20 @@ const GraphWeekWise = () => {
         setDropDownData(weekRange);
         weeksplitDate = weekRange[0]?.label?.split('-');
       }
+      function addSmallIncrementIfNeeded(startDate, endDate) {
+        // const start = convertToDate(startDate);
+        // let end = convertToDate(endDate);
+
+        if (startDate === endDate) {
+          startDate = convertToDate(startDate);
+          endDate = convertToDate(endDate) + 36000000;
+        } else {
+          startDate = convertToDate(startDate);
+          endDate = convertToDate(endDate);
+        }
+
+        return [startDate, endDate];
+      }
 
       const res = await new SprintService().getGraphDataForSprint(
         ticketId,
@@ -227,58 +242,144 @@ const GraphWeekWise = () => {
 
       const { first_sprint_date, last_sprint_date } = res?.data?.data;
       const { data } = res?.data;
+      const allBasketNames = data?.basket_data;
       const transformedData = {
         series: [
           {
             name: 'TODO',
-            data: data?.TO_DO?.map((task) => ({
-              x: task.basket_name,
-              y: [
-                convertToDate(task.task_start_Date),
-                convertToDate(task.task_end_date)
-              ],
-              taskDetail: task
-            }))
+            data: allBasketNames.map((basketName) => {
+              const task = data?.TO_DO?.find(
+                (task) => task.basket_name === basketName
+              );
+              return task
+                ? {
+                    x: basketName,
+                    y: addSmallIncrementIfNeeded(
+                      task.task_start_Date,
+                      task.task_end_date
+                    ),
+                    taskDetail: task
+                  }
+                : {
+                    x: basketName,
+                    y: [0, 0],
+                    taskDetail: {
+                      basket_name: basketName,
+                      task_start_Date: '',
+                      task_end_date: '',
+                      status: 'No Data'
+                    }
+                  };
+            })
           },
+
           {
             name: 'Delay',
-            data: data?.DELAY?.map((task) => ({
-              x: task.basket_name,
-              y: [
-                convertToDate(task.task_start_Date),
-                convertToDate(task.task_end_date)
-              ]
-            }))
+            data: allBasketNames.map((basketName) => {
+              const task = data?.DELAY?.find(
+                (task) => task.basket_name === basketName
+              );
+              return task
+                ? {
+                    x: basketName,
+                    y: addSmallIncrementIfNeeded(
+                      task.task_start_Date,
+                      task.task_end_date
+                    ),
+                    taskDetail: task
+                  }
+                : {
+                    x: basketName,
+                    y: [0, 0],
+                    taskDetail: {
+                      basket_name: basketName,
+                      task_start_Date: '',
+                      task_end_date: '',
+                      status: 'No Data'
+                    }
+                  };
+            })
           },
           {
             name: 'Highly Delay',
-            data: data?.HIGHLY_DELAY?.map((task) => ({
-              x: task.basket_name,
-              y: [
-                convertToDate(task.task_start_Date),
-                convertToDate(task.task_end_date)
-              ]
-            }))
+            data: allBasketNames.map((basketName) => {
+              const task = data?.HIGHLY_DELAY?.find(
+                (task) => task.basket_name === basketName
+              );
+              return task
+                ? {
+                    x: basketName,
+                    y: addSmallIncrementIfNeeded(
+                      task.task_start_Date,
+                      task.task_end_date
+                    ),
+                    taskDetail: task
+                  }
+                : {
+                    x: basketName,
+                    y: [0, 0],
+                    taskDetail: {
+                      basket_name: basketName,
+                      task_start_Date: '',
+                      task_end_date: '',
+                      status: 'No Data'
+                    }
+                  };
+            })
           },
           {
             name: 'Completed',
-            data: data?.COMPLETED?.map((task) => ({
-              x: task.basket_name,
-              y: [
-                convertToDate(task.task_start_Date),
-                convertToDate(task.task_end_date)
-              ]
-            }))
+            data: allBasketNames.map((basketName) => {
+              const task = data?.COMPLETED?.find(
+                (task) => task.basket_name === basketName
+              );
+              return task
+                ? {
+                    x: basketName,
+                    y: addSmallIncrementIfNeeded(
+                      task.task_start_Date,
+                      task.task_end_date
+                    ),
+                    taskDetail: task
+                  }
+                : {
+                    x: basketName,
+                    y: [0, 0],
+                    taskDetail: {
+                      basket_name: basketName,
+                      task_start_Date: '',
+                      task_end_date: '',
+                      status: 'No Data'
+                    }
+                  };
+            })
           },
           {
             name: 'In Progress',
-            data: data?.IN_PROGRESS?.map((task) => ({
-              x: task.basket_name,
-              y: [
-                convertToDate(task.task_start_Date),
-                convertToDate(task.task_end_date)
-              ]
-            }))
+            data: allBasketNames.map((basketName) => {
+              const task = data?.IN_PROGRESS?.find(
+                (task) => task.basket_name === basketName
+              );
+              return task
+                ? {
+                    x: basketName,
+                    y: addSmallIncrementIfNeeded(
+                      task.task_start_Date,
+                      task.task_end_date
+                    ),
+                    taskDetail: task
+                  }
+                : {
+                    x: basketName,
+                    y: [0, 0],
+                    taskDetail: {
+                      basket_name: basketName,
+                      task_start_Date: '',
+                      task_end_date: '',
+                      status: 'No Data'
+                    }
+                  };
+            })
           }
         ]
       };
@@ -315,13 +416,53 @@ const GraphWeekWise = () => {
               }
             ]
           },
+
+          yaxis: {
+            show: true,
+            showForNullSeries: false,
+            categories: allBasketNames
+          },
           tooltip: {
             custom: ({ series, seriesIndex, dataPointIndex, w }) => {
-              const s = w?.config?.series;
+              const taskDetail =
+                w.globals.initialSeries[seriesIndex].data[dataPointIndex]
+                  .taskDetail;
+              const taskOwners = taskDetail?.taskOwners.join('');
+              console.log('taskDetail', taskDetail);
               return `
               <div>
-                <p>Name:</p>
-                <p>${w.globals.labels[dataPointIndex]}</p>
+               <span className="mb-0"><strong>Sprint Name:</strong> ${
+                 taskDetail.sprint_name || 'null recieved in response'
+               }</span></br>
+                  <span className="mb-0"><strong>Task Name:</strong> ${
+                    taskDetail.task_name
+                  }</span></br>
+                 <span className="mb-0"><strong>Basket Name:</strong> ${
+                   taskDetail.basket_name
+                 }</span></br>
+              <span className="mb-0"><strong>Task Start Date:</strong> ${new Date(
+                taskDetail.task_start_Date
+              ).toLocaleDateString()}</span></br>
+              <span className="mb-0"><strong>Task End Date:</strong> ${new Date(
+                taskDetail.task_end_date
+              ).toLocaleDateString()}</span></br>
+              <span className="mb-0"><strong>Total Scheduled Hours:</strong> ${
+                taskDetail.task_scheduled_Hours || 'null recieved in response'
+              }</span></br>
+                 <span className="mb-0"><strong>Scheduled Hours:</strong> ${
+                   taskDetail.actual_task_scheduled_Hours ||
+                   'null recieved in response'
+                 }</span></br>
+                 <span className="mb-0"><strong>Actual Worked:</strong> ${
+                   taskDetail.task_actual_worked || 'null recieved in response'
+                 }</span></br>
+              <span className="mb-0"><strong>Status:</strong> ${
+                taskDetail.task_status || 'null recieved in response'
+              }</span></br>
+              <span className="mb-0"><strong>Actual Status:</strong> ${
+                taskDetail.task_actual_status || 'null recieved in response'
+              }</span></br>
+                 <span className="mb-0"><strong>Task Owners:</strong> ${taskOwners}</span></br>
               </div>
             `;
             }

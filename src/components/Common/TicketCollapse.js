@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Collapse } from 'react-bootstrap';
 
-const TicketCollapse = ({ ticket, open, toggleOpen }) => {
+const TicketCollapse = ({ ticket, open, toggleOpen, details }) => {
   return (
     <div className="card mt-3">
       <div className="card-body">
@@ -23,12 +23,7 @@ const TicketCollapse = ({ ticket, open, toggleOpen }) => {
         <Collapse in={open}>
           <div id="example-collapse-text">
             <p className="mt-1 mb-0 fw-bold">Ticket Details :</p>
-            <span>
-              Lorem ipsum dolor sit amet, consectetur adipisicing elit.
-              Explicabo blanditiis ut optio alias assumenda enim ratione iste
-              repellat. Voluptates quia, animi facilis eos corrupti non vel
-              fugit ratione et dolore?
-            </span>
+            <span>{details}</span>
           </div>
         </Collapse>
       </div>
