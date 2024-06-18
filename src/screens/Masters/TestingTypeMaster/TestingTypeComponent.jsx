@@ -10,76 +10,81 @@ import Alert from '../../../components/Common/Alert';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { postTesting, testingData, updateTesting } from './TestingTypeComponentAction';
+import {
+  postTesting,
+  testingData,
+  updateTesting
+} from './TestingTypeComponentAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
-import { handleModalOpen, handleModalClose } from './TestingTypeComponentSlices';
+import {
+  handleModalOpen,
+  handleModalClose
+} from './TestingTypeComponentSlices';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBar from '../../../components/Common/SearchBar ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function TestingTypeComponent() {
   const dispatch = useDispatch();
   const testingtypeData = useSelector(
-    TestingTypeComponentSlices => TestingTypeComponentSlices.testingData.testingData,
+    (TestingTypeComponentSlices) =>
+      TestingTypeComponentSlices.testingData.testingData
   );
   const isLoading = useSelector(
-    TestingTypeComponentSlices => TestingTypeComponentSlices.testingData.isLoading.testingDataList,
+    (TestingTypeComponentSlices) =>
+      TestingTypeComponentSlices.testingData.isLoading.testingDataList
   );
 
   const exportData = useSelector(
-    TestingTypeComponentSlices => TestingTypeComponentSlices.testingData.exportTestingData,
+    (TestingTypeComponentSlices) =>
+      TestingTypeComponentSlices.testingData.exportTestingData
   );
   const modal = useSelector(
-    TestingTypeComponentSlices => TestingTypeComponentSlices.testingData.modal,
+    (TestingTypeComponentSlices) => TestingTypeComponentSlices.testingData.modal
   );
-  const checkRole = useSelector(DashboardSlice =>
-    DashboardSlice.dashboard.getRoles.filter(d => d.menu_id == 39),
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 39)
   );
   const notify = useSelector(
-    TestingTypeComponentSlices => TestingTypeComponentSlices.testingData.notify,
+    (TestingTypeComponentSlices) =>
+      TestingTypeComponentSlices.testingData.notify
   );
 
-  const [data, setData] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
-  const roleId = sessionStorage.getItem('role_id');
-
-  const searchRef = useRef();
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter(d => {
-      for (const key in d) {
-        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  //search function
 
   const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+    const filteredList = customSearchHandler(testingtypeData, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(testingtypeData);
   };
 
   const columns = [
     {
       name: 'Action',
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
-      cell: row => (
+      cell: (row) => (
         <div className="btn-group" role="group">
           <button
             type="button"
             className="btn btn-outline-secondary"
             data-bs-toggle="modal"
             data-bs-target="#edit"
-            onClick={e => {
+            onClick={(e) => {
               dispatch(
                 handleModalOpen({
                   showModal: true,
                   modalData: row,
-                  modalHeader: 'Edit Testing Type',
-                }),
+                  modalHeader: 'Edit Testing Type'
+                })
               );
             }}
           >
@@ -87,26 +92,26 @@ function TestingTypeComponent() {
           </button>
         </div>
       ),
-      width: '80px',
+      width: '80px'
     },
     {
       name: 'Sr',
-      selector: row => row.counter,
+      selector: (row) => row.counter,
       sortable: true,
-      width: '60px',
+      width: '60px'
     },
 
     {
       name: 'Testing Type',
-      selector: row => row.testing_type,
+      selector: (row) => row.testing_type,
       sortable: true,
-      width: '125px',
+      width: '125px'
     },
     {
       name: 'Status',
-      selector: row => row.is_active,
+      selector: (row) => row.is_active,
       sortable: true,
-      cell: row => (
+      cell: (row) => (
         <div>
           {row.is_active == 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
@@ -120,116 +125,46 @@ function TestingTypeComponent() {
           )}
         </div>
       ),
-      width: '100px',
+      width: '100px'
     },
     {
       name: 'Created At',
-      selector: row => row.created_at,
+      selector: (row) => row.created_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Created By',
-      selector: row => row.created_by,
+      selector: (row) => row.created_by,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated At',
-      selector: row => row.updated_at,
+      selector: (row) => row.updated_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated By',
-      selector: row => row.updated_by,
+      selector: (row) => row.updated_by,
       sortable: true,
-      width: '175px',
-    },
+      width: '175px'
+    }
   ];
 
   const loadData = async () => {};
 
-  const handleForm = id => async e => {
+  const handleForm = (id) => async (e) => {
     e.preventDefault();
 
     const form = new FormData(e.target);
     if (!id) {
       dispatch(postTesting(form));
       dispatch(testingData());
-
-      //   .postTestingType(form)
-      //   .then((res) => {
-      //     if (res.status === 200) {
-      //       if (res.data.status === 1) {
-      //         setNotify({ type: "success", message: res.data.message });
-      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
-      //         loadData();
-      //       } else {
-      //         setNotify({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       setNotify({ type: "danger", message: res.message });
-      //       new ErrorLogService().sendErrorLog(
-      //         "State",
-      //         "Create_State",
-      //         "INSERT",
-      //         res.message
-      //       );
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     const { response } = error;
-      //     const { request, ...errorObject } = response;
-      //     setNotify({ type: "danger", message: "Request Error !!!" });
-      //     new ErrorLogService().sendErrorLog(
-      //       "State",
-      //       "Create_State",
-      //       "INSERT",
-      //       errorObject.data.message
-      //     );
-      //   });
     } else {
       dispatch(updateTesting({ id: id, payload: form }));
       dispatch(testingData());
-
-      //   .updateTestingType(id, form)
-      //   .then((res) => {
-      //     if (res.status === 200) {
-      //       if (res.data.status === 1) {
-      //         setNotify({ type: "success", message: res.data.message });
-      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
-      //         loadData();
-      //       } else {
-      //         setNotify({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       setNotify({ type: "danger", message: res.message });
-      //       new ErrorLogService().sendErrorLog(
-      //         "State",
-      //         "Edit_State",
-      //         "INSERT",
-      //         res.message
-      //       );
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     const { response } = error;
-      //     const { request, ...errorObject } = response;
-      //     setNotify({ type: "danger", message: "Request Error !!!" });
-      //     new ErrorLogService().sendErrorLog(
-      //       "State",
-      //       "Edit_State",
-      //       "INSERT",
-      //       errorObject.data.message
-      //     );
-      //   });
-    }
-  };
-
-  const handleKeyDown = event => {
-    if (event.key === 'Enter') {
-      handleSearch();
     }
   };
 
@@ -241,6 +176,13 @@ function TestingTypeComponent() {
       dispatch(getRoles());
     }
   }, []);
+  useEffect(() => {
+    setFilteredData(testingtypeData);
+  }, [testingtypeData]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -264,8 +206,8 @@ function TestingTypeComponent() {
                       handleModalOpen({
                         showModal: true,
                         modalData: null,
-                        modalHeader: 'Add Testing Type',
-                      }),
+                        modalHeader: 'Add Testing Type'
+                      })
                     );
                   }}
                 >
@@ -279,42 +221,14 @@ function TestingTypeComponent() {
         }}
       />
 
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by Testing Type ...."
-              ref={searchRef}
-              onKeyDown={handleKeyDown}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              onClick={handleSearch}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Testing Type Records"
-            />
-          </div>
-        </div>
-      </div>
+      <SearchBar
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by ...."
+        exportFileName="Testing Type Master Record"
+        exportData={exportData}
+      />
 
       <div className="card mt-2">
         <div className="card-body">
@@ -323,7 +237,7 @@ function TestingTypeComponent() {
               {testingtypeData && (
                 <DataTable
                   columns={columns}
-                  data={testingtypeData}
+                  data={filteredData}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
@@ -339,7 +253,10 @@ function TestingTypeComponent() {
       </div>
 
       <Modal centered show={modal.showModal}>
-        <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
+        <form
+          method="post"
+          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+        >
           <Modal.Header
             closeButton
             onClick={() => {
@@ -347,8 +264,8 @@ function TestingTypeComponent() {
                 handleModalClose({
                   showModal: false,
                   modalData: '',
-                  modalHeader: '',
-                }),
+                  modalHeader: ''
+                })
               );
             }}
           >
@@ -368,11 +285,15 @@ function TestingTypeComponent() {
                     name="testing_type"
                     maxLength={25}
                     required
-                    defaultValue={modal.modalData ? modal.modalData.testing_type : ''}
+                    defaultValue={
+                      modal.modalData ? modal.modalData.testing_type : ''
+                    }
                   />
                 </div>
                 <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">Remark :</label>
+                  <label className="form-label font-weight-bold">
+                    Remark :
+                  </label>
                   <input
                     type="text"
                     className="form-control form-control-sm"
@@ -405,7 +326,10 @@ function TestingTypeComponent() {
                                 : false
                             }
                           />
-                          <label className="form-check-label" htmlFor="is_active_1">
+                          <label
+                            className="form-check-label"
+                            htmlFor="is_active_1"
+                          >
                             Active
                           </label>
                         </div>
@@ -420,10 +344,15 @@ function TestingTypeComponent() {
                             value="0"
                             readOnly={modal.modalData ? false : true}
                             defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0 ? true : false
+                              modal.modalData && modal.modalData.is_active === 0
+                                ? true
+                                : false
                             }
                           />
-                          <label className="form-check-label" htmlFor="is_active_0">
+                          <label
+                            className="form-check-label"
+                            htmlFor="is_active_0"
+                          >
                             Deactive
                           </label>
                         </div>
@@ -442,7 +371,7 @@ function TestingTypeComponent() {
                 style={{
                   backgroundColor: '#484C7F',
                   width: '80px',
-                  padding: '8px',
+                  padding: '8px'
                 }}
               >
                 Add
@@ -467,8 +396,8 @@ function TestingTypeComponent() {
                   handleModalClose({
                     showModal: false,
                     modalData: '',
-                    modalHeader: '',
-                  }),
+                    modalHeader: ''
+                  })
                 );
               }}
             >

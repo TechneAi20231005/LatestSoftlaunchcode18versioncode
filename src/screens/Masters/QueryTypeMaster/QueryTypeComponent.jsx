@@ -22,6 +22,8 @@ import CustomerService from '../../../services/MastersService/CustomerService';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBar from '../../../components/Common/SearchBar ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function QueryTypeComponent() {
   const dispatch = useDispatch();
@@ -31,6 +33,8 @@ function QueryTypeComponent() {
 
   const [dataa, setDataa] = useState(null);
   const [isActive, setIsActive] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -140,10 +144,17 @@ function QueryTypeComponent() {
     });
   }
 
+  //search function
+
   const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+    const filteredList = customSearchHandler(data, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
   };
 
   const [queryGroups, setQueryGroups] = useState();
@@ -808,6 +819,14 @@ function QueryTypeComponent() {
   }, []);
 
   useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
+
+  useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
@@ -843,79 +862,31 @@ function QueryTypeComponent() {
             );
           }}
         />
-
-        <div className="card card-body">
-          <div className="row">
-            <div className="col-md-9">
-              <input
-                type="text"
-                id="search_result"
-                className="form-control"
-                placeholder="Search by Query Type Name...."
-                ref={searchRef}
-                onKeyDown={handleKeyDown}
-              />
-            </div>
-            <div className="col-md-3">
-              <button
-                className="btn btn-sm btn-warning text-white"
-                type="button"
-                onClick={handleSearch}
-                style={{ marginTop: '0px', fontWeight: '600' }}
-              >
-                <i className="icofont-search-1 "></i> Search
-              </button>
-              <button
-                className="btn btn-sm btn-info text-white"
-                type="button"
-                onClick={() => window.location.reload(false)}
-                style={{ marginTop: '0px', fontWeight: '600' }}
-              >
-                <i className="icofont-refresh text-white"></i> Reset
-              </button>
-              <ExportToExcel
-                className="btn btn-sm btn-danger"
-                apiData={exportData}
-                fileName="Query Type master Records"
-              />
-            </div>
-          </div>
-        </div>
+        <SearchBar
+          setSearchTerm={setSearchTerm}
+          handleSearch={handleSearch}
+          handleReset={handleReset}
+          placeholder="Search by query name...."
+          exportFileName="Query Type Master Record"
+          exportData={exportData}
+        />
 
         <div className="card mt-2">
-          <div className="card-body">
-            <div className="row clearfix g-3">
-              <div className="col-sm-12">
-                {isLoading && <TableLoadingSkelton />}
-                {!isLoading && data && (
-                  <DataTable
-                    columns={columns}
-                    data={data}
-                    defaultSortField="title"
-                    pagination
-                    progressPending={isLoading}
-                    progressComponent={<TableLoadingSkelton />}
-                    selectableRows={false}
-                    className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                    highlightOnHover={true}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
+          {isLoading && <TableLoadingSkelton />}
+          {!isLoading && data && (
+            <DataTable
+              columns={columns}
+              data={filteredData}
+              defaultSortField="title"
+              pagination
+              progressPending={isLoading}
+              progressComponent={<TableLoadingSkelton />}
+              selectableRows={false}
+              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+              highlightOnHover={true}
+            />
+          )}
         </div>
-
-        {/* <Modal show={showLoaderModal} centered>
-          <Modal.Body className="text-center">
-            <Spinner animation="grow" variant="primary" />
-            <Spinner animation="grow" variant="secondary" />
-            <Spinner animation="grow" variant="success" />
-            <Spinner animation="grow" variant="danger" />
-            <Spinner animation="grow" variant="warning" />
-            <Spinner animation="grow" variant="info" />
-            <Spinner animation="grow" variant="dark" />
-          </Modal.Body>
-        </Modal> */}
 
         <Modal
           centered
