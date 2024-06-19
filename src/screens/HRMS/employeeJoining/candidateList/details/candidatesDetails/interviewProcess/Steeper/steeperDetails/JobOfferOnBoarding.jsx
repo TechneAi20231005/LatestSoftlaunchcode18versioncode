@@ -8,7 +8,8 @@ import { useLocation } from 'react-router-dom';
 import {
   CustomCurrencyInput,
   CustomDropdown,
-  CustomInput
+  CustomInput,
+  CustomReactSelect
 } from '../../../../../../../../../components/custom/inputs/CustomInputs';
 import { getBranchMasterListThunk } from '../../../../../../../../../redux/services/hrms/employeeJoining/branchMaster';
 import { getDesignationData } from '../../../../../../../../Dashboard/DashboardAction';
@@ -81,24 +82,32 @@ function JobOfferOnBoarding() {
   };
 
   // // dropdown data
-  const preferredRole = designationMasterList
-    ?.filter((item) => item?.is_active === 1)
-    ?.map((item) => ({
-      label: item?.designation,
-      value: item?.id
-    }));
+  const preferredDesignation = [
+    { label: 'Select', value: '', isDisabled: true },
+    ...(designationMasterList
+      ?.filter((item) => item?.is_active === 1)
+      ?.map((item) => ({
+        label: item?.designation,
+        value: item?.id
+      })) || [])
+  ];
 
-  const locationType = branchMasterList
-    ?.filter((item) => item?.is_active === 1)
-    ?.map((item) => ({
-      label: item?.location_name,
-      value: item?.id
-    }));
+  const locationType = [
+    { label: 'Select', value: '', isDisabled: true },
+    ...(branchMasterList
+      ?.filter((item) => item?.is_active === 1)
+      ?.map((item) => ({
+        label: item?.location_name,
+        value: item?.id
+      })) || [])
+  ];
 
   const remarkType = [
-    ...remarkMasterList
+    { label: 'Select', value: '', isDisabled: true },
+    ...(remarkMasterList
       ?.filter((item) => item?.is_active === 1)
-      ?.map((item) => ({ label: item?.remark_description, value: item?.id })),
+      ?.map((item) => ({ label: item?.remark_description, value: item?.id })) ||
+      []),
     { label: 'Other', value: 0 }
   ];
 
@@ -300,8 +309,8 @@ function JobOfferOnBoarding() {
                   <Row className="row_gap_3 ">
                     <Col sm={6} md={6} lg={4}>
                       <Field
-                        data={preferredRole}
-                        component={CustomDropdown}
+                        options={preferredDesignation}
+                        component={CustomReactSelect}
                         name="designation_id"
                         label="Designation"
                         placeholder={
@@ -315,8 +324,8 @@ function JobOfferOnBoarding() {
 
                     <Col sm={6} md={6} lg={4}>
                       <Field
-                        data={locationType}
-                        component={CustomDropdown}
+                        options={locationType}
+                        component={CustomReactSelect}
                         name="location_id"
                         label="Location"
                         placeholder={
@@ -444,8 +453,8 @@ function JobOfferOnBoarding() {
                     <Row>
                       <Col sm={12}>
                         <Field
-                          component={CustomDropdown}
-                          data={remarkType}
+                          component={CustomReactSelect}
+                          options={remarkType}
                           name="remark_id"
                           label="Remark Title"
                           placeholder={
