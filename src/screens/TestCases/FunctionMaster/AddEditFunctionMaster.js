@@ -1,34 +1,34 @@
-import React from "react";
-import { Field, Form, Formik } from "formik";
-import { Col, Row } from "react-bootstrap";
-import { useDispatch } from "react-redux";
+import React from 'react';
+import { Field, Form, Formik } from 'formik';
+import { Col, Row } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
 
 import {
   CustomInput,
-  CustomRadioButton,
-} from "../../../components/custom/inputs/CustomInputs";
-import { RenderIf } from "../../../utils";
+  CustomRadioButton
+} from '../../../components/custom/inputs/CustomInputs';
+import { RenderIf } from '../../../utils';
 
 import {
   addFunctionMasterThunk,
   editFunctionMasterThunk,
-  getFunctionMasterListThunk,
-} from "../../../redux/services/testCases/functionMaster";
-import { addFunctionMasterValidation } from "./Validation/AddFunctionMaster";
-import CustomModal from "../../../components/custom/modal/CustomModal";
+  getFunctionMasterListThunk
+} from '../../../redux/services/testCases/functionMaster';
+import { addFunctionMasterValidation } from './Validation/AddFunctionMaster';
+import CustomModal from '../../../components/custom/modal/CustomModal';
 
-function AddFunctionMasterModal({ show, close, type, currentFunctionData }) {
+function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
   const dispatch = useDispatch();
   const addEditFunctionInitialValue = {
-    function_name: type === "EDIT" ? currentFunctionData?.function_name : "",
-    remark: type === "EDIT" ? currentFunctionData?.remark || "" : "",
-    is_active: type === "EDIT" ? currentFunctionData?.is_active?.toString() : 1,
+    function_name: type === 'EDIT' ? currentFunctionData?.function_name : '',
+    remark: type === 'EDIT' ? currentFunctionData?.remark || '' : '',
+    is_active: type === 'EDIT' ? currentFunctionData?.is_active?.toString() : 1
   };
 
   // // function
 
   const handleAddEditFunction = ({ formData }) => {
-    if (type === "ADD") {
+    if (type === 'ADD') {
       dispatch(
         addFunctionMasterThunk({
           formData: formData,
@@ -36,7 +36,7 @@ function AddFunctionMasterModal({ show, close, type, currentFunctionData }) {
             close();
             dispatch(getFunctionMasterListThunk());
           },
-          onErrorHandler: () => {},
+          onErrorHandler: () => {}
         })
       );
     } else {
@@ -48,7 +48,7 @@ function AddFunctionMasterModal({ show, close, type, currentFunctionData }) {
             close();
             dispatch(getFunctionMasterListThunk());
           },
-          onErrorHandler: () => {},
+          onErrorHandler: () => {}
         })
       );
     }
@@ -58,7 +58,7 @@ function AddFunctionMasterModal({ show, close, type, currentFunctionData }) {
     <>
       <CustomModal
         show={show}
-        title={`${type === "ADD" ? "Add" : "Edit"} Function Master`}
+        title={`${type === 'ADD' ? 'Add' : 'Edit'} Function Master`}
         width="md"
       >
         <Formik
@@ -89,7 +89,7 @@ function AddFunctionMasterModal({ show, close, type, currentFunctionData }) {
                   />
                 </Col>
 
-                <RenderIf render={type === "EDIT"}>
+                <RenderIf render={type === 'EDIT'}>
                   <div className="d-flex align-items-center mt-3">
                     <p className="mb-2 pe-2">
                       Status<span className="mendatory_sign">*</span> :
@@ -120,7 +120,7 @@ function AddFunctionMasterModal({ show, close, type, currentFunctionData }) {
                   type="submit"
                   disabled={!dirty}
                 >
-                  {type === "ADD" ? "Save" : "Update"}
+                  {type === 'ADD' ? 'Save' : 'Update'}
                 </button>
                 <button
                   onClick={() => close()}
@@ -138,4 +138,4 @@ function AddFunctionMasterModal({ show, close, type, currentFunctionData }) {
   );
 }
 
-export default AddFunctionMasterModal;
+export default AddEditFunctionMaster;
