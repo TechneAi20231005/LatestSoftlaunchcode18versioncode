@@ -1,98 +1,85 @@
-import React, { useEffect, useState, useRef } from "react";
-import DataTable from "react-data-table-component";
-import ErrorLogService from "../../services/ErrorLogService";
-import UserService from "../../services/MastersService/UserService";
-import ReportService from "../../services/ReportService/ReportService";
-import PageHeader from "../../components/Common/PageHeader";
-import Select from "react-select";
-import { Spinner, Modal } from "react-bootstrap";
-import * as Validation from "../../components/Utilities/Validation";
-import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
-import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
-import { Astrick } from "../../components/Utilities/Style";
-import { useDispatch, useSelector } from "react-redux";
-import { getRoles } from "../Dashboard/DashboardAction";
+import React, { useEffect, useState } from 'react';
+import DataTable from 'react-data-table-component';
+import ErrorLogService from '../../services/ErrorLogService';
+import UserService from '../../services/MastersService/UserService';
+import ReportService from '../../services/ReportService/ReportService';
+import PageHeader from '../../components/Common/PageHeader';
+import Select from 'react-select';
+
+import * as Validation from '../../components/Utilities/Validation';
+import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { getRoles } from '../Dashboard/DashboardAction';
+import TableLoadingSkelton from '../../components/custom/loader/TableLoadingSkelton';
+import DropdownLoadingSkeleton from '../../components/custom/loader/DropdownLoadingSkeleton';
 
 function UserTaskReportComponent() {
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
   const dispatch = useDispatch();
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 24)
+  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  const [isLoading, setISLoading] = useState(false);
+
+  const isMenuRoleChecked = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 24)
   );
 
   const [userData, setUserData] = useState(null);
   const [data, setData] = useState(null);
 
   const [exportData, setExportData] = useState(null);
+  const [searchPerformed, setSearchPerformed] = useState(false);
 
   const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
 
-  const [todateformat, setTodateformat] = useState("");
-  const [fromdateformat, setFromdateformat] = useState("");
-  const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null)
-  // const [datePicker, setDatePicker] = useState({
-  //     fromDate: "",
-  //     toDate: ""
-  // })
-
-  // const searchRef = useRef();
-  // const handleSearch = () => {
-  //     const search = searchRef.current.value;
-  //     const temp = data.filter(d => {
-  //         return d.task_name.toLowerCase().match(new RegExp(search.toLowerCase(), 'g'))
-  //     });
-  //     console.log(temp)
-  //     // setData({...data, temp});
-  //     setData(temp)
-  // }
+  const [todateformat, setTodateformat] = useState('');
+  const [fromdateformat, setFromdateformat] = useState('');
 
   const columns = [
     {
-      name: "Sr No",
+      name: 'Sr No',
       selector: (row) => row.sr,
       sortable: true,
-      width: "100px",
+      width: '100px'
     },
     {
-      name: "Ticket Id",
+      name: 'Ticket Id',
       selector: (row) => row.ticket_id,
       sortable: true,
-      width: "150px",
+      width: '150px'
     },
-    { name: "Task Name", selector: (row) => row.task_name, sortable: true },
-    { name: "User Name", selector: (row) => row.user_name, sortable: true },
+    { name: 'Task Name', selector: (row) => row.task_name, sortable: true },
+    { name: 'User Name', selector: (row) => row.user_name, sortable: true },
     {
-      name: "Total Worked",
+      name: 'Total Worked',
       selector: (row) => row.total_worked,
-      sortable: true,
+      sortable: true
     },
-    { name: "Status", selector: (row) => row.status, sortable: true },
-    { name: "Updated At", selector: (row) => row.updated_at, sortable: true },
+    { name: 'Status', selector: (row) => row.status, sortable: true },
+    { name: 'Updated At', selector: (row) => row.updated_at, sortable: true }
   ];
 
   const loadData = async () => {
     setShowLoaderModal(true);
     const tempUserData = [];
     const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
+      'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         setShowLoaderModal(false);
         const data = res.data.data.filter(
-          (d) => d.is_active === 1 && d.account_for === "SELF"
+          (d) => d.is_active === 1 && d.account_for === 'SELF'
         );
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,
             label:
               data[key].first_name +
-              " " +
+              ' ' +
               data[key].last_name +
-              " (" +
+              ' (' +
               data[key].id +
-              ")",
+              ')'
           });
         }
         const aa = tempUserData.sort(function (a, b) {
@@ -102,57 +89,48 @@ function UserTaskReportComponent() {
       }
     });
 
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //     if (res.status === 200) {
-    //         if (res.data.status == 1) {
-    //             setShowLoaderModal(false)
-    //             const getRoleId = sessionStorage.getItem("role_id");
-    //             setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-    //         }
-    //     }
-    // })
     dispatch(getRoles);
   };
 
   const handleFromDate = (e) => {
     const gettodatevalue = e.target.value;
-    const setdateformat = gettodatevalue.split("-");
+    const setdateformat = gettodatevalue.split('-');
     const settoyear = setdateformat[0];
     const settomonth = setdateformat[1];
     const settodate = setdateformat[2];
-    const settodateformat = settoyear + "" + settomonth + "" + settodate;
+    const settodateformat = settoyear + '' + settomonth + '' + settodate;
     setTodate(gettodatevalue);
     setTodateformat(settodateformat);
   };
 
   const handleToDate = (e) => {
     const getfromdatevalue = e.target.value;
-    const setfromformat = getfromdatevalue.split("-");
+    const setfromformat = getfromdatevalue.split('-');
     const setfromyear = setfromformat[0];
     const setfrommonth = setfromformat[1];
     const setfromdate = setfromformat[2];
     const setfromformatdate =
-      setfromyear + "" + setfrommonth + "" + setfromdate;
+      setfromyear + '' + setfrommonth + '' + setfromdate;
     setFromdate(getfromdatevalue);
     setFromdateformat(setfromformatdate);
   };
 
   const handleForm = async (e) => {
     e.preventDefault();
-    setShowLoaderModal(true);
+
+    setISLoading(true);
 
     const formData = new FormData(e.target);
-    var a = JSON.stringify(Object.fromEntries(formData));
 
     if (todateformat > fromdateformat) {
-      alert("Please select Date After From date");
+      alert('Please select Date After From date');
     } else {
-      var flag = 1;
       await new ReportService()
         .getUserTaskReport(formData)
         .then((res) => {
           if (res.status === 200) {
             setShowLoaderModal(false);
+            setSearchPerformed(true);
             const tempData = [];
             const exportTempData = [];
 
@@ -167,11 +145,12 @@ function UserTaskReportComponent() {
                 user_name: temp[key].employee_name,
                 total_worked: temp[key].total_worked,
                 status: temp[key].status,
-                updated_at: temp[key].updated_at,
+                updated_at: temp[key].updated_at
               });
             }
             setData(null);
             setData(tempData);
+            setISLoading(false);
             let count = 1;
             for (const key in temp) {
               exportTempData.push({
@@ -181,16 +160,16 @@ function UserTaskReportComponent() {
                 user_name: temp[key].employee_name,
                 total_worked: temp[key].total_worked,
                 status: temp[key].status,
-                updated_at: temp[key].updated_at,
+                updated_at: temp[key].updated_at
               });
             }
             setExportData(null);
             setExportData(exportTempData);
           } else {
             new ErrorLogService().sendErrorLog(
-              "UserTask",
-              "Get_UserTask",
-              "INSERT",
+              'UserTask',
+              'Get_UserTask',
+              'INSERT',
               res.message
             );
           }
@@ -199,9 +178,9 @@ function UserTaskReportComponent() {
           const { response } = error;
           const { request, ...errorObject } = response;
           new ErrorLogService().sendErrorLog(
-            "UserTask",
-            "Get_UserTask",
-            "INSERT",
+            'UserTask',
+            'Get_UserTask',
+            'INSERT',
             errorObject.data.message
           );
         });
@@ -209,7 +188,7 @@ function UserTaskReportComponent() {
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       handleForm();
     }
   };
@@ -219,18 +198,16 @@ function UserTaskReportComponent() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[0]?.can_read === 0) {
-      // alert("Rushi")
-
+    if (isMenuRoleChecked && isMenuRoleChecked[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, [checkRole]);
+  }, [isMenuRoleChecked]);
 
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="User Task Report" />
 
-      <div className="card mt-2" style={{ zIndex: 10 }}>
+      <div className="card mt-2">
         <div className="card-body">
           <form onSubmit={handleForm}>
             <div className="row">
@@ -238,14 +215,17 @@ function UserTaskReportComponent() {
                 <label>
                   <b>Select User :</b>
                 </label>
-                <Select
-                  isMulti
-                  isSearchable={true}
-                  name="user_id[]"
-                  className="basic-multi-select"
-                  classNamePrefix="select"
-                  options={userData}
-                />
+                {showLoaderModal && <DropdownLoadingSkeleton />}
+                {!showLoaderModal && userData && (
+                  <Select
+                    isMulti
+                    isSearchable={true}
+                    name="user_id[]"
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                    options={userData}
+                  />
+                )}
               </div>
               <div className="col-md-3">
                 <label>
@@ -286,49 +266,44 @@ function UserTaskReportComponent() {
                 />
               </div>
 
-              <div className="col-md-2">
-                <button
-                  className="btn btn-sm btn-warning text-white"
-                  type="submit"
-                  style={{ marginTop: "20px", fontWeight: "600" }}
-                >
-                  <i className="icofont-search-1 "></i> Search
-                </button>
-                <button
-                  className="btn btn-sm btn-info text-white"
-                  type="button"
-                  onClick={() => window.location.reload(false)}
-                  style={{ marginTop: "20px", fontWeight: "600" }}
-                >
-                  <i className="icofont-refresh text-white"></i> Reset
-                </button>
+              <div className="row mt-4">
+                <div className="col-md-6 ">
+                  <button
+                    className="btn btn-sm btn-warning text-white"
+                    type="submit"
+                  >
+                    <i className="icofont-search-1 " /> Search
+                  </button>
+                  <button
+                    className="btn btn-sm btn-info text-white"
+                    type="button"
+                    onClick={() => window.location.reload(false)}
+                  >
+                    <i className="icofont-refresh text-white" /> Reset
+                  </button>
+                </div>
+                <div className="col-md-6 d-flex justify-content-end">
+                  {data && data.length > 0 && (
+                    <ExportToExcel
+                      className="btn btn-sm btn-danger"
+                      apiData={exportData}
+                      fileName="User Task Report"
+                    />
+                  )}
+                </div>
               </div>
             </div>
           </form>
-          {data && data.length > 0 && (
-            <div
-              className="col"
-              style={{
-                textAlign: "right",
-                marginTop: "20px",
-                fontWeight: "600",
-              }}
-            >
-              <ExportToExcel
-                className="btn btn-sm btn-danger"
-                apiData={exportData}
-                fileName="User Task Report"
-              />
-            </div>
-          )}
         </div>
       </div>
 
-      {data && data.length > 0 && (
-        <div className="card mt-2">
-          <div className="card-body">
-            <div className="row clearfix g-3">
-              <div className="col-sm-12">
+      <div className="card mt-2">
+        <div className="card-body">
+          <div className="row clearfix g-3">
+            <div className="col-sm-12">
+              {isLoading ? (
+                <TableLoadingSkelton />
+              ) : data && data.length > 0 ? (
                 <DataTable
                   columns={columns}
                   data={data}
@@ -338,22 +313,14 @@ function UserTaskReportComponent() {
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
-              </div>
+              ) : (
+                searchPerformed &&
+                !isLoading && <div className="text-center">No data found</div>
+              )}
             </div>
           </div>
         </div>
-      )}
-      <Modal show={showLoaderModal} centered>
-        <Modal.Body className="text-center">
-          <Spinner animation="grow" variant="primary" />
-          <Spinner animation="grow" variant="secondary" />
-          <Spinner animation="grow" variant="success" />
-          <Spinner animation="grow" variant="danger" />
-          <Spinner animation="grow" variant="warning" />
-          <Spinner animation="grow" variant="info" />
-          <Spinner animation="grow" variant="dark" />
-        </Modal.Body>
-      </Modal>
+      </div>
     </div>
   );
 }
