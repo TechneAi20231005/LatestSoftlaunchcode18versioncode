@@ -1,23 +1,31 @@
-import React, { useReducer, useState } from 'react';
+import React, { useReducer, useRef, useState } from 'react';
 import { Card, CardBody, Col, Container, Row, Stack } from 'react-bootstrap';
 import { Field, Form, Formik } from 'formik';
 import { QRCode } from 'react-qrcode-logo';
+import Select from 'react-select';
 
 // // static import
 import PageHeader from '../../../../components/Common/PageHeader';
 import {
   CustomInput,
+  CustomRadioButton,
   CustomReactSelect
 } from '../../../../components/custom/inputs/CustomInputs';
+import { RenderIf } from '../../../../utils';
+import { generateFormValidation } from './validation';
 import './style.scss';
-import Select from 'react-select';
 
 function GenerateFormAndQrMaster() {
   // // initial state
+  const qrRef = useRef(null);
   const formInitialValue = {
     tenant_name: '',
     source_name: '',
     job_opening_id: [],
+    branch_id: [],
+    branding_type: 'logo',
+    logo: '',
+    company_name: '',
     theme_color: '',
     company_name_color: '',
     requiter_email_id: '',
@@ -30,7 +38,7 @@ function GenerateFormAndQrMaster() {
     (prevState, nextState) => {
       return { ...prevState, ...nextState };
     },
-    { qrColor: '#000', qrType: 'squares' }
+    { qrColor: '#000', qrType: 'squares', logoPath: '' }
   );
 
   // // dropdown data
@@ -57,11 +65,38 @@ function GenerateFormAndQrMaster() {
     { label: 'jobOpening 3', value: 'jobOpening_3' },
     { label: 'jobOpening_3_jobOpening_1_jobOpening_2', value: 'jobOpening_4' }
   ];
+
+  const locationData = [
+    { label: 'Select', value: '', isDisabled: true },
+    { label: 'location 1', value: 'location_1' },
+    { label: 'location 2', value: 'location_2' },
+    { label: 'location 3', value: 'location_3' },
+    { label: 'location_3_location_1_location_2', value: 'location_4' }
+  ];
+
   const qrStyleOptions = [
     { label: 'Squares', value: 'squares' },
     { label: 'Dots', value: 'dots' },
     { label: 'Fluid', value: 'fluid' }
   ];
+
+  // // all handler
+  const downloadQrCode = () => {
+    const canvas = qrRef.current?.canvasRef?.current;
+    if (canvas) {
+      const pngUrl = canvas
+        ?.toDataURL('image/png')
+        ?.replace('image/png', 'image/octet-stream');
+      let downloadLink = document.createElement('a');
+      downloadLink.href = pngUrl;
+      downloadLink.download = `${formData?.tenant_name} QR.png`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }
+  };
+  // console.log(formData);
+  // console.log(qrStyleData);
 
   return (
     <Container fluid>
@@ -70,8 +105,14 @@ function GenerateFormAndQrMaster() {
         <Col xs={12} sm={6} md={7} xxl={8} className="pe-sm-0 form_container">
           <Card className="w-100">
             <CardBody>
-              <Formik initialValues={formInitialValue}>
-                {({ dirty, values }) => {
+              <Formik
+                initialValues={formInitialValue}
+                validationSchema={generateFormValidation}
+                onSubmit={(values, errors) => {
+                  // console.log(errors);
+                }}
+              >
+                {({ dirty, values, errors, touched, setFieldValue }) => {
                   setFormData(values);
                   return (
                     <Form>
@@ -101,6 +142,74 @@ function GenerateFormAndQrMaster() {
                           requiredField
                           isMulti
                         />
+                        <Field
+                          options={locationData}
+                          component={CustomReactSelect}
+                          name="branch_id"
+                          label="Job Location"
+                          placeholder="Select"
+                          requiredField
+                          isMulti
+                        />
+                        <div>
+                          <div className="branding_type_container">
+                            <Field
+                              component={CustomRadioButton}
+                              type="radio"
+                              name="branding_type"
+                              label="Select Logo"
+                              value="logo"
+                              inputClassName="me-1"
+                              className="ms-0"
+                            />
+                            <Field
+                              component={CustomRadioButton}
+                              type="radio"
+                              name="branding_type"
+                              label="Enter Company Name"
+                              value="text"
+                              inputClassName="me-1"
+                            />
+                          </div>
+                          <RenderIf render={values.branding_type === 'logo'}>
+                            {/* <Field
+                              component={CustomInput}
+                              type="file"
+                              name="logo"
+                              withOutLabel
+                            /> */}
+                            <input
+                              type="file"
+                              name="logo"
+                              className={`form-control ${
+                                errors.logo && touched.logo ? 'is-invalid' : ''
+                              }`}
+                              accept="image/*"
+                              onChange={(event) => {
+                                setFieldValue('logo', event.target.files[0]);
+                                setQrStyleData({
+                                  logoPath: URL.createObjectURL(
+                                    event.target.files[0]
+                                  )
+                                });
+                              }}
+                            />
+                            <RenderIf render={errors.logo && touched.logo}>
+                              <div className="invalid-feedback">
+                                {errors.logo}
+                              </div>
+                            </RenderIf>
+                          </RenderIf>
+                          <RenderIf render={values.branding_type === 'text'}>
+                            <Field
+                              component={CustomInput}
+                              type="text"
+                              name="company_name"
+                              withOutLabel
+                              placeholder="Enter Company Name"
+                            />
+                          </RenderIf>
+                        </div>
                         <Row className="row_gap_3">
                           <Col sm={6}>
                             <Field
@@ -113,14 +222,16 @@ function GenerateFormAndQrMaster() {
                             />
                           </Col>
                           <Col sm={6}>
-                            <Field
-                              component={CustomInput}
-                              type="color"
-                              name="company_name_color"
-                              label="Company Name Color"
-                              placeholder="Enter Company Color"
-                              requiredField
-                            />
+                            <RenderIf render={values.branding_type === 'text'}>
+                              <Field
+                                component={CustomInput}
+                                type="color"
+                                name="company_name_color"
+                                label="Company Name Color"
+                                placeholder="Enter Company Color"
+                                requiredField
+                              />
+                            </RenderIf>
                           </Col>
                         </Row>
                         <Field
@@ -157,10 +268,18 @@ function GenerateFormAndQrMaster() {
             <CardBody className="w-100 d-flex flex-column gap-3 justify-content-center">
               <div className="d-flex align-items-center gap-3">
                 <QRCode
+                  ref={qrRef}
                   value="https://example.com"
-                  logoImage="https://example.com/logo.png"
+                  // size={250}
+                  logoImage={qrStyleData?.logoPath}
                   fgColor={qrStyleData?.qrColor}
                   qrStyle={qrStyleData?.qrType}
+                  logoHeight={55}
+                  logoWidth={55}
+                  // logoOpacity={0.95}
+                  eyeRadius={10}
+                  logoPaddingStyle="circle"
+                  removeQrCodeBehindLogo={true}
                 />
                 <Stack className="justify-content-between">
                   <i
@@ -190,6 +309,7 @@ function GenerateFormAndQrMaster() {
                   type="button"
                   className="btn btn-dark ms-0 w-100"
                   disabled={!formData?.source_name || !formData?.tenant_name}
+                  onClick={downloadQrCode}
                 >
                   <i className="icofont-download me-2" />
                   Download
