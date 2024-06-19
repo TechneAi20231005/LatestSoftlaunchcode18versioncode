@@ -18,7 +18,7 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBar from '../../../components/Common/SearchBar ';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 
 export default function DynamicFormDropdownComponent() {
@@ -228,13 +228,14 @@ export default function DynamicFormDropdownComponent() {
           );
         }}
       />
-      <SearchBar
+      <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by dropdown name...."
         exportFileName="Dropdown Master Record"
         exportData={exportData}
+        showExportButton={true}
       />
 
       <div className="card mt-2">

@@ -16,7 +16,7 @@ import { exportTempateData, templateData } from './TemplateComponetAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
 
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBar from '../../../components/Common/SearchBar ';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 
 function TemplateComponent() {
@@ -208,13 +208,14 @@ function TemplateComponent() {
         }}
       />
 
-      <SearchBar
+      <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by template name...."
         exportFileName="Template Master Record"
         exportData={exportData}
+        showExportButton={true}
       />
 
       <div className="card mt-2">

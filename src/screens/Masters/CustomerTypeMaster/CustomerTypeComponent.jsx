@@ -23,7 +23,7 @@ import {
   handleModalOpen
 } from './CustomerTypeComponentSlice';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBar from '../../../components/Common/SearchBar ';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 
 function CustomerTypeComponent() {
@@ -277,13 +277,14 @@ function CustomerTypeComponent() {
         }}
       />
 
-      <SearchBar
+      <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by customer type name...."
         exportFileName="Customer type Record"
         exportData={exportData}
+        showExportButton={true}
       />
 
       <div className="card mt-2">

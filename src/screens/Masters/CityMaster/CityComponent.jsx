@@ -29,7 +29,7 @@ import {
 import { getRoles } from '../../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import { customSearchHandler } from '../../../utils/customFunction';
-import SearchBar from '../../../components/Common/SearchBar ';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 function CityComponent() {
   // initial state
 
@@ -281,12 +281,7 @@ function CityComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && (
-        <>
-          {' '}
-          <Alert alertData={notify} />{' '}
-        </>
-      )}
+      {notify && <Alert alertData={notify} />}
 
       <Container fluid>
         <PageHeader
@@ -319,15 +314,16 @@ function CityComponent() {
           }}
         />
 
-        <SearchBar
+        <SearchBoxHeader
           setSearchTerm={setSearchTerm}
           handleSearch={handleSearch}
           handleReset={handleReset}
           placeholder="Search by city name...."
           exportFileName="City Master Record"
           exportData={exportCityData}
+          showExportButton={true}
         />
-        <div className="mt-3">
+        <div className="mt-2">
           {cityData && (
             <DataTable
               columns={columns}

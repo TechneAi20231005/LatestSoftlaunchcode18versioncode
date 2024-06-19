@@ -13,7 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getEmployeeData, getRoles } from '../../Dashboard/DashboardAction';
 import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBar from '../../../components/Common/SearchBar ';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 
 function UserComponent() {
@@ -238,7 +238,7 @@ function UserComponent() {
   }, [searchTerm]);
 
   return (
-    <div className="container-xxl">
+    <div className="container-xxl px-0">
       <PageHeader
         headerTitle="User Master"
         renderRight={() => {
@@ -258,15 +258,16 @@ function UserComponent() {
           );
         }}
       />
-      <SearchBar
+      <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by user name...."
         exportFileName="User Master Record"
         exportData={exportData}
+        showExportButton={true}
       />
-      <div className="card mt-2">
+      <div className="card mt-2 px-0">
         {employeeData && (
           <DataTable
             columns={columns}

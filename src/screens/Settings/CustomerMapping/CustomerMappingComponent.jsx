@@ -21,7 +21,7 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import { customSearchHandler } from '../../../utils/customFunction';
-import SearchBar from '../../../components/Common/SearchBar ';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 export default function CustomerMappingComponent() {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -234,13 +234,14 @@ export default function CustomerMappingComponent() {
           );
         }}
       />
-      <SearchBar
+      <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by...."
         exportFileName="Customer Mapping Master Record"
         exportData={exportData}
+        showExportButton={true}
       />
 
       <div className=" mt-2">

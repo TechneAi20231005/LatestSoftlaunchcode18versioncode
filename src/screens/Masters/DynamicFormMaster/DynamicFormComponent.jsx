@@ -17,7 +17,7 @@ import { dynamicFormData } from '../DynamicFormDropdown/Slices/DynamicFormDropDo
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBar from '../../../components/Common/SearchBar ';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 
 function DynamicFormComponent() {
@@ -213,13 +213,14 @@ function DynamicFormComponent() {
           );
         }}
       />
-      <SearchBar
+      <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by form name...."
         exportFileName="Dynamic form Master Record"
         exportData={exportData}
+        showExportButton={true}
       />
 
       <div className="card mt-2">

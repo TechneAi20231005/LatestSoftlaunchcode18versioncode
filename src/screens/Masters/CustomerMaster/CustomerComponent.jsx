@@ -14,7 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { getCustomerData, getRoles } from '../../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBar from '../../../components/Common/SearchBar ';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 
 function CustomerComponent() {
@@ -182,13 +182,14 @@ function CustomerComponent() {
         }}
       />
 
-      <SearchBar
+      <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by customer name...."
         exportFileName="customer Master Record"
         exportData={exportCustomerData}
+        showExportButton={true}
       />
 
       <div className="card mt-2">

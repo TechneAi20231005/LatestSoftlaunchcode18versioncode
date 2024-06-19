@@ -21,7 +21,7 @@ import {
 } from '../../Dashboard/DashboardAction';
 import { handleModalInStore } from '../../Dashboard/DashbordSlice';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBar from '../../../components/Common/SearchBar ';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 function StateComponent() {
   //initial state
@@ -239,13 +239,14 @@ function StateComponent() {
           }}
         />
 
-        <SearchBar
+        <SearchBoxHeader
           setSearchTerm={setSearchTerm}
           handleSearch={handleSearch}
           handleReset={handleReset}
           placeholder="Search by state name...."
           exportFileName="State Master Record"
           exportData={exportData}
+          showExportButton={true}
         />
 
         <div className="card mt-2">

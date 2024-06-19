@@ -22,7 +22,7 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import { handleModalClose, handleModalOpen } from './StatusComponentSlice';
 import { DashbordSlice } from '../../Dashboard/DashbordSlice';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBar from '../../../components/Common/SearchBar ';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 
 function StatusComponent() {
@@ -217,13 +217,14 @@ function StatusComponent() {
           );
         }}
       />
-      <SearchBar
+      <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by status name...."
         exportFileName="status Master Record"
         exportData={exportData}
+        showExportButton={true}
       />
 
       <div className="card mt-2">

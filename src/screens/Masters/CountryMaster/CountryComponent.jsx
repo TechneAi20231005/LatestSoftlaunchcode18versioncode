@@ -25,7 +25,7 @@ import {
   handleModalClose
 } from '../../Dashboard/DashbordSlice';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBar from '../../../components/Common/SearchBar ';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 
 function CountryComponent() {
@@ -226,13 +226,14 @@ function CountryComponent() {
             );
           }}
         />
-        <SearchBar
+        <SearchBoxHeader
           setSearchTerm={setSearchTerm}
           handleSearch={handleSearch}
           handleReset={handleReset}
           placeholder="Search by country name...."
           exportFileName="Country Master Record"
           exportData={exportCountryData}
+          showExportButton={true}
         />
       </Container>
       <div className="mt-2">

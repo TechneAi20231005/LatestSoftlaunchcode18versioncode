@@ -20,7 +20,7 @@ import {
 import { handleModalClose, handleModalOpen } from './DesignationSlice';
 
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBar from '../../../components/Common/SearchBar ';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 
 function DesignationComponent() {
@@ -220,13 +220,14 @@ function DesignationComponent() {
             );
           }}
         />
-        <SearchBar
+        <SearchBoxHeader
           setSearchTerm={setSearchTerm}
           handleSearch={handleSearch}
           handleReset={handleReset}
           placeholder="Search by designation name...."
           exportFileName="Designation Master Record"
           exportData={exportDesignation}
+          showExportButton={true}
         />
 
         <div className="card mt-2">

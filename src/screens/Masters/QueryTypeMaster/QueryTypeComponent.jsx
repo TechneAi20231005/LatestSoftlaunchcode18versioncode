@@ -22,11 +22,20 @@ import CustomerService from '../../../services/MastersService/CustomerService';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBar from '../../../components/Common/SearchBar ';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 
 function QueryTypeComponent() {
+  //initial state
   const dispatch = useDispatch();
+
+  //redux state
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 14)
+  );
+
+  //local state
+
   const [notify, setNotify] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
@@ -43,18 +52,12 @@ function QueryTypeComponent() {
   });
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  const [exportData, setExportData] = useState(null);
+  const [exportData, setExportData] = useState([]);
   const [exportQueryGroupData, setExportQueryGroupData] = useState(null);
 
   const [dynamicForm, setDynamicForm] = useState(null);
 
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState(null);
-
-  const roleId = sessionStorage.getItem('role_id');
-  // const [checkRole, setCheckRole] = useState(null);
-  const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 14)
-  );
 
   // ***************************** Edit & View Popup*************************************
   const [queryGroupData, setQueryGroupData] = useState(null);
@@ -68,17 +71,6 @@ function QueryTypeComponent() {
   const [selectedcustomer, setSelectedCustomer] = useState();
   const handleModalEditPopup = (editData) => {
     setModalEditPopup(editData);
-  };
-
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => {
-    setShow(true);
-    handleModalEditPopup({
-      showModal: false,
-      modalData: '',
-      modalHeader: ''
-    });
   };
 
   // ***************************** End Edit & View Popup*************************************
@@ -126,23 +118,6 @@ function QueryTypeComponent() {
       alert('Please Search Query Group Name');
     }
   };
-  const searchRef = useRef();
-
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
 
   //search function
 
@@ -156,8 +131,6 @@ function QueryTypeComponent() {
     setSearchTerm('');
     setFilteredData(data);
   };
-
-  const [queryGroups, setQueryGroups] = useState();
 
   const handleModal = (data) => {
     setModal(data);
@@ -862,13 +835,14 @@ function QueryTypeComponent() {
             );
           }}
         />
-        <SearchBar
+        <SearchBoxHeader
           setSearchTerm={setSearchTerm}
           handleSearch={handleSearch}
           handleReset={handleReset}
           placeholder="Search by query name...."
           exportFileName="Query Type Master Record"
           exportData={exportData}
+          showExportButton={true}
         />
 
         <div className="card mt-2">

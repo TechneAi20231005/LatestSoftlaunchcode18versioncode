@@ -21,7 +21,7 @@ import {
   handleModalClose
 } from './TestingTypeComponentSlices';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBar from '../../../components/Common/SearchBar ';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 
 function TestingTypeComponent() {
@@ -221,13 +221,14 @@ function TestingTypeComponent() {
         }}
       />
 
-      <SearchBar
+      <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by ...."
         exportFileName="Testing Type Master Record"
         exportData={exportData}
+        showExportButton={true}
       />
 
       <div className="card mt-2">

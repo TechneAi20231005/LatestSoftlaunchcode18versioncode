@@ -2,13 +2,14 @@ import React from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { ExportToExcel } from '../Utilities/Table/ExportToExcel';
 
-const SearchBar = ({
+const SearchBoxHeader = ({
   setSearchTerm,
   handleSearch,
   handleReset,
   exportData,
   exportFileName,
-  placeholder
+  placeholder,
+  showExportButton
 }) => {
   return (
     <Row className="row_gap_3">
@@ -17,7 +18,7 @@ const SearchBar = ({
           type="search"
           className="form-control"
           placeholder={placeholder}
-          onChange={(e) => setSearchTerm(e.target.value)}
+          onChange={(e) => setSearchTerm(e?.target?.value)}
         />
       </Col>
       <Col
@@ -31,24 +32,27 @@ const SearchBar = ({
           type="search"
           onClick={handleSearch}
         >
-          <i className="icofont-search-1 "></i> Search
+          <i className="icofont-search-1 " /> Search
         </button>
         <button
           className="btn btn-info text-white"
           type="button"
           onClick={handleReset}
         >
-          <i className="icofont-refresh text-white"></i> Reset
+          <i className="icofont-refresh text-white" /> Reset
         </button>
-        <ExportToExcel
-          className="btn btn-danger"
-          apiData={exportData}
-          fileName={exportFileName}
-          disabled={!exportData?.length}
-        />
+        {showExportButton && (
+          <ExportToExcel
+            className="btn btn-danger"
+            apiData={exportData}
+            fileName={exportFileName}
+            disabled={!exportData?.length}
+            showExportButton={true}
+          />
+        )}
       </Col>
     </Row>
   );
 };
 
-export default SearchBar;
+export default SearchBoxHeader;

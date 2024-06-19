@@ -22,7 +22,7 @@ import { postRole } from './RoleMasterAction';
 import { handleModalOpen, handleModalClose } from './RoleMasterSlice';
 
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBar from '../../../components/Common/SearchBar ';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 
 function RoleComponent({ location }) {
@@ -268,13 +268,14 @@ function RoleComponent({ location }) {
         }}
       />
 
-      <SearchBar
+      <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by role...."
         exportFileName="Role Master Record"
         exportData={exportData}
+        showExportButton={true}
       />
 
       <div className="card mt-2">
