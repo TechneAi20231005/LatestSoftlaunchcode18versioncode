@@ -272,8 +272,8 @@ function RoleComponent({ location }) {
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
-        placeholder="Search by city name...."
-        exportFileName="City Master Record"
+        placeholder="Search by role...."
+        exportFileName="Role Master Record"
         exportData={exportData}
       />
 

@@ -29,7 +29,7 @@ function QueryTypeComponent() {
   const dispatch = useDispatch();
   const [notify, setNotify] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
 
   const [dataa, setDataa] = useState(null);
   const [isActive, setIsActive] = useState(1);
