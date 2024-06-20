@@ -95,6 +95,7 @@ function AddEditInterviewMasterModal({
 
   const [employeesName, setEmployeesName] = useState({});
 
+
   const [selectedDesignationData, setSelectedDesignationData] = useState({
     id: '',
     designationFor: ''
@@ -219,6 +220,7 @@ function AddEditInterviewMasterModal({
         );
         setEmployeesName(transformedEmployeeData);
       }
+
     } else {
       setSelectedDesignationData({ id: '', designationFor: '' });
       setEmployeesName({});
