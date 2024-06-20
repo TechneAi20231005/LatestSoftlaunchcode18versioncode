@@ -71,8 +71,19 @@ class Sidebar extends React.Component {
     } catch (error) {
     } finally {
     }
+    document.addEventListener('mousedown', this.handleClickOutside);
   }
 
+  componentWillUnmount() {
+    document.removeEventListener('mousedown', this.handleClickOutside);
+  }
+
+  handleClickOutside = (event) => {
+    const sideBar = this.sidebarRef.current;
+    if (sideBar && !sideBar.contains(event.target)) {
+      sideBar.classList.remove('open');
+    }
+  };
   openChildren(id) {
     var otherTabs = document.getElementsByClassName('has-children');
     if (otherTabs) {
