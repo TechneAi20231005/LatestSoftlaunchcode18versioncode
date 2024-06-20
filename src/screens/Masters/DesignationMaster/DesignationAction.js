@@ -2,8 +2,8 @@ import { createAsyncThunk } from "@reduxjs/toolkit";
 import DesignationService from "../../../services/MastersService/DesignationService";
 
 
-export const getDesignationData = createAsyncThunk(
-  "getDesignationData",
+export const getDesignationDataListThunk = createAsyncThunk(
+  "getDesignationDataListThunk",
   async (config, thunkapi) => {
     try {
       const service = new DesignationService();
@@ -21,7 +21,7 @@ export const postDesignationData = createAsyncThunk(
     try {
       const service = new DesignationService();
       const response = await service.postDesignation(config);
-   
+
       return response;
     } catch (error) {
       throw error;

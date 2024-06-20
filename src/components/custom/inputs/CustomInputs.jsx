@@ -21,13 +21,21 @@ export const CustomInput = ({ field, form: { touched, errors }, ...props }) => {
       <input
         {...field}
         {...props}
-        className={`form-control ${error && touch ? 'is-invalid' : ''} ${props.inputClassName}`}
+        className={`form-control ${error && touch ? 'is-invalid' : ''} ${
+          props.inputClassName
+        }`}
       />
-      {error && touch && <div className="invalid-feedback d-block mb-1">{error}</div>}
+      {error && touch && (
+        <div className="invalid-feedback d-block mb-1">{error}</div>
+      )}
     </div>
   );
 };
-export const CustomPswInput = ({ field, form: { touched, errors }, ...props }) => {
+export const CustomPswInput = ({
+  field,
+  form: { touched, errors },
+  ...props
+}) => {
   const touch = getIn(touched, field.name);
   const error = getIn(errors, field.name);
 
@@ -43,21 +51,35 @@ export const CustomPswInput = ({ field, form: { touched, errors }, ...props }) =
         <input
           {...field}
           {...props}
-          className={`form-control ${error && touch && 'is-invalid'} ${props.inputClassName} `}
+          className={`form-control ${error && touch && 'is-invalid'} ${
+            props.inputClassName
+          } `}
         />
         <div className={error && touch && 'input_invalid'}>
           {props.show ? (
-            <i onClick={() => props.setShow(false)} className="icofont-eye cp" />
+            <i
+              onClick={() => props.setShow(false)}
+              className="icofont-eye cp"
+            />
           ) : (
-            <i onClick={() => props.setShow(true)} className="icofont-eye-blocked cp" />
+            <i
+              onClick={() => props.setShow(true)}
+              className="icofont-eye-blocked cp"
+            />
           )}
         </div>
       </div>
-      {error && touch && <div className="invalid-feedback d-block mb-1">{error}</div>}
+      {error && touch && (
+        <div className="invalid-feedback d-block mb-1">{error}</div>
+      )}
     </div>
   );
 };
-export const CustomCurrencyInput = ({ field, form: { touched, errors }, ...props }) => {
+export const CustomCurrencyInput = ({
+  field,
+  form: { touched, errors },
+  ...props
+}) => {
   const touch = getIn(touched, field.name);
   const error = getIn(errors, field.name);
 
@@ -71,7 +93,9 @@ export const CustomCurrencyInput = ({ field, form: { touched, errors }, ...props
         <input
           {...field}
           {...props}
-          className={`form-control ${error && touch && 'is-invalid'} ${props.inputClassName} `}
+          className={`form-control ${error && touch && 'is-invalid'} ${
+            props.inputClassName
+          } `}
         />
 
         <i className="icofont-rupee cp" />
@@ -79,12 +103,18 @@ export const CustomCurrencyInput = ({ field, form: { touched, errors }, ...props
           <small>/{props?.duration || 'Month'}</small>
         </div>
       </div>
-      {error && touch && <div className="invalid-feedback d-block mb-1">{error}</div>}
+      {error && touch && (
+        <div className="invalid-feedback d-block mb-1">{error}</div>
+      )}
     </div>
   );
 };
 
-export const CustomTextArea = ({ field, form: { touched, errors }, ...props }) => {
+export const CustomTextArea = ({
+  field,
+  form: { touched, errors },
+  ...props
+}) => {
   const touch = getIn(touched, field.name);
   const error = getIn(errors, field.name);
 
@@ -97,14 +127,20 @@ export const CustomTextArea = ({ field, form: { touched, errors }, ...props }) =
       <textarea
         {...field}
         {...props}
-        className={`form-control ${error && touch && 'is-invalid'} ${props.inputClassName} `}
+        className={`form-control ${error && touch && 'is-invalid'} ${
+          props.inputClassName
+        } `}
       />
       {error && touch && <div className="invalid-feedback">{error}</div>}
     </div>
   );
 };
 
-export const CustomDropdown = ({ field, form: { touched, errors }, ...props }) => {
+export const CustomDropdown = ({
+  field,
+  form: { touched, errors },
+  ...props
+}) => {
   const touch = getIn(touched, field.name);
   const error = getIn(errors, field.name);
 
@@ -119,7 +155,7 @@ export const CustomDropdown = ({ field, form: { touched, errors }, ...props }) =
       <select
         {...field}
         {...props}
-        onChange={e => {
+        onChange={(e) => {
           field.onChange(e);
           if (props.handleChange) {
             props.handleChange(e);
@@ -133,7 +169,7 @@ export const CustomDropdown = ({ field, form: { touched, errors }, ...props }) =
           {props.placeholder}
         </option>
         {props.data &&
-          props.data.map(i => (
+          props.data.map((i) => (
             <option key={Math.random()} value={i.value}>
               {i.label}
             </option>
@@ -156,14 +192,20 @@ export const CustomReactSelect = ({
   const touch = getIn(touched, field.name);
   const error = getIn(errors, field.name);
   const { setFieldValue } = useFormikContext();
-  const onChange = option => {
-    setFieldValue(field.name, isMulti ? option.map(item => item.value) : option.value);
+  const onChange = (option) => {
+    setFieldValue(
+      field.name,
+      isMulti ? option.map((item) => item.value) : option.value
+    );
+    if (props.handleChange) {
+      props.handleChange(option);
+    }
   };
   const getValue = () => {
     if (options) {
       return isMulti
-        ? options.filter(option => field?.value?.indexOf(option.value) >= 0)
-        : options.find(option => option.value === field.value);
+        ? options.filter((option) => field?.value?.indexOf(option.value) >= 0)
+        : options.find((option) => option.value === field.value);
     } else {
       return isMulti ? [] : '';
     }
@@ -175,7 +217,7 @@ export const CustomReactSelect = ({
   return (
     <div className={props.styleData} style={props.style}>
       {!props.withOutLabel && (
-        <label className="sss">
+        <label>
           {props.label}
           {props.requiredField && <span className="mendatory_sign">*</span>}
         </label>
@@ -187,7 +229,9 @@ export const CustomReactSelect = ({
         placeholder={props.placeholder}
         options={props.addOtherOption ? optionsWithOther : options}
         isMulti={isMulti}
-        className={`form-control p-0 ${props.inputClassName} ${error && touch && 'is-invalid'}`}
+        className={`form-control p-0 ${props.inputClassName} ${
+          error && touch && 'is-invalid'
+        }`}
         isDisabled={disabled}
         filterOption={filterOption}
       />
@@ -196,7 +240,11 @@ export const CustomReactSelect = ({
   );
 };
 
-export const CustomRadioButton = ({ field, form: { touched, errors }, ...props }) => {
+export const CustomRadioButton = ({
+  field,
+  form: { touched, errors },
+  ...props
+}) => {
   const touch = getIn(touched, field.name);
   const error = getIn(errors, field.name);
   return (
@@ -206,9 +254,11 @@ export const CustomRadioButton = ({ field, form: { touched, errors }, ...props }
           <input
             {...props}
             {...field}
-            className={`${props.inputClassName} ${error && touch && 'is-invalid'}`}
+            className={`${props.inputClassName} ${
+              error && touch && 'is-invalid'
+            }`}
             id={props.label}
-            onChange={e => {
+            onChange={(e) => {
               field.onChange(e);
               if (props.handleChange) {
                 props.handleChange(e);
@@ -230,18 +280,24 @@ export const CustomRadioButton = ({ field, form: { touched, errors }, ...props }
   );
 };
 
-export const CustomCheckbox = ({ field, form: { touched, errors }, ...props }) => {
+export const CustomCheckbox = ({
+  field,
+  form: { touched, errors },
+  ...props
+}) => {
   const touch = getIn(touched, field.name);
   const error = getIn(errors, field.name);
   const { setFieldValue } = useFormikContext();
   return (
     <>
-      <div className="cursor-pointer custom-checkbox wrapper justify-content-start">
+      <div className="cp custom-checkbox wrapper justify-content-start">
         <input
           name={props.name}
           id={props.id}
           type="checkbox"
-          className={`${error && touch && 'is-invalid'} ${props.checkboxclass} cp`}
+          className={`${error && touch && 'is-invalid'} ${
+            props.checkboxclass
+          } cp`}
           checked={props.val}
           disabled={props.disabled}
           onChange={() => {
@@ -256,7 +312,9 @@ export const CustomCheckbox = ({ field, form: { touched, errors }, ...props }) =
           {props.label}
         </label>
       </div>
-      {error && touch && <div className="invalid-feedback d-block mt-0">{error}</div>}
+      {error && touch && (
+        <div className="invalid-feedback d-block mt-0">{error}</div>
+      )}
     </>
   );
 };
@@ -284,33 +342,39 @@ export const CustomReactDatePicker = ({
           startDate={field.value[0] ? new Date(field.value[0]) : null}
           endDate={field.value[1] ? new Date(field.value[1]) : null}
           selectsRange
-          onChange={dates => {
+          onChange={(dates) => {
             field.onChange({
               target: {
                 name: field.name,
-                value: dates,
-              },
+                value: dates
+              }
             });
           }}
-          className={`form-control ${error && touch ? 'is-invalid' : ''} ${props.inputClassName}`}
+          className={`form-control ${error && touch ? 'is-invalid' : ''} ${
+            props.inputClassName
+          }`}
         />
       ) : (
         <DatePicker
           {...field}
           {...props}
           selected={field.value ? new Date(field.value) : null}
-          onChange={date => {
+          onChange={(date) => {
             field.onChange({
               target: {
                 name: field.name,
-                value: date,
-              },
+                value: date
+              }
             });
           }}
-          className={`form-control ${error && touch ? 'is-invalid' : ''} ${props.inputClassName}`}
+          className={`form-control ${error && touch ? 'is-invalid' : ''} ${
+            props.inputClassName
+          }`}
         />
       )}
-      {error && touch && <div className="invalid-feedback d-block mb-1">{error}</div>}
+      {error && touch && (
+        <div className="invalid-feedback d-block mb-1">{error}</div>
+      )}
     </div>
   );
 };

@@ -31,7 +31,7 @@ export const updateDepartment = createAsyncThunk(
     try {
       const service = new DepartmentService();
       const response = await service.updateDepartment(config.id, config.payload);
-   
+
       return response;
     } catch (error) {
       throw error;

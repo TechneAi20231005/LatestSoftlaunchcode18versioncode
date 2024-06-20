@@ -143,12 +143,14 @@ function AddCandidatesModal({ show, close }) {
                 <Row className="row_gap_3">
                   <Col sm={6} md={6}>
                     <Field
-                      data={sourceType}
-                      component={CustomDropdown}
+                      options={sourceType}
+                      component={CustomReactSelect}
                       name="source_id"
                       label="Source"
                       placeholder={
-                        sourceMasterLoading?.getSourceMasterList ? 'Loading...' : 'Select'
+                        sourceMasterLoading?.getSourceMasterList
+                          ? 'Loading...'
+                          : 'Select'
                       }
                       requiredField
                     />
@@ -188,7 +190,9 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomReactSelect}
                       name="designation_id"
                       label="Preferred Designation"
-                      placeholder={status === 'loading' ? 'Loading...' : 'Select'}
+                      placeholder={
+                        status === 'loading' ? 'Loading...' : 'Select'
+                      }
                       requiredField
                       isMulti
                     />
@@ -200,7 +204,9 @@ function AddCandidatesModal({ show, close }) {
                       name="location_id"
                       label="Preferred Location"
                       placeholder={
-                        branchMasterLoading?.getBranchMasterList ? 'Loading...' : 'Select'
+                        branchMasterLoading?.getBranchMasterList
+                          ? 'Loading...'
+                          : 'Select'
                       }
                       requiredField
                       isMulti
@@ -270,15 +276,24 @@ function AddCandidatesModal({ show, close }) {
                       type="file"
                       name="resume_path"
                       className={`form-control ${
-                        errors.resume_path && touched.resume_path ? 'is-invalid' : ''
+                        errors.resume_path && touched.resume_path
+                          ? 'is-invalid'
+                          : ''
                       }`}
                       onChange={(event) => {
-                        setFieldValue('resume_path', event.currentTarget.files[0]);
+                        setFieldValue(
+                          'resume_path',
+                          event.currentTarget.files[0]
+                        );
                       }}
                       accept=".jpg, .jpeg, .png, .pdf, .docx,"
                     />
-                    <RenderIf render={errors.resume_path && touched.resume_path}>
-                      <div className="invalid-feedback">{errors.resume_path}</div>
+                    <RenderIf
+                      render={errors.resume_path && touched.resume_path}
+                    >
+                      <div className="invalid-feedback">
+                        {errors.resume_path}
+                      </div>
                     </RenderIf>
                   </Col>
                 </Row>
@@ -295,7 +310,11 @@ function AddCandidatesModal({ show, close }) {
                       'Add'
                     )}
                   </button>
-                  <button onClick={close} className="btn btn-shadow-light px-3" type="button">
+                  <button
+                    onClick={close}
+                    className="btn btn-shadow-light px-3"
+                    type="button"
+                  >
                     Close
                   </button>
                 </div>
