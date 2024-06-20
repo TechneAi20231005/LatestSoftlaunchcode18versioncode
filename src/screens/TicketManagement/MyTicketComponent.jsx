@@ -1060,17 +1060,17 @@ export default function MyTicketComponent() {
     {
       name: 'Action',
       button: true,
-      width: '170px',
+      width: '80px',
 
-      // width: `${
-      //   assignedToMe ? (assignedToMe.length > 0 ? '4rem' : '30rem') : 'auto'
-      // }`,
+      width: `${
+        assignedToMe ? (assignedToMe.length > 0 ? '4rem' : '20.625rem') : 'auto'
+      }`,
       cell: (row) => actionComponent(row, 'ASSIGNED_TO_ME')
     },
-    { name: 'Sr', width: '170px', cell: (row, index) => index + 1 },
+    { name: 'Sr', width: '80px', cell: (row, index) => index + 1 },
     {
       name: 'Ticket Id',
-      width: '170px',
+      width: '150px',
       cell: (row) => (
         <Link to={`/${_base}/Ticket/View/` + row.id}>
           <span className="fw-bold text-secondary">{row.ticket_id}</span>
@@ -1080,7 +1080,7 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Description',
-      width: '170px',
+      width: '150px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -1119,17 +1119,17 @@ export default function MyTicketComponent() {
       name: 'Ticket Date',
       selector: (row) => row.ticket_date,
       sortable: true,
-      width: '170px'
+      width: '150px'
     },
     {
       name: 'Expected Solve Date',
-      width: '170px',
+      width: '150px',
       selector: (row) => row.expected_solve_date,
       sortable: true
     },
     {
       name: 'Priority',
-      width: '170px',
+      width: '150px',
       cell: (row) => (
         <div>
           {row.priority === 'Very High' && (
@@ -1182,7 +1182,13 @@ export default function MyTicketComponent() {
       cell: (row) => row.assign_to_user,
       sortable: true
     },
-    { name: 'Created By', cell: (row) => row.created_by_name, sortable: true }
+    {
+      name: 'Created By',
+      width: '150px',
+
+      cell: (row) => row.created_by_name,
+      sortable: true
+    }
   ];
 
   const createdByMeColumns = [
@@ -1338,7 +1344,7 @@ export default function MyTicketComponent() {
   const unpassedColumns = [
     {
       name: 'Action',
-      width: '170px',
+      width: '150px',
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
@@ -1368,7 +1374,7 @@ export default function MyTicketComponent() {
         </div>
       ),
       selector: 'selectAll',
-      width: '170px',
+      width: '150px',
       center: true,
       cell: (row) => (
         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1384,13 +1390,13 @@ export default function MyTicketComponent() {
 
     {
       name: 'Sr',
-      width: '170px',
+      width: '150px',
       center: true,
       cell: (row, index) => index + 1
     },
     {
       name: 'Ticket Id',
-      width: '170px',
+      width: '150px',
       cell: (row) => (
         <Link to={`/${_base}/Ticket/View/` + row.id}>
           <span className="fw-bold text-secondary">{row.ticket_id}</span>
@@ -1400,7 +1406,7 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Description',
-      width: '170px',
+      width: '150px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -1437,18 +1443,18 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Ticket Date',
-      width: '170px',
+      width: '150px',
       selector: (row) => row.ticket_date
     },
     {
       name: 'Expected Solve Date',
-      width: '170px',
+      width: '150px',
       selector: (row) => row.expected_solve_date,
       sortable: true
     },
     {
       name: 'Priority',
-      width: '170px',
+      width: '150px',
       cell: (row) => (
         <div>
           {row.priority === 'Very High' && (
@@ -1481,7 +1487,13 @@ export default function MyTicketComponent() {
       cell: (row) => row.query_type_name,
       sortable: true
     },
-    { name: 'Status', cell: (row) => row.status_name, sortable: true },
+    {
+      name: 'Status',
+      width: '150px',
+
+      cell: (row) => row.status_name,
+      sortable: true
+    },
     {
       name: 'Assign To Dept',
       width: '150px',
@@ -1494,7 +1506,13 @@ export default function MyTicketComponent() {
       cell: (row) => row.assign_to_user,
       sortable: true
     },
-    { name: 'Created By', cell: (row) => row.created_by_name, sortable: true },
+    {
+      name: 'Created By',
+      width: '150px',
+
+      cell: (row) => row.created_by_name,
+      sortable: true
+    },
     {
       name: 'Solved Date',
       width: '150px',
