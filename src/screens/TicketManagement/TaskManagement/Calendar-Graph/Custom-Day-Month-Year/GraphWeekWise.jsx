@@ -247,19 +247,20 @@ const GraphWeekWise = () => {
         series: [
           {
             name: 'TODO',
-            data: allBasketNames.map((basketName) => {
-              const task = data?.TO_DO?.find(
+            data: allBasketNames.flatMap((basketName) => {
+              const task = data?.TO_DO?.filter(
                 (task) => task.basket_name === basketName
               );
-              return task
-                ? {
+
+              return task.length > 0
+                ? task.map((task) => ({
                     x: basketName,
                     y: addSmallIncrementIfNeeded(
                       task.task_start_Date,
                       task.task_end_date
                     ),
                     taskDetail: task
-                  }
+                  }))
                 : {
                     x: basketName,
                     y: [0, 0],
@@ -275,19 +276,19 @@ const GraphWeekWise = () => {
 
           {
             name: 'Delay',
-            data: allBasketNames.map((basketName) => {
-              const task = data?.DELAY?.find(
+            data: allBasketNames.flatMap((basketName) => {
+              const task = data?.DELAY?.filter(
                 (task) => task.basket_name === basketName
               );
-              return task
-                ? {
+              return task.length > 0
+                ? task.map((task) => ({
                     x: basketName,
                     y: addSmallIncrementIfNeeded(
                       task.task_start_Date,
                       task.task_end_date
                     ),
                     taskDetail: task
-                  }
+                  }))
                 : {
                     x: basketName,
                     y: [0, 0],
@@ -302,19 +303,19 @@ const GraphWeekWise = () => {
           },
           {
             name: 'Highly Delay',
-            data: allBasketNames.map((basketName) => {
-              const task = data?.HIGHLY_DELAY?.find(
+            data: allBasketNames.flatMap((basketName) => {
+              const task = data?.HIGHLY_DELAY?.filter(
                 (task) => task.basket_name === basketName
               );
-              return task
-                ? {
+              return task.length > 0
+                ? task.map((task) => ({
                     x: basketName,
                     y: addSmallIncrementIfNeeded(
                       task.task_start_Date,
                       task.task_end_date
                     ),
                     taskDetail: task
-                  }
+                  }))
                 : {
                     x: basketName,
                     y: [0, 0],
@@ -329,19 +330,19 @@ const GraphWeekWise = () => {
           },
           {
             name: 'Completed',
-            data: allBasketNames.map((basketName) => {
-              const task = data?.COMPLETED?.find(
+            data: allBasketNames.flatMap((basketName) => {
+              const task = data?.COMPLETED?.filter(
                 (task) => task.basket_name === basketName
               );
-              return task
-                ? {
+              return task.length > 0
+                ? task.map((task) => ({
                     x: basketName,
                     y: addSmallIncrementIfNeeded(
                       task.task_start_Date,
                       task.task_end_date
                     ),
                     taskDetail: task
-                  }
+                  }))
                 : {
                     x: basketName,
                     y: [0, 0],
@@ -356,19 +357,19 @@ const GraphWeekWise = () => {
           },
           {
             name: 'In Progress',
-            data: allBasketNames.map((basketName) => {
-              const task = data?.IN_PROGRESS?.find(
+            data: allBasketNames.flatMap((basketName) => {
+              const task = data?.IN_PROGRESS?.filter(
                 (task) => task.basket_name === basketName
               );
-              return task
-                ? {
+              return task.length > 0
+                ? task.map((task) => ({
                     x: basketName,
                     y: addSmallIncrementIfNeeded(
                       task.task_start_Date,
                       task.task_end_date
                     ),
                     taskDetail: task
-                  }
+                  }))
                 : {
                     x: basketName,
                     y: [0, 0],
@@ -421,52 +422,54 @@ const GraphWeekWise = () => {
             show: true,
             showForNullSeries: false,
             categories: allBasketNames
-          },
-          tooltip: {
-            custom: ({ series, seriesIndex, dataPointIndex, w }) => {
-              const taskDetail =
-                w.globals.initialSeries[seriesIndex].data[dataPointIndex]
-                  .taskDetail;
-              const taskOwners = taskDetail?.taskOwners.join('');
-              console.log('taskDetail', taskDetail);
-              return `
-              <div>
-               <span className="mb-0"><strong>Sprint Name:</strong> ${
-                 taskDetail.sprint_name || 'null recieved in response'
-               }</span></br>
-                  <span className="mb-0"><strong>Task Name:</strong> ${
-                    taskDetail.task_name
-                  }</span></br>
-                 <span className="mb-0"><strong>Basket Name:</strong> ${
-                   taskDetail.basket_name
-                 }</span></br>
-              <span className="mb-0"><strong>Task Start Date:</strong> ${new Date(
-                taskDetail.task_start_Date
-              ).toLocaleDateString()}</span></br>
-              <span className="mb-0"><strong>Task End Date:</strong> ${new Date(
-                taskDetail.task_end_date
-              ).toLocaleDateString()}</span></br>
-              <span className="mb-0"><strong>Total Scheduled Hours:</strong> ${
-                taskDetail.task_scheduled_Hours || 'null recieved in response'
-              }</span></br>
-                 <span className="mb-0"><strong>Scheduled Hours:</strong> ${
-                   taskDetail.actual_task_scheduled_Hours ||
-                   'null recieved in response'
-                 }</span></br>
-                 <span className="mb-0"><strong>Actual Worked:</strong> ${
-                   taskDetail.task_actual_worked || 'null recieved in response'
-                 }</span></br>
-              <span className="mb-0"><strong>Status:</strong> ${
-                taskDetail.task_status || 'null recieved in response'
-              }</span></br>
-              <span className="mb-0"><strong>Actual Status:</strong> ${
-                taskDetail.task_actual_status || 'null recieved in response'
-              }</span></br>
-                 <span className="mb-0"><strong>Task Owners:</strong> ${taskOwners}</span></br>
-              </div>
-            `;
-            }
           }
+          // tooltip: {
+          //   custom: ({ series, seriesIndex, dataPointIndex, w }) => {
+          //     return;
+          //     const taskDetail =
+          //       w.globals.initialSeries[seriesIndex].data[dataPointIndex]
+          //         .taskDetail;
+          //     console.log('taskDetail tooltip', taskDetail);
+
+          //     const taskOwners = taskDetail?.taskOwners.join('');
+          //     return `
+          //     <div>
+          //      <span className="mb-0"><strong>Sprint Name:</strong> ${
+          //        taskDetail.sprint_name || 'null recieved in response'
+          //      }</span></br>
+          //         <span className="mb-0"><strong>Task Name:</strong> ${
+          //           taskDetail.task_name
+          //         }</span></br>
+          //        <span className="mb-0"><strong>Basket Name:</strong> ${
+          //          taskDetail.basket_name
+          //        }</span></br>
+          //     <span className="mb-0"><strong>Task Start Date:</strong> ${new Date(
+          //       taskDetail.task_start_Date
+          //     ).toLocaleDateString()}</span></br>
+          //     <span className="mb-0"><strong>Task End Date:</strong> ${new Date(
+          //       taskDetail.task_end_date
+          //     ).toLocaleDateString()}</span></br>
+          //     <span className="mb-0"><strong>Total Scheduled Hours:</strong> ${
+          //       taskDetail.task_scheduled_Hours || 'null recieved in response'
+          //     }</span></br>
+          //        <span className="mb-0"><strong>Scheduled Hours:</strong> ${
+          //          taskDetail.actual_task_scheduled_Hours ||
+          //          'null recieved in response'
+          //        }</span></br>
+          //        <span className="mb-0"><strong>Actual Worked:</strong> ${
+          //          taskDetail.task_actual_worked || 'null recieved in response'
+          //        }</span></br>
+          //     <span className="mb-0"><strong>Status:</strong> ${
+          //       taskDetail.task_status || 'null recieved in response'
+          //     }</span></br>
+          //     <span className="mb-0"><strong>Actual Status:</strong> ${
+          //       taskDetail.task_actual_status || 'null recieved in response'
+          //     }</span></br>
+          //        <span className="mb-0"><strong>Task Owners:</strong> ${taskOwners}</span></br>
+          //     </div>
+          //   `;
+          //   }
+          // }
         }
       }));
     } catch (error) {
