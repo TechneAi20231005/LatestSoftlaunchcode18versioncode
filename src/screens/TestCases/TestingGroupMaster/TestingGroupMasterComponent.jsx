@@ -12,10 +12,13 @@ function TestingGroupMasterComponent() {
   const dispatch = useDispatch();
 
   // // redux state
-  const { testingGroupMasterList, isLoading } = useSelector((state) => state?.testingGroupMaster);
+  const { testingGroupMasterList, isLoading } = useSelector(
+    (state) => state?.testingGroupMaster
+  );
 
   const [searchValue, setSearchValue] = useState('');
-  const [filteredTestingGroupMasterList, setFilterTestingGroupMasterList] = useState([]);
+  const [filteredTestingGroupMasterList, setFilterTestingGroupMasterList] =
+    useState([]);
 
   const [addEditTestingGroupModal, setAddEditTestingGroupModal] = useState({
     type: '',
@@ -25,7 +28,10 @@ function TestingGroupMasterComponent() {
 
   // Function to handle search button click
   const handleSearch = () => {
-    const filteredList = customSearchHandler(testingGroupMasterList, searchValue);
+    const filteredList = customSearchHandler(
+      testingGroupMasterList,
+      searchValue
+    );
     setFilterTestingGroupMasterList(filteredList);
   };
 
@@ -73,7 +79,7 @@ function TestingGroupMasterComponent() {
           )}
           {row.is_active == 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
-              DeActive
+              Deactive
             </span>
           )}
         </div>
@@ -170,11 +176,24 @@ function TestingGroupMasterComponent() {
             className="form-control"
           />
         </Col>
-        <Col xs={12} md={5} xxl={4} className="d-flex justify-content-sm-end btn_container">
-          <button className="btn btn-warning text-white" type="button" onClick={handleSearch}>
+        <Col
+          xs={12}
+          md={5}
+          xxl={4}
+          className="d-flex justify-content-sm-end btn_container"
+        >
+          <button
+            className="btn btn-warning text-white"
+            type="button"
+            onClick={handleSearch}
+          >
             <i className="icofont-search-1 " /> Search
           </button>
-          <button className="btn btn-info text-white" type="button" onClick={handleReset}>
+          <button
+            className="btn btn-info text-white"
+            type="button"
+            onClick={handleReset}
+          >
             <i className="icofont-refresh text-white" /> Reset
           </button>
           <ExportToExcel

@@ -1,41 +1,32 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Overlay, Tooltip, Modal, Button } from 'react-bootstrap';
-import './CustomFilterStyle.css'; // Ensure this CSS file includes the .custom-container class
-import { getDraftTestCaseList } from '../../../redux/services/testCases/downloadFormatFile';
-import { useDispatch } from 'react-redux';
+import { Overlay, Modal, Button } from 'react-bootstrap';
+import './CustomFilterStyle.css';
 
 const CustomFilterModal = ({
   show,
   handleClose,
   handleApply,
   position,
-  filterColumn,
   handleCheckboxChange,
   handleBetweenValueChange,
   selectedFilters,
   handleSelectAll,
-  uniqueValues,
   searchTerm,
-  setSearchTerm,
-  setSelectedFilters,
-  paginationData,
-  filterColumnId,
-  setFilterType,
-  setFilterText,
+
   filterType,
   columnName,
   handleAscendingClick,
   handleDescendingClick,
   type,
-  handleApplyButton
+  handleApplyButton,
+  filterData,
+  localDispatch
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showModal, setShowModal] = useState(false);
   const target = useRef(null);
   const searchRef = useRef(null);
   const containerRef = useRef(null);
-  // const [filterType, setFilterType] = useState('');
-  // const [filterText, setFilterText] = useState('');
 
   const textFilterData = [
     {
@@ -91,21 +82,6 @@ const CustomFilterModal = ({
     }
   ];
 
-  // <option value="equals">Equals</option>
-  // <option value="does not equal">
-  //   Does Not Equals
-  // </option>
-  // <option value="begins with">Begins With</option>
-  // <option value="does not begin with">Does Not Begin With</option>
-
-  // <option value="ends with">End with</option>
-  // <option value="does not end with">Does Not End with</option>
-
-  // <option value="contains"> Contains</option>
-  // <option value="does not contain">
-  //   Does Not Contain
-  // </option>
-
   useEffect(() => {
     const handleResize = () => {
       if (containerRef.current) {
@@ -130,46 +106,6 @@ const CustomFilterModal = ({
 
   const handleShow = () => setShowModal(true);
   const handleCloseModal = () => setShowModal(false);
-  const dispatch = useDispatch();
-
-  // const handleSubmit = () => {
-  //   const filterPayload = {
-  //     filter_testcase_data: [
-  //       {
-  //         column: filterColumnId,
-  //         searchText: filterText,
-  //         filter: filterType
-  //       }
-  //     ]
-  //   };
-
-  //   console.log('filterPayload', filterPayload);
-
-  //   // dispatch(
-  //   //   getDraftTestCaseList({
-  //   //     filter_testcase_data:filterPayload ,
-  //   //     limit: paginationData.rowPerPage,
-  //   //     page: paginationData.currentPage
-  //   //     // Spread the filter payload into the request payload
-  //   //   })
-  //   // );
-
-  //   dispatch(
-  //     getDraftTestCaseList({
-  //       limit: paginationData.rowPerPage,
-  //       page: paginationData.currentPage,
-  //       filter_testcase_data: [
-  //         {
-  //           column: filterColumnId,
-  //           searchText: filterText,
-  //           filter: filterType
-  //         }
-  //       ]
-  //     })
-  //   );
-
-  //   handleCloseModal();
-  // };
 
   if (!show) return null;
 
@@ -179,20 +115,20 @@ const CustomFilterModal = ({
       className="custom-container"
       style={{ top: position.top, left: position.left }}
     >
-      <div>
+      <div className="p-2">
         <b className="fs-6 text-primary">{columnName}</b>
         <hr className="my-2" />
 
         <p className="Sort mb-2">Sort</p>
         <span className="d-flex flex-column">
           <p
-            className="fs-6 mb-2 pointer"
+            className="fs-6 mb-2 cp"
             onClick={() => handleAscendingClick('ASC')}
           >
             <i className="bi bi-arrow-up-short fs-6"></i>Ascending
           </p>
           <p
-            className="fs-6 mb-2 pointer"
+            className="fs-6 mb-2 cp"
             onClick={() => handleDescendingClick('DESC')}
           >
             <i className="bi bi-arrow-down-short fs-6"></i>Descending
@@ -236,7 +172,7 @@ const CustomFilterModal = ({
                     {textFilterData.map((option) => (
                       <p
                         key={option.value}
-                        className="mb-2 cursor-pointer "
+                        className="mb-2 cp"
                         onClick={() => handleShow(option.value)}
                       >
                         {option.label}
@@ -244,7 +180,7 @@ const CustomFilterModal = ({
                     ))}
                   </>
                 )}
-                <hr className="my-1 pointer" />
+                <hr className="my-1 cp" />
 
                 <Modal
                   show={showModal}
@@ -253,7 +189,6 @@ const CustomFilterModal = ({
                   aria-labelledby="contained-modal-title-vcenter"
                   centered
                 >
-                  {console.log('type===>', type)}
                   <Modal.Header closeButton>
                     <Modal.Title className="fs-5 text-primary">
                       {type === 'number' ? 'Number Filters' : 'Text Filters'}
@@ -267,7 +202,10 @@ const CustomFilterModal = ({
                           className="form-select"
                           aria-label="Default select example"
                           onChange={(e) => {
-                            setFilterType(e.target.value);
+                            localDispatch({
+                              type: 'SET_FILTER_TYPE',
+                              payload: e.target.value
+                            });
                           }}
                         >
                           <option defaultValue>Open this select menu</option>
@@ -284,63 +222,48 @@ const CustomFilterModal = ({
                               ))}
                         </select>
                       </div>
-                      {/* {(filterType != 'does not equal' ||
-                        filterType != 'equals' ||
-                        filterType != 'is greater than' ||
-                        filterType != 'is less than' ||
-                        filterType != 'is not between') && ( */}
+
                       {type === 'text' && (
                         <div className="col">
                           <input
                             type="text"
                             className="form-control"
                             placeholder="Type"
-                            onChange={(e) => setFilterText(e.target.value)}
+                            onChange={(e) => {
+                              localDispatch({
+                                type: 'SET_FILTER_TEXT',
+                                payload: e.target.value
+                              });
+                            }}
                           />
                         </div>
                       )}
-                      {/* )} */}
-                      {
-                        // filterColumn === 'id' &&
-                        //   (filterType === 'equals' ||
-                        //     filterType === 'is greater than')
-                        type === 'number' && (
+
+                      {type === 'number' && (
+                        <div className="col">
+                          <input
+                            type="number"
+                            className="form-control"
+                            placeholder="Type"
+                            onChange={(e) =>
+                              handleBetweenValueChange(0, e.target.value)
+                            }
+                          />
+                        </div>
+                      )}
+                      {(filterType === 'is between' ||
+                        filterType === 'is not between') && (
+                        <>
                           <div className="col">
                             <input
                               type="number"
                               className="form-control"
                               placeholder="Type"
                               onChange={(e) =>
-                                handleBetweenValueChange(0, e.target.value)
-                              }
-                            />
-                          </div>
-                        )
-                      }
-                      {(filterType === 'is between' ||
-                        filterType === 'is not between') && (
-                        <>
-                          <div className="col">
-                            <input
-                              type={filterColumn === 'id' ? 'number' : 'text'}
-                              className="form-control"
-                              placeholder="Type"
-                              onChange={(e) =>
                                 handleBetweenValueChange(1, e.target.value)
                               }
                             />
                           </div>
-                          {/* <div className="col">
-                            <input
-                              type={filterColumn === 'id' ? 'number' : 'text'}
-                              className="form-control"
-                              placeholder="Type"
-                              // onChange={(e) => setFilterText(e.target.value)}
-                              onChange={(e) =>
-                                handleBetweenValueChange(1, e.target.value)
-                              }
-                            />
-                          </div> */}
                         </>
                       )}
                     </div>
@@ -368,18 +291,23 @@ const CustomFilterModal = ({
               placeholder="Search Here"
               className="form-control pe-5"
               value={searchTerm}
-              onChange={(e) => setSearchTerm(e.target.value)}
+              onChange={(e) => {
+                localDispatch({
+                  type: 'SET_SEARCH_TERM',
+                  payload: e.target.value
+                });
+              }}
             />
-            <i className="icofont-ui-search position-absolute top-50 end-0 translate-middle-y me-3 pointer"></i>
+            <i className="icofont-ui-search position-absolute top-50 end-0 translate-middle-y me-3 cp"></i>
           </div>
         </div>
       </div>
-      <div>
+      <div className="p-1">
         <input
           type="checkbox"
           id="filterAll"
           name="filterAll"
-          checked={selectedFilters.length === uniqueValues.length} // Check if all uniqueValues are selected
+          checked={selectedFilters?.length === filterData?.length}
           onChange={handleSelectAll}
         />
         <label className="mt-3 mx-3 fs-6" htmlFor="filterAll">
@@ -387,30 +315,32 @@ const CustomFilterModal = ({
         </label>
       </div>
 
-      {uniqueValues.map((value) => (
-        <div key={value.value} className="filter-item">
+      {filterData?.map((value) => (
+        <div key={value?.id} className="filter-item p-1">
           <input
             type="checkbox"
-            id={`filter${value.value}`}
-            name={`filter${value.value}`}
+            id={`filter${value?.id}`}
+            name={`filter${value?.id}`}
             className="check-box-size"
-            checked={selectedFilters.includes(value.label)} // Check if value.label is in selectedFilters
-            onChange={(e) => handleCheckboxChange(e, value.label, value.value)} // Pass label and value to handleFilterCheckboxChange
+            checked={selectedFilters.includes(value?.name)}
+            onChange={(e) => handleCheckboxChange(e, value?.name, value?.id)}
           />
-          <label className="mx-3 fs-6 mb-0" htmlFor={`filter${value.value}`}>
-            {value.label} {/* Display the label property of value */}
+          <label className="mx-3 fs-6 mb-0" htmlFor={`filter${value?.id}`}>
+            {value?.name}
           </label>
         </div>
       ))}
-      <div className="button-container">
-        <button className="btn btn-primary mt-3" onClick={handleApplyButton}>
-          Apply
-        </button>
-        <button className="btn btn-warning mt-3" onClick={handleClose}>
-          Cancel
-        </button>
-        <button className="btn btn-outline-dark mt-3">Clear All</button>
-      </div>
+
+      <button
+        className="btn btn-sm btn-primary mt-3"
+        onClick={handleApplyButton}
+      >
+        Apply
+      </button>
+      <button className="btn btn-sm btn-warning mt-3" onClick={handleClose}>
+        Cancel
+      </button>
+      <button className="btn btn-sm btn-outline-dark mt-3">Clear All</button>
     </div>
   );
 };

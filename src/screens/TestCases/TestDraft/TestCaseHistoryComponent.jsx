@@ -8,7 +8,6 @@ import { useParams } from 'react-router-dom';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function TestCaseHistoryComponent() {
-  // // initial state
   const { id } = useParams();
 
   const [paginationData, setPaginationData] = useReducer(
@@ -40,15 +39,16 @@ function TestCaseHistoryComponent() {
         <div>
           <span>Module</span>
           <i
-            // onClick={(e) =>
-            //   handleFilterClick(e, 'module_name', 'Module', 'text')
-            // }
-            className="icofont-filter ms-2"
+          // onClick={(e) =>
+          //   handleFilterClick(e, 'module_name', 'Module', 'text')
+          // }
+          // className="icofont-filter ms-2"
           />
         </div>
       ),
 
       selector: (row) => row.module_name,
+
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -76,7 +76,19 @@ function TestCaseHistoryComponent() {
           <span>{column.name}</span>
           <i className="icofont-history cp bg-warning rounded-circle ms-2" />
         </div>
-      )
+      ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('module_name'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
@@ -84,10 +96,10 @@ function TestCaseHistoryComponent() {
         <div>
           <span>Submodule Name</span>
           <i
-            // onClick={(e) =>
-            //   handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
-            // }
-            className="icofont-filter ms-2"
+          // onClick={(e) =>
+          //   handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
+          // }
+          // className="icofont-filter ms-2"
           />
         </div>
       ),
@@ -114,6 +126,18 @@ function TestCaseHistoryComponent() {
           )}
         </div>
       ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('sub_module_name'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ],
       header: (column, sortDirection) => (
         <div className="d-flex align-items-center">
           <span>{column.name}</span>
@@ -127,10 +151,10 @@ function TestCaseHistoryComponent() {
         <div>
           <span>Function</span>
           <i
-            // onClick={(e) =>
-            //   handleFilterClick(e, 'function_name', 'Function', 'text')
-            // }
-            className="icofont-filter ms-2"
+          // onClick={(e) =>
+          //   handleFilterClick(e, 'function_name', 'Function', 'text')
+          // }
+          // className="icofont-filter ms-2"
           />
         </div>
       ),
@@ -157,6 +181,18 @@ function TestCaseHistoryComponent() {
           )}
         </div>
       ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('function_name'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ],
       header: (column, sortDirection) => (
         <div className="d-flex align-items-center">
           <span>{column.name}</span>
@@ -170,8 +206,8 @@ function TestCaseHistoryComponent() {
         <div>
           <span>Field</span>
           <i
-            // onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
-            className="icofont-filter ms-2"
+          // onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
+          // className="icofont-filter ms-2"
           />
         </div>
       ),
@@ -198,6 +234,18 @@ function TestCaseHistoryComponent() {
           )}
         </div>
       ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('field'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ],
       header: (column, sortDirection) => (
         <div className="d-flex align-items-center">
           <span>{column.name}</span>
@@ -211,10 +259,10 @@ function TestCaseHistoryComponent() {
         <div>
           <span>Testing Type</span>
           <i
-            // onClick={(e) =>
-            //   handleFilterClick(e, 'type_name', 'Testing Type', 'text')
-            // }
-            className="icofont-filter ms-2"
+          // onClick={(e) =>
+          //   handleFilterClick(e, 'type_name', 'Testing Type', 'text')
+          // }
+          // className="icofont-filter ms-2"
           />
         </div>
       ),
@@ -241,6 +289,18 @@ function TestCaseHistoryComponent() {
           )}
         </div>
       ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('type_name'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ],
       header: (column, sortDirection) => (
         <div className="d-flex align-items-center">
           <span>{column.name}</span>
@@ -254,10 +314,10 @@ function TestCaseHistoryComponent() {
         <div>
           <span>Testing Group</span>
           <i
-            // onClick={(e) =>
-            //   handleFilterClick(e, 'group_name', 'Testing Group', 'text')
-            // }
-            className="icofont-filter ms-2"
+          // onClick={(e) =>
+          //   handleFilterClick(e, 'group_name', 'Testing Group', 'text')
+          // }
+          // className="icofont-filter ms-2"
           />
         </div>
       ),
@@ -284,6 +344,18 @@ function TestCaseHistoryComponent() {
           )}
         </div>
       ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('group_name'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ],
       header: (column, sortDirection) => (
         <div className="d-flex align-items-center">
           <span>{column.name}</span>
@@ -297,8 +369,8 @@ function TestCaseHistoryComponent() {
         <div>
           <span>Testing Id</span>
           <i
-            // onClick={(e) => handleFilterClick(e, 'id', 'Testing Id', 'number')}
-            className="icofont-filter ms-2"
+          // onClick={(e) => handleFilterClick(e, 'id', 'Testing Id', 'number')}
+          // className="icofont-filter ms-2"
           />
         </div>
       ),
@@ -326,6 +398,18 @@ function TestCaseHistoryComponent() {
           )}
         </div>
       ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('id'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ],
       header: (column, sortDirection) => (
         <div className="d-flex align-items-center">
           <span>{column.name}</span>
@@ -339,8 +423,8 @@ function TestCaseHistoryComponent() {
         <div>
           <span>Severity</span>
           <i
-            // onClick={(e) => handleFilterClick(e, 'id', 'Severity', 'text')}
-            className="icofont-filter ms-2"
+          // onClick={(e) => handleFilterClick(e, 'id', 'Severity', 'text')}
+          // className="icofont-filter ms-2"
           />
         </div>
       ),
@@ -368,6 +452,18 @@ function TestCaseHistoryComponent() {
           )}
         </div>
       ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('severity'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ],
       header: (column, sortDirection) => (
         <div className="d-flex align-items-center">
           <span>{column.name}</span>
@@ -380,8 +476,8 @@ function TestCaseHistoryComponent() {
         <div>
           <span>Steps</span>
           <i
-            // onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-            className="icofont-filter ms-2"
+          // onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
+          // className="icofont-filter ms-2"
           />
         </div>
       ),
@@ -399,7 +495,7 @@ function TestCaseHistoryComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.steps && row.type_name.length < 20
+                  {row.steps && row.steps.length < 20
                     ? row.steps
                     : row.steps.substring(0, 50) + '....'}
                 </span>
@@ -408,6 +504,76 @@ function TestCaseHistoryComponent() {
           )}
         </div>
       ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('steps'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ],
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
+      )
+    },
+
+    {
+      name: (
+        <div>
+          <span>Test Description</span>
+          <i
+          // onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
+          // className="icofont-filter ms-2"
+          />
+        </div>
+      ),
+      selector: (row) => row.test_description,
+      width: '7rem',
+      sortable: false,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.test_description && (
+            <OverlayTrigger
+              overlay={<Tooltip>{row.test_description} </Tooltip>}
+            >
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.test_description && row.test_description.length < 20
+                    ? row.test_description
+                    : row.test_description.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+      conditionalCellStyles: [
+        {
+          when: (row) => {
+            return row.changes && row.changes.includes('test_description');
+          },
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ],
+
       header: (column, sortDirection) => (
         <div className="d-flex align-items-center">
           <span>{column.name}</span>
@@ -421,10 +587,10 @@ function TestCaseHistoryComponent() {
         <div>
           <span>Expected Result</span>
           <i
-            // onClick={(e) =>
-            //   handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
-            // }
-            className="icofont-filter ms-2"
+          // onClick={(e) =>
+          //   handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
+          // }
+          // className="icofont-filter ms-2"
           />
         </div>
       ),
@@ -451,6 +617,18 @@ function TestCaseHistoryComponent() {
           )}
         </div>
       ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('expected_result'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ],
       header: (column, sortDirection) => (
         <div className="d-flex align-items-center">
           <span>{column.name}</span>
@@ -464,8 +642,8 @@ function TestCaseHistoryComponent() {
         <div>
           <span>Status</span>
           <i
-            // onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
-            className="icofont-filter ms-2"
+          // onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
+          // className="icofont-filter ms-2"
           />
         </div>
       ),
@@ -492,6 +670,18 @@ function TestCaseHistoryComponent() {
           )}
         </div>
       ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('status'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ],
       header: (column, sortDirection) => (
         <div className="d-flex align-items-center">
           <span>{column.name}</span>
@@ -505,10 +695,10 @@ function TestCaseHistoryComponent() {
         <div>
           <span>Project</span>
           <i
-            // onClick={(e) =>
-            //   handleFilterClick(e, 'project_name', 'Project', 'text')
-            // }
-            className="icofont-filter ms-2"
+          // onClick={(e) =>
+          //   handleFilterClick(e, 'project_name', 'Project', 'text')
+          // }
+          // className="icofont-filter ms-2"
           />
         </div>
       ),
@@ -535,6 +725,18 @@ function TestCaseHistoryComponent() {
           )}
         </div>
       ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('project_name'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ],
       header: (column, sortDirection) => (
         <div className="d-flex align-items-center">
           <span>{column.name}</span>
@@ -567,7 +769,19 @@ function TestCaseHistoryComponent() {
             </OverlayTrigger>
           )}
         </div>
-      )
+      ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('created_at'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
@@ -594,7 +808,19 @@ function TestCaseHistoryComponent() {
             </OverlayTrigger>
           )}
         </div>
-      )
+      ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('created_by'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
@@ -621,7 +847,19 @@ function TestCaseHistoryComponent() {
             </OverlayTrigger>
           )}
         </div>
-      )
+      ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('updated_at'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
@@ -648,7 +886,19 @@ function TestCaseHistoryComponent() {
             </OverlayTrigger>
           )}
         </div>
-      )
+      ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('updated_by'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     }
   ];
 

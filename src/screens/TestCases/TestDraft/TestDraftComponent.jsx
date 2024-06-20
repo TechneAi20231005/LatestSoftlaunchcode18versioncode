@@ -19,18 +19,15 @@ import {
   getSubModuleMasterThunk,
   importTestDraftThunk
 } from '../../../redux/services/testCases/downloadFormatFile';
-export default function TestDraftComponent({ close }) {
-  //// initial state
+export default function TestDraftComponent({}) {
   const location = useLocation();
   const dispatch = useDispatch();
-
-  ////redux state
-
-  const { allDraftTestListData, allReviewDraftTestListData } = useSelector(
-    (state) => state?.downloadFormat
-  );
-
-  //// local state
+  const {
+    allDraftTestListData,
+    allReviewDraftTestListData,
+    filterData,
+    filterReviewedDraftTestList
+  } = useSelector((state) => state?.downloadFormat);
   const [currentTab, setCurrentTab] = useState(
     location.state ?? 'test_summary'
   );
@@ -133,12 +130,19 @@ export default function TestDraftComponent({ close }) {
   ];
 
   const handleButtonClick = () => {
-    dispatch(
-      getDraftTestCaseList({
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage
-      })
-    );
+    currentTab === 'test_summary'
+      ? dispatch(
+          getDraftTestCaseList({
+            limit: paginationData.rowPerPage,
+            page: paginationData.currentPage
+          })
+        )
+      : dispatch(
+          getAllReviewTestDraftList({
+            limit: paginationData.rowPerPage,
+            page: paginationData.currentPage
+          })
+        );
   };
 
   useEffect(() => {
@@ -148,9 +152,7 @@ export default function TestDraftComponent({ close }) {
     dispatch(importTestDraftThunk());
     dispatch(
       getAllDraftTestCaseList({
-        type: 'ALL',
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage
+        type: 'ALL'
       })
     );
   }, []);
@@ -169,7 +171,6 @@ export default function TestDraftComponent({ close }) {
   }, [location]);
 
   useEffect(() => {
-    // Save the initial state to sessionStorage
     if (location.state) {
       sessionStorage.setItem('locationState', JSON.stringify(location.state));
     }
@@ -180,7 +181,6 @@ export default function TestDraftComponent({ close }) {
 
     window.addEventListener('beforeunload', handleBeforeUnload);
 
-    // Cleanup the event listener on component unmount
     return () => {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
@@ -193,12 +193,24 @@ export default function TestDraftComponent({ close }) {
         renderRight={() => {
           return (
             <div className="d-flex justify-content-sm-end btn_container">
-              <button
-                onClick={handleButtonClick}
-                className="btn btn-primary text-white me-2"
-              >
-                Clear All Filter
-              </button>
+              {currentTab === 'test_summary' ? (
+                <button
+                  onClick={handleButtonClick}
+                  className="btn btn-primary text-white me-2"
+                  disabled={filterData?.payload === 'null'}
+                >
+                  Clear All Filter
+                </button>
+              ) : (
+                <button
+                  onClick={handleButtonClick}
+                  className="btn btn-primary text-white me-2"
+                  disabled={filterReviewedDraftTestList?.payload === 'null'}
+                >
+                  Clear All Filter
+                </button>
+              )}
+
               <button
                 className="btn btn-success text-white me-2 "
                 onClick={(e) => {

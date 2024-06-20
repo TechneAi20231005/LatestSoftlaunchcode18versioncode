@@ -26,7 +26,6 @@ function ReviewCommentMasterComponent() {
     open: false
   });
 
-  // Function to handle search button click
   const handleSearch = () => {
     const filteredList = customSearchHandler(
       reviewCommentMasterList,
@@ -35,7 +34,6 @@ function ReviewCommentMasterComponent() {
     setFilteredReviewCommentMasterList(filteredList);
   };
 
-  // Function to handle reset button click
   const handleReset = () => {
     setSearchValue('');
     setFilteredReviewCommentMasterList(reviewCommentMasterList);
@@ -76,7 +74,7 @@ function ReviewCommentMasterComponent() {
             <span className="badge bg-primary">Active</span>
           )}
           {row.is_active == 0 && (
-            <span className="badge bg-danger">DeActive</span>
+            <span className="badge bg-danger">Deactive</span>
           )}
         </div>
       ),
@@ -129,12 +127,10 @@ function ReviewCommentMasterComponent() {
     dispatch(getReviewCommentMasterListThunk());
   }, []);
 
-  // Update the useEffect to update the filtered list when reviewCommentMasterList changes
   useEffect(() => {
     setFilteredReviewCommentMasterList(reviewCommentMasterList);
   }, [reviewCommentMasterList]);
 
-  // Function to handle search onchange
   useEffect(() => {
     handleSearch();
   }, [searchValue]);

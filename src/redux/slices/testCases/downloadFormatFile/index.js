@@ -24,12 +24,15 @@ const initialState = {
   allReviewDraftTestListData: [],
   allReviewDraftTestListDataByID: [],
   allReviewDraftTestListData: [],
-
+  filterReviewList: [],
+  filterData: { payload: null },
   getModuleData: [],
   getSubModuleData: [],
   getTestDraftData: [],
   allDraftListData: [],
   testDraftHistory: [],
+  filterReviewedDraftTestList: { payload: null },
+  filterData: false,
   editTestCase: false,
   sendTestCasesReviewer: false,
 
@@ -39,11 +42,14 @@ const initialState = {
     getProjectModuleList: false,
     importTestDraftFile: false,
     getModuleList: false,
+    filterData: false,
     getDraftTestListData: false,
     allDraftListData: false,
+    filterReviewedDraftTestList: false,
     allDraftTestListData: false,
     allReviewDraftTestListData: false,
     allReviewDraftTestListDataByID: false,
+    filterReviewList: false,
     getModuleData: false,
     getSubModuleData: false,
     getSubModuleList: false,
@@ -55,10 +61,12 @@ const initialState = {
     getProjectModuleList: '',
     getDraftTestListData: '',
     allDraftListData: '',
+    filterReviewList: '',
     allReviewDraftTestListData: '',
     allDraftTestListData: '',
     allReviewDraftTestListData: '',
-    allReviewDraftTestListDataByID: ''
+    allReviewDraftTestListDataByID: '',
+    filterReviewedDraftTestList: ''
   },
   successMsg: {
     getProjectModuleList: '',
@@ -66,17 +74,17 @@ const initialState = {
     allDraftTestListData: '',
     allReviewDraftTestListData: '',
     allDraftListData: '',
+    filterReviewList: '',
     allReviewDraftTestListData: '',
     allReviewDraftTestListDataByID: '',
-    testDraftHistory: false
+    testDraftHistory: false,
+    filterReviewedDraftTestList: ''
   }
 };
 const downloadFormatSlice = createSlice({
   name: 'Download Format File',
   initialState,
-  reducers: {
-    // ==> normal reducer functions go here
-  },
+  reducers: {},
   extraReducers(builder) {
     builder
 
@@ -205,11 +213,12 @@ const downloadFormatSlice = createSlice({
       .addCase(getDraftTestCaseList.fulfilled, (state, action) => {
         state.isLoading.getDraftTestListData = false;
         state.successMsg.getDraftTestListData = action?.payload;
-        let data = !action?.payload?.data?.data
-          ? action?.payload?.data
-          : action?.payload?.data?.data;
+        let data = !action?.payload?.data?.data?.data
+          ? action?.payload?.data?.data
+          : action?.payload?.data?.data?.data;
 
         state.getDraftTestListData = data;
+        state.filterData = action?.payload?.data?.filter_data;
 
         state.allDraftListData = action?.payload?.data;
       })
@@ -239,7 +248,8 @@ const downloadFormatSlice = createSlice({
       .addCase(getAllReviewTestDraftList.fulfilled, (state, action) => {
         state.isLoading.allReviewDraftTestListData = false;
         state.successMsg.allReviewDraftTestListData = action?.payload;
-        state.allReviewDraftTestListData = action?.payload?.data?.data;
+        state.allReviewDraftTestListData = action?.payload?.data?.data?.data;
+        state.filterReviewedDraftTestList = action?.payload?.data?.filter_data;
       })
       .addCase(getAllReviewTestDraftList.rejected, (state, action) => {
         state.isLoading.allReviewDraftTestListData = false;
@@ -254,8 +264,10 @@ const downloadFormatSlice = createSlice({
       .addCase(getByTestPlanIDReviewedListThunk.fulfilled, (state, action) => {
         state.isLoading.allReviewDraftTestListDataByID = false;
         state.successMsg.allReviewDraftTestListDataByID = action?.payload;
-        state.allReviewDraftTestListDataByID = action?.payload?.data?.data;
+        state.allReviewDraftTestListDataByID =
+          action?.payload?.data?.data?.data;
         state.allReviewDraftTestListData = action?.payload?.data;
+        state.filterReviewList = action?.payload?.data?.filter_data;
       })
       .addCase(getByTestPlanIDReviewedListThunk.rejected, (state, action) => {
         state.isLoading.allReviewDraftTestListDataByID = false;

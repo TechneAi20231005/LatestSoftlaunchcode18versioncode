@@ -2,11 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import customAxios from '../../../../http/axios';
 import { errorHandler } from '../../../../utils';
-import {
-  _apiUrl,
-  _attachmentUrl,
-  attachmentUrl
-} from '../../../../settings/constants';
+import { _apiUrl, _attachmentUrl } from '../../../../settings/constants';
 
 export const getProjectModuleMasterThunk = createAsyncThunk(
   'projectModuleMaster/getProjectModuleMasterList',
@@ -66,13 +62,7 @@ export const getSubModuleMasterThunk = createAsyncThunk(
 );
 export const downloadFormatFileThunk = createAsyncThunk(
   'downloadFormatFile',
-  async ({
-    project_id,
-    module_id,
-    submodule_id,
-    onSuccessHandler
-    // onErrorHandler
-  }) => {
+  async ({ project_id, module_id, submodule_id, onSuccessHandler }) => {
     try {
       const submoduleParam = JSON.stringify(submodule_id);
 
@@ -87,12 +77,10 @@ export const downloadFormatFileThunk = createAsyncThunk(
           toast.success(response?.data?.message);
           return response?.data?.message;
         } else {
-          // onErrorHandler();
           errorHandler(response);
         }
       }
     } catch (error) {
-      // onErrorHandler();
       errorHandler(error?.response);
       return Promise.reject(error?.response?.data?.message);
     }
@@ -105,7 +93,6 @@ export const getDraftTestCaseList = createAsyncThunk(
   async ({ limit, page, filter_testcase_data }) => {
     try {
       const response = await customAxios.get(
-        // `testCases/getDraftTestCases/getTestCases?limit=${limit}&page=${page}&filter_testcase_data=${filter_testcase_data}`
         `testCases/getDraftTestCases/getTestCases`,
         {
           params: {
@@ -118,7 +105,7 @@ export const getDraftTestCaseList = createAsyncThunk(
 
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
-          return { data: response?.data?.data, msg: response?.data?.message };
+          return { data: response?.data, msg: response?.data?.message };
         } else {
           errorHandler(response);
         }
@@ -134,10 +121,10 @@ export const getDraftTestCaseList = createAsyncThunk(
 
 export const getAllDraftTestCaseList = createAsyncThunk(
   'draftTestCase/getAllDraftTestCaseList',
-  async ({ limit, page, type }) => {
+  async ({ type }) => {
     try {
       const response = await customAxios.get(
-        `testCases/getDraftTestCases/getTestCases?type=${type}&limit=${limit}&page=${page}`
+        `testCases/getDraftTestCases/getTestCases?type=${type}`
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
@@ -165,7 +152,6 @@ export const importTestDraftThunk = createAsyncThunk(
           onSuccessHandler();
           toast.success(response?.data?.message);
           return { data: response?.data.data, msg: response?.data?.message };
-          // return response?.data?.message;
         } else {
           onErrorHandler();
           const url = `${_attachmentUrl}` + response.data.data.error_file;
@@ -250,7 +236,7 @@ export const getAllReviewTestDraftList = createAsyncThunk(
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
-          return { data: response?.data?.data, msg: response?.data?.message };
+          return { data: response?.data, msg: response?.data?.message };
         } else {
           errorHandler(response);
         }
@@ -264,14 +250,22 @@ export const getAllReviewTestDraftList = createAsyncThunk(
 
 export const getByTestPlanIDReviewedListThunk = createAsyncThunk(
   'testPlanID/getByTestPlanIDListThunk',
-  async ({ id, limit, page }) => {
+  async ({ id, limit, page, filter_testcase_data }) => {
     try {
       const response = await customAxios.get(
-        `testCases/getDraftTestCases/getTestCases/${id}?limit=${limit}&page=${page}`
+        `testCases/getDraftTestCases/getTestCases`,
+        {
+          params: {
+            id: id,
+            limit: limit,
+            page: page,
+            filter_testcase_data: JSON.stringify(filter_testcase_data)
+          }
+        }
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
-          return { data: response?.data?.data, msg: response?.data?.message };
+          return { data: response?.data, msg: response?.data?.message };
         } else {
           errorHandler(response);
         }

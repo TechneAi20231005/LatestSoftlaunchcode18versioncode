@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Row } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,6 +6,7 @@ import CustomModal from '../../../components/custom/modal/CustomModal';
 import {
   CustomDropdown,
   CustomInput,
+  CustomReactSelect,
   CustomTextArea
 } from '../../../components/custom/inputs/CustomInputs';
 import { editTestCaseValidation } from './Validation/EditTestCase';
@@ -43,12 +44,23 @@ function EditTestCaseModal({
     (state) => state?.testingTypeMaster
   );
 
-  const { getProjectModuleList, getModuleList, getSubModuleList } = useSelector(
-    (state) => state?.downloadFormat
-  );
+  const {
+    getProjectModuleList,
+    getModuleList,
+    getSubModuleList,
+    getModuleData,
+    getSubModuleData
+  } = useSelector((state) => state?.downloadFormat);
 
-  // // initial state
+  const [moduleDropdown, setModuleDropdown] = useState(getModuleList);
+
+  const [subModuleDropdown, setSubModuleDropdown] = useState(getSubModuleList);
+
   const severityData = [
+    {
+      value: 'Very High',
+      label: 'Very High'
+    },
     {
       value: 'High',
       label: 'High'
@@ -58,8 +70,8 @@ function EditTestCaseModal({
       label: 'Medium'
     },
     {
-      value: 'Medium',
-      label: 'Medium'
+      value: 'Low',
+      label: 'Low'
     }
   ];
 
@@ -74,6 +86,7 @@ function EditTestCaseModal({
       type === 'EDIT' ? currentTestCasesData?.function_id?.toString() : '',
     field: type === 'EDIT' ? currentTestCasesData?.field : '',
     type_id: type === 'EDIT' ? currentTestCasesData?.type_id?.toString() : '',
+    id: type === 'EDIT' ? currentTestCasesData?.id?.toString() : '',
     group_id: type === 'EDIT' ? currentTestCasesData?.group_id?.toString() : '',
     severity: type === 'EDIT' ? currentTestCasesData?.severity : '',
     steps: type === 'EDIT' ? currentTestCasesData?.steps : '',
@@ -125,6 +138,29 @@ function EditTestCaseModal({
       })
     );
   };
+
+  const handleProjectChange = async (e, setFieldValue) => {
+    setFieldValue('project_id', e.target.value);
+    setFieldValue('module_id', '');
+    setFieldValue('submodule_id', '');
+    setModuleDropdown(null);
+    const filteredModules = getModuleData
+      .filter((d) => d.project_id === parseInt(e.target.value))
+      .map((d) => ({ value: d.id, label: d.module_name }));
+
+    setModuleDropdown(filteredModules);
+  };
+
+  const handleModuleChange = (e, setFieldValue) => {
+    setFieldValue('module_id', e.target.value);
+    setFieldValue('submodule_id', '');
+    const data = getSubModuleData
+      ?.filter((d) => d.module_id === parseInt(e.target.value))
+      .map((d) => ({ value: d.id, label: d.sub_module_name }));
+
+    setSubModuleDropdown(data);
+  };
+
   useEffect(() => {
     if (getProjectModuleList?.length <= 0) {
       dispatch(getProjectModuleMasterThunk());
@@ -157,7 +193,7 @@ function EditTestCaseModal({
             handleEditTestCase({ formData: values });
           }}
         >
-          {({ values, touched, errors, setFieldValue }) => (
+          {({ setFieldValue }) => (
             <Form>
               <Row className="row_gap_3">
                 <Col md={4} lg={4}>
@@ -166,23 +202,31 @@ function EditTestCaseModal({
                     component={CustomDropdown}
                     name="project_id"
                     label="Project Name"
+                    handleChange={(event) =>
+                      handleProjectChange(event, setFieldValue)
+                    }
                   />
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
-                    data={getModuleList}
+                    data={moduleDropdown}
                     component={CustomDropdown}
                     name="module_id"
                     label="Module Name"
+                    handleChange={(event) =>
+                      handleModuleChange(event, setFieldValue)
+                    }
                   />
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
-                    data={getSubModuleList}
-                    component={CustomDropdown}
+                    options={subModuleDropdown}
+                    component={CustomReactSelect}
                     name="submodule_id"
                     label="SubModule Name"
                     placeholder="Select"
+                    isMulti
+                    required
                   />
                 </Col>
 
@@ -213,6 +257,16 @@ function EditTestCaseModal({
                     label="Testing Type"
                     placeholder="Enter testing type name"
                     requiredField
+                  />
+                </Col>
+                <Col md={4} lg={4}>
+                  <Field
+                    component={CustomInput}
+                    name="id"
+                    label="Test Id"
+                    placeholder="Enter testing id"
+                    requiredField
+                    disabled
                   />
                 </Col>
                 <Col md={4} lg={4}>

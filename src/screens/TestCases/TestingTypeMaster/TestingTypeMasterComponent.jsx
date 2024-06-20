@@ -12,9 +12,12 @@ function TestingTypeMasterComponent() {
   const dispatch = useDispatch();
 
   // // redux state
-  const { testingTypeMasterList, isLoading } = useSelector((state) => state?.testingTypeMaster);
+  const { testingTypeMasterList, isLoading } = useSelector(
+    (state) => state?.testingTypeMaster
+  );
   const [searchValue, setSearchValue] = useState('');
-  const [filteredTestingTypeMasterList, setFilterTestingTypeMasterList] = useState([]);
+  const [filteredTestingTypeMasterList, setFilterTestingTypeMasterList] =
+    useState([]);
 
   const [addEditTestingTypeModal, setAddEditTestingTypeModal] = useState({
     type: '',
@@ -22,13 +25,14 @@ function TestingTypeMasterComponent() {
     open: false
   });
 
-  // Function to handle search button click
   const handleSearch = () => {
-    const filteredList = customSearchHandler(testingTypeMasterList, searchValue);
+    const filteredList = customSearchHandler(
+      testingTypeMasterList,
+      searchValue
+    );
     setFilterTestingTypeMasterList(filteredList);
   };
 
-  // Function to handle reset button click
   const handleReset = () => {
     setSearchValue('');
     setFilterTestingTypeMasterList(testingTypeMasterList);
@@ -72,7 +76,7 @@ function TestingTypeMasterComponent() {
           )}
           {row.is_active == 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
-              DeActive
+              Deactive
             </span>
           )}
         </div>
@@ -127,12 +131,10 @@ function TestingTypeMasterComponent() {
     dispatch(getTestingTypeMasterListThunk());
   }, []);
 
-  // Update the useEffect to update the filtered list when testingTypeMasterList changes
   useEffect(() => {
     setFilterTestingTypeMasterList(testingTypeMasterList);
   }, [testingTypeMasterList]);
 
-  // Function to handle search onchange
   useEffect(() => {
     handleSearch();
   }, [searchValue]);
@@ -169,11 +171,24 @@ function TestingTypeMasterComponent() {
             className="form-control"
           />
         </Col>
-        <Col xs={12} md={5} xxl={4} className="d-flex justify-content-sm-end btn_container">
-          <button className="btn btn-warning text-white" type="button" onClick={handleSearch}>
+        <Col
+          xs={12}
+          md={5}
+          xxl={4}
+          className="d-flex justify-content-sm-end btn_container"
+        >
+          <button
+            className="btn btn-warning text-white"
+            type="button"
+            onClick={handleSearch}
+          >
             <i className="icofont-search-1 " /> Search
           </button>
-          <button className="btn btn-info text-white" type="button" onClick={handleReset}>
+          <button
+            className="btn btn-info text-white"
+            type="button"
+            onClick={handleReset}
+          >
             <i className="icofont-refresh text-white" /> Reset
           </button>
           <ExportToExcel

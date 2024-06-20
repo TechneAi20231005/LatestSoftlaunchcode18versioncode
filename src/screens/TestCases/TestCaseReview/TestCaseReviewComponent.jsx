@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useReducer } from 'react';
 import { Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import DataTable from 'react-data-table-component';
@@ -9,8 +9,77 @@ import { getTestCaseReviewListThunk } from '../../../redux/services/testCases/te
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import CustomFilterModal from '../Modal/CustomFilterModal';
 
+const initialState = {
+  filterType: '',
+  columnName: '',
+  type: '',
+  filterText: '',
+  filterValues: [],
+  modalPosition: { top: 0, left: 0 },
+  filterColumnId: null,
+  filterColumn: null,
+  modalIsOpen: false,
+  searchTerm: '',
+  selectedFilterIds: '',
+  selectedFilters: [],
+  filters: [],
+  sortOrder: null,
+  reviewerId: null,
+  selectAllNames: false,
+  selectedRows: [],
+  betweenValues: ['', '']
+};
+
+function localReducer(state, action) {
+  switch (action.type) {
+    case 'SET_FILTER_TYPE':
+      return { ...state, filterType: action.payload };
+    case 'SET_COLUMN_NAME':
+      return { ...state, columnName: action.payload };
+    case 'SET_TYPE':
+      return { ...state, type: action.payload };
+    case 'SET_FILTER_TEXT':
+      return { ...state, filterText: action.payload };
+    case 'SET_FILTER_VALUES':
+      return { ...state, filterValues: action.payload };
+    case 'SET_MODAL_POSITION':
+      return { ...state, modalPosition: action.payload };
+    case 'SET_FILTER_COLUMN_ID':
+      return { ...state, filterColumnId: action.payload };
+    case 'SET_FILTER_COLUMN':
+      return { ...state, filterColumn: action.payload };
+    case 'SET_MODAL_IS_OPEN':
+      return { ...state, modalIsOpen: action.payload };
+    case 'SET_SEARCH_TERM':
+      return { ...state, searchTerm: action.payload };
+    case 'SET_SELECTED_FILTER_IDS':
+      return { ...state, selectedFilterIds: action.payload };
+    case 'SET_SELECTED_FILTER':
+      return { ...state, selectedFilters: action.payload };
+    case 'SET_FILTERS':
+      return { ...state, filters: action.payload };
+    case 'SET_SORT_ORDER':
+      return { ...state, sortOrder: action.payload };
+    case 'SET_REVIEWER_ID':
+      return { ...state, reviewerId: action.payload };
+    case 'SET_SELECT_ALL_NAMES':
+      return { ...state, selectAllNames: action.payload };
+    case 'SET_SELECTED_ROWS':
+      return {
+        ...state,
+        selectedRows:
+          typeof action?.payload === 'function'
+            ? action?.payload(state.selectedRows)
+            : action?.payload
+      };
+    case 'SET_BETWEEN_VALUES':
+      return { ...state, betweenValues: action.payload };
+    default:
+      return state;
+  }
+}
+
 function TestCaseReviewComponent() {
-  // // initial state
   const dispatch = useDispatch();
   const [paginationData, setPaginationData] = useReducer(
     (prevState, nextState) => {
@@ -18,149 +87,177 @@ function TestCaseReviewComponent() {
     },
     { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
   );
-  const { testCaseReviewList, isLoading } = useSelector(
-    (state) => state?.testCaseReview
-  );
+  const { testCaseReviewList, isLoading, filterTestCaseReviewList } =
+    useSelector((state) => state?.testCaseReview);
 
-  const [filterColumn, setFilterColumn] = useState(null);
-  const [filterColumnId, setFilterColumnId] = useState(null);
+  const [state, localDispatch] = useReducer(localReducer, initialState);
 
-  const [modalPosition, setModalPosition] = useState({ top: 0, left: 0 });
-  const [selectedFilters, setSelectedFilters] = useState([]);
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filterType, setFilterType] = useState('');
-  const [filterText, setFilterText] = useState('');
-  const [filters, setFilters] = useState([]);
-  const [columnName, setColumnName] = useState('');
-  const [selectedFilterIds, setSelectedFilterIds] = useState([]);
-  const [sortOrder, setSortOrder] = useState(null);
-  const [modalIsOpen, setModalIsOpen] = useState(false);
-  const [type, setType] = useState();
+  const {
+    filterType,
+    columnName,
+    type,
+    filterText,
+    filterValues,
+    modalPosition,
+    filterColumnId,
+    filterColumn,
+    modalIsOpen,
+    searchTerm,
+    selectedFilterIds,
+    selectedFilters,
+    filters,
+    sortOrder,
+    reviewerId,
+    selectAllNames,
+    selectedRows,
+    betweenValues
+  } = state;
 
   const moduleMapping = {
     test_plan_id: 'test_plan_id',
     reviewer_name: 'reviewer_name',
     total_testcases: 'total_testcases',
-    reviewed_testcases: 'reviewed_testcases',
-    total_rejected: 'total_rejected',
-    total_approved: 'total_approved'
+    total_reviewed_testcases: 'total_reviewed_testcases',
+    total_rejected_testcases: 'total_rejected_testcases',
+    total_approved_testcases: 'total_approved_testcases',
+    created_at: 'created_at',
+    updated_at: 'updated_at'
   };
 
-  const handleFilterClick = (event, column, name, type) => {
-    setType(type);
-    setColumnName(name);
-    setFilterType('');
-    setFilterText('');
-
-    const rect = event.target.getBoundingClientRect();
-    setModalPosition({ top: rect.bottom, left: rect.left });
+  const handleFilterClick = (event, column, name, type, id) => {
+    const filterKeyMap = {
+      test_plan_id: 'test_plan_ids',
+      reviewer_name: 'reviewer_names',
+      total_testcases: 'total_testcases',
+      total_reviewed_testcases: 'total_reviewed_testcases',
+      total_rejected_testcases: 'total_rejected_testcases',
+      total_approved_testcases: 'total_approved_testcases',
+      created_at: 'created_at',
+      updated_at: 'updated_at'
+    };
+    const filteredData = filterTestCaseReviewList[filterKeyMap[column]];
     const columnId = moduleMapping[column];
-    setFilterColumnId(columnId);
-    setFilterColumn(column);
-    setModalIsOpen(true);
+    localDispatch({ type: 'SET_FILTER_TYPE', payload: '' });
+    localDispatch({ type: 'SET_COLUMN_NAME', payload: name });
+    localDispatch({ type: 'SET_TYPE', payload: type });
+    localDispatch({ type: 'SET_FILTER_TEXT', payload: '' });
+    localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: '' });
+    localDispatch({ type: 'SET_FILTER_VALUES', payload: filteredData });
+    localDispatch({ type: 'SET_FILTER_COLUMN', payload: column });
+    localDispatch({ type: 'SET_FILTER_COLUMN_ID', payload: columnId });
+    localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: true });
+    const rect = event.target.getBoundingClientRect();
+    localDispatch({
+      type: 'SET_MODAL_POSITION',
+      payload: { top: rect.bottom, left: rect.left }
+    });
   };
 
   const closeModal = () => {
-    setModalIsOpen(false);
-    setFilterColumn(null);
-    setSearchTerm('');
-    setSelectedFilters([]);
+    localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
+    localDispatch({ type: 'SET_FILTER_COLUMN', payload: '' });
+    localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
+    localDispatch({ type: 'SET_SELECTED_FILTER', payload: '' });
   };
 
   const handleAscendingClick = (order) => {
-    setSortOrder(order);
+    localDispatch({
+      type: 'SET_SORT_ORDER',
+      payload: order
+    });
   };
 
   const handleDescendingClick = (order) => {
-    setSortOrder(order);
+    localDispatch({
+      type: 'SET_SORT_ORDER',
+      payload: order
+    });
   };
-
-  useEffect(() => {
-    if (sortOrder && sortOrder != null) {
-      handleApplyFilter(sortOrder);
-    }
-  }, [sortOrder]);
-
-  const filteredUniqueValues =
-    filterColumn &&
-    testCaseReviewList
-      ?.map((row) => {
-        return {
-          value: row.id,
-          label: row[filterColumn] // Assuming filterColumn is 'module_name'
-        };
-      })
-      ?.reduce((unique, item) => {
-        return unique.some((e) => e.label === item.label)
-          ? unique
-          : [...unique, item];
-      }, []);
 
   const handleFilterCheckboxChange = (event, label, value) => {
     const isChecked = event.target.checked;
 
     if (isChecked) {
-      setSelectedFilters((prev) => [...prev, label]); // Add the label to selectedFilters
-      setSelectedFilterIds((prev) => [...prev, value]); // Add the corresponding value to selectedFilterIds
+      localDispatch({
+        type: 'SET_SELECTED_FILTER',
+        payload: [...state.selectedFilters, label]
+      });
+
+      localDispatch({
+        type: 'SET_SELECTED_FILTER_IDS',
+        payload: [...state.selectedFilterIds, value]
+      });
     } else {
-      setSelectedFilters((prev) => prev.filter((filter) => filter !== label)); // Remove the label from selectedFilters
-      setSelectedFilterIds((prev) =>
-        prev.filter((filterId) => filterId !== value)
-      ); // Remove the corresponding value from selectedFilterIds
+      localDispatch({
+        type: 'SET_SELECTED_FILTER',
+        payload: [...state.selectedFilters.filter((filter) => filter !== label)]
+      });
+
+      localDispatch({
+        type: 'SET_SELECTED_FILTER_IDS',
+        payload: state.selectedFilterIds.filter(
+          (filterId) => filterId !== value
+        )
+      });
     }
   };
 
-  // Function to handle select all checkbox
   const handleSelectAll = (event) => {
     if (event.target.checked) {
-      setSelectedFilters(filteredUniqueValues.map((item) => item.label)); // Set selectedFilters with all labels
-      setSelectedFilterIds(filteredUniqueValues.map((item) => item.value)); // Set selectedFilterIds with all values
+      localDispatch({
+        type: 'SET_SELECTED_FILTER',
+        payload: filterValues?.map((item) => item.name)
+      });
+
+      localDispatch({
+        type: 'SET_SELECTED_FILTER_IDS',
+        payload: filterValues?.map((item) => item.id)
+      });
     } else {
-      setSelectedFilters([]); // Clear selectedFilters
-      setSelectedFilterIds([]); // Clear selectedFilterIds
+      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+
+      localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: [] });
     }
   };
 
-  const [betweenValues, setBetweenValues] = useState(['', '']);
-
   const handleBetweenValueChange = (index, value) => {
-    const newValues = [...betweenValues];
-    newValues[index] = value;
-    setBetweenValues(newValues);
+    if (filterType !== 'is not between' && filterType !== 'is between') {
+      localDispatch({ type: 'SET_BETWEEN_VALUES', payload: Number(value) });
+    } else {
+      const newValues = [...betweenValues];
+      newValues[index] = value;
+      localDispatch({ type: 'SET_BETWEEN_VALUES', payload: newValues });
+    }
   };
 
   const getFilteredValues = () => {
-    if (filterType !== 'is not between' && filterType !== 'is between') {
-      return [Number(betweenValues[0])];
-    } else if (filterType === 'is not between' || filterType === 'is between') {
+    if (filterType === 'is not between' || filterType === 'is between') {
       return betweenValues.map((value) => Number(value));
     }
+
     return filterText;
   };
 
   const handleApplyFilter = async () => {
     const newFilter =
-      type === 'number'
+      filterType === 'is not between' || filterType === 'is between'
         ? {
             column: filterColumnId,
             column_name: filterColumn,
             filter: filterType,
-            whereIn: getFilteredValues(),
+            searchText: getFilteredValues(),
             sort: sortOrder
           }
         : {
             column: filterColumnId,
-            searchText: filterText,
             column_name: filterColumn,
+            searchText: type === 'text' ? filterText : betweenValues,
             filter: filterType,
             sort: sortOrder
           };
 
-    // // Update filters array with the new filter
-
     const updatedFilters = [...filters, newFilter];
-    setFilters(updatedFilters);
+    localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
 
     try {
       dispatch(
@@ -170,14 +267,36 @@ function TestCaseReviewComponent() {
           filter_testcase_data: updatedFilters
         })
       );
+      localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
+      localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
+      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+    } catch (error) {}
+  };
 
-      setModalIsOpen(false); // Close modal after applying filters
+  const handleApplyButton = async () => {
+    const newFilter = {
+      column: filterColumnId,
+      column_name: filterColumn,
 
-      setSearchTerm(''); // Reset search term if needed
-      setSelectedFilters([]); // Reset selected filters if needed
-    } catch (error) {
-      // Handle error if needed
-    }
+      whereIn: selectedFilterIds,
+      sort: sortOrder
+    };
+
+    const updatedFilters = [...filters, newFilter];
+    localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+
+    try {
+      dispatch(
+        getTestCaseReviewListThunk({
+          limit: paginationData.rowPerPage,
+          page: paginationData.currentPage,
+          filter_testcase_data: updatedFilters
+        })
+      );
+      localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
+      localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
+      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+    } catch (error) {}
   };
 
   const columns = [
@@ -214,7 +333,7 @@ function TestCaseReviewComponent() {
             <OverlayTrigger overlay={<Tooltip>{row.test_plan_id} </Tooltip>}>
               <div>
                 <Link
-                  to={`/${_base + '/ReviewedTestDraftComponent/' + row?.id}`}
+                  to={`/${_base + '/TestCaseReviewDetails/' + row?.id}`}
                   className="link_underline_primary"
                 >
                   {row.test_plan_id}
@@ -319,8 +438,8 @@ function TestCaseReviewComponent() {
             onClick={(e) =>
               handleFilterClick(
                 e,
-                'reviewed_testcases',
-                'reviewed_testcases',
+                'total_reviewed_testcases',
+                'total_reviewed_testcases',
                 'number'
               )
             }
@@ -329,7 +448,7 @@ function TestCaseReviewComponent() {
         </div>
       ),
 
-      selector: (row) => row.reviewed_testcases,
+      selector: (row) => row.total_reviewed_testcases,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -338,11 +457,11 @@ function TestCaseReviewComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.reviewed_testcases && (
+          {row.total_reviewed_testcases && (
             <OverlayTrigger
-              overlay={<Tooltip>{row.reviewed_testcases} </Tooltip>}
+              overlay={<Tooltip>{row.total_reviewed_testcases} </Tooltip>}
             >
-              <div>{row.reviewed_testcases}</div>
+              <div>{row.total_reviewed_testcases}</div>
             </OverlayTrigger>
           )}
         </div>
@@ -361,14 +480,19 @@ function TestCaseReviewComponent() {
           <span>Rejected Testcase</span>
           <i
             onClick={(e) =>
-              handleFilterClick(e, 'total_rejected', 'total_rejected', 'number')
+              handleFilterClick(
+                e,
+                'total_rejected_testcases',
+                'total_rejected_testcases',
+                'number'
+              )
             }
             className="icofont-filter ms-2"
           />
         </div>
       ),
 
-      selector: (row) => row.total_rejected,
+      selector: (row) => row.total_rejected_testcases,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -377,9 +501,11 @@ function TestCaseReviewComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.total_rejected && (
-            <OverlayTrigger overlay={<Tooltip>{row.total_rejected} </Tooltip>}>
-              <div>{row.total_rejected}</div>
+          {row.total_rejected_testcases && (
+            <OverlayTrigger
+              overlay={<Tooltip>{row.total_rejected_testcases} </Tooltip>}
+            >
+              <div>{row.total_rejected_testcases}</div>
             </OverlayTrigger>
           )}
         </div>
@@ -398,14 +524,19 @@ function TestCaseReviewComponent() {
           <span>Approved Testcse</span>
           <i
             onClick={(e) =>
-              handleFilterClick(e, 'total_approved', 'total_approved', 'number')
+              handleFilterClick(
+                e,
+                'total_approved_testcases',
+                'total_approved_testcases',
+                'number'
+              )
             }
             className="icofont-filter ms-2"
           />
         </div>
       ),
 
-      selector: (row) => row.total_approved,
+      selector: (row) => row.total_approved_testcases,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -414,9 +545,11 @@ function TestCaseReviewComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.total_approved && (
-            <OverlayTrigger overlay={<Tooltip>{row.total_approved} </Tooltip>}>
-              <div>{row.total_approved}</div>
+          {row.total_approved_testcases && (
+            <OverlayTrigger
+              overlay={<Tooltip>{row.total_approved_testcases} </Tooltip>}
+            >
+              <div>{row.total_approved_testcases}</div>
             </OverlayTrigger>
           )}
         </div>
@@ -443,6 +576,16 @@ function TestCaseReviewComponent() {
       width: '7rem'
     }
   ];
+
+  const handleButtonClick = () => {
+    dispatch(
+      getTestCaseReviewListThunk({
+        limit: paginationData.rowPerPage,
+        page: paginationData.currentPage
+      })
+    );
+  };
+
   useEffect(() => {
     dispatch(
       getTestCaseReviewListThunk({
@@ -453,7 +596,22 @@ function TestCaseReviewComponent() {
   }, []);
   return (
     <>
-      <PageHeader headerTitle="Test Case Review" />
+      <PageHeader
+        headerTitle="Test Case Review"
+        renderRight={() => {
+          return (
+            <div className="col-md-6 d-flex justify-content-end">
+              <button
+                onClick={handleButtonClick}
+                className="btn btn-primary text-white me-2"
+                disabled={filterTestCaseReviewList?.payload === 'null'}
+              >
+                Clear All Filter
+              </button>
+            </div>
+          );
+        }}
+      />
 
       <Container fluid className="employee_joining_details_container">
         <DataTable
@@ -462,7 +620,7 @@ function TestCaseReviewComponent() {
           defaultSortField="role_id"
           pagination
           paginationServer
-          paginationTotalRows={testCaseReviewList?.total}
+          paginationTotalRows={testCaseReviewList?.data?.total}
           paginationDefaultPage={testCaseReviewList?.currentPage}
           onChangePage={(page) => setPaginationData({ currentPage: page })}
           onChangeRowsPerPage={(newPageSize) => {
@@ -490,18 +648,17 @@ function TestCaseReviewComponent() {
           handleCheckboxChange={handleFilterCheckboxChange}
           selectedFilters={selectedFilters}
           handleSelectAll={handleSelectAll}
-          uniqueValues={filteredUniqueValues}
+          filterData={filterValues}
           searchTerm={searchTerm}
           filterType={filterType}
-          setSearchTerm={setSearchTerm}
           paginationData={paginationData}
-          setFilterType={setFilterType}
-          setFilterText={setFilterText}
           handleAscendingClick={handleAscendingClick}
           handleDescendingClick={handleDescendingClick}
           handleBetweenValueChange={handleBetweenValueChange}
           columnName={columnName}
           type={type}
+          handleApplyButton={handleApplyButton}
+          localDispatch={localDispatch}
         />
       )}
     </>
