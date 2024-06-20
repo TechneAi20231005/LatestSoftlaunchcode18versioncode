@@ -97,9 +97,9 @@ function AddEditInterviewMasterModal({
   const [selectedDesignationData, setSelectedDesignationData] = useState({
     id: '',
     designationFor: ''
-  });
 
-  // // dropdown data
+  }); 
+ // // dropdown data
   const departmentType = [
     { label: 'Select', value: '', isDisabled: true },
     ...(departmentDataList
