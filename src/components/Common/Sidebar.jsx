@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useNavigate } from 'react-router-dom';
 
@@ -19,15 +19,10 @@ const Sidebar = ({ activekey }) => {
   const role_id = localStorage.getItem('role_id');
   //Redux State
   const { menuList, filterMenuList } = useSelector((state) => state?.sidebar);
-
   const menuListData = menuList?.menu;
-
   //local state
-
   const [menuData, setMenuData] = useState(filterMenuList?.[0]);
-
   const [isSidebarMini, setIsSidebarMini] = useState(false);
-
   const [darkLightMode, setDarkLightMode] = useState('light');
   const [updateRtl, setUpdateRtl] = useState(false);
 
@@ -297,4 +292,4 @@ const Sidebar = ({ activekey }) => {
   );
 };
 
-export default Sidebar;
+export default memo(Sidebar);
