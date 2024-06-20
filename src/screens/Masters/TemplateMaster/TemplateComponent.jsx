@@ -2,105 +2,106 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
-import ErrorLogService from '../../../services/ErrorLogService';
+
 import TemplateService from '../../../services/MastersService/TemplateService';
 import PageHeader from '../../../components/Common/PageHeader';
-import Select from 'react-select';
+
 import Alert from '../../../components/Common/Alert';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
-import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+
 import { Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
-import { Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { exportTempateData, templateData } from './TemplateComponetAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
-import TemplateComponetSlice, { hideNotification } from './TemplateComponetSlice';
+
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function TemplateComponent() {
   const location = useLocation();
   const dispatch = useDispatch();
   const templatedata = useSelector(
-    TemplateComponetSlice => TemplateComponetSlice.tempateMaster.templateData,
+    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.templateData
   );
   const isLoading = useSelector(
-    TemplateComponetSlice => TemplateComponetSlice.tempateMaster.isLoading.templateDataList,
+    (TemplateComponetSlice) =>
+      TemplateComponetSlice.tempateMaster.isLoading.templateDataList
   );
 
   const exportData = useSelector(
-    TemplateComponetSlice => TemplateComponetSlice.tempateMaster.exportData,
+    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.exportData
   );
 
-  const notify = useSelector(TemplateComponetSlice => TemplateComponetSlice.tempateMaster.notify);
-  const checkRole = useSelector(DashboardSlice =>
-    DashboardSlice.dashboard.getRoles.filter(d => d.menu_id == 15),
+  const notify = useSelector(
+    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
+  );
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 15)
   );
 
-  const [data, setData] = useState(null);
-  const [dataa, setDataa] = useState(null);
   const [modal, setModal] = useState({
     showModal: false,
     modalData: '',
-    modalHeader: '',
+    modalHeader: ''
   });
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  const roleId = sessionStorage.getItem('role_id');
-
-  const handleModal = data => {
+  const handleModal = (data) => {
     setModal(data);
   };
 
-  const searchRef = useRef();
-
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter(d => {
-      for (const key in d) {
-        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
-
   const [searchTerm, setSearchTerm] = useState('');
-
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = value => {};
+  //search function
+
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(templatedata, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(templatedata);
+  };
 
   const columns = [
     {
       name: 'Action',
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
       width: '80px',
-      cell: row => (
+      cell: (row) => (
         <div className="btn-group" role="group">
-          <Link to={`/${_base}/Template/Edit/` + row.id} className="btn btn-outline-secondary">
+          <Link
+            to={`/${_base}/Template/Edit/` + row.id}
+            className="btn btn-outline-secondary"
+          >
             <i className="icofont-edit text-success"></i>
           </Link>
         </div>
-      ),
+      )
     },
     {
       name: 'Sr',
-      selector: row => row.counter,
+      selector: (row) => row.counter,
       sortable: true,
-      width: '80px',
+      width: '80px'
     },
 
     {
       name: 'Template Name',
-      selector: row => row['Template Name'],
+      selector: (row) => row['Template Name'],
       sortable: true,
       width: '150px',
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.template_name && (
             <OverlayTrigger overlay={<Tooltip>{row.template_name} </Tooltip>}>
               <div>
@@ -114,57 +115,52 @@ function TemplateComponent() {
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
       name: 'Status',
-      selector: row => row.is_active,
+      selector: (row) => row.is_active,
       sortable: false,
       width: '150px',
-      cell: row => (
+      cell: (row) => (
         <div>
-          {row.is_active == 1 && <span className="badge bg-primary">Active</span>}
-          {row.is_active == 0 && <span className="badge bg-danger">Deactive</span>}
+          {row.is_active == 1 && (
+            <span className="badge bg-primary">Active</span>
+          )}
+          {row.is_active == 0 && (
+            <span className="badge bg-danger">Deactive</span>
+          )}
         </div>
-      ),
+      )
     },
     {
       name: 'Created At',
-      selector: row => row.created_at,
+      selector: (row) => row.created_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Created By',
-      selector: row => row.created_by,
+      selector: (row) => row.created_by,
       sortable: true,
-      width: '150px',
+      width: '150px'
     },
     {
       name: 'Updated At',
-      selector: row => row.updated_at,
+      selector: (row) => row.updated_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated By',
-      selector: row => row.updated_by,
+      selector: (row) => row.updated_by,
       sortable: true,
-      width: '150px',
-    },
+      width: '150px'
+    }
   ];
 
-  const loadData = async () => {};
-
-  const handleKeyDown = event => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
   useEffect(() => {
-    loadData();
     dispatch(exportTempateData());
     dispatch(templateData());
 
@@ -180,6 +176,14 @@ function TemplateComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+
+  useEffect(() => {
+    setFilteredData(templatedata);
+  }, [templatedata]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -204,77 +208,30 @@ function TemplateComponent() {
         }}
       />
 
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by Templete Name...."
-              ref={searchRef}
-              onChange={e => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Template master Records"
-            />
-          </div>
-        </div>
-      </div>
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by template name...."
+        exportFileName="Template Master Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
 
       <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {templatedata && (
-                <DataTable
-                  columns={columns}
-                  data={templatedata.filter(customer => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(
-                          value =>
-                            typeof value === 'string' &&
-                            value.toLowerCase().includes(searchTerm.toLowerCase()),
-                        );
-                      }
-                    }
-                    return false;
-                  })}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  progressPending={isLoading}
-                  progressComponent={<TableLoadingSkelton />}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        {templatedata && (
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            defaultSortField="title"
+            pagination
+            selectableRows={false}
+            progressPending={isLoading}
+            progressComponent={<TableLoadingSkelton />}
+            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+            highlightOnHover={true}
+          />
+        )}
       </div>
     </div>
   );
@@ -284,16 +241,15 @@ function TemplateDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new TemplateService().getTemplate().then(res => {
+    new TemplateService().getTemplate().then((res) => {
       if (res.status === 200) {
-        let counter = 1;
         const data = res.data.data;
         for (const key in data) {
           tempData.push({
             id: data[key].id,
             template_name: data[key].template_name,
             created_at: data[key].created_at,
-            created_by: data[key].created_by,
+            created_by: data[key].created_by
           });
         }
         setData(tempData);
@@ -312,7 +268,9 @@ function TemplateDropdown(props) {
           required={props.required ? true : false}
           value={props.defaultValue}
         >
-          {props.defaultValue !== 0 && <option value={0}>Select Template</option>}
+          {props.defaultValue !== 0 && (
+            <option value={0}>Select Template</option>
+          )}
           {data.map(function (item, i) {
             if (props.defaultValue && props.defaultValue == item.id) {
               return (

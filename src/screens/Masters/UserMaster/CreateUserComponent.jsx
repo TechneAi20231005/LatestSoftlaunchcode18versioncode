@@ -23,10 +23,13 @@ import {
   getStateData,
   getStateDataSort,
   postUserData,
-  getEmployeeData,
+  getEmployeeData
 } from '../../Dashboard/DashboardAction';
 
-import { getDesignationData } from '../DesignationMaster/DesignationAction';
+import {
+  getDesignationData,
+  getDesignationDataListThunk
+} from '../DesignationMaster/DesignationAction';
 
 import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
 import { getRoleData } from '../RoleMaster/RoleMasterAction';
@@ -35,9 +38,12 @@ function CreateUserComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState('All_Tickets');
-  const roleDropdown = useSelector(RoleMasterSlice => RoleMasterSlice.rolemaster.getRoleData);
+  const roleDropdown = useSelector(
+    (RoleMasterSlice) => RoleMasterSlice.rolemaster.getRoleData
+  );
   const departmentDropdown = useSelector(
-    DepartmentMasterSlice => DepartmentMasterSlice.department.sortDepartmentData,
+    (DepartmentMasterSlice) =>
+      DepartmentMasterSlice.department.sortDepartmentData
   );
 
   const [filteredRoles, setFilteredRoles] = useState([]);
@@ -55,41 +61,54 @@ function CreateUserComponent({ match }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const Notify = useSelector(dashboardSlice => dashboardSlice.dashboard.notify);
-  const isLoading = useSelector(dashboardSlice => dashboardSlice.dashboard.isLoading);
-  const CountryData = useSelector(dashboardSlice => dashboardSlice.dashboard.filteredCountryData);
-  const cityData = useSelector(dashboardSlice => dashboardSlice.dashboard.sortedCityData);
-  const AllcityDropDownData = useSelector(dashboardSlice => dashboardSlice.dashboard.FilterCity);
+  const Notify = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.notify
+  );
+  const isLoading = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.isLoading
+  );
+  const CountryData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
+  );
+  const cityData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.sortedCityData
+  );
+  const AllcityDropDownData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.FilterCity
+  );
 
   const designationDropdown = useSelector(
-    DesignationSlice => DesignationSlice.designationMaster.sortedDesignationData,
+    (DesignationSlice) =>
+      DesignationSlice.designationMaster.sortedDesignationData
   );
-  const checkRole = useSelector(DashboardSlice =>
-    DashboardSlice.dashboard.getRoles.filter(d => d.menu_id == 3),
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
   );
-  const stateDropdown = useSelector(DashbordSlice => DashbordSlice.dashboard.activeState);
+  const stateDropdown = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.activeState
+  );
 
   const options = [
     { value: 'MY_TICKETS', label: 'My Tickets' },
     {
       value: 'DEPARTMENT_TICKETS',
-      label: 'Department Tickets',
-    },
+      label: 'Department Tickets'
+    }
   ];
 
   const mappingData = {
     department_id: null,
     ticket_show_type: null,
     ticket_passing_authority: 0,
-    is_default: 0,
+    is_default: 0
   };
   const [rows, setRows] = useState([
     {
       department_id: [],
       ticket_show_type: null,
       ticket_passing_authority: 0,
-      is_default: 0,
-    },
+      is_default: 0
+    }
   ]);
 
   const [empty, setEmpty] = useState([
@@ -97,8 +116,8 @@ function CreateUserComponent({ match }) {
       department_id: [],
       ticket_show_type: null,
       ticket_passing_authority: 0,
-      is_default: 0,
-    },
+      is_default: 0
+    }
   ]);
 
   const [updateStatus, setUpdateStatus] = useState({});
@@ -134,7 +153,7 @@ function CreateUserComponent({ match }) {
     confirmed_PassErr: '',
     roleErr: '',
     designationErr: '',
-    departmentErr: '',
+    departmentErr: ''
   });
 
   function checkingValidation(form) {
@@ -174,7 +193,7 @@ function CreateUserComponent({ match }) {
     } else if (confirmedPasswordRef.current.value == '') {
       setInputState({
         ...state,
-        confirmed_PassErr: ' Please Enter Confirmed password',
+        confirmed_PassErr: ' Please Enter Confirmed password'
       });
       flag = 1;
     } else if (selectRole == '') {
@@ -186,7 +205,7 @@ function CreateUserComponent({ match }) {
     } else if (selectPassword.length < 6) {
       setInputState({
         ...state,
-        passwordErr: ' Please maintain password length 6 to 20 characters',
+        passwordErr: ' Please maintain password length 6 to 20 characters'
       });
       alert('Please maintain password length 6 to 20 characters');
 
@@ -194,7 +213,7 @@ function CreateUserComponent({ match }) {
     } else if (selectPassword.length > 20) {
       setInputState({
         ...state,
-        passwordErr: ' Please maintain password length 6 to 20 characters',
+        passwordErr: ' Please maintain password length 6 to 20 characters'
       });
       alert('Please maintain password length 6 to 20 characters');
 
@@ -202,13 +221,13 @@ function CreateUserComponent({ match }) {
     } else if (selectContactNo.length < 10) {
       setInputState({
         ...state,
-        contactNoErr: 'contact number length should be 10 digit',
+        contactNoErr: 'contact number length should be 10 digit'
       });
       flag = 1;
     } else if (selectContactNo.length > 10) {
       setInputState({
         ...state,
-        contactNoErr: 'contact number length should be 10 digit',
+        contactNoErr: 'contact number length should be 10 digit'
       });
       flag = 1;
     } else if (contactValid == true) {
@@ -230,7 +249,7 @@ function CreateUserComponent({ match }) {
   const [contactNumber, setContactNumber] = useState(null);
 
   const [contactValid, setContactValid] = useState(false);
-  const handleContactValidation = e => {
+  const handleContactValidation = (e) => {
     const contactValidation = e.target.value;
     if (
       contactValidation.charAt(0) == '9' ||
@@ -253,7 +272,7 @@ function CreateUserComponent({ match }) {
   const [whatsappNumber, setWhatsappNumber] = useState(null);
   const [whatsappError, setWhatsappError] = useState(null);
   const [whatsappValid, setWhatsappValid] = useState(false);
-  const handleWhatsappValidation = e => {
+  const handleWhatsappValidation = (e) => {
     const whatsappValidation = e.target.value;
     if (
       whatsappValidation.charAt(0) == '9' ||
@@ -278,7 +297,7 @@ function CreateUserComponent({ match }) {
   const [stateDropdownData, setStateDropdownData] = useState([]);
   const [cityDropdownData, setCityDropdownData] = useState([]);
 
-  const handlePasswordValidation = e => {
+  const handlePasswordValidation = (e) => {
     if (e.target.value === '') {
       setInputState({ ...state, passwordErr: 'Please enter Password' });
     } else {
@@ -311,7 +330,7 @@ function CreateUserComponent({ match }) {
   const [pincodeNumber, setPincodenumber] = useState(null);
   const [pincodeError, setPincodeError] = useState(null);
   const [pincodeValid, setPincodeValid] = useState(false);
-  const handlePincodeValidation = e => {
+  const handlePincodeValidation = (e) => {
     const whatsappValidation = e.target.value;
     if (whatsappValidation.length == 6) {
       setPincodeError('');
@@ -322,11 +341,11 @@ function CreateUserComponent({ match }) {
     }
   };
 
-  const handleConfirmedPassword = event => {
+  const handleConfirmedPassword = (event) => {
     if (event.target.value === '') {
       setInputState({
         ...state,
-        confirmed_PassErr: 'Please Enter Confirmed password',
+        confirmed_PassErr: 'Please Enter Confirmed password'
       });
     } else {
       setInputState({ ...state, confirmed_PassErr: '' });
@@ -339,11 +358,11 @@ function CreateUserComponent({ match }) {
   };
 
   const [selectRole, setSelctRole] = useState(null);
-  const handleSelectRole = e => {
+  const handleSelectRole = (e) => {
     const newValue = e;
     setSelctRole(newValue);
   };
-  const handleForm = async e => {
+  const handleForm = async (e) => {
     e.preventDefault();
     if (loading) {
       return;
@@ -389,7 +408,7 @@ function CreateUserComponent({ match }) {
       pincodeValid == false
     ) {
       if (flag === 1) {
-        dispatch(postUserData(form)).then(res => {
+        dispatch(postUserData(form)).then((res) => {
           if (res.payload.data.status === 1 && res.payload.status === 200) {
             dispatch(getEmployeeData());
             setNotify({ type: 'success', message: res.payload.data.message });
@@ -407,16 +426,16 @@ function CreateUserComponent({ match }) {
     dispatch(getCountryDataSort());
     dispatch(getStateDataSort());
 
-    await new CustomerService().getCustomer().then(res => {
+    await new CustomerService().getCustomer().then((res) => {
       if (res.status == 200) {
         if (res.data.status == 1) {
           setCustomerDrp(
             res.data.data
-              .filter(d => d.is_active === 1)
-              .map(d => ({
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({
                 value: d.id,
-                label: d.name,
-              })),
+                label: d.name
+              }))
           );
         }
       }
@@ -428,17 +447,19 @@ function CreateUserComponent({ match }) {
       setStateDropdownData(
         stateDropdown &&
           stateDropdown
-            ?.filter(filterState => filterState.country_id === e.value)
-            ?.map(d => ({ value: d.id, label: d.state })),
+            ?.filter((filterState) => filterState.country_id === e.value)
+            ?.map((d) => ({ value: d.id, label: d.state }))
       );
     }
     if (type == 'STATE') {
       setCityDropdownData(
         AllcityDropDownData &&
-          AllcityDropDownData?.filter(filterState => filterState.state_id === e.value)?.map(d => ({
+          AllcityDropDownData?.filter(
+            (filterState) => filterState.state_id === e.value
+          )?.map((d) => ({
             value: d.id,
-            label: d.city,
-          })),
+            label: d.city
+          }))
       );
 
       setStateName(e);
@@ -446,7 +467,7 @@ function CreateUserComponent({ match }) {
     }
   };
   const [defaultDepartmentDropdown, setDefaultDepartmentDropdown] = useState();
-  const handleDeparmentChange = e => {
+  const handleDeparmentChange = (e) => {
     setDefaultDepartmentDropdown(e);
   };
 
@@ -465,13 +486,15 @@ function CreateUserComponent({ match }) {
 
     // Check if the selected department is already present in the rows
     const isDepartmentAlreadySelected = rows.some(
-      row => row.department_id === selectedDepartmentId,
+      (row) => row.department_id === selectedDepartmentId
     );
 
     if (isDepartmentAlreadySelected) {
       // If the department is already selected, show an error message
       // You can handle the error message display as per your UI design
-      alert('This Department is already selected. Please select another Department.');
+      alert(
+        'This Department is already selected. Please select another Department.'
+      );
       return;
     }
 
@@ -479,7 +502,7 @@ function CreateUserComponent({ match }) {
     const updatedAssign = [...rows];
     updatedAssign[index] = {
       ...updatedAssign[index],
-      department_id: selectedDepartmentId,
+      department_id: selectedDepartmentId
     };
     setRows(updatedAssign);
   };
@@ -487,17 +510,19 @@ function CreateUserComponent({ match }) {
   const handleTicketTypeShow = (selectedTicketOption, index) => {
     const selectedTicketID = selectedTicketOption.value;
 
-    const isDepartmentAlreadySelected = rows.some(row => row.ticket_show_type === selectedTicketID);
+    const isDepartmentAlreadySelected = rows.some(
+      (row) => row.ticket_show_type === selectedTicketID
+    );
 
     const updatedAssign = [...rows];
     updatedAssign[index] = {
       ...updatedAssign[index],
-      ticket_show_type: selectedTicketID,
+      ticket_show_type: selectedTicketID
     };
     setRows(updatedAssign);
   };
 
-  const handleRemoveSpecificRow = index => async () => {
+  const handleRemoveSpecificRow = (index) => async () => {
     const updatedAssign = [...rows];
     updatedAssign.splice(index, 1);
 
@@ -506,14 +531,14 @@ function CreateUserComponent({ match }) {
 
   const sortSlefRole =
     roleDropdown &&
-    roleDropdown?.filter(d => {
+    roleDropdown?.filter((d) => {
       return d.role.toLowerCase() !== 'user';
     });
   const filterSelfRole = sortSlefRole
-    ?.filter(d => d.is_active === 1)
-    .map(d => ({
+    ?.filter((d) => d.is_active === 1)
+    .map((d) => ({
       value: d.id,
-      label: d.role,
+      label: d.role
     }));
   const orderedSelfRoleData = filterSelfRole?.sort(function (a, b) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
@@ -521,24 +546,24 @@ function CreateUserComponent({ match }) {
 
   const customerSort =
     roleDropdown &&
-    roleDropdown?.filter(d => {
+    roleDropdown?.filter((d) => {
       return d.role.toLowerCase() === 'user';
     });
   const filterCutomerRole = customerSort
-    ?.filter(d => d.is_active === 1)
-    .map(d => ({
+    ?.filter((d) => d.is_active === 1)
+    .map((d) => ({
       value: d.id,
-      label: d.role,
+      label: d.role
     }));
   const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
 
-  const accountForChange = async account_for => {
+  const accountForChange = async (account_for) => {
     setSelctRole(null);
     setAccountFor(account_for);
     const accountFor = account_for;
-    const filteredAsAccountFor = roleDropdown?.filter(filterData => {
+    const filteredAsAccountFor = roleDropdown?.filter((filterData) => {
       if (accountFor === 'SELF') {
         return filterData.role.toLowerCase() !== 'user';
       } else if (accountFor === 'CUSTOMER') {
@@ -547,10 +572,10 @@ function CreateUserComponent({ match }) {
     });
 
     const response = filteredAsAccountFor
-      .filter(d => d.is_active === 1)
-      .map(d => ({
+      .filter((d) => d.is_active === 1)
+      .map((d) => ({
         value: d.id,
-        label: d.role,
+        label: d.role
       }));
     const aa = response.sort(function (a, b) {
       return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
@@ -574,7 +599,9 @@ function CreateUserComponent({ match }) {
       rows.forEach((d, i) => {
         if (d.department_id == e.value) {
           flag = 0;
-          alert(' Please select another Department.This Department already considered.');
+          alert(
+            ' Please select another Department.This Department already considered.'
+          );
           departmentRef.current.clear();
         }
       });
@@ -595,7 +622,8 @@ function CreateUserComponent({ match }) {
       } else if (type == 'TICKET_SHOW') {
         temp_element.ticket_show_type = e.value;
       } else if (type == 'TICKET_PASSING_AUTHORITY') {
-        temp_element.ticket_passing_authority = e.target.checked == true ? 1 : 0;
+        temp_element.ticket_passing_authority =
+          e.target.checked == true ? 1 : 0;
       } else if (type == 'IS_DEFAULT') {
         temp_element.is_default = e.target.checked == true ? 1 : 0;
       }
@@ -613,7 +641,9 @@ function CreateUserComponent({ match }) {
     } else {
       setIsReadOnly(false);
     }
-    var text1 = e.target.checked ? document.getElementById('contact_no').value : '';
+    var text1 = e.target.checked
+      ? document.getElementById('contact_no').value
+      : '';
     setCopyData(text1);
   }
 
@@ -642,7 +672,7 @@ function CreateUserComponent({ match }) {
     }
     dispatch(getRoleData());
     if (!designationDropdown.length) {
-      dispatch(getDesignationData());
+      dispatch(getDesignationDataListThunk());
     }
 
     if (!AllcityDropDownData.length) {
@@ -682,7 +712,7 @@ function CreateUserComponent({ match }) {
         <Tabs
           defaultActiveKey={tabKey}
           activeKey={tabKey}
-          onSelect={k => setTabKey(k)}
+          onSelect={(k) => setTabKey(k)}
           transition={false}
           id="noanim-tab-example1"
           className=" tab-body-header rounded d-inline-flex"
@@ -708,7 +738,7 @@ function CreateUserComponent({ match }) {
                             // value={accountFor? accountFor :""}
                             readOnly={false}
                             required
-                            onChange={e => accountForChange(e.target.value)}
+                            onChange={(e) => accountForChange(e.target.value)}
                           >
                             <option value="SELF">SELF</option>
                             <option value="CUSTOMER">CUSTOMER</option>
@@ -753,14 +783,14 @@ function CreateUserComponent({ match }) {
                           name="first_name"
                           placeholder="Please enter first name"
                           maxLength={30}
-                          onKeyPress={e => {
+                          onKeyPress={(e) => {
                             Validation.Characters(e);
                           }}
-                          onChange={event => {
+                          onChange={(event) => {
                             if (event.target.value === '') {
                               setInputState({
                                 ...state,
-                                firstNameErr: 'First Name Required',
+                                firstNameErr: 'First Name Required'
                               });
                             } else {
                               setInputState({ ...state, firstNameErr: '' });
@@ -770,7 +800,7 @@ function CreateUserComponent({ match }) {
                         {inputState && (
                           <small
                             style={{
-                              color: 'red',
+                              color: 'red'
                             }}
                           >
                             {inputState.firstNameErr}
@@ -786,14 +816,14 @@ function CreateUserComponent({ match }) {
                           name="middle_name"
                           placeholder="Middle Name"
                           maxLength={30}
-                          onKeyPress={e => {
+                          onKeyPress={(e) => {
                             Validation.Characters(e);
                           }}
-                          onChange={event => {
+                          onChange={(event) => {
                             if (event.target.value === '') {
                               setInputState({
                                 ...state,
-                                middleNameErr: 'Middle Name Required',
+                                middleNameErr: 'Middle Name Required'
                               });
                             } else {
                               setInputState({ ...state, middleNameErr: '' });
@@ -803,7 +833,7 @@ function CreateUserComponent({ match }) {
                         {inputState && (
                           <small
                             style={{
-                              color: 'red',
+                              color: 'red'
                             }}
                           >
                             {inputState.middleNameErr}
@@ -819,14 +849,14 @@ function CreateUserComponent({ match }) {
                           name="last_name"
                           placeholder="Last Name"
                           maxLength={30}
-                          onKeyPress={e => {
+                          onKeyPress={(e) => {
                             Validation.Characters(e);
                           }}
-                          onChange={event => {
+                          onChange={(event) => {
                             if (event.target.value === '') {
                               setInputState({
                                 ...state,
-                                lastNameErr: 'Last Name Required',
+                                lastNameErr: 'Last Name Required'
                               });
                             } else {
                               setInputState({ ...state, lastNameErr: '' });
@@ -836,7 +866,7 @@ function CreateUserComponent({ match }) {
                         {inputState && (
                           <small
                             style={{
-                              color: 'red',
+                              color: 'red'
                             }}
                           >
                             {inputState.lastNameErr}
@@ -860,16 +890,16 @@ function CreateUserComponent({ match }) {
                           className="form-control form-control-sm"
                           id="email_id"
                           name="email_id"
-                          onChange={event => {
+                          onChange={(event) => {
                             const email = event.target.value;
                             if (
                               !email.match(
-                                /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/,
+                                /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
                               )
                             ) {
                               setInputState({
                                 ...state,
-                                emailErr: 'Please enter a valid email address',
+                                emailErr: 'Please enter a valid email address'
                               });
                             } else {
                               setInputState({ ...state, emailErr: '' });
@@ -884,7 +914,7 @@ function CreateUserComponent({ match }) {
                         {inputState && (
                           <small
                             style={{
-                              color: 'red',
+                              color: 'red'
                             }}
                           >
                             {inputState.emailErr}
@@ -904,15 +934,15 @@ function CreateUserComponent({ match }) {
                           id="user_name"
                           name="user_name"
                           placeholder="Username"
-                          onKeyPress={e => {
+                          onKeyPress={(e) => {
                             Validation.CharactersNumbersOnly(e);
                           }}
                           maxLength={30}
-                          onChange={event => {
+                          onChange={(event) => {
                             if (event.target.value === '') {
                               setInputState({
                                 ...state,
-                                userNameErr: 'Please enter username',
+                                userNameErr: 'Please enter username'
                               });
                             } else {
                               setInputState({ ...state, userNameErr: '' });
@@ -922,7 +952,7 @@ function CreateUserComponent({ match }) {
                         {inputState && (
                           <small
                             style={{
-                              color: 'red',
+                              color: 'red'
                             }}
                           >
                             {inputState.userNameErr}
@@ -951,7 +981,7 @@ function CreateUserComponent({ match }) {
                           // key={Math.random()}
                           maxLength="10"
                           minLength="10"
-                          onKeyPress={e => {
+                          onKeyPress={(e) => {
                             Validation.mobileNumbersOnly(e);
                           }}
                           onChange={handleContactValidation}
@@ -959,7 +989,7 @@ function CreateUserComponent({ match }) {
                         {inputState && (
                           <small
                             style={{
-                              color: 'red',
+                              color: 'red'
                             }}
                           >
                             {inputState.contactNoErr}
@@ -1003,7 +1033,7 @@ function CreateUserComponent({ match }) {
                           // value={whatsappNumber? whatsappNumber :""}
                           // key={Math.random()}
                           ref={whatsappRef}
-                          onKeyPress={e => {
+                          onKeyPress={(e) => {
                             Validation.mobileNumbersOnly(e);
                           }}
                           onChange={handleWhatsappValidation}
@@ -1013,7 +1043,7 @@ function CreateUserComponent({ match }) {
                         {inputState && (
                           <small
                             style={{
-                              color: 'red',
+                              color: 'red'
                             }}
                           >
                             {inputState.whatsappErr}
@@ -1029,7 +1059,10 @@ function CreateUserComponent({ match }) {
                           Password : <Astrick color="red" />
                         </b>
                       </label>
-                      <div className="col-sm-3" style={{ position: 'relative', display: 'flex' }}>
+                      <div
+                        className="col-sm-3"
+                        style={{ position: 'relative', display: 'flex' }}
+                      >
                         <InputGroup className="">
                           <input
                             className="form-control"
@@ -1039,22 +1072,25 @@ function CreateUserComponent({ match }) {
                             minLength={6} // Minimum length is set to 6characters
                             maxLength={20}
                             type={passwordShown ? 'text' : 'password'}
-                            onKeyPress={e => {
+                            onKeyPress={(e) => {
                               Validation.password(e);
                             }}
                             onChange={handlePasswordValidation}
-                            onPaste={e => {
+                            onPaste={(e) => {
                               e.preventDefault();
                               return false;
                             }}
-                            onCopy={e => {
+                            onCopy={(e) => {
                               e.preventDefault();
                               return false;
                             }}
                           />
 
                           <InputGroup.Text>
-                            <i className="bi bi-eye-fill" onClick={togglePasswordVisiblity}></i>
+                            <i
+                              className="bi bi-eye-fill"
+                              onClick={togglePasswordVisiblity}
+                            ></i>
                           </InputGroup.Text>
                         </InputGroup>
 
@@ -1063,7 +1099,7 @@ function CreateUserComponent({ match }) {
                             style={{
                               color: 'red',
                               position: 'absolute',
-                              top: '95%',
+                              top: '95%'
                             }}
                           >
                             {inputState.passwordErr}
@@ -1076,7 +1112,10 @@ function CreateUserComponent({ match }) {
                           Confirmed Password :<Astrick color="red" />{' '}
                         </b>
                       </label>
-                      <div className="col-sm-3" style={{ position: 'relative', display: 'flex' }}>
+                      <div
+                        className="col-sm-3"
+                        style={{ position: 'relative', display: 'flex' }}
+                      >
                         <InputGroup>
                           <input
                             className="form-control form-control-sm "
@@ -1084,17 +1123,20 @@ function CreateUserComponent({ match }) {
                             ref={confirmedPasswordRef}
                             onChange={handleConfirmedPassword}
                             type={passwordShown1 ? 'text' : 'Password'}
-                            onPaste={e => {
+                            onPaste={(e) => {
                               e.preventDefault();
                               return false;
                             }}
-                            onCopy={e => {
+                            onCopy={(e) => {
                               e.preventDefault();
                               return false;
                             }}
                           />
                           <InputGroup.Text>
-                            <i className="bi bi-eye-fill" onClick={togglePasswordVisiblity1}></i>
+                            <i
+                              className="bi bi-eye-fill"
+                              onClick={togglePasswordVisiblity1}
+                            ></i>
                           </InputGroup.Text>
                         </InputGroup>
 
@@ -1103,7 +1145,7 @@ function CreateUserComponent({ match }) {
                             style={{
                               color: 'red',
                               position: 'absolute',
-                              top: '95%',
+                              top: '95%'
                             }}
                           >
                             {inputState.confirmed_PassErr}
@@ -1115,7 +1157,7 @@ function CreateUserComponent({ match }) {
                           style={{
                             color: 'red',
                             position: 'relative',
-                            left: '67%',
+                            left: '67%'
                           }}
                         >
                           Password Not matched
@@ -1140,14 +1182,16 @@ function CreateUserComponent({ match }) {
                           value={selectRole}
                           // options={filteredRoles}
                           options={
-                            accountFor === 'SELF' ? orderedSelfRoleData : orderedCustomerRoleData
+                            accountFor === 'SELF'
+                              ? orderedSelfRoleData
+                              : orderedCustomerRoleData
                           }
-                          onChange={e => {
+                          onChange={(e) => {
                             handleSelectRole(e);
                             if (e.value === '') {
                               setInputState({
                                 ...state,
-                                roleErr: 'Please Select Role',
+                                roleErr: 'Please Select Role'
                               });
                             } else {
                               setInputState({ ...state, roleErr: '' });
@@ -1158,7 +1202,7 @@ function CreateUserComponent({ match }) {
                           <small
                             style={{
                               color: 'red',
-                              position: 'relative',
+                              position: 'relative'
                             }}
                           >
                             {inputState.roleErr}
@@ -1179,11 +1223,11 @@ function CreateUserComponent({ match }) {
                           id="designation_id"
                           name="designation_id"
                           options={designationDropdown}
-                          onChange={event => {
+                          onChange={(event) => {
                             if (event.value === '') {
                               setInputState({
                                 ...state,
-                                designationErr: 'Please Select Designation',
+                                designationErr: 'Please Select Designation'
                               });
                             } else {
                               setInputState({ ...state, designationErr: '' });
@@ -1194,7 +1238,7 @@ function CreateUserComponent({ match }) {
                           <small
                             style={{
                               color: 'red',
-                              position: 'relative',
+                              position: 'relative'
                             }}
                           >
                             {inputState.designationErr}
@@ -1235,7 +1279,7 @@ function CreateUserComponent({ match }) {
                         style={{
                           color: 'red',
                           position: 'absolute',
-                          right: '70%',
+                          right: '70%'
                         }}
                       >
                         {inputState.addressErr}
@@ -1253,7 +1297,7 @@ function CreateUserComponent({ match }) {
                           id="pincode"
                           name="pincode"
                           maxLength={6}
-                          onKeyPress={e => {
+                          onKeyPress={(e) => {
                             Validation.NumbersOnly(e);
                           }}
                           onChange={handlePincodeValidation}
@@ -1261,7 +1305,7 @@ function CreateUserComponent({ match }) {
                         {inputState && (
                           <small
                             style={{
-                              color: 'red',
+                              color: 'red'
                             }}
                           >
                             {pincodeError}
@@ -1269,7 +1313,10 @@ function CreateUserComponent({ match }) {
                         )}
                       </div>
 
-                      <label className="col-sm-2 col-form-label" style={{ textAlign: 'right' }}>
+                      <label
+                        className="col-sm-2 col-form-label"
+                        style={{ textAlign: 'right' }}
+                      >
                         <b>Country :</b>
                       </label>
                       <div className="col-sm-4">
@@ -1277,7 +1324,7 @@ function CreateUserComponent({ match }) {
                           options={CountryData}
                           name="country_id"
                           id="country_id"
-                          onChange={e => handleDependentChange(e, 'COUNTRY')}
+                          onChange={(e) => handleDependentChange(e, 'COUNTRY')}
                         />
                       </div>
                     </div>
@@ -1296,14 +1343,17 @@ function CreateUserComponent({ match }) {
                           options={stateDropdownData}
                           name="state_id"
                           id="state_id"
-                          onChange={e => handleDependentChange(e, 'STATE')}
+                          onChange={(e) => handleDependentChange(e, 'STATE')}
                           defaultValue={stateName ? stateName : ''}
                           // key={Math.random()}
                           // value={stateName ? state : ""}
                         />
                       </div>
 
-                      <label className="col-sm-2 col-form-label" style={{ textAlign: 'right' }}>
+                      <label
+                        className="col-sm-2 col-form-label"
+                        style={{ textAlign: 'right' }}
+                      >
                         <b>City :</b>
                       </label>
 
@@ -1312,7 +1362,7 @@ function CreateUserComponent({ match }) {
                           options={cityDropdownData && cityDropdownData}
                           name="city_id"
                           id="city_id"
-                          onChange={e => setCityName(e)}
+                          onChange={(e) => setCityName(e)}
                           defaultValue={cityName ? cityName : ''}
                         />
                       </div>
@@ -1325,7 +1375,10 @@ function CreateUserComponent({ match }) {
           <Tab eventKey="User_Settings" title="User Setting">
             <div className="card">
               <div className="card-body">
-                <table className="table table-bordered table-responsive mt-5" id="tab_logic">
+                <table
+                  className="table table-bordered table-responsive mt-5"
+                  id="tab_logic"
+                >
                   <thead>
                     <tr>
                       <th className="text-center" style={{ width: '100px' }}>
@@ -1368,14 +1421,16 @@ function CreateUserComponent({ match }) {
                             className="basic-multi-select"
                             classNamePrefix="select"
                             options={departmentDropdown}
-                            value={departmentDropdown.filter(d =>
+                            value={departmentDropdown.filter((d) =>
                               Array.isArray(item.department_id)
                                 ? item.department_id.includes(d.value)
-                                : item.department_id === d.value,
+                                : item.department_id === d.value
                             )}
                             required
                             style={{ zIndex: '100' }}
-                            onChange={selectedOption => handleUserSelect(selectedOption, idx)}
+                            onChange={(selectedOption) =>
+                              handleUserSelect(selectedOption, idx)
+                            }
                           />
                         </td>
                         <td>
@@ -1383,11 +1438,13 @@ function CreateUserComponent({ match }) {
                             options={options}
                             id={`ticket_show_type_id_` + idx}
                             name="ticket_show_type[]"
-                            onChange={e => handleCheckInput(e, idx, 'TICKET_SHOW')}
-                            value={options.filter(d =>
+                            onChange={(e) =>
+                              handleCheckInput(e, idx, 'TICKET_SHOW')
+                            }
+                            value={options.filter((d) =>
                               Array.isArray(item.ticket_show_type)
                                 ? item.ticket_show_type.includes(d.value)
-                                : item.ticket_show_type === d.value,
+                                : item.ticket_show_type === d.value
                             )}
                             required
                           />
@@ -1398,7 +1455,9 @@ function CreateUserComponent({ match }) {
                             type="hidden"
                             name="ticket_passing_authority[]"
                             value={
-                              item.ticket_passing_authority ? item.ticket_passing_authority : 0
+                              item.ticket_passing_authority
+                                ? item.ticket_passing_authority
+                                : 0
                             }
                           />
 
@@ -1406,7 +1465,13 @@ function CreateUserComponent({ match }) {
                             type="checkbox"
                             id={`ticket_passing_authority_` + idx}
                             checked={item.ticket_passing_authority == 1}
-                            onChange={e => handleCheckInput(e, idx, 'TICKET_PASSING_AUTHORITY')}
+                            onChange={(e) =>
+                              handleCheckInput(
+                                e,
+                                idx,
+                                'TICKET_PASSING_AUTHORITY'
+                              )
+                            }
                           />
                         </td>
                         <td className="text-center">
@@ -1419,7 +1484,9 @@ function CreateUserComponent({ match }) {
                             type="checkbox"
                             id={`is_default_` + idx}
                             checked={item.is_default == 1}
-                            onChange={e => handleCheckInput(e, idx, 'IS_DEFAULT')}
+                            onChange={(e) =>
+                              handleCheckInput(e, idx, 'IS_DEFAULT')
+                            }
                           />
                         </td>
 
@@ -1454,7 +1521,7 @@ function CreateUserComponent({ match }) {
                 style={{
                   color: 'red',
                   position: 'absolute',
-                  right: '70%',
+                  right: '70%'
                 }}
               >
                 {inputState.departmentErr}
@@ -1487,7 +1554,10 @@ function CreateUserComponent({ match }) {
           )}
 
           {tabKey == 'User_Settings' && (
-            <button onClick={() => setTabKey('All_Tickets')} className="btn btn-primary">
+            <button
+              onClick={() => setTabKey('All_Tickets')}
+              className="btn btn-primary"
+            >
               Back
             </button>
           )}

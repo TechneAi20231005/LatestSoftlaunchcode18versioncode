@@ -26,7 +26,7 @@ import {
 
 import * as Validation from '../../../components/Utilities/Validation';
 import UserService from '../../../services/MastersService/UserService';
-import { getDesignationData } from '../DesignationMaster/DesignationAction';
+import { getDesignationData, getDesignationDataListThunk } from '../DesignationMaster/DesignationAction';
 import { getStatusData } from '../StatusMaster/StatusComponentAction';
 import QueryTypeService from '../../../services/MastersService/QueryTypeService';
 
@@ -458,7 +458,7 @@ function EditDynamicForm({ match }) {
     }
 
     if (!designationDropdown.length) {
-      dispatch(getDesignationData());
+      dispatch(getDesignationDataListThunk());
     }
 
     if (!AllcityDropDownData.length) {
