@@ -197,45 +197,45 @@ function CountryComponent() {
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
-      <Container fluid>
-        <PageHeader
-          headerTitle="Country Master"
-          renderRight={() => {
-            return (
-              <div>
-                {checkRole && checkRole[0]?.can_create === 1 ? (
-                  <button
-                    className="btn btn-dark px-5"
-                    onClick={() => {
-                      dispatch(
-                        handleModalInStore({
-                          showModal: true,
-                          modalData: null,
-                          modalHeader: 'Add Country'
-                        })
-                      );
-                    }}
-                  >
-                    <i className="icofont-plus-circle fs-6" />
-                    Add Country
-                  </button>
-                ) : (
-                  ''
-                )}
-              </div>
-            );
-          }}
-        />
-        <SearchBoxHeader
-          setSearchTerm={setSearchTerm}
-          handleSearch={handleSearch}
-          handleReset={handleReset}
-          placeholder="Search by country name...."
-          exportFileName="Country Master Record"
-          exportData={exportCountryData}
-          showExportButton={true}
-        />
-      </Container>
+
+      <PageHeader
+        headerTitle="Country Master"
+        renderRight={() => {
+          return (
+            <div>
+              {checkRole && checkRole[0]?.can_create === 1 ? (
+                <button
+                  className="btn btn-dark px-5"
+                  onClick={() => {
+                    dispatch(
+                      handleModalInStore({
+                        showModal: true,
+                        modalData: null,
+                        modalHeader: 'Add Country'
+                      })
+                    );
+                  }}
+                >
+                  <i className="icofont-plus-circle fs-6" />
+                  Add Country
+                </button>
+              ) : (
+                ''
+              )}
+            </div>
+          );
+        }}
+      />
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by country name...."
+        exportFileName="Country Master Record"
+        exportData={exportCountryData}
+        showExportButton={true}
+      />
+
       <div className="mt-2">
         {countryData && (
           <DataTable

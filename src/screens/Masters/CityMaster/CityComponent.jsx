@@ -283,62 +283,60 @@ function CityComponent() {
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
 
-      <Container fluid>
-        <PageHeader
-          headerTitle="City Master"
-          renderRight={() => {
-            return (
-              <div>
-                {checkRole && checkRole[0]?.can_create == 1 ? (
-                  <button
-                    className="btn btn-dark px-5"
-                    onClick={() => {
-                      setStateName(null);
-                      dispatch(
-                        handleModalInStore({
-                          showModal: true,
-                          modalData: null,
-                          modalHeader: 'Add City'
-                        })
-                      );
-                    }}
-                  >
-                    <i className="icofont-plus me-2 fs-6" />
-                    Add City
-                  </button>
-                ) : (
-                  ''
-                )}
-              </div>
-            );
-          }}
-        />
+      <PageHeader
+        headerTitle="City Master"
+        renderRight={() => {
+          return (
+            <div>
+              {checkRole && checkRole[0]?.can_create == 1 ? (
+                <button
+                  className="btn btn-dark px-5"
+                  onClick={() => {
+                    setStateName(null);
+                    dispatch(
+                      handleModalInStore({
+                        showModal: true,
+                        modalData: null,
+                        modalHeader: 'Add City'
+                      })
+                    );
+                  }}
+                >
+                  <i className="icofont-plus me-2 fs-6" />
+                  Add City
+                </button>
+              ) : (
+                ''
+              )}
+            </div>
+          );
+        }}
+      />
 
-        <SearchBoxHeader
-          setSearchTerm={setSearchTerm}
-          handleSearch={handleSearch}
-          handleReset={handleReset}
-          placeholder="Search by city name...."
-          exportFileName="City Master Record"
-          exportData={exportCityData}
-          showExportButton={true}
-        />
-        <div className="mt-2">
-          {cityData && (
-            <DataTable
-              columns={columns}
-              data={filteredData}
-              defaultSortField="title"
-              pagination
-              selectableRows={false}
-              progressPending={isLoading}
-              progressComponent={<TableLoadingSkelton />}
-              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-              highlightOnHover={true}
-            />
-          )}
-        </div>
-      </Container>
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by city name...."
+        exportFileName="City Master Record"
+        exportData={exportCityData}
+        showExportButton={true}
+      />
+      <div className="mt-2">
+        {cityData && (
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            defaultSortField="title"
+            pagination
+            selectableRows={false}
+            progressPending={isLoading}
+            progressComponent={<TableLoadingSkelton />}
+            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+            highlightOnHover={true}
+          />
+        )}
+      </div>
 
       <Modal centered show={modal.showModal}>
         <form
