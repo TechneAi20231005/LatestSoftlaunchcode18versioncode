@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
   getDesignationData,
+  getDesignationDataListThunk,
   postDesignationData,
   updatedDesignationData,
 } from './DesignationAction';
@@ -38,10 +39,10 @@ export const desegnationSlice = createSlice({
     },
   },
   extraReducers: builder => {
-    builder.addCase(getDesignationData.pending, state => {
+    builder.addCase(getDesignationDataListThunk.pending, state => {
       state.isLoading.DesignationList = true;
     });
-    builder.addCase(getDesignationData.fulfilled, (state, action) => {
+    builder.addCase(getDesignationDataListThunk.fulfilled, (state, action) => {
       const { payload } = action;
       state.isLoading.DesignationList = false;
 
@@ -81,7 +82,7 @@ export const desegnationSlice = createSlice({
         state.exportDesignation = exportDesignation;
       }
     });
-    builder.addCase(getDesignationData.rejected, state => {
+    builder.addCase(getDesignationDataListThunk.rejected, state => {
       state.status = 'rejected';
       state.isLoading.DesignationList = false;
     });
