@@ -52,9 +52,9 @@ function EditTestCaseModal({
     getSubModuleData
   } = useSelector((state) => state?.downloadFormat);
 
-  const [moduleDropdown, setModuleDropdown] = useState(getModuleList);
+  const [moduleDropdown, setModuleDropdown] = useState();
 
-  const [subModuleDropdown, setSubModuleDropdown] = useState(getSubModuleList);
+  const [subModuleDropdown, setSubModuleDropdown] = useState();
 
   const severityData = [
     {
@@ -202,6 +202,7 @@ function EditTestCaseModal({
                     component={CustomDropdown}
                     name="project_id"
                     label="Project Name"
+                    placeholder="Select"
                     handleChange={(event) =>
                       handleProjectChange(event, setFieldValue)
                     }
@@ -209,10 +210,11 @@ function EditTestCaseModal({
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
-                    data={moduleDropdown}
+                    data={!moduleDropdown ? getModuleList : moduleDropdown}
                     component={CustomDropdown}
                     name="module_id"
                     label="Module Name"
+                    placeholder="Select"
                     handleChange={(event) =>
                       handleModuleChange(event, setFieldValue)
                     }
@@ -220,7 +222,9 @@ function EditTestCaseModal({
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
-                    options={subModuleDropdown}
+                    options={
+                      !subModuleDropdown ? getSubModuleList : subModuleDropdown
+                    }
                     component={CustomReactSelect}
                     name="submodule_id"
                     label="SubModule Name"

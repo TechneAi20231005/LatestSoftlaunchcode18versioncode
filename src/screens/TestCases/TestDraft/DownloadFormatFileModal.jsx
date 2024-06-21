@@ -64,17 +64,35 @@ function DownloadFormatFileModal({ show, close }) {
   };
 
   const handleDownloadFormatFile = ({ formData }) => {
+    console.log('hey');
     const { project_id, module_id, submodule_id } = formData;
     dispatch(
       downloadFormatFileThunk({
         project_id,
         module_id,
-        submodule_id,
-        onSuccessHandler: () => {
-          close();
-        }
+        submodule_id
       })
-    );
+    ).then((res) => {
+      console.log('res', res?.meta?.requestStatus);
+      if (res?.meta?.requestStatus === 'fulfilled') {
+        console.log('API Call Successful');
+        close();
+      }
+    });
+    // if (
+    //   payload?.response?.status === 200 ||
+    //   payload?.response?.status === 201
+    // ) {
+    //   console.log('API Call Successful');
+    // }
+
+    // .then(() => {
+    //   console.log('API Call Successful'); // Debugging line
+    //   close(); // Close the modal upon success
+    // })
+    // .catch((error) => {
+    //   console.error('API Call Failed', error); // Debugging line
+    // });
   };
 
   useEffect(() => {
@@ -134,7 +152,7 @@ function DownloadFormatFileModal({ show, close }) {
                     placeholder="Select"
                     ref={subModuleIdRef}
                     isMulti
-                    required
+                    // required
                   />
                 </Col>
               </Row>

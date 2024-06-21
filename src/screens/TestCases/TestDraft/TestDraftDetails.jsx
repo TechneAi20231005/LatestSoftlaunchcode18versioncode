@@ -1226,14 +1226,7 @@ function TestDraftDetails(props) {
           dispatch(
             getDraftTestCaseList({
               limit: paginationData.rowPerPage,
-              page: paginationData.currentPage,
-              filter_testcase_data: [
-                {
-                  column: filterColumnId,
-                  searchText: filterText,
-                  filter: filterType
-                }
-              ]
+              page: paginationData.currentPage
             })
           );
         },

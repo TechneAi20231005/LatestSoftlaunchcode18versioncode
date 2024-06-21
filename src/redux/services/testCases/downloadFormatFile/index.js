@@ -64,21 +64,29 @@ export const downloadFormatFileThunk = createAsyncThunk(
   'downloadFormatFile',
   async ({ project_id, module_id, submodule_id, onSuccessHandler }) => {
     try {
-      const submoduleQueryParam = submodule_id
-        .map((id) => `submodule_id[]=${id}`)
-        .join('&');
+      let endpoint = `draftFile/getTestdraftBulkFormat?project_id=${project_id}&module_id=${module_id}`;
 
-      const endpoint = `draftFile/getTestdraftBulkFormat?project_id=${project_id}&module_id=${module_id}&${submoduleQueryParam}`;
+      // Append submodule_id parameters if they are provided
+      console.log('submodule_id', submodule_id.length);
+      if (submodule_id && submodule_id.length >= 0) {
+        const submoduleQueryParam = submodule_id
+          .map((id) => `submodule_id[]=${id}`)
+          .join('&');
+        endpoint += `&${submoduleQueryParam}`;
+      }
+
       const response = await customAxios.get(endpoint);
+      console.log('rrr', response);
       if (response?.status === 200 || response?.status === 201) {
         window.open(`${_apiUrl}${endpoint}`, '_parent').focus();
-        if (response?.data?.status === 1) {
-          onSuccessHandler();
-          toast.success(response?.data?.message);
-          return response?.data?.message;
-        } else {
-          errorHandler(response);
-        }
+        toast.success('File Downloaded Successfully');
+        // if (response?.data?.status === 1) {
+        //   onSuccessHandler();
+        //   toast.success(response?.data?.message);
+        //   return response?.data?.message;
+        // } else {
+        //   errorHandler(response);
+        // }
       }
     } catch (error) {
       errorHandler(error?.response);
@@ -253,10 +261,10 @@ export const getByTestPlanIDReviewedListThunk = createAsyncThunk(
   async ({ id, limit, page, filter_testcase_data }) => {
     try {
       const response = await customAxios.get(
-        `testCases/getDraftTestCases/getTestCases`,
+        `testCases/getDraftTestCases/getTestCases/${id}`,
         {
           params: {
-            id: id,
+            // id: id,
             limit: limit,
             page: page,
             filter_testcase_data: JSON.stringify(filter_testcase_data)

@@ -963,6 +963,8 @@ function TestCaseReviewDetails() {
     { title: 'Field', field: 'field' },
     { title: 'Testing Type', field: 'type_name' },
     { title: 'Testing Group', field: 'group_name' },
+    { title: 'Test ID', field: 'id' },
+    { title: 'Test Description', field: 'test_description' },
     { title: 'Steps', field: 'steps' },
     { title: 'Severity', field: 'severity' },
     { title: 'Expected Result', field: 'expected_result' },
@@ -1208,7 +1210,7 @@ function TestCaseReviewDetails() {
           defaultSortField="role_id"
           pagination
           paginationServer
-          paginationTotalRows={allTestPlanIDData?.total}
+          paginationTotalRows={allTestPlanIDData?.data?.total}
           paginationDefaultPage={rowData?.currentPage}
           onChangePage={(page) => setPaginationData({ currentPage: page })}
           onChangeRowsPerPage={(newPageSize) => {

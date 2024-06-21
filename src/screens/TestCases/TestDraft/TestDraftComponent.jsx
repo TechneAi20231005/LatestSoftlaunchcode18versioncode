@@ -108,6 +108,9 @@ export default function TestDraftComponent({}) {
     { title: 'Field', field: 'field' },
     { title: 'Testing Type', field: 'type_name' },
     { title: 'Testing Group', field: 'group_name' },
+    { title: 'Test ID', field: 'id' },
+    { title: 'Test Description', field: 'test_description' },
+
     { title: 'Steps', field: 'steps' },
     { title: 'Expected Result', field: 'expected_result' },
     { title: 'Status', field: 'status' },
