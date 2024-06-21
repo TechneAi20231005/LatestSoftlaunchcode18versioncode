@@ -82,21 +82,36 @@ export default function HrDashboard(props) {
   const history = useNavigate();
   const dispatch = useDispatch();
   const location = useLocation();
+
   const [approvedNotifications, setApprovedNotifications] = useState();
   const [notifications, setNotifications] = useState([]);
   const [historyData, setHistoryData] = useState([]);
-
   const [allNotificationRequest, setAllNotificationRequest] = useState();
   const [allRegularizationRequest, setAllRegularizationRequest] = useState();
-
-  const data = props.data;
-  var v1 = 50;
-  var v2 = 50;
   const [count, setCount] = useState();
   const [dailyTask, setDailyTask] = useState();
   const [upcomingTask, setUpcomingTask] = useState();
   const [previousTask, setPreviousTask] = useState();
   const [notificationHeight, setNotificationHeight] = useState(200);
+  const [timerState, setTimerState] = useState();
+  const [regularizationRequest, setRegularizationRequest] = useState([]);
+  const [ticketID, setTicketID] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+  const [notificationId, setNotificationId] = useState();
+  const [showApprovedOnly, setShowApprovedOnly] = useState(false);
+  const [approveRequestModal, setApproveRequestModal] = useState({
+    show: false,
+    data: null
+  });
+
+  const [historyModal, setHistoryModal] = useState({
+    show: false,
+    data: null
+  });
+
+  const data = props.data;
+  var v1 = 50;
+  var v2 = 50;
 
   const [chartData, setChartData] = useState({
     series: [0, 0, 0],
@@ -154,8 +169,6 @@ export default function HrDashboard(props) {
       }
     });
   }
-
-  const [timerState, setTimerState] = useState();
 
   const handleTimer = async (e, ticket_id, ticket_task_id, status) => {
     var data = {
@@ -227,8 +240,6 @@ export default function HrDashboard(props) {
     });
   };
 
-  const [showApprovedOnly, setShowApprovedOnly] = useState(false);
-
   const loadData = () => {
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active';
@@ -238,21 +249,6 @@ export default function HrDashboard(props) {
 
     dispatch(getAllUserById(localStorage.getItem('id')));
   };
-
-  useEffect(() => {
-    get();
-    loadNotifcation();
-  }, []);
-
-  useEffect(() => {
-    const account_for = localStorage.getItem('account_for');
-
-    if (account_for === 'CUSTOMER') {
-      window.location.href = `${process.env.PUBLIC_URL}/Ticket`;
-    }
-
-    loadData();
-  }, []);
 
   const handleShowApproveRequestModal = () => {
     const data = null;
@@ -311,24 +307,9 @@ export default function HrDashboard(props) {
     const data = null;
     setHistoryModal({ show: false, data: data });
   };
-  const [approveRequestModal, setApproveRequestModal] = useState({
-    show: false,
-    data: null
-  });
-
-  const [historyModal, setHistoryModal] = useState({
-    show: false,
-    data: null
-  });
-
-  const [regularizationRequest, setRegularizationRequest] = useState([]);
-  const [ticketID, setTicketID] = useState();
-  const [isLoading, setIsLoading] = useState(false);
-  const [notificationId, setNotificationId] = useState();
 
   const handleRegularizationRequest = async (currentData) => {
-    const id =
-      currentData?.ticketID === undefined ? currentData : currentData.ticketID;
+    const id = !currentData?.ticketID ? currentData : currentData?.ticketID;
     setIsLoading(null);
     setIsLoading(true);
     setTicketID(id);
@@ -360,6 +341,21 @@ export default function HrDashboard(props) {
       }
     });
   };
+
+  useEffect(() => {
+    get();
+    loadNotifcation();
+  }, []);
+
+  useEffect(() => {
+    const account_for = localStorage.getItem('account_for');
+
+    if (account_for === 'CUSTOMER') {
+      window.location.href = `${process.env.PUBLIC_URL}/Ticket`;
+    }
+
+    loadData();
+  }, []);
 
   return (
     <div className="container-xxl">
@@ -478,8 +474,7 @@ export default function HrDashboard(props) {
                           className="list-unstyled list mb-0"
                           style={{ height: `${notificationHeight}px` }}
                         >
-                          {approvedNotifications &&
-                            approvedNotifications?.length > 0 &&
+                          {approvedNotifications?.length > 0 &&
                             approvedNotifications?.map((ele, index) => {
                               const date = ele.created_at.split(' ')[0];
                               const time = ele.created_at.split(' ')[1];
@@ -545,8 +540,7 @@ export default function HrDashboard(props) {
                           className="list-unstyled list mb-0"
                           style={{ height: `${notificationHeight}px` }}
                         >
-                          {allRegularizationRequest &&
-                            allRegularizationRequest?.length > 0 &&
+                          {allRegularizationRequest?.length > 0 &&
                             allRegularizationRequest?.map((ele, index) => {
                               const date = ele.created_at.split(' ')[0];
                               const time = ele.created_at.split(' ')[1];
