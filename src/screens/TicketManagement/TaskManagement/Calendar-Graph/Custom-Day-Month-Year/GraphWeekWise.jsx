@@ -21,6 +21,10 @@ const GraphWeekWise = () => {
   // const [weekRange, setWeekRange] = useState([]);
   const [selectedDropDown, setSelectedDropdown] = useState(null);
   // const allBasketNames = ['Amit', 'Sprint basket', 'Priyans'];
+  const [ticketDetails, setTicketDetails] = useState({
+    ticket_id: '',
+    description: ''
+  });
   const [chartData, setChartData] = useState({
     series: [
       {
@@ -96,7 +100,7 @@ const GraphWeekWise = () => {
                 top: 0,
                 bottom: 2
               },
-              text: 'Sprint Start Date'
+              text: ''
             }
           },
           {
@@ -125,7 +129,7 @@ const GraphWeekWise = () => {
                 top: 0,
                 bottom: 0
               },
-              text: 'Sprint End Date'
+              text: ''
             }
           }
         ]
@@ -242,6 +246,8 @@ const GraphWeekWise = () => {
 
       const { first_sprint_date, last_sprint_date } = res?.data?.data;
       const { data } = res?.data;
+      setTicketDetails(res?.data?.ticket_details);
+
       const allBasketNames = data?.basket_data;
       const transformedData = {
         series: [
@@ -385,11 +391,57 @@ const GraphWeekWise = () => {
         ]
       };
 
+      const labelStyle = {
+        style: {
+          color: '#FFFFFF',
+          height: 450,
+          background: '#484C7F',
+          fontSize: '12px',
+          fontWeight: 400,
+          opacity: 0.6
+        }
+      };
+
+      const xaxisAnnotations = [];
+
+      data.sprint_data.forEach((sprint, index) => {
+        xaxisAnnotations.push({
+          x: new Date(sprint.start_date).getTime(),
+          label: {
+            text: `Sprint Name :${sprint.name} - Sprint start date : ${sprint.start_date} `,
+            ...labelStyle
+          }
+        });
+
+        xaxisAnnotations.push({
+          x: new Date(sprint.end_date).getTime(),
+          label: {
+            text: `Sprint Name :${sprint.name}   -   Sprint end date : ${sprint.end_date} `,
+            ...labelStyle
+          }
+        });
+      });
+
+      const barHeight = 30;
+      const chartHeight = barHeight * allBasketNames.length;
       setChartData((prevChartData) => ({
         ...prevChartData,
         series: transformedData.series,
         options: {
           ...prevChartData.options,
+          chart: {
+            ...prevChartData.options.chart,
+            height: chartHeight,
+            events: {
+              click: () => {
+                let prevTab = localStorage.getItem('PreviosTab');
+                localStorage.removeItem('PreviosTab');
+                if (prevTab) {
+                  window.location.href = prevTab;
+                }
+              }
+            }
+          },
           xaxis: {
             ...prevChartData.options.xaxis,
             min: new Date(firstDate || weeksplitDate[1]).getTime(),
@@ -397,24 +449,29 @@ const GraphWeekWise = () => {
           },
           annotations: {
             ...prevChartData.options.annotations,
+            // xaxis: [
+            //   ...prevChartData.options.annotations.xaxis,
+            //   {
+            //     ...prevChartData.options.annotations.xaxis[0],
+            //     x: new Date(last_sprint_date).getTime(),
+            //     label: {
+            //       ...prevChartData.options.annotations.xaxis[0].label,
+            //       text: 'Sprint Start Date'
+            //     }
+            //   }
+            //   // {
+            //   //   ...prevChartData.options.annotations.xaxis[1],
+            //   //   x: new Date(last_sprint_date).getTime(),
+            //   //   label: {
+            //   //     ...prevChartData.options.annotations.xaxis[1].label,
+            //   //     text: 'Sprint End Date'
+            //   //   }
+            //   // }
+            // ],
+
             xaxis: [
               ...prevChartData.options.annotations.xaxis,
-              {
-                ...prevChartData.options.annotations.xaxis[0],
-                x: new Date(first_sprint_date).getTime(),
-                label: {
-                  ...prevChartData.options.annotations.xaxis[0].label,
-                  text: 'Sprint Start Date'
-                }
-              },
-              {
-                ...prevChartData.options.annotations.xaxis[1],
-                x: new Date(last_sprint_date).getTime(),
-                label: {
-                  ...prevChartData.options.annotations.xaxis[1].label,
-                  text: 'Sprint End Date'
-                }
-              }
+              ...xaxisAnnotations
             ]
           },
 
@@ -422,54 +479,52 @@ const GraphWeekWise = () => {
             show: true,
             showForNullSeries: false,
             categories: allBasketNames
-          }
-          // tooltip: {
-          //   custom: ({ series, seriesIndex, dataPointIndex, w }) => {
-          //     return;
-          //     const taskDetail =
-          //       w.globals.initialSeries[seriesIndex].data[dataPointIndex]
-          //         .taskDetail;
-          //     console.log('taskDetail tooltip', taskDetail);
+          },
+          tooltip: {
+            custom: ({ series, seriesIndex, dataPointIndex, w }) => {
+              const taskDetail =
+                w.globals.initialSeries[seriesIndex].data[dataPointIndex]
+                  .taskDetail;
 
-          //     const taskOwners = taskDetail?.taskOwners.join('');
-          //     return `
-          //     <div>
-          //      <span className="mb-0"><strong>Sprint Name:</strong> ${
-          //        taskDetail.sprint_name || 'null recieved in response'
-          //      }</span></br>
-          //         <span className="mb-0"><strong>Task Name:</strong> ${
-          //           taskDetail.task_name
-          //         }</span></br>
-          //        <span className="mb-0"><strong>Basket Name:</strong> ${
-          //          taskDetail.basket_name
-          //        }</span></br>
-          //     <span className="mb-0"><strong>Task Start Date:</strong> ${new Date(
-          //       taskDetail.task_start_Date
-          //     ).toLocaleDateString()}</span></br>
-          //     <span className="mb-0"><strong>Task End Date:</strong> ${new Date(
-          //       taskDetail.task_end_date
-          //     ).toLocaleDateString()}</span></br>
-          //     <span className="mb-0"><strong>Total Scheduled Hours:</strong> ${
-          //       taskDetail.task_scheduled_Hours || 'null recieved in response'
-          //     }</span></br>
-          //        <span className="mb-0"><strong>Scheduled Hours:</strong> ${
-          //          taskDetail.actual_task_scheduled_Hours ||
-          //          'null recieved in response'
-          //        }</span></br>
-          //        <span className="mb-0"><strong>Actual Worked:</strong> ${
-          //          taskDetail.task_actual_worked || 'null recieved in response'
-          //        }</span></br>
-          //     <span className="mb-0"><strong>Status:</strong> ${
-          //       taskDetail.task_status || 'null recieved in response'
-          //     }</span></br>
-          //     <span className="mb-0"><strong>Actual Status:</strong> ${
-          //       taskDetail.task_actual_status || 'null recieved in response'
-          //     }</span></br>
-          //        <span className="mb-0"><strong>Task Owners:</strong> ${taskOwners}</span></br>
-          //     </div>
-          //   `;
-          //   }
-          // }
+              const taskOwners = taskDetail?.taskOwners.join('');
+              return `
+              <div>
+               <span className="mb-0"><strong>Sprint Name:</strong> ${
+                 taskDetail.sprint_name || 'null recieved in response'
+               }</span></br>
+                  <span className="mb-0"><strong>Task Name:</strong> ${
+                    taskDetail.task_name
+                  }</span></br>
+                 <span className="mb-0"><strong>Basket Name:</strong> ${
+                   taskDetail.basket_name
+                 }</span></br>
+              <span className="mb-0"><strong>Task Start Date:</strong> ${new Date(
+                taskDetail.task_start_Date
+              ).toLocaleDateString()}</span></br>
+              <span className="mb-0"><strong>Task End Date:</strong> ${new Date(
+                taskDetail.task_end_date
+              ).toLocaleDateString()}</span></br>
+              <span className="mb-0"><strong>Total Scheduled Hours:</strong> ${
+                taskDetail.task_scheduled_Hours || 'null recieved in response'
+              }</span></br>
+                 <span className="mb-0"><strong>Scheduled Hours:</strong> ${
+                   taskDetail.actual_task_scheduled_Hours ||
+                   'null recieved in response'
+                 }</span></br>
+                 <span className="mb-0"><strong>Actual Worked:</strong> ${
+                   taskDetail.task_actual_worked || 'null recieved in response'
+                 }</span></br>
+              <span className="mb-0"><strong>Status:</strong> ${
+                taskDetail.task_status || 'null recieved in response'
+              }</span></br>
+              <span className="mb-0"><strong>Actual Status:</strong> ${
+                taskDetail.task_actual_status || 'null recieved in response'
+              }</span></br>
+                 <span className="mb-0"><strong>Task Owners:</strong> ${taskOwners}</span></br>
+              </div>
+            `;
+            }
+          }
         }
       }));
     } catch (error) {
@@ -510,7 +565,7 @@ const GraphWeekWise = () => {
       await getGraphData(false, lastDayOfMonth, firstDayOfMonth);
     } else if (value === 'year') {
       const year = new Date(splitRange[0]).getFullYear();
-      // setDropDownData([...{ value: 1, label: year }]);
+      setDropDownData([{ value: 1, label: year }]);
       const firstDayOfYear = new Date(year, 0, 1);
       const lastDayOfYear = new Date(year, 11, 31);
       await getGraphData(false, lastDayOfYear, firstDayOfYear);
@@ -571,7 +626,12 @@ const GraphWeekWise = () => {
     <div className="container-xxl ">
       {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Manage Task" paddingStart="3" />
-      <TicketCollapse ticket={'TT-19994'} open={open} toggleOpen={toggleOpen} />
+      <TicketCollapse
+        ticket={ticketDetails.ticket_id}
+        details={ticketDetails.description}
+        open={open}
+        toggleOpen={toggleOpen}
+      />
 
       <div className="range-bar-chart-container card mt-3">
         <div className="col-12 text-end p-2 d-md-flex align-items-center my-3 justify-content-end d-none">
@@ -636,7 +696,8 @@ const GraphWeekWise = () => {
           options={chartData.options}
           series={chartData.series}
           type="rangeBar"
-          height={500}
+
+          // height={500}
         />
       </div>
     </div>

@@ -77,6 +77,13 @@ export const CalendarYearWise = (props) => {
       setNotify({ type: 'danger', message: err });
     }
   };
+  const ridirectToPreviousTab = () => {
+    let prevTab = localStorage.getItem('PreviosTab');
+    localStorage.removeItem('PreviosTab');
+    if (prevTab) {
+      window.location.href = prevTab;
+    }
+  };
 
   const eventPropGetter = (event) => {
     const statusColors = {
@@ -196,6 +203,7 @@ export const CalendarYearWise = (props) => {
           // eventWrapper: CustomTooltip,
           toolbar: CustomToolbar
         }}
+        onSelectEvent={ridirectToPreviousTab}
       />
     </div>
   );
