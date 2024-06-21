@@ -64,11 +64,11 @@ export const downloadFormatFileThunk = createAsyncThunk(
   'downloadFormatFile',
   async ({ project_id, module_id, submodule_id, onSuccessHandler }) => {
     try {
-      const submoduleParam = JSON.stringify(submodule_id);
+      const submoduleQueryParam = submodule_id
+        .map((id) => `submodule_id[]=${id}`)
+        .join('&');
 
-      const endpoint = `draftFile/getTestdraftBulkFormat?project_id=${project_id}&module_id=${module_id}&submodule_id=${encodeURIComponent(
-        submoduleParam
-      )}`;
+      const endpoint = `draftFile/getTestdraftBulkFormat?project_id=${project_id}&module_id=${module_id}&${submoduleQueryParam}`;
       const response = await customAxios.get(endpoint);
       if (response?.status === 200 || response?.status === 201) {
         window.open(`${_apiUrl}${endpoint}`, '_parent').focus();
