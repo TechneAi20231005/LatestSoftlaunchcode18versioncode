@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
-import PageHeader from "../../../components/Common/PageHeader";
-import Alert from "../../../components/Common/Alert";
-import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
-import { _base } from "../../../settings/constants";
-import Select from "react-select";
+import PageHeader from '../../../components/Common/PageHeader';
+import Alert from '../../../components/Common/Alert';
+import { Astrick } from '../../../components/Utilities/Style';
+import * as Validation from '../../../components/Utilities/Validation';
+import { _base } from '../../../settings/constants';
+import Select from 'react-select';
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   getCityData,
@@ -17,29 +17,20 @@ import {
   getCustomerType,
   getRoles,
   getStateData,
-  postCustomerData,
-} from "../../Dashboard/DashboardAction";
+  postCustomerData
+} from '../../Dashboard/DashboardAction';
 export default function CreateCustomer({ match }) {
-  const history = useNavigate();
-  const [notify, setNotify] = useState(null);
+  // const [notify, setNotify] = useState(null);
 
   const [dependent, setDependent] = useState({
     country_id: null,
-    state_id: null,
+    state_id: null
   });
 
   const [updateStatus, setUpdateStatus] = useState({});
 
   const [stateName, setStateName] = useState(null);
   const [cityName, setCityName] = useState(null);
-  const roleId = sessionStorage.getItem("role_id");
-
-  const handleDependent = (e, name) => {
-    setDependent({
-      ...dependent,
-      [name]: e.value,
-    });
-  };
 
   const [contactError, setContactError] = useState(null);
   const [contactErr, setContactErr] = useState(false);
@@ -63,7 +54,7 @@ export default function CreateCustomer({ match }) {
   );
 
   const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 4)
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 4)
   );
 
   const Notify = useSelector((dashbordSlice) => dashbordSlice.dashboard.notify);
@@ -71,13 +62,13 @@ export default function CreateCustomer({ match }) {
   const [stateDropdownData, setStateDropdownData] = useState(false);
   const [cityDropdownData, setCityDropdownData] = useState(false);
   const [isValidEmail, setIsValidEmail] = useState(true);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
 
   const handleEmailChange = (e) => {
     const newEmail = e.target.value;
     setEmail(newEmail);
 
-    if (newEmail.trim() === "") {
+    if (newEmail.trim() === '') {
       setIsValidEmail(true);
     } else {
       const isValid = validateEmail(newEmail);
@@ -94,23 +85,23 @@ export default function CreateCustomer({ match }) {
     const contactNumber = e.target.value;
     setContactNumber(contactNumber);
     if (
-      contactNumber.charAt(0) == "9" ||
-      contactNumber.charAt(0) == "8" ||
-      contactNumber.charAt(0) == "7" ||
-      contactNumber.charAt(0) == "6"
+      contactNumber.charAt(0) == '9' ||
+      contactNumber.charAt(0) == '8' ||
+      contactNumber.charAt(0) == '7' ||
+      contactNumber.charAt(0) == '6'
     ) {
       if (/^[0]+$/.test(contactNumber)) {
         setContactErr(true);
-        setContactError("Invalid Mobile Number");
+        setContactError('Invalid Mobile Number');
       } else {
         setContactErr(false);
-        setContactError("");
+        setContactError('');
       }
     } else if (contactNumber.length === 10) {
       setContactErr(true);
-      setContactError("Invalid Mobile Number");
+      setContactError('Invalid Mobile Number');
     } else {
-      setContactError("");
+      setContactError('');
     }
   };
 
@@ -118,62 +109,62 @@ export default function CreateCustomer({ match }) {
     e.preventDefault();
     const formData = new FormData(e.target);
     var flag = 1;
-    setNotify(null);
+    // setNotify(null);
 
-    var customerType = formData.getAll("customer_type_id");
-    var selectEmail = formData.getAll("email_id");
-    var selectCountry = formData.getAll("country_id");
-    var selectState = formData.getAll("state_id");
-    var selectCity = formData.getAll("city_id");
+    var customerType = formData.getAll('customer_type_id');
+    var selectEmail = formData.getAll('email_id');
+    var selectCountry = formData.getAll('country_id');
+    var selectState = formData.getAll('state_id');
+    var selectCity = formData.getAll('city_id');
 
     if (
-      customerType == "" ||
-      selectEmail == "" ||
-      selectCountry == "" ||
-      selectState == "" ||
-      selectCity == ""
+      customerType == '' ||
+      selectEmail == '' ||
+      selectCountry == '' ||
+      selectState == '' ||
+      selectCity == ''
     ) {
       flag = 0;
-      setNotify(null);
-      if (customerType == "") {
-        alert("Please Select Customer Type");
-      } else if (selectEmail == "") {
-        alert("Please Select Email");
-      } else if (selectCountry == "") {
-        alert("Please Select Country");
-      } else if (selectState == "") {
-        alert("Please Select State");
-      } else if (selectCity == "") {
-        alert("Please Select City");
+      // setNotify(null);
+      if (customerType == '') {
+        alert('Please Select Customer Type');
+      } else if (selectEmail === '') {
+        alert('Please Select Email');
+      } else if (selectCountry === '') {
+        alert('Please Select Country');
+      } else if (selectState === '') {
+        alert('Please Select State');
+      } else if (selectCity === '') {
+        alert('Please Select City');
       } else {
-        alert("Please Check Form");
+        alert('Please Check Form');
       }
     }
 
     if (contactNumber.length < 10) {
-      alert("Mobile Number Field should be 10 Digits");
+      alert('Mobile Number Field should be 10 Digits');
       return false;
     } else {
       if (flag === 1) {
         dispatch(postCustomerData(formData)).then((res) => {
           if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
-            setNotify({
-              type: "success",
-              message: res?.payload?.data?.message,
-            });
+            // setNotify({
+            //   type: 'success',
+            //   message: res?.payload?.data?.message
+            // });
             dispatch(getCustomerData());
             setTimeout(() => {
               navigate(`/${_base}/Customer`, {
                 state: {
                   alert: {
-                    type: "success",
-                    message: res?.payload?.data?.message,
-                  },
-                },
+                    type: 'success',
+                    message: res?.payload?.data?.message
+                  }
+                }
               });
             }, 3000);
           } else {
-            setNotify({ type: "danger", message: res?.payload?.data?.message });
+            // setNotify({ type: 'danger', message: res?.payload?.data?.message });
           }
         });
       }
@@ -212,8 +203,8 @@ export default function CreateCustomer({ match }) {
     var key = window.event.keyCode;
 
     if (key === 13) {
-      document.getElementById("txtArea").value =
-        document.getElementById("txtArea").value + "\n*";
+      document.getElementById('txtArea').value =
+        document.getElementById('txtArea').value + '\n*';
       return false;
     } else {
       return true;
@@ -312,7 +303,7 @@ export default function CreateCustomer({ match }) {
                     <input
                       type="email"
                       className={`form-control form-control-sm ${
-                        isValidEmail ? "" : "is-invalid"
+                        isValidEmail ? '' : 'is-invalid'
                       }`}
                       id="email_id"
                       name="email_id"
@@ -355,15 +346,15 @@ export default function CreateCustomer({ match }) {
                 {contactError && (
                   <small
                     style={{
-                      color: "red",
-                      position: "relative",
-                      left: "12.375rem",
+                      color: 'red',
+                      position: 'relative',
+                      left: '12.375rem'
                     }}
                   >
                     {contactError}
                   </small>
                 )}
-              </div>{" "}
+              </div>{' '}
               {/* CARD BODY */}
             </div>
             {/* CARD */}
@@ -376,7 +367,7 @@ export default function CreateCustomer({ match }) {
                 <div className="form-group row mt-3">
                   <label className="col-sm-2 col-form-label">
                     <b>
-                      Address :<Astrick color="red" size="13px" />{" "}
+                      Address :<Astrick color="red" size="13px" />{' '}
                     </b>
                   </label>
                   <div className="col-sm-10">
@@ -389,7 +380,7 @@ export default function CreateCustomer({ match }) {
                       maxLength={250}
                       onChange={onTestChange}
                       onKeyPress={(e) => {
-                        if (e.key === "Enter") {
+                        if (e.key === 'Enter') {
                         } else {
                           Validation.addressField(e);
                         }
@@ -423,7 +414,7 @@ export default function CreateCustomer({ match }) {
 
                   <label
                     className="col-sm-2 col-form-label"
-                    style={{ textAlign: "right" }}
+                    style={{ textAlign: 'right' }}
                   >
                     <b>
                       Country : <Astrick color="red" />
@@ -463,7 +454,7 @@ export default function CreateCustomer({ match }) {
 
                   <label
                     className="col-sm-2 col-form-label"
-                    style={{ textAlign: "right" }}
+                    style={{ textAlign: 'right' }}
                   >
                     <b>
                       City : <Astrick color="red" />
@@ -491,7 +482,7 @@ export default function CreateCustomer({ match }) {
             </div>
             {/* CARD */}
 
-            <div className="mt-3" style={{ textAlign: "right" }}>
+            <div className="mt-3" style={{ textAlign: 'right' }}>
               <button type="submit" className="btn btn-primary">
                 Add
               </button>

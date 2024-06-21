@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 
@@ -222,10 +222,12 @@ function CustomerDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
+
     new CustomerService().getCustomer().then((res) => {
       if (res.status === 200) {
         var data = res.data.data;
-        var data = data.filter((d) => d.is_active == 1);
+
+        var data = data.filter((d) => d.is_active === 1);
         for (const key in data) {
           tempData.push({
             id: data[key].id,
