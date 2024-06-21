@@ -102,10 +102,6 @@ const DayWiseCalendar = (props) => {
     }
   }
 
-  // useEffect(() => {
-  //   filterTaskAsPerAsSprint();
-  // }, [dayWiseData, presentDate]);
-
   return (
     <>
       {isLoading &&
@@ -116,7 +112,7 @@ const DayWiseCalendar = (props) => {
         ))}
       {dayWiseData && dayWiseData.length > 0 && !isLoading ? (
         dayWiseData.map((data) => {
-          let actualStatus = data?.task_status;
+          let actualStatus = data?.task_actual_status;
           let filteredBgColor = bgColor?.filter(
             (bgcolor) => bgcolor?.statusName === actualStatus
           );
