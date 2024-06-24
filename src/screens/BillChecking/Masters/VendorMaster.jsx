@@ -29,9 +29,11 @@ import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import { Table } from 'react-bootstrap';
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function VendorMaster({ match }) {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [panattachment, setPanAttachment] = useState([]);
   const [adharattachment, setAdharattachment] = useState([]);
   const [MSMEselectedFiles, setMSMESelectedFiles] = useState([]);
@@ -40,7 +42,7 @@ function VendorMaster({ match }) {
     useState([]);
   const [vendorId, setVendorId] = useState(null);
   const [attachment, setAttachment] = useState();
-  const roleId = localStorage.getItem('role_id');
+  const roleId = sessionStorage.getItem('role_id');
   const [checkRole, setCheckRole] = useState(null);
   const [uppercase, SetUpperCase] = useState();
   const [Panuppercase, SetPanUpeeerCase] = useState();
@@ -82,11 +84,20 @@ function VendorMaster({ match }) {
       return false;
     });
   }
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
+
+  //search function
 
   const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+    const filteredList = customSearchHandler(data, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
   };
 
   const handleModal = (data) => {
@@ -920,6 +931,13 @@ function VendorMaster({ match }) {
   useEffect(() => {
     loadData();
   }, []);
+  useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   function validateIFSCCode(ifscCode) {
     const regex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
@@ -1696,36 +1714,13 @@ function VendorMaster({ match }) {
           }}
         />
         {/* SEARCH FILTER */}
-        <div className="card card-body">
-          <div className="row">
-            <div className="col-md-8">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search...."
-                onClick={(e) => handleSearch(e)}
-                onKeyDown={handleKeyDown}
-                ref={searchRef}
-              />
-            </div>
-            <div className="col-md-3">
-              <button
-                className="btn btn-sm btn-warning text-white"
-                type="button"
-                onClick={handleSearch}
-              >
-                <i className="icofont-search-1 "></i> Search
-              </button>
-              <button
-                className="btn btn-sm btn-info text-white"
-                type="button"
-                onClick={() => window.location.reload(false)}
-              >
-                <i className="icofont-refresh text-white"></i> Reset
-              </button>
-            </div>
-          </div>
-        </div>
+        <SearchBoxHeader
+          setSearchTerm={setSearchTerm}
+          handleSearch={handleSearch}
+          handleReset={handleReset}
+          placeholder="Search by authority name...."
+          showExportButton={false}
+        />
 
         {/* DATA TABLE */}
         <div className="card mt-2">
@@ -1735,7 +1730,7 @@ function VendorMaster({ match }) {
                 {data && (
                   <DataTable
                     columns={columns}
-                    data={data}
+                    data={filteredData}
                     defaultSortFieldId="id"
                     expandableRows={true}
                     pagination

@@ -14,14 +14,8 @@ import { Astrick } from '../../../components/Utilities/Style';
 
 import { Link } from 'react-router-dom';
 
-import ErrorLogService from '../../../services/ErrorLogService';
-
 import BillCheckingTransactionService from '../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService';
 
-import UserService from '../../../services/MastersService/UserService';
-
-import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
-import BillTransactionService from '../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import {
@@ -35,14 +29,14 @@ import {
   handleModalOpen
 } from '../Slices/BillCheckingTransactionSlice';
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 const AuthorityMapping = () => {
-  const [data, setData] = useState(null);
-  const [statusData, setstatusData] = useState();
-
-  const roleId = localStorage.getItem('role_id');
+  //initial state
   const dispatch = useDispatch();
 
+  //redux state
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 47)
   );
@@ -67,10 +61,12 @@ const AuthorityMapping = () => {
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.modal
   );
+  //local state
+
+  const [statusData, setstatusData] = useState();
 
   const [error, setError] = useState('');
 
-  const [user, setUser] = useState();
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [read, setRead] = useState(true);
@@ -88,11 +84,23 @@ const AuthorityMapping = () => {
     new Array(assign.length).fill('')
   );
 
-  const currentDate = new Date();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
-  const handleModal = (data) => {};
-  const searchRef = useRef();
+  //search function
 
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(authorities, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(authorities);
+  };
+
+  //columns
   const columns = [
     {
       name: 'Sr',
@@ -233,28 +241,6 @@ const AuthorityMapping = () => {
     setstatusData(e?.target?.value);
   };
 
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
-
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const [filteredData, setFilteredData] = useState([]);
-
-  const handleSearch = (value) => {};
-
   const handleChanges = (e) => {
     const inputValue = e.target.value;
 
@@ -294,12 +280,6 @@ const AuthorityMapping = () => {
   const todayDate = `${current.getFullYear()}-${
     (current.getMonth() + 1 < 10 ? '0' : '') + (current.getMonth() + 1)
   }-${(current.getDate() < 10 ? '0' : '') + current.getDate()}`;
-
-  const todaysDate = `${current.getFullYear()}-${
-    current.getMonth() + 1 < 10
-      ? '0' + current.getMonth() + 1
-      : current.getMonth() + 1
-  }-0${current.getDate()}`;
 
   const handleAddRow = (e, index, type) => {
     const newRow = {
@@ -404,9 +384,6 @@ const AuthorityMapping = () => {
 
     dispatch(getModuleSettingData());
 
-    const data = [];
-    const exportTempData = [];
-
     dispatch(getRoles());
 
     const inputRequired =
@@ -415,14 +392,6 @@ const AuthorityMapping = () => {
 
     dispatch(updateAuthority());
   };
-
-  function getCurrentDateString() {
-    const today = new Date();
-    const year = today.getFullYear();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const day = String(today.getDate()).padStart(2, '0');
-    return `${year}-${month}-${day}`;
-  }
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
@@ -503,6 +472,13 @@ const AuthorityMapping = () => {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+  useEffect(() => {
+    setFilteredData(authorities);
+  }, [authorities]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -514,37 +490,13 @@ const AuthorityMapping = () => {
         }}
       />
       {/* SEARCH FILTER */}
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-8">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search...."
-              onChange={(e) => setSearchTerm(e.target.value)}
-              id="searchInput"
-              ref={searchRef}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-          </div>
-        </div>
-      </div>
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by authority name...."
+        showExportButton={false}
+      />
 
       {/* DATA TABLE */}
       <div className="card mt-2">
@@ -556,24 +508,7 @@ const AuthorityMapping = () => {
                   columns={columns}
                   defaultSortField="title"
                   pagination
-                  data={authorities.filter((customer) => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(
-                          (value) =>
-                            typeof value === 'string' &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
-                        );
-                      }
-                    }
-                    return false;
-                  })}
+                  data={filteredData}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
@@ -624,7 +559,7 @@ const AuthorityMapping = () => {
                     name="setting_name"
                     defaultValue={modal?.modalData?.setting_name}
                     onChange={handleChanges}
-                    ref={searchRef}
+                    // ref={searchRef}
                     required={true}
                     readOnly={
                       modal.modalHeader === 'Assign Authority' ||

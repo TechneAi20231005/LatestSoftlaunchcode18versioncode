@@ -1,6 +1,8 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import { Modal } from 'react-bootstrap';
+import { Astrick } from '../../../components/Utilities/Style';
 import DownloadFormatFileModal from './DownloadFormatFileModal';
 import ReviewedTestDraftDetails from './ReviewedTestDraftDetails';
 import CustomTab from '../../../components/custom/tabs/CustomTab';
@@ -17,76 +19,19 @@ import {
   getSubModuleMasterThunk,
   importTestDraftThunk
 } from '../../../redux/services/testCases/downloadFormatFile';
-import { Modal } from 'react-bootstrap';
-import { Astrick } from '../../../components/Utilities/Style';
-export default function TestDraftComponent({ close }) {
-  //// initial state
+export default function TestDraftComponent({}) {
   const location = useLocation();
   const dispatch = useDispatch();
-
-  ////redux state
-
-  const { allDraftTestListData, allReviewDraftTestListData } = useSelector(
-    (state) => state?.downloadFormat
-  );
-
-  //// local state
+  const {
+    allDraftTestListData,
+    allReviewDraftTestListData,
+    filterData,
+    filterReviewedDraftTestList
+  } = useSelector((state) => state?.downloadFormat);
   const [currentTab, setCurrentTab] = useState(
     location.state ?? 'test_summary'
   );
   const [state, setState] = useState(location.state);
-
-  const handleResetLocationState = () => {
-    setState(null);
-    localStorage.removeItem('locationState');
-  };
-
-  // useEffect(() => {
-  //   window.addEventListener('beforeunload', handleResetLocationState);
-
-  //   return window.removeEventListener('beforeunload', handleResetLocationState);
-  // }, [location.state]);
-
-  useEffect(() => {
-    // Save the initial state to localStorage
-    if (location.state) {
-      localStorage.setItem('locationState', JSON.stringify(location.state));
-    }
-
-    const handleBeforeUnload = (event) => {
-      handleResetLocationState();
-    };
-
-    window.addEventListener('beforeunload', handleBeforeUnload);
-
-    // Cleanup the event listener on component unmount
-    return () => {
-      window.removeEventListener('beforeunload', handleBeforeUnload);
-    };
-  }, [location.state]);
-
-  useEffect(() => {
-    // Check if there is saved state in localStorage on mount
-    const savedState = localStorage.getItem('locationState');
-    if (savedState) {
-      setState(JSON.parse(savedState));
-      localStorage.removeItem('locationState');
-      // Reset the location state using history.replaceState
-      window.history.replaceState(
-        null,
-        '',
-        location.pathname + location.search
-      );
-    }
-  }, [location]);
-
-  const tabsLabel = [
-    {
-      label: 'Test summary',
-      value: 'test_summary'
-    },
-    { label: 'Review Test Draft', value: 'review_test_draft' }
-  ];
 
   const [paginationData, setPaginationData] = useReducer(
     (prevState, nextState) => {
@@ -99,9 +44,6 @@ export default function TestDraftComponent({ close }) {
     modalData: '',
     modalHeader: ''
   });
-  const handleDownloadModal = (data) => {
-    setDownloadModal(data);
-  };
 
   const [bulkModal, setBulkModal] = useState({
     showModal: false,
@@ -109,11 +51,28 @@ export default function TestDraftComponent({ close }) {
     modalHeader: ''
   });
 
+  const handleResetLocationState = () => {
+    setState(null);
+    sessionStorage.removeItem('locationState');
+  };
+
+  const tabsLabel = [
+    {
+      label: 'Test summary',
+      value: 'test_summary'
+    },
+    { label: 'Review Test Draft', value: 'review_test_draft' }
+  ];
+
+  const handleDownloadModal = (data) => {
+    setDownloadModal(data);
+  };
+
   const handleBulkModal = (data) => {
     setBulkModal(data);
   };
 
-  const handleBulkUpload = async (e) => {
+  const handleBulkUpload = (e) => {
     e.preventDefault();
     const file = e.target.elements.file_attachment.files[0]; // Access the file from the event target
 
@@ -136,9 +95,7 @@ export default function TestDraftComponent({ close }) {
             })
           );
         },
-        onErrorHandler: () => {
-          // setOpenConfirmModal({ open: false });
-        }
+        onErrorHandler: () => {}
       })
     );
   };
@@ -151,6 +108,9 @@ export default function TestDraftComponent({ close }) {
     { title: 'Field', field: 'field' },
     { title: 'Testing Type', field: 'type_name' },
     { title: 'Testing Group', field: 'group_name' },
+    { title: 'Test ID', field: 'id' },
+    { title: 'Test Description', field: 'test_description' },
+
     { title: 'Steps', field: 'steps' },
     { title: 'Expected Result', field: 'expected_result' },
     { title: 'Status', field: 'status' },
@@ -172,6 +132,22 @@ export default function TestDraftComponent({ close }) {
     { title: 'Updated At', field: 'updated_at' }
   ];
 
+  const handleButtonClick = () => {
+    currentTab === 'test_summary'
+      ? dispatch(
+          getDraftTestCaseList({
+            limit: paginationData.rowPerPage,
+            page: paginationData.currentPage
+          })
+        )
+      : dispatch(
+          getAllReviewTestDraftList({
+            limit: paginationData.rowPerPage,
+            page: paginationData.currentPage
+          })
+        );
+  };
+
   useEffect(() => {
     dispatch(getProjectModuleMasterThunk());
     dispatch(getModuleMasterThunk());
@@ -179,13 +155,40 @@ export default function TestDraftComponent({ close }) {
     dispatch(importTestDraftThunk());
     dispatch(
       getAllDraftTestCaseList({
-        type: 'ALL',
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage
+        type: 'ALL'
       })
     );
-    // dispatch(getAllReviewTestDraftList());
   }, []);
+
+  useEffect(() => {
+    const savedState = sessionStorage.getItem('locationState');
+    if (savedState) {
+      setState(JSON.parse(savedState));
+      sessionStorage.removeItem('locationState');
+      window.history.replaceState(
+        null,
+        '',
+        location.pathname + location.search
+      );
+    }
+  }, [location]);
+
+  useEffect(() => {
+    if (location.state) {
+      sessionStorage.setItem('locationState', JSON.stringify(location.state));
+    }
+
+    const handleBeforeUnload = (event) => {
+      handleResetLocationState();
+    };
+
+    window.addEventListener('beforeunload', handleBeforeUnload);
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload);
+    };
+  }, [location.state]);
+
   return (
     <div className="container-xxl">
       <PageHeader
@@ -193,6 +196,24 @@ export default function TestDraftComponent({ close }) {
         renderRight={() => {
           return (
             <div className="d-flex justify-content-sm-end btn_container">
+              {currentTab === 'test_summary' ? (
+                <button
+                  onClick={handleButtonClick}
+                  className="btn btn-primary text-white me-2"
+                  disabled={filterData?.payload === 'null'}
+                >
+                  Clear All Filter
+                </button>
+              ) : (
+                <button
+                  onClick={handleButtonClick}
+                  className="btn btn-primary text-white me-2"
+                  disabled={filterReviewedDraftTestList?.payload === 'null'}
+                >
+                  Clear All Filter
+                </button>
+              )}
+
               <button
                 className="btn btn-success text-white me-2 "
                 onClick={(e) => {
@@ -281,9 +302,7 @@ export default function TestDraftComponent({ close }) {
       >
         {' '}
         <Modal.Header>
-          <Modal.Title className="fw-bold">
-            {/* {bulkModal.modalHeader} */}
-          </Modal.Title>
+          <Modal.Title className="fw-bold"></Modal.Title>
         </Modal.Header>
         <form method="post" onSubmit={handleBulkUpload}>
           <Modal.Body>

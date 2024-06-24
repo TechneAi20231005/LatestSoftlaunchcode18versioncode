@@ -23,6 +23,8 @@ import {
   handleModalOpen
 } from './CustomerTypeComponentSlice';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function CustomerTypeComponent() {
   const isActive1Ref = useRef();
@@ -80,7 +82,20 @@ function CustomerTypeComponent() {
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleSearch = (value) => {};
+  const [filteredData, setFilteredData] = useState([]);
+
+  //search function
+
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(customerData, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(customerData);
+  };
 
   const columns = [
     {
@@ -214,6 +229,14 @@ function CustomerTypeComponent() {
   }, [checkRole]);
 
   useEffect(() => {
+    setFilteredData(customerData);
+  }, [customerData]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
+
+  useEffect(() => {
     loadData();
     dispatch(getCustomerTypeData());
 
@@ -254,43 +277,15 @@ function CustomerTypeComponent() {
         }}
       />
 
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by Customer Name...."
-              ref={searchRef}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Customer Type master Records"
-            />
-          </div>
-        </div>
-      </div>
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by customer type name...."
+        exportFileName="Customer type Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
 
       <div className="card mt-2">
         <div className="card-body">
@@ -299,24 +294,7 @@ function CustomerTypeComponent() {
               {customerData && (
                 <DataTable
                   columns={columns}
-                  data={customerData.filter((customer) => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(
-                          (value) =>
-                            typeof value === 'string' &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
-                        );
-                      }
-                    }
-                    return false;
-                  })}
+                  data={filteredData}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}

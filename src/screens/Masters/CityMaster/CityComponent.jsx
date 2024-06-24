@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Modal } from 'react-bootstrap';
+import { Container, Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import Select from 'react-select';
 
@@ -13,13 +13,10 @@ import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
 import Alert from '../../../components/Common/Alert';
 
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 import {
   handleModalInStore,
   handleModalClose
 } from '../../Dashboard/DashbordSlice';
-
-import { Spinner } from 'react-bootstrap';
 
 import {
   getCityData,
@@ -31,76 +28,57 @@ import {
 } from '../../Dashboard/DashboardAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { customSearchHandler } from '../../../utils/customFunction';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 function CityComponent() {
+  // initial state
+
+  const dispatch = useDispatch();
+
+  //redux state
+
+  const {
+    cityData,
+    notify,
+    modal,
+    filteredStateData,
+    filteredCountryData,
+    activeState,
+    exportCityData
+  } = useSelector((state) => state?.dashboard);
+  const isLoading = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.isLoading.getCityDataList
+  );
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 7)
+  );
+  //local state
   const [stateDropdownData, setStateDropdownData] = useState([]);
-
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
-
   const [updateStatus, setUpdateStatus] = useState({});
   const [copyState, setCopyState] = useState([]);
-
   const [stateName, setStateName] = useState(null);
 
   const [dependent, setDependent] = useState({
     country_id: null,
     state_id: null
   });
-
-  const searchRef = useRef();
-
-  const dispatch = useDispatch();
-  const cityData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.cityData
-  );
-
-  const isLoading = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.isLoading.getCityDataList
-  );
-
-  const Notify = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.notify
-  );
-  const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
-  const StateData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.filteredStateData
-  );
-  const CountryData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard?.filteredCountryData
-  );
-  const stateDropdown = useSelector(
-    (DashbordSlice) => DashbordSlice.dashboard.activeState
-  );
-
-  const ExportData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.exportCityData
-  );
-
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 7)
-  );
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
-
   const [searchTerm, setSearchTerm] = useState('');
-
   const [filteredData, setFilteredData] = useState([]);
-  const handleSearch = (value) => {};
 
-  const roleId = localStorage.getItem('role_id');
+  //search function
 
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(cityData, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(cityData);
+  };
+
+  //columns
   const columns = [
     {
       name: 'Action',
@@ -233,20 +211,14 @@ function CityComponent() {
 
   const handleCountryChange = (e) => {
     setStateDropdownData(
-      stateDropdown &&
-        stateDropdown
+      activeState &&
+        activeState
           ?.filter((filterState) => filterState.country_id === e.value)
           ?.map((d) => ({ value: d.id, label: d.state }))
     );
     const newStatus = { ...updateStatus, statedrp: 1 };
     setUpdateStatus(newStatus);
     setStateName(null);
-  };
-
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
   };
 
   useEffect(() => {
@@ -259,30 +231,23 @@ function CityComponent() {
     if (
       !cityData.length ||
       !checkRole.length ||
-      !StateData.length ||
-      !CountryData.length
+      !filteredStateData.length ||
+      !filteredCountryData.length
     ) {
     }
   }, []);
 
   useEffect(() => {
-    setFilteredData(
-      cityData.filter((customer) => {
-        if (typeof searchTerm === 'string') {
-          if (typeof customer === 'string') {
-            return customer.toLowerCase().includes(searchTerm.toLowerCase());
-          } else if (typeof customer === 'object') {
-            return Object.values(customer).some(
-              (value) =>
-                typeof value === 'string' &&
-                value.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-          }
-        }
-        return false;
-      })
-    );
-  }, [searchTerm, cityData]);
+    setFilteredData(cityData);
+  }, [cityData]);
+
+  useEffect(() => {
+    dispatch(getCityData());
+  }, [dispatch]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   useEffect(() => {
     if (dependent.country_id !== null) {
@@ -308,7 +273,7 @@ function CityComponent() {
     if (modal.modalData) {
       if (modal.modalData.state_id) {
         setStateName(
-          stateDropdown?.filter((d) => modal.modalData.state_id == d.value)
+          activeState?.filter((d) => modal.modalData.state_id == d.value)
         );
       }
     }
@@ -316,20 +281,16 @@ function CityComponent() {
 
   return (
     <div className="container-xxl">
-      {Notify && (
-        <>
-          {' '}
-          <Alert alertData={Notify} />{' '}
-        </>
-      )}
+      {notify && <Alert alertData={notify} />}
+
       <PageHeader
         headerTitle="City Master"
         renderRight={() => {
           return (
-            <div className="col-auto d-flex w-sm-100">
+            <div>
               {checkRole && checkRole[0]?.can_create == 1 ? (
                 <button
-                  className="btn btn-dark btn-set-task w-sm-100"
+                  className="btn btn-dark px-5"
                   onClick={() => {
                     setStateName(null);
                     dispatch(
@@ -341,7 +302,8 @@ function CityComponent() {
                     );
                   }}
                 >
-                  <i className="icofont-plus-circle me-2 fs-6"></i>Add City
+                  <i className="icofont-plus me-2 fs-6" />
+                  Add City
                 </button>
               ) : (
                 ''
@@ -350,81 +312,30 @@ function CityComponent() {
           );
         }}
       />
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by City name...."
-              ref={searchRef}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              style={{ marginTop: '0px', fontWeight: '600' }}
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={ExportData}
-              fileName="City master"
-            />
-          </div>
-        </div>
-      </div>
 
-      <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {cityData && (
-                <DataTable
-                  columns={columns}
-                  data={cityData.filter((customer) => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(
-                          (value) =>
-                            typeof value === 'string' &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
-                        );
-                      }
-                    }
-                    return false;
-                  })}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  progressPending={isLoading}
-                  progressComponent={<TableLoadingSkelton />}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by city name...."
+        exportFileName="City Master Record"
+        exportData={exportCityData}
+        showExportButton={true}
+      />
+      <div className="mt-2">
+        {cityData && (
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            defaultSortField="title"
+            pagination
+            selectableRows={false}
+            progressPending={isLoading}
+            progressComponent={<TableLoadingSkelton />}
+            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+            highlightOnHover={true}
+          />
+        )}
       </div>
 
       <Modal centered show={modal.showModal}>
@@ -454,13 +365,13 @@ function CityComponent() {
                     Select Country :<Astrick color="red" size="13px" />
                   </label>
                   <Select
-                    options={CountryData && CountryData}
+                    options={filteredCountryData && filteredCountryData}
                     id="country_id"
                     name="country_id"
                     onChange={handleCountryChange}
                     defaultValue={
                       modal.modalData
-                        ? CountryData?.filter(
+                        ? filteredCountryData?.filter(
                             (d) => modal?.modalData?.country_id == d.value
                           )
                         : ''
@@ -480,7 +391,7 @@ function CityComponent() {
                     onChange={handleCountryChange}
                     defaultValue={
                       modal.modalData
-                        ? StateData.filter(
+                        ? filteredStateData.filter(
                             (d) => modal.modalData.state_id == d.value
                           )
                         : ''

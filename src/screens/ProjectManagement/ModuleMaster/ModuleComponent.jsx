@@ -7,52 +7,41 @@ import ModuleService from '../../../services/ProjectManagementService/ModuleServ
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 import PageHeader from '../../../components/Common/PageHeader';
 import Alert from '../../../components/Common/Alert';
-import Select from 'react-select';
-import { Spinner } from 'react-bootstrap';
-import { Modal } from 'react-bootstrap';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 function ModuleComponent() {
+  //initial state
   const location = useLocation();
+  const roleId = sessionStorage.getItem('role_id');
+
+  //local state
 
   const [notify, setNotify] = useState(null);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [exportData, setExportData] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  const roleId = localStorage.getItem('role_id');
   const [checkRole, setCheckRole] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
-  const searchRef = useRef();
-
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  //search function
 
   const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+    const filteredList = customSearchHandler(data, searchTerm);
+    setFilteredData(filteredList);
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
   };
+
+  //Data Table columns
 
   const columns = [
     {
@@ -209,8 +198,8 @@ function ModuleComponent() {
         setShowLoaderModal(false);
 
         if (res.data.status == 1) {
-          const getRoleId = localStorage.getItem('role_id');
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+          const getRoleId = sessionStorage.getItem('role_id');
+          setCheckRole(res.data.data.filter((d) => d.role_id === getRoleId));
         }
       }
     });
@@ -224,12 +213,19 @@ function ModuleComponent() {
   }, []);
 
   useEffect(() => {
-    if (checkRole && checkRole[20].can_read === 0) {
+    if (checkRole && checkRole[20]?.can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+  useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -240,7 +236,7 @@ function ModuleComponent() {
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[20].can_create === 1 ? (
+              {checkRole && checkRole[20]?.can_create === 1 ? (
                 <Link
                   to={`/${_base}/Module/Create`}
                   className="btn btn-dark btn-set-task w-sm-100"
@@ -254,51 +250,23 @@ function ModuleComponent() {
           );
         }}
       />
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by module name...."
+        exportFileName="Module Master Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
 
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search...."
-              ref={searchRef}
-              onKeyDown={handleKeyDown}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              onClick={handleSearch}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Module master Records"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="row clearfix g-3">
+      <div className="mt-2">
         <div className="col-sm-12">
           {isLoading && <TableLoadingSkelton />}
           {!isLoading && data && (
             <DataTable
               columns={columns}
-              data={data}
+              data={filteredData}
               defaultSortField="title"
               pagination
               selectableRows={false}
@@ -315,9 +283,9 @@ export default ModuleComponent;
 
 export function ModuleDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(async () => {
+  useEffect(() => {
     const tempData = [];
-    await new ModuleService().getModule().then((res) => {
+    new ModuleService().getModule().then((res) => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;

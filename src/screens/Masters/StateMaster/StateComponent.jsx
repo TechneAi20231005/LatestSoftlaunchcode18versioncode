@@ -1,8 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Modal } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Container, Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
-import ErrorLogService from '../../../services/ErrorLogService';
-import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+
 import StateService from '../../../services/MastersService/StateService';
 import PageHeader from '../../../components/Common/PageHeader';
 import Select from 'react-select';
@@ -10,14 +9,9 @@ import Select from 'react-select';
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
 import Alert from '../../../components/Common/Alert';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
-import { Spinner } from 'react-bootstrap';
+
 import { useSelector, useDispatch } from 'react-redux';
-import {
-  dashboardSlice,
-  handleModalClose,
-  hideNotification
-} from '../../Dashboard/DashbordSlice';
+import { handleModalClose } from '../../Dashboard/DashbordSlice';
 import {
   getCountryDataSort,
   getRoles,
@@ -27,66 +21,41 @@ import {
 } from '../../Dashboard/DashboardAction';
 import { handleModalInStore } from '../../Dashboard/DashbordSlice';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 function StateComponent() {
-  const [data, setData] = useState(null);
-  const [notify, setNotify] = useState();
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
-
-  const [country, setCountry] = useState(null);
-  const [countryDropdown, setCountryDropdown] = useState(null);
-  const [exportData, setExportData] = useState(null);
-  const roleId = localStorage.getItem('role_id');
-
-  const [state, setState] = useState(null);
-
-  const searchRef = useRef();
-
+  //initial state
   const dispatch = useDispatch();
 
-  const stateData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.stateData
-  );
+  //Redux State
+
+  const { stateData, modal, notify, filteredCountryData, exportData } =
+    useSelector((state) => state.dashboard);
+
   const isLoading = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.isLoading.stateDataList
   );
 
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 6)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 6)
   );
 
-  const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
-  const Notify = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.notify
-  );
-
-  const CountryData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
-  );
-  const ExportData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.exportData
-  );
-
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
-
+  //local state
   const [searchTerm, setSearchTerm] = useState('');
-
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = (value) => {};
+  //search function
+
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(stateData, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  //reset function
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(stateData);
+  };
 
   const columns = [
     {
@@ -180,101 +149,17 @@ function StateComponent() {
     }
   ];
 
-  const loadData = async () => {
-    setShowLoaderModal(null);
-    // setShowLoaderModal(true);
-    const data = [];
-    const exportTempData = [];
-    // await new StateService()
-    //   .getState()
-    //   .then((res) => {
-    //     if (res.status === 200) {
-    //       setShowLoaderModal(false);
-    //       let counter = 1;
-    //       const temp = res.data.data;
-    //       for (const key in temp) {
-    //         data.push({
-    //           counter: counter++,
-    //           id: temp[key].id,
-    //           state: temp[key].state,
-    //           country: temp[key].country,
-    //           country_id: temp[key].country_id,
-    //           is_active: temp[key].is_active,
-    //           remark: temp[key].remark,
-    //           created_at: temp[key].created_at,
-    //           created_by: temp[key].created_by,
-    //           updated_at: temp[key].updated_at,
-    //           updated_by: temp[key].updated_by,
-    //         });
-    //       }
-    //       setData(null);
-    //       setData(data);
-    //       setState(data);
-    //       for (const i in data) {
-    //         exportTempData.push({
-    //           Sr: data[i].counter,
-    //           State: data[i].state,
-    //           Country: data[i].country,
-    //           Status: data[i].is_active ? "Active" : "Deactive",
-    //           Remark:temp[i].remark,
-    //           created_at: temp[i].created_at,
-    //           created_by: temp[i].created_by,
-    //           updated_at: data[i].updated_at,
-    //           updated_by: data[i].updated_by,
-    //         });
-    //       }
-    //       setExportData(null);
-    //       setExportData(exportTempData);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     const { response } = error;
-    //     const { request, ...errorObject } = response;
-    //     new ErrorLogService().sendErrorLog(
-    //       "State",
-    //       "Get_State",
-    //       "INSERT",
-    //       errorObject.data.message
-    //     );
-    //   });
-
-    // await new CountryService().getCountrySort().then((res) => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-    //     if (res.data.status == 1) {
-    //       setCountry(res.data.data.filter((d) => d.is_active === 1));
-    //       setCountryDropdown(
-    //         res.data.data
-    //           .filter((d) => d.is_active == 1)
-    //           .map((d) => ({ value: d.id, label: d.country }))
-    //       );
-    //     }
-    //   }
-    // });
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-    //     if (res.data.status == 1) {
-    //       const getRoleId = localStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
-  };
-
   const handleForm = (id) => async (e) => {
     e.preventDefault();
-    setNotify(null);
+
     const form = new FormData(e.target);
     var flag = 1;
 
     var selectCountry = form.getAll('country_id');
     if (selectCountry == '0') {
       flag = 0;
-      //  setNotify(null);
+
       alert('Please Select Country');
-      // setNotify({ type: 'danger', message: "Please Select Country" });
     }
 
     if (flag === 1) {
@@ -285,40 +170,6 @@ function StateComponent() {
           } else {
           }
         });
-
-        // await new StateService()
-        //   .postState(form)
-        //   .then((res) => {
-        //     if (res.status === 200) {
-        //       setShowLoaderModal(false);
-        //       if (res.data.status === 1) {
-        //         setNotify({ type: "success", message: res.data.message });
-        //         setModal({ showModal: false, modalData: "", modalHeader: "" });
-        //         loadData();
-        //       } else {
-        //         setNotify({ type: "danger", message: res.data.message });
-        //       }
-        //     } else {
-        //       setNotify({ type: "danger", message: res.message });
-        //       new ErrorLogService().sendErrorLog(
-        //         "State",
-        //         "Create_State",
-        //         "INSERT",
-        //         res.message
-        //       );
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     const { response } = error;
-        //     const { request, ...errorObject } = response;
-        //     setNotify({ type: "danger", message: "Request Error !!!" });
-        //     new ErrorLogService().sendErrorLog(
-        //       "State",
-        //       "Create_State",
-        //       "INSERT",
-        //       errorObject.data.message
-        //     );
-        //   });
       } else {
         dispatch(updateStateData({ id: id, payload: form })).then((res) => {
           if (res?.payload?.data?.status === 1) {
@@ -326,47 +177,7 @@ function StateComponent() {
           } else {
           }
         });
-
-        // await new StateService()
-        //   .updateState(id, form)
-        //   .then((res) => {
-        //     if (res.status === 200) {
-        //       setShowLoaderModal(false);
-        //       if (res.data.status === 1) {
-        //         setNotify({ type: "success", message: res.data.message });
-        //         // setModal({ showModal: false, modalData: "", modalHeader: "" });
-        //         loadData();
-        //       } else {
-        //         setNotify({ type: "danger", message: res.data.message });
-        //       }
-        //     } else {
-        //       setNotify({ type: "danger", message: res.message });
-        //       new ErrorLogService().sendErrorLog(
-        //         "State",
-        //         "Edit_State",
-        //         "INSERT",
-        //         res.message
-        //       );
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     const { response } = error;
-        //     const { request, ...errorObject } = response;
-        //     setNotify({ type: "danger", message: "Request Error !!!" });
-        //     new ErrorLogService().sendErrorLog(
-        //       "State",
-        //       "Edit_State",
-        //       "INSERT",
-        //       errorObject.data.message
-        //     );
-        //   });
       }
-    }
-  };
-
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
     }
   };
 
@@ -377,139 +188,83 @@ function StateComponent() {
   }, [checkRole]);
 
   useEffect(() => {
-    loadData();
     dispatch(getCountryDataSort());
     dispatch(getStateData());
-    // const CountryData = useSelector((dashboardSlice)=>dashboardSlice.dashboard.filteredCountryData)
+
     if (!stateData.length || !checkRole.length) {
       dispatch(getRoles());
     }
-    if (!CountryData.length) {
+    if (!filteredCountryData.length) {
     }
   }, []);
 
-  // useEffect(() => {
-  //   if (Notify) {
-  //     const timer = setTimeout(() => {
-  //       dispatch(hideNotification());
-  //     }, 1500); // Adjust the timeout duration as needed
-  //     return () => clearTimeout(timer);
-  //   }
-  // }, [Notify, dispatch]);
+  useEffect(() => {
+    setFilteredData(stateData);
+  }, [stateData]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   return (
     <div className="container-xxl">
-      {Notify && <Alert alertData={Notify} />}
-      <PageHeader
-        headerTitle="State Master"
-        renderRight={() => {
-          return (
-            <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[0]?.can_create == 1 ? (
-                <button
-                  className="btn btn-dark btn-set-task w-sm-100"
-                  onClick={() => {
-                    dispatch(
-                      handleModalInStore({
-                        showModal: true,
-                        modalData: null,
-                        modalHeader: 'Add State'
-                      })
-                    );
-                    // handleModal({
-                    //   showModal: true,
-                    //   modalData: null,
-                    //   modalHeader: "Add State",
-                    // });
-                  }}
-                >
-                  <i className="icofont-plus-circle me-2 fs-6"></i>Add State
-                </button>
-              ) : (
-                ''
-              )}
-            </div>
-          );
-        }}
-      />
+      {notify && <Alert alertData={notify} />}
+      <Container fluid>
+        <PageHeader
+          headerTitle="State Master"
+          renderRight={() => {
+            return (
+              <div>
+                {checkRole && checkRole[0]?.can_create == 1 ? (
+                  <button
+                    className="btn btn-dark px-5"
+                    onClick={() => {
+                      dispatch(
+                        handleModalInStore({
+                          showModal: true,
+                          modalData: null,
+                          modalHeader: 'Add State'
+                        })
+                      );
+                    }}
+                  >
+                    <i className="icofont-plus-circle fs-6" />
+                    Add State
+                  </button>
+                ) : (
+                  ''
+                )}
+              </div>
+            );
+          }}
+        />
 
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by State Name...."
-              ref={searchRef}
-              // onKeyDown={handleKeyDown}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={ExportData}
-              fileName="State master Records"
-            />
-          </div>
-        </div>
-      </div>
+        <SearchBoxHeader
+          setSearchTerm={setSearchTerm}
+          handleSearch={handleSearch}
+          handleReset={handleReset}
+          placeholder="Search by state name...."
+          exportFileName="State Master Record"
+          exportData={exportData}
+          showExportButton={true}
+        />
 
-      <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {stateData && (
-                <DataTable
-                  columns={columns}
-                  data={stateData.filter((customer) => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(
-                          (value) =>
-                            typeof value === 'string' &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
-                        );
-                      }
-                    }
-                    return false;
-                  })}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  progressPending={isLoading}
-                  progressComponent={<TableLoadingSkelton />}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                />
-              )}
-            </div>
-          </div>
+        <div className="card mt-2">
+          {stateData && (
+            <DataTable
+              columns={columns}
+              data={filteredData}
+              defaultSortField="title"
+              pagination
+              selectableRows={false}
+              progressPending={isLoading}
+              progressComponent={<TableLoadingSkelton />}
+              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+              highlightOnHover={true}
+            />
+          )}
         </div>
-      </div>
+      </Container>
 
       <Modal centered show={modal.showModal}>
         <form
@@ -539,12 +294,12 @@ function StateComponent() {
                   </label>
 
                   <Select
-                    options={CountryData}
+                    options={filteredCountryData}
                     id="country_id"
                     name="country_id"
                     defaultValue={
                       modal.modalData
-                        ? CountryData.filter(
+                        ? filteredCountryData.filter(
                             (d) => modal.modalData.country_id == d.value
                           )
                         : ''
@@ -687,14 +442,6 @@ function StateComponent() {
                   })
                 );
               }}
-              // onClick={() => {
-              // handleModal({
-              //   showModal: false,
-              //   modalData: "",
-              //   modalHeader: "",
-              // });
-
-              // }}
             >
               Cancel
             </button>
@@ -709,9 +456,9 @@ export default StateComponent;
 
 export function StateDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(async () => {
+  useEffect(() => {
     const tempData = [];
-    await new StateService().getState().then((res) => {
+    new StateService().getState().then((res) => {
       if (res.status === 200) {
         const data = res.data.data;
         let counter = 1;

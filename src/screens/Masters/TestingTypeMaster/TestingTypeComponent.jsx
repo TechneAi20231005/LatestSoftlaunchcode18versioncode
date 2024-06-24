@@ -21,6 +21,8 @@ import {
   handleModalClose
 } from './TestingTypeComponentSlices';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function TestingTypeComponent() {
   const dispatch = useDispatch();
@@ -48,31 +50,20 @@ function TestingTypeComponent() {
       TestingTypeComponentSlices.testingData.notify
   );
 
-  const [data, setData] = useState(null);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
-  const roleId = localStorage.getItem('role_id');
-
-  const searchRef = useRef();
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  //search function
 
   const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+    const filteredList = customSearchHandler(testingtypeData, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(testingtypeData);
   };
 
   const columns = [
@@ -171,79 +162,9 @@ function TestingTypeComponent() {
     if (!id) {
       dispatch(postTesting(form));
       dispatch(testingData());
-
-      //   .postTestingType(form)
-      //   .then((res) => {
-      //     if (res.status === 200) {
-      //       if (res.data.status === 1) {
-      //         setNotify({ type: "success", message: res.data.message });
-      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
-      //         loadData();
-      //       } else {
-      //         setNotify({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       setNotify({ type: "danger", message: res.message });
-      //       new ErrorLogService().sendErrorLog(
-      //         "State",
-      //         "Create_State",
-      //         "INSERT",
-      //         res.message
-      //       );
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     const { response } = error;
-      //     const { request, ...errorObject } = response;
-      //     setNotify({ type: "danger", message: "Request Error !!!" });
-      //     new ErrorLogService().sendErrorLog(
-      //       "State",
-      //       "Create_State",
-      //       "INSERT",
-      //       errorObject.data.message
-      //     );
-      //   });
     } else {
       dispatch(updateTesting({ id: id, payload: form }));
       dispatch(testingData());
-
-      //   .updateTestingType(id, form)
-      //   .then((res) => {
-      //     if (res.status === 200) {
-      //       if (res.data.status === 1) {
-      //         setNotify({ type: "success", message: res.data.message });
-      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
-      //         loadData();
-      //       } else {
-      //         setNotify({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       setNotify({ type: "danger", message: res.message });
-      //       new ErrorLogService().sendErrorLog(
-      //         "State",
-      //         "Edit_State",
-      //         "INSERT",
-      //         res.message
-      //       );
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     const { response } = error;
-      //     const { request, ...errorObject } = response;
-      //     setNotify({ type: "danger", message: "Request Error !!!" });
-      //     new ErrorLogService().sendErrorLog(
-      //       "State",
-      //       "Edit_State",
-      //       "INSERT",
-      //       errorObject.data.message
-      //     );
-      //   });
-    }
-  };
-
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
     }
   };
 
@@ -255,6 +176,13 @@ function TestingTypeComponent() {
       dispatch(getRoles());
     }
   }, []);
+  useEffect(() => {
+    setFilteredData(testingtypeData);
+  }, [testingtypeData]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -293,42 +221,15 @@ function TestingTypeComponent() {
         }}
       />
 
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by Testing Type ...."
-              ref={searchRef}
-              onKeyDown={handleKeyDown}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              onClick={handleSearch}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Testing Type Records"
-            />
-          </div>
-        </div>
-      </div>
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by ...."
+        exportFileName="Testing Type Master Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
 
       <div className="card mt-2">
         <div className="card-body">
@@ -337,7 +238,7 @@ function TestingTypeComponent() {
               {testingtypeData && (
                 <DataTable
                   columns={columns}
-                  data={testingtypeData}
+                  data={filteredData}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}

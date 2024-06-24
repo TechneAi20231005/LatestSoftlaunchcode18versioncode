@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Modal } from 'react-bootstrap';
+import { Container, Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
 import CountryService from '../../../services/MastersService/CountryService';
@@ -25,59 +25,42 @@ import {
   handleModalClose
 } from '../../Dashboard/DashbordSlice';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function CountryComponent() {
-  const [data, setData] = useState(null);
-
-  const [notify, setNotify] = useState();
-
-  const roleId = localStorage.getItem('role_id');
-
-  const searchRef = useRef();
+  //initial state
   const dispatch = useDispatch();
-  const countryData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.countryData
+
+  //redux state
+
+  const { countryData, notify, modal, exportCountryData } = useSelector(
+    (state) => state.dashboard
   );
-  const Notify = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.notify
-  );
-  const modal = useSelector((dashboardSlice) => dashboardSlice.dashboard.modal);
 
   const isLoading = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.isLoading.CountyDataList
   );
 
-  const showLoadermodal = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.showLoaderModal
-  );
-  const ExportData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.exportCountryData
-  );
-
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 5)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 5)
   );
 
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
-
+  //local state
   const [searchTerm, setSearchTerm] = useState('');
-
   const [filteredData, setFilteredData] = useState([]);
-  const handleSearch = (value) => {};
+
+  //search function
+
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(countryData, searchTerm);
+    setFilteredData(filteredList);
+  };
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(countryData);
+  };
 
   const columns = [
     {
@@ -109,8 +92,7 @@ function CountryComponent() {
             <i className="icofont-edit text-success"></i>
           </button>
         </div>
-      ),
-      width: '80px'
+      )
     },
     {
       name: 'Sr',
@@ -170,12 +152,10 @@ function CountryComponent() {
     }
   ];
 
-  const loadData = async () => {};
-
   const handleForm = (id) => async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
-    setNotify(null);
+
     if (!id) {
       dispatch(postCountryData(form)).then((res) => {
         if (res?.payload?.data?.status === 1) {
@@ -193,17 +173,6 @@ function CountryComponent() {
     }
   };
 
-  const tableData = {
-    columns,
-    data
-  };
-
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -211,25 +180,32 @@ function CountryComponent() {
   }, [checkRole]);
 
   useEffect(() => {
-    loadData();
     dispatch(getCountryData());
 
     if (!countryData.length || !checkRole.length) {
       dispatch(getRoles());
     }
   }, []);
+  useEffect(() => {
+    setFilteredData(countryData);
+  }, [countryData]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   return (
     <div className="container-xxl">
-      {Notify && <Alert alertData={Notify} />}
+      {notify && <Alert alertData={notify} />}
+
       <PageHeader
         headerTitle="Country Master"
         renderRight={() => {
           return (
-            <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[0]?.can_create == 1 ? (
+            <div>
+              {checkRole && checkRole[0]?.can_create === 1 ? (
                 <button
-                  className="btn btn-dark btn-set-task w-sm-100"
+                  className="btn btn-dark px-5"
                   onClick={() => {
                     dispatch(
                       handleModalInStore({
@@ -240,7 +216,8 @@ function CountryComponent() {
                     );
                   }}
                 >
-                  <i className="icofont-plus-circle me-2 fs-6"></i>Add Country
+                  <i className="icofont-plus-circle fs-6" />
+                  Add Country
                 </button>
               ) : (
                 ''
@@ -249,82 +226,30 @@ function CountryComponent() {
           );
         }}
       />
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by country name...."
+        exportFileName="Country Master Record"
+        exportData={exportCountryData}
+        showExportButton={true}
+      />
 
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by Country Name...."
-              ref={searchRef}
-              onKeyDown={handleKeyDown}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={ExportData}
-              fileName="Country master Records"
-            />
-          </div>
-        </div>
-      </div>
-      <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {countryData && (
-                <DataTable
-                  columns={columns}
-                  data={countryData.filter((customer) => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(
-                          (value) =>
-                            typeof value === 'string' &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
-                        );
-                      }
-                    }
-                    return false;
-                  })}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                  progressPending={isLoading}
-                  progressComponent={<TableLoadingSkelton />}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+      <div className="mt-2">
+        {countryData && (
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            defaultSortField="title"
+            pagination
+            selectableRows={false}
+            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+            highlightOnHover={true}
+            progressPending={isLoading}
+            progressComponent={<TableLoadingSkelton />}
+          />
+        )}
       </div>
 
       <Modal centered show={modal.showModal}>

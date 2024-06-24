@@ -26,7 +26,10 @@ import {
   getEmployeeData
 } from '../../Dashboard/DashboardAction';
 
-import { getDesignationData } from '../DesignationMaster/DesignationAction';
+import {
+  getDesignationData,
+  getDesignationDataListThunk
+} from '../DesignationMaster/DesignationAction';
 
 import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
 import { getRoleData } from '../RoleMaster/RoleMasterAction';
@@ -669,7 +672,7 @@ function CreateUserComponent({ match }) {
     }
     dispatch(getRoleData());
     if (!designationDropdown.length) {
-      dispatch(getDesignationData());
+      dispatch(getDesignationDataListThunk());
     }
 
     if (!AllcityDropDownData.length) {

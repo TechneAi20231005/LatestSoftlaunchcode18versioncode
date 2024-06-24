@@ -9,7 +9,7 @@ import PageHeader from '../../../components/Common/PageHeader';
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
 import Alert from '../../../components/Common/Alert';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+
 import { useDispatch, useSelector } from 'react-redux';
 import {
   departmentData,
@@ -20,9 +20,14 @@ import {
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { handleModalClose, handleModalOpen } from './DepartmentMasterSlice';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function DepartmentComponent() {
+  //initial state
   const dispatch = useDispatch();
+
+  //Redux state
   const department = useSelector(
     (DepartmentMasterSlice) => DepartmentMasterSlice.department.departmentData
   );
@@ -32,7 +37,7 @@ function DepartmentComponent() {
   );
 
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 9)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 9)
   );
   const modal = useSelector(
     (DashboardSlice) => DashboardSlice.department.modal
@@ -45,31 +50,22 @@ function DepartmentComponent() {
       DepartmentMasterSlice.department.exportDepartmentData
   );
 
-  const [notify, setNotify] = useState();
-
-  const roleId = localStorage.getItem('role_id');
-
-  const searchRef = useRef();
-
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
-
   const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = (value) => {};
+  //search function
+
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(department, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(department);
+  };
+
   const columns = [
     {
       name: 'Action',
@@ -156,11 +152,9 @@ function DepartmentComponent() {
     }
   ];
 
-  const loadData = async () => {};
-
   const handleForm = (id) => async (e) => {
     e.preventDefault();
-    setNotify(null);
+
     const form = new FormData(e.target);
     if (!id) {
       dispatch(postdepartment(form)).then((res) => {
@@ -179,20 +173,20 @@ function DepartmentComponent() {
     }
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
   useEffect(() => {
-    loadData();
-
     dispatch(departmentData());
     if (!department.length) {
       dispatch(getRoles());
     }
   }, []);
+
+  useEffect(() => {
+    setFilteredData(department);
+  }, [department]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -227,43 +221,15 @@ function DepartmentComponent() {
         }}
       />
 
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by Department Name...."
-              ref={searchRef}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Department master Records"
-            />
-          </div>
-        </div>
-      </div>
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by department name...."
+        exportFileName="Department Master Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
 
       <div className="card mt-2">
         <div className="card-body">
@@ -272,24 +238,7 @@ function DepartmentComponent() {
               {department && (
                 <DataTable
                   columns={columns}
-                  data={department.filter((customer) => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(
-                          (value) =>
-                            typeof value === 'string' &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
-                        );
-                      }
-                    }
-                    return false;
-                  })}
+                  data={filteredData}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}

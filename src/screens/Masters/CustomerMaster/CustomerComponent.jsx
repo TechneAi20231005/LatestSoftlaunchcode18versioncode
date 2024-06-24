@@ -7,60 +7,52 @@ import CustomerService from '../../../services/MastersService/CustomerService';
 import PageHeader from '../../../components/Common/PageHeader';
 import Alert from '../../../components/Common/Alert';
 import { _base } from '../../../settings/constants';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+
 import 'react-data-table-component-extensions/dist/index.css';
 
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getCustomerData, getRoles } from '../../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function CustomerComponent() {
-  const [notify, setNotify] = useState(null);
-  const [data, setData] = useState(null);
-
-  const roleId = localStorage.getItem('role_id');
-
-  const searchRef = useRef();
-  const location = useLocation();
+  //initial state
 
   const dispatch = useDispatch();
-  const getallCustomer = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.getAllCustomerData
+  const location = useLocation();
+  //redux state
+  const { getAllCustomerData, exportCustomerData } = useSelector(
+    (state) => state.dashboard
   );
 
   const isLoading = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.isLoading.getCustomerList
   );
 
-  const exportData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.exportCustomerData
-  );
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 4)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 4)
   );
 
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
-
+  //local state
   const [searchTerm, setSearchTerm] = useState('');
+  const [notify, setNotify] = useState(null);
 
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = (value) => {};
+  //search function
+
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(getAllCustomerData, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(getAllCustomerData);
+  };
 
   const columns = [
     {
@@ -136,14 +128,8 @@ function CustomerComponent() {
       width: '175px'
     }
   ];
-  const tableData = {
-    columns,
-    data
-  };
-  const loadData = async () => {};
 
   useEffect(() => {
-    loadData();
     dispatch(getCustomerData());
 
     if (!checkRole.length) {
@@ -158,29 +144,18 @@ function CustomerComponent() {
   }, []);
 
   useEffect(() => {
-    setFilteredData(
-      getallCustomer.filter((customer) => {
-        if (typeof searchTerm === 'string') {
-          if (typeof customer === 'string') {
-            return customer.toLowerCase().includes(searchTerm.toLowerCase());
-          } else if (typeof customer === 'object') {
-            return Object.values(customer).some(
-              (value) =>
-                typeof value === 'string' &&
-                value.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-          }
-        }
-        return false;
-      })
-    );
-  }, [searchTerm, getallCustomer]);
-
-  useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+
+  useEffect(() => {
+    setFilteredData(getAllCustomerData);
+  }, [getAllCustomerData]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -190,13 +165,14 @@ function CustomerComponent() {
         headerTitle="Customer Master"
         renderRight={() => {
           return (
-            <div className="col-auto d-flex w-sm-100">
+            <div>
               {checkRole && checkRole[0]?.can_create === 1 ? (
                 <Link
                   to={`/${_base}/Customer/Create`}
                   className="btn btn-dark btn-set-task w-sm-100"
                 >
-                  <i className="icofont-plus-circle me-2 fs-6"></i>Add Customer
+                  <i className="icofont-plus-circle me-2 fs-6" />
+                  Add Customer
                 </Link>
               ) : (
                 ''
@@ -205,69 +181,25 @@ function CustomerComponent() {
           );
         }}
       />
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by customer Name...."
-              ref={searchRef}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Customer master Records"
-            />
-          </div>
-        </div>
-      </div>
+
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by customer name...."
+        exportFileName="customer Master Record"
+        exportData={exportCustomerData}
+        showExportButton={true}
+      />
 
       <div className="card mt-2">
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {getallCustomer && (
+              {getAllCustomerData && (
                 <DataTable
                   columns={columns}
-                  data={getallCustomer.filter((customer) => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(
-                          (value) =>
-                            typeof value === 'string' &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
-                        );
-                      }
-                    }
-                    return false;
-                  })}
+                  data={filteredData}
                   defaultSortField="title"
                   pagination
                   progressPending={isLoading}

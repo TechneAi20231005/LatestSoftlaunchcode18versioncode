@@ -4,61 +4,52 @@ import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
 import ErrorLogService from '../../../services/ErrorLogService';
 import SubModuleService from '../../../services/ProjectManagementService/SubModuleService';
-import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+
 import PageHeader from '../../../components/Common/PageHeader';
 import Alert from '../../../components/Common/Alert';
-import { Modal } from 'react-bootstrap';
-import { Spinner } from 'react-bootstrap';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { customSearchHandler } from '../../../utils/customFunction';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 
 function SubModuleComponent() {
-  const location = useLocation();
+  //initial state
+  const dispatch = useDispatch();
+
+  //redux state
+
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 22)
+  );
+
+  //local state
 
   const [notify, setNotify] = useState(null);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const roleId = localStorage.getItem('role_id');
-  // const [checkRole, setCheckRole] = useState(null);
-  const dispatch = useDispatch();
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 22)
-  );
   const [exportData, setExportData] = useState(null);
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
-  const searchRef = useRef();
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  //search function
 
   const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+    const filteredList = customSearchHandler(data, searchTerm);
+    setFilteredData(filteredList);
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
   };
+
+  //Data Table columns
 
   const columns = [
     {
@@ -192,17 +183,6 @@ function SubModuleComponent() {
         );
       });
     dispatch(getRoles());
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-
-    //     if (res.data.status == 1) {
-    //       const getRoleId = localStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
   };
 
   useEffect(() => {
@@ -214,6 +194,13 @@ function SubModuleComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, []);
+  useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -239,51 +226,23 @@ function SubModuleComponent() {
           );
         }}
       />
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by submodule name...."
+        exportFileName="submodule Master Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
 
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search...."
-              ref={searchRef}
-              onKeyDown={handleKeyDown}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              onClick={handleSearch}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Module master Records"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="row clearfix g-3">
+      <div className="mt-2">
         <div className="col-sm-12">
           {isLoading && <TableLoadingSkelton />}
           {!isLoading && data && (
             <DataTable
               columns={columns}
-              data={data}
+              data={filteredData}
               defaultSortField="title"
               pagination
               selectableRows={false}

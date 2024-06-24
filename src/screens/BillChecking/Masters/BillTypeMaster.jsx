@@ -4,48 +4,47 @@ import PageHeader from '../../../components/Common/PageHeader';
 import Alert from '../../../components/Common/Alert';
 import BillTypeMasterService from '../../../services/Bill Checking/Masters/BillTypeMasterService';
 import { _base, userSessionData } from '../../../settings/constants';
-import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 import { Link, useLocation } from 'react-router-dom';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function BillTypeMaster() {
-  const location = useLocation();
-  const [data, setData] = useState(null);
-  const [notify, setNotify] = useState();
-  const roleId = localStorage.getItem('role_id');
-  // const [checkRole, setCheckRole] = useState(null);
-  const userId = userSessionData.userId;
+  //initial state
 
-  const searchRef = useRef();
   const dispatch = useDispatch();
+  const location = useLocation();
+
+  //Redux state
+
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 44)
   );
 
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
+  //local state
+  const [data, setData] = useState([]);
+  const [notify, setNotify] = useState();
 
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
+
+  //search function
 
   const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+    const filteredList = customSearchHandler(data, searchTerm);
+    setFilteredData(filteredList);
   };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
+  };
+
+  //columns
 
   const columns = [
     {
@@ -250,7 +249,6 @@ function BillTypeMaster() {
 
   const loadData = async () => {
     const data = [];
-    var tempArray = [];
 
     await new BillTypeMasterService().getBillTypeData().then((res) => {
       if (res.status === 200) {
@@ -275,20 +273,6 @@ function BillTypeMaster() {
         setData(data);
       }
     });
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = localStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
-  };
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
   };
 
   useEffect(() => {
@@ -313,7 +297,14 @@ function BillTypeMaster() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-  console.log('checkRole', checkRole);
+
+  useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -334,39 +325,16 @@ function BillTypeMaster() {
         }}
       />
       {/* SEARCH FILTER */}
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-8">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search...."
-              ref={searchRef}
-              onKeyDown={handleKeyDown}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              onClick={(e) =>
-                searchRef.current.value
-                  ? handleSearch(e)
-                  : alert('please enter a search')
-              }
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-          </div>
-        </div>
-      </div>
+
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by Bill type name...."
+        exportFileName="Bill Type Master Record"
+        showExportButton={false}
+        // exportData={exportData}
+      />
 
       <div className="card mt-2">
         <div className="card-body">
@@ -375,7 +343,7 @@ function BillTypeMaster() {
               {data && (
                 <DataTable
                   columns={columns}
-                  data={data}
+                  data={filteredData}
                   pagination
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}

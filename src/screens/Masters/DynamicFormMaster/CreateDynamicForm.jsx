@@ -30,7 +30,7 @@ import { masterURL } from '../../../settings/constants';
 import DynamicComponent from './DynamicComponent';
 import UserService from '../../../services/MastersService/UserService';
 import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
-import { getDesignationData } from '../DesignationMaster/DesignationAction';
+import { getDesignationData, getDesignationDataListThunk } from '../DesignationMaster/DesignationAction';
 import { statusMasterSlice } from '../StatusMaster/StatusComponentSlice';
 import { getStatusData } from '../StatusMaster/StatusComponentAction';
 import QueryTypeService from '../../../services/MastersService/QueryTypeService';
@@ -542,7 +542,7 @@ function CreateDynamicForm() {
     }
 
     if (!designationDropdown.length) {
-      dispatch(getDesignationData());
+      dispatch(getDesignationDataListThunk());
     }
 
     if (!AllcityDropDownData.length) {

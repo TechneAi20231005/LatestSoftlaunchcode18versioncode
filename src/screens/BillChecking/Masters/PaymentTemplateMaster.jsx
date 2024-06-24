@@ -14,15 +14,16 @@ import Alert from '../../../components/Common/Alert';
 import StateService from '../../../services/MastersService/StateService';
 import CityService from '../../../services/MastersService/CityService';
 import PaymentTemplateService from '../../../services/Bill Checking/Masters/PaymentTemplateService';
-import DropdownService from '../../../services/Bill Checking/Bill Checking Transaction/DropdownService';
+
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
-import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 import { useDispatch, useSelector } from 'react-redux';
-import PaymentTemplateMasterSlice from './BillTypeMaster/PaymentTemplateMasterSlice';
+
 import { paymentTemplate } from './BillTypeMaster/PaymentTemplateMasterAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function PaymentTemplateMaster() {
   const dispatch = useDispatch();
@@ -37,8 +38,6 @@ function PaymentTemplateMaster() {
   const [paymentType, setPaymentType] = useState('Weekly');
 
   const paymentModeRef = useRef(null);
-
-  const [days, setDays] = useState();
 
   const options = [
     { value: '01', label: '1' },
@@ -84,8 +83,23 @@ function PaymentTemplateMaster() {
     'Sunday'
   ];
 
-  const [data, setData] = useState(null);
   const [notify, setNotify] = useState();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
+
+  //search function
+
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(paymentdata, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(paymentdata);
+  };
+
   const [modal, setModal] = useState({
     showModal: false,
     modalData: '',
@@ -99,31 +113,8 @@ function PaymentTemplateMaster() {
   const handlePaymentType = (e) => {
     setPaymentType(e.target.value);
   };
-  const searchRef = useRef();
-
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
 
   const billDayRef = useRef(null);
-
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const [filteredData, setFilteredData] = useState([]);
-
-  const handleSearch = (value) => {};
 
   const [country, setCountry] = useState();
   const [state, setState] = useState();
@@ -131,8 +122,6 @@ function PaymentTemplateMaster() {
   const [CountryDropdown, setCountryDropdown] = useState();
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
-
-  const roleId = localStorage.getItem('role_id');
 
   const columns = [
     {
@@ -334,7 +323,7 @@ function PaymentTemplateMaster() {
       sortable: true
     }
   ];
-  const [mindays, setMindays] = useState();
+
   const minDaysRef = useRef();
   const [toolTip, setToolTip] = useState({ id: 'EMPTY', message: 'NOTHING' });
 
@@ -471,16 +460,17 @@ function PaymentTemplateMaster() {
     }
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
   useEffect(() => {
     loadData();
   }, []);
 
+  useEffect(() => {
+    setFilteredData(paymentdata);
+  }, [paymentdata]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -512,38 +502,14 @@ function PaymentTemplateMaster() {
         }}
       />
       {/* SEARCH FILTER */}
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-8">
-            <input
-              type="text"
-              className="form-control"
-              id="search"
-              name="search"
-              placeholder="Search...."
-              ref={searchRef}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-          </div>
-        </div>
-      </div>
+
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by payment template name...."
+        showExportButton={false}
+      />
 
       {/* DATA TABLE */}
       <div className="card mt-2">
@@ -553,24 +519,7 @@ function PaymentTemplateMaster() {
               {paymentdata && (
                 <DataTable
                   columns={columns}
-                  data={paymentdata.filter((customer) => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(
-                          (value) =>
-                            typeof value === 'string' &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
-                        );
-                      }
-                    }
-                    return false;
-                  })}
+                  data={filteredData}
                   defaultSortFieldId="id"
                   pagination
                   selectableRows={false}

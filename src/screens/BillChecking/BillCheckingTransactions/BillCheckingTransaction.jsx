@@ -1,29 +1,27 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Modal, Dropdown, Spinner } from 'react-bootstrap';
+import { Dropdown, Spinner } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
-import CountryService from '../../../services/MastersService/CountryService';
 import PageHeader from '../../../components/Common/PageHeader';
 import Select from 'react-select';
 
 import Alert from '../../../components/Common/Alert';
-import StateService from '../../../services/MastersService/StateService';
+
 import CityService from '../../../services/MastersService/CityService';
 import { Link, useLocation } from 'react-router-dom';
-import { _base, userSessionData } from '../../../settings/constants';
+import { _base } from '../../../settings/constants';
 import BillCheckingService from '../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService';
 import BillCheckingTransactionService from '../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService';
 import DropdownService from '../../../services/Bill Checking/Bill Checking Transaction/DropdownService';
-import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+
 import UserService from '../../../services/MastersService/UserService';
-// import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-// import Tooltip from "react-bootstrap/Tooltip";
+
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 import { UseDispatch, useDispatch, useSelector } from 'react-redux';
-import BillCheckingTransactionSlice from '../Slices/BillCheckingTransactionSlice';
+
 import {
   BillcheckingpostData,
   billTypeDataDropDowm,
@@ -33,14 +31,15 @@ import {
   postBillcheckingData,
   statusDropDownData
 } from '../Slices/BillCheckingTransactionAction';
-import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
+
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { getVendorMasterData } from '../Slices/VendorMasterAction';
-import VendorMasterSlice from '../Slices/VendorMasterSlice';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function BillCheckingTransaction() {
   const location = useLocation();
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
 
   const [notify, setNotify] = useState();
   const [exportData, setExportData] = useState(null);
@@ -52,8 +51,6 @@ function BillCheckingTransaction() {
     modalHeader: ''
   });
 
-  const roleId = localStorage.getItem('role_id');
-
   const dispatch = useDispatch();
   const AllBillCheckingData = useSelector(
     (BillCheckingTransactionSlice) =>
@@ -64,7 +61,7 @@ function BillCheckingTransaction() {
       BillCheckingTransactionSlice.billChecking.authoritiesData
   );
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 42)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 42)
   );
   const billTypeDropdown = useSelector(
     (BillCheckingTransactionSlice) =>
@@ -80,35 +77,25 @@ function BillCheckingTransaction() {
       BillCheckingTransactionSlice.billChecking.statusDropDownData
   );
 
-  const handleModal = (data) => {
-    setModal(data);
-  };
   const searchRef = useRef();
 
-  function searchInData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
-    return (
-      data &&
-      data.filter((d) => {
-        for (const key in d) {
-          if (
-            typeof d[key] === 'string' &&
-            d[key].toLowerCase().includes(lowercaseSearch)
-          ) {
-            return true;
-          }
-        }
-        return false;
-      })
-    );
-  }
+  //search function
 
   const handleSearch = () => {
-    const searchValue = searchRef.current.value;
-    const result = searchInData(data, searchValue);
-    setData(result);
+    const filteredList = customSearchHandler(data, searchTerm);
+    setFilteredData(filteredList);
   };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
+  };
+
+  //columns
 
   const selectInputRef = useRef();
   const selectVendorRef = useRef();
@@ -135,12 +122,6 @@ function BillCheckingTransaction() {
   const handleCheckboxChange = () => {
     // Toggle the state of isOriginalBillReceived
     setIsOriginalBillReceived(!isOriginalBillReceived);
-  };
-
-  const handleClearSearchData = (e) => {
-    if (searchRef.current.value != null) {
-      document.getElementById('search').value = '';
-    }
   };
 
   const handleClearData = (e) => {
@@ -223,14 +204,9 @@ function BillCheckingTransaction() {
     setIsOriginalBillReceived(false);
   };
 
-  const [country, setCountry] = useState();
-  const [state, setState] = useState();
   const [city, setCity] = useState();
-  const [CountryDropdown, setCountryDropdown] = useState();
-  const [stateDropdown, setStateDropdown] = useState();
+
   const [cityDropdown, setCityDropdown] = useState();
-  const fileInputRef = useRef(null);
-  const [id, setId] = useState();
 
   const [assignToDropdown, setAssignToDropdown] = useState();
 
@@ -249,40 +225,7 @@ function BillCheckingTransaction() {
       selector: (row) => {},
       sortable: false,
       cell: (row) => {
-        const originalParam = row.id;
-
         return (
-          // <Dropdown className="d-inline-flex m-1">
-          //   <Dropdown.Toggle
-          //     as="button"
-          //     variant=""
-          //     id={`${"dropdown-basic_" + data?.id}`}
-          //     className="btn btn-primary text-white"
-          //   >
-          //     <i className="icofont-listine-dots"></i>
-          //   </Dropdown.Toggle>
-          //   {row &&
-          //     ((row.level == parseInt(row.total_level) &&
-          //       row.is_assign_to == 1) ||
-          //       row.is_editable_for_creator == 1 ||
-          //       (row.is_rejected == 1 && row.is_editable_for_creator == 1) ||
-          //       (authorities &&
-          //         authorities.All_Update_Bill === true &&
-          //         row.is_assign_to != 1) ||
-          //       (row.level != parseInt(row.total_level) &&
-          //         row.is_approver == 1)) &&
-          //     row.is_active == 1 && (
-          //       <li>
-          //         <Link
-          //           to={`/${_base}/EditBillCheckingTransaction/` + row.id}
-          //           className="btn btn-sm btn-primary text-white"
-          //           style={{ width: "100%", zIndex: 100 }}
-          //         >
-          //           <i className="icofont-edit"></i> Edit
-          //         </Link>
-          //       </li>
-          //     )}
-
           <Dropdown className="d-inline-flex m-1">
             <Dropdown.Toggle
               as="button"
@@ -293,7 +236,7 @@ function BillCheckingTransaction() {
                 padding: '0.25rem 0.5rem',
                 fontSize: '0.875rem',
                 marginRight: '5px'
-              }} // Adjust the size and margin as needed
+              }}
             >
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
@@ -315,7 +258,7 @@ function BillCheckingTransaction() {
                   className="btn btn-sm btn-primary text-white"
                   style={{
                     padding: '0.25rem 0.5rem',
-                    fontSize: '0.875rem' // Match the font size with the dropdown toggle
+                    fontSize: '0.875rem'
                   }}
                 >
                   <i className="icofont-edit"></i>
@@ -325,28 +268,6 @@ function BillCheckingTransaction() {
               )}
 
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {/* {row &&
-                ((row.level == parseInt(row.total_level) &&
-                  row.is_assign_to == 1) ||
-                  row.is_editable_for_creator == 1 ||
-                  (row.is_rejected == 1 && row.is_editable_for_creator == 1) ||
-                  (authorities &&
-                    authorities.All_Update_Bill === true &&
-                    row.is_assign_to != 1) ||
-                  (row.level != parseInt(row.total_level) &&
-                    row.is_approver == 1)) &&
-                row.is_active == 1 && (
-                  <li>
-                    <Link
-                      to={`/${_base}/EditBillCheckingTransaction/` + row.id}
-                      className="btn btn-sm btn-primary text-white"
-                      style={{ width: "100%", zIndex: 100 }}
-                    >
-                      <i className="icofont-edit"></i> Edit
-                    </Link>
-                  </li>
-                )} */}
-
               <li>
                 <Link
                   to={`/${_base}/ViewBillTransaction/` + row.id}
@@ -1120,27 +1041,12 @@ function BillCheckingTransaction() {
       });
   };
 
-  const [importModal, setImportModal] = useState({
-    ishowModal: false,
-    imodalData: '',
-    imodalHeader: ''
-  });
-
-  const handleImportModal = (data) => {
-    setImportModal(data);
-  };
-
   const [fromPaymentDate, setFromPaymentDate] = useState('');
 
-  const handleFromBillDate = (e) => {
-    setFromPaymentDate(e.target.value);
-  };
-
   const [datee, setDatee] = useState();
-  const [billDatedatee, setBillDatee] = useState();
 
   const [receivedate, setReceive] = useState();
-  const [isBillDateRequired, setIsBillDateRequired] = useState(false);
+
   const [fromBillAmount, setFromBillAmount] = useState('');
   const [toBillAmount, setToBillAmount] = useState('');
   const [toBillAmountErr, setToBillAmountErr] = useState('');
@@ -1224,9 +1130,6 @@ function BillCheckingTransaction() {
     setToReceive('');
   };
 
-  const isReceivedDate = !!receivedate;
-  const isToPaymentDateRequired = !!datee;
-
   const [fromBillDate, setFromBillDate] = useState('');
   const [toBillDate, setToBillDate] = useState('');
   const [isToBillDateRequired, setIsToBillDateRequired] = useState(false);
@@ -1239,8 +1142,6 @@ function BillCheckingTransaction() {
     setToBillDate('');
   };
 
-  const [paymentType, setPaymentType] = useState('weekly', 'monthly');
-
   const [showFilterFields, setShowFilterFields] = useState(false);
 
   useEffect(() => {
@@ -1250,19 +1151,19 @@ function BillCheckingTransaction() {
       setNotify(location.state.alert);
     }
   }, []);
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
-  };
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+  useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
 
-  // created by Asmita Margaje
-  // Define a functional component named LoaderComponent
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
+
   function LoaderComponent() {
     return (
       // Container to center-align the spinner and loading text
@@ -1320,11 +1221,11 @@ function BillCheckingTransaction() {
               >
                 Filter <i className="icofont-filter" />
               </button>
-              <ExportToExcel
+              {/* <ExportToExcel
                 className="btn btn-danger"
                 apiData={exportData}
                 fileName="Bill Checking Data"
-              />
+              /> */}
             </div>
           );
         }}
@@ -1792,7 +1693,7 @@ function BillCheckingTransaction() {
       )}
       {/* Search Filter  */}
 
-      <div className="container-xxl mt-2">
+      {/* <div className="container-xxl mt-2">
         <div className="card card-body">
           <div className="row">
             <div className="col-md-10">
@@ -1802,7 +1703,7 @@ function BillCheckingTransaction() {
                 className="form-control"
                 placeholder="Search By Bill ID...."
                 onClick={(e) => handleSearch(e)}
-                onKeyDown={handleKeyDown}
+                // onKeyDown={handleKeyDown}
                 ref={searchRef}
               />
             </div>
@@ -1827,7 +1728,16 @@ function BillCheckingTransaction() {
             </div>
           </div>
         </div>
-      </div>
+      </div> */}
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by Bill Id ...."
+        exportFileName="Bill checking  Master Record"
+        showExportButton={true}
+        exportData={exportData}
+      />
       {/* DATA TABLE */}
       <div className="container-xxl">
         <div className="card mt-2">
@@ -1840,7 +1750,7 @@ function BillCheckingTransaction() {
                   {AllBillCheckingData && (
                     <DataTable
                       columns={columns}
-                      data={data}
+                      data={filteredData}
                       pagination
                       selectableRows={false}
                       defaultSortAsc={false}

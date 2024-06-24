@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
@@ -7,33 +7,26 @@ import UserService from '../../../services/MastersService/UserService';
 import PageHeader from '../../../components/Common/PageHeader';
 
 import 'react-data-table-component-extensions/dist/index.css';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getEmployeeData, getRoles } from '../../Dashboard/DashboardAction';
 import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function UserComponent() {
+  //initial state
   const location = useLocation();
-  const [data, setData] = useState(null);
   const dispatch = useDispatch();
 
-  const [notify, setNotify] = useState(null);
-
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: '',
-    modalHeader: ''
-  });
+  //Redux State
 
   const [exportData, setExportData] = useState(null);
 
-  const roleId = localStorage.getItem('role_id');
-
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 3)
   );
 
   const employeeData = useSelector(
@@ -42,34 +35,25 @@ function UserComponent() {
   const isLoding = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.isLoading.employeeDataList
   );
-
-  const handleModal = (data) => {
-    setModal(data);
-  };
-
-  const searchRef = useRef();
-
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
-
+  //local state
   const [searchTerm, setSearchTerm] = useState('');
+  const [notify, setNotify] = useState(null);
 
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = (value) => {};
+  //search function
+
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(employeeData, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(employeeData);
+  };
+
   const columns = [
     {
       name: 'Action',
@@ -204,7 +188,6 @@ function UserComponent() {
               temp[i].ticket_show_type === 'MY_TICKETS'
                 ? 'My Tickets'
                 : 'Department Tickets',
-            // all_department: temp[i].all_department,
             Ticket_Passing_Authority: temp[i].ticket_passing_authority
               ? 'Yes'
               : 'No',
@@ -224,16 +207,6 @@ function UserComponent() {
     });
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
-  };
-  const tableData = {
-    columns,
-    data
-  };
-  var flag = 1;
   useEffect(() => {
     loadData();
 
@@ -255,28 +228,16 @@ function UserComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+  useEffect(() => {
+    setFilteredData(employeeData);
+  }, [employeeData]);
 
   useEffect(() => {
-    setFilteredData(
-      employeeData.filter((customer) => {
-        if (typeof searchTerm === 'string') {
-          if (typeof customer === 'string') {
-            return customer.toLowerCase().includes(searchTerm.toLowerCase());
-          } else if (typeof customer === 'object') {
-            return Object.values(customer).some(
-              (value) =>
-                typeof value === 'string' &&
-                value.toLowerCase().includes(searchTerm.toLowerCase())
-            );
-          }
-        }
-        return false;
-      })
-    );
-  }, [searchTerm, employeeData]);
+    handleSearch();
+  }, [searchTerm]);
 
   return (
-    <div className="container-xxl">
+    <div className="container-xxl px-0">
       <PageHeader
         headerTitle="User Master"
         renderRight={() => {
@@ -296,83 +257,29 @@ function UserComponent() {
           );
         }}
       />
-
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by User Name...."
-              ref={searchRef}
-              onKeyDown={handleKeyDown}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData && exportData}
-              fileName="User master Records"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {employeeData && (
-                <DataTable
-                  columns={columns}
-                  data={employeeData.filter((customer) => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(
-                          (value) =>
-                            typeof value === 'string' &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
-                        );
-                      }
-                    }
-                    return false;
-                  })}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  progressPending={isLoding}
-                  progressComponent={<TableLoadingSkelton />}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by user name...."
+        exportFileName="User Master Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
+      <div className="card mt-2 px-0">
+        {employeeData && (
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            defaultSortField="title"
+            pagination
+            selectableRows={false}
+            progressPending={isLoding}
+            progressComponent={<TableLoadingSkelton />}
+            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+            highlightOnHover={true}
+          />
+        )}
       </div>
     </div>
   );
@@ -385,9 +292,9 @@ export function UserDropdown(props) {
   useEffect(() => {
     const tempData = [];
     new UserService().getUser().then((res) => {
-      if (res.status == 200) {
+      if (res.status === 200) {
         const data = res.data.data;
-        let counter = 1;
+
         for (const key in data) {
           tempData.push({
             id: data[key].id,

@@ -2,14 +2,13 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import Select from 'react-select';
-import ErrorLogService from '../../../services/ErrorLogService';
+
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 import PageHeader from '../../../components/Common/PageHeader';
 import { Astrick } from '../../../components/Utilities/Style';
-import * as Validation from '../../../components/Utilities/Validation';
+
 import Alert from '../../../components/Common/Alert';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
-import { Spinner } from 'react-bootstrap';
+
 import UserService from '../../../services/MastersService/UserService';
 import GeneralSettingService from '../../../services/SettingService/GeneralSettingService';
 import Tooltip from 'react-bootstrap/Tooltip';
@@ -20,25 +19,27 @@ import {
   postGeneralSettingData,
   updateGeneralSettingData
 } from '../SettingAction';
-import MyTicketComponentSlice from '../../TicketManagement/MyTicketComponentSlice';
+
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
 import { handleModalClose, handleGeneralModal } from '../SettingSlice';
+import { customSearchHandler } from '../../../utils/customFunction';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function GeneralSettings() {
-  const [data, setData] = useState(null);
-  const [exportData, setExportData] = useState(null);
-  const [user, setUser] = useState(null);
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [notify, setNotify] = useState();
-  const [authority, setAuthority] = useState(['Upload ', 'Delete', ' Restore']);
-  const [generalSetting, setGeneralSetting] = useState([]);
-  const [checkRole, setCheckRole] = useState([]);
-
+  //initial  state
   const dispatch = useDispatch();
+
+  //redux state
 
   const getAllgeneralSettingData = useSelector(
     (SettingSlice) => SettingSlice.generalSetting.getAllgeneralSettingData
   );
+  const isLoading = useSelector(
+    (SettingSlice) =>
+      SettingSlice.generalSetting.isLoading.getGeneralSettingList
+  );
+
   const User = useSelector(
     (MyTicketComponentSlice) => MyTicketComponentSlice.myTicketComponent.user
   );
@@ -49,49 +50,51 @@ function GeneralSettings() {
     (SettingSlice) => SettingSlice.generalSetting.modal
   );
 
-  const [assignedUserModal, setAssignedUserModal] = useState({
-    showModal: false,
-    modalData: '',
-    modalHeader: ''
-  });
+  //local state
+  const [data, setData] = useState(null);
+  const [exportData, setExportData] = useState(null);
+  const [user, setUser] = useState(null);
+
+  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  const [notify, setNotify] = useState();
+
+  const [generalSetting, setGeneralSetting] = useState([]);
+  const [checkRole, setCheckRole] = useState([]);
 
   const userDetail = useRef();
-  const searchRef = useRef();
+
   const userValue = useRef();
 
   const useSetting = useRef();
   const useRemark = useRef();
 
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  //search function
 
   const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+    const filteredList = customSearchHandler(
+      getAllgeneralSettingData,
+      searchTerm
+    );
+    setFilteredData(filteredList);
   };
 
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
+  };
+
+  //Data Table columns
   const loadData = async () => {
     const inputRequired = 'id,employee_id,first_name,last_name';
     dispatch(getGeneralSettingData());
     dispatch(getUserForMyTicketsData(inputRequired));
     setShowLoaderModal(null);
-    const data = [];
-    const exportTempData = [];
-    const roleId = localStorage.getItem('role_id');
+
+    const roleId = sessionStorage.getItem('role_id');
 
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
@@ -105,8 +108,6 @@ function GeneralSettings() {
 
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
-        const tempData = [];
-        const temp = res.data.data;
         if (res.data.status == 1) {
           const data = res.data.data.sort((a, b) => {
             if (a.first_name && b.first_name) {
@@ -159,16 +160,6 @@ function GeneralSettings() {
     }
 
     const form = {};
-    // if (settingName === "Time Regularization after task complete") {
-    //   form.user_id = array;
-    // } else if (
-    //   settingName === "Time Regularization after task complete" &&
-    //   arrayOfId?.length > 0
-    // ) {
-    //   form.user_id = arrayOfId;
-    // } else {
-    //   form.user_id = arrayOfId;
-    // }
 
     if (
       settingName === 'Time Regularization after task complete' &&
@@ -195,13 +186,7 @@ function GeneralSettings() {
       });
     }
   };
-
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
-  };
-
+  //columns
   const columns = [
     {
       name: 'Action',
@@ -244,7 +229,6 @@ function GeneralSettings() {
     },
     {
       name: 'Assigned User',
-      // selector: (row) => row.setting_name,
       sortable: true,
       width: '20%',
       cell: (row) => {
@@ -306,12 +290,7 @@ function GeneralSettings() {
         let userList = User.filter(
           (userData) => row.created_by === userData.value
         );
-        //   return (
-        //     <>
-        //       {userList[0].label}
-        //     </>
-        //   )
-        // }
+
         if (userList && userList.length > 0) {
           return <>{userList[0].label}</>;
         } else {
@@ -350,6 +329,13 @@ function GeneralSettings() {
   useEffect(() => {
     loadData();
   }, []);
+  useEffect(() => {
+    setFilteredData(getAllgeneralSettingData);
+  }, [getAllgeneralSettingData]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -366,16 +352,6 @@ function GeneralSettings() {
             <div className="col-auto d-flex w-sm-100">
               <button
                 className="btn btn-dark btn-set-task w-sm-100"
-                // onClick={() => {
-
-                //   dispatch(
-                //     handleModalInStore({
-                //       showModal: true,
-                //       modalData: null,
-                //       modalHeader: "Add Setting",
-                //     })
-                //   );
-                // }}
                 onClick={() => {
                   dispatch(
                     handleGeneralModal({
@@ -392,63 +368,31 @@ function GeneralSettings() {
           );
         }}
       />
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by Setting name...."
-              ref={searchRef}
-              onKeyDown={handleKeyDown}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              onClick={handleSearch}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="General Settings"
-            />
-          </div>
-        </div>
-      </div>
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by setting name...."
+        exportFileName="General setting  Master Record"
+        exportData={exportData}
+      />
+
       <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {getAllgeneralSettingData && (
-                <DataTable
-                  columns={columns}
-                  data={getAllgeneralSettingData}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        {isLoading && <TableLoadingSkelton />}
+        {!isLoading && getAllgeneralSettingData && (
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            defaultSortField="title"
+            pagination
+            selectableRows={false}
+            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+            highlightOnHover={true}
+          />
+        )}
       </div>
 
-      <Modal show={showLoaderModal} centered>
+      {/* <Modal show={showLoaderModal} centered>
         <Modal.Body className="text-center">
           <Spinner animation="grow" variant="primary" />
           <Spinner animation="grow" variant="secondary" />
@@ -458,7 +402,7 @@ function GeneralSettings() {
           <Spinner animation="grow" variant="info" />
           <Spinner animation="grow" variant="dark" />
         </Modal.Body>
-      </Modal>
+      </Modal> */}
 
       <Modal
         centered
@@ -591,11 +535,6 @@ function GeneralSettings() {
               type="button"
               className="btn btn-danger text-white"
               onClick={() => {
-                // handleModal({
-                //   showModal: false,
-                //   modalData: "",
-                //   modalHeader: "",
-                // });
                 {
                   dispatch(
                     handleModalClose({

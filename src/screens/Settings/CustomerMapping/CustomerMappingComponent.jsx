@@ -2,26 +2,28 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import CustomerMappingService from '../../../services/SettingService/CustomerMappingService';
 import DataTable from 'react-data-table-component';
-import ErrorLogService from '../../../services/ErrorLogService';
+
 import PageHeader from '../../../components/Common/PageHeader';
 import Alert from '../../../components/Common/Alert';
-import Select from 'react-select';
+
 import { _base } from '../../../settings/constants';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
-import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+
 import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { Modal } from 'react-bootstrap';
 import { UseDispatch, useDispatch, useSelector } from 'react-redux';
-import CustomerMappingSlice from './Slices/CustomerMappingSlice';
 import {
   exportCustomerMappingData,
   getCustomerMappingData
 } from './Slices/CustomerMappingAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
-import DashbordSlice from '../../Dashboard/DashbordSlice';
+
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { customSearchHandler } from '../../../utils/customFunction';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 export default function CustomerMappingComponent() {
   const dispatch = useDispatch();
+  const location = useLocation();
   const data = useSelector(
     (CustomerMappingSlice) =>
       CustomerMappingSlice.customerMaster.customerMappingData
@@ -40,48 +42,25 @@ export default function CustomerMappingComponent() {
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32)
   );
 
-  const location = useLocation();
-
   const [notify, setNotify] = useState(null);
-  // const [data, setData] = useState(null);
-  const [dataa, setDataa] = useState(null);
 
-  // const [exportData, setExportData] = useState(null)
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  const roleId = localStorage.getItem('role_id');
-  // const [checkRole, setCheckRole] = useState(null)
-
-  const searchRef = useRef();
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
-
-  // const handleSearch = () => {
-  //   const SearchValue = searchRef.current.value;
-  //   const result = SearchInputData(data, SearchValue);
-  //   // setData(result);
-  // };
-
   const [searchTerm, setSearchTerm] = useState('');
-  // const handleSearch = (e) => {
-  //   setSearchTerm(e.target.value);
-  // };
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = (value) => {};
+  //search function
+
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(data, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
+  };
 
   const columns = [
     {
@@ -205,88 +184,8 @@ export default function CustomerMappingComponent() {
       width: '175px'
     }
   ];
-  const makeActive = (id) => {
-    // e.preventDefault();
-    const data = new FormData();
-    data.append('is_default', 1);
-    new CustomerMappingService().updateCustomerMapping(id, data).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          loadData();
-        }
-      }
-    });
-  };
-  const loadData = async () => {
-    setShowLoaderModal(null);
-    // setShowLoaderModal(true);
-    const tempData = [];
-    const exportTempData = [];
-    // await new CustomerMappingService().getCustomerMapping().then(res => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-
-    //     let counter = 1;
-    //     const data = res.data.data;
-    //     for (const key in data) {
-    //       tempData.push({
-    //         counter: counter++,
-    //         id: data[key].id,
-    //         query_type_name: data[key].query_type_name,
-    //         template_name: data[key].template_name,
-    //         dynamic_form_name: data[key].dynamic_form_name,
-    //         project_name: data[key].project_name,
-    //         module_name: data[key].module_name,
-    //         sub_module_name: data[key].sub_module_name,
-    //         department_name: data[key].department_name,
-    //         priority: data[key].priority,
-    //         approach: data[key].approach,
-    //         is_default: data[key].is_default,
-    //         is_active: data[key].is_active,
-    //         created_at: data[key].created_at,
-    //         created_by: data[key].created_by,
-    //         updated_at: data[key].updated_at,
-    //         updated_by: data[key].updated_by,
-    //       })
-    //     }
-    //     setData(tempData);
-    //     setDataa(tempData);
-
-    //     for (const i in data) {
-    //       exportTempData.push({
-    //         Sr: counter++,
-    //         Query: data[i].query_type_name,
-    //         Template: data[i].template_name,
-    //         Department: data[i].department_name,
-    //         Priority: data[i].priority,
-    //         Approach: data[i].approach,
-    //       })
-    //     }
-
-    //     setExportData(null)
-    //     setExportData(exportTempData)
-    //   }
-    // });
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-    //     if (res.data.status == 1) {
-    //       setCheckRole(res.data.data.filter(d => d.role_id == roleId))
-    //     }
-    //   }
-    // })
-  };
-
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
-  };
 
   useEffect(() => {
-    loadData();
-
     dispatch(getCustomerMappingData());
     dispatch(exportCustomerMappingData());
 
@@ -303,6 +202,12 @@ export default function CustomerMappingComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
+  useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
 
   return (
     <div className="container-xxl">
@@ -328,66 +233,22 @@ export default function CustomerMappingComponent() {
           );
         }}
       />
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by...."
+        exportFileName="Customer Mapping Master Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
 
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search...."
-              ref={searchRef}
-              onChange={(e) => setSearchTerm(e.target.value)}
-              // onKeyDown={handleKeyDown}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Customer Mapping master Records"
-            />
-          </div>
-        </div>
-      </div>
-      <div className="row clearfix g-3">
+      <div className=" mt-2">
         <div className="col-sm-12">
           {data && (
             <DataTable
               columns={columns}
-              data={data.filter((customer) => {
-                if (typeof searchTerm === 'string') {
-                  if (typeof customer === 'string') {
-                    return customer
-                      .toLowerCase()
-                      .includes(searchTerm.toLowerCase());
-                  } else if (typeof customer === 'object') {
-                    return Object.values(customer).some(
-                      (value) =>
-                        typeof value === 'string' &&
-                        value.toLowerCase().includes(searchTerm.toLowerCase())
-                    );
-                  }
-                }
-                return false;
-              })}
+              data={filteredData}
               defaultSortField="title"
               pagination
               selectableRows={false}

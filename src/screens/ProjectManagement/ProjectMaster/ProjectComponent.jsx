@@ -4,10 +4,10 @@ import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
 import ErrorLogService from '../../../services/ErrorLogService';
 import ProjectService from '../../../services/ProjectManagementService/ProjectService';
-import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+
 import PageHeader from '../../../components/Common/PageHeader';
 import Alert from '../../../components/Common/Alert';
-import Select from 'react-select';
+
 import { Spinner } from 'react-bootstrap';
 import { Modal } from 'react-bootstrap';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
@@ -16,52 +16,44 @@ import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function ProjectComponent() {
+  //initial state
   const location = useLocation();
   const dispatch = useDispatch();
 
-  const [notify, setNotify] = useState(null);
-  const [data, setData] = useState(null);
-  const [exportData, setExportData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const searchRef = useRef();
-
-  const roleId = localStorage.getItem('role_id');
-  // const [checkRole, setCheckRole] = useState(null);
+  //Redux State
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 20)
   );
+
+  //local state
+
+  const [notify, setNotify] = useState('');
+  const [data, setData] = useState([]);
+  const [exportData, setExportData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [showLoaderModal, setShowLoaderModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  //search function
 
   const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+    const filteredList = customSearchHandler(data, searchTerm);
+    setFilteredData(filteredList);
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
   };
 
+  //Data Table columns
   const columns = [
     {
       name: 'Action',
@@ -175,9 +167,7 @@ function ProjectComponent() {
         </div>
       )
     },
-    // { name: 'Assigned BA', selector: row => row.assigned_ba, sortable: true, },
-    // { name: 'Assigned DEV', selector: row => row.assigned_dev, sortable: true, },
-    // { name: 'Assigned TESTER', selector: row => row.assigned_tester, sortable: true, },
+
     {
       name: 'Remark',
       width: '10%',
@@ -343,7 +333,6 @@ function ProjectComponent() {
           for (const key in data) {
             exportData.push({
               SrNo: count++,
-              // id: data[key].id,
               'Project Name': data[key].project_name,
               projectReviewer: data[key].projectReviewer,
               is_active: data[key].is_active == 1 ? 'Active' : 'Deactive',
@@ -370,17 +359,6 @@ function ProjectComponent() {
       });
 
     dispatch(getRoles());
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-
-    //     if (res.data.status == 1) {
-    //       const getRoleId = localStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
   };
 
   useEffect(() => {
@@ -397,6 +375,13 @@ function ProjectComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+  useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -422,42 +407,15 @@ function ProjectComponent() {
         }}
       />
 
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search...."
-              ref={searchRef}
-              onKeyDown={handleKeyDown}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              onClick={handleSearch}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Project master Records"
-            />
-          </div>
-        </div>
-      </div>
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by project name...."
+        exportFileName="Project Master Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
 
       <div className="card mt-2">
         <div className="card-body">
@@ -467,7 +425,7 @@ function ProjectComponent() {
               {!isLoading && data && (
                 <DataTable
                   columns={columns}
-                  data={data}
+                  data={filteredData}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
@@ -479,18 +437,6 @@ function ProjectComponent() {
           </div>
         </div>
       </div>
-
-      <Modal show={showLoaderModal} centered>
-        <Modal.Body className="text-center">
-          <Spinner animation="grow" variant="primary" />
-          <Spinner animation="grow" variant="secondary" />
-          <Spinner animation="grow" variant="success" />
-          <Spinner animation="grow" variant="danger" />
-          <Spinner animation="grow" variant="warning" />
-          <Spinner animation="grow" variant="info" />
-          <Spinner animation="grow" variant="dark" />
-        </Modal.Body>
-      </Modal>
     </div>
   );
 }

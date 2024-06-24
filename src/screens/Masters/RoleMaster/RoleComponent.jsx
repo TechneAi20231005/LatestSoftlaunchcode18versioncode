@@ -1,30 +1,36 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
-import ErrorLogService from '../../../services/ErrorLogService';
+
 import RoleService from '../../../services/MastersService/RoleService';
 import PageHeader from '../../../components/Common/PageHeader';
-import Select from 'react-select';
+
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
 import Alert from '../../../components/Common/Alert';
 import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
-import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import { useDispatch, useSelector } from 'react-redux';
-import RoleMasterSlice from './RoleMasterSlice';
+
 import { getRoleData, updatedRole } from './RoleMasterAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { postRole } from './RoleMasterAction';
 import { handleModalOpen, handleModalClose } from './RoleMasterSlice';
-import DashbordSlice from '../../Dashboard/DashbordSlice';
+
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function RoleComponent({ location }) {
+  //initial state
   const dispatch = useDispatch();
+
+  //redux state
+
   const RoleMasterData = useSelector(
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.getRoleData
   );
@@ -33,7 +39,7 @@ function RoleComponent({ location }) {
   );
 
   const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 10)
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 10)
   );
 
   const Notify = useSelector(
@@ -46,33 +52,24 @@ function RoleComponent({ location }) {
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.exportRoleData
   );
 
+  //Local state
   const [notify, setNotify] = useState();
 
-  const roleId = localStorage.getItem('role_id');
-
-  const searchRef = useRef();
-
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
-
   const [searchTerm, setSearchTerm] = useState('');
-
   const [filteredData, setFilteredData] = useState([]);
 
-  const handleSearch = (value) => {};
+  //search function
+
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(RoleMasterData, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(RoleMasterData);
+  };
 
   const columns = [
     {
@@ -190,65 +187,6 @@ function RoleComponent({ location }) {
     }
   ];
 
-  const loadData = async () => {
-    //   const data = [];
-    //   const exportTempData = [];
-    //   await new RoleService().getRole().then(res => {
-    //       if (res.status === 200) {
-    //           let counter = 1;
-    //           const temp = res.data.data
-    //           for (const key in temp) {
-    //               data.push({
-    //                   counter: counter++,
-    //                   id: temp[key].id,
-    //                   role: temp[key].role,
-    //                   is_active: temp[key].is_active,
-    //                   remark: temp[key].remark,
-    //                   created_at: temp[key].created_at,
-    //                   created_by: temp[key].created_by,
-    //                   updated_at: temp[key].updated_at,
-    //                   updated_by: temp[key].updated_by
-    //               })
-    //           }
-    //           setData(null);
-    //           setData(data);
-    //           setDataa(data)
-    //           for (const i in data) {
-    //               exportTempData.push({
-    //                   Sr: data[i].counter,
-    //                   Role: data[i].role,
-    //                   Status: data[i].is_active ? 'Active' : 'Deactive',
-    //                   Remark:data[i].remark,
-    //                   created_at: data[i].created_at,
-    //                   created_by: data[i].created_by,
-    //                   updated_at: data[i].updated_at,
-    //                   updated_by: data[i].updated_by,
-    //               })
-    //           }
-    //     setExportData(null);
-    //     setExportData(exportTempData);
-    //   }
-    // })
-    // .catch((error) => {
-    //   const { response } = error;
-    //   const { request, ...errorObject } = response;
-    //   new ErrorLogService().sendErrorLog(
-    //     "Department",
-    //     "Get_Department",
-    //     "INSERT",
-    //     errorObject.data.message
-    //   );
-    // });
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = localStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
-  };
-
   const handleForm = (id) => async (e) => {
     e.preventDefault();
     setNotify(null);
@@ -261,39 +199,6 @@ function RoleComponent({ location }) {
         } else {
         }
       });
-
-      // dispatch(getRoleData());
-      // await new RoleService().postRole(form).then((res) => {
-      //   console.log("res",res);
-      //     if (res.status === 200) {
-      //       if (res.data.status === 1) {
-      //         setNotify({ type: "success", message: res.data.message });
-      //         setModal({ showModal: false, modalData: "", modalHeader: "" });
-      //         loadData();
-      //       } else {
-      //         setNotify({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       setNotify({ type: "danger", message: res.message });
-      //       new ErrorLogService().sendErrorLog(
-      //         "Role",
-      //         "Create_Role",
-      //         "INSERT",
-      //         res.message
-      //       );
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     const { response } = error;
-      //     const { request, ...errorObject } = response;
-      //     setNotify({ type: "danger", message: "Request Error !!!" });
-      //     new ErrorLogService().sendErrorLog(
-      //       "Role",
-      //       "Create_Role",
-      //       "INSERT",
-      //       errorObject.data.message
-      //     );
-      //   });
     } else {
       dispatch(updatedRole({ id: id, payload: form })).then((res) => {
         if (res?.payload?.data?.status === 1) {
@@ -301,64 +206,10 @@ function RoleComponent({ location }) {
         } else {
         }
       });
-      // await new RoleService().updateRole(id, form)
-      //   .then((res) => {
-      //     if (res.status === 200) {
-      //       if (res.data.status === 1) {
-      //         setNotify({ type: "success", message: res.data.message });
-      //         // setModal({ showModal: false, modalData: "", modalHeader: "" });
-      //         loadData();
-      //       } else {
-      //         setNotify({ type: "danger", message: res.data.message });
-      //       }
-      //     } else {
-      //       setNotify({ type: "danger", message: res.message });
-      //       new ErrorLogService().sendErrorLog(
-      //         "Role",
-      //         "Edit_Role",
-      //         "INSERT",
-      //         res.message
-      //       );
-      //     }
-      //   })
-      //   .catch((error) => {
-      //     const { response } = error;
-      //     const { request, ...errorObject } = response;
-      //     setNotify({ type: "danger", message: "Request Error !!!" });
-      //     new ErrorLogService().sendErrorLog(
-      //       "Role",
-      //       "Edit_Role",
-      //       "INSERT",
-      //       errorObject.data.message
-      //     );
-      //   });
-    }
-  };
-
-  // //Search As Enter key press
-  // useEffect(() => {
-  //     const listener = event => {
-  //         if (event.code === "Enter") {
-  //             console.log("Enter key was pressed. Run your function.");
-  //             // callMyFunction();
-  //             handleSearch()
-  //         }
-  //     };
-  //     document.addEventListener("keydown", listener);
-  //     return () => {
-  //         document.removeEventListener("keydown", listener);
-  //     };
-  // }, [data]);
-
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
     }
   };
 
   useEffect(() => {
-    loadData();
-
     const storedAlert = localStorage.getItem('alert');
     if (storedAlert) {
       setNotify(storedAlert);
@@ -371,13 +222,20 @@ function RoleComponent({ location }) {
   }, [location]);
 
   useEffect(() => {
-    loadData();
     dispatch(getRoleData());
 
     if (!RoleMasterData.length) {
       dispatch(getRoles());
     }
   }, []);
+
+  useEffect(() => {
+    setFilteredData(RoleMasterData);
+  }, [RoleMasterData]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -410,44 +268,16 @@ function RoleComponent({ location }) {
         }}
       />
 
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by Role Name...."
-              ref={searchRef}
-              // onKeyDown={handleKeyDown}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Role master Records"
-            />
-          </div>
-        </div>
-      </div>
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by role...."
+        exportFileName="Role Master Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
+
       <div className="card mt-2">
         <div className="card-body">
           <div className="row clearfix g-3">
@@ -455,24 +285,7 @@ function RoleComponent({ location }) {
               {RoleMasterData && (
                 <DataTable
                   columns={columns}
-                  data={RoleMasterData.filter((customer) => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(
-                          (value) =>
-                            typeof value === 'string' &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
-                        );
-                      }
-                    }
-                    return false;
-                  })}
+                  data={filteredData}
                   defaultSortField="role_id"
                   pagination
                   selectableRows={false}

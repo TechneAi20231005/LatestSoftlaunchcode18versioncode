@@ -18,15 +18,24 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 export default function DynamicFormDropdownComponent() {
+  //initial state
   const location = useLocation();
+  const dispatch = useDispatch();
 
-  const [data, setData] = useState(null);
-  const [dataa, setDataa] = useState(null);
-  const [notify, setNotify] = useState(null);
+  //redux state
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice?.dashboard?.getRoles.filter((d) => d.menu_id === 35)
+  );
+
+  //local state
+  const [data, setData] = useState([]);
+  const [dataa, setDataa] = useState([]);
+  const [notify, setNotify] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  // const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -35,37 +44,21 @@ export default function DynamicFormDropdownComponent() {
   });
 
   const [exportData, setExportData] = useState(null);
-  const roleId = localStorage.getItem('role_id');
-
-  const dispatch = useDispatch();
-  const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 35)
-  );
 
   const [searchTerm, setSearchTerm] = useState('');
-
   const [filteredData, setFilteredData] = useState([]);
-  const handleSearch = (value) => {};
 
-  const searchRef = useRef();
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
+  //search function
 
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(data, searchTerm);
+    setFilteredData(filteredList);
+  };
 
-  const handleModal = (data) => {
-    setModal(data);
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
   };
 
   const columns = [
@@ -96,14 +89,14 @@ export default function DynamicFormDropdownComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.dropdown_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.dropdown_name} </Tooltip>}>
+          {row?.dropdown_name && (
+            <OverlayTrigger overlay={<Tooltip>{row?.dropdown_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.dropdown_name && row.dropdown_name.length < 10
-                    ? row.dropdown_name
-                    : row.dropdown_name.substring(0, 10) + '....'}
+                  {row?.dropdown_name && row.dropdown_name?.length < 10
+                    ? row?.dropdown_name
+                    : row?.dropdown_name.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -197,23 +190,11 @@ export default function DynamicFormDropdownComponent() {
   };
 
   useEffect(() => {
-    const listener = (event) => {
-      if (event.code === 'Enter') {
-        handleSearch();
-      }
-    };
-    document.addEventListener('keydown', listener);
-    return () => {
-      document.removeEventListener('keydown', listener);
-    };
-  }, [data]);
-
-  useEffect(() => {
     loadData();
-    if (location && location.state) {
-      setNotify(location.state.alert);
+    if (location && location?.state) {
+      setNotify(location?.state?.alert);
     }
-    if (!checkRole.length) {
+    if (!checkRole?.length) {
       dispatch(getRoles());
     }
   }, []);
@@ -222,6 +203,13 @@ export default function DynamicFormDropdownComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+  useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
@@ -240,44 +228,15 @@ export default function DynamicFormDropdownComponent() {
           );
         }}
       />
-
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by Dropdown Name...."
-              ref={searchRef}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              style={{ marginTop: '0px', fontWeight: '600' }}
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Dynamic Form Dropdown master Records"
-            />
-          </div>
-        </div>
-      </div>
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by dropdown name...."
+        exportFileName="Dropdown Master Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
 
       <div className="card mt-2">
         <div className="card-body">
@@ -287,24 +246,7 @@ export default function DynamicFormDropdownComponent() {
               {!isLoading && data && (
                 <DataTable
                   columns={columns}
-                  data={data.filter((customer) => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(
-                          (value) =>
-                            typeof value === 'string' &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
-                        );
-                      }
-                    }
-                    return false;
-                  })}
+                  data={filteredData}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
