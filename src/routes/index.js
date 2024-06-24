@@ -402,7 +402,7 @@ export const userRoutes = [
     )
   },
   {
-    path: '/Ticket/Task/:id/sprint-calendar',
+    path: '/Ticket/Task/:id/sprint-calendar/:date',
     name: 'TicketTaskSprintCalendar',
     exact: true,
     component: lazy(() =>
@@ -736,19 +736,6 @@ export const userRoutes = [
     )
   },
   // // // settings routes end ⬆️
-
-  // // // test plane routes start ⬇️
-  {
-    path: '/TestBank',
-    name: 'TestBank',
-    exact: true,
-    component: lazy(() =>
-      import(
-        '../screens/TicketManagement/TaskManagement/components/TestBankComponent'
-      )
-    )
-  },
-  // // // test plane routes end ⬆️
 
   // // // bill checking routes start ⬇️
   {
@@ -1114,6 +1101,14 @@ export const userRoutes = [
     exact: true,
     component: lazy(() =>
       import('../screens/TestCases/TestDraft/TestCaseHistoryComponent')
+    )
+  },
+  {
+    path: '/TestBank',
+    name: 'TestBank',
+    exact: true,
+    component: lazy(() =>
+      import('../screens/TestCases/TestBank/TestBankComponent')
     )
   },
   // // // test case routes end ⬆️
