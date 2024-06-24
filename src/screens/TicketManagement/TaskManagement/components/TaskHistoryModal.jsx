@@ -210,7 +210,7 @@ export default function TaskHistoryModal(props) {
               task_hours: d.task_hours,
               created_at: d.created_at,
               updated_at: d.updated_at,
-              parent_name: parent_name,
+              parent_name: d.parent_name,
 
               created_by_name: d.created_by_name,
               updated_by_name: d.updated_by_name

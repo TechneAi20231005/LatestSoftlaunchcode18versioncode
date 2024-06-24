@@ -233,7 +233,6 @@ export default function MyTicketComponent() {
             >
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
-            {console.log('data', data.created_by)}
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
               {data.created_by == localStorage.getItem('id') ||
                 data.assign_to_user_id == localStorage.getItem('id') ||
