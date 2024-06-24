@@ -25,7 +25,6 @@ function DownloadFormatFileModal({ show, close }) {
     getSubModuleData
   } = useSelector((state) => state?.downloadFormat);
 
-  // // initial state
   const dispatch = useDispatch();
 
   const [moduleDropdown, setModuleDropdown] = useState();
@@ -43,9 +42,9 @@ function DownloadFormatFileModal({ show, close }) {
 
   const handleProjectChange = async (e, setFieldValue) => {
     setFieldValue('project_id', e.target.value);
-    setFieldValue('module_id', ''); // Clear module_name when project_name changes
+    setFieldValue('module_id', '');
     setFieldValue('submodule_id', '');
-    setModuleDropdown(null); // Clear the current module dropdown options
+    setModuleDropdown(null);
     const filteredModules = getModuleData
       .filter((d) => d.project_id === parseInt(e.target.value))
       .map((d) => ({ value: d.id, label: d.module_name }));
@@ -55,28 +54,45 @@ function DownloadFormatFileModal({ show, close }) {
 
   const handleModuleChange = (e, setFieldValue) => {
     setFieldValue('module_id', e.target.value);
-    setFieldValue('submodule_id', ''); // Clear submodule_name when module_name changes
+    setFieldValue('submodule_id', '');
 
     const data = getSubModuleData
-      ?.filter((d) => d.module_id === parseInt(e.target.value)) // Ensure correct data type
+      ?.filter((d) => d.module_id === parseInt(e.target.value))
       .map((d) => ({ value: d.id, label: d.sub_module_name }));
 
-    setSubModuleDropdown(data); // Set the filtered data for subModuleDropdown
+    setSubModuleDropdown(data);
   };
 
   const handleDownloadFormatFile = ({ formData }) => {
+    console.log('hey');
     const { project_id, module_id, submodule_id } = formData;
     dispatch(
       downloadFormatFileThunk({
         project_id,
         module_id,
-        submodule_id,
-        onSuccessHandler: () => {
-          close();
-        }
-        // onErrorHandler: () => {}
+        submodule_id
       })
-    );
+    ).then((res) => {
+      console.log('res', res?.meta?.requestStatus);
+      if (res?.meta?.requestStatus === 'fulfilled') {
+        console.log('API Call Successful');
+        close();
+      }
+    });
+    // if (
+    //   payload?.response?.status === 200 ||
+    //   payload?.response?.status === 201
+    // ) {
+    //   console.log('API Call Successful');
+    // }
+
+    // .then(() => {
+    //   console.log('API Call Successful'); // Debugging line
+    //   close(); // Close the modal upon success
+    // })
+    // .catch((error) => {
+    //   console.error('API Call Failed', error); // Debugging line
+    // });
   };
 
   useEffect(() => {
@@ -136,7 +152,7 @@ function DownloadFormatFileModal({ show, close }) {
                     placeholder="Select"
                     ref={subModuleIdRef}
                     isMulti
-                    required
+                    // required
                   />
                 </Col>
               </Row>
