@@ -42,7 +42,7 @@ function VendorMaster({ match }) {
     useState([]);
   const [vendorId, setVendorId] = useState(null);
   const [attachment, setAttachment] = useState();
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
   const [checkRole, setCheckRole] = useState(null);
   const [uppercase, SetUpperCase] = useState();
   const [Panuppercase, SetPanUpeeerCase] = useState();

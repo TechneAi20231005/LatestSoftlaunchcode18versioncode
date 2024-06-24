@@ -53,7 +53,7 @@ export default function TestDraftComponent({}) {
 
   const handleResetLocationState = () => {
     setState(null);
-    sessionStorage.removeItem('locationState');
+    localStorage.removeItem('locationState');
   };
 
   const tabsLabel = [
@@ -161,10 +161,10 @@ export default function TestDraftComponent({}) {
   }, []);
 
   useEffect(() => {
-    const savedState = sessionStorage.getItem('locationState');
+    const savedState = localStorage.getItem('locationState');
     if (savedState) {
       setState(JSON.parse(savedState));
-      sessionStorage.removeItem('locationState');
+      localStorage.removeItem('locationState');
       window.history.replaceState(
         null,
         '',
@@ -175,7 +175,7 @@ export default function TestDraftComponent({}) {
 
   useEffect(() => {
     if (location.state) {
-      sessionStorage.setItem('locationState', JSON.stringify(location.state));
+      localStorage.setItem('locationState', JSON.stringify(location.state));
     }
 
     const handleBeforeUnload = (event) => {
