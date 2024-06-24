@@ -8,9 +8,7 @@ import PageHeader from '../../../components/Common/PageHeader';
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
 import Alert from '../../../components/Common/Alert';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
-import { Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getCustomerTypeData,
@@ -52,33 +50,33 @@ function CustomerTypeComponent() {
   );
 
   const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 12)
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 12)
   );
 
   const isActive0Ref = useRef();
 
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [isActive, setIsActive] = useState(1);
+  // const [showLoaderModal, setShowLoaderModal] = useState(false);
+  // const [isActive, setIsActive] = useState(1);
 
-  const roleId = sessionStorage.getItem('role_id');
+  // const roleId = sessionStorage.getItem('role_id');
 
-  const searchRef = useRef();
+  // const searchRef = useRef();
 
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
+  // function SearchInputData(data, search) {
+  //   const lowercaseSearch = search.toLowerCase();
 
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  //   return data.filter((d) => {
+  //     for (const key in d) {
+  //       if (
+  //         typeof d[key] === 'string' &&
+  //         d[key].toLowerCase().includes(lowercaseSearch)
+  //       ) {
+  //         return true;
+  //       }
+  //     }
+  //     return false;
+  //   });
+  // }
 
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -144,12 +142,12 @@ function CustomerTypeComponent() {
       width: '125px',
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -184,15 +182,15 @@ function CustomerTypeComponent() {
   ];
 
   const loadData = async () => {
-    setShowLoaderModal(null);
+    // setShowLoaderModal(null);
   };
   const handleIsActive = (e) => {
     const value = e.target.value;
 
-    if (value == 1) {
-      setIsActive(1);
+    if (value === 1) {
+      // setIsActive(1);
     } else {
-      setIsActive(0);
+      // setIsActive(0);
     }
   };
   const handleForm = (id) => async (e) => {
@@ -216,11 +214,11 @@ function CustomerTypeComponent() {
     }
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
-  };
+  // const handleKeyDown = (event) => {
+  //   if (event.key === 'Enter') {
+  //     handleSearch();
+  //   }
+  // };
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -495,7 +493,7 @@ function CustomerTypeDropdown(props) {
         let counter = 1;
         const data = res.data.data;
         for (const key in data) {
-          if (data[key].is_active == 1) {
+          if (data[key].is_active === 1) {
             tempData.push({
               counter: counter++,
               id: data[key].id,
@@ -518,14 +516,14 @@ function CustomerTypeDropdown(props) {
           onChange={props.getChangeValue}
           required={props.required ? true : false}
         >
-          {props.defaultValue == 0 && (
+          {props.defaultValue === 0 && (
             <option selected>Select Customer Type</option>
           )}
-          {props.defaultValue != 0 && (
+          {props.defaultValue !== 0 && (
             <option selected>Select Customer Type</option>
           )}
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.type_name}

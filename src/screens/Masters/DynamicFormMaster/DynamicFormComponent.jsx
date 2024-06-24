@@ -6,10 +6,11 @@ import DataTable from 'react-data-table-component';
 import DynamicFormService from '../../../services/MastersService/DynamicFormService';
 import PageHeader from '../../../components/Common/PageHeader';
 
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
-import { Spinner } from 'react-bootstrap';
-import { Modal } from 'react-bootstrap';
+
+
+
+
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { dynamicFormData } from '../DynamicFormDropdown/Slices/DynamicFormDropDownAction';
@@ -23,12 +24,13 @@ import { customSearchHandler } from '../../../utils/customFunction';
 function DynamicFormComponent() {
   //initial state
   const location = useLocation();
-  const searchRef = useRef();
+
+
   const dispatch = useDispatch();
 
-  const [notify, setNotify] = useState(null);
+  // const [notify, setNotify] = useState(null);
 
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  // const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 13)
@@ -119,12 +121,12 @@ function DynamicFormComponent() {
       sortable: false,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -158,16 +160,16 @@ function DynamicFormComponent() {
     }
   ];
 
-  const loadData = async () => {
-    setShowLoaderModal(null);
-  };
+  // const loadData = async () => {
+  //   setShowLoaderModal(null);
+  // };
 
   useEffect(() => {
-    loadData();
+    // loadData();
     dispatch(dynamicFormData());
     dispatch(dynamicFormData());
     if (location && location.state) {
-      setNotify(location.state.alert);
+      // setNotify(location.state.alert);
     }
     if (!checkRole.length) {
       dispatch(getRoles());

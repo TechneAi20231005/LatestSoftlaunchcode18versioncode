@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Container, Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
@@ -105,12 +105,12 @@ function DesignationComponent() {
       width: '150px',
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -421,7 +421,7 @@ function DesignationDropdown(props) {
     const tempData = [];
 
     new DesignationService().getDesignation().then((res) => {
-      if (res.status == 200) {
+      if (res.status === 200) {
         const data = res.data.data;
         for (const key in data) {
           tempData.push({
@@ -445,16 +445,16 @@ function DesignationDropdown(props) {
           required={props.required ? true : false}
           value={props.defaultValue}
         >
-          {props.defaultValue == 0 && (
+          {props.defaultValue === 0 && (
             <option value={0} selected>
               Select Designation
             </option>
           )}
-          {props.defaultValue != 0 && (
+          {props.defaultValue !== 0 && (
             <option value={0}>Select Designation</option>
           )}
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.designation}

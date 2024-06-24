@@ -109,12 +109,12 @@ function StateComponent() {
       sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -156,7 +156,7 @@ function StateComponent() {
     var flag = 1;
 
     var selectCountry = form.getAll('country_id');
-    if (selectCountry == '0') {
+    if (selectCountry === '0') {
       flag = 0;
 
       alert('Please Select Country');
@@ -215,7 +215,7 @@ function StateComponent() {
           renderRight={() => {
             return (
               <div>
-                {checkRole && checkRole[0]?.can_create == 1 ? (
+                {checkRole && checkRole[0]?.can_create === 1 ? (
                   <button
                     className="btn btn-dark px-5"
                     onClick={() => {
@@ -300,7 +300,7 @@ function StateComponent() {
                     defaultValue={
                       modal.modalData
                         ? filteredCountryData.filter(
-                            (d) => modal.modalData.country_id == d.value
+                            (d) => modal.modalData.country_id === d.value
                           )
                         : ''
                     }
@@ -419,7 +419,7 @@ function StateComponent() {
                 Add
               </button>
             )}
-            {modal.modalData && checkRole && checkRole[0]?.can_update == 1 ? (
+            {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
               <button
                 type="submit"
                 className="btn btn-primary text-white"
@@ -461,7 +461,7 @@ function StateDropdown(props) {
         const data = res.data.data;
         let counter = 1;
         for (const key in data) {
-          if (data[key].is_active == 1) {
+          if (data[key].is_active === 1) {
             tempData.push({
               counter: counter++,
               id: data[key].id,
@@ -484,20 +484,20 @@ function StateDropdown(props) {
           onChange={props.getChangeValue}
           required={props.required ? true : false}
         >
-          {props.defaultValue == 0 && (
+          {props.defaultValue === 0 && (
             <option value={0} selected>
               Select State
             </option>
           )}
-          {props.defaultValue != 0 && <option value={0}>Select State</option>}
+          {props.defaultValue !== 0 && <option value={0}>Select State</option>}
           {data.map(function (item, i) {
-            if (props.countryId && props.countryId == item.country_id) {
+            if (props.countryId && props.countryId === item.country_id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.state}
                 </option>
               );
-            } else if (props.defaultValue && props.defaultValue == item.id) {
+            } else if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.state}

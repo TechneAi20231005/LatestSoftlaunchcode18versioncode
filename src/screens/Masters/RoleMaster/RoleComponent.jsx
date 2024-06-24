@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
@@ -10,7 +10,6 @@ import * as Validation from '../../../components/Utilities/Validation';
 import Alert from '../../../components/Common/Alert';
 import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
@@ -53,7 +52,7 @@ function RoleComponent({ location }) {
   );
 
   //Local state
-  const [notify, setNotify] = useState();
+  // const [notify, setNotify] = useState();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
@@ -189,7 +188,7 @@ function RoleComponent({ location }) {
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
-    setNotify(null);
+    // setNotify(null);
     const form = new FormData(e.target);
 
     if (!id) {
@@ -212,11 +211,11 @@ function RoleComponent({ location }) {
   useEffect(() => {
     const storedAlert = localStorage.getItem('alert');
     if (storedAlert) {
-      setNotify(storedAlert);
+      // setNotify(storedAlert);
 
       localStorage.removeItem('alert');
     } else if (location && location.state && location.state.alert) {
-      setNotify(location.state.alert);
+      // setNotify(location.state.alert);
       localStorage.setItem('alert', location.state.alert);
     }
   }, [location]);
@@ -507,14 +506,14 @@ function RoleDropdown(props) {
           required={props.required ? true : false}
           value={props.defaultValue}
         >
-          {props.defaultValue == 0 && (
+          {props.defaultValue === 0 && (
             <option value={0} selected>
               Select Role
             </option>
           )}
-          {props.defaultValue != 0 && <option value={0}>Select Role</option>}
+          {props.defaultValue !== 0 && <option value={0}>Select Role</option>}
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.role}
