@@ -27,13 +27,11 @@ function FunctionMasterComponent() {
     open: false
   });
 
-  // Function to handle search button click
   const handleSearch = () => {
     const filteredList = customSearchHandler(functionMasterList, searchValue);
     setFilterFunctionMasterList(filteredList);
   };
 
-  // Function to handle reset button click
   const handleReset = () => {
     setSearchValue('');
     setFilterFunctionMasterList(functionMasterList);
@@ -77,7 +75,7 @@ function FunctionMasterComponent() {
           )}
           {row.is_active == 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
-              DeActive
+              Deactive
             </span>
           )}
         </div>
@@ -132,12 +130,10 @@ function FunctionMasterComponent() {
     dispatch(getFunctionMasterListThunk());
   }, []);
 
-  // Update the useEffect to update the filtered list when testingTypeMasetrList changes
   useEffect(() => {
     setFilterFunctionMasterList(functionMasterList);
   }, [functionMasterList]);
 
-  // Function to handle search onchange
   useEffect(() => {
     handleSearch();
   }, [searchValue]);

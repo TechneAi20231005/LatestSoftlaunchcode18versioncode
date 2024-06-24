@@ -952,7 +952,12 @@ class MainIndex extends React.Component {
             />
             <Route
               exact
-              path={`/${_base}/TestCaseHistoryComponent`}
+              path={`/${_base}/FunctionMaster`}
+              element={<FunctionMasterComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/TestCaseHistoryComponent/:id`}
               element={<TestCaseHistoryComponent />}
             />
             <Route
