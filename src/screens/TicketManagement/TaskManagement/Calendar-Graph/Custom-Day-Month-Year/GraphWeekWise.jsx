@@ -335,9 +335,9 @@ const GraphWeekWise = () => {
             })
           },
           {
-            name: 'Completed',
+            name: 'In Time',
             data: allBasketNames.flatMap((basketName) => {
-              const task = data?.COMPLETED?.filter(
+              const task = data?.IN_TIME?.filter(
                 (task) => task.basket_name === basketName
               );
               return task.length > 0
