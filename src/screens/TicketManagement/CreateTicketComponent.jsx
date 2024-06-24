@@ -375,6 +375,7 @@ export default function CreateTicketComponent() {
         })
         .catch((res) => {
           toast.success(res?.data?.message);
+          setIsSubmitted(false);
         });
     }
   };
