@@ -346,13 +346,12 @@ export default function CreateTicketComponent() {
         .then((res) => {
           if (res?.status === 200) {
             if (res?.data?.status === 1) {
-
               toast.success(res?.data?.message);
               navigate(`/${_base}/Ticket`);
-             
+
               setIsSubmitted(false);
             } else {
-              if (formData.getAll('ticket_uploading') == 'REGULAR') {
+              if (formData.getAll('ticket_uploading') === 'REGULAR') {
                 toast.error(res?.data?.message);
                 setIsSubmitted(false);
               } else {
@@ -363,7 +362,6 @@ export default function CreateTicketComponent() {
                   return;
                 }
                 toast.success(res?.data?.message);
-
 
                 let url = `${_attachmentUrl}` + res.data.data;
                 window.open(url, '_blank').focus();
@@ -377,7 +375,6 @@ export default function CreateTicketComponent() {
         })
         .catch((res) => {
           toast.success(res?.data?.message);
-
         });
     }
   };
@@ -544,11 +541,8 @@ export default function CreateTicketComponent() {
       .then((res) => {
         const { data } = res?.data;
 
-        
         if (res?.data?.status === 1 && data) {
           setCustomerId(data?.customer_type_id);
-
-
         }
       });
 

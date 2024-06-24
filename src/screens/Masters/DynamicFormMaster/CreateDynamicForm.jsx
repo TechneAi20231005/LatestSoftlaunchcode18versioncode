@@ -19,18 +19,21 @@ import {
   getCountryDataSort,
   getCustomerData,
   getRoles,
-  getStateDataSort,
+  getStateDataSort
 } from '../../Dashboard/DashboardAction';
 
 import {
   dynamicFormData,
-  getAllDropDownData,
+  getAllDropDownData
 } from '../DynamicFormDropdown/Slices/DynamicFormDropDownAction';
 import { masterURL } from '../../../settings/constants';
 import DynamicComponent from './DynamicComponent';
 import UserService from '../../../services/MastersService/UserService';
 import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
-import { getDesignationData, getDesignationDataListThunk } from '../DesignationMaster/DesignationAction';
+import {
+  getDesignationData,
+  getDesignationDataListThunk
+} from '../DesignationMaster/DesignationAction';
 import { statusMasterSlice } from '../StatusMaster/StatusComponentSlice';
 import { getStatusData } from '../StatusMaster/StatusComponentAction';
 import QueryTypeService from '../../../services/MastersService/QueryTypeService';
@@ -59,51 +62,60 @@ function CreateDynamicForm() {
       inputDateTime: null,
       inputRadio: null,
       inputCheckbox: null,
-      inputOnChangeSource: null,
-    },
+      inputOnChangeSource: null
+    }
   };
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const roleDropdown = useSelector(DashbordSlice =>
+  const roleDropdown = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getAllRoles
-      ?.filter(d => d.is_active === 1)
-      .map(d => ({
+      ?.filter((d) => d.is_active === 1)
+      .map((d) => ({
         value: d.id,
-        label: d.role,
-      })),
+        label: d.role
+      }))
   );
 
   const departmentDropdown = useSelector(
-    DepartmentMasterSlice => DepartmentMasterSlice.department.sortDepartmentData,
+    (DepartmentMasterSlice) =>
+      DepartmentMasterSlice.department.sortDepartmentData
   );
 
-  const CountryData = useSelector(dashboardSlice => dashboardSlice.dashboard.filteredCountryData);
+  const CountryData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
+  );
 
-  const CustomerData = useSelector(dashboardSlice => dashboardSlice.dashboard.getCustomerData);
+  const CustomerData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.getCustomerData
+  );
 
   const AllcityDropDownData = useSelector(
-    dashboardSlice => dashboardSlice.dashboard.sortedCityData,
+    (dashboardSlice) => dashboardSlice.dashboard.sortedCityData
   );
 
   const designationDropdown = useSelector(
-    DesignationSlice => DesignationSlice.designationMaster.sortedDesignationData,
+    (DesignationSlice) =>
+      DesignationSlice.designationMaster.sortedDesignationData
   );
 
-  const stateDropdown = useSelector(DashbordSlice => DashbordSlice.dashboard.filteredStateData);
+  const stateDropdown = useSelector(
+    (DashbordSlice) => DashbordSlice.dashboard.filteredStateData
+  );
 
-  const checkRole = useSelector(DashbordSlice =>
-    DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 13),
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 13)
   );
   const dropdown = useSelector(
-    DynamicFormDropDownSlice => DynamicFormDropDownSlice.dynamicFormDropDown.sortDropDown,
+    (DynamicFormDropDownSlice) =>
+      DynamicFormDropDownSlice.dynamicFormDropDown.sortDropDown
   );
 
-  const statusData = useSelector(statusMasterSlice =>
+  const statusData = useSelector((statusMasterSlice) =>
     statusMasterSlice.statusMaster.filterStatusData
-      .filter(d => d.is_active == 1)
-      .map(d => ({ value: d.id, label: d.status })),
+      .filter((d) => d.is_active == 1)
+      .map((d) => ({ value: d.id, label: d.status }))
   );
 
   const [rows, setRows] = useState([mainJson]);
@@ -130,7 +142,7 @@ function CreateDynamicForm() {
   const [maxErr, setMaxErr] = useState();
   const [selectMasterValue, setSelectMasterValue] = useState();
 
-  const handleChange = (idx, type) => async e => {
+  const handleChange = (idx, type) => async (e) => {
     if (e.target.name === 'inputDateRange1') {
       setMinDate(e.target.value);
     }
@@ -188,12 +200,14 @@ function CreateDynamicForm() {
       'passed_status_changed_at',
       'passed_status_remark',
       'ticket_confirmation_otp',
-      'ticket_confirmation_otp_created_at',
+      'ticket_confirmation_otp_created_at'
     ];
 
     if (
       !notAllowed.includes(
-        e.target.value.replace(/[&\/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, '_').toLowerCase(),
+        e.target.value
+          .replace(/[&\/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, '_')
+          .toLowerCase()
       )
     ) {
       if (e.target.name === 'inputWidth') {
@@ -242,55 +256,91 @@ function CreateDynamicForm() {
         rows[idx].inputAddOn.inputDataSource = test1;
 
         rows[idx].inputAddOn.inputDataSourceData = test1;
-        const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
-        await new UserService().getUserForMyTickets(inputRequired).then(res => {
-          if (res.status === 200) {
-            const data = res.data.data.filter(d => d.is_active === 1);
+        const inputRequired =
+          'id,employee_id,first_name,last_name,middle_name,is_active';
+        await new UserService()
+          .getUserForMyTickets(inputRequired)
+          .then((res) => {
+            if (res.status === 200) {
+              const data = res.data.data.filter((d) => d.is_active === 1);
 
-            for (const key in data) {
-              tempUserData.push({
-                value: data[key].id,
-                label: data[key].first_name + ' ' + data[key].last_name + ' (' + data[key].id + ')',
+              for (const key in data) {
+                tempUserData.push({
+                  value: data[key].id,
+                  label:
+                    data[key].first_name +
+                    ' ' +
+                    data[key].last_name +
+                    ' (' +
+                    data[key].id +
+                    ')'
+                });
+              }
+              const aa = tempUserData.sort(function (a, b) {
+                return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
               });
+              setUserData(aa);
+              rows[idx].inputAddOn.inputDataSourceData = aa;
+              setInputDataSource(aa);
             }
-            const aa = tempUserData.sort(function (a, b) {
-              return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
-            });
-            setUserData(aa);
-            rows[idx].inputAddOn.inputDataSourceData = aa;
-            setInputDataSource(aa);
-          }
-        });
-      } else if (e.target.name === 'inputDataSource' && e.target.value === 'city') {
+          });
+      } else if (
+        e.target.name === 'inputDataSource' &&
+        e.target.value === 'city'
+      ) {
         rows[idx].inputAddOn.inputDataSourceData = AllcityDropDownData;
         setInputDataSource(AllcityDropDownData);
-      } else if (e.target.name === 'inputDataSource' && e.target.value === 'role') {
+      } else if (
+        e.target.name === 'inputDataSource' &&
+        e.target.value === 'role'
+      ) {
         rows[idx].inputAddOn.inputDataSourceData = roleDropdown;
         setInputDataSource(roleDropdown);
-      } else if (e.target.name === 'inputDataSource' && e.target.value === 'country') {
+      } else if (
+        e.target.name === 'inputDataSource' &&
+        e.target.value === 'country'
+      ) {
         rows[idx].inputAddOn.inputDataSourceData = CountryData;
         setInputDataSource(CountryData);
-      } else if (e.target.name === 'inputDataSource' && e.target.value === 'state') {
+      } else if (
+        e.target.name === 'inputDataSource' &&
+        e.target.value === 'state'
+      ) {
         rows[idx].inputAddOn.inputDataSourceData = stateDropdown;
         setInputDataSource(stateDropdown);
-      } else if (e.target.name === 'inputDataSource' && e.target.value === 'designation') {
+      } else if (
+        e.target.name === 'inputDataSource' &&
+        e.target.value === 'designation'
+      ) {
         rows[idx].inputAddOn.inputDataSourceData = designationDropdown;
         setInputDataSource(designationDropdown);
-      } else if (e.target.name === 'inputDataSource' && e.target.value === 'customer') {
+      } else if (
+        e.target.name === 'inputDataSource' &&
+        e.target.value === 'customer'
+      ) {
         rows[idx].inputAddOn.inputDataSourceData = CustomerData;
         setInputDataSource(CustomerData);
-      } else if (e.target.name === 'inputDataSource' && e.target.value === 'department') {
+      } else if (
+        e.target.name === 'inputDataSource' &&
+        e.target.value === 'department'
+      ) {
         rows[idx].inputAddOn.inputDataSourceData = departmentDropdown;
         setInputDataSource(departmentDropdown);
-      } else if (e.target.name === 'inputDataSource' && e.target.value === 'status') {
+      } else if (
+        e.target.name === 'inputDataSource' &&
+        e.target.value === 'status'
+      ) {
         rows[idx].inputAddOn.inputDataSourceData = statusData;
         setInputDataSource(statusData);
-      } else if (e.target.name === 'inputDataSource' && e.target.value === 'query') {
-        await new QueryTypeService().getQueryType().then(res => {
+      } else if (
+        e.target.name === 'inputDataSource' &&
+        e.target.value === 'query'
+      ) {
+        await new QueryTypeService().getQueryType().then((res) => {
           if (res.status === 200) {
             const data = res.data.data
-              .filter(d => d.is_active == 1)
-              .map(d => ({ value: d.id, label: d.query_type_name }));
+              .filter((d) => d.is_active == 1)
+              .map((d) => ({ value: d.id, label: d.query_type_name }));
 
             rows[idx].inputAddOn.inputDataSourceData = data;
 
@@ -310,21 +360,23 @@ function CreateDynamicForm() {
         setSelectedValue(dropDownValue);
 
         rows[idx].inputAddOn.inputRadio = test;
-        await new DynamicFormDropdownMasterService().getDropdownById(dropDownValue).then(res => {
-          if (res.status == 200) {
-            if (res.data.status == 1) {
-              const dropNames = res.data.data;
-              setRadioSelect(dropNames.master.dropdown_name);
-              const temp = [];
-              res.data.data.dropdown.forEach(d => {
-                temp.push({ label: d.label, value: d.id });
-              });
-              rows[idx].inputAddOn.inputRadio = temp;
-              setInputDataSource(temp);
-              rows[idx].inputAddOn.inputOnChangeSource = dropDownValue;
+        await new DynamicFormDropdownMasterService()
+          .getDropdownById(dropDownValue)
+          .then((res) => {
+            if (res.status == 200) {
+              if (res.data.status == 1) {
+                const dropNames = res.data.data;
+                setRadioSelect(dropNames.master.dropdown_name);
+                const temp = [];
+                res.data.data.dropdown.forEach((d) => {
+                  temp.push({ label: d.label, value: d.id });
+                });
+                rows[idx].inputAddOn.inputRadio = temp;
+                setInputDataSource(temp);
+                rows[idx].inputAddOn.inputOnChangeSource = dropDownValue;
+              }
             }
-          }
-        });
+          });
       }
     }
   };
@@ -336,7 +388,7 @@ function CreateDynamicForm() {
 
     updatedAssign[index] = {
       ...updatedAssign[index],
-      inputType: selectedUserIds,
+      inputType: selectedUserIds
     };
 
     setRows(updatedAssign);
@@ -371,8 +423,8 @@ function CreateDynamicForm() {
         inputDateTime: null,
         inputRadio: null,
         inputCheckbox: null,
-        inputOnChangeSource: null,
-      },
+        inputOnChangeSource: null
+      }
     };
 
     if (flag === 1) {
@@ -396,10 +448,10 @@ function CreateDynamicForm() {
     { value: 'designation', label: 'Designation Master' },
     { value: 'customer', label: 'Customer Master' },
     { value: 'status', label: 'Status Master' },
-    { value: 'query', label: 'Query Type Master' },
+    { value: 'query', label: 'Query Type Master' }
   ];
 
-  const handleRemoveSpecificRow = index => async () => {
+  const handleRemoveSpecificRow = (index) => async () => {
     const updatedAssign = [...rows];
     updatedAssign.splice(index, 1);
 
@@ -416,15 +468,15 @@ function CreateDynamicForm() {
     setFormShow(formShow == true ? false : true);
   };
 
-  const handleSubmit = async e => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     const data = {
       template_name: e.target.template_name.value,
-      data: JSON.stringify(rows),
+      data: JSON.stringify(rows)
     };
 
-    await new DynamicFormService().postDynamicForm(data).then(res => {
+    await new DynamicFormService().postDynamicForm(data).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
           dispatch(dynamicFormData());
@@ -432,7 +484,7 @@ function CreateDynamicForm() {
           setNotify({ type: 'success', message: res.data.message });
           setTimeout(() => {
             navigate(`/${_base}/DynamicForm`, {
-              state: { alert: { type: 'success', message: res.data.message } },
+              state: { alert: { type: 'success', message: res.data.message } }
             });
           }, 3000);
         } else {
@@ -440,7 +492,12 @@ function CreateDynamicForm() {
         }
       } else {
         setNotify({ type: 'danger', message: res.message });
-        new ErrorLogService().sendErrorLog('User', 'Create_User', 'INSERT', res.message);
+        new ErrorLogService().sendErrorLog(
+          'User',
+          'Create_User',
+          'INSERT',
+          res.message
+        );
       }
     });
   };
@@ -469,7 +526,7 @@ function CreateDynamicForm() {
   };
 
   const [dateValue, setDateValue] = useState(new Date());
-  const onChangeDate = value => {
+  const onChangeDate = (value) => {
     setDateValue(new Date(value));
   };
 
@@ -545,7 +602,7 @@ function CreateDynamicForm() {
                           name="template_name"
                           id="template_name"
                           required
-                          onKeyPress={e => {
+                          onKeyPress={(e) => {
                             Validation.CharactersNumbersOnly(e);
                           }}
                         />
@@ -553,43 +610,70 @@ function CreateDynamicForm() {
                     </div>
 
                     <div className="table-responsive">
-                      <table className="table table-bordered mt-3 table-responsive" id="tab_logic">
+                      <table
+                        className="table table-bordered mt-3 table-responsive"
+                        id="tab_logic"
+                      >
                         <thead>
                           <tr>
                             <th className="text-center" style={{ width: '5%' }}>
                               {' '}
                               Sr No.{' '}
                             </th>
-                            <th className="text-center" style={{ width: '15%' }}>
+                            <th
+                              className="text-center"
+                              style={{ width: '15%' }}
+                            >
                               {' '}
                               Type{' '}
                             </th>
                             <th className="text-center"> Width </th>
-                            <th className="text-center" style={{ width: '10%' }}>
+                            <th
+                              className="text-center"
+                              style={{ width: '10%' }}
+                            >
                               {' '}
                               Label{' '}
                             </th>
-                            <th className="text-center" style={{ width: '10%' }}>
+                            <th
+                              className="text-center"
+                              style={{ width: '10%' }}
+                            >
                               {' '}
                               Def. Value{' '}
                             </th>
-                            <th className="text-center" style={{ width: '10%' }}>
+                            <th
+                              className="text-center"
+                              style={{ width: '10%' }}
+                            >
                               {' '}
                               Mandatory{' '}
                             </th>
-                            <th className="text-center" style={{ width: '10%' }}>
+                            <th
+                              className="text-center"
+                              style={{ width: '10%' }}
+                            >
                               {' '}
                               Multiple
                             </th>
-                            <th className="text-center" style={{ width: '10%' }}>
+                            <th
+                              className="text-center"
+                              style={{ width: '10%' }}
+                            >
                               {' '}
                               Format
                             </th>
-                            <th className="text-center" style={{ width: '20%' }}>
+                            <th
+                              className="text-center"
+                              style={{ width: '20%' }}
+                            >
                               {' '}
                               Add-Ons
                             </th>
-                            <th className="text-center" style={{ width: '10%' }}>
+                            <th
+                              className="text-center"
+                              style={{ width: '10%' }}
+                            >
                               {' '}
                               Action
                             </th>
@@ -615,12 +699,16 @@ function CreateDynamicForm() {
                                     <option value="number">NUMBER</option>
                                     <option value="decimal">DECIMAL</option>
                                     <option value="date">DATE</option>
-                                    <option value="datetime-local">DATE TIME</option>
+                                    <option value="datetime-local">
+                                      DATE TIME
+                                    </option>
                                     <option value="time">TIME</option>
                                     <option value="select">SELECT</option>
                                     <option value="radio">RADIO</option>
                                     <option value="checkbox">CHECKBOX</option>
-                                    <option value="select-master">SELECT MASTER</option>
+                                    <option value="select-master">
+                                      SELECT MASTER
+                                    </option>
                                   </select>
                                 </td>
                                 <td>
@@ -650,14 +738,14 @@ function CreateDynamicForm() {
                                     value={item.inputLabel}
                                     onChange={handleChange(idx)}
                                     className="form-control form-control-sm"
-                                    onKeyPress={e => {
+                                    onKeyPress={(e) => {
                                       Validation.CharactersNumbersOnly(e);
                                     }}
                                   />
                                   {labelErr && (
                                     <p
                                       style={{
-                                        color: 'red',
+                                        color: 'red'
                                       }}
                                     >
                                       {labelErr}
@@ -665,15 +753,22 @@ function CreateDynamicForm() {
                                   )}
                                 </td>
                                 <td>
-                                  {item.inputType === 'date' || item.inputType === 'time' ? (
+                                  {item.inputType === 'date' ||
+                                  item.inputType === 'time' ? (
                                     <input
-                                      type={item.inputType === 'date' ? 'date' : 'time'}
+                                      type={
+                                        item.inputType === 'date'
+                                          ? 'date'
+                                          : 'time'
+                                      }
                                       name="inputDefaultValue"
                                       defaultValue={item.inputDefaultValue}
                                       onChange={handleChange(idx)}
                                       className="form-control form-control-sm"
-                                      onKeyPress={e => {
-                                        Validation.CharactersNumbersSpeicalOnly(e);
+                                      onKeyPress={(e) => {
+                                        Validation.CharactersNumbersSpeicalOnly(
+                                          e
+                                        );
                                       }}
                                     />
                                   ) : (
@@ -687,10 +782,15 @@ function CreateDynamicForm() {
                                       defaultValue={item.inputDefaultValue}
                                       onChange={handleChange(idx)}
                                       className="form-control form-control-sm"
-                                      onKeyPress={e => {
-                                        item.inputType === 'number' || item.inputType === 'decimal'
-                                          ? Validation.NumbersSpecialOnlyDecimal(e)
-                                          : Validation.CharactersNumbersSpeicalOnly(e);
+                                      onKeyPress={(e) => {
+                                        item.inputType === 'number' ||
+                                        item.inputType === 'decimal'
+                                          ? Validation.NumbersSpecialOnlyDecimal(
+                                              e
+                                            )
+                                          : Validation.CharactersNumbersSpeicalOnly(
+                                              e
+                                            );
                                       }}
                                     />
                                   )}
@@ -728,9 +828,15 @@ function CreateDynamicForm() {
                                       value={rows[idx].inputFormat}
                                     >
                                       <option>Select Format</option>
-                                      <option value="y-MM-dd">yyyy-mm-dd</option>
-                                      <option value="dd-MM-y">dd-mm-yyyy</option>
-                                      <option value="dd-MM-y">mm-dd-yyyy</option>
+                                      <option value="y-MM-dd">
+                                        yyyy-mm-dd
+                                      </option>
+                                      <option value="dd-MM-y">
+                                        dd-mm-yyyy
+                                      </option>
+                                      <option value="dd-MM-y">
+                                        mm-dd-yyyy
+                                      </option>
                                     </select>
                                   )}
                                 </td>
@@ -744,8 +850,11 @@ function CreateDynamicForm() {
                                         id="inputDataSource"
                                         name="inputDataSource"
                                       >
-                                        {dataSourceOptions.map(option => (
-                                          <option key={option.value} value={option.value}>
+                                        {dataSourceOptions.map((option) => (
+                                          <option
+                                            key={option.value}
+                                            value={option.value}
+                                          >
                                             {option.label}
                                           </option>
                                         ))}
@@ -759,14 +868,21 @@ function CreateDynamicForm() {
                                         className="form-control form-control-sm"
                                         onChange={handleChange(idx)}
                                         id="inputOnChangeSource"
+                                        required
                                         name="inputOnChangeSource"
                                         // defaultValue={selectedValue}
                                       >
-                                        <option>Select Data Source</option>
+                                        <option required>
+                                          Select Data Source
+                                        </option>
 
                                         {dropdown &&
                                           dropdown.map((d, i) => {
-                                            return <option value={d.id}>{d.dropdown_name}</option>;
+                                            return (
+                                              <option value={d.id}>
+                                                {d.dropdown_name}
+                                              </option>
+                                            );
                                           })}
                                       </select>
                                       {!selectedValue && (
@@ -790,7 +906,11 @@ function CreateDynamicForm() {
 
                                         {dropdown &&
                                           dropdown.map((d, i) => {
-                                            return <option value={d.id}>{d.dropdown_name}</option>;
+                                            return (
+                                              <option value={d.id}>
+                                                {d.dropdown_name}
+                                              </option>
+                                            );
                                           })}
                                       </select>
                                       {!selectedValue && (
@@ -814,7 +934,11 @@ function CreateDynamicForm() {
 
                                         {dropdown &&
                                           dropdown.map((d, i) => {
-                                            return <option value={d.id}>{d.dropdown_name}</option>;
+                                            return (
+                                              <option value={d.id}>
+                                                {d.dropdown_name}
+                                              </option>
+                                            );
                                           })}
                                       </select>
                                       {!selectedValue && (
@@ -835,7 +959,9 @@ function CreateDynamicForm() {
                                           id="inputRangeMin"
                                           name="inputRangeMin"
                                           className="form-control form-control-sm"
-                                          min={rows[idx].inputAddOn.inputRangeMin}
+                                          min={
+                                            rows[idx].inputAddOn.inputRangeMin
+                                          }
                                         />
                                       </div>
                                       <div className="form-group">
@@ -846,13 +972,20 @@ function CreateDynamicForm() {
                                           id="inputRangeMax"
                                           name="inputRangeMax"
                                           className="form-control form-control-sm"
-                                          max={rows[idx].inputAddOn.inputRangeMax}
+                                          max={
+                                            rows[idx].inputAddOn.inputRangeMax
+                                          }
                                         />
-                                        {parseFloat(rows[idx].inputAddOn.inputRangeMin) >
-                                          parseFloat(rows[idx].inputAddOn.inputRangeMax) && (
+                                        {parseFloat(
+                                          rows[idx].inputAddOn.inputRangeMin
+                                        ) >
+                                          parseFloat(
+                                            rows[idx].inputAddOn.inputRangeMax
+                                          ) && (
                                           <div className="text-danger">
                                             {' '}
-                                            Max number should be greater than Min number
+                                            Max number should be greater than
+                                            Min number
                                           </div>
                                         )}
                                       </div>
@@ -869,7 +1002,9 @@ function CreateDynamicForm() {
                                           id="inputRangeMin"
                                           name="inputRangeMin"
                                           className="form-control form-control-sm"
-                                          min={rows[idx].inputAddOn.inputRangeMin}
+                                          min={
+                                            rows[idx].inputAddOn.inputRangeMin
+                                          }
                                         />
                                       </div>
                                       <div className="form-group">
@@ -881,15 +1016,22 @@ function CreateDynamicForm() {
                                           name="inputRangeMax"
                                           className="form-control form-control-sm"
                                           // defaultValue={props.data.inputAddOn.inputRangeMax}
-                                          max={rows[idx].inputAddOn.inputRangeMax}
+                                          max={
+                                            rows[idx].inputAddOn.inputRangeMax
+                                          }
                                         />
 
                                         <>
-                                          {parseFloat(rows[idx].inputAddOn.inputRangeMin) >
-                                            parseFloat(rows[idx].inputAddOn.inputRangeMax) && (
+                                          {parseFloat(
+                                            rows[idx].inputAddOn.inputRangeMin
+                                          ) >
+                                            parseFloat(
+                                              rows[idx].inputAddOn.inputRangeMax
+                                            ) && (
                                             <div className="text-danger">
                                               {' '}
-                                              Max number should be greater than Min number
+                                              Max number should be greater than
+                                              Min number
                                             </div>
                                           )}
                                         </>
@@ -943,7 +1085,7 @@ function CreateDynamicForm() {
                                     <span
                                       style={{
                                         display: 'flex',
-                                        flexDirection: 'column',
+                                        flexDirection: 'column'
                                       }}
                                     >
                                       <input
@@ -963,7 +1105,9 @@ function CreateDynamicForm() {
                                         name="inputDateRange2"
                                         className="form-control form-control-sm"
                                         min={minDate}
-                                        max={rows[idx].inputAddOn.inputDateRange}
+                                        max={
+                                          rows[idx].inputAddOn.inputDateRange
+                                        }
                                       />
                                       <small style={{ color: 'red' }}>
                                         <b>Max date</b>
@@ -984,7 +1128,9 @@ function CreateDynamicForm() {
                                           id="inputRangeMin"
                                           name="inputRangeMin"
                                           className="form-control form-control-sm"
-                                          min={rows[idx].inputAddOn.inputRangeMin}
+                                          min={
+                                            rows[idx].inputAddOn.inputRangeMin
+                                          }
                                         />
                                       </div>
                                       <div className="form-group">
@@ -995,7 +1141,9 @@ function CreateDynamicForm() {
                                           id="inputRangeMax"
                                           name="inputRangeMax"
                                           className="form-control form-control-sm"
-                                          max={rows[idx].inputAddOn.inputRangeMax}
+                                          max={
+                                            rows[idx].inputAddOn.inputRangeMax
+                                          }
                                         />
                                       </div>
                                     </div>
@@ -1011,7 +1159,9 @@ function CreateDynamicForm() {
                                           id="datetime-local"
                                           name="datetime-local"
                                           className="form-control form-control-sm"
-                                          min={rows[idx].inputAddOn.inputDateTime}
+                                          min={
+                                            rows[idx].inputAddOn.inputDateTime
+                                          }
                                         />
                                       </div>
                                     </div>
@@ -1111,7 +1261,11 @@ function CreateDynamicForm() {
                           <input
                             type={data.inputType}
                             id={
-                              data.inputName ? data.inputName.replace(/ /g, '_').toLowerCase() : ''
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, '_')
+                                    .toLowerCase()
+                                : ''
                             }
                             name={data.inputName}
                             defaultValue={data.inputDefaultValue}
@@ -1121,7 +1275,11 @@ function CreateDynamicForm() {
                         {data.inputType === 'textarea' && (
                           <textarea
                             id={
-                              data.inputName ? data.inputName.replace(/ /g, '_').toLowerCase() : ''
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, '_')
+                                    .toLowerCase()
+                                : ''
                             }
                             name={data.inputName}
                             className="form-control form-control-sm"
@@ -1134,7 +1292,11 @@ function CreateDynamicForm() {
                           <input
                             type={data.inputType}
                             id={
-                              data.inputName ? data.inputName.replace(/ /g, '_').toLowerCase() : ''
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, '_')
+                                    .toLowerCase()
+                                : ''
                             }
                             name={data.inputName}
                             defaultValue={data.inputDefaultValue}
@@ -1148,7 +1310,11 @@ function CreateDynamicForm() {
                           <input
                             type={data.inputType}
                             id={
-                              data.inputName ? data.inputName.replace(/ /g, '_').toLowerCase() : ''
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, '_')
+                                    .toLowerCase()
+                                : ''
                             }
                             name={data.inputName}
                             defaultValue={data.inputDefaultValue}
@@ -1162,7 +1328,11 @@ function CreateDynamicForm() {
                           <input
                             type={data.inputType}
                             id={
-                              data.inputName ? data.inputName.replace(/ /g, '_').toLowerCase() : ''
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, '_')
+                                    .toLowerCase()
+                                : ''
                             }
                             name={data.inputName}
                             defaultValue={data.inputDefaultValue}
@@ -1175,7 +1345,11 @@ function CreateDynamicForm() {
                           <input
                             type="text"
                             id={
-                              data.inputName ? data.inputName.replace(/ /g, '_').toLowerCase() : ''
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, '_')
+                                    .toLowerCase()
+                                : ''
                             }
                             name={data.inputName}
                             // defaultValue={data.inputAddOn.inputRange}
@@ -1189,7 +1363,11 @@ function CreateDynamicForm() {
                         {data.inputType === 'select' && (
                           <select
                             id={
-                              data.inputName ? data.inputName.replace(/ /g, '_').toLowerCase() : ''
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, '_')
+                                    .toLowerCase()
+                                : ''
                             }
                             // defaultValue={data.inputDefaultValue}
                             name={data.inputName}
@@ -1197,12 +1375,14 @@ function CreateDynamicForm() {
                           >
                             <option> {data.inputDefaultValue}</option>
                             {data.inputAddOn.inputRadio &&
-                              data.inputAddOn.inputRadio.map(option => {
+                              data.inputAddOn.inputRadio.map((option) => {
                                 return (
                                   <option
                                     selected={
-                                      parseInt(data && data?.inputAddOn?.inputDataSource) ===
-                                      option.value
+                                      parseInt(
+                                        data &&
+                                          data?.inputAddOn?.inputDataSource
+                                      ) === option.value
                                     }
                                     value={option.value}
                                   >
@@ -1249,7 +1429,7 @@ function CreateDynamicForm() {
                                       type="checkbox"
                                       style={{
                                         marginRight: '8px',
-                                        marginLeft: '10px',
+                                        marginLeft: '10px'
                                       }}
                                     />
                                     <label
@@ -1296,7 +1476,11 @@ function CreateDynamicForm() {
                         {data.inputType === 'select-master' && (
                           <select
                             id={
-                              data.inputName ? data.inputName.replace(/ /g, '_').toLowerCase() : ''
+                              data.inputName
+                                ? data.inputName
+                                    .replace(/ /g, '_')
+                                    .toLowerCase()
+                                : ''
                             }
                             defaultValue={data.inputAddOn.inputDataSource}
                             name={data.inputName}
@@ -1304,19 +1488,24 @@ function CreateDynamicForm() {
                           >
                             <option> {data.inputName}</option>
                             {data.inputAddOn.inputDataSourceData &&
-                              data.inputAddOn.inputDataSourceData.map(option => {
-                                return (
-                                  <option
-                                    selected={
-                                      parseInt(data && data?.inputAddOn?.inputDataSourceData) ===
-                                      option.value
-                                    }
-                                    value={option.value}
-                                  >
-                                    {option.label}
-                                  </option>
-                                );
-                              })}
+                              data.inputAddOn.inputDataSourceData.map(
+                                (option) => {
+                                  return (
+                                    <option
+                                      selected={
+                                        parseInt(
+                                          data &&
+                                            data?.inputAddOn
+                                              ?.inputDataSourceData
+                                        ) === option.value
+                                      }
+                                      value={option.value}
+                                    >
+                                      {option.label}
+                                    </option>
+                                  );
+                                }
+                              )}
                           </select>
                         )}
                       </div>
