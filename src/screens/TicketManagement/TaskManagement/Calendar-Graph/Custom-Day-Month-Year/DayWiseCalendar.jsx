@@ -110,7 +110,7 @@ const DayWiseCalendar = (props) => {
             <TaskSkeleton />
           </div>
         ))}
-      {dayWiseData && dayWiseData.length > 0 ? (
+      {dayWiseData && dayWiseData.length > 0 && !isLoading ? (
         dayWiseData.map((data) => {
           let actualStatus = data?.task_actual_status;
           let filteredBgColor = bgColor?.filter(
@@ -162,8 +162,8 @@ const DayWiseCalendar = (props) => {
         })
       ) : (
         <div
-          className="text-center mt-4 p-2 text-white rounded-1"
-          style={{ backgroundColor: '#484C7F' }}
+          className="text-center mt-4 p-2 text-white rounded-1 bg-primary"
+          // style={{ backgroundColor: '#484C7F' }}
         >
           No Tasks For Current Date
         </div>
