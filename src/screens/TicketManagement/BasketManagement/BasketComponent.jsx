@@ -280,7 +280,11 @@ export default function BasketComponent({ match }) {
                 <tbody>
                   {data &&
                     data.map((item, idx) => (
-                      <tr id={`addr_${idx}`} key={idx} style={{ zIndex: 1000 }}>
+                      <tr
+                        id={`addr_${idx}`}
+                        key={item.id}
+                        style={{ zIndex: 1000 }}
+                      >
                         <td>{idx + 1}</td>
                         <td>
                           <input
