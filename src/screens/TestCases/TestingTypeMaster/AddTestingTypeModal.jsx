@@ -1,35 +1,35 @@
-import React from "react";
-import { Field, Form, Formik } from "formik";
-import { Col, Row } from "react-bootstrap";
-import { useDispatch } from "react-redux";
+import React from 'react';
+import { Field, Form, Formik } from 'formik';
+import { Col, Row } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
 
-import CustomModal from "../../../components/custom/modal/CustomModal";
+import CustomModal from '../../../components/custom/modal/CustomModal';
 import {
   CustomInput,
-  CustomRadioButton,
-} from "../.././../components/custom/inputs/CustomInputs";
-import { addTestingType } from "./Validation/AddTestingType";
-import { RenderIf } from "../../../utils";
+  CustomRadioButton
+} from '../../../components/custom/inputs/CustomInputs';
+import { addTestingType } from './Validation/AddTestingType';
+import { RenderIf } from '../../../utils';
 
 import {
   addTestingTypeMasterThunk,
   editTestingTypeMasterThunk,
-  getTestingTypeMasterListThunk,
-} from "../../../redux/services/testCases/testingTypeMaster";
+  getTestingTypeMasterListThunk
+} from '../../../redux/services/testCases/testingTypeMaster';
 
 function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
   const dispatch = useDispatch();
   const addEditTestingTypeInitialValue = {
-    type_name: type === "EDIT" ? currentTestingTypeData?.type_name : "",
-    remark: type === "EDIT" ? currentTestingTypeData?.remark || "" : "",
+    type_name: type === 'EDIT' ? currentTestingTypeData?.type_name : '',
+    remark: type === 'EDIT' ? currentTestingTypeData?.remark || '' : '',
     is_active:
-      type === "EDIT" ? currentTestingTypeData?.is_active?.toString() : 1,
+      type === 'EDIT' ? currentTestingTypeData?.is_active?.toString() : 1
   };
 
   // // function
 
   const handleAddEditTestingType = ({ formData }) => {
-    if (type === "ADD") {
+    if (type === 'ADD') {
       dispatch(
         addTestingTypeMasterThunk({
           formData: formData,
@@ -37,7 +37,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
             close();
             dispatch(getTestingTypeMasterListThunk());
           },
-          onErrorHandler: () => {},
+          onErrorHandler: () => {}
         })
       );
     } else {
@@ -49,7 +49,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
             close();
             dispatch(getTestingTypeMasterListThunk());
           },
-          onErrorHandler: () => {},
+          onErrorHandler: () => {}
         })
       );
     }
@@ -59,7 +59,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
     <>
       <CustomModal
         show={show}
-        title={`${type === "ADD" ? "Add" : "Edit"} Testing Type`}
+        title={`${type === 'ADD' ? 'Add' : 'Edit'} Testing Type`}
         width="md"
       >
         <Formik
@@ -90,7 +90,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
                   />
                 </Col>
 
-                <RenderIf render={type === "EDIT"}>
+                <RenderIf render={type === 'EDIT'}>
                   <div className="d-flex align-items-center mt-3">
                     <p className="mb-2 pe-2">
                       Status<span className="mendatory_sign">*</span> :
@@ -121,7 +121,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
                   type="submit"
                   disabled={!dirty}
                 >
-                  {type === "ADD" ? "Save" : "Update"}
+                  {type === 'ADD' ? 'Save' : 'Update'}
                 </button>
                 <button
                   onClick={() => close()}
