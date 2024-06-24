@@ -1,15 +1,15 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 // // static import
 import useOnlineStatus from './components/Utilities/useOnlineStatus';
+import { RenderIf } from './utils';
+import { REACT_APP_ROOT_URL } from './config/envConfig';
 import { guestRoutes, userRoutes } from './routes';
 import MainLayouts from './layouts/MainLayouts';
-import { REACT_APP_ROOT_URL } from './config/envConfig';
 import { MainLoader } from './components/custom/loader';
 import './App.css';
-import { RenderIf } from './utils';
 
 const App = () => {
   // // Initial state
@@ -52,11 +52,11 @@ const App = () => {
   }, [window.location.pathname]);
 
   // // preloader
-  useEffect(() => {
+  useLayoutEffect(() => {
     setScreenLoading(true);
     setTimeout(() => {
       setScreenLoading(false);
-    }, 3000);
+    }, 2000);
   }, []);
 
   const mainContent = appRoutes.map((route) => {

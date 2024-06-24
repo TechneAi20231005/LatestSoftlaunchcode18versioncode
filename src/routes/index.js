@@ -2,7 +2,7 @@ import { lazy } from 'react';
 
 export const guestRoutes = [
   {
-    path: '/sign-in',
+    path: '/',
     name: 'SignIn',
     exact: true,
     component: lazy(() => import('../components/Auth/SignIn'))
@@ -29,7 +29,7 @@ export const guestRoutes = [
   {
     redirectRoute: true,
     name: 'SignIn',
-    path: '/sign-in'
+    path: '/'
   }
 ];
 
@@ -990,7 +990,7 @@ export const userRoutes = [
     component: lazy(() => import('../screens/PO/generatePO/GeneratePo'))
   },
   {
-    path: '/GeneratePO/po`',
+    path: '/GeneratePO/po',
     name: 'GeneratePoPendingOrder`',
     exact: true,
     component: lazy(() =>

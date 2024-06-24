@@ -52,22 +52,22 @@ function PendingOrder() {
   const columns = [
     {
       name: 'Knockoff Wt Range',
-      selector: (row, index) => row?.knockoff_wt_range || '---',
+      selector: (row) => row?.knockoff_wt_range || '---',
       sortable: false
     },
     {
       name: 'Karagir Size Range',
-      selector: (row, index) => row?.karagir_size_range || '---',
+      selector: (row) => row?.karagir_size_range || '---',
       sortable: false
     },
     {
       name: 'Exact Wt',
-      selector: (row, index) => row?.exact_wt || '---',
+      selector: (row) => row?.exact_wt || '---',
       sortable: false
     },
     {
       name: 'Pending Quantity',
-      selector: (row, index) =>
+      selector: (row) =>
         row?.open_qty ? (
           <p className="bg-warning px-1">
             {Number(row?.open_qty) - Number(row?.total_po_qty) > 0
