@@ -2,11 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import customAxios from '../../../../http/axios';
 import { errorHandler } from '../../../../utils';
-import {
-  _apiUrl,
-  _attachmentUrl,
-  attachmentUrl
-} from '../../../../settings/constants';
+import { _apiUrl, _attachmentUrl } from '../../../../settings/constants';
 
 export const getProjectModuleMasterThunk = createAsyncThunk(
   'projectModuleMaster/getProjectModuleMasterList',
@@ -66,33 +62,33 @@ export const getSubModuleMasterThunk = createAsyncThunk(
 );
 export const downloadFormatFileThunk = createAsyncThunk(
   'downloadFormatFile',
-  async ({
-    project_id,
-    module_id,
-    submodule_id,
-    onSuccessHandler
-    // onErrorHandler
-  }) => {
+  async ({ project_id, module_id, submodule_id, onSuccessHandler }) => {
     try {
-      const submoduleParam = JSON.stringify(submodule_id);
+      let endpoint = `draftFile/getTestdraftBulkFormat?project_id=${project_id}&module_id=${module_id}`;
 
-      const endpoint = `draftFile/getTestdraftBulkFormat?project_id=${project_id}&module_id=${module_id}&submodule_id=${encodeURIComponent(
-        submoduleParam
-      )}`;
+      // Append submodule_id parameters if they are provided
+      console.log('submodule_id', submodule_id.length);
+      if (submodule_id && submodule_id.length >= 0) {
+        const submoduleQueryParam = submodule_id
+          .map((id) => `submodule_id[]=${id}`)
+          .join('&');
+        endpoint += `&${submoduleQueryParam}`;
+      }
+
       const response = await customAxios.get(endpoint);
+      console.log('rrr', response);
       if (response?.status === 200 || response?.status === 201) {
         window.open(`${_apiUrl}${endpoint}`, '_parent').focus();
-        if (response?.data?.status === 1) {
-          onSuccessHandler();
-          toast.success(response?.data?.message);
-          return response?.data?.message;
-        } else {
-          // onErrorHandler();
-          errorHandler(response);
-        }
+        toast.success('File Downloaded Successfully');
+        // if (response?.data?.status === 1) {
+        //   onSuccessHandler();
+        //   toast.success(response?.data?.message);
+        //   return response?.data?.message;
+        // } else {
+        //   errorHandler(response);
+        // }
       }
     } catch (error) {
-      // onErrorHandler();
       errorHandler(error?.response);
       return Promise.reject(error?.response?.data?.message);
     }
@@ -102,14 +98,22 @@ export const downloadFormatFileThunk = createAsyncThunk(
 ////get draft test case  data
 export const getDraftTestCaseList = createAsyncThunk(
   'draftTestCase/getDraftTestCaseList',
-  async ({ limit, page }) => {
+  async ({ limit, page, filter_testcase_data }) => {
     try {
       const response = await customAxios.get(
-        `testCases/getDraftTestCases/getTestCases?limit=${limit}&page=${page}`
+        `testCases/getDraftTestCases/getTestCases`,
+        {
+          params: {
+            limit: limit,
+            page: page,
+            filter_testcase_data: JSON.stringify(filter_testcase_data)
+          }
+        }
       );
+
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
-          return { data: response?.data?.data, msg: response?.data?.message };
+          return { data: response?.data, msg: response?.data?.message };
         } else {
           errorHandler(response);
         }
@@ -125,10 +129,10 @@ export const getDraftTestCaseList = createAsyncThunk(
 
 export const getAllDraftTestCaseList = createAsyncThunk(
   'draftTestCase/getAllDraftTestCaseList',
-  async ({ limit, page, type }) => {
+  async ({ type }) => {
     try {
       const response = await customAxios.get(
-        `testCases/getDraftTestCases/getTestCases?type=${type}&limit=${limit}&page=${page}`
+        `testCases/getDraftTestCases/getTestCases?type=${type}`
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
@@ -156,7 +160,6 @@ export const importTestDraftThunk = createAsyncThunk(
           onSuccessHandler();
           toast.success(response?.data?.message);
           return { data: response?.data.data, msg: response?.data?.message };
-          // return response?.data?.message;
         } else {
           onErrorHandler();
           const url = `${_attachmentUrl}` + response.data.data.error_file;
@@ -227,12 +230,21 @@ export const editTestCaseThunk = createAsyncThunk(
 
 export const getAllReviewTestDraftList = createAsyncThunk(
   'reviewDraftList/getAllReviewTestDraftList',
-  async () => {
+  async ({ limit, page, filter_testcase_data }) => {
     try {
-      const response = await customAxios.get(`testCases/getCount/getTestDraft`);
+      const response = await customAxios.get(
+        `testCases/getCount/getTestDraft`,
+        {
+          params: {
+            limit: limit,
+            page: page,
+            filter_testcase_data: JSON.stringify(filter_testcase_data)
+          }
+        }
+      );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
-          return { data: response?.data?.data, msg: response?.data?.message };
+          return { data: response?.data, msg: response?.data?.message };
         } else {
           errorHandler(response);
         }
@@ -246,10 +258,39 @@ export const getAllReviewTestDraftList = createAsyncThunk(
 
 export const getByTestPlanIDReviewedListThunk = createAsyncThunk(
   'testPlanID/getByTestPlanIDListThunk',
+  async ({ id, limit, page, filter_testcase_data }) => {
+    try {
+      const response = await customAxios.get(
+        `testCases/getDraftTestCases/getTestCases/${id}`,
+        {
+          params: {
+            // id: id,
+            limit: limit,
+            page: page,
+            filter_testcase_data: JSON.stringify(filter_testcase_data)
+          }
+        }
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          return { data: response?.data, msg: response?.data?.message };
+        } else {
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
+);
+
+export const testDraftDetailsHistoryThunk = createAsyncThunk(
+  'testDraft/testDraftHistory',
   async ({ id, limit, page }) => {
     try {
       const response = await customAxios.get(
-        `testCases/getDraftTestCases/getTestCases/${id}?limit=${limit}&page=${page}`
+        `testCases/history/getTestcasesHistory/${id}?limit=${limit}&page=${page}`
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {

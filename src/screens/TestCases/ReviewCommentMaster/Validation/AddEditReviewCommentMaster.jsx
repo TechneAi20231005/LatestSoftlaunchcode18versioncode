@@ -150,20 +150,6 @@ function AddEditReviewCommentMaster({
           )}
         </Formik>
       </CustomModal>
-
-      {/* <CustomAlertModal
-        show={openConfirmModal?.open}
-        type="success"
-        message={`Do you want to ${
-          type === "ADD" ? "save" : "update"
-        } this record?`}
-        onSuccess={handelAddEditReviewComment}
-        onClose={() => setOpenConfirmModal({ open: false })}
-        isLoading={
-          isLoading?.addReviewCommentMaster ||
-          isLoading?.editReviewCommentMaster
-        }
-      /> */}
     </>
   );
 }
