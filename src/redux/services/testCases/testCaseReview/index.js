@@ -5,12 +5,21 @@ import { toast } from 'react-toastify';
 
 export const getTestCaseReviewListThunk = createAsyncThunk(
   'testCaseReview/getTestCaseReviewListThunk',
-  async () => {
+  async ({ limit, page, filter_testcase_data }) => {
     try {
-      const response = await customAxios.get(`testCases/getCount/getTestDraft`);
+      const response = await customAxios.get(
+        `testCases/getCount/getTestDraft`,
+        {
+          params: {
+            limit: limit,
+            page: page,
+            filter_testcase_data: JSON.stringify(filter_testcase_data)
+          }
+        }
+      );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
-          return { data: response?.data?.data, msg: response?.data?.message };
+          return { data: response?.data, msg: response?.data?.message };
         } else {
           errorHandler(response);
         }
@@ -24,14 +33,22 @@ export const getTestCaseReviewListThunk = createAsyncThunk(
 
 export const getByTestPlanIDListThunk = createAsyncThunk(
   'testPlanID/getByTestPlanIDListThunk',
-  async ({ id, limit, page }) => {
+  async ({ id, limit, page, filter_testcase_data }) => {
     try {
       const response = await customAxios.get(
-        `testCases/getDraftTestCases/getTestCases/${id}?limit=${limit}&page=${page}`
+        `testCases/getDraftTestCases/getTestCases/${id}`,
+        {
+          params: {
+            // id: id,
+            limit: limit,
+            page: page,
+            filter_testcase_data: JSON.stringify(filter_testcase_data)
+          }
+        }
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
-          return { data: response?.data?.data, msg: response?.data?.message };
+          return { data: response?.data, msg: response?.data?.message };
         } else {
           errorHandler(response);
         }
