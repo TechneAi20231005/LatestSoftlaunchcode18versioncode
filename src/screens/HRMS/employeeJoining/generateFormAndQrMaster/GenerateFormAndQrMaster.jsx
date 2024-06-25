@@ -28,8 +28,8 @@ function GenerateFormAndQrMaster() {
     company_name: '',
     theme_color: '',
     company_name_color: '',
-    requiter_email_id: '',
-    requiter_contact_no: ''
+    recruiter_email_id: '',
+    recruiter_contact_no: ''
   };
 
   // // local state
@@ -237,16 +237,16 @@ function GenerateFormAndQrMaster() {
                         <Field
                           component={CustomInput}
                           type="email"
-                          name="requiter_email_id"
-                          label="Requiter Email ID"
-                          placeholder="Enter Requiter Email Id"
+                          name="recruiter_email_id"
+                          label="Recruiter Email ID"
+                          placeholder="Enter Recruiter Email Id"
                         />
                         <Field
                           component={CustomInput}
                           type="number"
-                          name="requiter_contact_no"
-                          label="Requiter Contact Number"
-                          placeholder="Enter Requiter Contact Number"
+                          name="recruiter_contact_no"
+                          label="Recruiter Contact Number"
+                          placeholder="Enter Recruiter Contact Number"
                         />
                         <button
                           type="submit"

@@ -44,24 +44,24 @@ export const generateFormValidation = Yup.object().shape({
       return true;
     }
   ),
-  requiter_email_id: Yup.string()
+  recruiter_email_id: Yup.string()
     .test(
       'either-email-or-contact',
-      'Requiter email ID is required',
+      'Recruiter email ID is required',
       (value) => {
-        if (!value?.requiter_contact_no && (!value || value.trim() === '')) {
+        if (!value?.recruiter_contact_no && (!value || value.trim() === '')) {
           return false;
         }
         return true;
       }
     )
     .email('Invalid email'),
-  requiter_contact_no: Yup.string()
+  recruiter_contact_no: Yup.string()
     .test(
       'either-email-or-contact',
-      'Requiter contact number is required',
+      'Recruiter contact number is required',
       (value) => {
-        if (!value?.requiter_email_id && (!value || value.trim() === '')) {
+        if (!value?.recruiter_email_id && (!value || value.trim() === '')) {
           return false;
         }
         return true;
