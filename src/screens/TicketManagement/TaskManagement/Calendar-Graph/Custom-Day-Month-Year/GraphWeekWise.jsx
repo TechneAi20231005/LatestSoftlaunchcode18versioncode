@@ -258,7 +258,7 @@ const GraphWeekWise = () => {
                 (task) => task.basket_name === basketName
               );
 
-              return task.length > 0
+              return task?.length > 0
                 ? task.map((task) => ({
                     x: basketName,
                     y: addSmallIncrementIfNeeded(
@@ -286,7 +286,7 @@ const GraphWeekWise = () => {
               const task = data?.DELAY?.filter(
                 (task) => task.basket_name === basketName
               );
-              return task.length > 0
+              return task?.length > 0
                 ? task.map((task) => ({
                     x: basketName,
                     y: addSmallIncrementIfNeeded(
@@ -313,7 +313,7 @@ const GraphWeekWise = () => {
               const task = data?.HIGHLY_DELAY?.filter(
                 (task) => task.basket_name === basketName
               );
-              return task.length > 0
+              return task?.length > 0
                 ? task.map((task) => ({
                     x: basketName,
                     y: addSmallIncrementIfNeeded(
@@ -340,7 +340,7 @@ const GraphWeekWise = () => {
               const task = data?.IN_TIME?.filter(
                 (task) => task.basket_name === basketName
               );
-              return task.length > 0
+              return task?.length > 0
                 ? task.map((task) => ({
                     x: basketName,
                     y: addSmallIncrementIfNeeded(
@@ -367,7 +367,7 @@ const GraphWeekWise = () => {
               const task = data?.IN_PROGRESS?.filter(
                 (task) => task.basket_name === basketName
               );
-              return task.length > 0
+              return task?.length > 0
                 ? task.map((task) => ({
                     x: basketName,
                     y: addSmallIncrementIfNeeded(
