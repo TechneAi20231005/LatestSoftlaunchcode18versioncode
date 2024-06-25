@@ -1,22 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import PageHeader from '../../../components/Common/PageHeader';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
 import { useDispatch, useSelector } from 'react-redux';
 import { customSearchHandler } from '../../../utils/customFunction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import AddTestingTypeModal from './AddTestingTypeModal';
-import { getTestingTypeMasterListThunk } from '../../../redux/services/testCases/testingTypeMaster';
+import { getTestingGroupMasterListThunk } from '../../../redux/services/testCases/testingGroupMaster';
+import AddTestingGroupModal from './AddTestingGroupModal';
 import { Col, Row } from 'react-bootstrap';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
-function TestingTypeMasterComponent() {
+function TestingGroupMasterComponent() {
   const dispatch = useDispatch();
 
   // // redux state
-  const { testingTypeMasterList, isLoading } = useSelector((state) => state?.testingTypeMaster);
-  const [searchValue, setSearchValue] = useState('');
-  const [filteredTestingTypeMasterList, setFilterTestingTypeMasterList] = useState([]);
+  const { testingGroupMasterList, isLoading } = useSelector(
+    (state) => state?.testingGroupMaster
+  );
 
-  const [addEditTestingTypeModal, setAddEditTestingTypeModal] = useState({
+  const [searchValue, setSearchValue] = useState('');
+  const [filteredTestingGroupMasterList, setFilterTestingGroupMasterList] =
+    useState([]);
+
+  const [addEditTestingGroupModal, setAddEditTestingGroupModal] = useState({
     type: '',
     data: '',
     open: false
@@ -24,14 +28,17 @@ function TestingTypeMasterComponent() {
 
   // Function to handle search button click
   const handleSearch = () => {
-    const filteredList = customSearchHandler(testingTypeMasterList, searchValue);
-    setFilterTestingTypeMasterList(filteredList);
+    const filteredList = customSearchHandler(
+      testingGroupMasterList,
+      searchValue
+    );
+    setFilterTestingGroupMasterList(filteredList);
   };
 
   // Function to handle reset button click
   const handleReset = () => {
     setSearchValue('');
-    setFilterTestingTypeMasterList(testingTypeMasterList);
+    setFilterTestingGroupMasterList(testingGroupMasterList);
   };
 
   const columns = [
@@ -47,7 +54,7 @@ function TestingTypeMasterComponent() {
         <i
           className="icofont-edit text-primary cp"
           onClick={() =>
-            setAddEditTestingTypeModal({
+            setAddEditTestingGroupModal({
               type: 'EDIT',
               data: row,
               open: true
@@ -72,7 +79,7 @@ function TestingTypeMasterComponent() {
           )}
           {row.is_active == 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
-              DeActive
+              Deactive
             </span>
           )}
         </div>
@@ -81,8 +88,8 @@ function TestingTypeMasterComponent() {
     },
 
     {
-      name: 'Testing Type Title',
-      selector: (row) => row.type_name,
+      name: 'Testing Group Title',
+      selector: (row) => row.group_name,
       sortable: false,
       width: '200px'
     },
@@ -116,7 +123,7 @@ function TestingTypeMasterComponent() {
   ];
 
   const exportColumns = [
-    { title: 'Testing Type Title', field: 'type_name' },
+    { title: 'Testing Group Title', field: 'group_name' },
     { title: 'Created At', field: 'created_at' },
     { title: 'Created By', field: 'created_by' },
     { title: 'Updated At', field: 'updated_at' },
@@ -124,13 +131,13 @@ function TestingTypeMasterComponent() {
   ];
 
   useEffect(() => {
-    dispatch(getTestingTypeMasterListThunk());
+    dispatch(getTestingGroupMasterListThunk());
   }, []);
 
-  // Update the useEffect to update the filtered list when testingTypeMasterList changes
+  // Update the useEffect to update the filtered list when testingTypeMasetrList changes
   useEffect(() => {
-    setFilterTestingTypeMasterList(testingTypeMasterList);
-  }, [testingTypeMasterList]);
+    setFilterTestingGroupMasterList(testingGroupMasterList);
+  }, [testingGroupMasterList]);
 
   // Function to handle search onchange
   useEffect(() => {
@@ -140,12 +147,12 @@ function TestingTypeMasterComponent() {
   return (
     <div className="container-xxl">
       <div className="d-flex justify-content-between">
-        <PageHeader headerTitle="Testing Type Master" />
+        <PageHeader headerTitle="Testing Group Master" />
         <div style={{ marginTop: '-30px' }}>
           <button
             className="btn btn-primary text-white "
             onClick={() =>
-              setAddEditTestingTypeModal({
+              setAddEditTestingGroupModal({
                 type: 'ADD',
                 data: '',
                 open: true
@@ -153,7 +160,7 @@ function TestingTypeMasterComponent() {
             }
           >
             <i className="icofont-plus px-2"></i>
-            Add Testing Type
+            Add Testing Group
           </button>
         </div>
       </div>
@@ -169,42 +176,55 @@ function TestingTypeMasterComponent() {
             className="form-control"
           />
         </Col>
-        <Col xs={12} md={5} xxl={4} className="d-flex justify-content-sm-end btn_container">
-          <button className="btn btn-warning text-white" type="button" onClick={handleSearch}>
+        <Col
+          xs={12}
+          md={5}
+          xxl={4}
+          className="d-flex justify-content-sm-end btn_container"
+        >
+          <button
+            className="btn btn-warning text-white"
+            type="button"
+            onClick={handleSearch}
+          >
             <i className="icofont-search-1 " /> Search
           </button>
-          <button className="btn btn-info text-white" type="button" onClick={handleReset}>
+          <button
+            className="btn btn-info text-white"
+            type="button"
+            onClick={handleReset}
+          >
             <i className="icofont-refresh text-white" /> Reset
           </button>
           <ExportToExcel
             className="btn btn-danger"
-            apiData={filteredTestingTypeMasterList}
+            apiData={filteredTestingGroupMasterList}
             columns={exportColumns}
-            fileName="Testing Type Master Records"
-            disabled={!filteredTestingTypeMasterList?.length}
+            fileName="Testing Group Master Records"
+            disabled={!filteredTestingGroupMasterList?.length}
           />
         </Col>
       </Row>
 
       <DataTable
         columns={columns}
-        data={filteredTestingTypeMasterList}
+        data={filteredTestingGroupMasterList}
         defaultSortField="role_id"
         pagination
         selectableRows={false}
         className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
         highlightOnHover={true}
-        progressPending={isLoading?.getTestingTypeMasterList}
+        progressPending={isLoading?.getTestingGroupMasterList}
         progressComponent={<TableLoadingSkelton />}
       />
-      <AddTestingTypeModal
-        show={addEditTestingTypeModal?.open}
-        type={addEditTestingTypeModal?.type}
-        currentTestingTypeData={addEditTestingTypeModal?.data}
-        close={(prev) => setAddEditTestingTypeModal({ ...prev, open: false })}
+      <AddTestingGroupModal
+        show={addEditTestingGroupModal?.open}
+        type={addEditTestingGroupModal?.type}
+        currentTestingGroupData={addEditTestingGroupModal?.data}
+        close={(prev) => setAddEditTestingGroupModal({ ...prev, open: false })}
       />
     </div>
   );
 }
 
-export default TestingTypeMasterComponent;
+export default TestingGroupMasterComponent;
