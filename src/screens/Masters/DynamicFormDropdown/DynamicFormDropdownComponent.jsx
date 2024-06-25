@@ -18,59 +18,55 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 export default function DynamicFormDropdownComponent() {
+  //initial state
   const location = useLocation();
+  const dispatch = useDispatch();
 
-  const [data, setData] = useState(null);
-  const [dataa, setDataa] = useState(null);
-  const [notify, setNotify] = useState(null);
+  //redux state
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice?.dashboard?.getRoles.filter((d) => d.menu_id === 35)
+  );
+
+  //local state
+  const [data, setData] = useState([]);
+  const [dataa, setDataa] = useState([]);
+  const [notify, setNotify] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  // const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [modal, setModal] = useState({
     showModal: false,
     modalData: '',
-    modalHeader: '',
+    modalHeader: ''
   });
 
   const [exportData, setExportData] = useState(null);
-  const roleId = sessionStorage.getItem('role_id');
-
-  const dispatch = useDispatch();
-  const checkRole = useSelector(DashbordSlice =>
-    DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 35),
-  );
 
   const [searchTerm, setSearchTerm] = useState('');
-
   const [filteredData, setFilteredData] = useState([]);
-  const handleSearch = value => {};
 
-  const searchRef = useRef();
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
+  //search function
 
-    return data.filter(d => {
-      for (const key in d) {
-        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(data, searchTerm);
+    setFilteredData(filteredList);
+  };
 
-  const handleModal = data => {
-    setModal(data);
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
   };
 
   const columns = [
     {
       name: 'Action',
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
-      cell: row => (
+      cell: (row) => (
         <div className="btn-group" role="group">
           <Link
             to={`/${_base}/DynamicFormDropdown/Edit/` + row.id}
@@ -79,56 +75,65 @@ export default function DynamicFormDropdownComponent() {
             <i className="icofont-edit text-success"></i>
           </Link>
         </div>
-      ),
+      )
     },
-    { name: 'Sr', selector: row => row.counter, sortable: true },
+    { name: 'Sr', selector: (row) => row.counter, sortable: true },
 
     {
       name: 'Dropdown Name',
-      selector: row => row.dropdown_name,
+      selector: (row) => row.dropdown_name,
       sortable: true,
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
-          {row.dropdown_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.dropdown_name} </Tooltip>}>
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row?.dropdown_name && (
+            <OverlayTrigger overlay={<Tooltip>{row?.dropdown_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.dropdown_name && row.dropdown_name.length < 10
-                    ? row.dropdown_name
-                    : row.dropdown_name.substring(0, 10) + '....'}
+                  {row?.dropdown_name && row.dropdown_name?.length < 10
+                    ? row?.dropdown_name
+                    : row?.dropdown_name.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
       name: 'Status',
-      selector: row => row.is_active,
+      selector: (row) => row.is_active,
       sortable: true,
-      cell: row => (
+      cell: (row) => (
         <div>
-          {row.is_active == 1 && <span className="badge bg-primary">Active</span>}
-          {row.is_active == 0 && <span className="badge bg-danger">Deactive</span>}
+          {row.is_active == 1 && (
+            <span className="badge bg-primary">Active</span>
+          )}
+          {row.is_active == 0 && (
+            <span className="badge bg-danger">Deactive</span>
+          )}
         </div>
-      ),
+      )
     },
 
-    { name: 'Created At', selector: row => row.created_at, sortable: true },
-    { name: 'Created By', selector: row => row.created_by, sortable: true },
+    { name: 'Created At', selector: (row) => row.created_at, sortable: true },
+    { name: 'Created By', selector: (row) => row.created_by, sortable: true },
 
-    { name: 'Updated At', selector: row => row.updated_at, sortable: true },
-    { name: 'Updated By', selector: row => row.updated_by, sortable: true },
+    { name: 'Updated At', selector: (row) => row.updated_at, sortable: true },
+    { name: 'Updated By', selector: (row) => row.updated_by, sortable: true }
   ];
 
   const loadData = async () => {
     setIsLoading(true); // Set loading state to true when starting data fetching
 
     try {
-      const res = await new DynamicFormDropdownMasterService().getAllDynamicFormDropdown();
+      const res =
+        await new DynamicFormDropdownMasterService().getAllDynamicFormDropdown();
 
       if (res.status === 200) {
         let counter = 1;
@@ -145,7 +150,7 @@ export default function DynamicFormDropdownComponent() {
             updated_at: temp[key].updated_at,
             created_at: temp[key].created_at,
             created_by: temp[key].created_by,
-            updated_by: temp[key].updated_by,
+            updated_by: temp[key].updated_by
           });
         }
 
@@ -160,7 +165,7 @@ export default function DynamicFormDropdownComponent() {
             created_at: temp[key].created_at,
             created_by: temp[key].created_by,
             updated_at: data[key].updated_at,
-            updated_by: data[key].updated_by,
+            updated_by: data[key].updated_by
           });
         }
 
@@ -176,7 +181,7 @@ export default function DynamicFormDropdownComponent() {
           'Status',
           'Get_Status',
           'INSERT',
-          errorObject.data.message,
+          errorObject.data.message
         );
       }
     } finally {
@@ -185,23 +190,11 @@ export default function DynamicFormDropdownComponent() {
   };
 
   useEffect(() => {
-    const listener = event => {
-      if (event.code === 'Enter') {
-        handleSearch();
-      }
-    };
-    document.addEventListener('keydown', listener);
-    return () => {
-      document.removeEventListener('keydown', listener);
-    };
-  }, [data]);
-
-  useEffect(() => {
     loadData();
-    if (location && location.state) {
-      setNotify(location.state.alert);
+    if (location && location?.state) {
+      setNotify(location?.state?.alert);
     }
-    if (!checkRole.length) {
+    if (!checkRole?.length) {
       dispatch(getRoles());
     }
   }, []);
@@ -210,6 +203,13 @@ export default function DynamicFormDropdownComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+  useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
@@ -228,44 +228,15 @@ export default function DynamicFormDropdownComponent() {
           );
         }}
       />
-
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by Dropdown Name...."
-              ref={searchRef}
-              onChange={e => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              style={{ marginTop: '0px', fontWeight: '600' }}
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Dynamic Form Dropdown master Records"
-            />
-          </div>
-        </div>
-      </div>
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by dropdown name...."
+        exportFileName="Dropdown Master Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
 
       <div className="card mt-2">
         <div className="card-body">
@@ -275,20 +246,7 @@ export default function DynamicFormDropdownComponent() {
               {!isLoading && data && (
                 <DataTable
                   columns={columns}
-                  data={data.filter(customer => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(
-                          value =>
-                            typeof value === 'string' &&
-                            value.toLowerCase().includes(searchTerm.toLowerCase()),
-                        );
-                      }
-                    }
-                    return false;
-                  })}
+                  data={filteredData}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
