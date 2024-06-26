@@ -32,10 +32,10 @@ const SprintCalendar = () => {
   const taskStatus = [
     { id: 1, statusName: 'TO_DO', color: '#C3F5FF' },
     { id: 2, statusName: 'IN_PROGRESS', color: '#FFECB3' },
-    { id: 3, statusName: 'COMPLETED', color: '#9EFFB9' },
-    { id: 4, statusName: 'Delay', color: '#FF8888' },
-    { id: 5, statusName: 'Min_Delay', color: '#FFC581' },
-    { id: 6, statusName: 'Max_Delay', color: '#484C7F' }
+    { id: 3, statusName: 'IN_TIME', color: '#9EFFB9' },
+    { id: 4, statusName: 'DELAY', color: '#FF8888' },
+    { id: 5, statusName: 'SLIGHTLY_DELAY', color: '#FFC581' },
+    { id: 6, statusName: 'HIGHLY_DELAY', color: '#484C7F' }
   ];
 
   const generateDateArray = () => {

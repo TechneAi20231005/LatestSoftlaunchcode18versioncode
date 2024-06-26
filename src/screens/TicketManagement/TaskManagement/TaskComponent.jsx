@@ -39,7 +39,6 @@ export default function TaskComponent() {
   const ticketId = id;
 
   const [moduleSetting, setModuleSetting] = useState();
-  //Ticket Related
   const [ticketData, setTicketData] = useState();
 
   const [expectedSolveDate, setExpectedSolveDate] = useState();
@@ -84,11 +83,6 @@ export default function TaskComponent() {
             setTicketData(res.data.data);
             setTicketStartDate(res.data.data.ticket_date);
             setExpectedSolveDate(res.data.data.expected_solve_date);
-            // getAttachment(res.data.data.id, "TICKET").then((resp) => {
-            //   if (resp.status === 200) {
-            //     setAttachment(resp.data.data);
-            //   }
-            // });
           }
         }
       })
@@ -139,11 +133,6 @@ export default function TaskComponent() {
     setShowBasketModal(true);
   };
 
-  var sortingArr;
-  function sortFunc(a, b) {
-    return sortingArr.indexOf(a.id) - sortingArr.indexOf(b.id);
-  }
-
   //Basket & Task Data
   const [ownership, setOwnership] = useState([]);
   const [data, setData] = useState();
@@ -184,13 +173,13 @@ export default function TaskComponent() {
               setIsLoading(false);
 
               // const temp = res.data.data;
-              sortingArr = res.data.basket_id_array;
+              // sortingArr = res.data.basket_id_array;
               setIsReviewer(res.data.is_reviewer);
               setOwnership(res.data.ownership);
               setBasketIdArray(res.data.basket_id_array);
               // setIsRegularised(res.data.is_regularized)
               setData(null);
-              res.data.data.sort(sortFunc);
+              // res.data.data.sort(sortFunc);
 
               res.data.data.map((tasks, index) => {
                 setBasketStartDate(tasks.start_date);
@@ -214,6 +203,7 @@ export default function TaskComponent() {
                   });
                 });
               });
+
               startTransition(() => {
                 setData(res.data.data);
                 setTasksData(tasksDataa);
@@ -330,8 +320,7 @@ export default function TaskComponent() {
 
   /*  ********************************* Approval Request ************************************** */
   //Suyash 31/5/22
-  const approvalRequest= {}
-
+  const approvalRequest = {};
 
   const handleRequestSubmit = (id, taskId) => {};
 
@@ -418,13 +407,11 @@ export default function TaskComponent() {
     });
   };
 
-  // const [buttonType, setButtontype] = useState();
-  // const [basketList, setBasketList] = useState(null);
-  const pushForward = async (e) => {
+  const pushForward = async (basketIds) => {
     var sendArray = {
       user_id: parseInt(userSessionData.userId),
       ticket_id: parseInt(ticketId),
-      basket_id_array: basketIdArray
+      basket_id_array: basketIds
     };
 
     await new BasketService().pushForward(sendArray).then((res) => {});
@@ -509,7 +496,6 @@ export default function TaskComponent() {
       });
     }
   };
-
   const sprintDropDownHandler = async (selectedOption) => {
     // setDisableNextBtn(false);
     // setDisablePrevBtn(false);
@@ -768,11 +754,50 @@ export default function TaskComponent() {
       width: '10%'
     }
   ];
+  let taskDraggedFromId;
+  let taskWhichIsDragged;
+
+  const TaskdragStartHandler = (basketId, task) => {
+    taskDraggedFromId = basketId;
+    taskWhichIsDragged = task;
+  };
+
+  const TaskdragEndhandler = (e, ele) => {
+    e.preventDefault();
+  };
+
+  const TaskdragOverHandler = (e) => {
+    e.preventDefault();
+  };
+  const TaskdropHandler = (e, ele, task) => {
+    let basketData = [...data];
+    let taskRemoved;
+    for (let i = 0; i < basketData.length; i++) {
+      if (basketData[i].id === taskDraggedFromId) {
+        for (let j = 0; j < basketData[i].taskData.length; j++) {
+          if (basketData[i].taskData[j].id === taskWhichIsDragged.id) {
+            taskRemoved = basketData[i].taskData.splice(j, 1);
+          }
+        }
+      }
+    }
+
+    for (let i = 0; i < basketData.length; i++) {
+      if (basketData[i].id === ele.id) {
+        const findIndex = basketData[i].taskData.findIndex(
+          // eslint-disable-next-line no-self-compare
+          (task) => task.id === task.id
+        );
+        basketData[i].taskData.splice(findIndex, 0, taskRemoved[0]);
+      }
+    }
+    setData(basketData);
+  };
 
   var dragId;
   var dropId;
-  var basketIdArray1;
-  var basketIdArray2;
+  // var basketIdArray1;
+  // var basketIdArray2;
   const dragStartHandler = (e, card) => {
     dragId = card.id;
   };
@@ -788,17 +813,23 @@ export default function TaskComponent() {
   const dropHandler = async (e, card) => {
     e.preventDefault();
     dropId = card.id;
-
-    basketIdArray1 = basketIdArray;
-    var drag = basketIdArray1.indexOf(dragId);
-    var drop = basketIdArray1.indexOf(dropId);
-    if (drag > -1) {
-      basketIdArray1.splice(drag, 1);
-    }
-    basketIdArray1.splice(drop, 0, dragId);
-    basketIdArray2 = basketIdArray1.join();
-    setBasketIdArray(basketIdArray2);
-    pushForward();
+    let basketData = [...data];
+    const indexOfDraggedBasket = basketData.findIndex(
+      (basket) => basket.id === dragId
+    );
+    const indexOfDroppedOn = basketData.findIndex(
+      (basket) => basket.id === card.id
+    );
+    let draggedElm = basketData[indexOfDraggedBasket];
+    let droppedOverElm = basketData[indexOfDroppedOn];
+    basketData[indexOfDroppedOn] = draggedElm;
+    basketData[indexOfDraggedBasket] = droppedOverElm;
+    setData(basketData);
+    let basketIdForPayload = basketData.map((basket) => basket.id);
+    setBasketIdArray(basketIdForPayload);
+    pushForward(basketIdForPayload);
+    // basketIdArray1 = basketIdArray;
+    return;
   };
   const [showDetails, setShowDetails] = useState(false);
   const detailsHandler = () => {
@@ -1445,129 +1476,146 @@ export default function TaskComponent() {
                   data.map((ele, index) => {
                     return (
                       <div
-                        draggable={true}
-                        onDragStart={(e) => dragStartHandler(e, ele)}
-                        onDragLeave={(e) => dragEndhandler(e)}
-                        onDragEnd={(e) => dragEndhandler(e, ele)}
-                        onDragOver={(e) => dragOverHandler(e)}
-                        onDrop={(e) => dropHandler(e, ele)}
                         id={`basket_${index}`}
                         key={`basket_${index}`}
-                        className="col-lg-4 col-md-12 col-sm-12"
+                        className={`col-lg-4 col-md-12 col-sm-12 `}
                       >
-                        <div className="p-0 m-0 d-flex justify-content-between">
-                          <h5>
-                            <strong> {ele.basket_name}</strong>
-                          </h5>
-                          <span
-                            className="badge bg-success text-end mt-2 p-1 px-3"
-                            style={{ fontSize: '14px' }}
-                          >
-                            {ele.total_worked ? ele.total_worked : 0}/
-                            {ele?.total_hours}
-                          </span>
-                        </div>
+                        <div
+                          draggable={true}
+                          onDragStart={(e) => dragStartHandler(e, ele)}
+                          onDragLeave={(e) => dragEndhandler(e)}
+                          onDragEnd={(e) => dragEndhandler(e, ele)}
+                          onDragOver={(e) => dragOverHandler(e)}
+                          onDrop={(e) => dropHandler(e, ele)}
+                        >
+                          <div className="p-0 m-0 d-flex justify-content-between">
+                            <h5>
+                              <strong> {ele.basket_name}</strong>
+                            </h5>
+                            <span
+                              className="badge bg-success text-end mt-2 p-1 px-3"
+                              style={{ fontSize: '14px' }}
+                            >
+                              {ele.total_worked ? ele.total_worked : 0}/
+                              {ele?.total_hours}
+                            </span>
+                          </div>
 
-                        <div className="p-0 m-0 d-flex justify-content-between mt-1">
-                          {ele &&
-                            (ele.ownership === 'TICKET' ||
-                              ele.ownership === 'BASKET' ||
-                              ele.ownership === 'PROJECT') && (
-                              <button
-                                type="button"
-                                key={`newTaskBtn_${index}`}
-                                className="btn btn-danger btn-sm text-white"
-                                style={{ padding: '10px 10px' }}
-                                name="newTaskButton"
-                                onClick={(e) => {
-                                  handleShowTaskModal(
-                                    ele.ticket_id,
-                                    ele.id,
-                                    null
-                                  );
-                                }}
-                              >
-                                <i
-                                  className="icofont-plus"
-                                  style={{
-                                    fontSize: '10px',
-                                    marginRight: '4px'
+                          <div className="p-0 m-0 d-flex justify-content-between mt-1">
+                            {ele &&
+                              (ele.ownership === 'TICKET' ||
+                                ele.ownership === 'BASKET' ||
+                                ele.ownership === 'PROJECT') && (
+                                <button
+                                  type="button"
+                                  key={`newTaskBtn_${index}`}
+                                  className="btn btn-danger btn-sm text-white"
+                                  style={{ padding: '10px 10px' }}
+                                  name="newTaskButton"
+                                  onClick={(e) => {
+                                    handleShowTaskModal(
+                                      ele.ticket_id,
+                                      ele.id,
+                                      null
+                                    );
                                   }}
-                                ></i>
-                                New Task
-                              </button>
-                            )}
+                                >
+                                  <i
+                                    className="icofont-plus"
+                                    style={{
+                                      fontSize: '10px',
+                                      marginRight: '4px'
+                                    }}
+                                  ></i>
+                                  New Task
+                                </button>
+                              )}
 
-                          <form
-                            method="post"
-                            onSubmit={(e) => {
-                              pushForward(e);
-                            }}
-                            encType="multipart/form-data"
-                          >
-                            <div>
-                              <input
-                                type="hidden"
-                                id="basket_id"
-                                name="basket_id"
-                                value={ele.id}
-                              />
-                              <input
-                                type="hidden"
-                                id="basket_id_array"
-                                name="basket_id_array"
-                                value={basketIdArray}
-                              />
-                            </div>
-                          </form>
+                            <form
+                              method="post"
+                              onSubmit={(e) => {
+                                pushForward(e);
+                              }}
+                              encType="multipart/form-data"
+                            >
+                              <div>
+                                <input
+                                  type="hidden"
+                                  id="basket_id"
+                                  name="basket_id"
+                                  value={ele.id}
+                                />
+                                <input
+                                  type="hidden"
+                                  id="basket_id_array"
+                                  name="basket_id_array"
+                                  value={basketIdArray}
+                                />
+                              </div>
+                            </form>
 
-                          {ele &&
-                            (ele.ownership === 'TICKET' ||
-                              ele.ownership === 'BASKET' ||
-                              ele.ownership === 'PROJECT') && (
-                              <button
-                                type="button"
-                                className="btn btn-primary text-white btn-sm"
-                                style={{ padding: '10px 10px' }}
-                                onClick={(e) => {
-                                  getTicketData();
+                            {ele &&
+                              (ele.ownership === 'TICKET' ||
+                                ele.ownership === 'BASKET' ||
+                                ele.ownership === 'PROJECT') && (
+                                <button
+                                  type="button"
+                                  className="btn btn-primary text-white btn-sm"
+                                  style={{ padding: '10px 10px' }}
+                                  onClick={(e) => {
+                                    getTicketData();
 
-                                  // Handle the click event here
-                                  handleShowBasketModal(ele.id);
-                                }}
-                              >
-                                <i
-                                  className="icofont-ui-edit"
-                                  style={{
-                                    fontSize: '13px',
-                                    marginRight: '4px'
+                                    // Handle the click event here
+                                    handleShowBasketModal(ele.id);
                                   }}
-                                ></i>
-                                Edit Basket
-                              </button>
-                            )}
+                                >
+                                  <i
+                                    className="icofont-ui-edit"
+                                    style={{
+                                      fontSize: '13px',
+                                      marginRight: '4px'
+                                    }}
+                                  ></i>
+                                  Edit Basket
+                                </button>
+                              )}
+                          </div>
                         </div>
-
                         <div className="ticket-container" key={ele.id}>
                           <div className="ticket">
                             {ele.taskData &&
                               ele.taskData.map((task) => {
                                 return (
-                                  <TaskData
-                                    key={task.id.toString()}
-                                    data={task}
-                                    date={basketStartDate}
-                                    loadBasket={() =>
-                                      getBasketData(
-                                        selectedOption?.value
-                                          ? selectedOption?.value
-                                          : 0,
-                                        currentTaskStatus
-                                      )
+                                  <div
+                                    draggable={true}
+                                    onDragStart={(e) =>
+                                      TaskdragStartHandler(ele.id, task)
                                     }
-                                    onShowTaskModal={handleShowTaskModal}
-                                    isReviewer={isReviewer}
-                                  />
+                                    onDragLeave={(e) => TaskdragEndhandler(e)}
+                                    onDragEnd={(e) =>
+                                      TaskdragEndhandler(e, ele)
+                                    }
+                                    onDragOver={(e) => TaskdragOverHandler(e)}
+                                    onDrop={(e) =>
+                                      TaskdropHandler(e, ele, task)
+                                    }
+                                  >
+                                    <TaskData
+                                      key={task.id.toString()}
+                                      data={task}
+                                      date={basketStartDate}
+                                      loadBasket={() =>
+                                        getBasketData(
+                                          selectedOption?.value
+                                            ? selectedOption?.value
+                                            : 0,
+                                          currentTaskStatus
+                                        )
+                                      }
+                                      onShowTaskModal={handleShowTaskModal}
+                                      isReviewer={isReviewer}
+                                    />
+                                  </div>
                                 );
                               })}
                           </div>

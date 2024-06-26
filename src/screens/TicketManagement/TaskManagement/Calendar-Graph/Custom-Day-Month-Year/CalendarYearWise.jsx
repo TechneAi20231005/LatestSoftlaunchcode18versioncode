@@ -13,14 +13,6 @@ export const CalendarYearWise = (props) => {
   // const [notify, setNotify] = useState({});
 
   const localizer = momentLocalizer(moment);
-  // const taskStatus = [
-  //   { id: 1, statusName: 'TO_DO', color: '#C3F5FF' },
-  //   { id: 2, statusName: 'IN_PROGRESS', color: '#FFECB3' },
-  //   { id: 3, statusName: 'COMPLETED', color: '#9EFFB9' },
-  //   { id: 4, statusName: 'Delay', color: '#C3F5FF' },
-  //   { id: 5, statusName: 'Min_Delay', color: '#FFC581' },
-  //   { id: 6, statusName: 'Max_Delay', color: '#484C7F' }
-  // ];
   const frameStructureForCalendar = async () => {
     const formatDate = (dates) => {
       const date = new Date(dates);
@@ -60,7 +52,8 @@ export const CalendarYearWise = (props) => {
                   scheduledHours: taskDataItem?.task_scheduled_Hours,
                   actualWorked: taskDataItem?.task_actual_worked,
                   priority: taskDataItem?.task_priority,
-                  actualStatus: taskDataItem?.task_status,
+                  status: taskDataItem?.task_status,
+                  actualStatus: taskDataItem?.task_actual_status,
                   taskOwners: taskDataItem?.taskOwners
                 };
                 newCalendarEvents.push(newEvent);
@@ -77,15 +70,22 @@ export const CalendarYearWise = (props) => {
       // setNotify({ type: 'danger', message: err });
     }
   };
+  const ridirectToPreviousTab = () => {
+    let prevTab = localStorage.getItem('PreviosTab');
+    localStorage.removeItem('PreviosTab');
+    if (prevTab) {
+      window.location.href = prevTab;
+    }
+  };
 
   const eventPropGetter = (event) => {
     const statusColors = {
       TO_DO: '#C3F5FF',
       IN_PROGRESS: '#FFECB3',
-      COMPLETED: '#9EFFB9',
-      Delay: '#C3F5FF',
-      Min_Delay: '#FFC581',
-      Max_Delay: '#484C7F'
+      IN_TIME: '#9EFFB9',
+      DELAY: '#C3F5FF',
+      SLIGHTLY_DELAY: '#FFC581',
+      HIGH_DELAY: '#484C7F'
     };
 
     const backgroundColor = statusColors[event?.actualStatus] || '';
@@ -107,6 +107,7 @@ export const CalendarYearWise = (props) => {
       actualWorked,
       actualStatus,
       taskOwners,
+      status,
       totalScheduledHours
     } = event;
     const users = taskOwners.join(',');
@@ -114,7 +115,7 @@ export const CalendarYearWise = (props) => {
       event.title
     }\nTask Name: ${taskName}\nBasket Name: ${basketName}\nStart Date:${taskStartDate}\nEnd Date:${taskEndDate}\nTotal Scheduled hours:${totalScheduledHours}\nScheduled Hours: ${scheduledHours}\nActual Worked: ${
       actualWorked ? actualWorked : '00:00:00'
-    }\nStatus:${actualStatus}\nTask Owners:${users}`;
+    }\nStatus:${status}\nActual Status:${actualStatus}\nTask Owners:${users}`;
     return tooltipText;
   };
 
@@ -196,6 +197,7 @@ export const CalendarYearWise = (props) => {
           // eventWrapper: CustomTooltip,
           toolbar: CustomToolbar
         }}
+        onSelectEvent={ridirectToPreviousTab}
       />
     </div>
   );

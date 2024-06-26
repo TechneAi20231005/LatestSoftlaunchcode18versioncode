@@ -1,44 +1,41 @@
 import React, { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
-import { Col, Row } from 'react-bootstrap';
-import { useDispatch, useSelector } from 'react-redux';
 import PageHeader from '../../../components/Common/PageHeader';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
-import { getReviewCommentMasterListThunk } from '../../../redux/services/testCases/reviewCommentMaster';
+import { useDispatch, useSelector } from 'react-redux';
 import { customSearchHandler } from '../../../utils/customFunction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import AddEditReviewCommentMaster from './Validation/AddEditReviewCommentMaster';
-function ReviewCommentMasterComponent() {
+import AddTestingTypeModal from './AddTestingTypeModal';
+import { getTestingTypeMasterListThunk } from '../../../redux/services/testCases/testingTypeMaster';
+import { Col, Row } from 'react-bootstrap';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
+function TestingTypeMasterComponent() {
   const dispatch = useDispatch();
 
   // // redux state
-  const { reviewCommentMasterList, isLoading } = useSelector(
-    (state) => state?.reviewCommentMaster
+  const { testingTypeMasterList, isLoading } = useSelector(
+    (state) => state?.testingTypeMaster
   );
-
   const [searchValue, setSearchValue] = useState('');
-  const [filteredReviewCommentMasterList, setFilteredReviewCommentMasterList] =
+  const [filteredTestingTypeMasterList, setFilterTestingTypeMasterList] =
     useState([]);
 
-  const [addEditReviewCommentModal, setAddEditReviewCommentModal] = useState({
+  const [addEditTestingTypeModal, setAddEditTestingTypeModal] = useState({
     type: '',
     data: '',
     open: false
   });
 
-  // Function to handle search button click
   const handleSearch = () => {
     const filteredList = customSearchHandler(
-      reviewCommentMasterList,
+      testingTypeMasterList,
       searchValue
     );
-    setFilteredReviewCommentMasterList(filteredList);
+    setFilterTestingTypeMasterList(filteredList);
   };
 
-  // Function to handle reset button click
   const handleReset = () => {
     setSearchValue('');
-    setFilteredReviewCommentMasterList(reviewCommentMasterList);
+    setFilterTestingTypeMasterList(testingTypeMasterList);
   };
 
   const columns = [
@@ -54,7 +51,7 @@ function ReviewCommentMasterComponent() {
         <i
           className="icofont-edit text-primary cp"
           onClick={() =>
-            setAddEditReviewCommentModal({
+            setAddEditTestingTypeModal({
               type: 'EDIT',
               data: row,
               open: true
@@ -73,18 +70,23 @@ function ReviewCommentMasterComponent() {
       cell: (row) => (
         <div>
           {row.is_active == 1 && (
-            <span className="badge bg-primary">Active</span>
+            <span className="badge bg-primary" style={{ width: '4rem' }}>
+              Active
+            </span>
           )}
           {row.is_active == 0 && (
-            <span className="badge bg-danger">DeActive</span>
+            <span className="badge bg-danger" style={{ width: '4rem' }}>
+              Deactive
+            </span>
           )}
         </div>
       ),
       width: '100px'
     },
+
     {
-      name: 'Reviewer Comment Title',
-      selector: (row) => row.reviewer_comment,
+      name: 'Testing Type Title',
+      selector: (row) => row.type_name,
       sortable: false,
       width: '200px'
     },
@@ -118,7 +120,7 @@ function ReviewCommentMasterComponent() {
   ];
 
   const exportColumns = [
-    { title: 'Reviewer Comment Title', field: 'reviewer_comment' },
+    { title: 'Testing Type Title', field: 'type_name' },
     { title: 'Created At', field: 'created_at' },
     { title: 'Created By', field: 'created_by' },
     { title: 'Updated At', field: 'updated_at' },
@@ -126,27 +128,26 @@ function ReviewCommentMasterComponent() {
   ];
 
   useEffect(() => {
-    dispatch(getReviewCommentMasterListThunk());
+    dispatch(getTestingTypeMasterListThunk());
   }, []);
 
-  // Update the useEffect to update the filtered list when reviewCommentMasterList changes
   useEffect(() => {
-    setFilteredReviewCommentMasterList(reviewCommentMasterList);
-  }, [reviewCommentMasterList]);
+    setFilterTestingTypeMasterList(testingTypeMasterList);
+  }, [testingTypeMasterList]);
 
-  // Function to handle search onchange
   useEffect(() => {
     handleSearch();
   }, [searchValue]);
+
   return (
     <div className="container-xxl">
       <div className="d-flex justify-content-between">
-        <PageHeader headerTitle="Review Comment Master" />
+        <PageHeader headerTitle="Testing Type Master" />
         <div style={{ marginTop: '-30px' }}>
           <button
             className="btn btn-primary text-white "
             onClick={() =>
-              setAddEditReviewCommentModal({
+              setAddEditTestingTypeModal({
                 type: 'ADD',
                 data: '',
                 open: true
@@ -154,7 +155,7 @@ function ReviewCommentMasterComponent() {
             }
           >
             <i className="icofont-plus px-2"></i>
-            Add Reviewer Comment
+            Add Testing Type
           </button>
         </div>
       </div>
@@ -192,32 +193,33 @@ function ReviewCommentMasterComponent() {
           </button>
           <ExportToExcel
             className="btn btn-danger"
-            apiData={filteredReviewCommentMasterList}
+            apiData={filteredTestingTypeMasterList}
             columns={exportColumns}
-            fileName="Review Comment Master Records"
-            disabled={!filteredReviewCommentMasterList?.length}
+            fileName="Testing Type Master Records"
+            disabled={!filteredTestingTypeMasterList?.length}
           />
         </Col>
       </Row>
+
       <DataTable
         columns={columns}
-        data={filteredReviewCommentMasterList}
+        data={filteredTestingTypeMasterList}
         defaultSortField="role_id"
         pagination
         selectableRows={false}
         className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
         highlightOnHover={true}
-        progressPending={isLoading?.getReviewCommentMasterList}
+        progressPending={isLoading?.getTestingTypeMasterList}
         progressComponent={<TableLoadingSkelton />}
       />
-      <AddEditReviewCommentMaster
-        show={addEditReviewCommentModal?.open}
-        type={addEditReviewCommentModal?.type}
-        currentReviewCommentData={addEditReviewCommentModal?.data}
-        close={(prev) => setAddEditReviewCommentModal({ ...prev, open: false })}
+      <AddTestingTypeModal
+        show={addEditTestingTypeModal?.open}
+        type={addEditTestingTypeModal?.type}
+        currentTestingTypeData={addEditTestingTypeModal?.data}
+        close={(prev) => setAddEditTestingTypeModal({ ...prev, open: false })}
       />
     </div>
   );
 }
 
-export default ReviewCommentMasterComponent;
+export default TestingTypeMasterComponent;

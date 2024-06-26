@@ -80,7 +80,7 @@ const WeekwiseCalendar = (props) => {
                   </div>
                 </div>
                 {taskDataArray.map((task, idx) => {
-                  let actualStatus = task?.task_status;
+                  let actualStatus = task?.task_actual_status;
                   let filteredBgColor = bgColor?.filter(
                     (bgcolor) => bgcolor?.statusName === actualStatus
                   );
