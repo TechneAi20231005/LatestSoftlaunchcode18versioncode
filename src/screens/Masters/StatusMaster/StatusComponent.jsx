@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
@@ -51,10 +51,10 @@ function StatusComponent() {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch =useCallback( () => {
     const filteredList = customSearchHandler(statusData, searchTerm);
     setFilteredData(filteredList);
-  };
+  },[statusData,searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -85,7 +85,7 @@ function StatusComponent() {
               );
             }}
           >
-            <i className="icofont-edit text-success"></i>
+            <i className="icofont-edit text-success" />
           </button>
         </div>
       )
@@ -176,14 +176,14 @@ function StatusComponent() {
     if (!statusData.length) {
       dispatch(getRoles());
     }
-  }, []);
+  }, [dispatch,statusData.length]);
   useEffect(() => {
     setFilteredData(statusData);
   }, [statusData]);
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm,handleSearch]);
 
   return (
     <div className="container-xxl">

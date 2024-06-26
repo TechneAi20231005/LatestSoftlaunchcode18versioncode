@@ -8,15 +8,14 @@ import {
 } from "../../../services/TicketService/TaskService";
 import SubtaskService from "../../../services/TicketService/SubtaskService";
 import ModuleSetting from "../../../services/SettingService/ModuleSetting";
-import axios from "axios";
-import { settingMasterUrl } from "../../../settings/constants";
+
 
 
 export const getBasketTaskData = createAsyncThunk(
 
 
   "getBasketTaskData",
-  async (config, thunkapi) => {
+  async (config) => {
     try {
       const service = new BasketService();
       const response = await service.getBasketTaskData(config);
@@ -134,4 +133,3 @@ export const getmoduleSetting = createAsyncThunk(
     }
   }
 );
-

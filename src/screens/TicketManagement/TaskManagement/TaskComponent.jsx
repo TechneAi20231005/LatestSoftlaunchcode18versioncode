@@ -1,21 +1,20 @@
 import React, { useEffect, useRef, useState, startTransition } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Card, CardBody, Dropdown, Modal } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import PageHeader from '../../../components/Common/PageHeader';
-import { _attachmentUrl, userSessionData } from '../../../settings/constants';
+import { userSessionData } from '../../../settings/constants';
 import Alert from '../../../components/Common/Alert';
 import ErrorLogService from '../../../services/ErrorLogService';
 import MyTicketService from '../../../services/TicketService/MyTicketService';
 import BasketService from '../../../services/TicketService/BasketService';
 import {
   getTaskData,
-  getTaskPlanner,
   getRegularizationTime,
   getTaskHistory,
   getTaskRegularizationTime
 } from '../../../services/TicketService/TaskService';
-import { getAttachment } from '../../../services/OtherService/AttachmentService';
+
 import BasketDetails from './components/BasketDetails';
 import TaskData from './components/TaskData';
 import TaskModal from './components/TaskModal';
@@ -27,29 +26,28 @@ import TestCasesService from '../../../services/TicketService/TestCaseService';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-import { Spinner } from 'react-bootstrap';
+
 import Select from 'react-select';
 import { Astrick } from '../../../components/Utilities/Style';
 import SprintService from '../../../services/TicketService/SprintService';
 import DataTable from 'react-data-table-component';
 import CardLoadingSkeleton from '../../../components/custom/loader/CardLoadingSkeleton';
 
-export default function TaskComponent({ match }) {
+export default function TaskComponent() {
   const [notify, setNotify] = useState(null);
   const { id } = useParams();
   const ticketId = id;
-  const history = useNavigate();
 
   const [moduleSetting, setModuleSetting] = useState();
   //Ticket Related
   const [ticketData, setTicketData] = useState();
-  const [attachment, setAttachment] = useState();
+
   const [expectedSolveDate, setExpectedSolveDate] = useState();
   const [ticketStartDate, setTicketStartDate] = useState();
   const [currentTaskStatus, setCurrentTaskStatus] = useState('PENDING');
 
   //Basket Modal Related
-  const [basketModal, setBasketModal] = useState(false);
+
   const [basketData, setBasketData] = useState(null);
   const [showBasketModal, setShowBasketModal] = useState(false);
 
@@ -151,17 +149,17 @@ export default function TaskComponent({ match }) {
   const [data, setData] = useState();
   const [basketIdArray, setBasketIdArray] = useState();
   const [isReviewer, setIsReviewer] = useState(null);
-  const [taskHistory, setTaskHistory] = useState();
+  // const [taskHistory, setTaskHistory] = useState();
   const [tasksData, setTasksData] = useState();
   const [allTaskList, setAllTaskList] = useState([]); //Defined as empty array
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  // const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
   const [basketStartDate, setBasketStartDate] = useState();
 
   const getBasketData = async (sprint_id, task_status) => {
     const tempAllTaskList = [];
-    const taskDataa = [];
+
     const tasksDataa = [];
     const sprintId = sprint_id ? sprint_id : 0;
     toast.clearWaitingQueue();
@@ -180,12 +178,12 @@ export default function TaskComponent({ match }) {
         .getBasketTaskData(ticketId, sprintId, task_status)
         .then((res) => {
           if (res.status === 200) {
-            setShowLoaderModal(false);
+            // setShowLoaderModal(false);
             setIsLoading(false);
             if (res.data.status === 1) {
               setIsLoading(false);
 
-              const temp = res.data.data;
+              // const temp = res.data.data;
               sortingArr = res.data.basket_id_array;
               setIsReviewer(res.data.is_reviewer);
               setOwnership(res.data.ownership);
@@ -287,7 +285,7 @@ export default function TaskComponent({ match }) {
       await getTaskHistory(id).then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            setTaskHistory(res.data.data);
+            // setTaskHistory(res.data.data);
           }
         }
       });
@@ -301,38 +299,39 @@ export default function TaskComponent({ match }) {
   };
 
   /*  ********************************* PLANNER ************************************** */
-  const [showPlannerModal, setShowPlannerModal] = useState(false);
+  // const [showPlannerModal, setShowPlannerModal] = useState(false);
 
-  const handleClosePlannerModal = () => {
-    setShowPlannerModal(false);
-  };
+  // const handleClosePlannerModal = () => {
+  //   setShowPlannerModal(false);
+  // };
 
   /*  ********************************* Group Activity ************************************** */
   //Suyash 30/5/22
-  const [groupActivityModal, setGroupActivityModal] = useState(false);
-  const [groupActivityModalData, setGroupActivityModalData] = useState();
+  // const [groupActivityModal, setGroupActivityModal] = useState(false);
+  // const [groupActivityModalData, setGroupActivityModalData] = useState();
 
-  const handleShowGroupModal = (e, taskOwners, taskId, dataa) => {
-    setGroupActivityModal(true);
-    setGroupActivityModalData(null);
-    const temp = [];
-    taskOwners.forEach((user) => {
-      let t = user;
-      t = { ...t, status: null };
-      temp.push(t);
-    });
-    const data = { taskOwners: temp, taskId: taskId, all: dataa };
-    setGroupActivityModalData(data);
-  };
+  // const handleShowGroupModal = (e, taskOwners, taskId, dataa) => {
+  //   setGroupActivityModal(true);
+  //   setGroupActivityModalData(null);
+  //   const temp = [];
+  //   taskOwners.forEach((user) => {
+  //     let t = user;
+  //     t = { ...t, status: null };
+  //     temp.push(t);
+  //   });
+  //   const data = { taskOwners: temp, taskId: taskId, all: dataa };
+  //   setGroupActivityModalData(data);
+  // };
 
-  const hideGroupActivityModal = () => {
-    // setGroupActivityModalData([]);
-    setGroupActivityModal(false);
-  };
+  // const hideGroupActivityModal = () => {
+  //   // setGroupActivityModalData([]);
+  //   setGroupActivityModal(false);
+  // };
 
   /*  ********************************* Approval Request ************************************** */
   //Suyash 31/5/22
-  const [approvalRequest, setApprovalRequest] = useState({});
+  const approvalRequest= {}
+
 
   const handleRequestSubmit = (id, taskId) => {};
 
@@ -355,10 +354,10 @@ export default function TaskComponent({ match }) {
     data: null
   });
 
-  const handleShowApproveRequestModal = () => {
-    const data = null;
-    setApproveRequestModal({ show: true, data: data });
-  };
+  // const handleShowApproveRequestModal = () => {
+  //   const data = null;
+  //   setApproveRequestModal({ show: true, data: data });
+  // };
   const handleShowApproveTaskRequestModal = () => {
     const data = null;
     setApproveTaskRequestModal({ show: true, data: data });
@@ -385,15 +384,15 @@ export default function TaskComponent({ match }) {
 
   const loadData = async () => {
     await new ModuleSetting().getSettingByName('Ticket', 'Task').then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
           setModuleSetting(res.data.data);
         }
       }
     });
     await new TestCasesService().getTaskBytTicket(ticketId).then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
+        if (res.data.status === 1) {
           const temp = res.data.data;
           setTaskDropdown(
             temp.map((d) => ({ value: d.id, label: d.task_name }))
@@ -419,8 +418,8 @@ export default function TaskComponent({ match }) {
     });
   };
 
-  const [buttonType, setButtontype] = useState();
-  const [basketList, setBasketList] = useState(null);
+  // const [buttonType, setButtontype] = useState();
+  // const [basketList, setBasketList] = useState(null);
   const pushForward = async (e) => {
     var sendArray = {
       user_id: parseInt(userSessionData.userId),
@@ -805,14 +804,14 @@ export default function TaskComponent({ match }) {
   const detailsHandler = () => {
     setShowDetails((prev) => !prev);
   };
-  const date = new Date();
+  // const date = new Date();
 
-  let day = date.getDate();
-  let month = date.getMonth() + 1;
-  let year = date.getFullYear();
+  // let day = date.getDate();
+  // let month = date.getMonth() + 1;
+  // let year = date.getFullYear();
 
   // This arrangement can be altered based on how we want the date's format to appear.
-  let currentDate = `${day}-${month}-${year}`;
+  // let currentDate = `${day}-${month}-${year}`;
   const goToSprintCalendarGraph = (module) => {
     let linkURL = `/${_base}/Ticket/Task/${ticketId}`;
     localStorage.setItem('PreviosTab', linkURL);
@@ -841,32 +840,32 @@ export default function TaskComponent({ match }) {
     getTicketData();
   }, []);
 
-  function LoaderComponent() {
-    return (
-      // Container to center-align the spinner and loading text
-      <div style={{ textAlign: 'center', marginTop: '50px' }}>
-        {/* Spinner element with custom styling */}
-        <Spinner
-          animation="border"
-          role="status"
-          style={{
-            width: '100px',
-            height: '100px',
-            borderWidth: '5px',
-            color: '#484c7f',
-            marginBottom: '10px'
-          }}
-        >
-          {/* Visually hidden loading text for accessibility */}
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
-        {/* Loading text displayed below the spinner */}
-        <div style={{ color: '#484c7f', fontSize: '16px', fontWeight: 'bold' }}>
-          Loading...
-        </div>
-      </div>
-    );
-  }
+  // function LoaderComponent() {
+  //   return (
+  //     // Container to center-align the spinner and loading text
+  //     <div style={{ textAlign: 'center', marginTop: '50px' }}>
+  //       {/* Spinner element with custom styling */}
+  //       <Spinner
+  //         animation="border"
+  //         role="status"
+  //         style={{
+  //           width: '100px',
+  //           height: '100px',
+  //           borderWidth: '5px',
+  //           color: '#484c7f',
+  //           marginBottom: '10px'
+  //         }}
+  //       >
+  //         {/* Visually hidden loading text for accessibility */}
+  //         <span className="visually-hidden">Loading...</span>
+  //       </Spinner>
+  //       {/* Loading text displayed below the spinner */}
+  //       <div style={{ color: '#484c7f', fontSize: '16px', fontWeight: 'bold' }}>
+  //         Loading...
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="container-xxl">
@@ -1666,7 +1665,7 @@ export default function TaskComponent({ match }) {
                           id="exampleFormControlInput1"
                           name="sprintName"
                           placeholder="Enter Sprint name"
-                          disabled={sprintModal?.modalHeader == 'View'}
+                          disabled={sprintModal?.modalHeader === 'View'}
                           defaultValue={sprintModal?.modalData?.name}
                           onChange={(e) => sprintInputChangeHandler(e)}
                           maxlength={50}

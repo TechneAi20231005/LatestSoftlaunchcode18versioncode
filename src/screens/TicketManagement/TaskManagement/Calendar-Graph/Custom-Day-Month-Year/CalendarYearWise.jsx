@@ -10,17 +10,17 @@ export const CalendarYearWise = (props) => {
   const params = useParams();
   const { id: ticketId } = params;
   const [calendarEvent, setCalendarEvent] = useState([]);
-  const [notify, setNotify] = useState({});
+  // const [notify, setNotify] = useState({});
 
   const localizer = momentLocalizer(moment);
-  const taskStatus = [
-    { id: 1, statusName: 'TO_DO', color: '#C3F5FF' },
-    { id: 2, statusName: 'IN_PROGRESS', color: '#FFECB3' },
-    { id: 3, statusName: 'COMPLETED', color: '#9EFFB9' },
-    { id: 4, statusName: 'Delay', color: '#C3F5FF' },
-    { id: 5, statusName: 'Min_Delay', color: '#FFC581' },
-    { id: 6, statusName: 'Max_Delay', color: '#484C7F' }
-  ];
+  // const taskStatus = [
+  //   { id: 1, statusName: 'TO_DO', color: '#C3F5FF' },
+  //   { id: 2, statusName: 'IN_PROGRESS', color: '#FFECB3' },
+  //   { id: 3, statusName: 'COMPLETED', color: '#9EFFB9' },
+  //   { id: 4, statusName: 'Delay', color: '#C3F5FF' },
+  //   { id: 5, statusName: 'Min_Delay', color: '#FFC581' },
+  //   { id: 6, statusName: 'Max_Delay', color: '#484C7F' }
+  // ];
   const frameStructureForCalendar = async () => {
     const formatDate = (dates) => {
       const date = new Date(dates);
@@ -71,10 +71,10 @@ export const CalendarYearWise = (props) => {
 
         setCalendarEvent((prevState) => [...prevState, ...newCalendarEvents]);
       } else {
-        setNotify({ type: 'danger', message: res?.data?.message });
+        // setNotify({ type: 'danger', message: res?.data?.message });
       }
     } catch (err) {
-      setNotify({ type: 'danger', message: err });
+      // setNotify({ type: 'danger', message: err });
     }
   };
 

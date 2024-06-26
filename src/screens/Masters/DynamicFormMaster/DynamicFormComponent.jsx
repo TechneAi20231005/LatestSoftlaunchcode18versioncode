@@ -1,15 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import DataTable from 'react-data-table-component';
 
 import DynamicFormService from '../../../services/MastersService/DynamicFormService';
 import PageHeader from '../../../components/Common/PageHeader';
-
-
-
-
-
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
@@ -24,7 +19,6 @@ import { customSearchHandler } from '../../../utils/customFunction';
 function DynamicFormComponent() {
   //initial state
   const location = useLocation();
-
 
   const dispatch = useDispatch();
 
@@ -274,10 +268,10 @@ function DynamicFormDropdown(props) {
           onChange={props.getChangeValue}
           required={props.required ? true : false}
         >
-          {props.defaultValue == 0 && <option value="">Select Form</option>}
-          {props.defaultValue != 0 && <option value="">Select Form</option>}
+          {props.defaultValue === 0 && <option value="">Select Form</option>}
+          {props.defaultValue !== 0 && <option value="">Select Form</option>}
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.template_name}

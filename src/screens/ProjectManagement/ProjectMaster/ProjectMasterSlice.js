@@ -1,32 +1,32 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 import {
   getprojectData,
   postprojectData,
   updateprojectMaster,
-  getprojectByID,
-} from "./ProjectMasterAction";
+  getprojectByID
+} from './ProjectMasterAction';
 
 const initialState = {
-  status: "",
-  err: "",
+  status: '',
+  err: '',
   moduleMaster: [],
   getmoduleById: [],
-  notify: "",
+  notify: '',
   updateModuleMaster: [],
   postmoduleMaster: [],
   modulesortedData: [],
   filteredModuleAccordingToProject: [],
   getproject: [],
-  postprojectData: "",
+  postprojectData: '',
   updateprojectMaster: [],
   getprojectData: [],
-  projectDropDownData:[],
-  exportProjectData:[]
+  projectDropDownData: [],
+  exportProjectData: []
 };
 
 export const ProjectMasterSlice = createSlice({
-  name: "projectMasterSlice",
+  name: 'projectMasterSlice',
   initialState,
   reducers: {
     loaderModal: (state, action) => {
@@ -41,17 +41,17 @@ export const ProjectMasterSlice = createSlice({
         )
         .map((moduleLabel) => ({
           value: moduleLabel.id,
-          label: moduleLabel.module_name,
+          label: moduleLabel.module_name
         }));
     },
 
     navigateToModule: (state, action) => {
       state.navigateToModule = action.payload;
-    },
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(getprojectData.pending, (state) => {
-      state.status = "loading";
+      state.status = 'loading';
     });
 
     builder.addCase(getprojectData.fulfilled, (state, action) => {
@@ -62,7 +62,7 @@ export const ProjectMasterSlice = createSlice({
 
         state.getproject = getproject;
 
-        state.status = "succeded";
+        state.status = 'succeded';
         state.showLoaderModal = false;
         let count = 1;
         for (let i = 0; i < getproject.length; i++) {
@@ -70,54 +70,53 @@ export const ProjectMasterSlice = createSlice({
         }
         state.getproject = [...getproject];
 
-
         let exportProjectData = [];
 
-        let counter =1
+        let counter = 1;
         for (const key in getproject) {
           exportProjectData.push({
             SrNo: counter++,
-                      // id: getproject[key].id,
-                      project_name: getproject[key].project_name,
-                      projectReviewer: getproject[key].projectReviewer,
-                      Status: getproject[key].is_active ? "Active" : "Deactive",
-                      description: getproject[key].description,
-                      remark: getproject[key].remark,
-                      created_at: getproject[key].created_at,
-                      created_by: getproject[key].created_by,
-                      updated_at: getproject[key].updated_at,
-                      updated_by: getproject[key].updated_by,
+            // id: getproject[key].id,
+            project_name: getproject[key].project_name,
+            projectReviewer: getproject[key].projectReviewer,
+            Status: getproject[key].is_active ? 'Active' : 'Deactive',
+            description: getproject[key].description,
+            remark: getproject[key].remark,
+            created_at: getproject[key].created_at,
+            created_by: getproject[key].created_by,
+            updated_at: getproject[key].updated_at,
+            updated_by: getproject[key].updated_by
           });
         }
         state.exportProjectData = exportProjectData;
 
-
-
-        let projectDropDownData = payload.data.data.filter((d) => d.is_active == 1).map((d) => ({ value: d.id, label: d.project_name }))
-        state.projectDropDownData = projectDropDownData
+        let projectDropDownData = payload.data.data
+          .filter((d) => d.is_active === 1)
+          .map((d) => ({ value: d.id, label: d.project_name }));
+        state.projectDropDownData = projectDropDownData;
       }
     });
     builder.addCase(getprojectData.rejected, (state) => {
-      state.status = "rejected";
+      state.status = 'rejected';
     });
 
     //____________postProject________________________
 
     builder.addCase(postprojectData.pending, (state) => {
-      state.status = "loading";
+      state.status = 'loading';
     });
 
     builder.addCase(postprojectData.fulfilled, (state, action) => {
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: "success", message: payload.data.message };
+        state.notify = { type: 'success', message: payload.data.message };
 
         let postprojectData = payload.data.data;
 
         state.postprojectData = postprojectData;
 
-        state.status = "succeded";
+        state.status = 'succeded';
         state.showLoaderModal = false;
         // let count = 1;
         // for (let i = 0; i < postprojectData.length; i++) {
@@ -127,26 +126,25 @@ export const ProjectMasterSlice = createSlice({
       }
     });
     builder.addCase(postprojectData.rejected, (state) => {
-      state.status = "rejected";
+      state.status = 'rejected';
     });
 
     //________________________-updateproject____________
 
     builder.addCase(updateprojectMaster.pending, (state) => {
-      state.status = "loading";
+      state.status = 'loading';
     });
 
     builder.addCase(updateprojectMaster.fulfilled, (state, action) => {
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: "success", message: payload.data.message };
+        state.notify = { type: 'success', message: payload.data.message };
         let updateprojectMaster = payload.data.data;
-     
 
         state.updateprojectMaster = updateprojectMaster;
 
-        state.status = "succeded";
+        state.status = 'succeded';
         state.showLoaderModal = false;
         // let count = 1;
         // for (let i = 0; i < postprojectData.length; i++) {
@@ -156,13 +154,13 @@ export const ProjectMasterSlice = createSlice({
       }
     });
     builder.addCase(updateprojectMaster.rejected, (state) => {
-      state.status = "rejected";
+      state.status = 'rejected';
     });
 
     //_________________getProjectById__________________
 
     builder.addCase(getprojectByID.pending, (state) => {
-      state.status = "loading";
+      state.status = 'loading';
     });
 
     builder.addCase(getprojectByID.fulfilled, (state, action) => {
@@ -173,7 +171,7 @@ export const ProjectMasterSlice = createSlice({
 
         state.getprojectByID = getprojectByID;
 
-        state.status = "succeded";
+        state.status = 'succeded';
         state.showLoaderModal = false;
         // let count = 1;
         // for (let i = 0; i < postprojectData.length; i++) {
@@ -183,16 +181,16 @@ export const ProjectMasterSlice = createSlice({
       }
     });
     builder.addCase(getprojectByID.rejected, (state) => {
-      state.status = "rejected";
+      state.status = 'rejected';
     });
-  },
+  }
 });
 
 export const {
   handleModalOpen,
   handleModalClose,
   navigateToModule,
-  filterModuleAccordingToProject,
+  filterModuleAccordingToProject
 } = ProjectMasterSlice.actions;
 
 export default ProjectMasterSlice.reducer;

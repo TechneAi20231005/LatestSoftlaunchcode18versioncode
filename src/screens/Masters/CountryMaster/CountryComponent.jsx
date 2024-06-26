@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
@@ -50,10 +50,10 @@ function CountryComponent() {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(countryData, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [countryData, searchTerm]);
   // Function to handle reset button click
   const handleReset = () => {
     setSearchTerm('');
@@ -177,20 +177,28 @@ function CountryComponent() {
     }
   }, [checkRole]);
 
+  // useEffect(() => {
+  //   dispatch(getCountryData());
+
+  //   if (!countryData.length || !checkRole.length) {
+  //     dispatch(getRoles());
+  //   }
+  // }, []);
   useEffect(() => {
     dispatch(getCountryData());
 
     if (!countryData.length || !checkRole.length) {
       dispatch(getRoles());
     }
-  }, []);
+  }, [dispatch, countryData.length, checkRole.length]);
+
   useEffect(() => {
     setFilteredData(countryData);
   }, [countryData]);
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -388,7 +396,7 @@ function CountryComponent() {
               </button>
             )}
 
-            {modal.modalData && checkRole && checkRole[0]?.can_update == 1 ? (
+            {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
               <button
                 type="submit"
                 className="btn btn-primary text-white"

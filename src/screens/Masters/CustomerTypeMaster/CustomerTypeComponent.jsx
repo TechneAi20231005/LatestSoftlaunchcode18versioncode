@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
@@ -84,10 +84,10 @@ function CustomerTypeComponent() {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(customerData, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [customerData, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -232,7 +232,7 @@ function CustomerTypeComponent() {
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   useEffect(() => {
     loadData();
@@ -241,7 +241,7 @@ function CustomerTypeComponent() {
     if (!customerData?.length) {
       dispatch(getRoles());
     }
-  }, []);
+  }, [dispatch, customerData.length]);
 
   return (
     <div className="container-xxl">

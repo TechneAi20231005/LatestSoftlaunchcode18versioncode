@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Container, Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
@@ -46,10 +46,10 @@ function StateComponent() {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(stateData, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [stateData, searchTerm]);
 
   //reset function
   const handleReset = () => {
@@ -196,7 +196,7 @@ function StateComponent() {
     }
     if (!filteredCountryData.length) {
     }
-  }, []);
+  }, [dispatch,stateData.length,checkRole.length,filteredCountryData.length]);
 
   useEffect(() => {
     setFilteredData(stateData);
@@ -204,7 +204,7 @@ function StateComponent() {
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">

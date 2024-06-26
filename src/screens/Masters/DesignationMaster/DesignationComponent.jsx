@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Container, Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
@@ -47,10 +47,10 @@ function DesignationComponent() {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(getDesignationData, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [getDesignationData, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -151,7 +151,7 @@ function DesignationComponent() {
     if (!id) {
       dispatch(postDesignationData(form)).then((res) => {
         if (res?.payload?.data?.status === 1) {
-          dispatch(getDesignationData());
+          dispatch(getDesignationDataListThunk());
         } else {
         }
       });
@@ -159,7 +159,7 @@ function DesignationComponent() {
       dispatch(updatedDesignationData({ id: id, payload: form })).then(
         (res) => {
           if (res?.payload?.data?.status === 1) {
-            dispatch(getDesignationData());
+            dispatch(getDesignationDataListThunk());
           } else {
           }
         }
@@ -179,14 +179,14 @@ function DesignationComponent() {
     if (!getDesignationData.length) {
       dispatch(getRoles());
     }
-  }, []);
+  }, [dispatch, getDesignationData.length]);
   useEffect(() => {
     setFilteredData(getDesignationData);
   }, [getDesignationData]);
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">

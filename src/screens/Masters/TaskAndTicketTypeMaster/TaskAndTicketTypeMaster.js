@@ -1,16 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
-import {
-  ButtonComponent,
-  DropdownComponent,
-  SearchComponent
-} from '../../../components/Utilities/Button/Button';
+import { ButtonComponent } from '../../../components/Utilities/Button/Button';
 import PageHeader from '../../../components/Common/PageHeader';
 import { Modal } from 'react-bootstrap';
 import { Astrick } from '../../../components/Utilities/Style';
 import TaskTicketTypeService from '../../../services/MastersService/TaskTicketTypeService';
 import Alert from '../../../components/Common/Alert';
 import DataTable from 'react-data-table-component';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
@@ -102,7 +98,7 @@ const CustomOptionTicket = ({ label, options, onClick, closeDropdown }) => {
 const CustomMenuList = ({ options, onSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [openOptions, setOpenOptions] = useState([]);
-  const [selectedOption, setSelectedOption] = useState(null);
+  // const [selectedOption, setSelectedOption] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -121,7 +117,7 @@ const CustomMenuList = ({ options, onSelect }) => {
   };
 
   const handleSelect = (label, ID) => {
-    setSelectedOption(label);
+    // setSelectedOption(label);
     onSelect(label, ID);
     setOpenOptions([]);
     setIsMenuOpen(!isMenuOpen);
@@ -457,7 +453,7 @@ function TaskAndTicketTypeMaster(props) {
       .getAllTaskTicketType(selectedType)
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status == 1) {
+          if (res.data.status === 1) {
             let counter = 1;
             var tempData = [];
             const temp = res.data.data;
@@ -469,7 +465,7 @@ function TaskAndTicketTypeMaster(props) {
                 parent_id: temp[key].parent_id,
                 type_name: temp[key].type_name,
                 parent_name:
-                  temp[key].parent_name === null && temp[key].parent_id == 0
+                  temp[key].parent_name === null && temp[key].parent_id === 0
                     ? 'Primary'
                     : temp[key].parent_name,
 
@@ -493,12 +489,12 @@ function TaskAndTicketTypeMaster(props) {
 
                 type_name: temp[i].type_name,
                 parent_name:
-                  temp[i].parent_name === null && temp[i].parent_id == 0
+                  temp[i].parent_name === null && temp[i].parent_id === 0
                     ? 'Primary'
                     : temp[i].parent_name,
 
                 remark: temp[i].remark,
-                is_active: temp[i].is_active == 1 ? 'Active' : 'Deactive',
+                is_active: temp[i].is_active === 1 ? 'Active' : 'Deactive',
                 created_at: temp[i].created_at,
                 created_by: temp[i].created_by,
                 updated_at: temp[i].updated_at,
@@ -970,7 +966,7 @@ function TaskAndTicketTypeMaster(props) {
   }
 
   // Assuming your data is stored in a variable called `data`
-  const labelsAndParentIDs = extractLabelsAndParentIDs(taskData);
+  // const labelsAndParentIDs = extractLabelsAndParentIDs(taskData);
 
   return (
     <div className="container-xxl">
