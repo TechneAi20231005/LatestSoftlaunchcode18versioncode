@@ -21,7 +21,7 @@ const App = () => {
 
   // // local state
   const [appRoutes, setAppRoutes] = useState([]);
-  const [screenLoading, setScreenLoading] = useState(false);
+  const [screenPreLoading, setScreenPreLoading] = useState(false);
 
   // useEffect hook for set routes on component mount
   useEffect(() => {
@@ -53,9 +53,9 @@ const App = () => {
 
   // // preloader
   useLayoutEffect(() => {
-    setScreenLoading(true);
+    setScreenPreLoading(true);
     setTimeout(() => {
-      setScreenLoading(false);
+      setScreenPreLoading(false);
     }, 2000);
   }, []);
 
@@ -81,15 +81,22 @@ const App = () => {
 
   return (
     <>
-      <RenderIf render={screenLoading}>
+      <RenderIf render={screenPreLoading}>
         <MainLoader />
       </RenderIf>
       <div
         id="mytask-layout"
-        className={`${screenLoading ? 'd_hide' : 'theme-indigo'}`}
+        className={`${screenPreLoading ? 'd_hide' : 'theme-indigo'}`}
       >
         <Routes>
-          <Route element={<MainLayouts isAuthenticated={tokenPresent} />}>
+          <Route
+            element={
+              <MainLayouts
+                isAuthenticated={tokenPresent}
+                setScreenPreLoading={setScreenPreLoading}
+              />
+            }
+          >
             {mainContent}
           </Route>
         </Routes>

@@ -7,7 +7,7 @@ import Header from '../components/Common/Header';
 import LeftSide from '../components/Auth/LeftSide';
 import { SuspenseLoader } from '../components/custom/loader';
 
-function MainLayouts({ isAuthenticated }) {
+function MainLayouts({ isAuthenticated, setScreenPreLoading }) {
   return (
     <>
       {isAuthenticated ? (
@@ -26,7 +26,7 @@ function MainLayouts({ isAuthenticated }) {
         <Suspense fallback={<SuspenseLoader />}>
           <div className="main d-flex justify-content-around align-items-center">
             <LeftSide />
-            <Outlet />
+            <Outlet context={[setScreenPreLoading]} />
           </div>
         </Suspense>
       )}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link } from 'react-router-dom';
+import { useNavigate, Link, useOutletContext } from 'react-router-dom';
+
 import { _base } from '../../settings/constants';
 import { useDispatch, useSelector } from 'react-redux';
 import Alert from '../Common/Alert';
@@ -9,6 +10,7 @@ export default function SignIn() {
   // // initial state
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const [setScreenPreLoading] = useOutletContext();
 
   // redux state
   const notify = useSelector((loginSlice) => loginSlice.login.notify);
@@ -30,8 +32,10 @@ export default function SignIn() {
         const tokenExpirationTime = decodeToken(token).exp * 1000;
         localStorage.setItem('jwt_token_expiration', tokenExpirationTime);
         window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+        setScreenPreLoading(true);
       } else {
         setIsLoading(false);
+        setScreenPreLoading(false);
       }
     });
   };
