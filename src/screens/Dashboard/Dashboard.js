@@ -1,135 +1,83 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import PageHeader from "../../components/Common/PageHeader";
-import { getData } from "../../services/DashboardService";
-import Chart from "react-apexcharts";
-import dateFormat from "dateformat";
-import { awsData } from "../../components/Data/test.json";
-import * as time from "../../components/Utilities/Functions";
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import PageHeader from '../../components/Common/PageHeader';
+import { getData } from '../../services/DashboardService';
+import Chart from 'react-apexcharts';
+
+import * as time from '../../components/Utilities/Functions';
 import {
   postTimerData,
-  deleteTask,
   getRegularizationTime,
-  getRegularizationTimeHistory,
-} from "../../services/TicketService/TaskService";
-import { _base } from "../../settings/constants";
+  getRegularizationTimeHistory
+} from '../../services/TicketService/TaskService';
+import { _base } from '../../settings/constants';
 import {
-  getAllDashboardData,
   getAllUserById,
-  getCityData,
-  getCountryData,
-  getCountryDataSort,
-  getCustomerData,
-  getCustomerType,
-  getDynamiucFormData,
   getEmployeeData,
-  getNotifications,
-  getStateData,
-  getStateDataSort,
-} from "./DashboardAction";
-import { dashboardSlice } from "./DashbordSlice";
-import { getRoles } from "./DashboardAction";
-import { getDesignationData } from "../Masters/DesignationMaster/DesignationAction";
-import {
-  getUserForMyTicketsData,
-  getUserTicketsTest,
-} from "../TicketManagement/MyTicketComponentAction";
-import { getStatusData } from "../Masters/StatusMaster/StatusComponentAction";
-import { departmentData } from "../Masters/DepartmentMaster/DepartmentMasterAction";
-import { getprojectData } from "../ProjectManagement/ProjectMaster/ProjectMasterAction";
-import { moduleMaster } from "../ProjectManagement/ModuleMaster/ModuleAction";
-import {
-  getSubModuleById,
-  subModuleMaster,
-} from "../ProjectManagement/SubModuleMaster/SubModuleMasterAction";
-import SubModuleMasterSlice from "../ProjectManagement/SubModuleMaster/SubModuleMasterSlice";
-import { queryType } from "../Masters/QueryTypeMaster/QueryTypeComponetAction";
-import {
-  getCustomerMappingData,
-  getQueryTypeData,
-  getTemplateData,
-  getcustomerTypeData,
-} from "../Settings/CustomerMapping/Slices/CustomerMappingAction";
-import {
-  dynamicFormData,
-  dynamicFormDropDownData,
-  getAllDropDownData,
-} from "../Masters/DynamicFormDropdown/Slices/DynamicFormDropDownAction";
-import { getRoleData } from "../Masters/RoleMaster/RoleMasterAction";
-import { getCustomerTypeData } from "../Masters/CustomerTypeMaster/CustomerTypeComponentAction";
-import { templateData } from "../Masters/TemplateMaster/TemplateComponetAction";
-import { testingData } from "../Masters/TestingTypeMaster/TestingTypeComponentAction";
-import {
-  getParentDropdown,
-  taskAndTicketMaster,
-} from "../Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMasterAction";
-import {
-  getBasketByIdData,
-  getBasketTaskData,
-  getmoduleSetting,
-} from "../TicketManagement/TaskManagement/TaskComponentAction";
-import { useDispatch } from "react-redux";
-import { getNotification } from "../../services/NotificationService/NotificationService";
-import Dropdown from "react-bootstrap/Dropdown";
-import ApproveRequestModal from "../TicketManagement/TaskManagement/components/ApproveRequestModal";
-import TimeRegularizationHistory from "../TicketManagement/TaskManagement/components/TimeRegularizationHistory";
+  getNotifications
+} from './DashboardAction';
 
-export default function HrDashboard(props) {
+import { useDispatch } from 'react-redux';
+import { getNotification } from '../../services/NotificationService/NotificationService';
+import Dropdown from 'react-bootstrap/Dropdown';
+import ApproveRequestModal from '../TicketManagement/TaskManagement/components/ApproveRequestModal';
+import TimeRegularizationHistory from '../TicketManagement/TaskManagement/components/TimeRegularizationHistory';
+
+export default function HrDashboard() {
   const history = useNavigate();
   const dispatch = useDispatch();
-  const location = useLocation();
+
   const [approvedNotifications, setApprovedNotifications] = useState();
   const [notifications, setNotifications] = useState([]);
   const [historyData, setHistoryData] = useState([]);
 
   const [allRequest, setAllRequest] = useState();
-  const data = props.data;
-  var v1 = 50;
-  var v2 = 50;
+
   const [count, setCount] = useState();
   const [dailyTask, setDailyTask] = useState();
   const [upcomingTask, setUpcomingTask] = useState();
   const [previousTask, setPreviousTask] = useState();
-  const [notificationHeight, setNotificationHeight] = useState(200);
+  const notificationHeight = 200;
 
   const [chartData, setChartData] = useState({
     series: [0, 0, 0],
     Chart: {
-      height: "auto",
+      height: 'auto'
     },
     options: {
       chart: {
-        type: "donut",
+        type: 'donut'
       },
-      labels: ["Pending Task", "Working Tasks", "Completed Task"],
+      labels: ['Pending Task', 'Working Tasks', 'Completed Task'],
 
-      colors: ["#ff1843", "#ffc107", "#198754", "#FBFBFB"],
+      colors: ['#ff1843', '#ffc107', '#198754', '#FBFBFB'],
 
       dataLables: {
         style: {
-          textColor: "white",
-          colors: ["#333", "#fff"],
-        },
-      },
-    },
+          textColor: 'white',
+          colors: ['#333', '#fff']
+        }
+      }
+    }
   });
   const checkTokenExpiration = () => {
-    const tokenExpirationTime = localStorage.getItem("jwt_token_expiration");
+    const tokenExpirationTime = localStorage.getItem('jwt_token_expiration');
     const currentTime = new Date().getTime();
 
     if (tokenExpirationTime && currentTime > tokenExpirationTime) {
       // Token has expired, log out the user
-      localStorage.removeItem("jwt_token");
-      localStorage.removeItem("jwt_token_expiration");
+      localStorage.removeItem('jwt_token');
+      localStorage.removeItem('jwt_token_expiration');
       sessionStorage.clear();
       history(`${process.env.PUBLIC_URL}/`);
     }
   };
 
-  async function get() {
-    const id = sessionStorage.getItem("id");
+  // async function get() {
+  const get = async () => {
+    const id = sessionStorage.getItem('id');
     await getData(id).then((res) => {
-      if (res.status == 200) {
+      if (res?.status === 200) {
         setCount(res.data.data.count);
         setDailyTask(res.data.data.dailyTask);
         setPreviousTask(res.data.data.previousTask);
@@ -141,28 +89,27 @@ export default function HrDashboard(props) {
               ? res.data.data.count.pendingTask
               : 0,
             res.data.data.count.workingTask,
-            res.data.data.count.completedTask,
-          ],
+            res.data.data.count.completedTask
+          ]
         };
+
         setChartData(updatedChartData);
       }
     });
-  }
-
-  const [timerState, setTimerState] = useState();
+  };
 
   const handleTimer = async (e, ticket_id, ticket_task_id, status) => {
     var data = {
-      tenant_id: localStorage.getItem("tenant_id"),
+      tenant_id: localStorage.getItem('tenant_id'),
       ticket_id: ticket_id,
       ticket_task_id: ticket_task_id,
-      user_id: localStorage.getItem("id"),
+      user_id: localStorage.getItem('id'),
       status: status,
-      time: time.getDateTime(),
+      time: time.getDateTime()
     };
     await postTimerData(data).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
           get();
         } else {
           checkTokenExpiration();
@@ -179,20 +126,19 @@ export default function HrDashboard(props) {
         if (res.data.data !== null) {
           if (res?.data?.data?.result) {
             var length = res.data.data.result.length;
-            var height = 0;
+
             setNotifications(res.data.data.result);
 
             // setApprovedNotifications(res.data.data.for_me);
             setApprovedNotifications(
-              res?.data?.data?.result?.filter((d) => d?.status == 1)
+              res?.data?.data?.result?.filter((d) => d?.status === 1)
             );
 
             setAllRequest(
-              res?.data?.data?.result?.filter((d) => d?.status != 0)
+              res?.data?.data?.result?.filter((d) => d?.status !== 0)
             );
 
             if (parseInt(length) > 0 && parseInt(length) <= 5) {
-              height = 100;
             }
           }
         }
@@ -203,13 +149,11 @@ export default function HrDashboard(props) {
   const [showApprovedOnly, setShowApprovedOnly] = useState(false);
 
   const loadData = () => {
-    const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
     dispatch(getEmployeeData());
     dispatch(getNotifications());
     // dispatch(getAllDashboardData());
 
-    dispatch(getAllUserById(localStorage.getItem("id")));
+    dispatch(getAllUserById(localStorage.getItem('id')));
   };
 
   useEffect(() => {
@@ -218,9 +162,9 @@ export default function HrDashboard(props) {
   }, []);
 
   useEffect(() => {
-    const account_for = localStorage.getItem("account_for");
+    const account_for = localStorage.getItem('account_for');
 
-    if (account_for === "CUSTOMER") {
+    if (account_for === 'CUSTOMER') {
       window.location.href = `${process.env.PUBLIC_URL}/Ticket`;
     }
 
@@ -248,7 +192,7 @@ export default function HrDashboard(props) {
 
           if (res.data.data) {
             const temp = res.data.data
-              ?.filter((d) => d?.status_remark !== "PENDING")
+              ?.filter((d) => d?.status_remark !== 'PENDING')
               ?.map((d) => ({
                 id: d.id,
                 created_by_name: d.created_by_name,
@@ -264,7 +208,7 @@ export default function HrDashboard(props) {
                 actual_time: d.actual_time,
                 task_hours: d.task_hours,
                 scheduled_time: d.scheduled_time,
-                status: d.status_remark,
+                status: d.status_remark
               }));
 
             // Assuming setDataa is a function to set the state
@@ -286,12 +230,12 @@ export default function HrDashboard(props) {
   };
   const [approveRequestModal, setApproveRequestModal] = useState({
     show: false,
-    data: null,
+    data: null
   });
 
   const [historyModal, setHistoryModal] = useState({
     show: false,
-    data: null,
+    data: null
   });
 
   const [regularizationRequest, setRegularizationRequest] = useState([]);
@@ -300,8 +244,6 @@ export default function HrDashboard(props) {
   const [notificationId, setNotificationId] = useState();
 
   const handleRegularizationRequest = (cuurentData) => {
-    
-    
     setIsLoading(null);
     setIsLoading(true);
     setTicketID(cuurentData.ticketID ? cuurentData.ticketID : cuurentData);
@@ -310,7 +252,7 @@ export default function HrDashboard(props) {
       if (res.status === 200) {
         setIsLoading(false);
         const temp = res?.data?.data
-          ?.filter((d) => d.status_remark === "PENDING")
+          ?.filter((d) => d.status_remark === 'PENDING')
           .map((d) => ({
             id: d.id,
             created_by_name: d.created_by_name,
@@ -326,7 +268,7 @@ export default function HrDashboard(props) {
             actual_time: d.actual_time,
             task_hours: d.task_hours,
             scheduled_time: d.scheduled_time,
-            status: d.status_remark,
+            status: d.status_remark
           }));
 
         setRegularizationRequest(temp);
@@ -338,14 +280,14 @@ export default function HrDashboard(props) {
     <div className="container-xxl">
       <div
         style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          display: 'flex',
+          justifyContent: 'space-between',
+          alignItems: 'center'
         }}
       >
         <PageHeader headerTitle="Dashboard" />
 
-        <div style={{ position: "relative", marginTop: "-40px" }}>
+        <div style={{ position: 'relative', marginTop: '-40px' }}>
           {(historyModal.show || approveRequestModal.show) === false && (
             <Dropdown
               className="notifications"
@@ -359,14 +301,14 @@ export default function HrDashboard(props) {
                 className="nav-link dropdown-toggle pulse"
                 style={{ zIndex: -200 }}
               >
-                <div className=" me-3" style={{ marginLeft: "28%" }}>
+                <div className=" me-3" style={{ marginLeft: '28%' }}>
                   <div>
                     <button
                       class=" badge bg-primary p-2"
                       style={{
-                        width: "auto",
-                        padding: "0.5rem 2rem",
-                        lineHeight: "revert-layer",
+                        width: 'auto',
+                        padding: '0.5rem 2rem',
+                        lineHeight: 'revert-layer'
                       }}
                     >
                       Regularization
@@ -375,20 +317,20 @@ export default function HrDashboard(props) {
                       <div
                         className="notification-circle"
                         style={{
-                          position: "absolute",
-                          top: "-10px",
-                          right: "-10px",
-                          padding: "3px",
-                          backgroundColor: "rgb(255, 24, 67)",
-                          borderRadius: "50%",
-                          justifyContent: "center",
-                          alignItems: "center",
-                          color: "white",
-                          textAlign: "center",
-                          fontSize: "0.8rem",
-                          fontWeight: "bold",
-                          minWidth: "20px", // Minimum width to prevent squishing
-                          height: "auto", // Let the height adjust automatically}}
+                          position: 'absolute',
+                          top: '-10px',
+                          right: '-10px',
+                          padding: '3px',
+                          backgroundColor: 'rgb(255, 24, 67)',
+                          borderRadius: '50%',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          color: 'white',
+                          textAlign: 'center',
+                          fontSize: '0.8rem',
+                          fontWeight: 'bold',
+                          minWidth: '20px', // Minimum width to prevent squishing
+                          height: 'auto' // Let the height adjust automatically}}
                         }}
                       >
                         {approvedNotifications.length}
@@ -399,11 +341,11 @@ export default function HrDashboard(props) {
               </Dropdown.Toggle>
 
               <Dropdown.Menu className="rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">
-                <div className="card border-0" style={{ width: "30rem" }}>
+                <div className="card border-0" style={{ width: '30rem' }}>
                   <div className="card-header border-0 p-3">
                     <h5 className="mb-0 font-weight-light d-flex justify-content-between">
                       <span>
-                        Regularization Request :{" "}
+                        Regularization Request :{' '}
                         {showApprovedOnly === true ? (
                           <span>Approved Only By Me</span>
                         ) : (
@@ -430,8 +372,8 @@ export default function HrDashboard(props) {
                   <div
                     className="tab-content card-body"
                     style={{
-                      maxHeight: "200px",
-                      overflowY: "auto",
+                      maxHeight: '200px',
+                      overflowY: 'auto'
                     }}
                   >
                     {showApprovedOnly ? (
@@ -443,10 +385,10 @@ export default function HrDashboard(props) {
                           {approvedNotifications &&
                             approvedNotifications.length > 0 &&
                             approvedNotifications.map((ele, index) => {
-                              const date = ele.created_at.split(" ")[0];
-                              const time = ele.created_at.split(" ")[1];
+                              const date = ele.created_at.split(' ')[0];
+                              const time = ele.created_at.split(' ')[1];
 
-                              const parts = ele.url.split("/"); // Split the string by '/'
+                              const parts = ele.url.split('/'); // Split the string by '/'
                               const ticketID = parts[parts.length - 1]; // Get the last part of the array
                               const notificationid = ele.id;
                               return (
@@ -456,12 +398,12 @@ export default function HrDashboard(props) {
                                 >
                                   <div
                                     className="flex-fill ms-2"
-                                    style={{ cursor: "pointer" }}
+                                    style={{ cursor: 'pointer' }}
                                     onClick={(e) => {
                                       handleShowApproveRequestModal();
                                       handleRegularizationRequest({
                                         ticketID,
-                                        notificationid,
+                                        notificationid
                                       });
                                     }}
                                   >
@@ -470,14 +412,14 @@ export default function HrDashboard(props) {
                                       <p className="d-flex justify-content-between mb-0">
                                         <span className="font-weight-bold">
                                           <span className="fw-bold badge bg-primary p-2">
-                                            {" "}
+                                            {' '}
                                             {`Date : ${date}`}
                                           </span>
                                           <span
                                             className="fw-bold badge bg-danger p-2"
-                                            style={{ marginLeft: "10px" }}
+                                            style={{ marginLeft: '10px' }}
                                           >
-                                            {" "}
+                                            {' '}
                                             {`Time : ${time}`}
                                           </span>
                                           <br />
@@ -510,14 +452,12 @@ export default function HrDashboard(props) {
                           {allRequest &&
                             allRequest.length > 0 &&
                             allRequest.map((ele, index) => {
-                              const date = ele.created_at.split(" ")[0];
-                              const time = ele.created_at.split(" ")[1];
+                              const date = ele.created_at.split(' ')[0];
+                              const time = ele.created_at.split(' ')[1];
 
-                              const parts1 = ele?.url?.split("/"); // Split the string by '/'
+                              const parts1 = ele?.url?.split('/'); // Split the string by '/'
                               const ticketID1 =
                                 parts1 && parts1[parts1?.length - 1];
-                          
-                                
 
                               return (
                                 <li
@@ -526,7 +466,7 @@ export default function HrDashboard(props) {
                                 >
                                   <div
                                     className="flex-fill ms-2"
-                                    style={{ cursor: "pointer" }}
+                                    style={{ cursor: 'pointer' }}
                                     onClick={(e) => {
                                       handleShowApproveRequestModal();
                                       handleRegularizationRequest(ticketID1);
@@ -536,14 +476,14 @@ export default function HrDashboard(props) {
                                       <p className="d-flex justify-content-between mb-0">
                                         <span className="font-weight-bold">
                                           <span className="fw-bold badge bg-primary p-2">
-                                            {" "}
+                                            {' '}
                                             {`Date : ${date}`}
                                           </span>
                                           <span
                                             className="fw-bold badge bg-danger p-2"
-                                            style={{ marginLeft: "10px" }}
+                                            style={{ marginLeft: '10px' }}
                                           >
-                                            {" "}
+                                            {' '}
                                             {`Time : ${time}`}
                                           </span>
                                           <br />
@@ -573,23 +513,23 @@ export default function HrDashboard(props) {
                   <div
                     className="row m-0"
                     style={{
-                      border: "2px solid #ccc",
-                      justifyContent: "space-between",
-                      width: "100%",
-                      height: "100%",
+                      border: '2px solid #ccc',
+                      justifyContent: 'space-between',
+                      width: '100%',
+                      height: '100%'
                     }}
                   >
                     <div
                       className={`col-4 card-footer text-center border-top-0 ${
-                        !showApprovedOnly ? "bg-info" : "white"
+                        !showApprovedOnly ? 'bg-info' : 'white'
                       }`}
-                      style={{ width: "50%", height: "50px" }}
+                      style={{ width: '50%', height: '50px' }}
                       onClick={() => setShowApprovedOnly(false)}
                     >
                       <div className="btn-group h-100">
                         <Link
                           to={`/${_base}/Dashboard`}
-                          style={{ width: "100%" }}
+                          style={{ width: '100%' }}
                         >
                           View All Request
                         </Link>
@@ -598,15 +538,15 @@ export default function HrDashboard(props) {
 
                     <div
                       className={`col-4 card-footer text-center border-top-0 ${
-                        showApprovedOnly ? "bg-info" : "white"
+                        showApprovedOnly ? 'bg-info' : 'white'
                       }`}
-                      style={{ width: "50%", height: "50px" }}
+                      style={{ width: '50%', height: '50px' }}
                       onClick={() => setShowApprovedOnly(true)}
                     >
                       <div className="btn-group h-100">
                         <Link
                           to={`/${_base}/Dashboard`}
-                          style={{ width: "100%" }}
+                          style={{ width: '100%' }}
                         >
                           Approved Only By Me
                         </Link>
@@ -653,7 +593,7 @@ export default function HrDashboard(props) {
                 </div>
                 <div className="flex-fill ms-4">
                   <div className="">
-                    <strong style={{ fontSize: "12px" }}>Pending Task</strong>
+                    <strong style={{ fontSize: '12px' }}>Pending Task</strong>
                   </div>
                   <div>
                     {count && <h5 className="mb-0 ">{count.pendingTask}</h5>}
@@ -661,6 +601,7 @@ export default function HrDashboard(props) {
                 </div>
                 <a
                   title="view-members"
+                  href="/path-to-destination"
                   className="btn btn-link text-decoration-none  rounded-1"
                 >
                   <i className="icofont-hand-drawn-right fs-2 text-white"></i>
@@ -679,7 +620,7 @@ export default function HrDashboard(props) {
                 </div>
                 <div className="flex-fill ms-4">
                   <div className="">
-                    <strong style={{ fontSize: "12px" }}>Working Task</strong>
+                    <strong style={{ fontSize: '12px' }}>Working Task</strong>
                   </div>
                   <div>
                     {count && <h5 className="mb-0 ">{count.workingTask}</h5>}
@@ -687,6 +628,7 @@ export default function HrDashboard(props) {
                 </div>
                 <a
                   title="view-members"
+                  href="/"
                   className="btn btn-link text-decoration-none  rounded-1"
                 >
                   <i className="icofont-hand-drawn-right fs-2 text-white"></i>
@@ -705,7 +647,7 @@ export default function HrDashboard(props) {
                 </div>
                 <div className="flex-fill ms-4">
                   <div className="">
-                    <strong style={{ fontSize: "12px" }}>Completed Task</strong>
+                    <strong style={{ fontSize: '12px' }}>Completed Task</strong>
                   </div>
                   <div>
                     {count && <h5 className="mb-0 ">{count.completedTask}</h5>}
@@ -713,6 +655,7 @@ export default function HrDashboard(props) {
                 </div>
                 <a
                   title="view-members"
+                  href="/"
                   className="btn btn-link text-decoration-none  rounded-1"
                 >
                   <i className="icofont-hand-drawn-right fs-2 text-white"></i>
@@ -731,7 +674,7 @@ export default function HrDashboard(props) {
                 </div>
                 <div className="flex-fill ms-4">
                   <div className="">
-                    <strong style={{ fontSize: "12px" }}>Total Task</strong>
+                    <strong style={{ fontSize: '12px' }}>Total Task</strong>
                   </div>
                   <div>
                     {count && <h5 className="mb-0 ">{count.totalTask}</h5>}
@@ -739,6 +682,7 @@ export default function HrDashboard(props) {
                 </div>
                 <a
                   title="view-members"
+                  href="/"
                   className="btn btn-link text-decoration-none  rounded-1"
                 >
                   <i className="icofont-hand-drawn-right fs-2 text-white"></i>
@@ -747,7 +691,7 @@ export default function HrDashboard(props) {
             </div>
           </div>
         </div>
-      </div>{" "}
+      </div>{' '}
       <div className="row g-3 mb-3 row-deck mt-2">
         <div className="col-md-12 col-lg-6 col-xl-6 col-xxl-6">
           <div className="card">
@@ -757,16 +701,16 @@ export default function HrDashboard(props) {
             <div className="card-body p-0">
               <div
                 className="flex-grow-1"
-                style={{ height: "250px", overflowY: "scroll" }}
+                style={{ height: '250px', overflowY: 'scroll' }}
               >
                 {dailyTask &&
                   dailyTask.length > 0 &&
                   dailyTask.map((ele, index) => {
-                    if (ele.time_status == "STOP") {
+                    if (ele.time_status === 'STOP') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                          style={{ backgroundColor: "#EBF5FB" }}
+                          style={{ backgroundColor: '#EBF5FB' }}
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
@@ -780,34 +724,34 @@ export default function HrDashboard(props) {
                                   {index + 1}. {ele.main_ticket_id}-
                                   {ele.task_name.length < 20
                                     ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + "...."}
+                                    : ele.task_name.substring(0, 20) + '....'}
                                 </h6>
                               </Link>
                             </div>
                           </div>
-                          {ele.status !== "COMPLETED" && (
+                          {ele.status !== 'COMPLETED' && (
                             <button
                               type="button"
                               style={{
-                                border: "none",
-                                borderRadius: "25%",
-                                height: "35px",
-                                width: "35px",
-                                textAlign: "center",
-                                margin: "0px",
-                                padding: "0px",
+                                border: 'none',
+                                borderRadius: '25%',
+                                height: '35px',
+                                width: '35px',
+                                textAlign: 'center',
+                                margin: '0px',
+                                padding: '0px'
                               }}
                               title="Stop Task"
                               onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, "STOP")
+                                handleTimer(e, ele.ticket_id, ele.id, 'STOP')
                               }
                             >
                               <i
                                 className="icofont-ui-pause"
                                 style={{
-                                  fontSize: "20px",
-                                  color: "#EC7063",
-                                  margin: "auto",
+                                  fontSize: '20px',
+                                  color: '#EC7063',
+                                  margin: 'auto'
                                 }}
                               ></i>
                             </button>
@@ -815,7 +759,7 @@ export default function HrDashboard(props) {
 
                           {ele && ele.total_worked && (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-danger p-2"
                             >
                               {ele.total_worked}
@@ -824,64 +768,64 @@ export default function HrDashboard(props) {
 
                           {ele && ele.task_hours && (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-danger p-2"
                             >
                               {ele.task_hours}
                             </span>
                           )}
 
-                          {ele && ele && ele.status == "TO_DO" ? (
+                          {ele && ele && ele.status === 'TO_DO' ? (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-danger p-2"
                             >
                               {ele.status}
                             </span>
-                          ) : ele.status == "IN_PROGRESS" ? (
+                          ) : ele.status === 'IN_PROGRESS' ? (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-warning p-2"
                             >
                               {ele.status}
                             </span>
                           ) : (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-success p-2"
                             >
                               {ele.status}
                             </span>
                           )}
                           <div className="time-block text-truncate ">
-                            {ele.priority === "Very High" && (
+                            {ele.priority === 'Very High' && (
                               <span
                                 className="badge bg-danger p-2"
-                                style={{ width: "100px" }}
+                                style={{ width: '100px' }}
                               >
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "High" && (
+                            {ele.priority === 'High' && (
                               <span
                                 className="badge bg-warning p-2"
-                                style={{ width: "100px" }}
+                                style={{ width: '100px' }}
                               >
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Medium" && (
+                            {ele.priority === 'Medium' && (
                               <span
                                 className="badge bg-info p-2"
-                                style={{ width: "100px" }}
+                                style={{ width: '100px' }}
                               >
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Low" && (
+                            {ele.priority === 'Low' && (
                               <span
                                 className="badge bg-success p-2"
-                                style={{ width: "100px" }}
+                                style={{ width: '100px' }}
                               >
                                 {ele.priority}
                               </span>
@@ -889,17 +833,19 @@ export default function HrDashboard(props) {
                           </div>
                         </div>
                       );
+                    } else {
+                      return null;
                     }
                   })}
 
                 {dailyTask &&
                   dailyTask.length > 0 &&
                   dailyTask.map((ele, index) => {
-                    if (ele.time_status == "START") {
+                    if (ele.time_status === 'START') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                          style={{ backgroundColor: "#EBF5FB" }}
+                          style={{ backgroundColor: '#EBF5FB' }}
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
@@ -914,58 +860,58 @@ export default function HrDashboard(props) {
                                     {index + 1}. {ele.main_ticket_id}-
                                     {ele.task_name.length < 20
                                       ? ele.task_name
-                                      : ele.task_name.substring(0, 20) + "...."}
+                                      : ele.task_name.substring(0, 20) + '....'}
                                   </h6>
                                 ) : (
-                                  "NO DATA"
+                                  'NO DATA'
                                 )}
                               </Link>
                             </div>
                           </div>
-                          {ele.status != "COMPLETED" && (
+                          {ele.status !== 'COMPLETED' && (
                             <button
                               type="button"
                               style={{
-                                border: "none",
-                                borderRadius: "25%",
-                                height: "35px",
-                                width: "35px",
-                                textAlign: "center",
-                                margin: "0px",
-                                padding: "0px",
+                                border: 'none',
+                                borderRadius: '25%',
+                                height: '35px',
+                                width: '35px',
+                                textAlign: 'center',
+                                margin: '0px',
+                                padding: '0px'
                               }}
                               title="Start Task"
                               onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, "START")
+                                handleTimer(e, ele.ticket_id, ele.id, 'START')
                               }
                             >
                               <i
                                 className="icofont-ui-play"
                                 style={{
-                                  fontSize: "20px",
-                                  color: "#1ABC9C",
-                                  margin: "auto",
+                                  fontSize: '20px',
+                                  color: '#1ABC9C',
+                                  margin: 'auto'
                                 }}
                               ></i>
                             </button>
                           )}
-                          {ele && ele && ele.status == "TO_DO" ? (
+                          {ele && ele && ele.status === 'TO_DO' ? (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-danger p-2"
                             >
                               {ele.status}
                             </span>
-                          ) : ele.status == "IN_PROGRESS" ? (
+                          ) : ele.status === 'IN_PROGRESS' ? (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-warning p-2"
                             >
                               {ele.status}
                             </span>
                           ) : (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-success p-2"
                             >
                               {ele.status}
@@ -973,34 +919,34 @@ export default function HrDashboard(props) {
                           )}
 
                           <div className="time-block text-truncate">
-                            {ele.priority === "Very High" && (
+                            {ele.priority === 'Very High' && (
                               <span
                                 className="badge bg-danger p-2"
-                                style={{ width: "100px" }}
+                                style={{ width: '100px' }}
                               >
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "High" && (
+                            {ele.priority === 'High' && (
                               <span
                                 className="badge bg-danger p-2"
-                                style={{ width: "100px" }}
+                                style={{ width: '100px' }}
                               >
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Medium" && (
+                            {ele.priority === 'Medium' && (
                               <span
                                 className="badge bg-info p-2"
-                                style={{ width: "100px" }}
+                                style={{ width: '100px' }}
                               >
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Low" && (
+                            {ele.priority === 'Low' && (
                               <span
                                 className="badge bg-success p-2"
-                                style={{ width: "100px" }}
+                                style={{ width: '100px' }}
                               >
                                 {ele.priority}
                               </span>
@@ -1008,6 +954,8 @@ export default function HrDashboard(props) {
                           </div>
                         </div>
                       );
+                    } else {
+                      return null;
                     }
                   })}
               </div>
@@ -1023,16 +971,16 @@ export default function HrDashboard(props) {
             <div className="card-body p-0">
               <div
                 className="flex-grow-1"
-                style={{ height: "250px", overflowY: "scroll" }}
+                style={{ height: '250px', overflowY: 'scroll' }}
               >
                 {previousTask &&
                   previousTask.length > 0 &&
                   previousTask.map((ele, index) => {
-                    if (ele.time_status == "STOP") {
+                    if (ele.time_status === 'STOP') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                          style={{ backgroundColor: "#EBF5FB" }}
+                          style={{ backgroundColor: '#EBF5FB' }}
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
@@ -1046,35 +994,35 @@ export default function HrDashboard(props) {
                                   {index + 1}. {ele.main_ticket_id}-
                                   {ele.task_name.length < 20
                                     ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + "...."}
+                                    : ele.task_name.substring(0, 20) + '....'}
                                 </h6>
                               </Link>
                             </div>
                           </div>
 
-                          {ele.status != "COMPLETED" && (
+                          {ele.status !== 'COMPLETED' && (
                             <button
                               type="button"
                               style={{
-                                border: "none",
-                                borderRadius: "25%",
-                                height: "35px",
-                                width: "35px",
-                                textAlign: "center",
-                                margin: "0px",
-                                padding: "0px",
+                                border: 'none',
+                                borderRadius: '25%',
+                                height: '35px',
+                                width: '35px',
+                                textAlign: 'center',
+                                margin: '0px',
+                                padding: '0px'
                               }}
                               title="Stop Task"
                               onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, "STOP")
+                                handleTimer(e, ele.ticket_id, ele.id, 'STOP')
                               }
                             >
                               <i
                                 className="icofont-ui-pause"
                                 style={{
-                                  fontSize: "20px",
-                                  color: "#EC7063",
-                                  margin: "auto",
+                                  fontSize: '20px',
+                                  color: '#EC7063',
+                                  margin: 'auto'
                                 }}
                               ></i>
                             </button>
@@ -1082,7 +1030,7 @@ export default function HrDashboard(props) {
 
                           {ele && ele.total_worked && (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-danger p-2"
                             >
                               {ele.total_worked}
@@ -1091,30 +1039,30 @@ export default function HrDashboard(props) {
 
                           {ele && ele.task_hours && (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-danger p-2"
                             >
                               {ele.task_hours}
                             </span>
                           )}
 
-                          {ele && ele && ele.status == "TO_DO" ? (
+                          {ele && ele && ele.status === 'TO_DO' ? (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-danger p-2"
                             >
                               {ele.status}
                             </span>
-                          ) : ele.status == "IN_PROGRESS" ? (
+                          ) : ele.status === 'IN_PROGRESS' ? (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-warning p-2"
                             >
                               {ele.status}
                             </span>
                           ) : (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-success p-2"
                             >
                               {ele.status}
@@ -1122,41 +1070,41 @@ export default function HrDashboard(props) {
                           )}
                           <span
                             className="badge bg-primary p-2"
-                            style={{ width: "100px", marginRight: "5px" }}
+                            style={{ width: '100px', marginRight: '5px' }}
                           >
                             {ele.end_date}
                           </span>
 
                           <div className="time-block text-truncate  ">
-                            {ele.priority === "Very High" && (
+                            {ele.priority === 'Very High' && (
                               <span
                                 className="badge bg-danger"
-                                style={{ width: "100px" }}
+                                style={{ width: '100px' }}
                               >
                                 {ele.priority}
                               </span>
                             )}
 
-                            {ele.priority === "High" && (
+                            {ele.priority === 'High' && (
                               <span
                                 className="badge bg-danger p-2"
-                                style={{ width: "100px" }}
+                                style={{ width: '100px' }}
                               >
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Medium" && (
+                            {ele.priority === 'Medium' && (
                               <span
                                 className="badge bg-info p-2"
-                                style={{ width: "100px" }}
+                                style={{ width: '100px' }}
                               >
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Low" && (
+                            {ele.priority === 'Low' && (
                               <span
                                 className="badge bg-success p-2"
-                                style={{ width: "100px" }}
+                                style={{ width: '100px' }}
                               >
                                 {ele.priority}
                               </span>
@@ -1164,17 +1112,19 @@ export default function HrDashboard(props) {
                           </div>
                         </div>
                       );
+                    } else {
+                      return null;
                     }
                   })}
 
                 {previousTask &&
                   previousTask.length > 0 &&
                   previousTask.map((ele, index) => {
-                    if (ele.time_status == "START") {
+                    if (ele.time_status === 'START') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                          style={{ backgroundColor: "#EBF5FB" }}
+                          style={{ backgroundColor: '#EBF5FB' }}
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
@@ -1188,55 +1138,55 @@ export default function HrDashboard(props) {
                                   {index + 1}. {ele.main_ticket_id}-
                                   {ele.task_name.length < 20
                                     ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + "...."}
+                                    : ele.task_name.substring(0, 20) + '....'}
                                 </h6>
                               </Link>
                             </div>
                           </div>
-                          {ele.status != "COMPLETED" && (
+                          {ele.status !== 'COMPLETED' && (
                             <button
                               type="button"
                               style={{
-                                border: "none",
-                                borderRadius: "25%",
-                                height: "35px",
-                                width: "35px",
-                                textAlign: "center",
-                                margin: "0px",
-                                padding: "0px",
+                                border: 'none',
+                                borderRadius: '25%',
+                                height: '35px',
+                                width: '35px',
+                                textAlign: 'center',
+                                margin: '0px',
+                                padding: '0px'
                               }}
                               title="Start Task"
                               onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, "START")
+                                handleTimer(e, ele.ticket_id, ele.id, 'START')
                               }
                             >
                               <i
                                 className="icofont-ui-play"
                                 style={{
-                                  fontSize: "20px",
-                                  color: "#1ABC9C",
-                                  margin: "auto",
+                                  fontSize: '20px',
+                                  color: '#1ABC9C',
+                                  margin: 'auto'
                                 }}
                               ></i>
                             </button>
                           )}
-                          {ele && ele && ele.status == "TO_DO" ? (
+                          {ele && ele && ele.status === 'TO_DO' ? (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-danger p-2"
                             >
                               {ele.status}
                             </span>
-                          ) : ele.status == "IN_PROGRESS" ? (
+                          ) : ele.status === 'IN_PROGRESS' ? (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-warning p-2"
                             >
                               {ele.status}
                             </span>
                           ) : (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-success p-2"
                             >
                               {ele.status}
@@ -1244,39 +1194,39 @@ export default function HrDashboard(props) {
                           )}
                           <span
                             className="badge bg-primary p-2"
-                            style={{ width: "80px", marginRight: "5px" }}
+                            style={{ width: '80px', marginRight: '5px' }}
                           >
                             {ele.end_date}
                           </span>
                           <div className="time-block text-truncate">
-                            {ele.priority === "Very High" && (
+                            {ele.priority === 'Very High' && (
                               <span
                                 className="badge bg-danger p-2"
-                                style={{ width: "80px" }}
+                                style={{ width: '80px' }}
                               >
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "High" && (
+                            {ele.priority === 'High' && (
                               <span
                                 className="badge bg-danger p-2"
-                                style={{ width: "80px" }}
+                                style={{ width: '80px' }}
                               >
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Medium" && (
+                            {ele.priority === 'Medium' && (
                               <span
                                 className="badge bg-info p-2"
-                                style={{ width: "80px" }}
+                                style={{ width: '80px' }}
                               >
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Low" && (
+                            {ele.priority === 'Low' && (
                               <span
                                 className="badge bg-success p-2"
-                                style={{ width: "80px" }}
+                                style={{ width: '80px' }}
                               >
                                 {ele.priority}
                               </span>
@@ -1284,6 +1234,8 @@ export default function HrDashboard(props) {
                           </div>
                         </div>
                       );
+                    } else {
+                      return null;
                     }
                   })}
               </div>
@@ -1300,7 +1252,7 @@ export default function HrDashboard(props) {
             <div className="card-body p-0">
               <div
                 className="flex-grow-1"
-                style={{ height: "250px", overflowY: "scroll" }}
+                style={{ height: '250px', overflowY: 'scroll' }}
               >
                 {chartData && chartData.series && (
                   <Chart
@@ -1323,15 +1275,15 @@ export default function HrDashboard(props) {
             <div className="card-body p-0">
               <div
                 className="flex-grow-1"
-                style={{ height: "250px", overflowY: "scroll" }}
+                style={{ height: '250px', overflowY: 'scroll' }}
               >
                 {upcomingTask &&
                   upcomingTask.map((ele, index) => {
-                    if (ele.time_status == "STOP") {
+                    if (ele.time_status === 'STOP') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                          style={{ backgroundColor: "#EBF5FB" }}
+                          style={{ backgroundColor: '#EBF5FB' }}
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
@@ -1342,55 +1294,55 @@ export default function HrDashboard(props) {
                                   {index + 1}. {ele.main_ticket_id}-
                                   {ele.task_name.length < 20
                                     ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + "...."}
+                                    : ele.task_name.substring(0, 20) + '....'}
                                 </h6>
                               </Link>
                             </div>
                           </div>
-                          {ele.status != "COMPLETED" && (
+                          {ele.status !== 'COMPLETED' && (
                             <button
                               type="button"
                               style={{
-                                border: "none",
-                                borderRadius: "25%",
-                                height: "35px",
-                                width: "35px",
-                                textAlign: "center",
-                                margin: "0px",
-                                padding: "0px",
+                                border: 'none',
+                                borderRadius: '25%',
+                                height: '35px',
+                                width: '35px',
+                                textAlign: 'center',
+                                margin: '0px',
+                                padding: '0px'
                               }}
                               title="Stop Task"
                               onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, "STOP")
+                                handleTimer(e, ele.ticket_id, ele.id, 'STOP')
                               }
                             >
                               <i
                                 className="icofont-ui-pause"
                                 style={{
-                                  fontSize: "20px",
-                                  color: "#EC7063",
-                                  margin: "auto",
+                                  fontSize: '20px',
+                                  color: '#EC7063',
+                                  margin: 'auto'
                                 }}
                               ></i>
                             </button>
                           )}
-                          {ele && ele && ele.status == "TO_DO" ? (
+                          {ele && ele && ele.status === 'TO_DO' ? (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-danger p-2"
                             >
                               {ele.status}
                             </span>
-                          ) : ele.status == "IN_PROGRESS" ? (
+                          ) : ele.status === 'IN_PROGRESS' ? (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-warning p-2"
                             >
                               {ele.status}
                             </span>
                           ) : (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-success p-2"
                             >
                               {ele.status}
@@ -1398,27 +1350,27 @@ export default function HrDashboard(props) {
                           )}
                           <span
                             className="badge bg-primary p-2"
-                            style={{ width: "100px", marginRight: "5px" }}
+                            style={{ width: '100px', marginRight: '5px' }}
                           >
                             {ele.end_date}
                           </span>
                           <div className="time-block text-truncate">
-                            {ele.priority === "Very High" && (
+                            {ele.priority === 'Very High' && (
                               <span className="badge bg-danger p-2">
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "High" && (
+                            {ele.priority === 'High' && (
                               <span className="badge bg-danger p-2">
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Medium" && (
+                            {ele.priority === 'Medium' && (
                               <span className="badge bg-info p-2">
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Low" && (
+                            {ele.priority === 'Low' && (
                               <span className="badge bg-success p-2">
                                 {ele.priority}
                               </span>
@@ -1426,16 +1378,18 @@ export default function HrDashboard(props) {
                           </div>
                         </div>
                       );
+                    } else {
+                      return null;
                     }
                   })}
 
                 {upcomingTask &&
                   upcomingTask.map((ele, index) => {
-                    if (ele.time_status == "START") {
+                    if (ele.time_status === 'START') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
-                          style={{ backgroundColor: "#EBF5FB" }}
+                          style={{ backgroundColor: '#EBF5FB' }}
                         >
                           <div className="d-flex align-items-center flex-fill">
                             <div className="d-flex flex-column ps-3">
@@ -1449,55 +1403,55 @@ export default function HrDashboard(props) {
                                   {index + 1}. {ele.main_ticket_id}-
                                   {ele.task_name.length < 20
                                     ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + "...."}
+                                    : ele.task_name.substring(0, 20) + '....'}
                                 </h6>
                               </Link>
                             </div>
                           </div>
-                          {ele.status != "COMPLETED" && (
+                          {ele.status !== 'COMPLETED' && (
                             <button
                               type="button"
                               style={{
-                                border: "none",
-                                borderRadius: "25%",
-                                height: "35px",
-                                width: "35px",
-                                textAlign: "center",
-                                margin: "0px",
-                                padding: "0px",
+                                border: 'none',
+                                borderRadius: '25%',
+                                height: '35px',
+                                width: '35px',
+                                textAlign: 'center',
+                                margin: '0px',
+                                padding: '0px'
                               }}
                               title="Start Task"
                               onClick={(e) =>
-                                handleTimer(e, ele.ticket_id, ele.id, "START")
+                                handleTimer(e, ele.ticket_id, ele.id, 'START')
                               }
                             >
                               <i
                                 className="icofont-ui-play"
                                 style={{
-                                  fontSize: "20px",
-                                  color: "#1ABC9C",
-                                  margin: "auto",
+                                  fontSize: '20px',
+                                  color: '#1ABC9C',
+                                  margin: 'auto'
                                 }}
                               ></i>
                             </button>
                           )}
-                          {ele && ele && ele.status == "TO_DO" ? (
+                          {ele && ele && ele.status === 'TO_DO' ? (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-danger p-2"
                             >
                               {ele.status}
                             </span>
-                          ) : ele.status == "IN_PROGRESS" ? (
+                          ) : ele.status === 'IN_PROGRESS' ? (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-warning p-2"
                             >
                               {ele.status}
                             </span>
                           ) : (
                             <span
-                              style={{ width: "80px", marginRight: "5px" }}
+                              style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-success p-2"
                             >
                               {ele.status}
@@ -1505,39 +1459,39 @@ export default function HrDashboard(props) {
                           )}
                           <span
                             className="badge bg-primary p-2"
-                            style={{ width: "80px", marginRight: "5px" }}
+                            style={{ width: '80px', marginRight: '5px' }}
                           >
                             {ele.end_date}
                           </span>
                           <div className="time-block text-truncate">
-                            {ele.priority === "Very High" && (
+                            {ele.priority === 'Very High' && (
                               <span
                                 className="badge bg-danger p-2"
-                                style={{ width: "80px" }}
+                                style={{ width: '80px' }}
                               >
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "High" && (
+                            {ele.priority === 'High' && (
                               <span
                                 className="badge bg-danger p-2"
-                                style={{ width: "80px" }}
+                                style={{ width: '80px' }}
                               >
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Medium" && (
+                            {ele.priority === 'Medium' && (
                               <span
                                 className="badge bg-info p-2"
-                                style={{ width: "80px" }}
+                                style={{ width: '80px' }}
                               >
                                 {ele.priority}
                               </span>
                             )}
-                            {ele.priority === "Low" && (
+                            {ele.priority === 'Low' && (
                               <span
                                 className="badge bg-success p-2"
-                                style={{ width: "80px" }}
+                                style={{ width: '80px' }}
                               >
                                 {ele.priority}
                               </span>
@@ -1545,6 +1499,8 @@ export default function HrDashboard(props) {
                           </div>
                         </div>
                       );
+                    } else {
+                      return null;
                     }
                   })}
               </div>
