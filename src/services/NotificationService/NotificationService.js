@@ -1,21 +1,22 @@
 import axios from 'axios';
-import { userSessionData } from '../../settings/constants';
 import { notificationUrl } from '../../settings/constants';
 
-const _URL = notificationUrl;
-
 const _getNotification =
-  _URL + '/getNotification/' + localStorage.getItem('id');
+  notificationUrl + '/getNotification/' + localStorage.getItem('id');
 
-const _markedReadNotification = _URL + '/markedReadNotification/';
+const _markedReadNotification = notificationUrl + '/markedReadNotification/';
+const _markedReadRegularizationNotification =
+  notificationUrl + '/markAllAsReadNotification/';
+
 const _getAllNotification =
-  _URL + '/getAllNotification/' + localStorage.getItem('id');
+  notificationUrl + '/getAllNotification/' + localStorage.getItem('id');
 
-const _markAllReadAsNotification = _URL + '/markAllAsReadNotification/';
+const _markAllReadAsNotification =
+  notificationUrl + '/markAllAsReadNotification/';
+
+const token = localStorage.getItem('jwt_token');
 
 export function getData() {
-  const token = localStorage.getItem('jwt_token');
-
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -23,12 +24,10 @@ export function getData() {
       'Content-Type': 'application/json'
     }
   };
-  return axios.get(_URL, config);
+  return axios.get(notificationUrl, config);
 }
 
 export function postData(payload) {
-  const token = localStorage.getItem('jwt_token');
-
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -37,12 +36,10 @@ export function postData(payload) {
     }
   };
 
-  return axios.post(_URL, payload, config);
+  return axios.post(notificationUrl, payload, config);
 }
 
 export function getNotification() {
-  const token = localStorage.getItem('jwt_token');
-
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -53,9 +50,21 @@ export function getNotification() {
   return axios.get(_getNotification, config);
 }
 
-export function markedReadNotification(id) {
-  const token = localStorage.getItem('jwt_token');
+export function markedAllReadRegularizationNotification({ id, type }) {
+  const config = {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
+    }
+  };
+  return axios.get(
+    _markedReadRegularizationNotification + id + '/' + type,
+    config
+  );
+}
 
+export function markedReadNotification(id) {
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -67,8 +76,6 @@ export function markedReadNotification(id) {
 }
 
 export function getAllNotification() {
-  const token = localStorage.getItem('jwt_token');
-
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
@@ -80,8 +87,6 @@ export function getAllNotification() {
 }
 
 export function getAllmarkAllAsReadNotification(userId) {
-  const token = localStorage.getItem('jwt_token');
-
   const config = {
     headers: {
       Authorization: `Bearer ${token}`,
