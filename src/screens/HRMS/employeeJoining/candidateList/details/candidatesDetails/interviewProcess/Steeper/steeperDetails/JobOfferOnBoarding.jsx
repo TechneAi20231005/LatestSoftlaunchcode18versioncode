@@ -11,11 +11,8 @@ import {
   CustomInput,
   CustomReactSelect
 } from '../../../../../../../../../components/custom/inputs/CustomInputs';
-import { getBranchMasterListThunk } from '../../../../../../../../../redux/services/hrms/employeeJoining/branchMaster';
-import { getDesignationData } from '../../../../../../../../Dashboard/DashboardAction';
 import { jobOfferValidation } from './validation/jobOfferValidation';
 import { RenderIf } from '../../../../../../../../../utils';
-import { getRemarkMasterListThunk } from '../../../../../../../../../redux/services/hrms/employeeJoining/remarkMaster';
 import {
   useCurrentInterviewStep,
   useJobOfferSalaryFiltered
@@ -30,6 +27,7 @@ import {
 } from '../../../../../../../../../redux/services/hrms/employeeJoining/interviewProcess';
 import SalaryNegotiationActivity from './SalaryNegotiationActivity';
 import { experienceLevel } from '../../../../../../../../../settings/constants';
+import useDropdownData from '../../../../../../../../../hooks/useDropdownData';
 
 function JobOfferOnBoarding() {
   // // initial state
@@ -40,15 +38,6 @@ function JobOfferOnBoarding() {
   const currentInterviewStep = useCurrentInterviewStep();
 
   // // redux state
-  const { getDesignationData: designationMasterList, status } = useSelector(
-    (DesignationSlice) => DesignationSlice.designationMaster
-  );
-  const { branchMasterList, isLoading: branchMasterLoading } = useSelector(
-    (state) => state?.branchMaster
-  );
-  const { remarkMasterList, isLoading: remarkMasterLoading } = useSelector(
-    (state) => state?.remarkMaster
-  );
   const { salaryMasterList } = useSelector((state) => state?.salaryMaster);
   const { isLoading, salaryOfferedByHrAndSrHrData, interviewProcessData } =
     useSelector((state) => state?.interViewProcess);
@@ -82,34 +71,14 @@ function JobOfferOnBoarding() {
   };
 
   // // dropdown data
-  const preferredDesignation = [
-    { label: 'Select', value: '', isDisabled: true },
-    ...(designationMasterList
-      ?.filter((item) => item?.is_active === 1)
-      ?.map((item) => ({
-        label: item?.designation,
-        value: item?.id
-      })) || [])
-  ];
-
-  const locationType = [
-    { label: 'Select', value: '', isDisabled: true },
-    ...(branchMasterList
-      ?.filter((item) => item?.is_active === 1)
-      ?.map((item) => ({
-        label: item?.location_name,
-        value: item?.id
-      })) || [])
-  ];
-
-  const remarkType = [
-    { label: 'Select', value: '', isDisabled: true },
-    ...(remarkMasterList
-      ?.filter((item) => item?.is_active === 1)
-      ?.map((item) => ({ label: item?.remark_description, value: item?.id })) ||
-      []),
-    { label: 'Other', value: 0 }
-  ];
+  const {
+    preferredDesignationDropdown,
+    preferredDesignationDropdownLoading,
+    preferredLocationDropdown,
+    preferredLocationDropdownLoading,
+    remarkDropdown,
+    remarkDropdownLoading
+  } = useDropdownData({ render: true });
 
   // // filed disable cases
   const fieldDisableCase_1 =
@@ -261,15 +230,6 @@ function JobOfferOnBoarding() {
   // };
 
   useEffect(() => {
-    if (!designationMasterList?.length) {
-      dispatch(getDesignationData());
-    }
-    if (!branchMasterList?.length) {
-      dispatch(getBranchMasterListThunk());
-    }
-    if (!remarkMasterList?.length) {
-      dispatch(getRemarkMasterListThunk());
-    }
     if (!salaryMasterList?.length) {
       dispatch(getSalaryMasterListThunk());
     }
@@ -309,12 +269,14 @@ function JobOfferOnBoarding() {
                   <Row className="row_gap_3 ">
                     <Col sm={6} md={6} lg={4}>
                       <Field
-                        options={preferredDesignation}
+                        options={preferredDesignationDropdown}
                         component={CustomReactSelect}
                         name="designation_id"
                         label="Designation"
                         placeholder={
-                          status === 'loading' ? 'Loading...' : 'Select'
+                          preferredDesignationDropdownLoading
+                            ? 'Loading...'
+                            : 'Select'
                         }
                         requiredField
                         onBlur={() => handelSetMaxSalaryValue(setFieldValue)}
@@ -324,12 +286,12 @@ function JobOfferOnBoarding() {
 
                     <Col sm={6} md={6} lg={4}>
                       <Field
-                        options={locationType}
+                        options={preferredLocationDropdown}
                         component={CustomReactSelect}
                         name="location_id"
                         label="Location"
                         placeholder={
-                          branchMasterLoading?.getBranchMasterList
+                          preferredLocationDropdownLoading
                             ? 'Loading...'
                             : 'Select'
                         }
@@ -454,13 +416,11 @@ function JobOfferOnBoarding() {
                       <Col sm={12}>
                         <Field
                           component={CustomReactSelect}
-                          options={remarkType}
+                          options={remarkDropdown}
                           name="remark_id"
                           label="Remark Title"
                           placeholder={
-                            remarkMasterLoading?.getRemarkMasterList
-                              ? 'Loading...'
-                              : 'Select'
+                            remarkDropdownLoading ? 'Loading...' : 'Select'
                           }
                           requiredField
                           disabled={

@@ -454,9 +454,9 @@ function TestDraftDetails(props) {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.module_name && row.module_name.length < 20
-                    ? row.module_name
-                    : row.module_name.substring(0, 50) + '....'}
+                  {row?.module_name && row?.module_name?.length < 20
+                    ? row?.module_name
+                    : row?.module_name?.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -662,14 +662,14 @@ function TestDraftDetails(props) {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.type_name && (
+          {row?.type_name && (
             <OverlayTrigger overlay={<Tooltip>{row.type_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.type_name && row.type_name.length < 20
-                    ? row.type_name
-                    : row.type_name.substring(0, 50) + '....'}
+                  {row?.type_name && row?.type_name?.length < 20
+                    ? row?.type_name
+                    : row?.type_name?.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -705,14 +705,14 @@ function TestDraftDetails(props) {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.group_name && (
+          {row?.group_name && (
             <OverlayTrigger overlay={<Tooltip>{row.group_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.group_name && row.group_name.length < 20
-                    ? row.group_name
-                    : row.group_name.substring(0, 50) + '....'}
+                  {row?.group_name && row?.group_name?.length < 20
+                    ? row?.group_name
+                    : row?.group_name?.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -864,14 +864,14 @@ function TestDraftDetails(props) {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.steps && (
+          {row?.steps && (
             <OverlayTrigger overlay={<Tooltip>{row.steps} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.steps && row.type_name.length < 20
-                    ? row.steps
-                    : row.steps.substring(0, 50) + '....'}
+                  {row?.steps && row.type_name?.length < 20
+                    ? row?.steps
+                    : row?.steps?.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -907,14 +907,14 @@ function TestDraftDetails(props) {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.expected_result && (
+          {row?.expected_result && (
             <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.expected_result && row.expected_result.length < 20
-                    ? row.expected_result
-                    : row.expected_result.substring(0, 50) + '....'}
+                  {row?.expected_result && row?.expected_result?.length < 20
+                    ? row?.expected_result
+                    : row?.expected_result?.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -948,14 +948,14 @@ function TestDraftDetails(props) {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.status && (
+          {row?.status && (
             <OverlayTrigger overlay={<Tooltip>{row.status} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.status && row.status.length < 20
-                    ? row.status
-                    : row.status.substring(0, 50) + '....'}
+                  {row?.status && row?.status?.length < 20
+                    ? row?.status
+                    : row?.status?.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -991,14 +991,14 @@ function TestDraftDetails(props) {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.project_name && (
+          {row?.project_name && (
             <OverlayTrigger overlay={<Tooltip>{row.project_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.project_name && row.project_name.length < 20
-                    ? row.project_name
-                    : row.project_name.substring(0, 50) + '....'}
+                  {row?.project_name && row?.project_name?.length < 20
+                    ? row?.project_name
+                    : row?.project_name?.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -1034,14 +1034,14 @@ function TestDraftDetails(props) {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.created_at && (
-            <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
+          {row?.created_at && (
+            <OverlayTrigger overlay={<Tooltip>{row?.created_at} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.created_at && row.created_at.length < 20
-                    ? row.created_at
-                    : row.created_at.substring(0, 50) + '....'}
+                  {row?.created_at && row?.created_at?.length < 20
+                    ? row?.created_at
+                    : row?.created_at?.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -1077,14 +1077,14 @@ function TestDraftDetails(props) {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.created_by && (
+          {row?.created_by && (
             <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.created_by && row.created_by.length < 20
-                    ? row.created_by
-                    : row.created_by.substring(0, 50) + '....'}
+                  {row?.created_by && row?.created_by?.length < 20
+                    ? row?.created_by
+                    : row?.created_by?.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -1120,14 +1120,14 @@ function TestDraftDetails(props) {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.updated_at && (
+          {row?.updated_at && (
             <OverlayTrigger overlay={<Tooltip>{row.updated_at} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.updated_at && row.updated_at.length < 20
-                    ? row.updated_at
-                    : row.updated_at.substring(0, 50) + '....'}
+                  {row?.updated_at && row?.updated_at?.length < 20
+                    ? row?.updated_at
+                    : row?.updated_at?.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -1163,14 +1163,14 @@ function TestDraftDetails(props) {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.updated_by && (
+          {row?.updated_by && (
             <OverlayTrigger overlay={<Tooltip>{row.updated_by} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.updated_by && row.updated_by.length < 20
-                    ? row.updated_by
-                    : row.updated_by.substring(0, 50) + '....'}
+                  {row?.updated_by && row?.updated_by?.length < 20
+                    ? row?.updated_by
+                    : row?.updated_by?.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -1199,7 +1199,7 @@ function TestDraftDetails(props) {
       setReviewerError('');
     }
     const testCasesData =
-      selectedRows.length > 0
+      selectedRows?.length > 0
         ? selectedRows?.map((id) => id)
         : getDraftTestListData
             ?.filter((row) => row.status === 'DRAFT')
