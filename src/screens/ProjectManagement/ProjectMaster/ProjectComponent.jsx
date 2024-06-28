@@ -127,7 +127,7 @@ function ProjectComponent() {
 
     {
       name: 'Description',
-      width: '10%',
+      width: '170px',
       selector: (row) => row.description,
       sortable: true,
       cell: (row) => (
@@ -141,9 +141,9 @@ function ProjectComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.description && row.description.length < 10
+                  {row.description && row.description.length < 20
                     ? row.description
-                    : row.description.substring(0, 10) + '....'}
+                    : row.description.substring(0, 20) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -191,7 +191,7 @@ function ProjectComponent() {
     },
     {
       name: 'created at',
-      width: '10%',
+      width: '200px',
       selector: (row) => row.created_at,
       sortable: true,
       cell: (row) => (
@@ -205,9 +205,9 @@ function ProjectComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.created_at && row.created_at.length < 10
+                  {row.created_at && row.created_at.length < 20
                     ? row.created_at
-                    : row.created_at.substring(0, 10) + '....'}
+                    : row.created_at.substring(0, 20) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -231,9 +231,9 @@ function ProjectComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.created_by && row.created_by.length < 10
+                  {row.created_by && row.created_by.length < 20
                     ? row.created_by
-                    : row.created_by.substring(0, 10) + '....'}
+                    : row.created_by.substring(0, 20) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -307,11 +307,12 @@ function ProjectComponent() {
         if (res.status === 200) {
           setShowLoaderModal(false);
 
-          let counter = 1;
+          let counter = 0;
+          console.log(counter++);
           const temp = res.data.data;
           for (const key in temp) {
             data.push({
-              SrNo: counter++,
+              counter: counter++,
               id: temp[key].id,
               project_name: temp[key].project_name,
               projectReviewer: temp[key].projectReviewer,

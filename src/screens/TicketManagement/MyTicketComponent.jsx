@@ -253,18 +253,7 @@ export default function MyTicketComponent() {
                   </li>
                 ))}
 
-              <li>
-                {' '}
-                <Link
-                  to={`/${_base}/Ticket/View/` + data.id}
-                  className="btn btn-sm btn-info text-white"
-                  style={{ width: '100%', zIndex: 100 }}
-                >
-                  <i className="icofont-external-link "></i> View
-                </Link>{' '}
-              </li>
-
-              {data.created_by != localStorage.getItem('id') &&
+              {data.created_by !== localStorage.getItem('id') &&
                 data.basket_configured === 0 &&
                 localStorage.getItem('account_for') === 'SELF' &&
                 data.status_name != 'Solved' &&
@@ -281,13 +270,9 @@ export default function MyTicketComponent() {
                   </li>
                 )}
 
-              {(data.created_by != localStorage.getItem('id') &&
+              {data.created_by !== localStorage.getItem('id') &&
                 data.basket_configured > 0 &&
-                data.status_name != 'Solved' &&
-                localStorage.getItem('account_for' === 'SELF')) ||
-                (data?.projectowner?.filter(
-                  (d) => d.user_id == localStorage.getItem('id')
-                ) && (
+                localStorage.getItem('account_for') === 'SELF' && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Task/` + data.id}
@@ -297,17 +282,40 @@ export default function MyTicketComponent() {
                       <i className="icofont-tasks"></i> Task
                     </Link>
                   </li>
-                ))}
+                )}
 
               <li>
+                {' '}
                 <Link
-                  to={`/${_base}/TicketHistory/` + data.id}
-                  className="btn btn-sm btn-primary text-white"
+                  to={`/${_base}/Ticket/View/` + data.id}
+                  className="btn btn-sm btn-info text-white"
                   style={{ width: '100%', zIndex: 100 }}
                 >
-                  <i className="icofont-history"></i> History
-                </Link>
+                  <i className="icofont-external-link "></i> View
+                </Link>{' '}
               </li>
+              {data?.passed_status !== 'UNPASS' && (
+                <>
+                  <li>
+                    <Link
+                      to={`/${_base}/TicketHistory/` + data.id}
+                      className="btn btn-sm btn-primary text-white"
+                      style={{ width: '100%', zIndex: 100 }}
+                    >
+                      <i className="icofont-history"></i> History
+                    </Link>
+                  </li>
+                  <li>
+                    <button
+                      className=" btn btn-sm  btn-secondary text-white"
+                      style={{ width: '100%', zIndex: 100 }}
+                      onClick={(e) => handleConfirmationModal(e, data)}
+                    >
+                      Confirm
+                    </button>
+                  </li>
+                </>
+              )}
             </Dropdown.Menu>
           </Dropdown>
         );
