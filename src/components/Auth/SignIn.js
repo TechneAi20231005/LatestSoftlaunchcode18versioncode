@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, Link, useOutletContext } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 
 import { _base } from '../../settings/constants';
-import { useDispatch, useSelector } from 'react-redux';
+import { usePreLoading } from '../../context';
+
 import Alert from '../Common/Alert';
 import { postLoginUser } from './AuthSices/loginAction';
 
@@ -10,7 +12,9 @@ export default function SignIn() {
   // // initial state
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [setScreenPreLoading] = useOutletContext();
+
+  // // context state
+  const { screenPreLoading, setScreenPreLoading } = usePreLoading();
 
   // redux state
   const notify = useSelector((loginSlice) => loginSlice.login.notify);
@@ -25,6 +29,7 @@ export default function SignIn() {
       return;
     }
     setIsLoading(true);
+    setScreenPreLoading(true);
     const data = new FormData(e.target);
     dispatch(postLoginUser(data)).then((success) => {
       if (success.payload?.status === 1) {
@@ -32,7 +37,6 @@ export default function SignIn() {
         const tokenExpirationTime = decodeToken(token).exp * 1000;
         localStorage.setItem('jwt_token_expiration', tokenExpirationTime);
         window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
-        setScreenPreLoading(true);
       } else {
         setIsLoading(false);
         setScreenPreLoading(false);

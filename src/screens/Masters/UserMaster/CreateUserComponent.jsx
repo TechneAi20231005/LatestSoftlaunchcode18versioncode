@@ -33,6 +33,7 @@ import {
 
 import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
 import { getRoleData } from '../RoleMaster/RoleMasterAction';
+import { toast } from 'react-toastify';
 
 function CreateUserComponent({ match }) {
   const history = useNavigate();
@@ -81,8 +82,15 @@ function CreateUserComponent({ match }) {
     (DesignationSlice) =>
       DesignationSlice.designationMaster.sortedDesignationData
   );
+  console.log('designationDropdown', designationDropdown);
+  const sortDesignationDropdown = [...designationDropdown].sort((a, b) => {
+    if (a.label < b.label) return -1;
+    if (a.label > b.label) return 1;
+    return 0;
+  });
+
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 3)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 3)
   );
   const stateDropdown = useSelector(
     (DashbordSlice) => DashbordSlice.dashboard.activeState
@@ -409,12 +417,15 @@ function CreateUserComponent({ match }) {
     ) {
       if (flag === 1) {
         dispatch(postUserData(form)).then((res) => {
-          if (res.payload.data.status === 1 && res.payload.status === 200) {
+          if (
+            res?.payload?.data?.status === 1 &&
+            res?.payload?.status === 200
+          ) {
+            toast.success(res?.payload?.data?.message);
+            navigate(`/${_base}/User`);
             dispatch(getEmployeeData());
-            setNotify({ type: 'success', message: res.payload.data.message });
-            setTimeout(() => {
-              navigate(`/${_base}/User`);
-            }, 3000);
+          } else {
+            toast.error(res?.payload?.data?.message);
           }
           setLoading(false);
         });
@@ -1222,7 +1233,7 @@ function CreateUserComponent({ match }) {
                         <Select
                           id="designation_id"
                           name="designation_id"
-                          options={designationDropdown}
+                          options={sortDesignationDropdown}
                           onChange={(event) => {
                             if (event.value === '') {
                               setInputState({

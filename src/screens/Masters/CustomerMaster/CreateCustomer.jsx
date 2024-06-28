@@ -20,7 +20,6 @@ import {
   postCustomerData
 } from '../../Dashboard/DashboardAction';
 export default function CreateCustomer({ match }) {
-  const history = useNavigate();
   const [notify, setNotify] = useState(null);
 
   const [dependent, setDependent] = useState({
@@ -32,14 +31,6 @@ export default function CreateCustomer({ match }) {
 
   const [stateName, setStateName] = useState(null);
   const [cityName, setCityName] = useState(null);
-  const roleId = localStorage.getItem('role_id');
-
-  const handleDependent = (e, name) => {
-    setDependent({
-      ...dependent,
-      [name]: e.value
-    });
-  };
 
   const [contactError, setContactError] = useState(null);
   const [contactErr, setContactErr] = useState(false);
@@ -63,7 +54,7 @@ export default function CreateCustomer({ match }) {
   );
 
   const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 4)
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 4)
   );
 
   const Notify = useSelector((dashbordSlice) => dashbordSlice.dashboard.notify);
@@ -106,7 +97,7 @@ export default function CreateCustomer({ match }) {
         setContactErr(false);
         setContactError('');
       }
-    } else if (contactNumber.length === 10) {
+    } else if (contactNumber?.length === 10) {
       setContactErr(true);
       setContactError('Invalid Mobile Number');
     } else {
@@ -150,8 +141,8 @@ export default function CreateCustomer({ match }) {
       }
     }
 
-    if (contactNumber.length < 10) {
-      alert('Mobile Number Field should be 10 Digits');
+    if (contactNumber?.length < 10) {
+      alert('Please enter mobile number');
       return false;
     } else {
       if (flag === 1) {
@@ -225,18 +216,18 @@ export default function CreateCustomer({ match }) {
     dispatch(getStateData());
     dispatch(getCountryDataSort());
     dispatch(getCityData());
-    if (!customerType.length) {
+    if (!customerType?.length) {
       dispatch(getCustomerType());
     }
-    if (!stateDropdown.length) {
+    if (!stateDropdown?.length) {
     }
-    if (!countryDropdown.length) {
+    if (!countryDropdown?.length) {
     }
-    if (!checkRole.length) {
+    if (!checkRole?.length) {
       dispatch(getRoles());
     }
 
-    if (!cityDropdownData.length) {
+    if (!cityDropdownData?.length) {
     }
   }, []);
 
@@ -342,6 +333,7 @@ export default function CreateCustomer({ match }) {
                       id="contact_no"
                       name="contact_no"
                       placeholder="Contact Number"
+                      required
                       minLength={10}
                       maxLength={10}
                       onKeyPress={(e) => {

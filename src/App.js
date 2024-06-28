@@ -1,8 +1,9 @@
-import React, { useEffect, useLayoutEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Navigate, Route, Routes } from 'react-router-dom';
 
 // // static import
+import { usePreLoading } from './context';
 import useOnlineStatus from './components/Utilities/useOnlineStatus';
 import { RenderIf } from './utils';
 import { REACT_APP_ROOT_URL } from './config/envConfig';
@@ -16,12 +17,14 @@ const App = () => {
   const onlineStatus = useOnlineStatus();
   const tokenPresent = localStorage.getItem('jwt_token');
 
+  // // context state
+  const { screenPreLoading } = usePreLoading();
+
   // // redux state
   const { isAuth } = useSelector((state) => state.login);
 
   // // local state
   const [appRoutes, setAppRoutes] = useState([]);
-  const [screenPreLoading, setScreenPreLoading] = useState(false);
 
   // useEffect hook for set routes on component mount
   useEffect(() => {
@@ -50,14 +53,6 @@ const App = () => {
       clearInterval(interval);
     };
   }, [window.location.pathname]);
-
-  // // preloader
-  useLayoutEffect(() => {
-    setScreenPreLoading(true);
-    setTimeout(() => {
-      setScreenPreLoading(false);
-    }, 2000);
-  }, []);
 
   const mainContent = appRoutes.map((route) => {
     return route.component ? (
@@ -89,14 +84,7 @@ const App = () => {
         className={`${screenPreLoading ? 'd_hide' : 'theme-indigo'}`}
       >
         <Routes>
-          <Route
-            element={
-              <MainLayouts
-                isAuthenticated={tokenPresent}
-                setScreenPreLoading={setScreenPreLoading}
-              />
-            }
-          >
+          <Route element={<MainLayouts isAuthenticated={tokenPresent} />}>
             {mainContent}
           </Route>
         </Routes>
