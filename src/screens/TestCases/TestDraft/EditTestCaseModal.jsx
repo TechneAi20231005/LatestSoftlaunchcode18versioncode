@@ -55,6 +55,7 @@ function EditTestCaseModal({
   const [moduleDropdown, setModuleDropdown] = useState();
 
   const [subModuleDropdown, setSubModuleDropdown] = useState();
+  const [disable, setDisable] = useState(false);
 
   const severityData = [
     {
@@ -74,7 +75,6 @@ function EditTestCaseModal({
       label: 'Low'
     }
   ];
-
   const testCaseInitialValue = {
     project_id:
       type === 'EDIT' ? currentTestCasesData?.project_id?.toString() : '',
@@ -97,12 +97,14 @@ function EditTestCaseModal({
   };
 
   const handleEditTestCase = ({ formData }) => {
+    setDisable(true);
     dispatch(
       editTestCaseThunk({
         currentId: currentTestCasesData?.id,
         formData: formData,
         onSuccessHandler: () => {
           close();
+          setDisable(false);
           {
             payloadType === 'DRAFT' &&
               dispatch(
@@ -171,13 +173,13 @@ function EditTestCaseModal({
     if (getSubModuleList?.length <= 0) {
       dispatch(getSubModuleMasterThunk());
     }
-    dispatch(
-      getByTestPlanIDListThunk({
-        id: id,
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage
-      })
-    );
+    // dispatch(
+    //   getByTestPlanIDListThunk({
+    //     id: id,
+    //     limit: paginationData.rowPerPage,
+    //     page: paginationData.currentPage
+    //   })
+    // );
     dispatch(getFunctionMasterListThunk());
     dispatch(getTestingGroupMasterListThunk());
     dispatch(getTestingTypeMasterListThunk());
@@ -203,6 +205,7 @@ function EditTestCaseModal({
                     name="project_id"
                     label="Project Name"
                     placeholder="Select"
+                    requiredField
                     handleChange={(event) =>
                       handleProjectChange(event, setFieldValue)
                     }
@@ -214,23 +217,25 @@ function EditTestCaseModal({
                     component={CustomDropdown}
                     name="module_id"
                     label="Module Name"
+                    requiredField
                     placeholder="Select"
                     handleChange={(event) =>
                       handleModuleChange(event, setFieldValue)
                     }
                   />
                 </Col>
+
                 <Col md={4} lg={4}>
                   <Field
-                    options={
+                    data={
                       !subModuleDropdown ? getSubModuleList : subModuleDropdown
                     }
-                    component={CustomReactSelect}
+                    component={CustomDropdown}
                     name="submodule_id"
                     label="SubModule Name"
                     placeholder="Select"
-                    isMulti
-                    required
+                    // isMulti
+                    requiredField
                   />
                 </Col>
 
@@ -326,7 +331,11 @@ function EditTestCaseModal({
               </Row>
 
               <div className="d-flex justify-content-end gap-2">
-                <button className="btn btn-dark px-4" type="submit">
+                <button
+                  disabled={disable}
+                  className="btn btn-dark px-4"
+                  type="submit"
+                >
                   Update
                 </button>
                 <button

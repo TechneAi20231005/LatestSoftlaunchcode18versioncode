@@ -168,7 +168,6 @@ function TestCaseReviewDetails() {
       }
     });
   };
-
   const handleSubmit = async (status) => {
     const updatedRows = rowData
       .filter((row) => selectedRows.includes(row.id))
@@ -183,10 +182,10 @@ function TestCaseReviewDetails() {
       common_comment_id: commonComment,
       common_remark: commonRemark
     };
+
     dispatch(
       approveRejectByReviewerMasterThunk({
         formData,
-
         onSuccessHandler: () => {
           setCommonComment('');
           setCommonRemark('');
@@ -199,7 +198,6 @@ function TestCaseReviewDetails() {
           );
           localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: false });
           localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
-
           setRowData(testPlanIdData);
         },
         onErrorHandler: () => {}
@@ -228,9 +226,9 @@ function TestCaseReviewDetails() {
     {
       name: 'Action',
       selector: (row) => (
-        <>
+        <div className="d-flex align-items-center">
           <i
-            className="icofont-edit text-primary cp me-3"
+            className="icofont-edit text-primary  btn btn-outline-secondary cp me-3"
             onClick={() =>
               setAddEditTestCasesModal({
                 type: 'EDIT',
@@ -241,12 +239,12 @@ function TestCaseReviewDetails() {
           />
 
           <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.id}`}>
-            <i class="icofont-history cp bg-warning rounded-circle" />
+            <i class="icofont-history cp   btn btn-outline-secondary fw-bold" />
           </Link>
-        </>
+        </div>
       ),
       sortable: false,
-      width: '90px'
+      width: '150px'
     },
 
     {
@@ -532,9 +530,9 @@ function TestCaseReviewDetails() {
     {
       name: (
         <div>
-          <span>Testing Id</span>
+          <span>Test Id</span>
           <i
-            onClick={(e) => handleFilterClick(e, 'id', 'Testing Id', 'number')}
+            onClick={(e) => handleFilterClick(e, 'id', 'Test Id', 'number')}
             className="icofont-filter ms-2"
           />
         </div>
@@ -577,7 +575,7 @@ function TestCaseReviewDetails() {
       ),
       selector: (row) => row.severity,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -620,7 +618,7 @@ function TestCaseReviewDetails() {
       ),
       selector: (row) => row.test_description,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -698,7 +696,7 @@ function TestCaseReviewDetails() {
         </div>
       ),
       selector: (row) => row.steps,
-      width: '7rem',
+      width: '10rem',
       sortable: false,
       cell: (row) => (
         <div
@@ -866,7 +864,7 @@ function TestCaseReviewDetails() {
       ),
       selector: (row) => row.created_at,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -909,7 +907,7 @@ function TestCaseReviewDetails() {
       ),
       selector: (row) => row.created_by,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -924,6 +922,92 @@ function TestCaseReviewDetails() {
                   {row.created_by && row.created_by.length < 20
                     ? row.created_by
                     : row.created_by.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
+      )
+    },
+
+    {
+      name: (
+        <div>
+          <span>Updated At</span>
+          <i
+            onClick={(e) =>
+              handleFilterClick(e, 'updated_at', 'updated_at', 'text')
+            }
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
+      selector: (row) => row.updated_at,
+      width: '10rem',
+      sortable: false,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.updated_at && (
+            <OverlayTrigger overlay={<Tooltip>{row.updated_at} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.updated_at && row.updated_at.length < 20
+                    ? row.updated_at
+                    : row.updated_at.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
+      )
+    },
+
+    {
+      name: (
+        <div>
+          <span>Updated By</span>
+          <i
+            onClick={(e) =>
+              handleFilterClick(e, 'updated_by', 'updated_by', 'text')
+            }
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
+      selector: (row) => row.updated_by,
+      width: '10rem',
+      sortable: false,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.updated_by && (
+            <OverlayTrigger overlay={<Tooltip>{row.updated_by} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.updated_by && row.updated_by.length < 20
+                    ? row.updated_by
+                    : row.updated_by.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -1096,6 +1180,7 @@ function TestCaseReviewDetails() {
   };
 
   const handleApplyFilter = async () => {
+    console.log('sort', sortOrder);
     const newFilter =
       filterType === 'is not between' || filterType === 'is between'
         ? {
@@ -1119,6 +1204,7 @@ function TestCaseReviewDetails() {
     try {
       dispatch(
         getByTestPlanIDListThunk({
+          id: id,
           limit: paginationData.rowPerPage,
           page: paginationData.currentPage,
           filter_testcase_data: updatedFilters
@@ -1145,6 +1231,7 @@ function TestCaseReviewDetails() {
     try {
       dispatch(
         getByTestPlanIDListThunk({
+          id: id,
           limit: paginationData.rowPerPage,
           page: paginationData.currentPage,
           filter_testcase_data: updatedFilters
@@ -1165,6 +1252,12 @@ function TestCaseReviewDetails() {
       })
     );
   };
+
+  useEffect(() => {
+    if (sortOrder && sortOrder != null) {
+      handleApplyFilter(sortOrder);
+    }
+  }, [sortOrder]);
 
   useEffect(() => {
     dispatch(
