@@ -566,7 +566,7 @@ function TestCaseReviewComponent() {
       name: 'Created At',
       selector: (row) => row.created_at,
       sortable: false,
-      width: '7rem'
+      width: '10rem'
     },
 
     {
@@ -585,6 +585,12 @@ function TestCaseReviewComponent() {
       })
     );
   };
+
+  useEffect(() => {
+    if (sortOrder && sortOrder != null) {
+      handleApplyFilter(sortOrder);
+    }
+  }, [sortOrder]);
 
   useEffect(() => {
     dispatch(

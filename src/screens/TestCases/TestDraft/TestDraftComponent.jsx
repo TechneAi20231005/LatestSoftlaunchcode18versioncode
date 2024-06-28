@@ -72,7 +72,10 @@ export default function TestDraftComponent({}) {
     setBulkModal(data);
   };
 
+  const [disable, setDisable] = useState(false);
+
   const handleBulkUpload = (e) => {
+    setDisable(true);
     e.preventDefault();
     const file = e.target.elements.file_attachment.files[0]; // Access the file from the event target
 
@@ -88,6 +91,8 @@ export default function TestDraftComponent({}) {
         formData,
         onSuccessHandler: () => {
           setBulkModal({ showModal: false });
+          setDisable(false);
+
           dispatch(
             getDraftTestCaseList({
               limit: paginationData.rowPerPage,
@@ -95,7 +100,9 @@ export default function TestDraftComponent({}) {
             })
           );
         },
-        onErrorHandler: () => {}
+        onErrorHandler: () => {
+          setBulkModal({ showModal: false });
+        }
       })
     );
   };
@@ -327,6 +334,7 @@ export default function TestDraftComponent({}) {
               type="submit"
               className="btn btn-primary text-white"
               style={{ backgroundColor: '#484C7F' }}
+              disabled={disable}
               onClick={() => {
                 handleBulkModal({
                   showModal: true,

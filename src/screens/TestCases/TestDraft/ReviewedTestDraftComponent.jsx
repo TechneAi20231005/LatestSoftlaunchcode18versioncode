@@ -361,6 +361,7 @@ function ReviewedTestDraftComponent() {
     try {
       dispatch(
         getByTestPlanIDReviewedListThunk({
+          id: id,
           limit: paginationData.rowPerPage,
           page: paginationData.currentPage,
           filter_testcase_data: updatedFilters
@@ -387,6 +388,7 @@ function ReviewedTestDraftComponent() {
     try {
       dispatch(
         getByTestPlanIDReviewedListThunk({
+          id: id,
           limit: paginationData.rowPerPage,
           page: paginationData.currentPage,
           filter_testcase_data: updatedFilters
@@ -402,9 +404,9 @@ function ReviewedTestDraftComponent() {
     {
       name: 'Action',
       selector: (row) => (
-        <>
+        <div className="d-flex align-items-center">
           <i
-            className="icofont-edit text-primary cp me-3"
+            className="icofont-edit text-primary btn btn-outline-secondary cp me-3"
             onClick={() =>
               setAddEditTestCasesModal({
                 type: 'EDIT',
@@ -415,12 +417,12 @@ function ReviewedTestDraftComponent() {
           />
 
           <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.id}`}>
-            <i class="icofont-history cp bg-warning rounded-circle" />
+            <i class="icofont-history cp  btn btn-outline-secondary " />
           </Link>
-        </>
+        </div>
       ),
       sortable: false,
-      width: '90px'
+      width: '150px'
     },
 
     {
@@ -751,7 +753,7 @@ function ReviewedTestDraftComponent() {
       ),
       selector: (row) => row.severity,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -794,7 +796,7 @@ function ReviewedTestDraftComponent() {
       ),
       selector: (row) => row.test_description,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -872,7 +874,7 @@ function ReviewedTestDraftComponent() {
         </div>
       ),
       selector: (row) => row.steps,
-      width: '7rem',
+      width: '10rem',
       sortable: false,
       cell: (row) => (
         <div
@@ -1038,7 +1040,7 @@ function ReviewedTestDraftComponent() {
       ),
       selector: (row) => row.created_at,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -1081,7 +1083,7 @@ function ReviewedTestDraftComponent() {
       ),
       selector: (row) => row.created_by,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -1189,6 +1191,11 @@ function ReviewedTestDraftComponent() {
       })
     );
   };
+  useEffect(() => {
+    if (sortOrder && sortOrder != null) {
+      handleApplyFilter(sortOrder);
+    }
+  }, [sortOrder]);
 
   return (
     <div className="container-xxl">

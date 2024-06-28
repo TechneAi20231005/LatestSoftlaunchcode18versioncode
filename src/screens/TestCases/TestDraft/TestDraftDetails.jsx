@@ -139,7 +139,7 @@ function TestDraftDetails(props) {
     },
     { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
   );
-
+  const [disable, setDisable] = useState(false);
   const moduleMapping = {
     module_name: 'module_id',
     sub_module_name: 'submodule_id',
@@ -380,10 +380,10 @@ function TestDraftDetails(props) {
     {
       name: 'Action',
       selector: (row) => (
-        <>
+        <div className="d-flex align-items-center">
           <i
             disabled={row.status !== 'DRAFT'}
-            className={`icofont-edit text-primary cp me-3 ${
+            className={`icofont-edit text-primary btn btn-outline-secondary cp  ${
               row.status !== 'DRAFT' ? 'disabled-icon' : ''
             }`}
             onClick={() =>
@@ -396,12 +396,12 @@ function TestDraftDetails(props) {
             }
           />
           <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.id}`}>
-            <i class="icofont-history cp bg-warning rounded-circle" />
+            <i class="icofont-history cp btn btn-outline-secondary fw-bold  " />
           </Link>
-        </>
+        </div>
       ),
       sortable: false,
-      width: '90px'
+      width: '150px'
     },
     {
       name: (
@@ -730,9 +730,9 @@ function TestDraftDetails(props) {
     {
       name: (
         <div>
-          <span>Testing Id</span>
+          <span>Test Id</span>
           <i
-            onClick={(e) => handleFilterClick(e, 'id', 'Testing Id', 'number')}
+            onClick={(e) => handleFilterClick(e, 'id', 'Test Id', 'number')}
             className="icofont-filter ms-2"
           />
         </div>
@@ -856,7 +856,7 @@ function TestDraftDetails(props) {
         </div>
       ),
       selector: (row) => row.steps,
-      width: '7rem',
+      width: '10rem',
       sortable: false,
       cell: (row) => (
         <div
@@ -1191,7 +1191,13 @@ function TestDraftDetails(props) {
     dispatch(getEmployeeData());
   };
 
+  const [reviewerError, setReviewerError] = useState([]);
   const handleSubmit = () => {
+    if (!reviewerId) {
+      setReviewerError('Reviewer Id is Required');
+    } else {
+      setReviewerError('');
+    }
     const testCasesData =
       selectedRows?.length > 0
         ? selectedRows?.map((id) => id)
@@ -1211,14 +1217,17 @@ function TestDraftDetails(props) {
         reviewer_id: reviewerId
       };
     }
-
+    setDisable(true);
     dispatch(
       sendTestCaseReviewerThunk({
         formData,
         type: 'DRAFT',
         id: null,
+
         onSuccessHandler: () => {
           setSendToReviewerModal({ showModal: false });
+          setDisable(false);
+          localDispatch({ type: 'SET_REVIEWER_ID', payload: [] });
           localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
 
           localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: false });
@@ -1277,7 +1286,6 @@ function TestDraftDetails(props) {
           progressComponent={<TableLoadingSkelton />}
         />
       </Container>
-
       <div className="d-flex justify-content-end mt-3">
         <button
           type="submit"
@@ -1289,7 +1297,11 @@ function TestDraftDetails(props) {
               modalHeader: 'Send To Reviewer Modal'
             });
           }}
-          disabled={getDraftTestListData?.length <= 0}
+          disabled={
+            !getDraftTestListData ||
+            getDraftTestListData?.filter((item) => item.status === 'DRAFT')
+              .length === 0
+          }
         >
           <i class="icofont-paper-plane fs-0.8"></i> {''}
           Send To Reviewer
@@ -1321,18 +1333,30 @@ function TestDraftDetails(props) {
             id="reviewer_id"
             name="reviewer_id"
             options={testerData}
+            required
             onChange={(e) => {
               const selectedId = e?.value;
               localDispatch({ type: 'SET_REVIEWER_ID', payload: selectedId });
+              setReviewerError('');
             }}
             placeholder="select..."
           />
+          {reviewerError && (
+            <p
+              style={{
+                color: 'red'
+              }}
+            >
+              {reviewerError}
+            </p>
+          )}
         </Modal.Body>
         <Modal.Footer>
           <button
             type="submit"
             className="btn btn-sm btn bg-success text-white"
             onClick={() => handleSubmit()}
+            // disabled={disable}
           >
             <i class="icofont-paper-plane "></i> {''}
             Send To Reviewer

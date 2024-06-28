@@ -588,6 +588,12 @@ function ReviewedTestDraftDetails() {
   ];
 
   useEffect(() => {
+    if (sortOrder && sortOrder != null) {
+      handleApplyFilter(sortOrder);
+    }
+  }, [sortOrder]);
+
+  useEffect(() => {
     dispatch(
       getAllReviewTestDraftList({
         limit: paginationData.rowPerPage,
