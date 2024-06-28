@@ -1,4 +1,10 @@
-import React, { useEffect, useRef, useState, startTransition } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  startTransition,
+  useCallback
+} from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { Card, CardBody, Dropdown, Modal } from 'react-bootstrap';
 import { toast } from 'react-toastify';
@@ -74,7 +80,7 @@ export default function TaskComponent() {
   const [sprintFirstDate, setSprintFirstDate] = useState('');
   const [sprintLastDate, setSprintLastDate] = useState('');
 
-  const getTicketData = async () => {
+  const getTicketData = useCallback(async () => {
     await new MyTicketService()
       .getTicketById(ticketId)
       .then((res) => {
@@ -97,7 +103,7 @@ export default function TaskComponent() {
           errorObject.data.message
         );
       });
-  };
+  }, [ticketId]);
 
   const handleCloseBasketModal = () => {
     setShowBasketModal(false);
@@ -146,103 +152,106 @@ export default function TaskComponent() {
   const [isLoading, setIsLoading] = useState(true);
   const [basketStartDate, setBasketStartDate] = useState();
 
-  const getBasketData = async (sprint_id, task_status) => {
-    const tempAllTaskList = [];
+  const getBasketData = useCallback(
+    async (sprint_id, task_status) => {
+      const tempAllTaskList = [];
 
-    const tasksDataa = [];
-    const sprintId = sprint_id ? sprint_id : 0;
-    toast.clearWaitingQueue();
-    const toastId = toast.loading('Fetching Latest Api Data... (0 sec)');
+      const tasksDataa = [];
+      const sprintId = sprint_id ? sprint_id : 0;
+      toast.clearWaitingQueue();
+      const toastId = toast.loading('Fetching Latest Api Data... (0 sec)');
 
-    let counter = 0;
-    const interval = setInterval(() => {
-      counter += 1;
-      toast.update(toastId, {
-        render: `Fetching Latest Api Data... (${counter} sec)`
-      });
-    }, 1000);
-    // setIsLoading(true);
-    try {
-      await new BasketService()
-        .getBasketTaskData(ticketId, sprintId, task_status)
-        .then((res) => {
-          if (res.status === 200) {
-            // setShowLoaderModal(false);
-            setIsLoading(false);
-            if (res.data.status === 1) {
-              setIsLoading(false);
-
-              // const temp = res.data.data;
-              // sortingArr = res.data.basket_id_array;
-              setIsReviewer(res.data.is_reviewer);
-              setOwnership(res.data.ownership);
-              setBasketIdArray(res.data.basket_id_array);
-              // setIsRegularised(res.data.is_regularized)
-              setData(null);
-              // res.data.data.sort(sortFunc);
-
-              res.data.data.map((tasks, index) => {
-                setBasketStartDate(tasks.start_date);
-                tasks.taskData.forEach((d, i) => {
-                  let taskOwnerNames = d.taskOwners
-                    .map((owner) => owner.taskOwnerName)
-                    .join(', ');
-                  tasksDataa.push({
-                    ticket_id_name: d.ticket_id_name,
-                    Task_Names: d.task_name,
-                    Task_Hours: d.task_hours,
-                    Start_Date: d.task_start_date,
-                    End_Date: d.task_end_date,
-                    Status: d.status,
-                    Priority: d.priority,
-                    Total_Worked: d.total_worked,
-                    Basket_Name: tasks.basket_name,
-                    taskOwnerNames: taskOwnerNames,
-
-                    task_type: d.parent_name
-                  });
-                });
-              });
-
-              startTransition(() => {
-                setData(res.data.data);
-                setTasksData(tasksDataa);
-              });
-
-              res.data.data.forEach((dataa) => {
-                dataa.taskData.forEach((task) => {
-                  tempAllTaskList.push({
-                    value: task.id,
-                    label: task.task_name
-                  });
-                });
-              });
-              setAllTaskList([]);
-              setAllTaskList(tempAllTaskList);
-
-              setIsLoading(false); // Loading finished
-            }
-          }
-        });
-    } catch (error) {
-      toast.update(toastId, {
-        render: 'Error fetching data!',
-        type: toast.TYPE.ERROR,
-        isLoading: false,
-        autoClose: 3000
-      });
-    } finally {
-      clearInterval(interval);
-      if (toastId) {
+      let counter = 0;
+      const interval = setInterval(() => {
+        counter += 1;
         toast.update(toastId, {
-          render: 'Data fetched successfully!',
-          type: toast.TYPE.SUCCESS,
+          render: `Fetching Latest Api Data... (${counter} sec)`
+        });
+      }, 1000);
+      // setIsLoading(true);
+      try {
+        await new BasketService()
+          .getBasketTaskData(ticketId, sprintId, task_status)
+          .then((res) => {
+            if (res.status === 200) {
+              // setShowLoaderModal(false);
+              setIsLoading(false);
+              if (res.data.status === 1) {
+                setIsLoading(false);
+
+                // const temp = res.data.data;
+                // sortingArr = res.data.basket_id_array;
+                setIsReviewer(res.data.is_reviewer);
+                setOwnership(res.data.ownership);
+                setBasketIdArray(res.data.basket_id_array);
+                // setIsRegularised(res.data.is_regularized)
+                setData(null);
+                // res.data.data.sort(sortFunc);
+
+                res.data.data.forEach((tasks, index) => {
+                  setBasketStartDate(tasks.start_date);
+                  tasks.taskData.forEach((d, i) => {
+                    let taskOwnerNames = d.taskOwners
+                      .map((owner) => owner.taskOwnerName)
+                      .join(', ');
+                    tasksDataa.push({
+                      ticket_id_name: d.ticket_id_name,
+                      Task_Names: d.task_name,
+                      Task_Hours: d.task_hours,
+                      Start_Date: d.task_start_date,
+                      End_Date: d.task_end_date,
+                      Status: d.status,
+                      Priority: d.priority,
+                      Total_Worked: d.total_worked,
+                      Basket_Name: tasks.basket_name,
+                      taskOwnerNames: taskOwnerNames,
+
+                      task_type: d.parent_name
+                    });
+                  });
+                });
+
+                startTransition(() => {
+                  setData(res.data.data);
+                  setTasksData(tasksDataa);
+                });
+
+                res.data.data.forEach((dataa) => {
+                  dataa.taskData.forEach((task) => {
+                    tempAllTaskList.push({
+                      value: task.id,
+                      label: task.task_name
+                    });
+                  });
+                });
+                setAllTaskList([]);
+                setAllTaskList(tempAllTaskList);
+
+                setIsLoading(false); // Loading finished
+              }
+            }
+          });
+      } catch (error) {
+        toast.update(toastId, {
+          render: 'Error fetching data!',
+          type: toast.TYPE.ERROR,
           isLoading: false,
           autoClose: 3000
         });
+      } finally {
+        clearInterval(interval);
+        if (toastId) {
+          toast.update(toastId, {
+            render: 'Data fetched successfully!',
+            type: toast.TYPE.SUCCESS,
+            isLoading: false,
+            autoClose: 3000
+          });
+        }
       }
-    }
-  };
+    },
+    [ticketId]
+  );
 
   //Task Related
   const [showTaskModal, setShowTaskModal] = useState(false);
@@ -371,7 +380,7 @@ export default function TaskComponent() {
     setSprintModal(data);
   };
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     await new ModuleSetting().getSettingByName('Ticket', 'Task').then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
@@ -405,7 +414,7 @@ export default function TaskComponent() {
         setSprintLastDate(last_sprint_end_date);
       }
     });
-  };
+  }, [ticketId]);
 
   const pushForward = async (basketIds) => {
     var sendArray = {
@@ -795,9 +804,8 @@ export default function TaskComponent() {
   };
 
   var dragId;
-  var dropId;
-  // var basketIdArray1;
-  // var basketIdArray2;
+  // var dropId;
+
   const dragStartHandler = (e, card) => {
     dragId = card.id;
   };
@@ -812,7 +820,7 @@ export default function TaskComponent() {
 
   const dropHandler = async (e, card) => {
     e.preventDefault();
-    dropId = card.id;
+    // dropId = card.id;
     let basketData = [...data];
     const indexOfDraggedBasket = basketData.findIndex(
       (basket) => basket.id === dragId
@@ -869,7 +877,13 @@ export default function TaskComponent() {
     );
     loadData();
     getTicketData();
-  }, []);
+  }, [
+    currentTaskStatus,
+    getBasketData,
+    getTicketData,
+    loadData,
+    selectedOption?.value
+  ]);
 
   // function LoaderComponent() {
   //   return (
@@ -1093,6 +1107,7 @@ export default function TaskComponent() {
                                 {attachment.name}
                                 <div className="d-flex justify-content-center p-0 mt-1">
                                   <a
+                                    href="/"
                                     // href={`${_attachmentUrl}/${attachment.path}`}
                                     target="_blank"
                                     className="btn btn-primary btn-sm p-1"
@@ -1467,7 +1482,7 @@ export default function TaskComponent() {
               </div>
             </CardBody>
           </Card>
-          {isLoading == true ? (
+          {isLoading === true ? (
             <CardLoadingSkeleton />
           ) : (
             <>

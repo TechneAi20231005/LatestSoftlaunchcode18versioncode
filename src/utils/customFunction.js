@@ -5,7 +5,8 @@ export const transformDataForExportHandler = (data, headers, keys) => {
       if (header === 'Sr No.') {
         transformedRow[header] = index + 1;
       } else if (header === 'Status') {
-        transformedRow[header] = Number(row?.[keys[i]]) === 1 ? 'Active' : 'Deactive';
+        transformedRow[header] =
+          Number(row?.[keys[i]]) === 1 ? 'Active' : 'Deactive';
       } else {
         transformedRow[header] = row?.[keys[i]] || '--';
       }
@@ -16,11 +17,12 @@ export const transformDataForExportHandler = (data, headers, keys) => {
 
 export const customSearchHandler = (list, searchValue) => {
   if (!searchValue) return list;
-  const filteredList = list.filter(branch => {
+  const filteredList = list.filter((branch) => {
     const branchValues = Object.values(branch);
-    return branchValues.some(value => {
+    return branchValues.some((value) => {
       return (
-        typeof value === 'string' && value?.toLowerCase()?.includes(searchValue?.toLowerCase())
+        typeof value === 'string' &&
+        value?.toLowerCase()?.includes(searchValue?.toLowerCase())
       );
     });
   });
@@ -53,11 +55,15 @@ export const customSearchHandler = (list, searchValue) => {
 //   };
 // })();
 
-export const formatNumberWithCurrency = (number, locale = 'en-IN', currency = 'INR') => {
+export const formatNumberWithCurrency = (
+  number,
+  locale = 'en-IN',
+  currency = 'INR'
+) => {
   const formatter = new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: currency,
-    currencyDisplay: 'narrowSymbol',
+    currencyDisplay: 'narrowSymbol'
   });
   return formatter.format(number);
 };

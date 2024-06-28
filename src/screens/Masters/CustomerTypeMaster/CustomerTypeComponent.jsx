@@ -55,29 +55,6 @@ function CustomerTypeComponent() {
 
   const isActive0Ref = useRef();
 
-  // const [showLoaderModal, setShowLoaderModal] = useState(false);
-  // const [isActive, setIsActive] = useState(1);
-
-  // const roleId = sessionStorage.getItem('role_id');
-
-  // const searchRef = useRef();
-
-  // function SearchInputData(data, search) {
-  //   const lowercaseSearch = search.toLowerCase();
-
-  //   return data.filter((d) => {
-  //     for (const key in d) {
-  //       if (
-  //         typeof d[key] === 'string' &&
-  //         d[key].toLowerCase().includes(lowercaseSearch)
-  //       ) {
-  //         return true;
-  //       }
-  //     }
-  //     return false;
-  //   });
-  // }
-
   const [searchTerm, setSearchTerm] = useState('');
 
   const [filteredData, setFilteredData] = useState([]);

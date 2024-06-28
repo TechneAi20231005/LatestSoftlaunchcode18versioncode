@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { ButtonComponent } from '../../../components/Utilities/Button/Button';
 import PageHeader from '../../../components/Common/PageHeader';
 import { Modal } from 'react-bootstrap';
@@ -245,7 +245,7 @@ const CustomMenuList = ({ options, onSelect }) => {
 const CustomMenuListTicket = ({ options, onSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [openOptions, setOpenOptions] = useState([]);
-  const [selectedOption, setSelectedOption] = useState(null);
+  // const [selectedOption, setSelectedOption] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -264,7 +264,7 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
   };
 
   const handleSelect = (label, ID) => {
-    setSelectedOption(label);
+    // setSelectedOption(label);
     onSelect(label, ID);
     setOpenOptions([]);
     setIsMenuOpen(!isMenuOpen);
@@ -388,39 +388,34 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
 };
 
 function TaskAndTicketTypeMaster(props) {
-  const [selectedValue, setSelectedValue] = useState('');
+  // const [selectedValue, setSelectedValue] = useState('');
   const [notify, setNotify] = useState();
   const [data, setData] = useState([]);
-  const [parent, setParent] = useState();
+  // const [parent, setParent] = useState();
   const [taskData, setTaskData] = useState([]);
   const [ticketData, setTicketData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const [exportData, setExportData] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [selectedOption, setSelectedOption] = useState(null);
+  // const [isOpen, setIsOpen] = useState(false);
+  const selectedOption = null;
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [parentTaskName, setParentTaskName] = useState(null);
   const [parentTicketName, setParentTicketName] = useState(null);
 
-  const handleSelect = (label, ID, isMenuOpen) => {
-    setSelectedOption(selectedOption === label ? null : label);
+  const handleSelect = (label) => {
+    // setSelectedOption(selectedOption === label ? null : label);
     setSelectedOptionId(label);
     closeAllDropdowns();
     setParentTaskName('');
     setParentTicketName('');
-  };
-  const toggleDropdown = (e) => {
-    setIsOpen(!isOpen);
   };
 
   const closeAllDropdowns = () => {
     // Logic to close all dropdowns
     // For example, you could set a state variable to trigger re-rendering
   };
-
-  const typeRef = useRef(null);
 
   const typeNameRef = useRef(null);
 
@@ -435,10 +430,10 @@ function TaskAndTicketTypeMaster(props) {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(data, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [data, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -512,11 +507,11 @@ function TaskAndTicketTypeMaster(props) {
 
     await new TaskTicketTypeService().getParent().then((res) => {
       if (res.status === 200) {
-        const mappedData = res.data.data.map((d) => ({
-          value: d.id,
-          label: d.type_name
-        }));
-        setParent(mappedData);
+        // const mappedData = res.data.data.map((d) => ({
+        //   value: d.id,
+        //   label: d.type_name
+        // }));
+        // setParent(mappedData);
       } else {
       }
     });
@@ -614,16 +609,6 @@ function TaskAndTicketTypeMaster(props) {
   // Transform the ticketData
   const transformedOptionsTicket = transformDataTicket(ticketData);
 
-  const [expandedRows, setExpandedRows] = useState([]);
-
-  const handleRowExpandToggle = (row) => {
-    const isRowExpanded = expandedRows.includes(row.id);
-    const newExpandedRows = isRowExpanded
-      ? expandedRows.filter((id) => id !== row.id)
-      : [...expandedRows, row.id];
-    setExpandedRows(newExpandedRows);
-  };
-
   const [selectedType, setSelectedType] = useState('TASK'); // State to track selected type
   const handleType = async (e) => {
     setData([]);
@@ -632,7 +617,7 @@ function TaskAndTicketTypeMaster(props) {
       .getAllTaskTicketType(e.target.value)
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status == 1) {
+          if (res.data.status === 1) {
             let counter = 1;
             var tempData = [];
             const temp = res.data.data;
@@ -644,7 +629,7 @@ function TaskAndTicketTypeMaster(props) {
                 parent_id: temp[key].parent_id,
                 type_name: temp[key].type_name,
                 parent_name:
-                  temp[key].parent_name === null && temp[key].parent_id == 0
+                  temp[key].parent_name === null && temp[key].parent_id === 0
                     ? 'Primary'
                     : temp[key].parent_name,
                 remark: temp[key].remark,
@@ -777,12 +762,12 @@ function TaskAndTicketTypeMaster(props) {
       sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -893,7 +878,7 @@ function TaskAndTicketTypeMaster(props) {
 
         await new TaskTicketTypeService()._updateType(id, form).then((res) => {
           if (res.status === 200) {
-            if (res.data.status == 1) {
+            if (res.data.status === 1) {
               setNotify({ type: 'success', message: res.data.message });
               setModal({ showModal: false });
               loadData();
@@ -912,6 +897,7 @@ function TaskAndTicketTypeMaster(props) {
 
   useEffect(() => {
     loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -920,50 +906,15 @@ function TaskAndTicketTypeMaster(props) {
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [handleSearch, searchTerm]);
 
   useEffect(() => {
     // Check if the modal is closed
     if (!modal.showModal) {
       setIsMenuOpen(false); // Close the menu when modal is closed
-      setSelectedOption(null);
+      // setSelectedOption(null);
     }
   }, [modal.showModal]);
-
-  const [isHovered, setIsHovered] = useState(false);
-
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-  };
-
-  const elementStyle = {
-    color: isHovered ? 'red' : 'black',
-    transition: 'color 0.3s'
-  };
-
-  function extractLabelsAndParentIDs(taskData) {
-    const result = [];
-
-    function extractLabelsAndParentIDsRecursive(obj, id = null) {
-      if (obj.type_name) {
-        result.push({ label: obj.type_name, parentId: id });
-      }
-      if (obj.children && obj.children.length > 0) {
-        obj.children.forEach((option) => {
-          extractLabelsAndParentIDsRecursive(option, obj.id);
-        });
-      }
-    }
-    taskData?.forEach((item) => {
-      extractLabelsAndParentIDsRecursive(item);
-    });
-
-    return result;
-  }
 
   // Assuming your data is stored in a variable called `data`
   // const labelsAndParentIDs = extractLabelsAndParentIDs(taskData);
@@ -997,7 +948,7 @@ function TaskAndTicketTypeMaster(props) {
                     modalData: '',
                     modalHeader: modalHeader
                   });
-                  setSelectedValue(''); // Reset any selected value if needed
+                  // setSelectedValue(''); // Reset any selected value if needed
                 }}
               >
                 <i className="icofont-plus-circle me-2 fs-6"></i>Add

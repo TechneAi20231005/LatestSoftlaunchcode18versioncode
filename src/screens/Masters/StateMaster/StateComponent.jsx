@@ -196,7 +196,12 @@ function StateComponent() {
     }
     if (!filteredCountryData.length) {
     }
-  }, [dispatch,stateData.length,checkRole.length,filteredCountryData.length]);
+  }, [
+    dispatch,
+    stateData.length,
+    checkRole.length,
+    filteredCountryData.length
+  ]);
 
   useEffect(() => {
     setFilteredData(stateData);

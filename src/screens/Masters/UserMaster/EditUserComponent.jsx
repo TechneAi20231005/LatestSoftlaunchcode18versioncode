@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo
+} from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import Tab from 'react-bootstrap/Tab';
@@ -64,12 +70,15 @@ function EditUserComponent({ match }) {
     { value: 'MY_TICKETS', label: 'My Tickets' },
     { value: 'DEPARTMENT_TICKETS', label: 'Department Tickets' }
   ];
-  const mappingData = {
-    department_id: null,
-    ticket_passing_authority: null,
-    ticket_show_type: null,
-    is_default: 0
-  };
+  const mappingData = useMemo(
+    () => ({
+      department_id: null,
+      ticket_passing_authority: null,
+      ticket_show_type: null,
+      is_default: 0
+    }),
+    []
+  );
 
   const [rows, setRows] = useState([
     {
@@ -417,7 +426,7 @@ function EditUserComponent({ match }) {
     // dispatch(clearRoleDropdown())
   };
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     await new StateService().getState().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
@@ -549,7 +558,7 @@ function EditUserComponent({ match }) {
           setRows([mappingData]);
         }
       });
-  };
+  }, [mappingData, roleDropdown, userId]);
   const handleDependentChange = (e, type) => {
     if (type === 'COUNTRY') {
       setStateDropdown(
@@ -688,7 +697,7 @@ function EditUserComponent({ match }) {
 
     // if (!roleDropdown.length) {
     // }
-  }, []);
+  }, [CountryData.length, checkRole.length, dispatch]);
 
   useEffect(() => {
     const fetchRoleData = async () => {
@@ -712,7 +721,7 @@ function EditUserComponent({ match }) {
 
   useEffect(() => {
     loadData();
-  }, [roleDropdown]);
+  }, [loadData]);
 
   useEffect(() => {
     if (
@@ -725,13 +734,8 @@ function EditUserComponent({ match }) {
       );
       const newStatus = { ...updateStatus, statedrp: 1 };
       setUpdateStatus(newStatus);
-      // setStateName(
-      //   data &&
-      //     stateDropdown &&
-      //     stateDropdown.filter((d) => d.value === data.state_id)
-      // );
     }
-  }, [data, stateDropdown]);
+  }, [data, stateDropdown, updateStatus]);
 
   const [copyData, setCopyData] = useState(null);
 
@@ -770,7 +774,7 @@ function EditUserComponent({ match }) {
           : cityName
       );
     }
-  }, [data, cityDropdown]);
+  }, [data, cityDropdown, updateStatus, cityName]);
 
   return (
     <div className="container-xxl">
@@ -971,7 +975,7 @@ function EditUserComponent({ match }) {
                               const email = event.target.value;
                               if (
                                 !email.match(
-                                  /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
+                                  /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
                                 )
                               ) {
                                 setInputState({

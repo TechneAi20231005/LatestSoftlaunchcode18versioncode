@@ -39,10 +39,12 @@ export default function CreateProjectComponent({ match }) {
     var selectOwner = formData.getAll('project_owner[]');
     if (selectCustomer === '') {
       flag = 0;
-      //setNotify(null);
+
+      
       alert('Please Select Customer');
       e.preventDefault();
-      //setNotify({ type: 'danger', message: 'Please Select Country' })
+
+
     }
     if (selectOwner === '') {
       flag = 0;
@@ -133,15 +135,8 @@ export default function CreateProjectComponent({ match }) {
       }
     });
 
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
 
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
+
 
     dispatch(getRoles());
 

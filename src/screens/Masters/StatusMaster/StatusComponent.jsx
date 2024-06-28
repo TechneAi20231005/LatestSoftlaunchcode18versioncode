@@ -51,10 +51,10 @@ function StatusComponent() {
 
   //search function
 
-  const handleSearch =useCallback( () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(statusData, searchTerm);
     setFilteredData(filteredList);
-  },[statusData,searchTerm]);
+  }, [statusData, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -176,14 +176,14 @@ function StatusComponent() {
     if (!statusData.length) {
       dispatch(getRoles());
     }
-  }, [dispatch,statusData.length]);
+  }, [dispatch, statusData.length]);
   useEffect(() => {
     setFilteredData(statusData);
   }, [statusData]);
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm,handleSearch]);
+  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">

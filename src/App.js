@@ -87,23 +87,8 @@ const App = () => {
           </h1>
         )}
       </div>
-      {/*
-        {token && onlineStatus && (
-          <>
-            <Sidebar />
-            <MainIndex />
-          </>
-        )}
-        {token && onlineStatus === false && (
-          <h1 className="mt-4">
-            {" "}
-            Looks like you're offline 🔴🔴🔴 Please check your internet
-            connection{" "}
-          </h1>
-        )} */}
     </>
   );
 };
 
 export default App;
-// updated by Rushikesh harkare 01/08/2023

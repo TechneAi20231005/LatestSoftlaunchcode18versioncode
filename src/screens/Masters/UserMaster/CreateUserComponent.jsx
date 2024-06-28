@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import Tab from 'react-bootstrap/Tab';
@@ -43,16 +43,12 @@ function CreateUserComponent({ match }) {
 
   const [filteredRoles, setFilteredRoles] = useState([]);
 
-  // const [state, setState] = useState(null);
   const state = null;
-
-  // const [city, setCity] = useState(null);
 
   const [accountFor, setAccountFor] = useState('SELF');
 
   const [CustomerDrp, setCustomerDrp] = useState(null);
   const [loading, setLoading] = useState(false);
-  // const roleId = sessionStorage.getItem('role_id');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -60,15 +56,11 @@ function CreateUserComponent({ match }) {
   const Notify = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.notify
   );
-  // const isLoading = useSelector(
-  //   (dashboardSlice) => dashboardSlice.dashboard.isLoading
-  // );
+
   const CountryData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
   );
-  // const cityData = useSelector(
-  //   (dashboardSlice) => dashboardSlice.dashboard.sortedCityData
-  // );
+
   const AllcityDropDownData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.FilterCity
   );
@@ -417,7 +409,7 @@ function CreateUserComponent({ match }) {
     }
   };
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     dispatch(getCountryDataSort());
     dispatch(getStateDataSort());
 
@@ -435,7 +427,7 @@ function CreateUserComponent({ match }) {
         }
       }
     });
-  };
+  }, [dispatch]);
 
   const handleDependentChange = (e, type) => {
     if (type === 'COUNTRY') {
@@ -689,7 +681,16 @@ function CreateUserComponent({ match }) {
     // handleData()
     dispatch(getAllRoles());
     dispatch(departmentData());
-  }, []);
+  }, [
+    AllcityDropDownData.length,
+    checkRole.length,
+    cityDropdownData.length,
+    designationDropdown.length,
+    dispatch,
+    loadData,
+    stateDropdown.length,
+    stateDropdownData.length
+  ]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {

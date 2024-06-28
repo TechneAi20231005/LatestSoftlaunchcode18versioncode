@@ -226,7 +226,7 @@ function RoleComponent({ location }) {
     if (!RoleMasterData.length) {
       dispatch(getRoles());
     }
-  }, [dispatch,RoleMasterData.length]);
+  }, [dispatch, RoleMasterData.length]);
 
   useEffect(() => {
     setFilteredData(RoleMasterData);

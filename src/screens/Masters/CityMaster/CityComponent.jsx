@@ -56,14 +56,7 @@ function CityComponent() {
   //local state
   const [stateDropdownData, setStateDropdownData] = useState([]);
   const [updateStatus, setUpdateStatus] = useState({});
-  // const [copyState, setCopyState] = useState([]);
 
-  // const [stateName, setStateName] = useState(null);
-
-  // const [dependent, setDependent] = useState({
-  //   country_id: null,
-  //   state_id: null
-  // });
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
 

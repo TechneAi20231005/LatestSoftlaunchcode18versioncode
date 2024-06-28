@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import DataTable from 'react-data-table-component';
@@ -22,10 +22,6 @@ function DynamicFormComponent() {
 
   const dispatch = useDispatch();
 
-  // const [notify, setNotify] = useState(null);
-
-  // const [showLoaderModal, setShowLoaderModal] = useState(false);
-
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 13)
   );
@@ -48,10 +44,10 @@ function DynamicFormComponent() {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(data, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [data, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -172,7 +168,7 @@ function DynamicFormComponent() {
     }
     if (!exportData.length) {
     }
-  }, []);
+  }, [dispatch, data.length, exportData.length, location, checkRole.length]);
 
   useEffect(() => {
     setFilteredData(data);
@@ -180,7 +176,7 @@ function DynamicFormComponent() {
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {

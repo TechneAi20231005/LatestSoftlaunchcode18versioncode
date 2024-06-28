@@ -3,13 +3,6 @@ import DynamicFormDropdownMasterService from '../../../services/MastersService/D
 
 function DynamicComponent(props) {
   const [selectedDropdown, setSelectedDropdown] = useState();
-  //   const [selectedDropdownValues, setSelectedDropdownValues] = useState();
-
-  //   const [selectedOption, setSelectedOption] = useState('');
-
-  //   const handleOptionChange = (value) => {
-  //     setSelectedOption(value);
-  //   };
 
   const loadData = useCallback(async () => {
     if (

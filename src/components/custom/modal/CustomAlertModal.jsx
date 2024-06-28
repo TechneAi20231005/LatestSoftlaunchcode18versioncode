@@ -15,7 +15,7 @@ function CustomAlertModal({
   btnSuccessName,
   heading,
   footerMsg,
-  isLoading,
+  isLoading
 }) {
   return (
     <Modal
@@ -43,7 +43,9 @@ function CustomAlertModal({
         <RenderIf render={heading}>
           <p className="fw-bold text-center">{heading}</p>
         </RenderIf>
-        <p className={`${heading || footerMsg ? 'py-1' : 'py-3'} text-center`}>{message}</p>
+        <p className={`${heading || footerMsg ? 'py-1' : 'py-3'} text-center`}>
+          {message}
+        </p>
         <RenderIf render={footerMsg}>
           <p className="fw-bold text-center">{footerMsg}</p>
         </RenderIf>
@@ -54,7 +56,11 @@ function CustomAlertModal({
               onClick={!isLoading ? onSuccess : ''}
               disabled={isLoading}
             >
-              {isLoading ? <Spinner animation="border" size="sm" /> : btnSuccessName || 'Yes'}
+              {isLoading ? (
+                <Spinner animation="border" size="sm" />
+              ) : (
+                btnSuccessName || 'Yes'
+              )}
             </button>
           )}
           {onClose && (

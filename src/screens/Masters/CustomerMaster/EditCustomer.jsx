@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import ErrorLogService from '../../../services/ErrorLogService';
 import CustomerService from '../../../services/MastersService/CustomerService';
@@ -42,18 +42,7 @@ function EditCustomer() {
   const [stateName, setStateName] = useState(null);
   const [cityName, setCityName] = useState(null);
 
-  // const stateRef = useRef(null);
-
-  // const roleId = sessionStorage.getItem('role_id');
-
-  // const handleDependent = (e, name) => {
-  //   setData({
-  //     ...data,
-  //     [name]: e.value
-  //   });
-  // };
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     await new CustomerService()
       .getCustomerById(customerId)
       .then((res) => {
@@ -93,7 +82,6 @@ function EditCustomer() {
     await new CountryService().getCountrySort().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          // setCountry(res.data.data.filter((d) => d.is_active === 1));
           setCountryDropdown(
             res.data.data
               .filter((d) => d.is_active === 1)
@@ -138,7 +126,7 @@ function EditCustomer() {
     });
 
     dispatch(getRoles());
-  };
+  }, [customerId, dispatch]);
 
   const [emailError, setEmailError] = useState('');
   const [mailError, setMailError] = useState(false);
@@ -146,7 +134,7 @@ function EditCustomer() {
   const handleEmail = (e) => {
     const email = e.target.value;
     const emailRegex =
-      /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
+      /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
     if (emailRegex.test(email) === false) {
       setEmailError('Invalid Email');
       setMailError(true);
@@ -156,22 +144,18 @@ function EditCustomer() {
     }
   };
   const [contactError, setContactError] = useState(null);
-  // const [contactErr, setContactErr] = useState(false);
-  // const [contactNumber, setContactNumber] = useState(null);
+
   const handleMobileValidation = (e) => {
     const contactNumber = e.target.value;
 
-    // setContactNumber(contactNumber);
     if (
       contactNumber.charAt(0) === '9' ||
       contactNumber.charAt(0) === '8' ||
       contactNumber.charAt(0) === '7' ||
       contactNumber.charAt(0) === '6'
     ) {
-      // setContactErr(false);
       setContactError('');
     } else if (contactNumber.length === 10) {
-      // setContactErr(true);
       setContactError('Invalid Mobile Number');
     } else {
       setContactError('');
@@ -284,7 +268,7 @@ function EditCustomer() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
     if (
@@ -303,7 +287,7 @@ function EditCustomer() {
           stateDropdown.filter((d) => d.value === data.state_id)
       );
     }
-  }, [data, stateDropdown]);
+  }, [data, stateDropdown, updateStatus]);
 
   useEffect(() => {
     if (
@@ -329,7 +313,7 @@ function EditCustomer() {
     if (checkRole && checkRole[0]?.can_update === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, [data, cityDropdown, checkRole]);
+  }, [data, cityDropdown, checkRole, updateStatus, cityName]);
 
   return (
     <div className="container-xxl">
@@ -386,7 +370,7 @@ function EditCustomer() {
                           defaultValue={
                             data &&
                             customerType.filter(
-                              (d) => d.value == data.customer_type_id
+                              (d) => d.value === data.customer_type_id
                             )
                           }
                         />
@@ -487,7 +471,7 @@ function EditCustomer() {
                               id="is_active_1"
                               value="1"
                               defaultChecked={
-                                data && data.is_active == 1
+                                data && data.is_active === 1
                                   ? true
                                   : !data
                                   ? true
@@ -513,7 +497,7 @@ function EditCustomer() {
                               value="0"
                               // readOnly={(modal.modalData) ? false : true }
                               defaultChecked={
-                                data && data.is_active == 0 ? true : false
+                                data && data.is_active === 0 ? true : false
                               }
                             />
                             <label
@@ -603,7 +587,7 @@ function EditCustomer() {
                             data &&
                             countryDropdown &&
                             countryDropdown.filter(
-                              (d) => d.value == data.country_id
+                              (d) => d.value === data.country_id
                             )
                           }
                           onChange={handleCountryChange}

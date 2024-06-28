@@ -8,8 +8,6 @@ import Profile from './Dashboard/Profile';
 import NotificationComponent from './Notification/NotificationComponent';
 import ApprovedNotificationComponent from './Notification/ApprovedNotificationComponent';
 
-import TenantForm from './Masters/TenantMaster/EditForm';
-
 import { CustomerComponent } from './Masters/CustomerMaster/CustomerComponent';
 import EditCustomer from './Masters/CustomerMaster/EditCustomer';
 import CreateCustomer from './Masters/CustomerMaster/CreateCustomer';
@@ -219,11 +217,6 @@ class MainIndex extends React.Component {
               element={<ApprovedNotificationComponent />}
             />
             <Route path={`/${_base}/Tenant`} element={<TenantComponent />} />
-            <Route
-              exact
-              path={`/${_base}/Tenant/Edit/:id`}
-              element={<TenantForm />}
-            />
             <Route
               exact
               path={`/${_base}/Customer`}

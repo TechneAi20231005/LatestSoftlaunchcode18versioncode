@@ -31,6 +31,7 @@ function DesignationComponent() {
   const { getDesignationData, exportDesignation, modal, notify } = useSelector(
     (state) => state.designationMaster
   );
+
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice?.dashboard?.getRoles?.filter((d) => d.menu_id === 8)
   );

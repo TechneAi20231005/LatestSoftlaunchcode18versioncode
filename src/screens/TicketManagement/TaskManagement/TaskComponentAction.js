@@ -1,20 +1,16 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import BasketService from "../../../services/TicketService/BasketService";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import BasketService from '../../../services/TicketService/BasketService';
 import {
   getTaskData,
   postTask,
   postTimerData,
-  updateTask,
-} from "../../../services/TicketService/TaskService";
-import SubtaskService from "../../../services/TicketService/SubtaskService";
-import ModuleSetting from "../../../services/SettingService/ModuleSetting";
-
-
+  updateTask
+} from '../../../services/TicketService/TaskService';
+import SubtaskService from '../../../services/TicketService/SubtaskService';
+import ModuleSetting from '../../../services/SettingService/ModuleSetting';
 
 export const getBasketTaskData = createAsyncThunk(
-
-
-  "getBasketTaskData",
+  'getBasketTaskData',
   async (config) => {
     try {
       const service = new BasketService();
@@ -27,7 +23,7 @@ export const getBasketTaskData = createAsyncThunk(
 );
 
 export const getAllTaskData = createAsyncThunk(
-  "getAllTaskData",
+  'getAllTaskData',
   async (config, thunkapi) => {
     try {
       const response = await getTaskData(config);
@@ -39,7 +35,7 @@ export const getAllTaskData = createAsyncThunk(
 );
 
 export const taskModal = createAsyncThunk(
-  "taskModal",
+  'taskModal',
   async (config, thunkapi) => {
     try {
       const response = await postTask(config);
@@ -51,7 +47,7 @@ export const taskModal = createAsyncThunk(
 );
 
 export const updatetaskModal = createAsyncThunk(
-  "updatetaskModal",
+  'updatetaskModal',
   async (config, thunkapi) => {
     try {
       const response = await updateTask(config.id, config.payload);
@@ -63,7 +59,7 @@ export const updatetaskModal = createAsyncThunk(
 );
 
 export const updateBasketDetails = createAsyncThunk(
-  "updateBasketDetails",
+  'updateBasketDetails',
   async (config, thunkapi) => {
     try {
       const service = new BasketService();
@@ -76,7 +72,7 @@ export const updateBasketDetails = createAsyncThunk(
 );
 
 export const PostTimerDataChange = createAsyncThunk(
-  "PostTimerDataChange",
+  'PostTimerDataChange',
   async (payload, thunkapi) => {
     try {
       const response = await postTimerData(payload);
@@ -89,7 +85,7 @@ export const PostTimerDataChange = createAsyncThunk(
 );
 
 export const postSubTask = createAsyncThunk(
-  "taskModal",
+  'taskModal',
   async (config, thunkapi) => {
     try {
       const service = new SubtaskService();
@@ -101,9 +97,8 @@ export const postSubTask = createAsyncThunk(
   }
 );
 
-
 export const getBasketByIdData = createAsyncThunk(
-  "getBasketByIdData",
+  'getBasketByIdData',
   async (config, thunkapi) => {
     try {
       const service = new BasketService();
@@ -115,17 +110,15 @@ export const getBasketByIdData = createAsyncThunk(
   }
 );
 
-
-
-
-
-
 export const getmoduleSetting = createAsyncThunk(
-  "getmoduleSetting",
-  async ({module_name,submodule_name}, thunkapi) => {
+  'getmoduleSetting',
+  async ({ module_name, submodule_name }, thunkapi) => {
     try {
       const service = new ModuleSetting();
-      const response = await service.getSettingByName(module_name,submodule_name);
+      const response = await service.getSettingByName(
+        module_name,
+        submodule_name
+      );
 
       return response;
     } catch (error) {
