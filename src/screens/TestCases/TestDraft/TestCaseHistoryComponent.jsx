@@ -367,7 +367,7 @@ function TestCaseHistoryComponent() {
     {
       name: (
         <div>
-          <span>Testing Id</span>
+          <span>Test Id</span>
           <i
           // onClick={(e) => handleFilterClick(e, 'id', 'Testing Id', 'number')}
           // className="icofont-filter ms-2"
