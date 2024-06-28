@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Row, Stack, Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -14,14 +14,12 @@ import {
 import { addCandidatesValidation } from './validation/addCandidates';
 import OtpVerificationModal from './OtpVerificationModal';
 import { RenderIf } from '../../../../utils';
-import { getBranchMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/branchMaster';
-import { getSourceMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/sourceMaster';
-import { getDesignationData } from '../../../Dashboard/DashboardAction';
 import {
   addCandidatesMasterThunk,
   getCandidatesMasterListThunk
 } from '../../../../redux/services/hrms/employeeJoining/candidatesListMaster';
 import { experienceLevel } from '../../../../settings/constants';
+import useDropdownData from '../../../../hooks/useDropdownData';
 
 function AddCandidatesModal({ show, close }) {
   // // initial state
@@ -46,37 +44,15 @@ function AddCandidatesModal({ show, close }) {
   // // redux state
   const { isLoading } = useSelector((state) => state?.candidatesMaster);
 
-  const { branchMasterList, isLoading: branchMasterLoading } = useSelector(
-    (state) => state?.branchMaster
-  );
-  const { getDesignationData: designationMasterList, status } = useSelector(
-    (DesignationSlice) => DesignationSlice.designationMaster
-  );
-  const { sourceMasterList, isLoading: sourceMasterLoading } = useSelector(
-    (state) => state?.sourceMaster
-  );
-
   // // dropdown data
-  const preferredRole = designationMasterList
-    ?.filter((item) => item?.is_active === 1)
-    ?.map((item) => ({
-      label: item?.designation,
-      value: item?.id
-    }));
-
-  const preferredLocation = branchMasterList
-    ?.filter((item) => item?.is_active === 1)
-    ?.map((item) => ({
-      label: item?.location_name,
-      value: item?.id
-    }));
-
-  const sourceType = sourceMasterList
-    ?.filter((item) => item?.is_active === 1)
-    ?.map((item) => ({
-      label: item?.source_name,
-      value: item?.id
-    }));
+  const {
+    sourceDropdown,
+    sourceDropdownLoading,
+    preferredDesignationDropdown,
+    preferredDesignationDropdownLoading,
+    preferredLocationDropdown,
+    preferredLocationDropdownLoading
+  } = useDropdownData({ render: show });
 
   // // local state
   const [otpModal, setOtpModal] = useState(false);
@@ -113,19 +89,6 @@ function AddCandidatesModal({ show, close }) {
     );
   };
 
-  useEffect(() => {
-    if (show) {
-      if (!designationMasterList?.length) {
-        dispatch(getDesignationData());
-      }
-      if (!branchMasterList?.length) {
-        dispatch(getBranchMasterListThunk());
-      }
-      if (!sourceMasterList?.length) {
-        dispatch(getSourceMasterListThunk());
-      }
-    }
-  }, [show]);
   return (
     <>
       <CustomModal show={show} title="Add Data" width="lg">
@@ -143,14 +106,12 @@ function AddCandidatesModal({ show, close }) {
                 <Row className="row_gap_3">
                   <Col sm={6} md={6}>
                     <Field
-                      options={sourceType}
+                      options={sourceDropdown}
                       component={CustomReactSelect}
                       name="source_id"
                       label="Source"
                       placeholder={
-                        sourceMasterLoading?.getSourceMasterList
-                          ? 'Loading...'
-                          : 'Select'
+                        sourceDropdownLoading ? 'Loading...' : 'Select'
                       }
                       requiredField
                     />
@@ -186,12 +147,14 @@ function AddCandidatesModal({ show, close }) {
                   </Col>
                   <Col sm={6} md={6}>
                     <Field
-                      options={preferredRole}
+                      options={preferredDesignationDropdown}
                       component={CustomReactSelect}
                       name="designation_id"
                       label="Preferred Designation"
                       placeholder={
-                        status === 'loading' ? 'Loading...' : 'Select'
+                        preferredDesignationDropdownLoading
+                          ? 'Loading...'
+                          : 'Select'
                       }
                       requiredField
                       isMulti
@@ -199,12 +162,12 @@ function AddCandidatesModal({ show, close }) {
                   </Col>
                   <Col sm={6} md={6}>
                     <Field
-                      options={preferredLocation}
+                      options={preferredLocationDropdown}
                       component={CustomReactSelect}
                       name="location_id"
                       label="Preferred Location"
                       placeholder={
-                        branchMasterLoading?.getBranchMasterList
+                        preferredLocationDropdownLoading
                           ? 'Loading...'
                           : 'Select'
                       }
