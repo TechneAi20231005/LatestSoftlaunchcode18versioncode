@@ -140,6 +140,9 @@ function TestDraftDetails(props) {
     { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
   );
   const [disable, setDisable] = useState(false);
+  console.log('disable', disable);
+  const [reviewerError, setReviewerError] = useState([]);
+
   const moduleMapping = {
     module_name: 'module_id',
     sub_module_name: 'submodule_id',
@@ -1191,7 +1194,6 @@ function TestDraftDetails(props) {
     dispatch(getEmployeeData());
   };
 
-  const [reviewerError, setReviewerError] = useState([]);
   const handleSubmit = () => {
     if (!reviewerId) {
       setReviewerError('Reviewer Id is Required');
@@ -1227,7 +1229,7 @@ function TestDraftDetails(props) {
         onSuccessHandler: () => {
           setSendToReviewerModal({ showModal: false });
           setDisable(false);
-          localDispatch({ type: 'SET_REVIEWER_ID', payload: [] });
+          localDispatch({ type: 'SET_REVIEWER_ID', payload: null });
           localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
 
           localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: false });
@@ -1356,7 +1358,7 @@ function TestDraftDetails(props) {
             type="submit"
             className="btn btn-sm btn bg-success text-white"
             onClick={() => handleSubmit()}
-            // disabled={disable}
+            disabled={disable}
           >
             <i class="icofont-paper-plane "></i> {''}
             Send To Reviewer
