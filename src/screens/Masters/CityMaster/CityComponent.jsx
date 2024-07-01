@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Container, Modal } from 'react-bootstrap';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import Select from 'react-select';
 
@@ -49,28 +49,23 @@ function CityComponent() {
   const isLoading = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.isLoading.getCityDataList
   );
+  console.log('filteredStateData', filteredStateData);
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 7)
   );
   //local state
   const [stateDropdownData, setStateDropdownData] = useState([]);
   const [updateStatus, setUpdateStatus] = useState({});
-  const [copyState, setCopyState] = useState([]);
-  const [stateName, setStateName] = useState(null);
 
-  const [dependent, setDependent] = useState({
-    country_id: null,
-    state_id: null
-  });
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(cityData, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [cityData, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -136,12 +131,12 @@ function CityComponent() {
       sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -182,11 +177,11 @@ function CityComponent() {
 
     var selectCountry = form.getAll('country_id');
     var selectState = form.getAll('state_id');
-    if (selectCountry == '' || selectState == '') {
+    if (selectCountry === '' || selectState === '') {
       flag = 0;
-      if (selectCountry == '') {
+      if (selectCountry === '') {
         alert('Please Select Country');
-      } else if (selectState == '') {
+      } else if (selectState === '') {
         alert('Please Select State');
       }
     }
@@ -218,7 +213,7 @@ function CityComponent() {
     );
     const newStatus = { ...updateStatus, statedrp: 1 };
     setUpdateStatus(newStatus);
-    setStateName(null);
+    // setStateName(null);
   };
 
   useEffect(() => {
@@ -235,7 +230,13 @@ function CityComponent() {
       !filteredCountryData.length
     ) {
     }
-  }, []);
+  }, [
+    dispatch,
+    cityData.length,
+    checkRole.length,
+    filteredStateData.length,
+    filteredCountryData.length
+  ]);
 
   useEffect(() => {
     setFilteredData(cityData);
@@ -247,23 +248,24 @@ function CityComponent() {
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
-  useEffect(() => {
-    if (dependent.country_id !== null) {
-      const newStates = [...copyState];
-      const filterNewState = newStates.filter((state) => {
-        if (state.country_id === dependent.country_id) {
-          return {
-            value: state.id,
-            label: state.state,
-            country_id: state.country_id
-          };
-        }
-      });
-      setStateDropdownData(filterNewState);
-    }
-  }, [dependent]);
+  // useEffect(() => {
+  //   if (dependent.country_id !== null) {
+  //     const newStates = [...copyState];
+
+  //     const filterNewState = newStates.filter((state) => {
+  //       if (state.country_id === dependent.country_id) {
+  //         return {
+  //           value: state.id,
+  //           label: state.state,
+  //           country_id: state.country_id
+  //         };
+  //       }
+  //     });
+  //     setStateDropdownData(filterNewState);
+  //   }
+  // }, [dependent, copyState]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -272,12 +274,12 @@ function CityComponent() {
 
     if (modal.modalData) {
       if (modal.modalData.state_id) {
-        setStateName(
-          activeState?.filter((d) => modal.modalData.state_id == d.value)
-        );
+        // setStateName(
+        //   activeState?.filter((d) => modal.modalData.state_id === d.value)
+        // );
       }
     }
-  }, [modal.showModal, checkRole]);
+  }, [modal.showModal, checkRole, modal.modalData]);
 
   return (
     <div className="container-xxl">
@@ -288,11 +290,11 @@ function CityComponent() {
         renderRight={() => {
           return (
             <div>
-              {checkRole && checkRole[0]?.can_create == 1 ? (
+              {checkRole && checkRole[0]?.can_create === 1 ? (
                 <button
                   className="btn btn-dark px-5"
                   onClick={() => {
-                    setStateName(null);
+                    // setStateName(null);
                     dispatch(
                       handleModalInStore({
                         showModal: true,
@@ -372,7 +374,7 @@ function CityComponent() {
                     defaultValue={
                       modal.modalData
                         ? filteredCountryData?.filter(
-                            (d) => modal?.modalData?.country_id == d.value
+                            (d) => modal?.modalData?.country_id === d.value
                           )
                         : ''
                     }
@@ -392,7 +394,7 @@ function CityComponent() {
                     defaultValue={
                       modal.modalData
                         ? filteredStateData.filter(
-                            (d) => modal.modalData.state_id == d.value
+                            (d) => modal.modalData.state_id === d.value
                           )
                         : ''
                     }
@@ -510,7 +512,7 @@ function CityComponent() {
                 Add
               </button>
             )}
-            {modal.modalData && checkRole && checkRole[0]?.can_update == 1 ? (
+            {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
               <button
                 type="submit"
                 className="btn btn-primary text-white"
@@ -551,7 +553,7 @@ function CityDropdown(props) {
         let counter = 1;
         const data = res.data.data;
         for (const key in data) {
-          if (data[key].is_active == 1) {
+          if (data[key].is_active === 1) {
             tempData.push({
               counter: counter++,
               id: data[key].id,
@@ -574,14 +576,14 @@ function CityDropdown(props) {
           onChange={props.getChangeValue}
           required={props.required ? true : false}
         >
-          {props.defaultValue == 0 && (
+          {props.defaultValue === 0 && (
             <option value={0} selected>
               Select City
             </option>
           )}
-          {props.defaultValue != 0 && <option value={0}>Select City</option>}
+          {props.defaultValue !== 0 && <option value={0}>Select City</option>}
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.city}

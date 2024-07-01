@@ -1,7 +1,7 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import DepartmentService from "../../../services/MastersService/DepartmentService";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import DepartmentService from '../../../services/MastersService/DepartmentService';
 export const departmentData = createAsyncThunk(
-  "departmentData",
+  'departmentData',
   async (config, thunkapi) => {
     try {
       const service = new DepartmentService();
@@ -14,7 +14,7 @@ export const departmentData = createAsyncThunk(
 );
 
 export const postdepartment = createAsyncThunk(
-  "postdepartment",
+  'postdepartment',
   async (config, thunkapi) => {
     try {
       const service = new DepartmentService();
@@ -26,11 +26,14 @@ export const postdepartment = createAsyncThunk(
   }
 );
 export const updateDepartment = createAsyncThunk(
-  "updateDepartment",
+  'updateDepartment',
   async (config, thunkapi) => {
     try {
       const service = new DepartmentService();
-      const response = await service.updateDepartment(config.id, config.payload);
+      const response = await service.updateDepartment(
+        config.id,
+        config.payload
+      );
 
       return response;
     } catch (error) {

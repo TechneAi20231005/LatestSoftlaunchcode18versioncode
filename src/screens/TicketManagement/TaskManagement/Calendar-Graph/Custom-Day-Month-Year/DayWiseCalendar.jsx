@@ -1,16 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Avatar from 'react-avatar';
 import './custom-style.css';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { _base } from '../../../../../settings/constants';
-import SprintService from '../../../../../services/TicketService/SprintService';
+
 import TaskSkeleton from './Skeleton/TaskSkeleton';
 
 const DayWiseCalendar = (props) => {
-  const navigate = useNavigate();
-
-  const params = useParams();
-  const { date, id: ticketId } = params;
   const { data: dayWiseData, bgColor, isLoading } = props;
   // const [isLoading, setIsLoading] = useState(true);
   const [tooltipContent, setTooltipContent] = useState('');
@@ -36,7 +30,6 @@ const DayWiseCalendar = (props) => {
     }\nStatus:${task_status}\nActual Status:${task_actual_status}\nTask Owners:${users}`;
     setTooltipContent(tooltipText);
 
-    const tooltip = document.getElementById('custom-tooltip');
     const xPos = event.clientX + 5;
     const yPos = event.clientY - 5;
     setTooltipPosition({ x: xPos, y: yPos });

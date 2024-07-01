@@ -1,7 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Modal, Table } from 'react-bootstrap';
-import SubtaskService from '../../../../services/TicketService/SubtaskService';
-import ErrorLogService from '../../../../services/ErrorLogService';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Modal } from 'react-bootstrap';
+
 import Alert from '../../../../components/Common/Alert';
 import DataTable from 'react-data-table-component';
 import Tooltip from 'react-bootstrap/Tooltip';
@@ -11,9 +10,7 @@ import { Spinner } from 'react-bootstrap';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import { getTaskHistory } from '../../../../services/TicketService/TaskService';
 export default function TaskHistoryModal(props) {
-  const formRef = useRef();
-
-  const [notify, setNotify] = useState();
+  const notify = null;
 
   const [data, setData] = useState();
   const [exportData, setExportData] = useState(null);
@@ -182,7 +179,7 @@ export default function TaskHistoryModal(props) {
     }
   ];
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
     await new getTaskHistory(props.taskId).then((res) => {
@@ -223,11 +220,11 @@ export default function TaskHistoryModal(props) {
         }
       }
     });
-  };
+  }, [props.taskId]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
   return (
     <>
       {notify && <Alert alertData={notify} />}

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Modal } from 'react-bootstrap';
 import Tooltip from 'react-bootstrap/Tooltip';
 
@@ -42,7 +42,7 @@ function QueryTypeComponent() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [data, setData] = useState([]);
 
-  const [dataa, setDataa] = useState(null);
+  // const [dataa, setDataa] = useState(null);
   const [isActive, setIsActive] = useState(1);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
@@ -52,12 +52,12 @@ function QueryTypeComponent() {
     modalData: '',
     modalHeader: ''
   });
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  // const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [exportData, setExportData] = useState([]);
   const [exportQueryGroupData, setExportQueryGroupData] = useState(null);
 
-  const [dynamicForm, setDynamicForm] = useState(null);
+  // const [dynamicForm, setDynamicForm] = useState(null);
 
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState(null);
 
@@ -69,8 +69,8 @@ function QueryTypeComponent() {
     modalDataEditPopup: '',
     modalHeaderEditPopup: ''
   });
-  const [customerDropdown, setCustomerDropdown] = useState();
-  const [selectedcustomer, setSelectedCustomer] = useState();
+  // const [customerDropdown, setCustomerDropdown] = useState();
+  // const [selectedcustomer, setSelectedCustomer] = useState();
   const handleModalEditPopup = (editData) => {
     setModalEditPopup(editData);
   };
@@ -123,10 +123,10 @@ function QueryTypeComponent() {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(data, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [data, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -253,12 +253,12 @@ function QueryTypeComponent() {
       sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -361,7 +361,7 @@ function QueryTypeComponent() {
       sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span
               className="badge"
               style={{ width: '4rem', backgroundColor: '#484c7f' }}
@@ -369,7 +369,7 @@ function QueryTypeComponent() {
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -389,7 +389,7 @@ function QueryTypeComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          <a
+          <button
             href="#"
             onClick={(e) => {
               handleFormQueryGroup({
@@ -411,7 +411,7 @@ function QueryTypeComponent() {
                 </div>
               </OverlayTrigger>
             )}
-          </a>
+          </button>
         </div>
       )
     },
@@ -441,10 +441,10 @@ function QueryTypeComponent() {
     await new QueryTypeService()
       .getAllQueryGroup()
       .then((res) => {
-        if (res.data.status == 1) {
+        if (res.data.status === 1) {
           setQueryGroupDropdown(
             res.data.data
-              .filter((d) => d.is_active == 1)
+              .filter((d) => d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.group_name }))
           );
         }
@@ -583,21 +583,21 @@ function QueryTypeComponent() {
 
   // **************************************End Add Query Group *****************************************
 
-  function isQueryType(queryType) {
-    return /^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$/.test(queryType);
-  }
+  // function isQueryType(queryType) {
+  //   return /^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$/.test(queryType);
+  // }
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setIsLoading(true);
-    setShowLoaderModal(null);
-    setShowLoaderModal(true);
+    // setShowLoaderModal(null);
+    // setShowLoaderModal(true);
     const data = [];
     const exportTempData = [];
     await new QueryTypeService()
       .getQueryType()
       .then((res) => {
         if (res.status === 200) {
-          setShowLoaderModal(false);
+          // setShowLoaderModal(false);
 
           let counter = 1;
           const temp = res.data.data;
@@ -623,7 +623,7 @@ function QueryTypeComponent() {
           }
 
           setData(data);
-          setDataa(data);
+          // setDataa(data);
           setIsLoading(false);
 
           for (const i in data) {
@@ -656,33 +656,33 @@ function QueryTypeComponent() {
       });
 
     await new DynamicFormService().getDynamicForm().then((res) => {
-      if (res.data.status == 1) {
-        setShowLoaderModal(false);
+      if (res.data.status === 1) {
+        // setShowLoaderModal(false);
 
-        setDynamicForm(res.data.data.filter((d) => d.is_active === 1));
+        // setDynamicForm(res.data.data.filter((d) => d.is_active === 1));
         setDynamicFormDropdown(
           res.data.data
-            .filter((d) => d.is_active == 1)
+            .filter((d) => d.is_active === 1)
             .map((d) => ({ value: d.id, label: d.template_name }))
         );
       }
     });
 
     await new CustomerService().getCustomer().then((res) => {
-      if (res.data.status == 1) {
-        setSelectedCustomer(res.data.data.filter((d) => d.is_active === 1));
-        setCustomerDropdown(
-          res.data.data
-            .filter((d) => d.is_active == 1)
-            .map((d) => ({ value: d.id, label: d.name }))
-        );
+      if (res.data.status === 1) {
+        // setSelectedCustomer(res.data.data.filter((d) => d.is_active === 1));
+        // setCustomerDropdown(
+        //   res.data.data
+        //     .filter((d) => d.is_active === 1)
+        //     .map((d) => ({ value: d.id, label: d.name }))
+        // );
       }
     });
     dispatch(getRoles());
-  };
+  }, [dispatch]);
 
   const handleClearData = (e) => {
-    if (viewSearchRef.current.value != null) {
+    if (viewSearchRef.current.value !== null) {
       document.getElementById('search_resultt').value = '';
     }
     loadData();
@@ -697,7 +697,7 @@ function QueryTypeComponent() {
     var flag = 1;
     setNotify(null);
     var selectFormId = form.getAll('form_id');
-    var selectCustomerId = form.getAll('customer_id');
+    // var selectCustomerId = form.getAll('customer_id');
     var selectQueryGroup = form.getAll('query_group_data[]');
 
     if (selectFormId.length === 0) {
@@ -720,10 +720,9 @@ function QueryTypeComponent() {
           form.append('is_active', 1);
           const res = await new QueryTypeService().postQueryType(form);
           if (res.status === 200) {
-            setShowLoaderModal(false);
-            setIsSubmitting(false);
+            // setShowLoaderModal(false);
             if (res.data.status === 1) {
-              setShowLoaderModal(false);
+              // setShowLoaderModal(false);
               setModal({ showModal: false, modalData: '', modalHeader: '' });
               toast.success(res?.data?.message);
 
@@ -750,7 +749,7 @@ function QueryTypeComponent() {
           form.append('is_active', isActive);
           const res = await new QueryTypeService().updateQueryType(id, form);
           if (res.status === 200) {
-            setShowLoaderModal(false);
+            // setShowLoaderModal(false);
             if (res.data.status === 1) {
               setModal({ showModal: false, modalData: '', modalHeader: '' });
               setNotify({ type: 'success', message: res.data.message });
@@ -783,11 +782,11 @@ function QueryTypeComponent() {
     }
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
-  };
+  // const handleKeyDown = (event) => {
+  //   if (event.key === 'Enter') {
+  //     handleSearch();
+  //   }
+  // };
   const handleViewSearchKeyDown = (event) => {
     if (event.key === 'Enter') {
       handleViewSearch();
@@ -798,7 +797,7 @@ function QueryTypeComponent() {
     loadData();
     loadDataEditPopup();
     setNotify(null);
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
     setFilteredData(data);
@@ -806,7 +805,7 @@ function QueryTypeComponent() {
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -925,7 +924,7 @@ function QueryTypeComponent() {
                         modal.modalData &&
                         dynamicFormDropdown &&
                         dynamicFormDropdown.filter(
-                          (d) => d.value == modal.modalData.form_id
+                          (d) => d.value === modal.modalData.form_id
                         )
                       }
                       required={true}
@@ -1407,7 +1406,7 @@ function QueryTypeComponent() {
 
 function QueryTypeDropdown(props) {
   const [data, setData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     const tempData = [];
     new QueryTypeService().getQueryType().then((res) => {
@@ -1424,7 +1423,7 @@ function QueryTypeDropdown(props) {
           }
         }
         setData(tempData);
-        setIsLoading(false);
+        // setIsLoading(false);
       }
     });
   }, []);
@@ -1440,14 +1439,14 @@ function QueryTypeDropdown(props) {
           required={props.required ? true : false}
           readOnly={props.readonly ? true : false}
         >
-          {props.defaultValue == 0 && (
+          {props.defaultValue === 0 && (
             <option value="">Select Query Type</option>
           )}
-          {props.defaultValue != 0 && (
+          {props.defaultValue !== 0 && (
             <option value="">Select Query Type </option>
           )}
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.query_type_name}

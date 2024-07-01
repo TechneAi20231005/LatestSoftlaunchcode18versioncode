@@ -1,15 +1,14 @@
-import React, { useState, useEffect } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
-import GoogleImg from "../../assets/images/verify.svg";
-import * as Validation from "../Utilities/Validation";
-import Alert from "../Common/Alert";
-import { _base } from "../../settings/constants";
-import { postDataa } from "../../services/ForgetPasswordService/OtpService";
-import { postData } from "../../services/ForgetPasswordService/ForgotPasswordService";
-
+import React, { useState, useEffect } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import GoogleImg from '../../assets/images/verify.svg';
+import * as Validation from '../Utilities/Validation';
+import Alert from '../Common/Alert';
+import { _base } from '../../settings/constants';
+import { postDataa } from '../../services/ForgetPasswordService/OtpService';
+import { postData } from '../../services/ForgetPasswordService/ForgotPasswordService';
 
 export default function StepAuthentication() {
-  const location = useLocation()
+  const location = useLocation();
 
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
@@ -20,7 +19,7 @@ export default function StepAuthentication() {
     const { name, value } = e.target;
     setUserData({
       ...userData,
-      [name]: value,
+      [name]: value
     });
   };
 
@@ -28,15 +27,17 @@ export default function StepAuthentication() {
     if (e) {
       e.preventDefault();
       postDataa(userData).then((res) => {
-        if (res.status == 200) {
+        if (res.status === 200) {
           if (res.data.status === 1) {
-            history({
-              pathname: `/${_base}/reset-password`,
-
-            }, { state: { email: userData.email, otp: userData.otp }, });
+            history(
+              {
+                pathname: `/${_base}/reset-password`
+              },
+              { state: { email: userData.email, otp: userData.otp } }
+            );
           } else {
             setNotify();
-            setNotify({ type: "danger", message: res.data.message });
+            setNotify({ type: 'danger', message: res.data.message });
           }
         }
       });
@@ -45,37 +46,35 @@ export default function StepAuthentication() {
 
   const submitOtpHandler = (e) => {
     e.preventDefault();
-    setNotify(null)
+    setNotify(null);
     postData(userData).then((res) => {
-      if (res.status == 200) {
+      if (res.status === 200) {
         if (res.data.status === 1) {
           setNotify({ type: 'success', message: res.data.message });
-
         } else {
           setNotify({ type: 'danger', message: res.data.message });
         }
       } else {
         setNotify();
-        setNotify({ type: 'danger', message: "Request Error" });
+        setNotify({ type: 'danger', message: 'Request Error' });
       }
     });
   };
   const handleResendClick = () => {
     // Implement the logic to resend the verification code here
     // For now, let's just simulate a success message
-    setNotify({ type: "success", message: "New code sent successfully." });
+    setNotify({ type: 'success', message: 'New code sent successfully.' });
     setResendDisabled(true);
   };
-
 
   useEffect(() => {
     if (location && location.state) {
       setUserData((prevState) => ({
         ...prevState,
-        email: location.state.email,
+        email: location.state.email
       }));
     }
-  }, []);
+  }, [location]);
   useEffect(() => {
     // Countdown logic
     let timer = null;
@@ -96,7 +95,7 @@ export default function StepAuthentication() {
       {notify && <Alert alertData={notify} />}
       <div
         className="w-100 p-3 p-md-5 card border-0 bg-dark text-light"
-        style={{ maxWidth: "32rem" }}
+        style={{ maxWidth: '32rem' }}
       >
         <form onSubmit={submitHandler} className="row g-1 p-3 p-md-4">
           <div className="col-12 text-center mb-1 mb-lg-5">
@@ -142,8 +141,11 @@ export default function StepAuthentication() {
             ) : (
               <button
                 type="submit"
-                onClick={e => { handleResendClick(e); submitOtpHandler(e) }}
-                style={{ border: "none", background: "none" }}
+                onClick={(e) => {
+                  handleResendClick(e);
+                  submitOtpHandler(e);
+                }}
+                style={{ border: 'none', background: 'none' }}
                 className="text-secondary"
               >
                 Resend a new code.

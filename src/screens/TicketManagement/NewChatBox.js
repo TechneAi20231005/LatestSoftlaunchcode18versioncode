@@ -1,14 +1,13 @@
-import React, { useState, useEffect } from "react";
-import { MentionsInput, Mention } from "react-mentions";
-import { Form, Button, ListGroup } from "react-bootstrap";
-import UserService from "../../services/MastersService/UserService"; // Import your UserService
-import classNames from "./example.module.css";
-import MyTicketService from "../../services/TicketService/MyTicketService";
-import { Astrick } from "../../components/Utilities/Style";
+import React, { useState, useEffect } from 'react';
+import { MentionsInput, Mention } from 'react-mentions';
+import { Button, ListGroup } from 'react-bootstrap';
+import UserService from '../../services/MastersService/UserService'; // Import your UserService
+import classNames from './example.module.css';
+import MyTicketService from '../../services/TicketService/MyTicketService';
 
 const Chatbox = (props) => {
-  const { ticketId, loadComment, commentData, statusName } = props;
-  const [message, setMessage] = useState("");
+  const { ticketId, loadComment, commentData } = props;
+  const [message, setMessage] = useState('');
   const [users, setUsers] = useState([]);
   const [mentionId, setMentionId] = useState([]);
   const handleMentionAdd = (e) => {
@@ -16,7 +15,7 @@ const Chatbox = (props) => {
   };
   const handleComment = async (e) => {
     e.preventDefault();
-    setMessage("");
+    setMessage('');
     // if (!mentionId.length) {
     //   alert("Kindly mention user");
     //   return;
@@ -25,7 +24,7 @@ const Chatbox = (props) => {
       .postComment({
         ticket_id: ticketId,
         comment: message,
-        mentions_id: mentionId,
+        mentions_id: mentionId
       })
       .then((res) => {
         loadComment();
@@ -36,17 +35,17 @@ const Chatbox = (props) => {
     const fetchData = async () => {
       try {
         const inputRequired =
-          "id,employee_id,first_name,last_name,middle_name,is_active";
+          'id,employee_id,first_name,last_name,middle_name,is_active';
         const res = await new UserService().getUserForMyTickets(inputRequired);
 
         if (res.status === 200 && res.data.status === 1) {
-          console.log("res", res);
+          console.log('res', res);
           const data = res.data.data.filter(
             (d) => d.is_active === 1 && d.account_for
           );
           const select = data.map((d) => ({
             id: d.id,
-            display: `${d.first_name} ${d.last_name}`,
+            display: `${d.first_name} ${d.last_name}`
           }));
           setUsers(select);
         }
@@ -57,7 +56,7 @@ const Chatbox = (props) => {
   }, []);
 
   return (
-    <div style={{ maxWidth: "500px", margin: "auto" }}>
+    <div style={{ maxWidth: '500px', margin: 'auto' }}>
       <form method="post" onSubmit={handleComment}>
         <div className="card ">
           <div className="card-body card-body-height py-4">
@@ -69,8 +68,8 @@ const Chatbox = (props) => {
                   classNames={classNames}
                   value={message}
                   disabled={
-                    props.statusName?.status_name === "Solved" ||
-                    props.statusName?.status_name === "Rejected"
+                    props.statusName?.status_name === 'Solved' ||
+                    props.statusName?.status_name === 'Rejected'
                   }
                   onChange={(e) => setMessage(e.target.value)}
                 >
@@ -107,8 +106,6 @@ const Chatbox = (props) => {
                       //   selectedFiles && selectedFiles.length <= 0 ? true : false
                       // }
                       onChange={(e) => {
-                        const selectedFile = e.target.files[0];
-
                         // Check if the file type is one of the allowed types
                         // if (
                         //   selectedFile.type === "image/jpg" ||
@@ -130,7 +127,6 @@ const Chatbox = (props) => {
                         //   }
                         //   e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
                         // }
-
                         // uploadAttachmentHandler(e, "UPLOAD", "");
                         // maxLengthCheck(e, "UPLOAD");
                       }}
@@ -147,14 +143,14 @@ const Chatbox = (props) => {
 
             <ListGroup
               className="mt-3"
-              style={{ overflowY: "scroll", height: "70vh" }}
+              style={{ overflowY: 'scroll', height: '70vh' }}
             >
               {commentData?.comments?.map((comment, index) => (
                 <ListGroup.Item key={index}>
                   <div>
                     <p className="fw-bold">
-                      {" "}
-                      {highlightMentions(comment?.cmt ? comment?.cmt : "")}
+                      {' '}
+                      {highlightMentions(comment?.cmt ? comment?.cmt : '')}
                     </p>
                   </div>
 
@@ -192,7 +188,7 @@ const highlightMentions = (comment) => {
     parts.push(
       <span
         key={match.index}
-        style={{ color: "#15198f" }}
+        style={{ color: '#15198f' }}
       >{`@${userName}`}</span>
     );
 

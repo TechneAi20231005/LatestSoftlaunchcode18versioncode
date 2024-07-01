@@ -1,51 +1,37 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { _base } from "../../settings/constants";
-import ErrorLogService from "../../services/ErrorLogService";
-import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
-import PageHeader from "../../components/Common/PageHeader";
-import Select from "react-select";
-import * as Validation from "../../components/Utilities/Validation";
-import Alert from "../../components/Common/Alert";
-import { Astrick } from "../../components/Utilities/Style";
-import RoleService from "../../services/MastersService/RoleService";
+import React, { useCallback, useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { _base } from '../../settings/constants';
+import ErrorLogService from '../../services/ErrorLogService';
+import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
+import PageHeader from '../../components/Common/PageHeader';
 
-import { CustomerDropdown } from "../Masters/CustomerMaster/CustomerComponent";
-import { RoleDropdown } from "../Masters/RoleMaster/RoleComponent";
+import Alert from '../../components/Common/Alert';
+
+import RoleService from '../../services/MastersService/RoleService';
 
 const ManageMenu = ({ match }) => {
   const { id } = useParams();
   const roleId = id;
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
-  const [accountFor, setAccountFor] = useState();
 
   const [menus, setMenus] = useState({ role_id: roleId, menu: null });
 
-  const [data, setData] = useState();
-
-  const [roleDropdown, setRoleDropdown] = useState(null);
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     //1. CAll ROLE API
     await new RoleService()
       .getRole()
       .then((res) => {
         if (res.status === 200) {
-          setRoleDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({ value: d.id, label: d.role }))
-          );
         }
       })
       .catch((error) => {
         const { response } = error;
         const { request, ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
-          "Department",
-          "Get_Department",
-          "INSERT",
+          'Department',
+          'Get_Department',
+          'INSERT',
           errorObject.data.message
         );
       });
@@ -63,13 +49,13 @@ const ManageMenu = ({ match }) => {
                 name: d.name,
                 can_read: 0,
                 can_create: 0,
-                can_update: 0,
+                can_update: 0
                 // 'can_delete': 0
               });
             });
             new ManageMenuService().getRole(roleId).then((res1) => {
               if (res1.status === 200) {
-                if (res1.data.status == 1) {
+                if (res1.data.status === 1) {
                   const data1 = res1.data.data;
                   let menu1 = menu;
                   data1.forEach((d, i1) => {
@@ -86,7 +72,7 @@ const ManageMenu = ({ match }) => {
                   setMenus((prev) => ({ ...prev, menu: menu }));
                 } else {
                   setMenus((prev) => ({ ...prev, menu: menu }));
-                  setNotify({ type: "danger", message: res.data.message });
+                  setNotify({ type: 'danger', message: res.data.message });
                   setNotify(null);
                 }
               }
@@ -98,16 +84,15 @@ const ManageMenu = ({ match }) => {
         const { response } = error;
         const { request, ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
-          "Status",
-          "Create_Status",
-          "INSERT",
+          'Status',
+          'Create_Status',
+          'INSERT',
           errorObject.data.message
         );
       });
-  };
+  }, [roleId]);
 
   // handle input change
-  const handleInputChange = (e, index) => {};
 
   const handleForm = async (e) => {
     e.preventDefault();
@@ -117,34 +102,32 @@ const ManageMenu = ({ match }) => {
       .then((res) => {
         setNotify(null);
         if (res.status === 200) {
-          if (res.data.status == 1) {
-            // setMenus(prev => ({ ...prev, 'role_id': roleId }));
-            // setNotify({ type: 'success', message: res.data.message });
-            document.getElementById("MenuMangementForm").reset();
+          if (res.data.status === 1) {
+            document.getElementById('MenuMangementForm').reset();
             loadData();
             history(
               {
-                pathname: `/${_base}/Role`,
+                pathname: `/${_base}/Role`
               },
               {
                 state: {
                   alert: {
                     id: Math.random(),
-                    type: "success",
-                    message: res.data.message,
-                  },
-                },
+                    type: 'success',
+                    message: res.data.message
+                  }
+                }
               }
             );
           } else {
-            setNotify({ type: "danger", message: res.data.message });
+            setNotify({ type: 'danger', message: res.data.message });
           }
         } else {
-          setNotify({ type: "danger", message: res.message });
+          setNotify({ type: 'danger', message: res.message });
           new ErrorLogService().sendErrorLog(
-            "Menu_Management",
-            "Create_Menu",
-            "INSERT",
+            'Menu_Management',
+            'Create_Menu',
+            'INSERT',
             res.message
           );
         }
@@ -153,49 +136,33 @@ const ManageMenu = ({ match }) => {
         const { response } = error;
         const { request, ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
-          "Menu_Management",
-          "Create_Menu",
-          "INSERT",
+          'Menu_Management',
+          'Create_Menu',
+          'INSERT',
           errorObject.data.message
         );
       });
   };
 
-  const selectAllRow = (index) => {
-    const menu = menus;
-
-    //     if(e.target.value==m.id){
-    //         menu[i].can_read=1;
-    //         menu[i].can_create=1;
-    //         menu[i].can_update=1;
-    //         menu[i].can_delete=1;
-    //     }
-    // })
-    // menus[index] = {...menus[index], can_read:1};
-    // this.setState({ markers });
-    // setMenus(prev=>([...prev,menus]))
-    // setMenus(null);
-    // setMenus(menu);
-  };
   const checkBoxHandle = (id, key, e) => {
     let temp_state = [...menus.menu];
     let actualIndex = null;
     temp_state.forEach((ele, index) => {
-      if (ele.id == id) {
+      if (ele.id === id) {
         actualIndex = index;
       }
     });
 
     let temp_element = { ...menus.menu[actualIndex] };
 
-    if (key == "can_create") {
-      temp_element.can_create = temp_element.can_create == 1 ? 0 : 1;
+    if (key === 'can_create') {
+      temp_element.can_create = temp_element.can_create === 1 ? 0 : 1;
     }
-    if (key == "can_read") {
-      temp_element.can_read = temp_element.can_read == 1 ? 0 : 1;
+    if (key === 'can_read') {
+      temp_element.can_read = temp_element.can_read === 1 ? 0 : 1;
     }
-    if (key == "can_update") {
-      temp_element.can_update = temp_element.can_update == 1 ? 0 : 1;
+    if (key === 'can_update') {
+      temp_element.can_update = temp_element.can_update === 1 ? 0 : 1;
     }
 
     temp_state[actualIndex] = temp_element;
@@ -209,15 +176,15 @@ const ManageMenu = ({ match }) => {
 
       let actualIndex = null;
       temp_state.forEach((ele, index) => {
-        if (ele.id == id) {
+        if (ele.id === id) {
           actualIndex = index;
         }
       });
       let temp_element = { ...menus.menu[actualIndex] };
-      temp_element.can_create = e.target.checked == true ? 1 : 0;
-      temp_element.can_read = e.target.checked == true ? 1 : 0;
-      temp_element.can_update = e.target.checked == true ? 1 : 0;
-      temp_element.can_delete = e.target.checked == true ? 1 : 0;
+      temp_element.can_create = e.target.checked === true ? 1 : 0;
+      temp_element.can_read = e.target.checked === true ? 1 : 0;
+      temp_element.can_update = e.target.checked === true ? 1 : 0;
+      temp_element.can_delete = e.target.checked === true ? 1 : 0;
       temp_state[actualIndex] = temp_element;
       setMenus((prev) => ({ ...prev, menu: temp_state }));
     } else {
@@ -225,10 +192,10 @@ const ManageMenu = ({ match }) => {
 
       temp_state.forEach((ele, index) => {
         let temp_element = { ...menus.menu[index] };
-        temp_element.can_create = e.target.checked == true ? 1 : 0;
-        temp_element.can_read = e.target.checked == true ? 1 : 0;
-        temp_element.can_update = e.target.checked == true ? 1 : 0;
-        temp_element.can_delete = e.target.checked == true ? 1 : 0;
+        temp_element.can_create = e.target.checked === true ? 1 : 0;
+        temp_element.can_read = e.target.checked === true ? 1 : 0;
+        temp_element.can_update = e.target.checked === true ? 1 : 0;
+        temp_element.can_delete = e.target.checked === true ? 1 : 0;
         temp_state[index] = temp_element;
         setMenus((prev) => ({ ...prev, menu: temp_state }));
       });
@@ -238,7 +205,7 @@ const ManageMenu = ({ match }) => {
   useEffect(() => {
     loadData();
     //    setNotify(null);
-  }, []);
+  }, [loadData]);
 
   return (
     <div className="container-xxl">
@@ -324,10 +291,10 @@ const ManageMenu = ({ match }) => {
                                         name="can_read[]"
                                         defaultValue={ele.can_read}
                                         checked={
-                                          ele.can_read == 1 ? true : false
+                                          ele.can_read === 1 ? true : false
                                         }
                                         onChange={(e) =>
-                                          checkBoxHandle(ele.id, "can_read", e)
+                                          checkBoxHandle(ele.id, 'can_read', e)
                                         }
                                       />
                                     </td>
@@ -339,12 +306,12 @@ const ManageMenu = ({ match }) => {
                                         name="can_create[]"
                                         value={ele.can_create}
                                         checked={
-                                          ele.can_create == 1 ? true : false
+                                          ele.can_create === 1 ? true : false
                                         }
                                         onChange={(e) =>
                                           checkBoxHandle(
                                             ele.id,
-                                            "can_create",
+                                            'can_create',
                                             e
                                           )
                                         }
@@ -357,12 +324,12 @@ const ManageMenu = ({ match }) => {
                                         name="can_update[]"
                                         value={ele.can_update}
                                         checked={
-                                          ele.can_update == 1 ? true : false
+                                          ele.can_update === 1 ? true : false
                                         }
                                         onChange={(e) =>
                                           checkBoxHandle(
                                             ele.id,
-                                            "can_update",
+                                            'can_update',
                                             e
                                           )
                                         }
@@ -377,11 +344,11 @@ const ManageMenu = ({ match }) => {
                     </div>
                   </div>
                 )}
-              </div>{" "}
+              </div>{' '}
               {/* CARD BODY */}
-            </div>{" "}
+            </div>{' '}
             {/* CARD */}
-            <div className="mt-3" style={{ textAlign: "right" }}>
+            <div className="mt-3" style={{ textAlign: 'right' }}>
               <button type="submit" className="btn btn-primary">
                 Submit
               </button>

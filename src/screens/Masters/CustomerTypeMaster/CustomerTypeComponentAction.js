@@ -1,8 +1,8 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import CustomerTypeService from "../../../services/MastersService/CustomerTypeService";
+import CustomerTypeService from '../../../services/MastersService/CustomerTypeService';
 export const getCustomerTypeData = createAsyncThunk(
-  "getCustomerTypeData",
+  'getCustomerTypeData',
   async (config, thunkapi) => {
     try {
       const service = new CustomerTypeService();
@@ -15,7 +15,7 @@ export const getCustomerTypeData = createAsyncThunk(
 );
 
 export const postCustomerData = createAsyncThunk(
-  "postCustomerData",
+  'postCustomerData',
   async (config, thunkapi) => {
     try {
       const service = new CustomerTypeService();
@@ -27,12 +27,15 @@ export const postCustomerData = createAsyncThunk(
   }
 );
 export const updateCustomerData = createAsyncThunk(
-  "updateCustomerData",
+  'updateCustomerData',
   async (config, thunkapi) => {
     try {
       const service = new CustomerTypeService();
-      const response = await service.updateCustomerType(config.id, config.payload);
-    
+      const response = await service.updateCustomerType(
+        config.id,
+        config.payload
+      );
+
       return response;
     } catch (error) {
       throw error;

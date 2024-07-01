@@ -1,9 +1,9 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import RoleService from "../../../services/MastersService/RoleService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import RoleService from '../../../services/MastersService/RoleService';
+import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 
 export const getRoleData = createAsyncThunk(
-  "getRoleData",
+  'getRoleData',
   async (config, thunkapi) => {
     try {
       const service = new RoleService();
@@ -16,13 +16,12 @@ export const getRoleData = createAsyncThunk(
   }
 );
 export const postRole = createAsyncThunk(
-  "postRole",
+  'postRole',
   async (config, thunkapi) => {
     try {
       const service = new RoleService();
       const response = await service.postRole(config);
 
-      
       return response;
     } catch (error) {
       throw error;
@@ -31,10 +30,8 @@ export const postRole = createAsyncThunk(
 );
 
 export const updatedRole = createAsyncThunk(
-  "updatedRole",
+  'updatedRole',
   async (config, thunkapi) => {
- 
-    
     try {
       const service = new RoleService();
       const response = await service.updateRole(config.id, config.payload);
@@ -47,11 +44,9 @@ export const updatedRole = createAsyncThunk(
 
 //______________getAllMenu_____________________
 
-
 export const getAllMenu = createAsyncThunk(
-  "getAllMenu",
+  'getAllMenu',
   async (config, thunkapi) => {
-  
     try {
       const service = new ManageMenuService();
       const response = await service.getAllMenu();
@@ -64,21 +59,15 @@ export const getAllMenu = createAsyncThunk(
 //_____________POSTmenuManage________________
 
 export const postMenuData = createAsyncThunk(
-  "postMenuData",
+  'postMenuData',
   async (config, thunkapi) => {
     try {
       const service = new ManageMenuService();
       const response = await service.postData(config);
-  
+
       return response;
     } catch (error) {
       throw error;
     }
   }
 );
-
-
-
-
-
-

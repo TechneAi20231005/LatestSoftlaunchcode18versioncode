@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import ErrorLogService from '../../../services/ErrorLogService';
 import CustomerService from '../../../services/MastersService/CustomerService';
@@ -16,7 +16,7 @@ import Select from 'react-select';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 
-function EditCustomer({ match }) {
+function EditCustomer() {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
 
@@ -24,13 +24,13 @@ function EditCustomer({ match }) {
   const customerId = id;
   const dispatch = useDispatch();
   const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 4)
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 4)
   );
 
   const [data, setData] = useState(null);
   const [customerType, setCustomerType] = useState(null);
 
-  const [country, setCountry] = useState(null);
+  // const [country, setCountry] = useState(null);
   const [countryDropdown, setCountryDropdown] = useState(null);
   const [state, setState] = useState(null);
   const [stateDropdown, setStateDropdown] = useState(null);
@@ -42,18 +42,7 @@ function EditCustomer({ match }) {
   const [stateName, setStateName] = useState(null);
   const [cityName, setCityName] = useState(null);
 
-  const stateRef = useRef(null);
-
-  const roleId = sessionStorage.getItem('role_id');
-
-  const handleDependent = (e, name) => {
-    setData({
-      ...data,
-      [name]: e.value
-    });
-  };
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     await new CustomerService()
       .getCustomerById(customerId)
       .then((res) => {
@@ -80,11 +69,10 @@ function EditCustomer({ match }) {
 
     await new CustomerType().getCustomerType().then((res) => {
       if (res.status === 200) {
-        let counter = 1;
         const data = res.data.data;
         setCustomerType(
           data
-            .filter((d) => d.is_active == 1)
+            .filter((d) => d.is_active === 1)
             .map((d) => ({ label: d.type_name, value: d.id }))
         );
       }
@@ -93,11 +81,10 @@ function EditCustomer({ match }) {
     //  **************************Country load data**************************************
     await new CountryService().getCountrySort().then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCountry(res.data.data.filter((d) => d.is_active === 1));
+        if (res.data.status === 1) {
           setCountryDropdown(
             res.data.data
-              .filter((d) => d.is_active == 1)
+              .filter((d) => d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.country }))
           );
         }
@@ -106,7 +93,7 @@ function EditCustomer({ match }) {
     //  ************************** State load data**************************************
     await new StateService().getStateSort().then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
+        if (res.data.status === 1) {
           setState(res.data.data.filter((d) => d.is_active === 1));
           setStateDropdown(
             res.data.data
@@ -123,7 +110,7 @@ function EditCustomer({ match }) {
     //  ************************** city load data**************************************
     await new CityService().getCity().then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
+        if (res.data.status === 1) {
           setCity(res.data.data.filter((d) => d.is_active === 1));
           setCityDropdown(
             res.data.data
@@ -139,7 +126,7 @@ function EditCustomer({ match }) {
     });
 
     dispatch(getRoles());
-  };
+  }, [customerId, dispatch]);
 
   const [emailError, setEmailError] = useState('');
   const [mailError, setMailError] = useState(false);
@@ -147,7 +134,7 @@ function EditCustomer({ match }) {
   const handleEmail = (e) => {
     const email = e.target.value;
     const emailRegex =
-      /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
+      /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
     if (emailRegex.test(email) === false) {
       setEmailError('Invalid Email');
       setMailError(true);
@@ -157,22 +144,17 @@ function EditCustomer({ match }) {
     }
   };
   const [contactError, setContactError] = useState(null);
-  const [contactErr, setContactErr] = useState(false);
-  const [contactNumber, setContactNumber] = useState(null);
   const handleMobileValidation = (e) => {
     const contactNumber = e.target.value;
 
-    setContactNumber(contactNumber);
     if (
-      contactNumber.charAt(0) == '9' ||
-      contactNumber.charAt(0) == '8' ||
-      contactNumber.charAt(0) == '7' ||
-      contactNumber.charAt(0) == '6'
+      contactNumber.charAt(0) === '9' ||
+      contactNumber.charAt(0) === '8' ||
+      contactNumber.charAt(0) === '7' ||
+      contactNumber.charAt(0) === '6'
     ) {
-      setContactErr(false);
       setContactError('');
     } else if (contactNumber.length === 10) {
-      setContactErr(true);
       setContactError('Invalid Mobile Number');
     } else {
       setContactError('');
@@ -191,29 +173,29 @@ function EditCustomer({ match }) {
     var selectCity = formData.getAll('city_id');
 
     if (
-      customerType == '' ||
-      selectEmail == '' ||
-      selectCountry == '' ||
-      selectState == '' ||
-      selectCity == ''
+      customerType === '' ||
+      selectEmail === '' ||
+      selectCountry === '' ||
+      selectState === '' ||
+      selectCity === ''
     ) {
       flag = 0;
       setNotify(null);
-      if (customerType == '') {
+      if (customerType === '') {
         alert('Please Select Customer Type');
-      } else if (selectEmail == '') {
+      } else if (selectEmail === '') {
         alert('Please Select Email');
-      } else if (selectCountry == '') {
+      } else if (selectCountry === '') {
         alert('Please Select Country');
-      } else if (selectState == '') {
+      } else if (selectState === '') {
         alert('Please Select State');
-      } else if (selectCity == '') {
+      } else if (selectCity === '') {
         alert('Please Select City');
       } else {
       }
     }
 
-    if (flag == 1) {
+    if (flag === 1) {
       setNotify(null);
       await new CustomerService()
         .updateCustomer(customerId, formData)
@@ -261,7 +243,7 @@ function EditCustomer({ match }) {
   const handleCountryChange = (e) => {
     setStateDropdown(
       state
-        .filter((d) => d.country_id == e.value)
+        .filter((d) => d.country_id === e.value)
         .map((d) => ({ value: d.id, label: d.state }))
     );
     const newStatus = { ...updateStatus, statedrp: 1 };
@@ -274,7 +256,7 @@ function EditCustomer({ match }) {
   const handleStateChange = (e) => {
     setCityDropdown(
       city
-        .filter((d) => d.state_id == e.value)
+        .filter((d) => d.state_id === e.value)
         .map((d) => ({ value: d.id, label: d.city }))
     );
     const newStatus = { ...updateStatus, citydrp: 1 };
@@ -285,7 +267,7 @@ function EditCustomer({ match }) {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
     if (
@@ -301,10 +283,10 @@ function EditCustomer({ match }) {
       setStateName(
         data &&
           stateDropdown &&
-          stateDropdown.filter((d) => d.value == data.state_id)
+          stateDropdown.filter((d) => d.value === data.state_id)
       );
     }
-  }, [data, stateDropdown]);
+  }, [data, stateDropdown, updateStatus]);
 
   useEffect(() => {
     if (
@@ -320,17 +302,17 @@ function EditCustomer({ match }) {
       setCityName(
         data &&
           cityDropdown &&
-          cityDropdown.filter((d) => d.value == data.city_id)
+          cityDropdown.filter((d) => d.value === data.city_id)
           ? data &&
               cityDropdown &&
-              cityDropdown.filter((d) => d.value == data.city_id)
+              cityDropdown.filter((d) => d.value === data.city_id)
           : cityName
       );
     }
     if (checkRole && checkRole[0]?.can_update === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, [data, cityDropdown, checkRole]);
+  }, [data, cityDropdown, checkRole, updateStatus, cityName]);
 
   return (
     <div className="container-xxl">
@@ -387,7 +369,7 @@ function EditCustomer({ match }) {
                           defaultValue={
                             data &&
                             customerType.filter(
-                              (d) => d.value == data.customer_type_id
+                              (d) => d.value === data.customer_type_id
                             )
                           }
                         />
@@ -488,7 +470,7 @@ function EditCustomer({ match }) {
                               id="is_active_1"
                               value="1"
                               defaultChecked={
-                                data && data.is_active == 1
+                                data && data.is_active === 1
                                   ? true
                                   : !data
                                   ? true
@@ -514,7 +496,7 @@ function EditCustomer({ match }) {
                               value="0"
                               // readOnly={(modal.modalData) ? false : true }
                               defaultChecked={
-                                data && data.is_active == 0 ? true : false
+                                data && data.is_active === 0 ? true : false
                               }
                             />
                             <label
@@ -604,7 +586,7 @@ function EditCustomer({ match }) {
                             data &&
                             countryDropdown &&
                             countryDropdown.filter(
-                              (d) => d.value == data.country_id
+                              (d) => d.value === data.country_id
                             )
                           }
                           onChange={handleCountryChange}

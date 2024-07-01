@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import Select from 'react-select';
@@ -51,15 +51,10 @@ function GeneralSettings() {
   );
 
   //local state
-  const [data, setData] = useState(null);
-  const [exportData, setExportData] = useState(null);
+  // const [data, setData] = useState(null);
+  const data = null;
+  const exportData = null;
   const [user, setUser] = useState(null);
-
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [notify, setNotify] = useState();
-
-  const [generalSetting, setGeneralSetting] = useState([]);
-  const [checkRole, setCheckRole] = useState([]);
 
   const userDetail = useRef();
 
@@ -73,13 +68,13 @@ function GeneralSettings() {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(
       getAllgeneralSettingData,
       searchTerm
     );
     setFilteredData(filteredList);
-  };
+  }, [getAllgeneralSettingData, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -88,27 +83,23 @@ function GeneralSettings() {
   };
 
   //Data Table columns
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     const inputRequired = 'id,employee_id,first_name,last_name';
     dispatch(getGeneralSettingData());
     dispatch(getUserForMyTicketsData(inputRequired));
-    setShowLoaderModal(null);
 
     const roleId = sessionStorage.getItem('role_id');
 
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const temp = res.data.data.filter((d) => d.menu_id === 78);
-
-          setCheckRole(temp);
         }
       }
     });
 
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
+        if (res.data.status === 1) {
           const data = res.data.data.sort((a, b) => {
             if (a.first_name && b.first_name) {
               return a.first_name.localeCompare(b.first_name);
@@ -132,12 +123,10 @@ function GeneralSettings() {
           for (let i = 0; i < data.length; i++) {
             data[i].counter = count++;
           }
-
-          setGeneralSetting(data);
         }
       }
     });
-  };
+  }, [dispatch]);
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
@@ -163,7 +152,7 @@ function GeneralSettings() {
 
     if (
       settingName === 'Time Regularization after task complete' &&
-      arrayOfId?.length == 0
+      arrayOfId?.length === 0
     ) {
       form.user_id = array;
     } else {
@@ -175,7 +164,6 @@ function GeneralSettings() {
     form.value = usersettingValue;
     form.is_active = true;
 
-    setNotify(null);
     if (!id) {
       dispatch(postGeneralSettingData(form));
     } else {
@@ -234,6 +222,7 @@ function GeneralSettings() {
       width: '20%',
       cell: (row) => {
         let arr = [];
+        // eslint-disable-next-line array-callback-return
         User.filter((el) => {
           if (row.user_id.includes(el.value)) {
             arr.push(el.label);
@@ -259,12 +248,12 @@ function GeneralSettings() {
       sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -329,14 +318,14 @@ function GeneralSettings() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
   useEffect(() => {
     setFilteredData(getAllgeneralSettingData);
   }, [getAllgeneralSettingData]);
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -536,15 +525,13 @@ function GeneralSettings() {
               type="button"
               className="btn btn-danger text-white"
               onClick={() => {
-                {
-                  dispatch(
-                    handleModalClose({
-                      showModal: false,
-                      modalData: '',
-                      modalHeader: ''
-                    })
-                  );
-                }
+                dispatch(
+                  handleModalClose({
+                    showModal: false,
+                    modalData: '',
+                    modalHeader: ''
+                  })
+                );
               }}
             >
               Cancel

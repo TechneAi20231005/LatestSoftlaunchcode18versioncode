@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Link, createRoutesFromChildren, useNavigate } from 'react-router-dom';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 import { Spinner, Modal } from 'react-bootstrap';
 import Alert from '../../components/Common/Alert';
@@ -34,7 +34,7 @@ export default function CreateTicketComponent() {
   const departmentRef = useRef();
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 18)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 18)
   );
 
   const current = new Date();
@@ -76,34 +76,33 @@ export default function CreateTicketComponent() {
   var today = new Date().toISOString().split('T')[0];
   const [data, setData] = useState(ticketData);
 
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  const showLoaderModal = false;
 
-  const [department, setDepartment] = useState(null);
   const [rows, setRows] = useState();
 
-  const [dynamicTicketData, setDynamicTicketData] = useState(null);
+  // const [dynamicTicketData, setDynamicTicketData] = useState(null);
 
-  const [queryType, setQueryType] = useState(null);
+  // const [queryType, setQueryType] = useState(null);
   const [customerMapping, setCustomerMapping] = useState(null);
 
   const [isFileGenerated, setIsFileGenerated] = useState(null);
-  const [alldepartmentData, setAllDepartmentData] = useState();
+  // const [alldepartmentData, setAllDepartmentData] = useState();
 
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [departmentDropdown, setDepartmentDropdown] = useState();
   const [userDropdown, setUserDropdown] = useState();
   const [customerID, setCustomerId] = useState();
 
-  const [expectedSolveDate, setExpectedSolveDate] = useState(null);
+  // const [expectedSolveDate, setExpectedSolveDate] = useState(null);
 
-  const [parent, setParent] = useState();
+  // const [parent, setParent] = useState();
 
-  const [queryGroupData, setQueryGroupData] = useState(null);
-  const [queryTypeData, setQueryTypeData] = useState(null);
+  // const [queryGroupData, setQueryGroupData] = useState(null);
+  // const [queryTypeData, setQueryTypeData] = useState(null);
 
   const [userDepartments, setUserDepartments] = useState();
   const [approch, setApproch] = useState();
-  const [user, setUser] = useState('');
+  // const [user, setUser] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [ticketsData, setTicketsData] = useState([]);
 
@@ -117,7 +116,7 @@ export default function CreateTicketComponent() {
   const CustomMenuListTicket = ({ options, onSelect }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [openOptions, setOpenOptions] = useState([]);
-    const [selectedOption, setSelectedOption] = useState(null);
+    // const [selectedOption, setSelectedOption] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -322,15 +321,16 @@ export default function CreateTicketComponent() {
 
     var flag = 1;
 
+    // eslint-disable-next-line no-use-before-define
     if (selectQueryGroup && selectQueryGroup.length > 0) {
       formData.append('dynamicForm', JSON.stringify(rows));
       var selectCountry = formData.getAll('customer_id');
       var selectQueryGroup = formData.getAll('query_group_id');
-      var selectgetAll = formData.get('ticket_type_id');
-      if (selectCountry == '') {
+
+      if (selectCountry === '') {
         flag = 0;
       }
-      if (selectQueryGroup == '') {
+      if (selectQueryGroup === '') {
         alert('Please select query group');
         e.preventDefault();
         flag = 0;
@@ -340,7 +340,7 @@ export default function CreateTicketComponent() {
     }
 
     setNotify(null);
-    if (flag == 1) {
+    if (flag === 1) {
       await new MyTicketService()
         .postTicket(formData)
         .then((res) => {
@@ -375,7 +375,6 @@ export default function CreateTicketComponent() {
         })
         .catch((res) => {
           toast.success(res?.data?.message);
-          setIsSubmitted(false);
         });
     }
   };
@@ -393,7 +392,6 @@ export default function CreateTicketComponent() {
         await new MyTicketService().getExpectedSolveDate(cmId).then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              setExpectedSolveDate(res.data.data);
             }
           }
         });
@@ -401,7 +399,7 @@ export default function CreateTicketComponent() {
       }
 
       setRows(null);
-      if (data && data?.length == 0) {
+      if (data && data?.length === 0) {
         alert(
           'Dynamic Form is not mapped against this Query Type, Please Map Form first'
         );
@@ -426,8 +424,8 @@ export default function CreateTicketComponent() {
             var tempResponse = [];
 
             result.forEach((res, i) => {
-              if (res.status == 200) {
-                if (res.data.status == 1) {
+              if (res.status === 200) {
+                if (res.data.status === 1) {
                   var temp = [];
                   temp = res.data.data.dropdown.map((d) => ({
                     value: d.id + '|' + d.label,
@@ -457,49 +455,6 @@ export default function CreateTicketComponent() {
 
   const [selectedDropdown, setSelectedDropdown] = useState([]);
 
-  const dynamicDependancyHandle = async (key, e, dependanceDropdownName) => {
-    setSelectedDropdown({ ...selectedDropdown, [key]: e });
-    var currentData = rows.filter(
-      (d) => d.inputName === dependanceDropdownName
-    );
-    if (dependanceDropdownName) {
-      var formdata = new FormData();
-      formdata.append('key', key);
-      formdata.append('value', e.value);
-      formdata.append('dropdownName', dependanceDropdownName);
-      formdata.append(
-        'dropdownId',
-        currentData[0]?.inputAddOn?.inputDataSource
-      );
-
-      var dropdown = [];
-      await new DynamicFormDropdownMasterService()
-        .getDropdownByName(formdata)
-        .then((res) => {
-          if (res.status == 200) {
-            if (res.data.status == 1) {
-              var temp = [];
-              dropdown = res.data.data.dropdown.map((d) => ({
-                value: d.id + '|' + d.label,
-                label: d.label
-              }));
-            }
-          }
-        });
-      var rowIndex = rows.findIndex(
-        (d) =>
-          d.inputName === dependanceDropdownName &&
-          d.inputAddOn.inputDataSource ==
-            currentData[0].inputAddOn.inputDataSource
-      );
-      setRows((prev) => {
-        const newPrev = [...prev];
-        newPrev[rowIndex].inputAddOn.inputDataSourceData = dropdown;
-        return newPrev;
-      });
-    }
-  };
-
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSelectOptionClick = () => {
@@ -508,10 +463,10 @@ export default function CreateTicketComponent() {
   const dynamicChangeHandle = (e) => {
     const { name, value } = e.target;
     setSelectedDropdown({ ...selectedDropdown, [name]: value });
-    setDynamicTicketData((prev) => ({ ...prev, [name]: value }));
+    // setDynamicTicketData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     const query_type_id = '';
     const queryTypeTemp = [];
     const status = 1;
@@ -550,42 +505,37 @@ export default function CreateTicketComponent() {
     var queryType = [];
     await new QueryTypeService().getQueryType().then((resp) => {
       if (resp.data.status === 1) {
-        setUser(queryType);
-        setQueryTypeData(resp.data.data.filter((d) => d.is_active == 1));
         resp.data.data
-          .filter((q) => q.is_active == 1)
+          .filter((q) => q.is_active === 1)
           .filter((q) => queryTypeTemp.includes(q.id))
           .forEach((q) => {
             queryType.push({ id: q.id, query_type_name: q.query_type_name });
           });
-        setQueryType(queryType);
       }
     });
 
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id';
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
-      if (res.payload.status == 200) {
+      if (res.payload.status === 200) {
       }
     });
     await new QueryTypeService().getAllQueryGroup(status).then((res) => {
-      if (res.data.status == 1) {
-        setQueryGroupData(res.data.data.filter((d) => d.is_active == 1));
+      if (res.data.status === 1) {
         setQueryGroupDropdown(
           res.data.data
-            .filter((d) => d.is_active == 1)
+            .filter((d) => d.is_active === 1)
             .map((d) => ({ value: d.id, label: d.group_name }))
         );
       }
     });
 
     await new DepartmentService().getDepartment().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          setDepartment(res.data.data.filter((d) => d.is_active == 1));
+      if (res.status === 200) {
+        if (res.data.status === 1) {
           var defaultValue = [{ value: 0, label: 'Select Department' }];
           var dropwdown = res.data.data
-            .filter((d) => d.is_active == 1)
+            .filter((d) => d.is_active === 1)
             .map((d) => ({ value: d.id, label: d.department }));
           defaultValue = [...defaultValue, ...dropwdown];
           setDepartmentDropdown(defaultValue);
@@ -593,38 +543,9 @@ export default function CreateTicketComponent() {
       }
     });
 
-    await new TaskTicketTypeService().getParent().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          if (res.status === 200) {
-            const mappedData = res.data.data.map((d) => ({
-              value: d.id,
-              label: d.type_name
-            }));
-
-            setParent(mappedData);
-          } else {
-          }
-        }
-      }
-    });
-
     await new TaskTicketTypeService()?.getTicketType()?.then((res) => {
       if (res?.status === 200) {
         setTicketsData(res?.data?.data);
-      }
-    });
-
-    await new DepartmentService().getDepartment().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          const temp = res.data.data;
-          setAllDepartmentData(
-            temp
-              .filter((d) => d.id)
-              .map((d) => ({ value: d.id, label: d.department }))
-          );
-        }
       }
     });
 
@@ -650,7 +571,7 @@ export default function CreateTicketComponent() {
       });
 
     dispatch(getRoles());
-  };
+  }, [dispatch]);
 
   const handleDownloadFormat = async (e) => {
     setNotify(null);
@@ -696,40 +617,22 @@ export default function CreateTicketComponent() {
     }
   };
 
-  // const handleParentchange = async (e) => {
-  //   if (ticketTypeRefs.current) {
-  //     ticketTypeRefs.current.clearValue();
-  //   }
-  //   await new TaskTicketTypeService().getAllType().then((res) => {
-  //     if (res.status === 200) {
-  //       if (res.data.status === 1) {
-  //         const temp = res.data.data;
-  //         setGetAllType(
-  //           temp
-  //             .filter((d) => d.type === 'TICKET' && d.is_active == 1)
-  //             .map((d) => ({ value: d.id, label: d.type_name }))
-  //         );
-  //       }
-  //     }
-  //   });
-  // };
-
   const handleGetDepartmentUsers = async (e) => {
     setUserDropdown(null);
     await new UserService().getUserWithMultipleDepartment().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
           var defaultValue = [{ value: '', label: 'Select User' }];
 
           const dropdown = res.data.data
-            .filter((d) => d.is_active == 1)
+            .filter((d) => d.is_active === 1)
             .filter((d) => d.multiple_department_id.includes(e.value))
             .map((d) => ({
               value: d.id,
               label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
             }));
 
-          if (data.approach == 'RW') {
+          if (data.approach === 'RW') {
             defaultValue = dropdown;
           } else {
             defaultValue = [...defaultValue, ...dropdown];
@@ -739,40 +642,6 @@ export default function CreateTicketComponent() {
       }
     });
   };
-
-  // function transformDataTicket(ticketsData, hasPrimaryLabel = false) {
-  //   const primaryLabel = "Primary";
-  //   const options = [];
-
-  //   // Push the primary label if it hasn't been pushed before
-  //   if (!hasPrimaryLabel) {
-  //     options.push({
-  //       ID: null,
-  //       label: primaryLabel,
-  //       isStatic: true,
-  //       options: [],
-  //     });
-  //     hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
-  //   }
-
-  //   // Process the ticketData
-  //   ticketsData?.forEach((item) => {
-  //     const label = item.type_name;
-
-  //     if (label !== primaryLabel) {
-  //       // Push API labels directly into options array
-  //       options.push({
-  //         ID: item.parent_id,
-  //         label: label,
-  //         options: item.children
-  //           ? transformDataTicket(item.children, hasPrimaryLabel)
-  //           : [],
-  //       });
-  //     }
-  //   });
-
-  //   return options;
-  // }
 
   function transformDataTicket(ticketsData) {
     const options = [];
@@ -797,9 +666,9 @@ export default function CreateTicketComponent() {
 
   const handleAutoChanges = async (e, type, nameField) => {
     if (data) {
-      var value = type == 'Select2' ? e && e.value : e.target.value;
-      if (nameField == 'query_type_id') {
-        const x = customerMapping.filter((d) => d.query_type_id == value);
+      var value = type === 'Select2' ? e && e.value : e.target.value;
+      if (nameField === 'query_type_id') {
+        const x = customerMapping.filter((d) => d.query_type_id === value);
         const accountFor = localStorage.getItem('account_for');
 
         if (x?.length > 0) {
@@ -850,7 +719,7 @@ export default function CreateTicketComponent() {
   useEffect(() => {
     loadData();
     dispatch(getCustomerMappingData());
-  }, []);
+  }, [dispatch, loadData]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
@@ -929,9 +798,10 @@ export default function CreateTicketComponent() {
                   {userDepartments && (
                     <Select
                       defaultValue={
-                        userDepartments?.length == 1
+                        userDepartments?.length === 1
                           ? userDepartments[0]
-                          : isMultipleDepartment?.map((department) => {
+                          : // eslint-disable-next-line array-callback-return
+                            isMultipleDepartment?.map((department) => {
                               if (department?.is_default) {
                                 return {
                                   value: department?.department_id,
@@ -1095,7 +965,7 @@ export default function CreateTicketComponent() {
                 </div>
               </div>
 
-              {data.ticket_uploading == 'REGULAR' && (
+              {data.ticket_uploading === 'REGULAR' && (
                 <div className="form-group row mt-3">
                   <div className="col-sm-3">
                     <label className="col-form-label">
@@ -1111,8 +981,8 @@ export default function CreateTicketComponent() {
                         name="confirmation_required"
                         value="1"
                         checked={
-                          data.confirmation_required == '1' ||
-                          data.confirmation_required == 1
+                          data.confirmation_required === '1' ||
+                          data.confirmation_required === 1
                         }
                         onChange={(e) =>
                           handleAutoChanges(e, 'Radio', 'confirmation_required')
@@ -1129,8 +999,8 @@ export default function CreateTicketComponent() {
                         name="confirmation_required"
                         value="0"
                         checked={
-                          data.confirmation_required == '0' ||
-                          data.confirmation_required == 0
+                          data.confirmation_required === '0' ||
+                          data.confirmation_required === 0
                         }
                         onChange={(e) =>
                           handleAutoChanges(e, 'Radio', 'confirmation_required')
@@ -1217,13 +1087,12 @@ export default function CreateTicketComponent() {
             <div className="card-body">
               <div className="row">
                 {rows.map((data, index) => {
-                  var range = '';
                   return (
                     <div className={`${data.inputWidth} mt-2`}>
                       <label>
                         <b>
                           {data.inputLabel}{' '}
-                          {data.inputMandatory == true ? (
+                          {data.inputMandatory === true ? (
                             <Astrick color="red" size="13px" />
                           ) : (
                             ''
@@ -1241,7 +1110,7 @@ export default function CreateTicketComponent() {
                           }
                           name={data.inputName}
                           defaultValue={data.inputDefaultValue}
-                          required={data.inputMandatory == true ? true : false}
+                          required={data.inputMandatory === true ? true : false}
                           onChange={dynamicChangeHandle}
                           className="form-control form-control-sm"
                         />
@@ -1261,7 +1130,7 @@ export default function CreateTicketComponent() {
                               : ''
                           }
                           onChange={dynamicChangeHandle}
-                          required={data.inputMandatory == true ? true : false}
+                          required={data.inputMandatory === true ? true : false}
                         >
                           {data.inputDefaultValue}
                         </textarea>
@@ -1273,7 +1142,9 @@ export default function CreateTicketComponent() {
                             type="date"
                             name={data.inputName}
                             required={
-                              data && data.inputMandatory == true ? true : false
+                              data && data.inputMandatory === true
+                                ? true
+                                : false
                             }
                             defaultValue={data.inputDefaultValue}
                             style={{ width: '100%' }}
@@ -1286,7 +1157,9 @@ export default function CreateTicketComponent() {
                             type="datetime-local"
                             name={data.inputName}
                             required={
-                              data && data.inputMandatory == true ? true : false
+                              data && data.inputMandatory === true
+                                ? true
+                                : false
                             }
                             onChange={dynamicChangeHandle}
                             defaultValue={data.inputDefaultValue}
@@ -1311,12 +1184,12 @@ export default function CreateTicketComponent() {
                             data.inputDefaultValue
                           }
                           onChange={dynamicChangeHandle}
-                          required={data.inputMandatory == true ? true : false}
+                          required={data.inputMandatory === true ? true : false}
                           className="form-control form-control-sm"
                         />
                       )}
 
-                      {data.inputType == 'radio' && data.inputAddOn.inputRadio
+                      {data.inputType === 'radio' && data.inputAddOn.inputRadio
                         ? data.inputAddOn.inputRadio.map((d) => {
                             return (
                               <div>
@@ -1334,7 +1207,7 @@ export default function CreateTicketComponent() {
                           })
                         : ''}
 
-                      {data.inputType == 'checkbox' &&
+                      {data.inputType === 'checkbox' &&
                       data.inputAddOn.inputRadio
                         ? data.inputAddOn.inputRadio.map((d) => {
                             return (
@@ -1369,7 +1242,7 @@ export default function CreateTicketComponent() {
                           }
                           name={data.inputName}
                           defaultValue={data.inputDefaultValue}
-                          required={data.inputMandatory == true ? true : false}
+                          required={data.inputMandatory === true ? true : false}
                           onChange={dynamicChangeHandle}
                           min={data.inputAddOn.inputRangeMin}
                           max={data.inputAddOn.inputRangeMax}
@@ -1385,7 +1258,7 @@ export default function CreateTicketComponent() {
                               : ''
                           }
                           defaultValue={data.inputDefaultValue}
-                          required={data.inputMandatory == true ? true : false}
+                          required={data.inputMandatory === true ? true : false}
                           name={data.inputName}
                           onChange={dynamicChangeHandle}
                           minLength={parseInt(data.inputAddOn.inputRangeMin)}
@@ -1564,7 +1437,7 @@ export default function CreateTicketComponent() {
           </div>
         )}
         <div className="mt-3" style={{ textAlign: 'right' }}>
-          {data.ticket_uploading == 'REGULAR' && (
+          {data.ticket_uploading === 'REGULAR' && (
             <button
               type="submit"
               className="btn btn-sm btn-primary"
@@ -1574,7 +1447,7 @@ export default function CreateTicketComponent() {
             </button>
           )}
 
-          {data.ticket_uploading == 'BULK_UPLOADING' && (
+          {data.ticket_uploading === 'BULK_UPLOADING' && (
             <button
               type="submit"
               className="btn btn-sm btn-primary"

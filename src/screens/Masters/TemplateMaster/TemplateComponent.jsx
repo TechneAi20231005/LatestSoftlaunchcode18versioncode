@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
@@ -7,9 +7,8 @@ import TemplateService from '../../../services/MastersService/TemplateService';
 import PageHeader from '../../../components/Common/PageHeader';
 
 import Alert from '../../../components/Common/Alert';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
-import { Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { exportTempateData, templateData } from './TemplateComponetAction';
@@ -38,28 +37,18 @@ function TemplateComponent() {
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
   );
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 15)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 15)
   );
-
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: '',
-    modalHeader: ''
-  });
-
-  const handleModal = (data) => {
-    setModal(data);
-  };
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(templatedata, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [templatedata, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -125,10 +114,10 @@ function TemplateComponent() {
       width: '150px',
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary">Active</span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger">Deactive</span>
           )}
         </div>
@@ -169,7 +158,7 @@ function TemplateComponent() {
     }
     if (location && location.state) {
     }
-  }, []);
+  }, [dispatch, location, templatedata.length]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -183,7 +172,7 @@ function TemplateComponent() {
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [handleSearch, searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -272,7 +261,7 @@ function TemplateDropdown(props) {
             <option value={0}>Select Template</option>
           )}
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.template_name}

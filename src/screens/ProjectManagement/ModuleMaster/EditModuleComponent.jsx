@@ -1,6 +1,6 @@
 
 
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import ModuleService from "../../../services/ProjectManagementService/ModuleService";
 import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
@@ -15,7 +15,7 @@ import { _base } from "../../../settings/constants";
 export default function EditModuleComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
-  
+
   const { id } = useParams();
   const moduleId = id;
 
@@ -24,14 +24,15 @@ export default function EditModuleComponent({ match }) {
   const roleId = sessionStorage.getItem("role_id");
   const [checkRole, setCheckRole] = useState(null);
 
-  const loadData = async () => {
-    const data = [];
+  const loadData = useCallback( async () => {
+
+
 
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
+        if (res.data.status === 1) {
           const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+          setCheckRole(res.data.data.filter((d) => d.role_id === getRoleId));
         }
       }
     });
@@ -63,7 +64,7 @@ export default function EditModuleComponent({ match }) {
           errorObject.data.message
         );
       });
-  };
+  },[moduleId, roleId]);
 
   const handleForm = async (e) => {
     e.preventDefault();
@@ -77,7 +78,7 @@ export default function EditModuleComponent({ match }) {
           if (res.data.status === 1) {
             history({
               pathname: `/${_base}/Module`,
-          
+
             },{ state: { alert: { type: "success", message: res.data.message } }}
             );
           } else {
@@ -108,7 +109,7 @@ export default function EditModuleComponent({ match }) {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
     if (checkRole && checkRole[20].can_update === 0) {
@@ -218,7 +219,7 @@ export default function EditModuleComponent({ match }) {
                               id="is_active_1"
                               value="1"
                               defaultChecked={
-                                data && data.is_active == 1 ? true : false
+                                data && data.is_active === 1 ? true : false
                               }
                             />
                             <label
@@ -238,7 +239,7 @@ export default function EditModuleComponent({ match }) {
                               id="is_active_0"
                               value="0"
                               defaultChecked={
-                                data && data.is_active == 0 ? true : false
+                                data && data.is_active === 0 ? true : false
                               }
                             />
                             <label
@@ -278,10 +279,3 @@ export default function EditModuleComponent({ match }) {
     </div>
   );
 }
-
-
-
-
-
-
-

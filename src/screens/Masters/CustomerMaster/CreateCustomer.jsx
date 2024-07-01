@@ -20,27 +20,13 @@ import {
   postCustomerData
 } from '../../Dashboard/DashboardAction';
 export default function CreateCustomer({ match }) {
-
-
-  const [notify, setNotify] = useState(null);
-
-  const [dependent, setDependent] = useState({
-    country_id: null,
-    state_id: null
-  });
-
   const [updateStatus, setUpdateStatus] = useState({});
 
   const [stateName, setStateName] = useState(null);
   const [cityName, setCityName] = useState(null);
 
-
-
-
-
-
   const [contactError, setContactError] = useState(null);
-  const [contactErr, setContactErr] = useState(false);
+  // const [contactErr, setContactErr] = useState(false);
   const [contactNumber, setContactNumber] = useState(null);
 
   const navigate = useNavigate();
@@ -92,20 +78,20 @@ export default function CreateCustomer({ match }) {
     const contactNumber = e.target.value;
     setContactNumber(contactNumber);
     if (
-      contactNumber.charAt(0) == '9' ||
-      contactNumber.charAt(0) == '8' ||
-      contactNumber.charAt(0) == '7' ||
-      contactNumber.charAt(0) == '6'
+      contactNumber.charAt(0) === '9' ||
+      contactNumber.charAt(0) === '8' ||
+      contactNumber.charAt(0) === '7' ||
+      contactNumber.charAt(0) === '6'
     ) {
       if (/^[0]+$/.test(contactNumber)) {
-        setContactErr(true);
+        // setContactErr(true);
         setContactError('Invalid Mobile Number');
       } else {
-        setContactErr(false);
+        // setContactErr(false);
         setContactError('');
       }
-    } else if (contactNumber?.length === 10) {
-      setContactErr(true);
+    } else if (contactNumber.length === 10) {
+      // setContactErr(true);
       setContactError('Invalid Mobile Number');
     } else {
       setContactError('');
@@ -116,7 +102,7 @@ export default function CreateCustomer({ match }) {
     e.preventDefault();
     const formData = new FormData(e.target);
     var flag = 1;
-    setNotify(null);
+    // setNotify(null);
 
     var customerType = formData.getAll('customer_type_id');
     var selectEmail = formData.getAll('email_id');
@@ -125,40 +111,39 @@ export default function CreateCustomer({ match }) {
     var selectCity = formData.getAll('city_id');
 
     if (
-      customerType == '' ||
-      selectEmail == '' ||
-      selectCountry == '' ||
-      selectState == '' ||
-      selectCity == ''
+      customerType === '' ||
+      selectEmail === '' ||
+      selectCountry === '' ||
+      selectState === '' ||
+      selectCity === ''
     ) {
       flag = 0;
-      setNotify(null);
-      if (customerType == '') {
+      // setNotify(null);
+      if (customerType === '') {
         alert('Please Select Customer Type');
-      } else if (selectEmail == '') {
+      } else if (selectEmail === '') {
         alert('Please Select Email');
-      } else if (selectCountry == '') {
+      } else if (selectCountry === '') {
         alert('Please Select Country');
-      } else if (selectState == '') {
+      } else if (selectState === '') {
         alert('Please Select State');
-      } else if (selectCity == '') {
+      } else if (selectCity === '') {
         alert('Please Select City');
       } else {
         alert('Please Check Form');
       }
     }
 
-    if (contactNumber?.length < 10) {
-      alert('Please enter mobile number');
+    if (contactNumber.length < 10) {
+      alert('Mobile Number Field should be 10 Digits');
       return false;
     } else {
       if (flag === 1) {
         dispatch(postCustomerData(formData)).then((res) => {
-          if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
-            setNotify({
-              type: 'success',
-              message: res?.payload?.data?.message
-            });
+          if (
+            res?.payload?.data?.status === 1 &&
+            res?.payload?.status === 200
+          ) {
             dispatch(getCustomerData());
             setTimeout(() => {
               navigate(`/${_base}/Customer`, {
@@ -171,14 +156,12 @@ export default function CreateCustomer({ match }) {
               });
             }, 3000);
           } else {
-            setNotify({ type: 'danger', message: res?.payload?.data?.message });
+            // setNotify({ type: 'danger', message: res?.payload?.data?.message });
           }
         });
       }
     }
   };
-
-  const loadData = async () => {};
 
   const handleCountryChange = (e) => {
     setStateDropdownData(
@@ -236,7 +219,14 @@ export default function CreateCustomer({ match }) {
 
     if (!cityDropdownData?.length) {
     }
-  }, []);
+  }, [
+    checkRole.length,
+    cityDropdownData.length,
+    countryDropdown.length,
+    customerType.length,
+    dispatch,
+    stateDropdown.length
+  ]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {

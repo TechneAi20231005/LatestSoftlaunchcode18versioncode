@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import Tab from 'react-bootstrap/Tab';
@@ -26,18 +26,13 @@ import {
   getEmployeeData
 } from '../../Dashboard/DashboardAction';
 
-import {
-  getDesignationData,
-  getDesignationDataListThunk
-} from '../DesignationMaster/DesignationAction';
+import { getDesignationDataListThunk } from '../DesignationMaster/DesignationAction';
 
 import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
 import { getRoleData } from '../RoleMaster/RoleMasterAction';
 import { toast } from 'react-toastify';
 
 function CreateUserComponent({ match }) {
-  const history = useNavigate();
-  const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState('All_Tickets');
   const roleDropdown = useSelector(
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.getRoleData
@@ -49,15 +44,12 @@ function CreateUserComponent({ match }) {
 
   const [filteredRoles, setFilteredRoles] = useState([]);
 
-  const [state, setState] = useState(null);
-
-  const [city, setCity] = useState(null);
+  const state = null;
 
   const [accountFor, setAccountFor] = useState('SELF');
 
   const [CustomerDrp, setCustomerDrp] = useState(null);
   const [loading, setLoading] = useState(false);
-  const roleId = sessionStorage.getItem('role_id');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -65,15 +57,11 @@ function CreateUserComponent({ match }) {
   const Notify = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.notify
   );
-  const isLoading = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.isLoading
-  );
+
   const CountryData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
   );
-  const cityData = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.sortedCityData
-  );
+
   const AllcityDropDownData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.FilterCity
   );
@@ -119,16 +107,16 @@ function CreateUserComponent({ match }) {
     }
   ]);
 
-  const [empty, setEmpty] = useState([
-    {
-      department_id: [],
-      ticket_show_type: null,
-      ticket_passing_authority: 0,
-      is_default: 0
-    }
-  ]);
+  // const [empty, setEmpty] = useState([
+  //   {
+  //     department_id: [],
+  //     ticket_show_type: null,
+  //     ticket_passing_authority: 0,
+  //     is_default: 0
+  //   }
+  // ]);
 
-  const [updateStatus, setUpdateStatus] = useState({});
+  // const [updateStatus, setUpdateStatus] = useState({});
 
   const [passwordShown, setPasswordShown] = useState(false);
   const togglePasswordVisiblity = () => {
@@ -172,42 +160,42 @@ function CreateUserComponent({ match }) {
     var selectUserName = form.getAll('user_name')[0];
     var selectContactNo = form.getAll('contact_no')[0];
     var selectPassword = form.getAll('password')[0];
-    var selectWhatsapp = form.getAll('whats_app_contact_no')[0];
+    // var selectWhatsapp = form.getAll('whats_app_contact_no')[0];
     var selectRole = form.getAll('role_id')[0];
     var selectDesignation = form.getAll('designation_id')[0];
 
     let flag = 0;
-    if (selectFirstName == '') {
+    if (selectFirstName === '') {
       setInputState({ ...state, firstNameErr: ' Please Enter First Name' });
       flag = 1;
-    } else if (selectMiddleName == '') {
+    } else if (selectMiddleName === '') {
       setInputState({ ...state, middleNameErr: ' Please Enter Middle Name' });
       flag = 1;
-    } else if (selectLastName == '') {
+    } else if (selectLastName === '') {
       setInputState({ ...state, lastNameErr: ' Please Enter last Name' });
       flag = 1;
-    } else if (selectEmail == '') {
+    } else if (selectEmail === '') {
       setInputState({ ...state, emailErr: ' Please Enter Email' });
       flag = 1;
-    } else if (selectUserName == '') {
+    } else if (selectUserName === '') {
       setInputState({ ...state, userNameErr: ' Please Enter username' });
       flag = 1;
-    } else if (selectContactNo == '') {
+    } else if (selectContactNo === '') {
       setInputState({ ...state, contactNoErr: ' Please Enter contact no.' });
       flag = 1;
-    } else if (selectPassword == '') {
+    } else if (selectPassword === '') {
       setInputState({ ...state, passwordErr: ' Please Enter Password' });
       flag = 1;
-    } else if (confirmedPasswordRef.current.value == '') {
+    } else if (confirmedPasswordRef.current.value === '') {
       setInputState({
         ...state,
         confirmed_PassErr: ' Please Enter Confirmed password'
       });
       flag = 1;
-    } else if (selectRole == '') {
+    } else if (selectRole === '') {
       setInputState({ ...state, roleErr: ' Please Select role' });
       flag = 1;
-    } else if (selectDesignation == '') {
+    } else if (selectDesignation === '') {
       setInputState({ ...state, designationErr: ' Please Select designation' });
       flag = 1;
     } else if (selectPassword.length < 6) {
@@ -238,32 +226,33 @@ function CreateUserComponent({ match }) {
         contactNoErr: 'contact number length should be 10 digit'
       });
       flag = 1;
-    } else if (contactValid == true) {
+    } else if (contactValid === true) {
       alert('Enter valid Contact Number');
       flag = 1;
-    } else if (whatsappValid == true) {
+    } else if (whatsappValid === true) {
       alert('Enter valid Whatsapp Number');
       flag = 1;
-    } else if (mailError == true) {
+    } else if (mailError === true) {
       alert('Invalid Email');
       flag = 1;
     }
     return flag;
   }
 
-  const [emailError, setEmailError] = useState(null);
-  const [mailError, setMailError] = useState(false);
+  // const [emailError, setEmailError] = useState(null);
+  // const [mailError, setMailError] = useState(false);
+  const mailError = false;
 
-  const [contactNumber, setContactNumber] = useState(null);
+  // const [contactNumber, setContactNumber] = useState(null);
 
   const [contactValid, setContactValid] = useState(false);
   const handleContactValidation = (e) => {
     const contactValidation = e.target.value;
     if (
-      contactValidation.charAt(0) == '9' ||
-      contactValidation.charAt(0) == '8' ||
-      contactValidation.charAt(0) == '7' ||
-      contactValidation.charAt(0) == '6'
+      contactValidation.charAt(0) === '9' ||
+      contactValidation.charAt(0) === '8' ||
+      contactValidation.charAt(0) === '7' ||
+      contactValidation.charAt(0) === '6'
     ) {
       setInputState({ ...state, contactNoErr: '' });
       setContactValid(false);
@@ -273,20 +262,20 @@ function CreateUserComponent({ match }) {
     }
 
     if (contactValidation.length < 10) {
-      setContactNumber(contactValidation);
+      // setContactNumber(contactValidation);
     }
   };
 
-  const [whatsappNumber, setWhatsappNumber] = useState(null);
-  const [whatsappError, setWhatsappError] = useState(null);
+  // const [whatsappNumber, setWhatsappNumber] = useState(null);
+  // const [whatsappError, setWhatsappError] = useState(null);
   const [whatsappValid, setWhatsappValid] = useState(false);
   const handleWhatsappValidation = (e) => {
     const whatsappValidation = e.target.value;
     if (
-      whatsappValidation.charAt(0) == '9' ||
-      whatsappValidation.charAt(0) == '8' ||
-      whatsappValidation.charAt(0) == '7' ||
-      whatsappValidation.charAt(0) == '6'
+      whatsappValidation.charAt(0) === '9' ||
+      whatsappValidation.charAt(0) === '8' ||
+      whatsappValidation.charAt(0) === '7' ||
+      whatsappValidation.charAt(0) === '6'
     ) {
       setInputState({ ...state, whatsappErr: '' });
       setWhatsappValid(false);
@@ -296,12 +285,12 @@ function CreateUserComponent({ match }) {
     }
 
     if (whatsappValidation.length < 11) {
-      setWhatsappNumber(whatsappValidation);
+      // setWhatsappNumber(whatsappValidation);
     }
   };
 
-  const [passwordError, setPasswordError] = useState(null);
-  const [passwordValid, setPasswordValid] = useState(false);
+  // const [passwordError, setPasswordError] = useState(null);
+  // const [passwordValid, setPasswordValid] = useState(false);
   const [stateDropdownData, setStateDropdownData] = useState([]);
   const [cityDropdownData, setCityDropdownData] = useState([]);
 
@@ -314,14 +303,14 @@ function CreateUserComponent({ match }) {
     setPassword(e.target.value);
     const passwordValidation = e.target.value;
     if (passwordValidation.length > 20) {
-      setPasswordError('Enter Password min. 6 & max. 20');
-      setPasswordValid(true);
+      // setPasswordError('Enter Password min. 6 & max. 20');
+      // setPasswordValid(true);
     } else if (passwordValidation.length < 6) {
-      setPasswordError('Enter Password min. 6 & max. 20');
-      setPasswordValid(true);
+      // setPasswordError('Enter Password min. 6 & max. 20');
+      // setPasswordValid(true);
     } else {
-      setPasswordError('');
-      setPasswordValid(false);
+      // setPasswordError('');
+      // setPasswordValid(false);
     }
 
     // Compare passwords
@@ -335,12 +324,12 @@ function CreateUserComponent({ match }) {
     }
   };
 
-  const [pincodeNumber, setPincodenumber] = useState(null);
+  // const [pincodeNumber, setPincodenumber] = useState(null);
   const [pincodeError, setPincodeError] = useState(null);
   const [pincodeValid, setPincodeValid] = useState(false);
   const handlePincodeValidation = (e) => {
     const whatsappValidation = e.target.value;
-    if (whatsappValidation.length == 6) {
+    if (whatsappValidation.length === 6) {
       setPincodeError('');
       setPincodeValid(false);
     } else {
@@ -376,12 +365,10 @@ function CreateUserComponent({ match }) {
       return;
     }
     setLoading(true); // Set loading state to true
-    setNotify(null);
+    // setNotify(null);
 
     const form = new FormData(e.target);
     var flag = 1;
-
-    var a = JSON.stringify(Object.fromEntries(form));
 
     const formValidation = checkingValidation(form);
     if (formValidation === 1) {
@@ -390,30 +377,30 @@ function CreateUserComponent({ match }) {
     }
 
     var selectDepartment = form.getAll('department_id[]');
-    if (selectDepartment == '') {
+    if (selectDepartment === '') {
       setInputState({ ...state, departmentErr: ' Please Select Department' });
       setLoading(false); // Reset loading state
       return false;
     }
 
-    if (confirmPasswordError == true) {
+    if (confirmPasswordError === true) {
       alert('Password Does not Match');
       setLoading(false); // Reset loading state
       return false;
-    } else if (mailError == true) {
+    } else if (mailError === true) {
       alert('Enter valid email');
       setLoading(false); // Reset loading state
       return false;
-    } else if (pincodeValid == true) {
+    } else if (pincodeValid === true) {
       alert('Enter valid Pincode');
       setLoading(false); // Reset loading state
       return false;
     } else if (
-      confirmPasswordError == false &&
-      mailError == false &&
-      contactValid == false &&
-      whatsappValid == false &&
-      pincodeValid == false
+      confirmPasswordError === false &&
+      mailError === false &&
+      contactValid === false &&
+      whatsappValid === false &&
+      pincodeValid === false
     ) {
       if (flag === 1) {
         dispatch(postUserData(form)).then((res) => {
@@ -424,8 +411,10 @@ function CreateUserComponent({ match }) {
             toast.success(res?.payload?.data?.message);
             navigate(`/${_base}/User`);
             dispatch(getEmployeeData());
-          } else {
-            toast.error(res?.payload?.data?.message);
+            // setNotify({ type: 'success', message: res.payload.data.message });
+            setTimeout(() => {
+              navigate(`/${_base}/User`);
+            }, 3000);
           }
           setLoading(false);
         });
@@ -433,15 +422,15 @@ function CreateUserComponent({ match }) {
     }
   };
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     dispatch(getCountryDataSort());
     dispatch(getStateDataSort());
 
     await new CustomerService().getCustomer().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
           setCustomerDrp(
-            res.data.data
+            res?.data.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({
                 value: d.id,
@@ -451,10 +440,10 @@ function CreateUserComponent({ match }) {
         }
       }
     });
-  };
+  }, [dispatch]);
 
   const handleDependentChange = (e, type) => {
-    if (type == 'COUNTRY') {
+    if (type === 'COUNTRY') {
       setStateDropdownData(
         stateDropdown &&
           stateDropdown
@@ -462,7 +451,7 @@ function CreateUserComponent({ match }) {
             ?.map((d) => ({ value: d.id, label: d.state }))
       );
     }
-    if (type == 'STATE') {
+    if (type === 'STATE') {
       setCityDropdownData(
         AllcityDropDownData &&
           AllcityDropDownData?.filter(
@@ -477,18 +466,18 @@ function CreateUserComponent({ match }) {
       setCityName(null);
     }
   };
-  const [defaultDepartmentDropdown, setDefaultDepartmentDropdown] = useState();
-  const handleDeparmentChange = (e) => {
-    setDefaultDepartmentDropdown(e);
-  };
+  // const [defaultDepartmentDropdown, setDefaultDepartmentDropdown] = useState();
+  // const handleDeparmentChange = (e) => {
+  //   setDefaultDepartmentDropdown(e);
+  // };
 
   const handleAddRow = async () => {
-    setNotify(null);
+    // setNotify(null);
     let flag = 1;
     if (flag === 1) {
       setRows([...rows, mappingData]);
     } else {
-      setNotify({ type: 'danger', message: 'Complete Previous Record' });
+      // setNotify({ type: 'danger', message: 'Complete Previous Record' });
     }
   };
 
@@ -518,20 +507,20 @@ function CreateUserComponent({ match }) {
     setRows(updatedAssign);
   };
 
-  const handleTicketTypeShow = (selectedTicketOption, index) => {
-    const selectedTicketID = selectedTicketOption.value;
+  // const handleTicketTypeShow = (selectedTicketOption, index) => {
+  //   const selectedTicketID = selectedTicketOption.value;
 
-    const isDepartmentAlreadySelected = rows.some(
-      (row) => row.ticket_show_type === selectedTicketID
-    );
+  //   const isDepartmentAlreadySelected = rows.some(
+  //     (row) => row.ticket_show_type === selectedTicketID
+  //   );
 
-    const updatedAssign = [...rows];
-    updatedAssign[index] = {
-      ...updatedAssign[index],
-      ticket_show_type: selectedTicketID
-    };
-    setRows(updatedAssign);
-  };
+  //   const updatedAssign = [...rows];
+  //   updatedAssign[index] = {
+  //     ...updatedAssign[index],
+  //     ticket_show_type: selectedTicketID
+  //   };
+  //   setRows(updatedAssign);
+  // };
 
   const handleRemoveSpecificRow = (index) => async () => {
     const updatedAssign = [...rows];
@@ -580,6 +569,7 @@ function CreateUserComponent({ match }) {
       } else if (accountFor === 'CUSTOMER') {
         return filterData.role.toLowerCase() === 'user';
       }
+      return false;
     });
 
     const response = filteredAsAccountFor
@@ -606,9 +596,9 @@ function CreateUserComponent({ match }) {
       setInputState({ ...state, designationErr: '' });
     }
     let flag = 1;
-    if (type == 'DEPARTMENT') {
+    if (type === 'DEPARTMENT') {
       rows.forEach((d, i) => {
-        if (d.department_id == e.value) {
+        if (d.department_id === e.value) {
           flag = 0;
           alert(
             ' Please select another Department.This Department already considered.'
@@ -618,25 +608,25 @@ function CreateUserComponent({ match }) {
       });
     }
 
-    if (flag == 1) {
+    if (flag === 1) {
       let temp_state = [...rows];
       let actualIndex = null;
       temp_state.forEach((ele, index) => {
-        if (index == id) {
+        if (index === id) {
           actualIndex = index;
         }
       });
       let temp_element = { ...rows[actualIndex] };
 
-      if (type == 'DEPARTMENT') {
+      if (type === 'DEPARTMENT') {
         temp_element.department_id = e.value;
-      } else if (type == 'TICKET_SHOW') {
+      } else if (type === 'TICKET_SHOW') {
         temp_element.ticket_show_type = e.value;
-      } else if (type == 'TICKET_PASSING_AUTHORITY') {
+      } else if (type === 'TICKET_PASSING_AUTHORITY') {
         temp_element.ticket_passing_authority =
-          e.target.checked == true ? 1 : 0;
-      } else if (type == 'IS_DEFAULT') {
-        temp_element.is_default = e.target.checked == true ? 1 : 0;
+          e.target.checked === true ? 1 : 0;
+      } else if (type === 'IS_DEFAULT') {
+        temp_element.is_default = e.target.checked === true ? 1 : 0;
       }
       temp_state[actualIndex] = temp_element;
       setRows(temp_state);
@@ -662,20 +652,20 @@ function CreateUserComponent({ match }) {
     whatsappRef.current.value = copyData;
   }, [copyData]);
 
-  const passwordHandle = (e, s) => {
-    setPassword(e.target.value);
-  };
+  // const passwordHandle = (e, s) => {
+  //   setPassword(e.target.value);
+  // };
 
-  function language() {
-    '#first_name'.on('keypress', function (event) {
-      var englishAlphabetAndWhiteSpace = /[A-Za-z ]/g;
-      var key = String.fromCharCode(event.which);
-      if (englishAlphabetAndWhiteSpace.test(key)) {
-        return true;
-      }
-      alert('this is not in English'); //put any message here!!!
-    });
-  }
+  // function language() {
+  //   '#first_name'.on('keypress', function (event) {
+  //     var englishAlphabetAndWhiteSpace = /[A-Za-z ]/g;
+  //     var key = String.fromCharCode(event.which);
+  //     if (englishAlphabetAndWhiteSpace.test(key)) {
+  //       return true;
+  //     }
+  //     alert('this is not in English'); //put any message here!!!
+  //   });
+  // }
   useEffect(() => {
     loadData();
     if (!checkRole.length) {
@@ -704,7 +694,16 @@ function CreateUserComponent({ match }) {
     // handleData()
     dispatch(getAllRoles());
     dispatch(departmentData());
-  }, []);
+  }, [
+    AllcityDropDownData.length,
+    checkRole.length,
+    cityDropdownData.length,
+    designationDropdown.length,
+    dispatch,
+    loadData,
+    stateDropdown.length,
+    stateDropdownData.length
+  ]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
@@ -733,7 +732,7 @@ function CreateUserComponent({ match }) {
               <div className="col-sm-12">
                 <div className="card">
                   <div className="card-body">
-                    {localStorage.getItem('account_for') == 'SELF' && (
+                    {localStorage.getItem('account_for') === 'SELF' && (
                       <div className="form-group row">
                         <label className="col-sm-2 col-form-label">
                           <b>
@@ -902,10 +901,10 @@ function CreateUserComponent({ match }) {
                           id="email_id"
                           name="email_id"
                           onChange={(event) => {
-                            const email = event.target.value;
+                            const email = event?.target?.value;
                             if (
                               !email.match(
-                                /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
+                                /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
                               )
                             ) {
                               setInputState({
@@ -1475,7 +1474,7 @@ function CreateUserComponent({ match }) {
                           <input
                             type="checkbox"
                             id={`ticket_passing_authority_` + idx}
-                            checked={item.ticket_passing_authority == 1}
+                            checked={item.ticket_passing_authority === 1}
                             onChange={(e) =>
                               handleCheckInput(
                                 e,
@@ -1494,7 +1493,7 @@ function CreateUserComponent({ match }) {
                           <input
                             type="checkbox"
                             id={`is_default_` + idx}
-                            checked={item.is_default == 1}
+                            checked={item.is_default === 1}
                             onChange={(e) =>
                               handleCheckInput(e, idx, 'IS_DEFAULT')
                             }
@@ -1502,7 +1501,7 @@ function CreateUserComponent({ match }) {
                         </td>
 
                         <td>
-                          {idx === 0 && departmentValue == true && (
+                          {idx === 0 && departmentValue === true && (
                             <button
                               type="button"
                               className="btn btn-sm btn-outline-primary pull-left"
@@ -1511,7 +1510,7 @@ function CreateUserComponent({ match }) {
                               <i className="icofont-plus-circle"></i>
                             </button>
                           )}
-                          {idx != 0 && (
+                          {idx !== 0 && (
                             <button
                               type="button"
                               className="btn btn-outline-danger btn-sm"
@@ -1542,7 +1541,7 @@ function CreateUserComponent({ match }) {
         </Tabs>
 
         <div className="mt-3" style={{ textAlign: 'right' }}>
-          {tabKey == 'All_Tickets' && (
+          {tabKey === 'All_Tickets' && (
             <span
               onClick={() => {
                 const form = new FormData(userForm.current);
@@ -1558,13 +1557,13 @@ function CreateUserComponent({ match }) {
               Next
             </span>
           )}
-          {tabKey == 'User_Settings' && (
+          {tabKey === 'User_Settings' && (
             <button type="submit" className="btn btn-primary">
               Submit
             </button>
           )}
 
-          {tabKey == 'User_Settings' && (
+          {tabKey === 'User_Settings' && (
             <button
               onClick={() => setTabKey('All_Tickets')}
               className="btn btn-primary"

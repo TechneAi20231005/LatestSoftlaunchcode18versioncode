@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useDebugValue } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
@@ -10,7 +10,6 @@ import PageHeader from '../../../components/Common/PageHeader';
 import Alert from '../../../components/Common/Alert';
 
 import 'react-data-table-component-extensions/dist/index.css';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
@@ -33,15 +32,9 @@ export default function DynamicFormDropdownComponent() {
 
   //local state
   const [data, setData] = useState([]);
-  const [dataa, setDataa] = useState([]);
+
   const [notify, setNotify] = useState();
   const [isLoading, setIsLoading] = useState(false);
-
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: '',
-    modalHeader: ''
-  });
 
   const [exportData, setExportData] = useState(null);
 
@@ -50,10 +43,10 @@ export default function DynamicFormDropdownComponent() {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(data, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [data, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -111,10 +104,10 @@ export default function DynamicFormDropdownComponent() {
       sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary">Active</span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger">Deactive</span>
           )}
         </div>
@@ -155,7 +148,7 @@ export default function DynamicFormDropdownComponent() {
         }
 
         setData(data);
-        setDataa(data);
+        // setDataa(data);
 
         for (const key in data) {
           exportTempData.push({
@@ -197,7 +190,7 @@ export default function DynamicFormDropdownComponent() {
     if (!checkRole?.length) {
       dispatch(getRoles());
     }
-  }, []);
+  }, [checkRole.length, dispatch, location]);
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -209,7 +202,7 @@ export default function DynamicFormDropdownComponent() {
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}

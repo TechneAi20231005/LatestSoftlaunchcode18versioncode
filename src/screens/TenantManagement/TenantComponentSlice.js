@@ -1,27 +1,27 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 
 import {
   getAllTenant,
   posttenantData,
-  updatetenantData,
-} from "./TenantConponentAction";
+  updatetenantData
+} from './TenantConponentAction';
 
 const initialState = {
-  status: "",
-  err: "",
+  status: '',
+  err: '',
   notify: {},
   modal: {
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   },
   exportRoleData: [],
   exportAllTenantData: [],
-  getAllTenant: [],
+  getAllTenant: []
 };
 
 export const tenantmasterSlice = createSlice({
-  name: "rolemasterSlice",
+  name: 'rolemasterSlice',
   initialState,
   reducers: {
     loaderModal: (state, action) => {
@@ -35,18 +35,18 @@ export const tenantmasterSlice = createSlice({
     },
     handleError: (state, action) => {
       state.notify = action.payload;
-    },
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(getAllTenant.pending, (state) => {
-      state.status = "loading";
+      state.status = 'loading';
       // state.notify = null
     });
     builder.addCase(getAllTenant.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getAllTenant = payload.data.data;
-        state.status = "succeded";
+        state.status = 'succeded';
         state.showLoaderModal = false;
         let count = 1;
         for (let i = 0; i < getAllTenant.length; i++) {
@@ -66,43 +66,43 @@ export const tenantmasterSlice = createSlice({
             State: getAllTenant[i].state,
             City: getAllTenant[i].city,
             // Role: getAllTenant[i].role,
-            Status: getAllTenant[i].is_active ? "Active" : "Deactive",
+            Status: getAllTenant[i].is_active ? 'Active' : 'Deactive',
             // Remark: getAllTenant[i].remark,
             created_at: getAllTenant[i].created_at,
             created_by: getAllTenant[i].created_by,
             updated_at: getAllTenant[i].updated_at,
-            updated_by: getAllTenant[i].updated_by,
+            updated_by: getAllTenant[i].updated_by
           });
         }
         state.exportAllTenantData = exportAllTenantData;
       }
     });
     builder.addCase(getAllTenant.rejected, (state) => {
-      state.status = "rejected";
+      state.status = 'rejected';
     });
 
     //__________________________PostTenant________________________________
     builder.addCase(posttenantData.pending, (state) => {
-      state.status = "loading";
+      state.status = 'loading';
       state.notify = null;
     });
     builder.addCase(posttenantData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.modal = { showModal: false, modalData: null, modalHeader: "" };
+        state.modal = { showModal: false, modalData: null, modalHeader: '' };
         let posttenantData = payload.data.data;
-        state.status = "succeded";
+        state.status = 'succeded';
         state.showLoaderModal = false;
         state.posttenantData = posttenantData;
         // state.notify = { type: "success", message: payload.data.message };
       }
     });
     builder.addCase(posttenantData.rejected, (state) => {
-      state.status = "rejected";
+      state.status = 'rejected';
     });
 
     builder.addCase(updatetenantData.pending, (state) => {
-      state.status = "loading";
+      state.status = 'loading';
       state.notify = null;
     });
     builder.addCase(updatetenantData.fulfilled, (state, action) => {
@@ -112,11 +112,11 @@ export const tenantmasterSlice = createSlice({
       }
     });
     builder.addCase(updatetenantData.rejected, (state) => {
-      state.status = "rejected";
+      state.status = 'rejected';
     });
 
     //___________________________________________UpdateRole_________________________________
-  },
+  }
 });
 
 export const { handleModalOpen, handleModalClose, handleError } =

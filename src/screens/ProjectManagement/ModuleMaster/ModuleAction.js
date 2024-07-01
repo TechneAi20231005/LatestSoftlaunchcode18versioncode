@@ -1,14 +1,13 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import ModuleService from "../../../services/ProjectManagementService/ModuleService";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import ModuleService from '../../../services/ProjectManagementService/ModuleService';
 
 export const moduleMaster = createAsyncThunk(
-  "moduleMaster",
+  'moduleMaster',
   async (config, thunkapi) => {
     try {
       const service = new ModuleService();
       const response = await service.getModule();
-  
-      
+
       return response;
     } catch (error) {
       throw error;
@@ -17,13 +16,12 @@ export const moduleMaster = createAsyncThunk(
 );
 
 export const getmoduleById = createAsyncThunk(
-  "getmoduleById",
+  'getmoduleById',
   async (config, thunkapi) => {
     try {
       const service = new ModuleService();
       const response = await service.getModuleById(config.id);
-    
-      
+
       return response;
     } catch (error) {
       throw error;
@@ -32,13 +30,12 @@ export const getmoduleById = createAsyncThunk(
 );
 
 export const postmoduleMaster = createAsyncThunk(
-  "postmoduleMaster",
+  'postmoduleMaster',
   async (config, thunkapi) => {
     try {
       const service = new ModuleService();
       const response = await service.postModule(config);
 
-      
       return response;
     } catch (error) {
       throw error;
@@ -47,13 +44,12 @@ export const postmoduleMaster = createAsyncThunk(
 );
 
 export const updateModuleMaster = createAsyncThunk(
-  "updateModuleMaster",
+  'updateModuleMaster',
   async (config, thunkapi) => {
     try {
       const service = new ModuleService();
       const response = await service.updateModule(config.id, config.payload);
- 
-      
+
       return response;
     } catch (error) {
       throw error;

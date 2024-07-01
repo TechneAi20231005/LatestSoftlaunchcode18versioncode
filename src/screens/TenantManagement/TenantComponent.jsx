@@ -1,33 +1,27 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
-import DataTable from "react-data-table-component";
-import PageHeader from "../../components/Common/PageHeader";
-import ErrorLogService from "../../services/ErrorLogService";
-import TenantService from "../../services/MastersService/TenantService";
-import { _base } from "../../settings/constants";
-import Alert from "../../components/Common/Alert";
-import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
-import { Spinner } from "react-bootstrap";
-import { Modal } from "react-bootstrap";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllTenant } from "./TenantConponentAction";
-import TenantComponentSlice, {
-  handleError,
-  tenantmasterSlice,
-} from "./TenantComponentSlice";
+import React, { useEffect, useState, useRef } from 'react';
+import { Link } from 'react-router-dom';
+import DataTable from 'react-data-table-component';
+import PageHeader from '../../components/Common/PageHeader';
 
-import { getEmployeeData, getRoles } from "../Dashboard/DashboardAction";
-import DashbordSlice from "../Dashboard/DashbordSlice";
-import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
+import { _base } from '../../settings/constants';
+import Alert from '../../components/Common/Alert';
+
+import { Spinner } from 'react-bootstrap';
+import { Modal } from 'react-bootstrap';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllTenant } from './TenantConponentAction';
+
+import { getEmployeeData, getRoles } from '../Dashboard/DashboardAction';
+
+import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
 
 function TenantComponent() {
-  const location = useLocation();
   const dispatch = useDispatch();
   const getAllTenantData = useSelector(
     (TenantComponentSlice) => TenantComponentSlice.tenantMaster.getAllTenant
   );
   const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 33)
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 33)
   );
   const getAllEmployeeData = useSelector(
     (DashboardSlice) => DashboardSlice.dashboard.employeeData
@@ -41,11 +35,11 @@ function TenantComponent() {
   const notify = useSelector(
     (TenantComponentSlice) => TenantComponentSlice.tenantMaster.notify
   );
-  const roleId = sessionStorage.getItem("role_id");
-  const isMasterAdmin = localStorage.getItem("role_name");
+
+  const isMasterAdmin = localStorage.getItem('role_name');
   // const [checkRole, setCheckRole] = useState(null);
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [searchTerm, setSearchTerm] = useState("");
+  const showLoaderModal = false;
+  const [searchTerm, setSearchTerm] = useState('');
   const searchRef = useRef();
   function SearchInputData(data, search) {
     const lowercaseSearch = search.toLowerCase();
@@ -53,7 +47,7 @@ function TenantComponent() {
     return data.filter((d) => {
       for (const key in d) {
         if (
-          typeof d[key] === "string" &&
+          typeof d[key] === 'string' &&
           d[key].toLowerCase().includes(lowercaseSearch)
         ) {
           return true;
@@ -71,10 +65,10 @@ function TenantComponent() {
 
   const columns = [
     {
-      name: "Action",
+      name: 'Action',
       selector: (row) => {},
       sortable: false,
-      width: "100px",
+      width: '100px',
       cell: (row) => (
         <div className="btn-group" role="group">
           <Link
@@ -84,43 +78,43 @@ function TenantComponent() {
             <i className="icofont-edit text-success"></i>
           </Link>
         </div>
-      ),
+      )
     },
 
     {
-      name: "Sr",
+      name: 'Sr',
       selector: (row) => row.counter,
       sortable: true,
-      width: "100px",
+      width: '100px'
     },
-    { name: "Name", selector: (row) => row.company_name, sortable: true },
-    { name: "Ticket ID Series", selector: (row) => row.series, sortable: true },
+    { name: 'Name', selector: (row) => row.company_name, sortable: true },
+    { name: 'Ticket ID Series', selector: (row) => row.series, sortable: true },
 
-    { name: "Type", selector: (row) => row.company_type, sortable: true },
+    { name: 'Type', selector: (row) => row.company_type, sortable: true },
     {
-      name: "Status",
+      name: 'Status',
       //   selector: (row) => row.is_active,
       sortable: false,
-      width: "100px",
+      width: '100px',
 
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary">Active</span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger">Deactive</span>
           )}
         </div>
-      ),
+      )
     },
     {
-      name: "Created At",
+      name: 'Created At',
       selector: (row) => row.created_at,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Created By",
+      name: 'Created By',
       cell: (row) => {
         let tenantCreatedBy = getAllEmployeeData?.filter(
           (filterEmployee) => filterEmployee.id === row.created_by
@@ -129,89 +123,33 @@ function TenantComponent() {
           <div>
             {tenantCreatedBy[0]?.first_name
               ? `${tenantCreatedBy[0]?.first_name}  ${tenantCreatedBy[0]?.last_name}`
-              : ""}
+              : ''}
           </div>
         );
       },
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Updated At",
+      name: 'Updated At',
       selector: (row) => row.updated_at,
-      sortable: true,
+      sortable: true
       // width: "100px",
     },
     {
-      name: "Updated By",
+      name: 'Updated By',
       selector: (row) => row.updated_by,
-      sortable: true,
-    },
+      sortable: true
+    }
   ];
 
-  const loadData = async () => {
-    // setShowLoaderModal(null);
-    // setShowLoaderModal(true);
-    // const data = [];
-    // await new TenantService()
-    //   .getTenant()
-    //   .then((res) => {
-    //     const tempData = [];
-    //     if (res.status === 200) {
-    //       setShowLoaderModal(false);
-    //       let counter = 1;
-    //       const data = res.data.data;
-    //       for (const key in data) {
-    //         tempData.push({
-    //           counter: counter++,
-    //           id: data[key].id,
-    //           is_active: data[key].is_active,
-    //           company_name: data[key].company_name,
-    //           company_type: data[key].company_type,
-    //           remark: data[key].remark,
-    //           updated_at: data[key].updated_at,
-    //           updated_by: data[key].updated_by,
-    //         });
-    //       }
-    //       setData(null);
-    //       setData(tempData);
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     const { response } = error;
-    //     const { request, ...errorObject } = response;
-    //     new ErrorLogService().sendErrorLog(
-    //       "Tenant",
-    //       "Get_Tenant",
-    //       "INSERT",
-    //       errorObject.data.message
-    //     );
-    //   });
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
-  };
-
   useEffect(() => {
-    loadData();
     dispatch(getEmployeeData());
-    // if (location && location.state) {
-
-    //   // setNotify(location.state.alert);
-    // }
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
-    loadData();
-
     dispatch(getAllTenant());
     dispatch(getRoles());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -223,7 +161,7 @@ function TenantComponent() {
 
   return (
     <div className="container-xxl">
-      {notify?.type === "success" && <Alert alertData={notify} />}
+      {notify?.type === 'success' && <Alert alertData={notify} />}
 
       <PageHeader
         headerTitle="Tenant Master"
@@ -231,20 +169,20 @@ function TenantComponent() {
           return (
             <div
               className={
-                isMasterAdmin === "MasterAdmin"
-                  ? "col-auto d-flex w-sm-100"
-                  : "d-none"
+                isMasterAdmin === 'MasterAdmin'
+                  ? 'col-auto d-flex w-sm-100'
+                  : 'd-none'
               }
             >
               {checkRole && checkRole[0]?.can_create === 1 ? (
                 <Link
-                  to={`/${_base + "/TenantMaster/Create"}`}
+                  to={`/${_base + '/TenantMaster/Create'}`}
                   className="btn btn-dark btn-set-task w-sm-100"
                 >
                   <i className="icofont-plus-circle me-2 fs-6"></i>Add Tenant
                 </Link>
               ) : (
-                ""
+                ''
               )}
             </div>
           );
@@ -267,7 +205,7 @@ function TenantComponent() {
               className="btn btn-sm btn-warning text-white"
               type="button"
               onClick={handleSearch}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-search-1 "></i> Search
             </button>
@@ -275,7 +213,7 @@ function TenantComponent() {
               className="btn btn-sm btn-info text-white"
               type="button"
               onClick={() => window.location.reload(false)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
+              style={{ marginTop: '0px', fontWeight: '600' }}
             >
               <i className="icofont-refresh text-white"></i> Reset
             </button>
@@ -294,15 +232,15 @@ function TenantComponent() {
             <DataTable
               columns={columns}
               data={getAllTenantData.filter((customer) => {
-                if (typeof searchTerm === "string") {
-                  if (typeof customer === "string") {
+                if (typeof searchTerm === 'string') {
+                  if (typeof customer === 'string') {
                     return customer
                       .toLowerCase()
                       .includes(searchTerm.toLowerCase());
-                  } else if (typeof customer === "object") {
+                  } else if (typeof customer === 'object') {
                     return Object.values(customer).some(
                       (value) =>
-                        typeof value === "string" &&
+                        typeof value === 'string' &&
                         value.toLowerCase().includes(searchTerm.toLowerCase())
                     );
                   }
