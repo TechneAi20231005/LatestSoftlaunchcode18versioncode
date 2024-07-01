@@ -57,7 +57,7 @@ function CreateUserComponent({ match }) {
 
   const [CustomerDrp, setCustomerDrp] = useState(null);
   const [loading, setLoading] = useState(false);
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();

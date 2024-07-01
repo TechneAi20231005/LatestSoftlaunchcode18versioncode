@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
-import { Modal, Nav, Tab } from "react-bootstrap";
-import CurrentClientProject from "./CurrentClientProject";
-import PageHeader from "../../components/Common/PageHeader";
-import ConsolidatedService from "../../services/ProjectManagementService/ConsolidatedService";
-import { Spinner } from "react-bootstrap";
+import React, { useState, useEffect } from 'react';
+import { Modal, Nav, Tab } from 'react-bootstrap';
+import CurrentClientProject from './CurrentClientProject';
+import PageHeader from '../../components/Common/PageHeader';
+import ConsolidatedService from '../../services/ProjectManagementService/ConsolidatedService';
+import { Spinner } from 'react-bootstrap';
 
-import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
-import { useDispatch, useSelector } from "react-redux";
-import { consolidatedData } from "./ConsolidatedAction";
-import { getRoles } from "../Dashboard/DashboardAction";
-import ConsolidatedSlice from "./ConsolidatedSlice";
-import TableLoadingSkelton from "../../components/custom/loader/TableLoadingSkelton";
-import CardLoadingSkeleton from "../../components/custom/loader/CardLoadingSkeleton";
+import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
+import { useDispatch, useSelector } from 'react-redux';
+import { consolidatedData } from './ConsolidatedAction';
+import { getRoles } from '../Dashboard/DashboardAction';
+import ConsolidatedSlice from './ConsolidatedSlice';
+import TableLoadingSkelton from '../../components/custom/loader/TableLoadingSkelton';
+import CardLoadingSkeleton from '../../components/custom/loader/CardLoadingSkeleton';
 
 function ConsolidatedView() {
   const dispatch = useDispatch();
@@ -31,7 +31,7 @@ function ConsolidatedView() {
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 34)
   );
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = localStorage.getItem('role_id');
   const [projects, setProjects] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 

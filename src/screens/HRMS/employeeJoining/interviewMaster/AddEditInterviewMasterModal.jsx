@@ -83,7 +83,6 @@ function AddEditInterviewMasterModal({
   });
 
   const [employeesName, setEmployeesName] = useState({});
-
   const [selectedDesignationData, setSelectedDesignationData] = useState({
     id: '',
     designationFor: ''

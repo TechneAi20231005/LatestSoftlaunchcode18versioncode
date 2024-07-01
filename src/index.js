@@ -1,12 +1,15 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import { ToastContainer } from 'react-toastify';
-import App from './App';
 import { BrowserRouter } from 'react-router-dom';
-import './assetsNew/css/my-task.style.min.css';
-import reportWebVitals from './reportWebVitals';
+import { ToastContainer } from 'react-toastify';
 import { Provider } from 'react-redux';
+
+// // static import
+import App from './App';
+import { PreLoadingProvider } from './context';
 import { store } from './redux/store/store';
+import reportWebVitals from './reportWebVitals';
+import './assetsNew/css/my-task.style.min.css';
 import './index.css';
 
 const root = ReactDOM.createRoot(document.getElementById('root'));
@@ -15,7 +18,9 @@ const renderApp = () => {
   root.render(
     <Provider store={store}>
       <BrowserRouter>
-        <App />
+        <PreLoadingProvider>
+          <App />
+        </PreLoadingProvider>
         <ToastContainer
           position="top-right"
           autoClose={3000}
@@ -29,7 +34,7 @@ const renderApp = () => {
           icon={true}
         />
       </BrowserRouter>
-    </Provider>,
+    </Provider>
   );
 };
 

@@ -142,27 +142,27 @@ export default function HrDashboard(props) {
       // Token has expired, log out the user
       localStorage.removeItem('jwt_token');
       localStorage.removeItem('jwt_token_expiration');
-      sessionStorage.clear();
+      localStorage.clear();
       history(`${process.env.PUBLIC_URL}/`);
     }
   };
 
   async function get() {
-    const id = sessionStorage.getItem('id');
+    const id = localStorage.getItem('id');
     await getData(id).then((res) => {
       if (res.status == 200) {
-        setCount(res.data.data.count);
-        setDailyTask(res.data.data.dailyTask);
-        setPreviousTask(res.data.data.previousTask);
-        setUpcomingTask(res.data.data.upcomingTask);
+        setCount(res?.data?.data?.count);
+        setDailyTask(res?.data?.data?.dailyTask);
+        setPreviousTask(res?.data?.data?.previousTask);
+        setUpcomingTask(res?.data?.data?.upcomingTask);
         const updatedChartData = {
           ...chartData,
           series: [
-            res.data.data.count.pendingTask
-              ? res.data.data.count.pendingTask
+            res?.data?.data?.count?.pendingTask
+              ? res?.data?.data?.count?.pendingTask
               : 0,
-            res.data.data.count.workingTask,
-            res.data.data.count.completedTask
+            res?.data?.data?.count?.workingTask,
+            res?.data?.data?.count?.completedTask
           ]
         };
         setChartData(updatedChartData);

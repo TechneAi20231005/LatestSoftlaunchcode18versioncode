@@ -128,8 +128,6 @@ function CreateDynamicForm() {
 
   const [inputDataSource, setInputDataSource] = useState();
 
-  
-
   const [radioSelect, setRadioSelect] = useState();
 
   const [userData, setUserData] = useState(null);
@@ -534,7 +532,7 @@ function CreateDynamicForm() {
     //     if (res.status === 200) {
     //     //   setShowLoaderModal(false);
     //       if (res.data.status == 1) {
-    //         const getRoleId = sessionStorage.getItem("role_id");
+    //         const getRoleId = localStorage.getItem("role_id");
     //         setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
     //       }
     //     }

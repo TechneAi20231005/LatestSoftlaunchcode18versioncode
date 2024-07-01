@@ -44,7 +44,7 @@ function EditCustomer({ match }) {
 
   const stateRef = useRef(null);
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   const handleDependent = (e, name) => {
     setData({

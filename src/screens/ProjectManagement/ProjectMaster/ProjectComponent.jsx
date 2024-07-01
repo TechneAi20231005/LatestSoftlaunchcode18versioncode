@@ -334,7 +334,6 @@ function ProjectComponent() {
           for (const key in data) {
             exportData.push({
               SrNo: count++,
-
               'Project Name': data[key].project_name,
               projectReviewer: data[key].projectReviewer,
               is_active: data[key].is_active == 1 ? 'Active' : 'Deactive',
@@ -443,7 +442,9 @@ function ProjectComponent() {
   );
 }
 
-function ProjectDropdown(props) {
+export default ProjectComponent;
+
+export function ProjectDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
@@ -503,5 +504,3 @@ function ProjectDropdown(props) {
     </>
   );
 }
-
-export { ProjectComponent, ProjectDropdown };

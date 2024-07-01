@@ -14,7 +14,7 @@ import { customSearchHandler } from '../../../utils/customFunction';
 function ModuleComponent() {
   //initial state
   const location = useLocation();
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   //local state
 
@@ -198,7 +198,7 @@ function ModuleComponent() {
         setShowLoaderModal(false);
 
         if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem('role_id');
+          const getRoleId = localStorage.getItem('role_id');
           setCheckRole(res.data.data.filter((d) => d.role_id === getRoleId));
         }
       }
@@ -279,8 +279,9 @@ function ModuleComponent() {
     </div>
   );
 }
+export default ModuleComponent;
 
-function ModuleDropdown(props) {
+export function ModuleDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
@@ -338,5 +339,3 @@ function ModuleDropdown(props) {
     </>
   );
 }
-
-export { ModuleComponent, ModuleDropdown };

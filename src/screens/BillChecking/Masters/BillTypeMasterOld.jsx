@@ -128,8 +128,7 @@
 //   const [employeeOptions, setEmployeeOptions] = useState([]); // State for dropdown options of assigned employees
 //   const [requiredOptions, setRequiredOptions] = useState([]); // State for dropdown options of required users
 
-
-//   const roleId = sessionStorage.getItem("role_id");
+//   const roleId = localStorage.getItem("role_id");
 //   const [checkRole, setCheckRole] = useState(null);
 
 //   const [key, setKey] = useState("");
@@ -238,7 +237,7 @@
 //         </div>
 //       ),
 //     },
-  
+
 //     { name: "Bill Type", selector: (row) => row.bill_type, sortable: true },
 //     {
 //       name: "Status",
@@ -395,7 +394,7 @@
 //     await new ManageMenuService().getRole(roleId).then((res) => {
 //       if (res.status === 200) {
 //         if (res.data.status == 1) {
-//           const getRoleId = sessionStorage.getItem("role_id");
+//           const getRoleId = localStorage.getItem("role_id");
 //           setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
 //         }
 //       }
@@ -429,8 +428,6 @@
 //   var requiredNumbersElement4 = document.getElementById("required_numbers4");
 //   var requiredNumbersElement5 = document.getElementById("required_numbers5");
 //   var requiredNumbersElement6 = document.getElementById("required_numbers6");
-    
-
 
 //   if(key >= 1){
 //   if (!requiredNumbersElement1 || requiredNumbersElement1.value === "") {
@@ -447,7 +444,6 @@
 //     flag =1
 //   }
 // }
-
 
 // if(key >= 2){
 //   if (!requiredNumbersElement2 || requiredNumbersElement2.value === "") {
@@ -481,7 +477,6 @@
 //   }
 // }
 
-
 // if(key >= 4){
 //   if (!requiredNumbersElement4 || requiredNumbersElement4.value === "") {
 //     requiredNumbersElement4.focus();
@@ -497,7 +492,6 @@
 //     flag =1
 //   }
 // }
-
 
 // if(key >= 5){
 //   if (!requiredNumbersElement5 || requiredNumbersElement5.value === "") {
@@ -571,12 +565,6 @@
 //         });
 //     }
 //   };
-
-
-
-
-
-
 
 //   const selectRefs = useRef(
 //     Array(6)
@@ -691,12 +679,9 @@
 //     }
 //   };
 
- 
-
 //   const [formSubmitted, setFormSubmitted] = useState(false);
 
 //   const tab1Ref = useRef();
-
 
 //   const handleTabContentChange = (index, fieldName, value) => {
 //     if(index == 0 && fieldName !== "required_users" && fieldName !== "required_numbers" && tab1RequiredRef.current){
@@ -724,8 +709,8 @@
 //       setSelectedUsers6(()=> null)
 //     }
 
-//     // empty filed of required numbers on change of required users dropdown 
-    
+//     // empty filed of required numbers on change of required users dropdown
+
 //     if(index == 0 && fieldName !== "employee_id" && fieldName !== "required_numbers"  ){
 //       document.getElementById("required_numbers1").value =""
 //     }
@@ -760,7 +745,6 @@
 //     });
 //   };
 
-
 //   const handleDefaultValueChange = (index, fieldName, value) => {
 //     setApproverEditData((prevApproverData) => {
 //       const updatedData = [...prevApproverData.data];
@@ -781,8 +765,6 @@
 //       return { data: updatedData };
 //     });
 //   };
-
-  
 
 //   const handleTabChange = (selectedKey) => {
 
@@ -811,7 +793,7 @@
 //         return level;
 //       });
 //       return { data: updatedData };
-    
+
 //     });
 //   };
 //   const setLevel = (e) => {
@@ -903,7 +885,7 @@
 //   };
 //   const [selectedRequiredUserData, setSelectedRequiredUserData] = useState();
 //   const handleSelectedRequired = (selectedOptions, index) => {
-    
+
 //     selectRequiredUserRefs.current[index].current.clearValue(); // Clear only the changed "required users" dropdown
 
 //     setApproverEditData((prevApproverData) => {
@@ -934,16 +916,12 @@
 //   useEffect(() => {
 //     loadData();
 //   }, [approverEditData]);
- 
-
-
 
 //   useEffect(()=>{
-//     if(checkRole && checkRole[47].can_read === 0){  
-//       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
+//     if(checkRole && checkRole[47].can_read === 0){
+//       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
 //     }
 //   },[checkRole])
-
 
 //   return (
 //     <div className="container-xxl">
@@ -1210,7 +1188,7 @@
 //                                             />
 //                                           )}
 //                                         </div>
-                                     
+
 //                                         <div className="col-sm-3">
 //                                           <label className="form-label font-weight-bold">
 //                                             Required Members :
@@ -2491,9 +2469,9 @@
 //                     {editableData && (
 //                       <td
 //                         className="text-center"
-                        
+
 //                       >
-//                       <Select 
+//                       <Select
 //                       className="col-sm"
 //                       isDisabled
 //                       isMulti
@@ -2538,7 +2516,5 @@
 //     </div>
 //   );
 // }
-
-
 
 // export default BillTypeMaster;

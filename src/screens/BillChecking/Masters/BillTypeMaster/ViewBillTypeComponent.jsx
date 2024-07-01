@@ -1,14 +1,14 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Container, Row, Col, Button, Table, Form } from "react-bootstrap";
-import PageHeader from "../../../../components/Common/PageHeader";
-import Select from "react-select";
-import { Astrick } from "../../../../components/Utilities/Style";
-import UserService from "../../../../services/MastersService/UserService";
-import * as Validation from "../../../../components/Utilities/Validation";
-import BillTypeMasterService from "../../../../services/Bill Checking/Masters/BillTypeMasterService";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import Alert from "../../../../components/Common/Alert";
-import { _base } from "../../../../settings/constants";
+import React, { useEffect, useState, useRef } from 'react';
+import { Container, Row, Col, Button, Table, Form } from 'react-bootstrap';
+import PageHeader from '../../../../components/Common/PageHeader';
+import Select from 'react-select';
+import { Astrick } from '../../../../components/Utilities/Style';
+import UserService from '../../../../services/MastersService/UserService';
+import * as Validation from '../../../../components/Utilities/Validation';
+import BillTypeMasterService from '../../../../services/Bill Checking/Masters/BillTypeMasterService';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import Alert from '../../../../components/Common/Alert';
+import { _base } from '../../../../settings/constants';
 
 const ViewBillTypeComponent = ({ match }) => {
   const history = useNavigate();
@@ -24,11 +24,11 @@ const ViewBillTypeComponent = ({ match }) => {
             bill_approval_level: 1,
             employee_id: null,
             required_users: null,
-            required_numbers: null,
-          },
-        ],
-      },
-    ],
+            required_numbers: null
+          }
+        ]
+      }
+    ]
   });
 
   const [billTypeData, setBilltypeData] = useState();
@@ -52,9 +52,9 @@ const ViewBillTypeComponent = ({ match }) => {
           bill_approval_level: 1,
           employee_id: null,
           required_users: null,
-          required_numbers: null,
-        },
-      ],
+          required_numbers: null
+        }
+      ]
     };
 
     newData.push(newSection);
@@ -67,7 +67,7 @@ const ViewBillTypeComponent = ({ match }) => {
     // Use map to update each object's assignToUser property
     const updatedData = newData.map((d) => ({
       ...d,
-      assignToUser: selectedOptions.map((option) => option.value),
+      assignToUser: selectedOptions.map((option) => option.value)
     }));
 
     // Set the updated array as the new state
@@ -82,7 +82,7 @@ const ViewBillTypeComponent = ({ match }) => {
       bill_approval_level: newData[sectionIndex].level.length + 1,
       employee_id: null,
       required_users: null,
-      required_numbers: null,
+      required_numbers: null
     });
 
     // Push an empty array for the new row in selectedUsersArray
@@ -134,18 +134,18 @@ const ViewBillTypeComponent = ({ match }) => {
       (nextTabAmount !== 0 && nextTabAmount <= currentData[index].amount)
     ) {
       alert(
-        "Amount in section " +
+        'Amount in section ' +
           (index + 1) +
-          " should be greater than previous and less than the next tab"
+          ' should be greater than previous and less than the next tab'
       );
-      e.target.value = "00.00";
+      e.target.value = '00.00';
       // You can add additional handling here if needed
     }
   };
 
   const loadData = async () => {
     const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
+      'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -153,19 +153,19 @@ const ViewBillTypeComponent = ({ match }) => {
           setUserData(
             a.map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name + " " + "(" + d.id + ")",
+              label: d.first_name + ' ' + d.last_name + ' ' + '(' + d.id + ')'
             }))
           );
           setAssignedUserData(
             a.map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name + " " + "(" + d.id + ")",
+              label: d.first_name + ' ' + d.last_name + ' ' + '(' + d.id + ')'
             }))
           );
           setRequiredUserData(
             a.map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name + " " + "(" + d.id + ")",
+              label: d.first_name + ' ' + d.last_name + ' ' + '(' + d.id + ')'
             }))
           );
         }
@@ -219,7 +219,7 @@ const ViewBillTypeComponent = ({ match }) => {
     // Update the selected values in the second dropdown
     updatedData[sectionIndex].level[rowIndex].required_users = [
       ...prevSelectedValues2.filter((value) => !removedValues.includes(value)),
-      ...addedValues,
+      ...addedValues
     ];
 
     setApproverData({ data: updatedData });
@@ -297,22 +297,22 @@ const ViewBillTypeComponent = ({ match }) => {
     });
 
     // Check if assign_employee_id[] is empty
-    const assignEmployeeId = formData.getAll("assign_employee_id[]");
-    if (assignEmployeeId == "") {
-      alert("Please select Assigned User");
+    const assignEmployeeId = formData.getAll('assign_employee_id[]');
+    if (assignEmployeeId == '') {
+      alert('Please select Assigned User');
       return;
     }
 
     // Check if any of the fields are empty or null
     if (isEmpty) {
-      alert("Please fill in all required fields");
+      alert('Please fill in all required fields');
       return;
     }
 
     // Proceed with the API request
-    formData.append("approverData", JSON.stringify(approverData));
-    formData.append("user_id", sessionStorage.getItem("id"));
-    formData.append("bill_type", e.target.bill_type.value);
+    formData.append('approverData', JSON.stringify(approverData));
+    formData.append('user_id', localStorage.getItem('id'));
+    formData.append('bill_type', e.target.bill_type.value);
 
     try {
       const res = await new BillTypeMasterService().updateBillType(
@@ -324,12 +324,12 @@ const ViewBillTypeComponent = ({ match }) => {
         if (res.data.status === 1) {
           history(
             {
-              pathname: `/${_base}/billTypeMaster`,
+              pathname: `/${_base}/billTypeMaster`
             },
-            { state: { alert: { type: "success", message: res.data.message } } }
+            { state: { alert: { type: 'success', message: res.data.message } } }
           );
         } else {
-          setNotify({ type: "danger", message: res.data.message });
+          setNotify({ type: 'danger', message: res.data.message });
         }
       }
     } catch (error) {
@@ -354,14 +354,14 @@ const ViewBillTypeComponent = ({ match }) => {
 
     const transformedData = Object.keys(approverData).map((key) => {
       const item = approverData[key];
-      const amount = item.amount || "00.00";
+      const amount = item.amount || '00.00';
       const slab = item.slab || 1;
 
       const level = item.level.map((levelItem, index) => ({
         bill_approval_level: levelItem.bil_approval_level,
         employee_id: levelItem.employee_ids,
         required_users: levelItem.is_required_users,
-        required_numbers: levelItem.required_numbers || null,
+        required_numbers: levelItem.required_numbers || null
       }));
 
       return { amount, slab, level };
@@ -392,7 +392,7 @@ const ViewBillTypeComponent = ({ match }) => {
               <input
                 type="hidden"
                 id="user_id"
-                value={sessionStorage.getItem("id")}
+                value={localStorage.getItem('id')}
               />
 
               <div className="col-sm-4 ">
@@ -513,19 +513,19 @@ const ViewBillTypeComponent = ({ match }) => {
                     <Col className="mt-2">
                       <strong>
                         {index + 1 === approverData.data.length
-                          ? "Above Amount"
-                          : " Upto Amount"}
+                          ? 'Above Amount'
+                          : ' Upto Amount'}
                         :
                       </strong>
                       <input
                         className="form-control-md"
                         type="number"
                         readOnly
-                        value={item.amount != null ? item.amount : ""}
+                        value={item.amount != null ? item.amount : ''}
                         onChange={(e) => {
                           let inputValue = e.target.value;
 
-                          inputValue = inputValue.replace(/-/g, "");
+                          inputValue = inputValue.replace(/-/g, '');
 
                           // Parse the input value as a number
                           const newValue = parseFloat(inputValue);
@@ -612,7 +612,7 @@ const ViewBillTypeComponent = ({ match }) => {
                                 key={rowIndex}
                                 max={
                                   approverData.data[index].level[rowIndex]
-                                    .required_users?.length || ""
+                                    .required_users?.length || ''
                                 }
                                 onKeyPress={(e) => {
                                   Validation.NumbersOnly(e);
@@ -622,7 +622,7 @@ const ViewBillTypeComponent = ({ match }) => {
                                   let inputValue = e.target.value;
 
                                   // Use a regex to remove any negative sign
-                                  inputValue = inputValue.replace(/-/g, "");
+                                  inputValue = inputValue.replace(/-/g, '');
 
                                   // Parse the input value as a number
                                   const newValue = parseFloat(inputValue);

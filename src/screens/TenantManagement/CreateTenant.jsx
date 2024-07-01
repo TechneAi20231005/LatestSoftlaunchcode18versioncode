@@ -58,7 +58,7 @@ export default function CreateTenant({ match }) {
     (TenantComponentSlice) => TenantComponentSlice.tenantMaster.notify
   );
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
   // const [checkRole, setCheckRole] = useState(null);
   const isMasterAdmin = localStorage.getItem('role_name');
   const companyType = [
@@ -199,7 +199,7 @@ export default function CreateTenant({ match }) {
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       const getRoleId = localStorage.getItem("role_id");
     //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
     //     }
     //   }

@@ -414,8 +414,9 @@ function DesignationComponent() {
     </div>
   );
 }
+export default DesignationComponent;
 
-function DesignationDropdown(props) {
+export function DesignationDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
@@ -474,5 +475,3 @@ function DesignationDropdown(props) {
     </>
   );
 }
-
-export { DesignationComponent, DesignationDropdown };

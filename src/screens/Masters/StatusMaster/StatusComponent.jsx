@@ -416,7 +416,9 @@ function StatusComponent() {
   );
 }
 
-function StatusDropdown(props) {
+export default StatusComponent;
+
+export function StatusDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
@@ -477,5 +479,3 @@ function StatusDropdown(props) {
     </>
   );
 }
-
-export { StatusComponent, StatusDropdown };

@@ -20,8 +20,6 @@ import {
   postCustomerData
 } from '../../Dashboard/DashboardAction';
 export default function CreateCustomer({ match }) {
-
-
   const [notify, setNotify] = useState(null);
 
   const [dependent, setDependent] = useState({
@@ -33,11 +31,6 @@ export default function CreateCustomer({ match }) {
 
   const [stateName, setStateName] = useState(null);
   const [cityName, setCityName] = useState(null);
-
-
-
-
-
 
   const [contactError, setContactError] = useState(null);
   const [contactErr, setContactErr] = useState(false);

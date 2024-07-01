@@ -12,7 +12,6 @@ import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel
 import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
 import { Modal } from 'react-bootstrap';
 import { UseDispatch, useDispatch, useSelector } from 'react-redux';
-
 import {
   exportCustomerMappingData,
   getCustomerMappingData

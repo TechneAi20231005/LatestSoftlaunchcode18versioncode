@@ -94,7 +94,7 @@ function GeneralSettings() {
     dispatch(getUserForMyTicketsData(inputRequired));
     setShowLoaderModal(null);
 
-    const roleId = sessionStorage.getItem('role_id');
+    const roleId = localStorage.getItem('role_id');
 
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
@@ -229,7 +229,6 @@ function GeneralSettings() {
     },
     {
       name: 'Assigned User',
-
       sortable: true,
       width: '20%',
       cell: (row) => {

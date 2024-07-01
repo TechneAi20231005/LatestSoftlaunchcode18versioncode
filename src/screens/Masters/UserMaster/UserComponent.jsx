@@ -188,7 +188,6 @@ function UserComponent() {
               temp[i].ticket_show_type === 'MY_TICKETS'
                 ? 'My Tickets'
                 : 'Department Tickets',
-
             Ticket_Passing_Authority: temp[i].ticket_passing_authority
               ? 'Yes'
               : 'No',
@@ -286,7 +285,9 @@ function UserComponent() {
   );
 }
 
-function UserDropdown(props) {
+export default UserComponent;
+
+export function UserDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
@@ -351,4 +352,3 @@ function UserDropdown(props) {
     </>
   );
 }
-export { UserComponent, UserDropdown };

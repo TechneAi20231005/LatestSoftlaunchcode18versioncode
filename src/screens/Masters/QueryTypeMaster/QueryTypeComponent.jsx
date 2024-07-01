@@ -1404,8 +1404,9 @@ function QueryTypeComponent() {
     </>
   );
 }
+export default QueryTypeComponent;
 
-function QueryTypeDropdown(props) {
+export function QueryTypeDropdown(props) {
   const [data, setData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
@@ -1467,5 +1468,3 @@ function QueryTypeDropdown(props) {
     </>
   );
 }
-
-export { QueryTypeComponent, QueryTypeDropdown };

@@ -241,8 +241,9 @@ function DynamicFormComponent() {
     </div>
   );
 }
+export default DynamicFormComponent;
 
-function DynamicFormDropdown(props) {
+export function DynamicFormDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
@@ -295,4 +296,3 @@ function DynamicFormDropdown(props) {
     </>
   );
 }
-export { DynamicFormComponent, DynamicFormDropdown };

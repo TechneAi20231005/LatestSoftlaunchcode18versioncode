@@ -411,4 +411,4 @@ function TestingTypeComponent() {
   );
 }
 
-export { TestingTypeComponent };
+export default TestingTypeComponent;

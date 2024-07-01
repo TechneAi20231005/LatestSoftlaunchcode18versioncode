@@ -60,7 +60,7 @@ function CustomerTypeComponent() {
   const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [isActive, setIsActive] = useState(1);
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   const searchRef = useRef();
 
@@ -485,8 +485,9 @@ function CustomerTypeComponent() {
     </div>
   );
 }
+export default CustomerTypeComponent;
 
-function CustomerTypeDropdown(props) {
+export function CustomerTypeDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
@@ -545,5 +546,3 @@ function CustomerTypeDropdown(props) {
     </>
   );
 }
-
-export { CustomerTypeComponent, CustomerTypeDropdown };

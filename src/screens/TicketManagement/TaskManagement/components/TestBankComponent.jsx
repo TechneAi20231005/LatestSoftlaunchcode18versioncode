@@ -1,54 +1,52 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from 'react';
 import {
   _base,
   _attachmentUrl,
   _apiUrl,
-  userSessionData,
-} from "../../../../settings/constants";
+  userSessionData
+} from '../../../../settings/constants';
 
-import { Modal, Spinner } from "react-bootstrap";
-import DataTable from "react-data-table-component";
-import DataTableExtensions from "react-data-table-component-extensions";
-import TestCasesService from "../../../../services/TicketService/TestCaseService";
-import PageHeader from "../../../../components/Common/PageHeader";
-import { Astrick } from "../../../../components/Utilities/Style";
-import { ExportToExcel } from "../../../../components/Utilities/Table/ExportToExcel";
-import ErrorLogService from "../../../../services/ErrorLogService";
-import Alert from "../../../../components/Common/Alert";
-import { Link, useParams } from "react-router-dom";
+import { Modal, Spinner } from 'react-bootstrap';
+import DataTable from 'react-data-table-component';
+import DataTableExtensions from 'react-data-table-component-extensions';
+import TestCasesService from '../../../../services/TicketService/TestCaseService';
+import PageHeader from '../../../../components/Common/PageHeader';
+import { Astrick } from '../../../../components/Utilities/Style';
+import { ExportToExcel } from '../../../../components/Utilities/Table/ExportToExcel';
+import ErrorLogService from '../../../../services/ErrorLogService';
+import Alert from '../../../../components/Common/Alert';
+import { Link, useParams } from 'react-router-dom';
 import {
   getAttachment,
-  deleteAttachment,
-} from "../../../../services/OtherService/AttachmentService";
-import { Table } from "react-bootstrap";
-import MyTicketService from "../../../../services/TicketService/MyTicketService";
-import ModuleService from "../../../../services/ProjectManagementService/ModuleService";
-import SubModuleService from "../../../../services/ProjectManagementService/SubModuleService";
-import * as Validation from "../../../../components/Utilities/Validation";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
-import Select from "react-select";
-import ProjectService from "../../../../services/ProjectManagementService/ProjectService";
-import DesignationService from "../../../../services/MastersService/DesignationService";
-import TestingTypeServices from "../../../../services/MastersService/TestingTypeService"
-import { useLocation } from "react-router-dom";
+  deleteAttachment
+} from '../../../../services/OtherService/AttachmentService';
+import { Table } from 'react-bootstrap';
+import MyTicketService from '../../../../services/TicketService/MyTicketService';
+import ModuleService from '../../../../services/ProjectManagementService/ModuleService';
+import SubModuleService from '../../../../services/ProjectManagementService/SubModuleService';
+import * as Validation from '../../../../components/Utilities/Validation';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import Select from 'react-select';
+import ProjectService from '../../../../services/ProjectManagementService/ProjectService';
+import DesignationService from '../../../../services/MastersService/DesignationService';
+import TestingTypeServices from '../../../../services/MastersService/TestingTypeService';
+import { useLocation } from 'react-router-dom';
 
-const TestBankComponent = ({ match, props,  }) => {
-  const location = useLocation()
-  const {id} = useParams();
-  const ticketId = id
+const TestBankComponent = ({ match, props }) => {
+  const location = useLocation();
+  const { id } = useParams();
+  const ticketId = id;
   const [data, setData] = useState(null);
   const [userTypeData, setUserTypeData] = useState(null);
   const [notify, setNotify] = useState(null);
   const [modal, setModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
   const [projectData, setProjectData] = useState();
   const [projectDropdown, setProjectDropdown] = useState();
-
-  
 
   const [moduleData, setModuleData] = useState();
   const [moduleDropdown, setModuleDropdown] = useState();
@@ -58,14 +56,14 @@ const TestBankComponent = ({ match, props,  }) => {
 
   const [sendtoModal, setSendtoModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
-  const [colors, setColors] = useState("green");
-  const [priority, setPriority] = useState("white");
+  const [colors, setColors] = useState('green');
+  const [priority, setPriority] = useState('white');
 
-  const [taskDropdown, setTaskDropdown] = useState(); 
-   const [testingTypeDropdown, setTestingTypeDropdown] = useState();
+  const [taskDropdown, setTaskDropdown] = useState();
+  const [testingTypeDropdown, setTestingTypeDropdown] = useState();
 
   const handleSendtoModal = (data) => {
     setSendtoModal(data);
@@ -74,7 +72,7 @@ const TestBankComponent = ({ match, props,  }) => {
   const handleUpdateClick = () => {
     setShowInput(true);
   };
-  const [showLoaderModal, setShowLoaderModal] = useState(false)
+  const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [showTestSuite, setTestSuite] = useState(false);
   const handleTestSuite = () => {
@@ -83,12 +81,10 @@ const TestBankComponent = ({ match, props,  }) => {
 
   const [sendtoTestSuiteModal, setsendtoTestSuiteModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
 
-
-  
   const [selectedRowsData, setSelectedRowsData] = useState([]);
   const handleSendtoTestSuiteModal = (suiteData) => {
     setsendtoTestSuiteModal(suiteData);
@@ -131,36 +127,36 @@ const TestBankComponent = ({ match, props,  }) => {
     //       </div>
     //     ),
     // },
-    { name: "Sr", selector: (row) => row.counter, sortable: true, },
+    { name: 'Sr', selector: (row) => row.counter, sortable: true },
 
     {
-      name: "Test Case Id",
+      name: 'Test Case Id',
       selector: (row) => row.test_case_id,
-      sortable: true,
+      sortable: true
     },
 
     {
-      name: "TicketId",
+      name: 'TicketId',
       selector: (row) => row.ticket_id,
-      sortable: true,
+      sortable: true
     },
 
     {
-      name: "Project Name",
+      name: 'Project Name',
       selector: (row) => row.project_name,
-      sortable: true,
+      sortable: true
     },
 
     {
-      name: "Function",
+      name: 'Function',
       selector: (row) => row.function,
-      sortable: true,
+      sortable: true
     },
 
     {
-      name: "Field",
+      name: 'Field',
       selector: (row) => row.field,
-      sortable: true,
+      sortable: true
     },
 
     // {
@@ -175,32 +171,34 @@ const TestBankComponent = ({ match, props,  }) => {
     //   selector: (row) => row.task_name,
     // },
     {
-      name: "Testing Type",
+      name: 'Testing Type',
       selector: (row) => row.testing_type_name,
-      sortable: true,
+      sortable: true
     },
-    { name: "Module", selector: (row) => row.module_name, sortable: true },
-    { name: "Sub Module", selector: (row) => row.submodule, sortable: true },
-    { name: "Platform", selector: (row) => row.platform, sortable: true },
-    { name: "APK Version", selector: (row) => row.apk_version, sortable: true },
-    { name: "Os Version", selector: (row) => row.os_version, sortable: true },
+    { name: 'Module', selector: (row) => row.module_name, sortable: true },
+    { name: 'Sub Module', selector: (row) => row.submodule, sortable: true },
+    { name: 'Platform', selector: (row) => row.platform, sortable: true },
+    { name: 'APK Version', selector: (row) => row.apk_version, sortable: true },
+    { name: 'Os Version', selector: (row) => row.os_version, sortable: true },
     // { name: "Steps", selector: (row) => row.steps_to_follow, sortable: true },
     {
       name: 'Description',
-      selector: row => row.test_description,
+      selector: (row) => row.test_description,
       sortable: true,
       width: '280px',
 
-      cell: row => (
+      cell: (row) => (
         <div
-          className='btn-group'
-          role='group'
-          aria-label='Basic outlined example'
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
         >
           {row.test_description && (
-            <OverlayTrigger overlay={<Tooltip>{row.test_description} </Tooltip>}>
+            <OverlayTrigger
+              overlay={<Tooltip>{row.test_description} </Tooltip>}
+            >
               <div>
-                <span className='ms-1'> {row.test_description}</span>
+                <span className="ms-1"> {row.test_description}</span>
               </div>
             </OverlayTrigger>
           )}
@@ -209,20 +207,20 @@ const TestBankComponent = ({ match, props,  }) => {
     },
     {
       name: 'Expected Result',
-      selector: row => row.expected_result,
+      selector: (row) => row.expected_result,
       sortable: true,
       width: '280px',
 
-      cell: row => (
+      cell: (row) => (
         <div
-          className='btn-group'
-          role='group'
-          aria-label='Basic outlined example'
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
         >
           {row.expected_result && (
             <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
               <div>
-                <span className='ms-1'> {row.expected_result}</span>
+                <span className="ms-1"> {row.expected_result}</span>
               </div>
             </OverlayTrigger>
           )}
@@ -231,42 +229,20 @@ const TestBankComponent = ({ match, props,  }) => {
     },
     {
       name: 'Actual Result',
-      selector: row => row.actual_result,
+      selector: (row) => row.actual_result,
       sortable: true,
       width: '280px',
 
-      cell: row => (
+      cell: (row) => (
         <div
-          className='btn-group'
-          role='group'
-          aria-label='Basic outlined example'
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
         >
           {row.actual_result && (
             <OverlayTrigger overlay={<Tooltip>{row.actual_result} </Tooltip>}>
               <div>
-                <span className='ms-1'> {row.actual_result}</span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
-    },
-   {
-      name: 'Tester Comments',
-      selector: row => row.tester_comments,
-      sortable: true,
-      width: '280px',
-
-      cell: row => (
-        <div
-          className='btn-group'
-          role='group'
-          aria-label='Basic outlined example'
-        >
-          {row.tester_comments && (
-            <OverlayTrigger overlay={<Tooltip>{row.tester_comments} </Tooltip>}>
-              <div>
-                <span className='ms-1'> {row.tester_comments}</span>
+                <span className="ms-1"> {row.actual_result}</span>
               </div>
             </OverlayTrigger>
           )}
@@ -274,9 +250,31 @@ const TestBankComponent = ({ match, props,  }) => {
       )
     },
     {
-      name: "Tester Status",
-      selector: (row) => row.tester_status,
+      name: 'Tester Comments',
+      selector: (row) => row.tester_comments,
       sortable: true,
+      width: '280px',
+
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.tester_comments && (
+            <OverlayTrigger overlay={<Tooltip>{row.tester_comments} </Tooltip>}>
+              <div>
+                <span className="ms-1"> {row.tester_comments}</span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
+    },
+    {
+      name: 'Tester Status',
+      selector: (row) => row.tester_status,
+      sortable: true
     },
     // {
     //   name: "Developer Status",
@@ -306,27 +304,26 @@ const TestBankComponent = ({ match, props,  }) => {
     //   sortable: true,
     //   width:"280px"
     // },
-    { name: "Severity", selector: (row) => row.severity, sortable: true },
+    { name: 'Severity', selector: (row) => row.severity, sortable: true },
     {
-      name: "Script Path",
+      name: 'Script Path',
       selector: (row) => row.scrpt_path,
-      sortable: true,
-    },
+      sortable: true
+    }
   ];
 
   const tableData = {
     columns,
-    data,
+    data
   };
 
   const useSessionData = {
-    userId: sessionStorage.getItem("id"),
+    userId: localStorage.getItem('id')
   };
 
   const [testSuiteDropdown, setTestSuiteDropdown] = useState();
   const [tester, setTester] = useState();
 
-  
   const [ticketIdDropdown, setticketIdDropdown] = useState();
   // Load All Data and Render
   const loadData = async () => {
@@ -345,50 +342,58 @@ const TestBankComponent = ({ match, props,  }) => {
     await new TestingTypeServices().getAlltestingType().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const temp = res.data.data.filter(d=> d.is_active == 1)
-          
-          const  tempo = temp.map((d) => ({
+          const temp = res.data.data.filter((d) => d.is_active == 1);
+
+          const tempo = temp.map((d) => ({
             value: d.id,
-            label: d.testing_type,
+            label: d.testing_type
           }));
           setTestingTypeDropdown(tempo);
         }
       }
     });
 
-    await new DesignationService().getdesignatedDropdown(ticketId).then((res) => {
+    await new DesignationService()
+      .getdesignatedDropdown(ticketId)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            var deta = res.data.data;
+            setTester(
+              deta.TESTER.map((d) => ({
+                value: d.id,
+                label: d.first_name + '-' + d.last_name
+              }))
+            );
+          }
+        }
+      });
+    await new TestCasesService().getAllTestSuites().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          var deta = res.data.data
-          setTester(deta.TESTER.map(d => ({ value: d.id, label: d.first_name + "-" + d.last_name  })));
+          const temp = res.data.data;
+          setTestSuiteDropdown(
+            temp.map((d) => ({ value: d.id, label: d.testsuit_name }))
+          );
         }
       }
-    })
-    await new TestCasesService().getAllTestSuites().then((res)=>{
-      if(res.status === 200){
-          if(res.data.status == 1){
+    });
 
-              const temp = res.data.data;
-              setTestSuiteDropdown(
-                temp.map((d) => ({ value: d.id, label: d.testsuit_name }))
-              );            }
+    await new TestCasesService().getAllTicketId().then((res) => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          const temp = res.data.data;
+          setticketIdDropdown(
+            temp.map((d) => ({ value: d.id, label: d.ticket_id }))
+          );
+        }
       }
-  })
-
-    await new TestCasesService().getAllTicketId().then((res)=>{
-      if(res.status ===200){
-          if(res.data.status == 1){
-              const temp = res.data.data;
-              setticketIdDropdown(
-                temp.map((d) => ({ value: d.id, label: d.ticket_id }))
-              );           }
-      }
-    })
+    });
     await new ProjectService().getProject().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const temp = res.data.data
-          
+          const temp = res.data.data;
+
           setProjectData(temp);
           setProjectDropdown(
             temp.map((d) => ({ value: d.id, label: d.project_name }))
@@ -400,7 +405,7 @@ const TestBankComponent = ({ match, props,  }) => {
     await new ModuleService().getModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const temp = res.data.data
+          const temp = res.data.data;
 
           setModuleData(temp);
           setModuleDropdown(
@@ -413,62 +418,63 @@ const TestBankComponent = ({ match, props,  }) => {
     await new SubModuleService().getSubModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const temp = res.data.data
-          
+          const temp = res.data.data;
+
           setSubModuleData(temp);
           setSubModuleDropdown(
             temp.map((d) => ({
               value: d.id,
-              label: d.sub_module_name,
+              label: d.sub_module_name
             }))
           );
         }
       }
     });
-
-   
   };
 
-  const moduleIdRef = useRef()
-  const subModuleIdRef = useRef()
-  const projectIdRef = useRef()
-  const ticketIdRef = useRef()
-  const testSuiteRef = useRef()
-  const testingTypeRef = useRef()
-
+  const moduleIdRef = useRef();
+  const subModuleIdRef = useRef();
+  const projectIdRef = useRef();
+  const ticketIdRef = useRef();
+  const testSuiteRef = useRef();
+  const testingTypeRef = useRef();
 
   const clearValue = (name) => {
     switch (name) {
-        case "module_id":
-            if (moduleIdRef.current)
-            {
-                moduleIdRef.current.clearValue();
-            }
-            break;
-            case "submodule_id":
-            if (subModuleIdRef.current) {
-                subModuleIdRef.current.clearValue();
-            }
-            break; 
-        default:
-            break;
+      case 'module_id':
+        if (moduleIdRef.current) {
+          moduleIdRef.current.clearValue();
+        }
+        break;
+      case 'submodule_id':
+        if (subModuleIdRef.current) {
+          subModuleIdRef.current.clearValue();
+        }
+        break;
+      default:
+        break;
     }
-}
+  };
 
+  const handleProjectChange = async (e) => {
+    clearValue('module_id');
+    clearValue('submodule_id');
+    setModuleDropdown(
+      moduleData
+        .filter((d) => d.project_id == e.value)
+        .map((d) => ({ value: d.id, label: d.module_name }))
+    );
+  };
 
-
-const handleProjectChange = async(e) => {
-    clearValue('module_id')
-    clearValue('submodule_id')
-    setModuleDropdown(moduleData.filter(d => d.project_id == e.value).map(d => ({ value: d.id, label: d.module_name })));
-  
-}
-
-const handleModuleChange = (e) => {
-    if(e){
-    setSubModuleDropdown(subModuleData.filter(d => d.module_id == e.value).map(d => ({ value: d.id, label: d.sub_module_name })));
+  const handleModuleChange = (e) => {
+    if (e) {
+      setSubModuleDropdown(
+        subModuleData
+          .filter((d) => d.module_id == e.value)
+          .map((d) => ({ value: d.id, label: d.sub_module_name }))
+      );
     }
-}
+  };
 
   const selectTest = (selectedRows) => {
     //  var ids = selectedRows.selectedRows.map(d=> d.id == selectedRows.is_disabled)
@@ -482,9 +488,9 @@ const handleModuleChange = (e) => {
     //     }
     //  })
 
-    var temp = data.map((d, i) => (ids.includes(d.id) ? i : "x"));
+    var temp = data.map((d, i) => (ids.includes(d.id) ? i : 'x'));
 
-    temp = temp.filter((d) => d != "x");
+    temp = temp.filter((d) => d != 'x');
 
     //  setData(null);
     //  setData(a);
@@ -506,29 +512,28 @@ const handleModuleChange = (e) => {
     //     )
   };
 
-
   const priorityStyle = (e) => {
     setPriority(null);
     switch (e.target.value) {
-      case "HIGH":
-        setPriority("red");
+      case 'HIGH':
+        setPriority('red');
         break;
-      case "MEDIUM":
-        setPriority("orange");
+      case 'MEDIUM':
+        setPriority('orange');
         break;
-      case "LOW":
-        setPriority("green");
+      case 'LOW':
+        setPriority('green');
       default:
-        return "green";
+        return 'green';
     }
   };
 
   // Update State of Status Color
   const colorStyle = (e) => {
-    if (e.target.value == "PASS") {
-      setColors("green");
+    if (e.target.value == 'PASS') {
+      setColors('green');
     } else {
-      setColors("red");
+      setColors('red');
     }
   };
   const updateForm = (id) => async (e) => {
@@ -540,15 +545,15 @@ const handleModuleChange = (e) => {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1)
-            setNotify({ type: "success", message: res.data.message });
-          setModal({ showModal: false, modalData: "", modalHeader: "" });
+            setNotify({ type: 'success', message: res.data.message });
+          setModal({ showModal: false, modalData: '', modalHeader: '' });
         } else {
-          setNotify({ type: "danger", message: res.data.message });
+          setNotify({ type: 'danger', message: res.data.message });
 
           new ErrorLogService().sendErrorLog(
-            "TestCase",
-            "Create_TestCases",
-            "INSERT",
+            'TestCase',
+            'Create_TestCases',
+            'INSERT',
             res.message
           );
         }
@@ -556,11 +561,11 @@ const handleModuleChange = (e) => {
       .catch((error) => {
         const { response } = error;
         const { request, ...errorObject } = response;
-        setNotify({ type: "danger", message: "Request Error !!!" });
+        setNotify({ type: 'danger', message: 'Request Error !!!' });
         new ErrorLogService().sendErrorLog(
-          "TestCase",
-          "Create_TestCases",
-          "INSERT",
+          'TestCase',
+          'Create_TestCases',
+          'INSERT',
           errorObject.data.message
         );
       });
@@ -580,9 +585,9 @@ const handleModuleChange = (e) => {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
-            setNotify({ type: "success", message: res.data.message });
+            setNotify({ type: 'success', message: res.data.message });
           } else {
-            setNotify({ type: "danger", message: res.data.message });
+            setNotify({ type: 'danger', message: res.data.message });
           }
         }
       });
@@ -593,7 +598,7 @@ const handleModuleChange = (e) => {
   // Expandable Component to render attachments
   const ExpandedComponent = ({ data }) => (
     <pre>
-      <Table style={{ width: "30%" }}>
+      <Table style={{ width: '30%' }}>
         <thead>
           <tr>
             <th>Sr</th>
@@ -617,7 +622,7 @@ const handleModuleChange = (e) => {
                     >
                       <i
                         class="icofont-eye"
-                        style={{ fontSize: "15px", height: "15px" }}
+                        style={{ fontSize: '15px', height: '15px' }}
                       ></i>
                     </a>
                   </td>
@@ -629,46 +634,45 @@ const handleModuleChange = (e) => {
     </pre>
   );
 
-  const [exportData, serExportData] = useState()
+  const [exportData, serExportData] = useState();
   const handleFilter = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
     const tempData = [];
     const exportTempData = [];
 
-    var flag =1
-    if(projectIdRef.current.commonProps.hasValue ||
-       moduleIdRef.current.commonProps.hasValue  ||
-       subModuleIdRef.current.commonProps.hasValue ||
-       ticketIdRef.current.commonProps.hasValue ||
-       document.getElementById('severity').value != "" ||
-       document.getElementById('priority').value != "" ||
-       testSuiteRef.current.commonProps.hasValue ||
-       document.getElementById('tester_status').value != "" ||
-       document.getElementById('developer_status').value != "" ||
-       document.getElementById('ba_status').value != "" ||
-       testingTypeRef.current.commonProps.hasValue ){
-      flag =1
-    } else{
-      alert("please select atleast one value")
-      flag = 0
+    var flag = 1;
+    if (
+      projectIdRef.current.commonProps.hasValue ||
+      moduleIdRef.current.commonProps.hasValue ||
+      subModuleIdRef.current.commonProps.hasValue ||
+      ticketIdRef.current.commonProps.hasValue ||
+      document.getElementById('severity').value != '' ||
+      document.getElementById('priority').value != '' ||
+      testSuiteRef.current.commonProps.hasValue ||
+      document.getElementById('tester_status').value != '' ||
+      document.getElementById('developer_status').value != '' ||
+      document.getElementById('ba_status').value != '' ||
+      testingTypeRef.current.commonProps.hasValue
+    ) {
+      flag = 1;
+    } else {
+      alert('please select atleast one value');
+      flag = 0;
     }
 
-    if(flag === 1){
-    await new TestCasesService()
-      .getTestcasesByFilter( form)
-      .then((res) => {
+    if (flag === 1) {
+      await new TestCasesService().getTestcasesByFilter(form).then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
             let counter = 1;
             const temp = res.data.data;
-         
-            
+
             for (const key in temp) {
               tempData.push({
                 counter: counter++,
                 id: temp[key].id,
-                reviewer_comments:temp[key].reviewer_comments,
+                reviewer_comments: temp[key].reviewer_comments,
                 project_name: temp[key].project_name,
                 module_name: temp[key].module_name,
                 submodule: temp[key].submodule,
@@ -678,24 +682,23 @@ const handleModuleChange = (e) => {
                 developer_status: temp[key].developer_status,
                 dev_comments: temp[key].dev_comments,
                 ba_comments: temp[key].ba_comments,
-                script_path:temp[key].script_path,
+                script_path: temp[key].script_path,
                 severity: temp[key].severity,
                 priority: temp[key].priority,
                 test_case_id: temp[key].test_case_id,
-               task_name: temp[key].task_name,
-               testing_type: temp[key].testing_type,
-               function: temp[key].function,
-               platform: temp[key].platform,
-               apk_version: temp[key].apk_version,
-               os_version: temp[key].os_version,
-               testing_type_name: temp[key].testing_type_name,
-               test_description: temp[key].test_description,
-               expected_result: temp[key].expected_result,
-               actual_result: temp[key].actual_result,
-               tester_comments: temp[key].tester_comments,
-               screenshot: temp[key].screenshot,
-               field: temp[key].field,
-
+                task_name: temp[key].task_name,
+                testing_type: temp[key].testing_type,
+                function: temp[key].function,
+                platform: temp[key].platform,
+                apk_version: temp[key].apk_version,
+                os_version: temp[key].os_version,
+                testing_type_name: temp[key].testing_type_name,
+                test_description: temp[key].test_description,
+                expected_result: temp[key].expected_result,
+                actual_result: temp[key].actual_result,
+                tester_comments: temp[key].tester_comments,
+                screenshot: temp[key].screenshot,
+                field: temp[key].field
               });
             }
             setData(null);
@@ -711,28 +714,27 @@ const handleModuleChange = (e) => {
                 test_description: temp[key].test_description,
                 expected_result: temp[key].expected_result,
                 actual_result: temp[key].actual_result,
-                reviewer_comments:temp[key].reviewer_comments,
+                reviewer_comments: temp[key].reviewer_comments,
                 priority: temp[key].priority,
                 tester_status: temp[key].tester_status,
                 ba_status: temp[key].ba_status,
                 developer_status: temp[key].developer_status,
                 dev_comments: temp[key].dev_comments,
                 ba_comments: temp[key].ba_comments,
-                script_path:temp[key].script_path,
+                script_path: temp[key].script_path,
                 severity: temp[key].severity,
-               task_name: temp[key].task_name,
-               function: temp[key].function,
-               platform: temp[key].platform,
-               apk_version: temp[key].apk_version,
-               os_version: temp[key].os_version,
-               testing_type_name: temp[key].testing_type_name,
-               tester_comments: temp[key].tester_comments,
-               screenshot: temp[key].screenshot,
-               field: temp[key].field,
-
+                task_name: temp[key].task_name,
+                function: temp[key].function,
+                platform: temp[key].platform,
+                apk_version: temp[key].apk_version,
+                os_version: temp[key].os_version,
+                testing_type_name: temp[key].testing_type_name,
+                tester_comments: temp[key].tester_comments,
+                screenshot: temp[key].screenshot,
+                field: temp[key].field
               });
             }
-            serExportData(exportTempData)
+            serExportData(exportTempData);
           }
         }
       });
@@ -741,16 +743,15 @@ const handleModuleChange = (e) => {
 
   const [addToExistingSuiteModal, setaddToExistingSuiteModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
 
   const [createNewTestSuiteModal, setcreateNewTestSuiteModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
-
 
   const handleAddToExistingSuiteModal = (existingSuiteData) => {
     setaddToExistingSuiteModal(existingSuiteData);
@@ -759,106 +760,126 @@ const handleModuleChange = (e) => {
   const handleCreateSuiteModal = (createSuiteData) => {
     setcreateNewTestSuiteModal(createSuiteData);
   };
-  const addToExistingTestSuite = async(e) =>{
-    setNotify(null)
+  const addToExistingTestSuite = async (e) => {
+    setNotify(null);
     e.preventDefault();
-    const form = new FormData(e.target)
-    form.append("test_case_id",selectedRowsData)
+    const form = new FormData(e.target);
+    form.append('test_case_id', selectedRowsData);
 
-    await new TestCasesService().addToExistingTestSuite(form).then((res)=>{
-      if(res.status === 200){
-        if(res.data.status == 1){
-          setNotify({ type: "success", message: res.data.message });
-          setsendtoTestSuiteModal({showModal: false,modalData: "",modalHeader: "",});
-          setaddToExistingSuiteModal({showModal: false,modalData: "",modalHeader: "",});
-
-        }else{
-          setNotify({ type: "danger", message: res.data.message });
+    await new TestCasesService().addToExistingTestSuite(form).then((res) => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          setNotify({ type: 'success', message: res.data.message });
+          setsendtoTestSuiteModal({
+            showModal: false,
+            modalData: '',
+            modalHeader: ''
+          });
+          setaddToExistingSuiteModal({
+            showModal: false,
+            modalData: '',
+            modalHeader: ''
+          });
+        } else {
+          setNotify({ type: 'danger', message: res.data.message });
         }
       }
-    })
-  }
+    });
+  };
 
-  const testerIdRef =useRef()
-  const ticketIdsRef =useRef()
-  const basketIdRef =useRef()
+  const testerIdRef = useRef();
+  const ticketIdsRef = useRef();
+  const basketIdRef = useRef();
 
-  const sendTestcasesToTesterForExecution = async(e) =>{
-    setShowLoaderModal(null)
-    setShowLoaderModal(true)
-    e.preventDefault()
-    setNotify(null)
-    var flag = 1
-    const form = new FormData(e.target)
-    form.append("test_case_id",selectedRowsData)
-    if(testerIdRef.current.commonProps.hasValue == false){
-      alert("please select tester")
-      flag =0
+  const sendTestcasesToTesterForExecution = async (e) => {
+    setShowLoaderModal(null);
+    setShowLoaderModal(true);
+    e.preventDefault();
+    setNotify(null);
+    var flag = 1;
+    const form = new FormData(e.target);
+    form.append('test_case_id', selectedRowsData);
+    if (testerIdRef.current.commonProps.hasValue == false) {
+      alert('please select tester');
+      flag = 0;
     }
-    if(ticketIdsRef.current.commonProps.hasValue == false){
-      alert("please select ticketId")
-      flag =0
+    if (ticketIdsRef.current.commonProps.hasValue == false) {
+      alert('please select ticketId');
+      flag = 0;
     }
-    if(basketIdRef.current.commonProps.hasValue == false){
-      alert("please select basket")
-      flag =0
+    if (basketIdRef.current.commonProps.hasValue == false) {
+      alert('please select basket');
+      flag = 0;
     }
-    var s = form.get("task_hours")
-    if(s == "00:00"){
-      alert('Please enter task hours')
-      flag=0
+    var s = form.get('task_hours');
+    if (s == '00:00') {
+      alert('Please enter task hours');
+      flag = 0;
     }
-    
-    if(flag ===1){
-    await new TestCasesService().getAssignTestCasesToTester(form).then((res)=>{
-      if(res.status === 200){
-        if(res.data.status == 1){
-          setShowLoaderModal(false)
-          setSendtoModal({showModal:false, modalData:"",modalHeader:""})
-          setNotify({ type: "success", message: res.data.message });
-        }else{
-          setNotify({ type: "danger", message: res.data.message });
 
-        }
-      }
-    })
-  }
-  }
-  const [basketDropdown, setBasketDropdown]= useState();
-  const handleTicketBasket = async(e) =>{
+    if (flag === 1) {
+      await new TestCasesService()
+        .getAssignTestCasesToTester(form)
+        .then((res) => {
+          if (res.status === 200) {
+            if (res.data.status == 1) {
+              setShowLoaderModal(false);
+              setSendtoModal({
+                showModal: false,
+                modalData: '',
+                modalHeader: ''
+              });
+              setNotify({ type: 'success', message: res.data.message });
+            } else {
+              setNotify({ type: 'danger', message: res.data.message });
+            }
+          }
+        });
+    }
+  };
+  const [basketDropdown, setBasketDropdown] = useState();
+  const handleTicketBasket = async (e) => {
     // e.preventDefault();
-    await new TestCasesService().getBasketTasksData(e.value, userSessionData.userId,"BASKET").then((res)=>{
-      if(res.status === 200) {
-        if(res.data.status ==1){
-          var temp = res.data.data
-         setBasketDropdown( temp.map(d=> ({value:d.id, label:d.basket_name})))
+    await new TestCasesService()
+      .getBasketTasksData(e.value, userSessionData.userId, 'BASKET')
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            var temp = res.data.data;
+            setBasketDropdown(
+              temp.map((d) => ({ value: d.id, label: d.basket_name }))
+            );
+          }
         }
-      }
-    })
-  }
+      });
+  };
 
-  const createNewTestSuite = async (e) =>{
-    setNotify(null)
+  const createNewTestSuite = async (e) => {
+    setNotify(null);
     e.preventDefault();
-    const form = new FormData (e.target)
-    await new TestCasesService().createTestSuite(form).then((res)=>{
-      if(res.status === 200){
-        if(res.data.status == 1){
-          setNotify({ type: "success", message: res.data.message });
-          setcreateNewTestSuiteModal({showModal:false, modalData:"",modalHeader:""})
+    const form = new FormData(e.target);
+    await new TestCasesService().createTestSuite(form).then((res) => {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
+          setNotify({ type: 'success', message: res.data.message });
+          setcreateNewTestSuiteModal({
+            showModal: false,
+            modalData: '',
+            modalHeader: ''
+          });
           loadData();
-        }else{
-          setNotify({ type: "danger", message: res.data.message });
+        } else {
+          setNotify({ type: 'danger', message: res.data.message });
         }
       }
-    })
-  }
+    });
+  };
 
-  const [date, setDate] = useState()
+  const [date, setDate] = useState();
 
-  const handleDate =(e) =>{
+  const handleDate = (e) => {
     setDate(e.target.value);
-  }
+  };
   const [flag, setFlag] = useState(0);
 
   useEffect(() => {
@@ -878,7 +899,7 @@ const handleModuleChange = (e) => {
     <div>
       <PageHeader headerTitle="Test Plan" />
       {notify && <Alert alertData={notify} />}
-    
+
       {/* modal for send to test suite */}
       <Modal
         size="md"
@@ -887,8 +908,8 @@ const handleModuleChange = (e) => {
         onHide={(e) => {
           handleSendtoTestSuiteModal({
             showModal: false,
-            modalData: "",
-            modalHeader: "",
+            modalData: '',
+            modalHeader: ''
           });
         }}
       >
@@ -901,7 +922,7 @@ const handleModuleChange = (e) => {
           <div className="container">
             <div className="deadline-form ">
               <div className="form-group row ">
-                <div className="row" style={{ fontSize: "16px" }}>
+                <div className="row" style={{ fontSize: '16px' }}>
                   <div className="col-sm-2"></div>
                   <div className="col-sm-16 mt-2">
                     <label class="fancy-checkbox parsley-error" />
@@ -915,8 +936,8 @@ const handleModuleChange = (e) => {
                       onClick={() => {
                         handleAddToExistingSuiteModal({
                           showModal: true,
-                          modalData: "",
-                          modalHeader: "Add to Existing Test Suite",
+                          modalData: '',
+                          modalHeader: 'Add to Existing Test Suite'
                         });
                       }}
                     />
@@ -932,9 +953,8 @@ const handleModuleChange = (e) => {
                       onClick={() => {
                         handleCreateSuiteModal({
                           showModal: true,
-                          modalData: "",
-                          modalHeader: "Create Test Suite",
-                          
+                          modalData: '',
+                          modalHeader: 'Create Test Suite'
                         });
                       }}
                     />
@@ -949,18 +969,18 @@ const handleModuleChange = (e) => {
       {/* modal for send to test suite */}
 
       {/* Modal For Add to Existing Test Suite */}
-  <Modal
+      <Modal
         size="md"
         centered
         show={addToExistingSuiteModal.showModal}
         onHide={(e) => {
           handleAddToExistingSuiteModal({
             showModal: false,
-            modalData: "",
-            modalHeader: "",
+            modalData: '',
+            modalHeader: ''
           });
         }}
-     >
+      >
         <form method="post" onSubmit={addToExistingTestSuite}>
           <Modal.Header closeButton>
             <Modal.Title className="fw-bold">
@@ -992,7 +1012,7 @@ const handleModuleChange = (e) => {
             <button
               type="submit"
               className="btn btn-primary text-white"
-              style={{ backgroundColor: "#484C7F" }}
+              style={{ backgroundColor: '#484C7F' }}
             >
               Submit
             </button>
@@ -1003,13 +1023,13 @@ const handleModuleChange = (e) => {
               onClick={(e) => {
                 handleAddToExistingSuiteModal({
                   showModal: false,
-                  modalData: "",
-                  modalHeader: "",
+                  modalData: '',
+                  modalHeader: ''
                 });
                 handleSendtoTestSuiteModal({
                   showModal: true,
-                  modalData: "",
-                  modalHeader: "",
+                  modalData: '',
+                  modalHeader: ''
                 });
               }}
             >
@@ -1017,20 +1037,19 @@ const handleModuleChange = (e) => {
             </button>
           </Modal.Footer>
         </form>
-  </Modal>
+      </Modal>
       {/* Modal For Add to Existing Test Suite */}
 
       {/* Modal For Create Test Suite */}
       <Modal
-      
         size="md"
         centered
         show={createNewTestSuiteModal.showModal}
         onHide={(e) => {
           handleCreateSuiteModal({
             showModal: false,
-            modalData: "",
-            modalHeader: "",
+            modalData: '',
+            modalHeader: ''
           });
         }}
       >
@@ -1068,7 +1087,7 @@ const handleModuleChange = (e) => {
             <button
               type="submit"
               className="btn btn-primary text-white"
-              style={{ backgroundColor: "#484C7F" }}
+              style={{ backgroundColor: '#484C7F' }}
             >
               Submit
             </button>
@@ -1079,13 +1098,13 @@ const handleModuleChange = (e) => {
               onClick={(e) => {
                 handleCreateSuiteModal({
                   showModal: false,
-                  modalData: "",
-                  modalHeader: "",
+                  modalData: '',
+                  modalHeader: ''
                 });
                 handleSendtoTestSuiteModal({
                   showModal: true,
-                  modalData: "",
-                  modalHeader: "",
+                  modalData: '',
+                  modalHeader: ''
                 });
               }}
             >
@@ -1096,7 +1115,6 @@ const handleModuleChange = (e) => {
       </Modal>
       {/* Modal For Create Test Suite */}
 
-
       {/* Assign Test case to Tester */}
 
       <Modal
@@ -1106,152 +1124,170 @@ const handleModuleChange = (e) => {
         onHide={(e) => {
           handleSendtoModal({
             showModal: false,
-            modalData: "",
-            modalHeader: "",
+            modalData: '',
+            modalHeader: ''
           });
         }}
       >
-        <form method="post" onSubmit ={sendTestcasesToTesterForExecution}>
+        <form method="post" onSubmit={sendTestcasesToTesterForExecution}>
           <Modal.Header closeButton>
-            <Modal.Title className="fw-bold">Assign Task 
-               </Modal.Title>
+            <Modal.Title className="fw-bold">Assign Task</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <div className="row">
-          <div className="col-sm-4">
+              <div className="col-sm-4">
                 <label>
-                  <b>Tester<Astrick color="red" />:</b>
+                  <b>
+                    Tester
+                    <Astrick color="red" />:
+                  </b>
                 </label>
-                {tester &&
-                <Select
-                  className="form-control form-control-sm"
-                  id="tester_id"
-                  name="tester_id"
-                  ref={testerIdRef}
-                  options={tester}
-                />
-                }     
-                </div>
-           
-            <div className="col-sm-4">
-                  <label>
-                    <b>Ticket Id <Astrick color="red" />:</b>
-                  </label>
-                  {ticketIdDropdown &&
+                {tester && (
+                  <Select
+                    className="form-control form-control-sm"
+                    id="tester_id"
+                    name="tester_id"
+                    ref={testerIdRef}
+                    options={tester}
+                  />
+                )}
+              </div>
+
+              <div className="col-sm-4">
+                <label>
+                  <b>
+                    Ticket Id <Astrick color="red" />:
+                  </b>
+                </label>
+                {ticketIdDropdown && (
                   <Select
                     className="form-control form-control-sm "
                     name="ticket_id"
                     id="ticket_id"
                     options={ticketIdDropdown}
                     ref={ticketIdsRef}
-
-                    onChange={e=>handleTicketBasket(e)}
-
+                    onChange={(e) => handleTicketBasket(e)}
                   />
-                  }
-               
-                </div>
+                )}
+              </div>
               <div className="col-sm-4">
                 <label>
-                  <b>Select Basket <Astrick color="red" />:</b>
+                  <b>
+                    Select Basket <Astrick color="red" />:
+                  </b>
                 </label>
-                {basketDropdown &&
-                <Select
-                  className="form-control form-control-sm"
-                  id="basket_id"
-                  name="basket_id"
-                  ref={basketIdRef}
-                  options={basketDropdown}
-                />
-                }     
-                </div>  
-                <div className="col-sm-4 mt-2">
+                {basketDropdown && (
+                  <Select
+                    className="form-control form-control-sm"
+                    id="basket_id"
+                    name="basket_id"
+                    ref={basketIdRef}
+                    options={basketDropdown}
+                  />
+                )}
+              </div>
+              <div className="col-sm-4 mt-2">
                 <label>
-                  <b>Task Name <Astrick color="red" />:</b>
+                  <b>
+                    Task Name <Astrick color="red" />:
+                  </b>
                 </label>
                 <input
-                  type ="text"
+                  type="text"
                   className="form-control form-control-sm"
                   id="task_id"
                   required
                   name="task_id"
                 />
-                </div>   
-                <div className="col-sm-4 mt-2">
+              </div>
+              <div className="col-sm-4 mt-2">
                 <label>
-                  <b>Start Date <Astrick color="red" />:</b>
+                  <b>
+                    Start Date <Astrick color="red" />:
+                  </b>
                 </label>
                 <input
-                  type ="date"
+                  type="date"
                   className="form-control form-control-sm"
                   id="start_date"
                   name="start_date"
                   onChange={handleDate}
                   required
                 />
-                </div>  
-                <div className="col-sm-4 mt-2">
+              </div>
+              <div className="col-sm-4 mt-2">
                 <label>
-                  <b>End Date <Astrick color="red" />:</b>
+                  <b>
+                    End Date <Astrick color="red" />:
+                  </b>
                 </label>
                 <input
-                  type ="date"
+                  type="date"
                   className="form-control form-control-sm"
                   id="end_date"
                   name="end_date"
                   min={date}
                   required
                 />
-                </div>   
-                <div className="col-sm-4 mt-2">
+              </div>
+              <div className="col-sm-4 mt-2">
                 <label>
-                  <b>Task Hours <Astrick color="red" />:</b>
+                  <b>
+                    Task Hours <Astrick color="red" />:
+                  </b>
                 </label>
                 <input
-                  type ="text"
+                  type="text"
                   className="form-control form-control-sm"
                   id="task_hours"
-                  defaultValue={"00:00"}
-                  onKeyPress={e=>{Validation.NumbersOnly(e)}}
+                  defaultValue={'00:00'}
+                  onKeyPress={(e) => {
+                    Validation.NumbersOnly(e);
+                  }}
                   name="task_hours"
                   required
-                  
                 />
-                </div>
-                <Modal.Footer>
-                <small
-             style={{fontSize:"13px", color:'blue', fontWeight:"bold", fontStyle:"italic"}}>
-              Note:- (All fields are manadatory)
-               </small>
-                  <button
-                    type="submit"
-                    className="btn btn-sm btn-primary"
-                    style={{ backgroundColor: "#484C7F" }}
-                  >
-                    Submit
-                  </button>
-
-                  <button
-              type="button"
-              className="btn btn-danger text-white"
-              onClick={(e) => {
-                handleSendtoModal({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                });
-              }}
-            >
-              Cancel
-            </button>
-                </Modal.Footer>
               </div>
+              <Modal.Footer>
+                <small
+                  style={{
+                    fontSize: '13px',
+                    color: 'blue',
+                    fontWeight: 'bold',
+                    fontStyle: 'italic'
+                  }}
+                >
+                  Note:- (All fields are manadatory)
+                </small>
+                <button
+                  type="submit"
+                  className="btn btn-sm btn-primary"
+                  style={{ backgroundColor: '#484C7F' }}
+                >
+                  Submit
+                </button>
+
+                <button
+                  type="button"
+                  className="btn btn-danger text-white"
+                  onClick={(e) => {
+                    handleSendtoModal({
+                      showModal: false,
+                      modalData: '',
+                      modalHeader: ''
+                    });
+                  }}
+                >
+                  Cancel
+                </button>
+              </Modal.Footer>
+            </div>
           </Modal.Body>
         </form>
       </Modal>
       {/* Assign Test case to Tester */}
 
-        <div className="container-xxl">
+      <div className="container-xxl">
         <form onSubmit={handleFilter} method="post">
           <div className="card mt-2" style={{ zIndex: 10 }}>
             <div className="card-body">
@@ -1260,65 +1296,64 @@ const handleModuleChange = (e) => {
                   <label>
                     <b>Project:</b>
                   </label>
-                  {projectDropdown &&
-                  <Select
-                    className="form-control form-control-sm"
-                    id="project_id"
-                    name="project_id"
-                    ref ={projectIdRef}
-                    options={projectDropdown}
-                    onChange={e=>{handleProjectChange(e)}}
-
-                  />
-                }
+                  {projectDropdown && (
+                    <Select
+                      className="form-control form-control-sm"
+                      id="project_id"
+                      name="project_id"
+                      ref={projectIdRef}
+                      options={projectDropdown}
+                      onChange={(e) => {
+                        handleProjectChange(e);
+                      }}
+                    />
+                  )}
                 </div>
 
                 <div className="col-sm-4">
                   <label>
                     <b>Module:</b>
                   </label>
-                  {moduleDropdown &&
-                  <Select
-                    className="form-control form-control-sm"
-                    id="module_id"
-                    name="module_id"
-                    options={moduleDropdown}
-                    ref = {moduleIdRef}
-                    onChange={handleModuleChange}
-                  />
-                  }
+                  {moduleDropdown && (
+                    <Select
+                      className="form-control form-control-sm"
+                      id="module_id"
+                      name="module_id"
+                      options={moduleDropdown}
+                      ref={moduleIdRef}
+                      onChange={handleModuleChange}
+                    />
+                  )}
                 </div>
                 <div className="col-sm-4">
                   <label>
                     <b>Sub Module:</b>
                   </label>
-                  {subModuleDropdown &&
-                  <Select
-                    className="form-control form-control-sm"
-                    id="submodule_id"
-                    name="submodule_id"
-                    
-                    ref={subModuleIdRef}
-                    options={subModuleDropdown}
-                    onChange={handleModuleChange}
-                  />
-                  }
+                  {subModuleDropdown && (
+                    <Select
+                      className="form-control form-control-sm"
+                      id="submodule_id"
+                      name="submodule_id"
+                      ref={subModuleIdRef}
+                      options={subModuleDropdown}
+                      onChange={handleModuleChange}
+                    />
+                  )}
                 </div>
 
                 <div className="col-sm-4">
                   <label>
                     <b>Ticket Id:</b>
                   </label>
-                  {ticketIdDropdown &&
-                  <Select
-                    className="form-control form-control-sm mt-2"
-                    name="ticket_id"
-                    id="ticket_id"
-                    ref= {ticketIdRef}
-                    options={ticketIdDropdown}
-                  />
-                  }
-               
+                  {ticketIdDropdown && (
+                    <Select
+                      className="form-control form-control-sm mt-2"
+                      name="ticket_id"
+                      id="ticket_id"
+                      ref={ticketIdRef}
+                      options={ticketIdDropdown}
+                    />
+                  )}
                 </div>
 
                 <div className="col-sm-4">
@@ -1330,7 +1365,9 @@ const handleModuleChange = (e) => {
                     id="severity"
                     name="severity"
                   >
-                          <option value="" selected disabled hidden>Select..</option>
+                    <option value="" selected disabled hidden>
+                      Select..
+                    </option>
                     <option value="LOW">LOW</option>
                     <option value="MEDIUM">MEDIUM</option>
                     <option value="HIGH">HIGH</option>
@@ -1346,7 +1383,9 @@ const handleModuleChange = (e) => {
                     id="priority"
                     name="priority"
                   >
-                    <option value="" selected disabled hidden>Select..</option>
+                    <option value="" selected disabled hidden>
+                      Select..
+                    </option>
                     <option value="LOW">LOW</option>
                     <option value="MEDIUM">MEDIUM</option>
                     <option value="HIGH">HIGH</option>
@@ -1356,16 +1395,15 @@ const handleModuleChange = (e) => {
                   <label>
                     <b>Test Suite:</b>
                   </label>
-                  {testSuiteDropdown &&
-                  <Select
-                    className="form-control form-control-sm mt-2"
-                    id="testsuit_id"
-                    name="testsuit_id"
-                    ref= {testSuiteRef}
-                   options={testSuiteDropdown} 
-                  />
-                    }
-          
+                  {testSuiteDropdown && (
+                    <Select
+                      className="form-control form-control-sm mt-2"
+                      id="testsuit_id"
+                      name="testsuit_id"
+                      ref={testSuiteRef}
+                      options={testSuiteDropdown}
+                    />
+                  )}
                 </div>
                 <div className="col-sm-4">
                   <label>
@@ -1376,7 +1414,9 @@ const handleModuleChange = (e) => {
                     id="tester_status"
                     name="tester_status"
                   >
-                          <option value="" selected disabled hidden>Select..</option>
+                    <option value="" selected disabled hidden>
+                      Select..
+                    </option>
 
                     <option value="PASS">PASS</option>
                     <option value="FAIL">FAIL</option>
@@ -1393,14 +1433,16 @@ const handleModuleChange = (e) => {
                     id="developer_status"
                     name="developer_status"
                   >
-                          <option value="" selected disabled hidden>Select..</option>
+                    <option value="" selected disabled hidden>
+                      Select..
+                    </option>
 
-                   <option value="SOLVED" >SOLVED</option>
-                      <option value="RSOLVED">RSOLVED</option>
-                      <option value="DEFFERED">DEFFERED</option>
-                      <option value="NOT_A_BUG">NOT A BUG</option>
-                      <option value="PENDING">PENDING</option>
-                      <option value="CR">CR</option>
+                    <option value="SOLVED">SOLVED</option>
+                    <option value="RSOLVED">RSOLVED</option>
+                    <option value="DEFFERED">DEFFERED</option>
+                    <option value="NOT_A_BUG">NOT A BUG</option>
+                    <option value="PENDING">PENDING</option>
+                    <option value="CR">CR</option>
                   </select>
                 </div>
                 <div className="col-sm-4 mt-2">
@@ -1412,13 +1454,15 @@ const handleModuleChange = (e) => {
                     id="ba_status"
                     name="ba_status"
                   >
-                          <option value="" selected disabled hidden>Select..</option>
-                      <option value="NOT_A_BUG">NOT A BUG</option>
-                      <option value="CR">CR</option>
-                          <option value="BUG">BUG</option>
-                      <option value="NOT_IN_THIS_PHASE">NOT IN THIS PHASE</option>
-                      <option value="SOLVED">SOLVED</option>
-                      <option value="SOLVED">TO BE DISCUSSED</option>
+                    <option value="" selected disabled hidden>
+                      Select..
+                    </option>
+                    <option value="NOT_A_BUG">NOT A BUG</option>
+                    <option value="CR">CR</option>
+                    <option value="BUG">BUG</option>
+                    <option value="NOT_IN_THIS_PHASE">NOT IN THIS PHASE</option>
+                    <option value="SOLVED">SOLVED</option>
+                    <option value="SOLVED">TO BE DISCUSSED</option>
                   </select>
                 </div>
 
@@ -1440,14 +1484,14 @@ const handleModuleChange = (e) => {
                     className="btn btn-sm btn-info text-white"
                     type="button"
                     onClick={() => window.location.reload(false)}
-                    style={{ marginTop: "20px", fontWeight: "600" }}
+                    style={{ marginTop: '20px', fontWeight: '600' }}
                   >
                     <i className="icofont-refresh text-white"></i> Reset
                   </button>
-                  <button 
+                  <button
                     className="btn btn-sm btn-warning text-white"
                     type="submit"
-                    style={{ marginTop: "20px", fontWeight: "600" }}
+                    style={{ marginTop: '20px', fontWeight: '600' }}
                   >
                     <i className="icofont-search-1 "></i> Search
                   </button>
@@ -1457,106 +1501,111 @@ const handleModuleChange = (e) => {
           </div>
         </form>
       </div>
-{data &&
-      <div className="container-xxl">
-        <div className="card mt-2">
-          <div className="card-body">
-            <div className="row clearfix g-3">
-              <div className="col-sm-12">
-              { data && selectedRowsData && selectedRowsData.length <= 0 &&
-                    <span style={{color:"red", fontWeight:"bold", fontStyle:"italic"}}>Note: Please select atleast one test case before sending to test suite or assign to tester</span> }
-               
-                <div className="d-flex flex-row-reverse">
-                  {data && data.length >=0 &&
-                  <ExportToExcel
-                    className="btn btn-sm btn-danger"
-                    apiData={exportData}
-                    fileName="Test Cases"
-                  />
-                  }
-
-           
-           
-                  <div>
-                    {data && 
-                    <>
-                  
-                    <button
-                      className="btn  btn-warning"
-                      type="button"
-                      onClick={() => {
-                        handleSendtoTestSuiteModal({
-                          showModal: true,
-                          modalData: "",
-                          modalHeader: "Test Suite ",
-                        });
+      {data && (
+        <div className="container-xxl">
+          <div className="card mt-2">
+            <div className="card-body">
+              <div className="row clearfix g-3">
+                <div className="col-sm-12">
+                  {data && selectedRowsData && selectedRowsData.length <= 0 && (
+                    <span
+                      style={{
+                        color: 'red',
+                        fontWeight: 'bold',
+                        fontStyle: 'italic'
                       }}
                     >
-                      Test Suite <i className="icofont-sign-in" />
-                    </button>
-                    </>
-                    }
+                      Note: Please select atleast one test case before sending
+                      to test suite or assign to tester
+                    </span>
+                  )}
 
-                {data && data.length > 0 &&
-                    <button
-                      className="btn  btn-primary"
-                      type="button"
-                      onClick={() => {
-                        handleSendtoModal({
-                          showModal: true,
-                          modalData: "",
-                          modalHeader: "Assign Test Cases To",
-                        });
-                      }}
-                    >
-                      Assign To <i className="icofont-sign-in" />
-                    </button>
-                       } 
+                  <div className="d-flex flex-row-reverse">
+                    {data && data.length >= 0 && (
+                      <ExportToExcel
+                        className="btn btn-sm btn-danger"
+                        apiData={exportData}
+                        fileName="Test Cases"
+                      />
+                    )}
+
+                    <div>
+                      {data && (
+                        <>
+                          <button
+                            className="btn  btn-warning"
+                            type="button"
+                            onClick={() => {
+                              handleSendtoTestSuiteModal({
+                                showModal: true,
+                                modalData: '',
+                                modalHeader: 'Test Suite '
+                              });
+                            }}
+                          >
+                            Test Suite <i className="icofont-sign-in" />
+                          </button>
+                        </>
+                      )}
+
+                      {data && data.length > 0 && (
+                        <button
+                          className="btn  btn-primary"
+                          type="button"
+                          onClick={() => {
+                            handleSendtoModal({
+                              showModal: true,
+                              modalData: '',
+                              modalHeader: 'Assign Test Cases To'
+                            });
+                          }}
+                        >
+                          Assign To <i className="icofont-sign-in" />
+                        </button>
+                      )}
+                    </div>
                   </div>
+                  <div></div>
+
+                  {data && (
+                    <DataTableExtensions {...tableData}>
+                      <DataTable
+                        columns={columns}
+                        defaultSortField="title"
+                        data={data}
+                        pagination
+                        selectableRows={true}
+                        // onSelectedRowsChange={selectTest}
+                        className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                        highlightOnHover={true}
+                        pointerOnHover={true}
+                        // expandableRows
+                        onSelectedRowsChange={handleSelectedRowsChange} // handle selection of rows
+                        // expandableRowsComponent={ExpandedComponent}
+                        // selectableRowDisabled={rowDisabledCriteria}
+                        responsive={true}
+                      />
+                    </DataTableExtensions>
+                  )}
                 </div>
-                <div></div>
-
-                {data && (
-                  <DataTableExtensions {...tableData}>
-                    <DataTable
-                      columns={columns}
-                      defaultSortField="title"
-                      data={data}
-                      pagination
-                      selectableRows={true}
-                      // onSelectedRowsChange={selectTest}
-                      className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                      highlightOnHover={true}
-                      pointerOnHover={true}
-                      // expandableRows
-                      onSelectedRowsChange={handleSelectedRowsChange} // handle selection of rows
-
-                      // expandableRowsComponent={ExpandedComponent}
-                      // selectableRowDisabled={rowDisabledCriteria}
-                      responsive={true}
-                    />
-                  </DataTableExtensions>
-                )}
               </div>
             </div>
           </div>
         </div>
-      </div>
-    }
-       <Modal show={showLoaderModal} centered>
-          <Modal.Body className='text-center'>
-            <Spinner animation='grow' variant='primary' />
-            <Spinner animation='grow' variant='secondary' />
-            <Spinner animation='grow' variant='success' />
-            <Spinner animation='grow' variant='danger' />
-            <Spinner animation='grow' variant='warning' />
-            <Spinner animation='grow' variant='info' />
-            <Spinner animation='grow' variant='dark' />
-          </Modal.Body>
-        </Modal>
+      )}
+      <Modal show={showLoaderModal} centered>
+        <Modal.Body className="text-center">
+          <Spinner animation="grow" variant="primary" />
+          <Spinner animation="grow" variant="secondary" />
+          <Spinner animation="grow" variant="success" />
+          <Spinner animation="grow" variant="danger" />
+          <Spinner animation="grow" variant="warning" />
+          <Spinner animation="grow" variant="info" />
+          <Spinner animation="grow" variant="dark" />
+        </Modal.Body>
+      </Modal>
     </div>
   );
 };
 
 export default TestBankComponent;
-

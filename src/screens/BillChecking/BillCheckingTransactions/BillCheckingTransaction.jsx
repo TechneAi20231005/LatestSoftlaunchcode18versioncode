@@ -1151,7 +1151,6 @@ function BillCheckingTransaction() {
       setNotify(location.state.alert);
     }
   }, []);
-
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;

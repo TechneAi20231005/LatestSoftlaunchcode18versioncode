@@ -53,7 +53,7 @@ const CreateTemplateComponent = () => {
   );
   const [notify, setNotify] = useState(null);
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   const mainJson = {
     template_name: null,

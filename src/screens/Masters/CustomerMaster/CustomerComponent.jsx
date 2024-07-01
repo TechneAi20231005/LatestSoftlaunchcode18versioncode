@@ -218,7 +218,7 @@ function CustomerComponent() {
   );
 }
 
-function CustomerDropdown(props) {
+export function CustomerDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
@@ -269,4 +269,4 @@ function CustomerDropdown(props) {
   );
 }
 
-export { CustomerComponent, CustomerDropdown };
+export default CustomerComponent;

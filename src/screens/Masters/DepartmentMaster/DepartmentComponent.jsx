@@ -421,7 +421,9 @@ function DepartmentComponent() {
   );
 }
 
-function DepartmentDropdown(props) {
+export default DepartmentComponent;
+
+export function DepartmentDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
@@ -480,4 +482,3 @@ function DepartmentDropdown(props) {
     </>
   );
 }
-export { DepartmentComponent, DepartmentDropdown };

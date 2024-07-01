@@ -1,81 +1,82 @@
-import React, { useEffect, useState } from "react";
-import DataTable from "react-data-table-component";
-import { Table } from "react-bootstrap";
-import ErrorLogService from "../../services/ErrorLogService";
-import UserService from "../../services/MastersService/UserService";
-import ReportService from "../../services/ReportService/ReportService";
-import PageHeader from "../../components/Common/PageHeader";
-import Select from "react-select";
-import { Astrick } from "../../components/Utilities/Style";
-import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
-import { Spinner, Modal } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { _base, userSessionData } from "../../settings/constants";
-import ManageMenuService from '../../services/MenuManagementService/ManageMenuService'
-import { useDispatch, useSelector } from "react-redux";
-import { getRoles } from "../Dashboard/DashboardAction";
+import React, { useEffect, useState } from 'react';
+import DataTable from 'react-data-table-component';
+import { Table } from 'react-bootstrap';
+import ErrorLogService from '../../services/ErrorLogService';
+import UserService from '../../services/MastersService/UserService';
+import ReportService from '../../services/ReportService/ReportService';
+import PageHeader from '../../components/Common/PageHeader';
+import Select from 'react-select';
+import { Astrick } from '../../components/Utilities/Style';
+import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
+import { Spinner, Modal } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import { _base, userSessionData } from '../../settings/constants';
+import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
+import { useDispatch, useSelector } from 'react-redux';
+import { getRoles } from '../Dashboard/DashboardAction';
 
 export default function ResourcePlanningReportComponent() {
-
-
   const [userData, setUserData] = useState(null);
   const [data, setData] = useState(null);
   const [exportData, setExportData] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const roleId = sessionStorage.getItem("role_id")
+  const roleId = localStorage.getItem('role_id');
   // const [checkRole, setCheckRole] = useState(null)
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==25)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 25)
   );
 
   const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
 
-  const [todateformat, setTodateformat] = useState("");
-  const [fromdateformat, setFromdateformat] = useState("");
+  const [todateformat, setTodateformat] = useState('');
+  const [fromdateformat, setFromdateformat] = useState('');
 
   const columns = [
-    { name: "Sr", selector: (row) => row.sr, sortable: false, width: "70px" },
+    { name: 'Sr', selector: (row) => row.sr, sortable: false, width: '70px' },
     {
-      name: "Date",
+      name: 'Date',
       selector: (row) => row.date,
       sortable: true,
-      width: "150px",
+      width: '150px'
     },
     {
-      name: "User Name",
+      name: 'User Name',
       selector: (row) => row.user_name,
       sortable: true,
-      width: "150px",
+      width: '150px'
     },
     {
-      name: "Hours",
+      name: 'Hours',
       selector: (row) => row.hours,
       sortable: true,
-      width: "100px",
-    },
+      width: '100px'
+    }
   ];
 
   const loadData = async () => {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
     const tempUserData = [];
-    const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
+    const inputRequired =
+      'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         setShowLoaderModal(false);
-        const data = res.data.data.filter((d) => d.is_active === 1 && d.account_for === "SELF");
+        const data = res.data.data.filter(
+          (d) => d.is_active === 1 && d.account_for === 'SELF'
+        );
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,
             label:
               data[key].first_name +
-              " " +
+              ' ' +
               data[key].last_name +
-              " (" +
+              ' (' +
               data[key].id +
-              ")",
+              ')'
           });
         }
         const aa = tempUserData.sort(function (a, b) {
@@ -85,17 +86,15 @@ export default function ResourcePlanningReportComponent() {
       }
     });
 
-
-
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       const getRoleId = localStorage.getItem("role_id");
     //       setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
     //     }
     //   }
     // })
-    dispatch(getRoles())
+    dispatch(getRoles());
 
     const data = [];
     const exportData = [];
@@ -104,23 +103,23 @@ export default function ResourcePlanningReportComponent() {
   const [startDate, setStartDate] = useState(null);
   const handleFromDate = (e) => {
     const gettodatevalue = e.target.value;
-    const setdateformat = gettodatevalue.split("-");
+    const setdateformat = gettodatevalue.split('-');
     const settoyear = setdateformat[0];
     const settomonth = setdateformat[1];
     const settodate = setdateformat[2];
-    const settodateformat = settoyear + "" + settomonth + "" + settodate;
+    const settodateformat = settoyear + '' + settomonth + '' + settodate;
     setTodate(gettodatevalue);
     setTodateformat(settodateformat);
   };
 
   const handleToDate = (e) => {
     const getfromdatevalue = e.target.value;
-    const setfromformat = getfromdatevalue.split("-");
+    const setfromformat = getfromdatevalue.split('-');
     const setfromyear = setfromformat[0];
     const setfrommonth = setfromformat[1];
     const setfromdate = setfromformat[2];
     const setfromformatdate =
-      setfromyear + "" + setfrommonth + "" + setfromdate;
+      setfromyear + '' + setfrommonth + '' + setfromdate;
     setFromdate(getfromdatevalue);
     setFromdateformat(setfromformatdate);
   };
@@ -134,7 +133,7 @@ export default function ResourcePlanningReportComponent() {
     var flag = 1;
 
     if (todateformat > fromdateformat) {
-      alert("Please select End Date Greater than Start date");
+      alert('Please select End Date Greater than Start date');
     } else {
       if (flag === 1) {
         try {
@@ -147,7 +146,7 @@ export default function ResourcePlanningReportComponent() {
               setShowLoaderModal(false);
               let sr = 1;
               const data = res.data.data;
-         
+
               if (data && data.length > 0) {
                 for (const key in data) {
                   tempData.push({
@@ -156,7 +155,7 @@ export default function ResourcePlanningReportComponent() {
                     hours: data[key].hours,
                     user_id: data[key].user_id,
                     user_name: data[key].user_name,
-                    tasks: data[key].tasks,
+                    tasks: data[key].tasks
                   });
                 }
                 setData(null);
@@ -177,7 +176,9 @@ export default function ResourcePlanningReportComponent() {
 
                 const exportTempData = [];
                 for (const i in data) {
-                  const tasks = Array.isArray(data[i].tasks) ? data[i].tasks : [];
+                  const tasks = Array.isArray(data[i].tasks)
+                    ? data[i].tasks
+                    : [];
                   let counter = 1;
                   for (const task of tasks) {
                     exportTempData.push({
@@ -186,7 +187,7 @@ export default function ResourcePlanningReportComponent() {
                       date: data[i].date,
                       user_name: data[i].user_name,
                       task_name: task.task_name,
-                      total_hours: task.total_hours,
+                      total_hours: task.total_hours
                     });
                   }
                 }
@@ -200,25 +201,25 @@ export default function ResourcePlanningReportComponent() {
             }
           } else {
             new ErrorLogService().sendErrorLog(
-              "ResourcePlanning",
-              "Get_ResourcePlanning",
-              "INSERT",
+              'ResourcePlanning',
+              'Get_ResourcePlanning',
+              'INSERT',
               res.message
             );
           }
         } catch (error) {
           if (error.response && error.response.data) {
             new ErrorLogService().sendErrorLog(
-              "ResourcePlanning",
-              "Get_ResourcePlanning",
-              "INSERT",
+              'ResourcePlanning',
+              'Get_ResourcePlanning',
+              'INSERT',
               error.response.data.message
             );
           } else {
             new ErrorLogService().sendErrorLog(
-              "ResourcePlanning",
-              "Get_ResourcePlanning",
-              "INSERT",
+              'ResourcePlanning',
+              'Get_ResourcePlanning',
+              'INSERT',
               error.message
             );
           }
@@ -245,10 +246,12 @@ export default function ResourcePlanningReportComponent() {
                 <tr>
                   <td>{key + 1}</td>
                   {/*        // Updated by Asmita Margaje */}
-                  <td >
+                  <td>
                     <Link to={`/${_base}/Ticket/Task/${task.id}`}>
-                      <span style={{ fontWeight: 'bold' }}> {task.ticket_id} </span>
-
+                      <span style={{ fontWeight: 'bold' }}>
+                        {' '}
+                        {task.ticket_id}{' '}
+                      </span>
                     </Link>
                     - {task.task_name}
                   </td>
@@ -271,7 +274,7 @@ export default function ResourcePlanningReportComponent() {
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, [])
+  }, []);
 
   return (
     <div className="container-xxl">
@@ -293,7 +296,7 @@ export default function ResourcePlanningReportComponent() {
                   classNamePrefix="select"
                   options={userData}
                   required
-                  style={{ zIndex: "100" }}
+                  style={{ zIndex: '100' }}
                 />
               </div>
 
@@ -332,7 +335,7 @@ export default function ResourcePlanningReportComponent() {
                 <button
                   className="btn btn-sm btn-warning text-white"
                   type="submit"
-                  style={{ marginTop: "20px", fontWeight: "600" }}
+                  style={{ marginTop: '20px', fontWeight: '600' }}
                 >
                   <i className="icofont-search-1 "></i> Search
                 </button>
@@ -340,7 +343,7 @@ export default function ResourcePlanningReportComponent() {
                   className="btn btn-sm btn-info text-white"
                   type="button"
                   onClick={() => window.location.reload(false)}
-                  style={{ marginTop: "20px", fontWeight: "600" }}
+                  style={{ marginTop: '20px', fontWeight: '600' }}
                 >
                   <i className="icofont-refresh text-white"></i> Reset
                 </button>
@@ -348,9 +351,9 @@ export default function ResourcePlanningReportComponent() {
               <div
                 className="col-md-10"
                 style={{
-                  textAlign: "right",
-                  marginTop: "20px",
-                  fontWeight: "600",
+                  textAlign: 'right',
+                  marginTop: '20px',
+                  fontWeight: '600'
                 }}
               >
                 <ExportToExcel

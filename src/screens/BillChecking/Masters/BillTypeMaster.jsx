@@ -4,7 +4,6 @@ import PageHeader from '../../../components/Common/PageHeader';
 import Alert from '../../../components/Common/Alert';
 import BillTypeMasterService from '../../../services/Bill Checking/Masters/BillTypeMasterService';
 import { _base, userSessionData } from '../../../settings/constants';
-
 import { Link, useLocation } from 'react-router-dom';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';

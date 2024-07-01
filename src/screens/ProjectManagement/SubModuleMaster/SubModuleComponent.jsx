@@ -255,8 +255,9 @@ function SubModuleComponent() {
     </div>
   );
 }
+export default SubModuleComponent;
 
-function SubModuleDropdown(props) {
+export function SubModuleDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
@@ -317,5 +318,3 @@ function SubModuleDropdown(props) {
     </>
   );
 }
-
-export { SubModuleComponent, SubModuleDropdown };

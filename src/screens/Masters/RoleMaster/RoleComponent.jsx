@@ -481,8 +481,9 @@ function RoleComponent({ location }) {
     </div>
   );
 }
+export default RoleComponent;
 
-function RoleDropdown(props) {
+export function RoleDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
@@ -540,5 +541,3 @@ function RoleDropdown(props) {
     </>
   );
 }
-
-export { RoleComponent, RoleDropdown };

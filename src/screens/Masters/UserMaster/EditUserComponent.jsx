@@ -28,7 +28,6 @@ import {
   getEmployeeData,
   getRoles
 } from '../../Dashboard/DashboardAction';
-
 import RoleService from '../../../services/MastersService/RoleService';
 import { toast } from 'react-toastify';
 function EditUserComponent({ match }) {
@@ -112,7 +111,7 @@ function EditUserComponent({ match }) {
   const [password, setPassword] = useState(null);
   const [confirmPasswordError, setConfirmPasswordError] = useState(false);
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   const confirmedPasswordRef = useRef(0);
   const userForm = useRef();

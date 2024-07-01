@@ -542,7 +542,9 @@ function CityComponent() {
     </div>
   );
 }
-function CityDropdown(props) {
+export default CityComponent;
+
+export function CityDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
@@ -601,5 +603,3 @@ function CityDropdown(props) {
     </>
   );
 }
-
-export { CityComponent, CityDropdown };

@@ -452,7 +452,9 @@ function StateComponent() {
   );
 }
 
-function StateDropdown(props) {
+export default StateComponent;
+
+export function StateDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
@@ -517,5 +519,3 @@ function StateDropdown(props) {
     </>
   );
 }
-
-export { StateComponent, StateDropdown };

@@ -200,15 +200,15 @@ class MainIndex extends React.Component {
 
   render() {
     // Encryption function (same as mentioned before)
-    if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
-      for (var a in sessionStorage) {
-        localStorage.setItem(a, sessionStorage[a]);
-      }
-    } else {
-      for (var a in localStorage) {
-        sessionStorage.setItem(a, localStorage[a]);
-      }
-    }
+    // if (Object.keys(localStorage).length < Object.keys(localStorage).length) {
+    //   for (var a in localStorage) {
+    //     localStorage.setItem(a, localStorage[a]);
+    //   }
+    // } else {
+    //   for (var a in localStorage) {
+    //     localStorage.setItem(a, localStorage[a]);
+    //   }
+    // }
     return (
       <div className="main px-lg-4 px-md-4">
         <Header />
@@ -512,6 +512,7 @@ class MainIndex extends React.Component {
               path={`/${_base}/CustomerMapping/Edit/:id`}
               element={<EditCustomerMappingComponent />}
             />
+            {/* remove in lazy loading */}
             <Route path={`/${_base}/Menu/Create`} element={<CreateMenu />} />
             <Route
               exact
@@ -728,6 +729,7 @@ class MainIndex extends React.Component {
               element={<ViewPaymentTemplateDetails />}
             />
             {/* HRMS  */} {/* Asmita */}
+            {/* old hrms remove in lazy loading */}
             <Route path={`/${_base}/Source`} element={<SourceComponent />} />
             <Route
               exact

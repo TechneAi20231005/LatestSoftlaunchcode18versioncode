@@ -14,7 +14,6 @@ import { Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { exportTempateData, templateData } from './TemplateComponetAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
-
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
@@ -236,8 +235,9 @@ function TemplateComponent() {
     </div>
   );
 }
+export default TemplateComponent;
 
-function TemplateDropdown(props) {
+export function TemplateDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
@@ -292,5 +292,3 @@ function TemplateDropdown(props) {
     </>
   );
 }
-
-export { TemplateComponent, TemplateDropdown };

@@ -423,7 +423,9 @@ function CountryComponent() {
   );
 }
 
-function CountryDropdown(props) {
+export default CountryComponent;
+
+export function CountryDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
@@ -483,5 +485,3 @@ function CountryDropdown(props) {
     </>
   );
 }
-
-export { CountryComponent, CountryDropdown };
