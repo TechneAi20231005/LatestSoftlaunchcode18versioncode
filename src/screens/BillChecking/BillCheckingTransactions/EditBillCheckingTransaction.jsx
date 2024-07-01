@@ -1,52 +1,52 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import { Modal } from "react-bootstrap";
-import ErrorLogService from "../../../services/ErrorLogService";
+import React, { useEffect, useState, useRef } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Modal } from 'react-bootstrap';
+import ErrorLogService from '../../../services/ErrorLogService';
 
-import PageHeader from "../../../components/Common/PageHeader";
-import Alert from "../../../components/Common/Alert";
-import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
-import { _base, userSessionData } from "../../../settings/constants";
-import Select from "react-select";
-import DropdownService from "../../../services/Bill Checking/Bill Checking Transaction/DropdownService";
-import BillTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
+import PageHeader from '../../../components/Common/PageHeader';
+import Alert from '../../../components/Common/Alert';
+import { Astrick } from '../../../components/Utilities/Style';
+import * as Validation from '../../../components/Utilities/Validation';
+import { _base, userSessionData } from '../../../settings/constants';
+import Select from 'react-select';
+import DropdownService from '../../../services/Bill Checking/Bill Checking Transaction/DropdownService';
+import BillTransactionService from '../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService';
 
-import DepartmentService from "../../../services/MastersService/DepartmentService";
-import UserService from "../../../services/MastersService/UserService";
+import DepartmentService from '../../../services/MastersService/DepartmentService';
+import UserService from '../../../services/MastersService/UserService';
 
 import {
   getAttachment,
-  deleteAttachment,
-} from "../../../services/OtherService/AttachmentService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+  deleteAttachment
+} from '../../../services/OtherService/AttachmentService';
+import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 import {
   DropdownComponent,
-  ReactSelectComponent,
-} from "../../../components/Utilities/Button/Button";
-import axios from "axios";
-import { useDispatch, useSelector } from "react-redux";
-import { getRoles } from "@testing-library/react";
-import { getAllRoles } from "../../Dashboard/DashboardAction";
+  ReactSelectComponent
+} from '../../../components/Utilities/Button/Button';
+import axios from 'axios';
+import { useDispatch, useSelector } from 'react-redux';
+import { getRoles } from '@testing-library/react';
+import { getAllRoles } from '../../Dashboard/DashboardAction';
 
-const secretKey = "rushikesh";
+const secretKey = 'rushikesh';
 
 export default function CreateBillCheckingTransaction({ match }) {
   var section = 0;
   const { id } = useParams();
   const [modal, setModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
-  const [ip, setIp] = useState("");
-  const [statusValue, setStatusValue] = useState("");
+  const [ip, setIp] = useState('');
+  const [statusValue, setStatusValue] = useState('');
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         // Asynchronously fetch data
-        const res = await axios.get("https://api.ipify.org/?format=json");
+        const res = await axios.get('https://api.ipify.org/?format=json');
         setIp(res.data.ip);
       } catch (error) {
         // Handle errors if needed
@@ -70,7 +70,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [customerType, setCustomerType] = useState(null);
   const [dependent, setDependent] = useState({
     country_id: null,
-    state_id: null,
+    state_id: null
   });
 
   const [billType, setBillType] = useState(null);
@@ -98,14 +98,14 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const [tdsData, setTdsData] = useState(null);
 
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = sessionStorage.getItem('role_id');
   // const [checkRole, setCheckRole] = useState(null);
 
   const handleModal = (data) => {
     setModal(data);
   };
   const handleImageClick = (e) => {
-    setModal({ showModal: true, modalData: "", modalHeader: "" });
+    setModal({ showModal: true, modalData: '', modalHeader: '' });
   };
 
   const sectionRef = useRef();
@@ -145,10 +145,10 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [netPaymentError, setNetPaymentError] = useState();
 
   const [inputState, setInputState] = useState({
-    debitAdvanceErr: "",
-    taxableAmountErr: "",
-    igstErr: "",
-    tcsErr: "",
+    debitAdvanceErr: '',
+    taxableAmountErr: '',
+    igstErr: '',
+    tcsErr: ''
   });
 
   const [debitAdvanceErr, setDebitAdvanceErr] = useState(null);
@@ -167,21 +167,21 @@ export default function CreateBillCheckingTransaction({ match }) {
   // };
   const handleTaxable = (e) => {
     const taxableValue = e.target.value;
-    if (taxableValue === "") {
-      setTaxableAmountErr("Taxable Amount Is Required");
+    if (taxableValue === '') {
+      setTaxableAmountErr('Taxable Amount Is Required');
     } else {
-      setTaxableAmountErr("");
+      setTaxableAmountErr('');
     }
     let input = e.target.value;
     // Remove any non-numeric or decimal point characters
-    input = input.replace(/[^0-9.]/g, "");
+    input = input.replace(/[^0-9.]/g, '');
     // Check if the input has more than one dot
     if ((input.match(/\./g) || []).length > 1) {
       // If so, remove all dots after the first one
-      input = input.replace(/\.(?=.*\.)/g, "");
+      input = input.replace(/\.(?=.*\.)/g, '');
     }
     // Check if the input has more than 2 decimal places
-    if (input.indexOf(".") !== -1 && input.split(".")[1].length > 2) {
+    if (input.indexOf('.') !== -1 && input.split('.')[1].length > 2) {
       // If so, round the input to 2 decimal places
       input = parseFloat(input).toFixed(2);
     }
@@ -190,21 +190,21 @@ export default function CreateBillCheckingTransaction({ match }) {
   };
   const handleGst = (e) => {
     const igstValue = e.target.value;
-    if (igstValue === "") {
-      setIgstErr("IGST/GST Amount Is Required");
+    if (igstValue === '') {
+      setIgstErr('IGST/GST Amount Is Required');
     } else {
-      setIgstErr("");
+      setIgstErr('');
     }
     let input = e.target.value;
     // Remove any non-numeric or decimal point characters
-    input = input.replace(/[^0-9.]/g, "");
+    input = input.replace(/[^0-9.]/g, '');
     // Check if the input has more than one dot
     if ((input.match(/\./g) || []).length > 1) {
       // If so, remove all dots after the first one
-      input = input.replace(/\.(?=.*\.)/g, "");
+      input = input.replace(/\.(?=.*\.)/g, '');
     }
     // Check if the input has more than 2 decimal places
-    if (input.indexOf(".") !== -1 && input.split(".")[1].length > 2) {
+    if (input.indexOf('.') !== -1 && input.split('.')[1].length > 2) {
       // If so, round the input to 2 decimal places
       input = parseFloat(input).toFixed(2);
     }
@@ -214,42 +214,42 @@ export default function CreateBillCheckingTransaction({ match }) {
   const handleRoundOff = (e) => {
     let input = e.target.value;
     // Remove any non-numeric, decimal point, or negative sign characters
-    input = input.replace(/[^0-9.-]/g, "");
+    input = input.replace(/[^0-9.-]/g, '');
     // Check if the input has more than one dot
     if ((input.match(/\./g) || []).length > 1) {
       // If so, remove all dots after the first one
-      input = input.replace(/\.(?=.*\.)/g, "");
+      input = input.replace(/\.(?=.*\.)/g, '');
     }
     // Check if the input has more than 2 decimal places
-    if (input.indexOf(".") !== -1 && input.split(".")[1].length > 2) {
+    if (input.indexOf('.') !== -1 && input.split('.')[1].length > 2) {
       // If so, round the input to 2 decimal places
       input = parseFloat(input).toFixed(2);
     }
     // Check if the input has more than one negative sign
     if ((input.match(/-/g) || []).length > 1) {
       // If so, remove all negative signs after the first one
-      input = input.replace(/-(?=.*-)/g, "");
+      input = input.replace(/-(?=.*-)/g, '');
     }
     e.target.value = input;
     setRoundOff(input);
   };
   const handleTcs = (e) => {
     const tcsValue = e.target.value;
-    if (tcsValue === "") {
-      setTcsErr("TCS Amount Is Required");
+    if (tcsValue === '') {
+      setTcsErr('TCS Amount Is Required');
     } else {
-      setTcsErr("");
+      setTcsErr('');
     }
     let input = e.target.value;
     // Remove any non-numeric or decimal point characters
-    input = input.replace(/[^0-9.]/g, "");
+    input = input.replace(/[^0-9.]/g, '');
     // Check if the input has more than one dot
     if ((input.match(/\./g) || []).length > 1) {
       // If so, remove all dots after the first one
-      input = input.replace(/\.(?=.*\.)/g, "");
+      input = input.replace(/\.(?=.*\.)/g, '');
     }
     // Check if the input has more than 2 decimal places
-    if (input.indexOf(".") !== -1 && input.split(".")[1].length > 2) {
+    if (input.indexOf('.') !== -1 && input.split('.')[1].length > 2) {
       // If so, round the input to 2 decimal places
       input = parseFloat(input).toFixed(2);
     }
@@ -261,14 +261,14 @@ export default function CreateBillCheckingTransaction({ match }) {
     if (e) {
       let input = e.target.value;
       // Remove any non-numeric or decimal point characters
-      input = input.replace(/[^0-9.]/g, "");
+      input = input.replace(/[^0-9.]/g, '');
       // Check if the input has more than one dot
       if ((input.match(/\./g) || []).length > 1) {
         // If so, remove all dots after the first one
-        input = input.replace(/\.(?=.*\.)/g, "");
+        input = input.replace(/\.(?=.*\.)/g, '');
       }
       // Check if the input has more than 2 decimal places
-      if (input.indexOf(".") !== -1 && input.split(".")[1].length > 2) {
+      if (input.indexOf('.') !== -1 && input.split('.')[1].length > 2) {
         // If so, round the input to 2 decimal places
         input = parseFloat(input).toFixed(2);
       }
@@ -278,21 +278,21 @@ export default function CreateBillCheckingTransaction({ match }) {
   };
   const handleDebit = (e) => {
     const debitValue = e.target.value;
-    if (debitValue === "") {
-      setDebitAdvanceErr("Debit Advance Is Required");
+    if (debitValue === '') {
+      setDebitAdvanceErr('Debit Advance Is Required');
     } else {
-      setDebitAdvanceErr("");
+      setDebitAdvanceErr('');
     }
     let input = e.target.value;
     // Remove any non-numeric or decimal point characters
-    input = input.replace(/[^0-9.]/g, "");
+    input = input.replace(/[^0-9.]/g, '');
     // Check if the input has more than one dot
     if ((input.match(/\./g) || []).length > 1) {
       // If so, remove all dots after the first one
-      input = input.replace(/\.(?=.*\.)/g, "");
+      input = input.replace(/\.(?=.*\.)/g, '');
     }
     // Check if the input has more than 2 decimal places
-    if (input.indexOf(".") !== -1 && input.split(".")[1].length > 2) {
+    if (input.indexOf('.') !== -1 && input.split('.')[1].length > 2) {
       // If so, round the input to 2 decimal places
       input = parseFloat(input).toFixed(2);
     }
@@ -322,15 +322,15 @@ export default function CreateBillCheckingTransaction({ match }) {
             setConstitutionDropdown(
               res.data.data.map((d) => ({
                 value: d.id,
-                label: d.constitution_name,
+                label: d.constitution_name
               }))
             );
           }
           if (selecttdsAmountRef.current.value != null) {
-            document.getElementById("tds_amount").value = "";
+            document.getElementById('tds_amount').value = '';
           }
           if (selectTdsPercentageRef.current.value != null) {
-            document.getElementById("tds_percentage").value = "";
+            document.getElementById('tds_percentage').value = '';
           }
         }
       });
@@ -340,10 +340,10 @@ export default function CreateBillCheckingTransaction({ match }) {
     // Clear the userDropdown state
     setConstitutionDropdown(null);
     if (selecttdsAmountRef.current.value != null) {
-      document.getElementById("tds_amount").value = "";
+      document.getElementById('tds_amount').value = '';
     }
     if (selectTdsPercentageRef.current.value != null) {
-      document.getElementById("tds_percentage").value = "";
+      document.getElementById('tds_percentage').value = '';
     }
   };
 
@@ -358,7 +358,7 @@ export default function CreateBillCheckingTransaction({ match }) {
             setConstitutionDropdown(
               res.data.data.map((d) => ({
                 value: d.id,
-                label: d.constitution_name,
+                label: d.constitution_name
               }))
             );
           }
@@ -428,14 +428,14 @@ export default function CreateBillCheckingTransaction({ match }) {
         if (res.data.status == 1) {
           setVendor(res.data.data);
           const filterData = res.data.data.filter(
-            (d) => d.consider_in_payment === "YES"
+            (d) => d.consider_in_payment === 'YES'
           );
           setVendorDropdown(
             filterData
               .filter((d) => d.is_active == 1)
               .map((d) => ({
                 value: d.id,
-                label: d.vendor_name,
+                label: d.vendor_name
               }))
           );
         }
@@ -454,7 +454,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     });
 
     const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
+      'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -462,7 +462,7 @@ export default function CreateBillCheckingTransaction({ match }) {
           setUserDropdown(
             res.data.data.map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name,
+              label: d.first_name + ' ' + d.last_name
             }))
           );
         }
@@ -492,7 +492,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const RecordRoomUserDropdown = [
     // Add the static option "Record room"
-    { value: "record_room", label: "Record room" },
+    { value: 'record_room', label: 'Record room' }
   ];
   const handleStatus = (e, type) => {
     setStatusValue(type);
@@ -501,57 +501,57 @@ export default function CreateBillCheckingTransaction({ match }) {
     e.preventDefault();
     const form = new FormData(e.target);
     setNotify(null);
-    form.delete("attachment[]");
+    form.delete('attachment[]');
 
     if (selectedFiles) {
       for (var i = 0; i < selectedFiles.length; i++) {
-        form.append("attachment[" + i + "]", selectedFiles[i].file);
+        form.append('attachment[' + i + ']', selectedFiles[i].file);
       }
     }
 
     if (statusValue !== null) {
       if (statusValue === 1) {
-        form.append("status", 1);
+        form.append('status', 1);
       } else if (statusValue === 2) {
-        form.append("status", 2);
+        form.append('status', 2);
       }
     }
 
-    if (document.getElementById("is_igst_applicable").checked) {
-      form.append("is_igst_applicable", 1);
+    if (document.getElementById('is_igst_applicable').checked) {
+      form.append('is_igst_applicable', 1);
     } else {
-      form.append("is_igst_applicable", 0);
+      form.append('is_igst_applicable', 0);
     }
-    if (document.getElementById("is_tds_applicable").checked) {
-      form.append("is_tds_applicable", 1);
+    if (document.getElementById('is_tds_applicable').checked) {
+      form.append('is_tds_applicable', 1);
     } else {
-      form.append("is_tds_applicable", 0);
-    }
-
-    if (document.getElementById("is_tcs_applicable").checked) {
-      form.append("is_tcs_applicable", 1);
-    } else {
-      form.append("is_tcs_applicable", 0);
+      form.append('is_tds_applicable', 0);
     }
 
-    if (document.getElementById("is_original_bill_needed").checked) {
-      form.append("is_original_bill_needed", 1);
+    if (document.getElementById('is_tcs_applicable').checked) {
+      form.append('is_tcs_applicable', 1);
     } else {
-      form.append("is_original_bill_needed", 0);
+      form.append('is_tcs_applicable', 0);
     }
 
-    if (document.getElementById("authorized_by_hod").checked) {
-      form.append("authorized_by_hod", 1);
+    if (document.getElementById('is_original_bill_needed').checked) {
+      form.append('is_original_bill_needed', 1);
     } else {
-      form.append("authorized_by_hod", 0);
+      form.append('is_original_bill_needed', 0);
     }
 
-    if (document.getElementById("authorized_by_management").checked) {
-      form.append("authorized_by_management", 1);
+    if (document.getElementById('authorized_by_hod').checked) {
+      form.append('authorized_by_hod', 1);
     } else {
-      form.append("authorized_by_management", 0);
+      form.append('authorized_by_hod', 0);
     }
-    form.append("client_ip_address", ip);
+
+    if (document.getElementById('authorized_by_management').checked) {
+      form.append('authorized_by_management', 1);
+    } else {
+      form.append('authorized_by_management', 0);
+    }
+    form.append('client_ip_address', ip);
 
     await new BillTransactionService()
       .updateBillChecking(id, form)
@@ -560,25 +560,25 @@ export default function CreateBillCheckingTransaction({ match }) {
           if (res.data.status === 1) {
             history(
               {
-                pathname: `/${_base}/BillCheckingTransaction`,
+                pathname: `/${_base}/BillCheckingTransaction`
               },
               {
                 state: {
-                  alert: { type: "success", message: res.data.message },
-                },
+                  alert: { type: 'success', message: res.data.message }
+                }
               }
             );
-            setNotify({ type: "success", message: res.data.message });
+            setNotify({ type: 'success', message: res.data.message });
             loadData();
           } else {
-            setNotify({ type: "danger", message: res.data.message });
+            setNotify({ type: 'danger', message: res.data.message });
           }
         } else {
-          setNotify({ type: "danger", message: res.data.message });
+          setNotify({ type: 'danger', message: res.data.message });
           new ErrorLogService().sendErrorLog(
-            "Payment_template",
-            "Create_Payment_template",
-            "INSERT",
+            'Payment_template',
+            'Create_Payment_template',
+            'INSERT',
             res.message
           );
         }
@@ -586,11 +586,11 @@ export default function CreateBillCheckingTransaction({ match }) {
       .catch((error) => {
         const { response } = error;
         const { request, ...errorObject } = response;
-        setNotify({ type: "danger", message: "Request Error !!!" });
+        setNotify({ type: 'danger', message: 'Request Error !!!' });
         new ErrorLogService().sendErrorLog(
-          "Payment_template",
-          "Create_Payment_template",
-          "INSERT",
+          'Payment_template',
+          'Create_Payment_template',
+          'INSERT',
           errorObject.data.message
         );
       });
@@ -601,11 +601,11 @@ export default function CreateBillCheckingTransaction({ match }) {
   const date = new Date();
   const futureDate = date.getDate();
   date.setDate(futureDate);
-  const defaultValue = date.toLocaleDateString("en-CA");
+  const defaultValue = date.toLocaleDateString('en-CA');
   const loadAttachment = async () => {
     setNotify(null);
     if (id) {
-      await getAttachment(id, "BILL_CHECK").then((res) => {
+      await getAttachment(id, 'BILL_CHECK').then((res) => {
         if (res.status === 200) {
           setAttachment(null);
           setAttachment(res.data.data);
@@ -619,14 +619,14 @@ export default function CreateBillCheckingTransaction({ match }) {
   const [selectedFiles, setSelectedFiles] = useState([]);
 
   const validFileTypes = [
-    "image/png",
-    "image/jpeg",
-    "image/jpg",
-    "application/pdf",
+    'image/png',
+    'image/jpeg',
+    'image/jpg',
+    'application/pdf'
   ];
 
   const uploadAttachmentHandler = (e, type, id = null) => {
-    if (type === "UPLOAD") {
+    if (type === 'UPLOAD') {
       var tempSelectedFile = [...selectedFiles]; // Create a copy of the existing files
       var totalSize = 0; // Initialize total size
 
@@ -648,7 +648,7 @@ export default function CreateBillCheckingTransaction({ match }) {
         tempSelectedFile.push({
           file: file,
           fileName: file.name,
-          tempUrl: URL.createObjectURL(file),
+          tempUrl: URL.createObjectURL(file)
         });
 
         totalSize += fileSize; // Update the total size
@@ -667,25 +667,25 @@ export default function CreateBillCheckingTransaction({ match }) {
       // Check if the maximum 10 attachments condition is met
 
       // if (tempSelectedFile?.length + data?.attachment?.length <= 10) {
-      fileInputRef.current.value = "";
+      fileInputRef.current.value = '';
       setSelectedFiles(tempSelectedFile);
       // } else {
       //   alert("You can only upload a maximum of 10 attachments.");
       // }
-    } else if (type === "DELETE") {
+    } else if (type === 'DELETE') {
       let filteredFileArray = selectedFiles.filter(
         (item, index) => id !== index
       );
       setSelectedFiles(filteredFileArray);
     }
-    e.target.value = ""; // Reset the input field
+    e.target.value = ''; // Reset the input field
   };
 
   // maximum length check for attachments
   const maxLengthCheck = (e) => {
     if (e.target.files.length > 10) {
-      alert("You Can Upload Only 10 Attachments");
-      document.getElementById("attachment").value = null;
+      alert('You Can Upload Only 10 Attachments');
+      document.getElementById('attachment').value = null;
       setSelectedFiles(null);
     }
   };
@@ -740,40 +740,40 @@ export default function CreateBillCheckingTransaction({ match }) {
     oneYearAgo.getMonth() + 1
   )
     .toString()
-    .padStart(2, "0")}-${oneYearAgo.getDate().toString().padStart(2, "0")}`;
+    .padStart(2, '0')}-${oneYearAgo.getDate().toString().padStart(2, '0')}`;
 
   useEffect(() => {
     var tdsAmount = 0;
 
     if (data) {
       var billAmount =
-        parseFloat(document.getElementById("taxable_amount").value) +
-        parseFloat(document.getElementById("gst_amount").value) +
-        parseFloat(document.getElementById("round_off").value) +
-        parseFloat(document.getElementById("tcs").value);
+        parseFloat(document.getElementById('taxable_amount').value) +
+        parseFloat(document.getElementById('gst_amount').value) +
+        parseFloat(document.getElementById('round_off').value) +
+        parseFloat(document.getElementById('tcs').value);
 
       var billAmount1 =
-        parseFloat(document.getElementById("taxable_amount").value) +
-        parseFloat(document.getElementById("gst_amount").value) +
-        parseFloat(document.getElementById("round_off").value);
+        parseFloat(document.getElementById('taxable_amount').value) +
+        parseFloat(document.getElementById('gst_amount').value) +
+        parseFloat(document.getElementById('round_off').value);
 
       var netPayment = 0;
       if (isTcsApplicable === true) {
         netPayment =
           parseFloat(billAmount) -
-          parseFloat(document.getElementById("debit_advance").value);
+          parseFloat(document.getElementById('debit_advance').value);
       } else {
         netPayment =
           parseFloat(billAmount1) -
-          parseFloat(document.getElementById("debit_advance").value);
+          parseFloat(document.getElementById('debit_advance').value);
       }
 
       setNetPayment(Math.round(netPayment));
 
-      if (document.getElementById("is_tds_applicable").checked) {
+      if (document.getElementById('is_tds_applicable').checked) {
         tdsAmount =
-          (parseFloat(document.getElementById("taxable_amount").value) *
-            parseFloat(document.getElementById("tds_percentage").value)) /
+          (parseFloat(document.getElementById('taxable_amount').value) *
+            parseFloat(document.getElementById('tds_percentage').value)) /
           100;
         setTdsAmount(Math.ceil(tdsAmount));
         if (tdsAmount > 0) {
@@ -782,7 +782,7 @@ export default function CreateBillCheckingTransaction({ match }) {
         }
       }
 
-      document.getElementById("net_payment").value = Math.round(netPayment);
+      document.getElementById('net_payment').value = Math.round(netPayment);
       setNetPayment(Math.round(netPayment));
       if (billAmount != 0) {
         setBillAmount(billAmount.toFixed(2));
@@ -790,7 +790,7 @@ export default function CreateBillCheckingTransaction({ match }) {
       }
     }
     if (netPayment < 0) {
-      setNetPaymentError("Net bill payment should be positive value");
+      setNetPaymentError('Net bill payment should be positive value');
     } else {
       setNetPaymentError(null); // or setNetPaymentError(""); depending on your preference
     }
@@ -806,7 +806,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     debit,
     tdsAmount,
     netPayment,
-    isTcsApplicable,
+    isTcsApplicable
   ]);
 
   useEffect(() => {
@@ -837,22 +837,22 @@ export default function CreateBillCheckingTransaction({ match }) {
   const startPastYear = startFinancialYear.getFullYear() - 1;
   const startYear = startFinancialYear.getFullYear();
 
-  const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, "0"); // Adding 1 because months are zero-based
-  const startDay = String(startFinancialYear.getDate()).padStart(2, "0");
+  const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
+  const startDay = String(startFinancialYear.getDate()).padStart(2, '0');
 
   const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
   const formattedStartPastDate = `${startPastYear}-${startMonth}-${startDay}`;
 
   const endYear = endFinancialYear.getFullYear();
-  const endMonth = String(endFinancialYear.getMonth() + 1).padStart(2, "0"); // Adding 1 because months are zero-based
-  const endDay = String(endFinancialYear.getDate()).padStart(2, "0");
+  const endMonth = String(endFinancialYear.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
+  const endDay = String(endFinancialYear.getDate()).padStart(2, '0');
 
   // const formattedEndDate = endFinancialYear.toISOString().split('T')[0];
   const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
 
   const year = currentDate.getFullYear();
-  const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-  const day = String(currentDate.getDate()).padStart(2, "0");
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
   const formattedDate = `${year}-${month}-${day}`;
 
   let recordRoom = userDropdown && userDropdown.filter((d) => d.value === 692);
@@ -920,7 +920,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                       {billTypeDropdown && (
                         <Select
                           type="text"
-                          className="form-control form-control"
                           options={billTypeDropdown}
                           onChange={(e) => {
                             handleAssignToPerson(e);
@@ -956,7 +955,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                         {userDropdown && data ? (
                           <Select
                             type="text"
-                            className="form-control form-control-sm"
                             id="assign_to"
                             options={userDropdown}
                             name="assign_to"
@@ -983,7 +981,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                       </label>
                       {data && vendorDropdown && (
                         <Select
-                          className="form-control form-control-sm"
                           id="vendor_name"
                           name="vendor_name"
                           options={vendorDropdown}
@@ -1033,7 +1030,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
                         <b>
-                          {" "}
+                          {' '}
                           Bill Date: <Astrick color="red" size="13px" />
                         </b>
                       </label>
@@ -1064,7 +1061,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
                         <b>
-                          {" "}
+                          {' '}
                           Received Date: <Astrick color="red" size="13px" />
                         </b>
                       </label>
@@ -1089,7 +1086,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
                         <b>
-                          {" "}
+                          {' '}
                           Debit Advance: <Astrick color="red" size="13px" />
                         </b>
                       </label>
@@ -1105,7 +1102,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         required
                         readOnly={
                           data.is_rejected == 1 ||
-                          data.created_by == localStorage.getItem("id") ||
+                          data.created_by == localStorage.getItem('id') ||
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
@@ -1116,18 +1113,18 @@ export default function CreateBillCheckingTransaction({ match }) {
                         maxLength={13}
                         onKeyPress={(e) => {
                           const allowedKeys = [
-                            "0",
-                            "1",
-                            "2",
-                            "3",
-                            "4",
-                            "5",
-                            "6",
-                            "7",
-                            "8",
-                            "9",
-                            ".",
-                            "Backspace",
+                            '0',
+                            '1',
+                            '2',
+                            '3',
+                            '4',
+                            '5',
+                            '6',
+                            '7',
+                            '8',
+                            '9',
+                            '.',
+                            'Backspace'
                           ];
                           const inputValue = e.key;
 
@@ -1136,7 +1133,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           }
 
                           const currentInput = e.target.value;
-                          const decimalIndex = currentInput.indexOf(".");
+                          const decimalIndex = currentInput.indexOf('.');
 
                           if (
                             decimalIndex !== -1 &&
@@ -1147,7 +1144,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
                           if (
                             currentInput.length >= 10 &&
-                            inputValue !== "." &&
+                            inputValue !== '.' &&
                             decimalIndex === -1
                           ) {
                             e.preventDefault();
@@ -1157,7 +1154,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       {inputState && (
                         <small
                           style={{
-                            color: "red",
+                            color: 'red'
                           }}
                         >
                           {debitAdvanceErr}
@@ -1168,7 +1165,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
                         <b>
-                          {" "}
+                          {' '}
                           Taxable Amount: <Astrick color="red" size="13px" />
                         </b>
                       </label>
@@ -1187,7 +1184,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         required
                         readOnly={
                           data.is_rejected == 1 ||
-                          data.created_by == localStorage.getItem("id") ||
+                          data.created_by == localStorage.getItem('id') ||
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
@@ -1198,12 +1195,12 @@ export default function CreateBillCheckingTransaction({ match }) {
                         onKeyPress={(e) => {
                           const inputValue = e.key;
                           const currentInput = e.target.value;
-                          const decimalIndex = currentInput.indexOf(".");
+                          const decimalIndex = currentInput.indexOf('.');
 
                           if (
                             !/^\d$/.test(inputValue) &&
-                            inputValue !== "." &&
-                            inputValue !== "Backspace"
+                            inputValue !== '.' &&
+                            inputValue !== 'Backspace'
                           ) {
                             e.preventDefault();
                           }
@@ -1217,7 +1214,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
                           if (
                             currentInput.length >= 10 &&
-                            inputValue !== "." &&
+                            inputValue !== '.' &&
                             decimalIndex === -1
                           ) {
                             e.preventDefault();
@@ -1227,7 +1224,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       {inputState && (
                         <small
                           style={{
-                            color: "red",
+                            color: 'red'
                           }}
                         >
                           {taxableAmountErr}
@@ -1240,10 +1237,10 @@ export default function CreateBillCheckingTransaction({ match }) {
                         className="sm"
                         id="is_igst_applicable"
                         type="checkbox"
-                        style={{ marginRight: "8px" }}
+                        style={{ marginRight: '8px' }}
                         disabled={
                           data.is_rejected == 1 ||
-                          data.created_by == localStorage.getItem("id") ||
+                          data.created_by == localStorage.getItem('id') ||
                           (data.current_user_is_approver == 1 &&
                             data.current_user_is_approver == 0)
                             ? false
@@ -1279,7 +1276,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         required
                         readOnly={
                           data.is_rejected == 1 ||
-                          data.created_by == localStorage.getItem("id") ||
+                          data.created_by == localStorage.getItem('id') ||
                           (data.current_user_is_approver == 1 &&
                             data.current_user_is_approver == 0)
                             ? false
@@ -1288,12 +1285,12 @@ export default function CreateBillCheckingTransaction({ match }) {
                         onKeyPress={(e) => {
                           const inputValue = e.key;
                           const currentInput = e.target.value;
-                          const decimalIndex = currentInput.indexOf(".");
+                          const decimalIndex = currentInput.indexOf('.');
 
                           if (
                             !/^\d$/.test(inputValue) &&
-                            inputValue !== "." &&
-                            inputValue !== "Backspace"
+                            inputValue !== '.' &&
+                            inputValue !== 'Backspace'
                           ) {
                             e.preventDefault();
                           }
@@ -1307,7 +1304,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
                           if (
                             currentInput.length >= 10 &&
-                            inputValue !== "." &&
+                            inputValue !== '.' &&
                             decimalIndex === -1
                           ) {
                             e.preventDefault();
@@ -1318,7 +1315,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       {inputState && (
                         <small
                           style={{
-                            color: "red",
+                            color: 'red'
                           }}
                         >
                           {igstErr}
@@ -1338,7 +1335,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         onChange={(e) => handleRoundOff(e)}
                         readOnly={
                           data.is_rejected == 1 ||
-                          data.created_by == localStorage.getItem("id") ||
+                          data.created_by == localStorage.getItem('id') ||
                           (data.current_user_is_approver == 1 &&
                             authorities &&
                             authorities.All_Update_Bill == true &&
@@ -1350,27 +1347,27 @@ export default function CreateBillCheckingTransaction({ match }) {
                         maxLength={13}
                         onKeyPress={(e) => {
                           const allowedKeys = [
-                            "0",
-                            "1",
-                            "2",
-                            "3",
-                            "4",
-                            "5",
-                            "6",
-                            "7",
-                            "8",
-                            "9",
-                            ".",
-                            "Backspace",
-                            "-",
+                            '0',
+                            '1',
+                            '2',
+                            '3',
+                            '4',
+                            '5',
+                            '6',
+                            '7',
+                            '8',
+                            '9',
+                            '.',
+                            'Backspace',
+                            '-'
                           ];
                           const inputValue = e.key;
                           const currentInput = e.target.value;
-                          const decimalIndex = currentInput.indexOf(".");
+                          const decimalIndex = currentInput.indexOf('.');
 
                           // Allow '-' only at the beginning of the input
                           if (
-                            inputValue === "-" &&
+                            inputValue === '-' &&
                             e.target.selectionStart !== 0
                           ) {
                             e.preventDefault();
@@ -1385,7 +1382,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
                           if (
                             currentInput.length >= 10 &&
-                            inputValue !== "." &&
+                            inputValue !== '.' &&
                             decimalIndex === -1
                           ) {
                             e.preventDefault();
@@ -1404,8 +1401,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                       <div className=" col-md-3 ">
                         <label className=" col-form-label">
                           <b>
-                            {" "}
-                            TCS Amount:{" "}
+                            {' '}
+                            TCS Amount:{' '}
                             {isTcsApplicable === true && (
                               <Astrick color="red" size="13px" />
                             )}
@@ -1435,7 +1432,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         {inputState && isTcsApplicable === true && (
                           <small
                             style={{
-                              color: "red",
+                              color: 'red'
                             }}
                           >
                             {tcsErr}
@@ -1447,8 +1444,8 @@ export default function CreateBillCheckingTransaction({ match }) {
                         <div className=" col-md-3 ">
                           <label className=" col-form-label">
                             <b>
-                              {" "}
-                              TCS Amount:{" "}
+                              {' '}
+                              TCS Amount:{' '}
                               {isTcsApplicable === true && (
                                 <Astrick color="red" size="13px" />
                               )}
@@ -1474,7 +1471,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                     <div className=" col-md-3 ">
                       <label className="col-form-label">
                         <b>
-                          {" "}
+                          {' '}
                           Bill Amount: <Astrick color="red" size="13px" />
                         </b>
                       </label>
@@ -1497,7 +1494,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       <input
                         className="sm-1"
                         type="checkbox"
-                        style={{ marginRight: "8px", marginLeft: "10px" }}
+                        style={{ marginRight: '8px', marginLeft: '10px' }}
                         id="is_tds_applicable"
                         onChange={(e) => handleTdsApplicable(e)}
                         defaultChecked={
@@ -1528,7 +1525,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       <input
                         className="sm-1"
                         type="checkbox"
-                        style={{ marginRight: "8px", marginLeft: "10px" }}
+                        style={{ marginRight: '8px', marginLeft: '10px' }}
                         disabled={
                           authorities && authorities.TCS_Applicable === false
                             ? true
@@ -1560,7 +1557,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                         {sectionDropdown && (
                           <Select
                             type="text"
-                            className="form-control form-control-sm"
                             id="tds_section"
                             name="tds_section"
                             placeholder="select..."
@@ -1602,7 +1598,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         />
                         <label className=" col-form-label">
                           <b>
-                            TDS Constitution :{" "}
+                            TDS Constitution :{' '}
                             <Astrick color="red" size="13px" />
                           </b>
                         </label>
@@ -1610,7 +1606,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                         <span>
                           {constitutionDropdown && data && (
                             <Select
-                              className="form-control form-control-sm"
                               id="tds_constitution"
                               name="tds_constitution"
                               options={constitutionDropdown}
@@ -1681,12 +1676,12 @@ export default function CreateBillCheckingTransaction({ match }) {
                             className="form-control form-control-sm"
                             id="tds_percentage"
                             name="tds_percentage"
-                            value={tdsPercentage ? tdsPercentage : ""}
+                            value={tdsPercentage ? tdsPercentage : ''}
                             ref={selectTdsPercentageRef}
                             onChange={(e) => handleTds(e)}
                             readOnly={
                               data.is_rejected == 1 ||
-                              data.created_by == localStorage.getItem("id") ||
+                              data.created_by == localStorage.getItem('id') ||
                               (data.current_user_is_approver == 1 &&
                                 data.current_user_is_approver == 0)
                                 ? false
@@ -1702,13 +1697,13 @@ export default function CreateBillCheckingTransaction({ match }) {
                             defaultValue={
                               data && data.tds_percentage
                                 ? data.tds_percentage
-                                : ""
+                                : ''
                             }
                             ref={selectTdsPercentageRef}
                             onChange={(e) => handleTds(e)}
                             readOnly={
                               data.is_rejected == 1 ||
-                              data.created_by == localStorage.getItem("id") ||
+                              data.created_by == localStorage.getItem('id') ||
                               (data.current_user_is_approver == 1 &&
                                 data.current_user_is_approver == 0)
                                 ? false
@@ -1724,7 +1719,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
                         <b>
-                          {" "}
+                          {' '}
                           Net Payment : <Astrick color="red" size="13px" />
                         </b>
                       </label>
@@ -1739,18 +1734,18 @@ export default function CreateBillCheckingTransaction({ match }) {
                       />
                       <span
                         className="fw-bold"
-                        style={{ fontStyle: "italic", color: "red" }}
+                        style={{ fontStyle: 'italic', color: 'red' }}
                       >
                         {data && data.bill_amount_in_words
                           ? data.bill_amount_in_words
-                          : ""}
+                          : ''}
                       </span>
                     </div>
 
                     {netPaymentError && (
                       <p
                         style={{
-                          color: "red",
+                          color: 'red'
                         }}
                       >
                         {netPaymentError}
@@ -1761,7 +1756,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       <input
                         className="sm-1"
                         type="checkbox"
-                        style={{ marginRight: "8px", marginLeft: "10px" }}
+                        style={{ marginRight: '8px', marginLeft: '10px' }}
                         id="is_original_bill_needed"
                         onChange={(e) => handleAuthorizedByManagement(e)}
                         defaultChecked={
@@ -1781,7 +1776,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                     {data &&
                       data.approvers_id.length > 0 &&
                       data.approvers_id.includes(
-                        parseInt(sessionStorage.getItem("id"))
+                        parseInt(sessionStorage.getItem('id'))
                       ) && (
                         <>
                           <div className=" col-md mt-4">
@@ -1856,9 +1851,9 @@ export default function CreateBillCheckingTransaction({ match }) {
                         id="remark"
                         name="remark"
                         readOnly
-                        style={{ fontWeight: "bold" }}
+                        style={{ fontWeight: 'bold' }}
                         rows="4"
-                        defaultValue={data && data.remark_history.join("\n")}
+                        defaultValue={data && data.remark_history.join('\n')}
                       />
                     </div>
                     <div className=" col-md-4 ">
@@ -1906,7 +1901,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           <label className=" col-form-label">
                             <b>
                               Upload Attachment :
-                              <Astrick color="red" size="13px" />{" "}
+                              <Astrick color="red" size="13px" />{' '}
                             </b>
                           </label>
                           <input
@@ -1918,7 +1913,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             multiple
                             disabled={
                               data.is_rejected == 1 ||
-                              data.created_by == localStorage.getItem("id") ||
+                              data.created_by == localStorage.getItem('id') ||
                               (data.current_user_is_approver == 1 &&
                                 authorities &&
                                 authorities.All_Update_Bill == true &&
@@ -1927,7 +1922,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                                 : true
                             }
                             onChange={(e) => {
-                              uploadAttachmentHandler(e, "UPLOAD", "");
+                              uploadAttachmentHandler(e, 'UPLOAD', '');
                               // maxLengthCheck(e, "UPLOAD");
                             }}
                           />
@@ -1937,7 +1932,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           <input
                             className="sm-1"
                             type="checkbox"
-                            style={{ marginRight: "8px", marginLeft: "10px" }}
+                            style={{ marginRight: '8px', marginLeft: '10px' }}
                             id="authorized_by_management"
                             onChange={(e) => handleAuthorizedByManagement(e)}
                             defaultChecked={
@@ -1960,7 +1955,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           <input
                             className="sm-1"
                             type="checkbox"
-                            style={{ marginRight: "8px", marginLeft: "10px" }}
+                            style={{ marginRight: '8px', marginLeft: '10px' }}
                             id="authorized_by_hod"
                             onChange={(e) => handleAuthorizedByHod(e)}
                             defaultChecked={
@@ -1984,11 +1979,11 @@ export default function CreateBillCheckingTransaction({ match }) {
                   <div
                     className="attachments-container"
                     style={{
-                      display: "flex",
-                      flexWrap: "wrap",
-                      maxWidth: "100%",
-                      maxHeight: "400px", // Example maximum height
-                      overflowY: "auto", // Enable vertical scrolling if needed
+                      display: 'flex',
+                      flexWrap: 'wrap',
+                      maxWidth: '100%',
+                      maxHeight: '400px', // Example maximum height
+                      overflowY: 'auto' // Enable vertical scrolling if needed
                     }}
                   >
                     {selectedFiles &&
@@ -1997,31 +1992,31 @@ export default function CreateBillCheckingTransaction({ match }) {
                           <div
                             key={index}
                             style={{
-                              marginRight: "20px",
-                              marginBottom: "20px", // Add margin bottom for spacing between attachments
-                              width: "100px", // Set a fixed width for consistency
+                              marginRight: '20px',
+                              marginBottom: '20px', // Add margin bottom for spacing between attachments
+                              width: '100px' // Set a fixed width for consistency
                             }}
                           >
                             <div
                               className="card"
                               style={{
-                                backgroundColor: "#EBF5FB",
-                                height: "100%", // Set the height of the card to fill the container
-                                display: "flex", // Use flexbox to align content vertically
-                                flexDirection: "column", // Align content in a column layout
+                                backgroundColor: '#EBF5FB',
+                                height: '100%', // Set the height of the card to fill the container
+                                display: 'flex', // Use flexbox to align content vertically
+                                flexDirection: 'column' // Align content in a column layout
                               }}
                             >
                               <div
                                 className="card-header"
-                                style={{ padding: "10px", overflow: "hidden" }}
+                                style={{ padding: '10px', overflow: 'hidden' }}
                               >
                                 <span
                                   style={{
-                                    display: "inline-block",
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    whiteSpace: "nowrap",
-                                    maxWidth: "100%", // Ensure the span does not exceed the container width
+                                    display: 'inline-block',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    whiteSpace: 'nowrap',
+                                    maxWidth: '100%' // Ensure the span does not exceed the container width
                                   }}
                                 >
                                   {attachment.fileName}
@@ -2045,12 +2040,12 @@ export default function CreateBillCheckingTransaction({ match }) {
                                   className="btn btn-danger text-white btn-sm p-1"
                                   type="button"
                                   onClick={(e) => {
-                                    uploadAttachmentHandler(e, "DELETE", index);
+                                    uploadAttachmentHandler(e, 'DELETE', index);
                                   }}
                                 >
                                   <i
                                     className="icofont-ui-delete"
-                                    style={{ fontSize: "15px" }}
+                                    style={{ fontSize: '15px' }}
                                   ></i>
                                 </button>
                               </div>
@@ -2064,11 +2059,11 @@ export default function CreateBillCheckingTransaction({ match }) {
                     <div
                       className="attachments-container"
                       style={{
-                        display: "flex",
-                        flexWrap: "wrap",
-                        maxWidth: "100%",
-                        maxHeight: "400px", // Example maximum height
-                        overflowY: "auto", // Enable vertical scrolling if needed
+                        display: 'flex',
+                        flexWrap: 'wrap',
+                        maxWidth: '100%',
+                        maxHeight: '400px', // Example maximum height
+                        overflowY: 'auto' // Enable vertical scrolling if needed
                       }}
                     >
                       {data &&
@@ -2077,34 +2072,34 @@ export default function CreateBillCheckingTransaction({ match }) {
                             <div
                               key={index}
                               style={{
-                                marginRight: "20px",
-                                marginBottom: "20px", // Add margin bottom for spacing between attachments
-                                width: "100px", // Set a fixed width for consistency
+                                marginRight: '20px',
+                                marginBottom: '20px', // Add margin bottom for spacing between attachments
+                                width: '100px' // Set a fixed width for consistency
                               }}
                             >
                               <div
                                 className="card"
                                 style={{
-                                  backgroundColor: "#EBF5FB",
-                                  height: "100%", // Set the height of the card to fill the container
-                                  display: "flex", // Use flexbox to align content vertically
-                                  flexDirection: "column", // Align content in a column layout
+                                  backgroundColor: '#EBF5FB',
+                                  height: '100%', // Set the height of the card to fill the container
+                                  display: 'flex', // Use flexbox to align content vertically
+                                  flexDirection: 'column' // Align content in a column layout
                                 }}
                               >
                                 <div
                                   className="card-header"
                                   style={{
-                                    padding: "10px",
-                                    overflow: "hidden",
+                                    padding: '10px',
+                                    overflow: 'hidden'
                                   }}
                                 >
                                   <span
                                     style={{
-                                      display: "inline-block",
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                      whiteSpace: "nowrap",
-                                      maxWidth: "100%", // Ensure the span does not exceed the container width
+                                      display: 'inline-block',
+                                      overflow: 'hidden',
+                                      textOverflow: 'ellipsis',
+                                      whiteSpace: 'nowrap',
+                                      maxWidth: '100%' // Ensure the span does not exceed the container width
                                     }}
                                   >
                                     {attach.name}
@@ -2133,7 +2128,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                                   >
                                     <i
                                       className="icofont-ui-delete"
-                                      style={{ fontSize: "12px" }}
+                                      style={{ fontSize: '12px' }}
                                     ></i>
                                   </button>
                                 </div>
@@ -2157,47 +2152,47 @@ export default function CreateBillCheckingTransaction({ match }) {
                                 <tr>
                                   <th
                                     className="text-center"
-                                    style={{ width: "100px" }}
+                                    style={{ width: '100px' }}
                                   >
                                     Total Approval Level Count
                                   </th>
                                   <th
                                     className="text-center"
-                                    style={{ width: "100px" }}
+                                    style={{ width: '100px' }}
                                   >
-                                    {" "}
-                                    Level{" "}
+                                    {' '}
+                                    Level{' '}
                                   </th>
 
                                   <th
                                     className="text-center"
-                                    style={{ width: "300px" }}
+                                    style={{ width: '300px' }}
                                   >
-                                    {" "}
-                                    Approvals Name{" "}
+                                    {' '}
+                                    Approvals Name{' '}
                                   </th>
 
                                   <th
                                     className="text-center"
-                                    style={{ width: "300px" }}
+                                    style={{ width: '300px' }}
                                   >
-                                    {" "}
+                                    {' '}
                                     Approvals Required Name
                                   </th>
                                   <th
                                     className="text-center"
-                                    style={{ width: "300px" }}
+                                    style={{ width: '300px' }}
                                   >
-                                    {" "}
-                                    Approved By{" "}
+                                    {' '}
+                                    Approved By{' '}
                                   </th>
 
                                   <th
                                     className="text-center"
-                                    style={{ width: "300px" }}
+                                    style={{ width: '300px' }}
                                   >
-                                    {" "}
-                                    Rejected By{" "}
+                                    {' '}
+                                    Rejected By{' '}
                                   </th>
                                 </tr>
                               </thead>
@@ -2229,7 +2224,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                 </div>
               </div>
               {/* CARD */}
-              <div className="mt-3" style={{ textAlign: "right" }}>
+              <div className="mt-3" style={{ textAlign: 'right' }}>
                 <button type="submit" className="btn btn-primary">
                   Update
                 </button>
@@ -2249,13 +2244,13 @@ export default function CreateBillCheckingTransaction({ match }) {
               onHide={(e) => {
                 handleModal({
                   showModal: false,
-                  modalData: "",
-                  modalHeader: "",
+                  modalData: '',
+                  modalHeader: ''
                 });
               }}
             >
               <Modal.Header closeButton />
-              <Modal.Body style={{ alignItems: "center" }}>
+              <Modal.Body style={{ alignItems: 'center' }}>
                 {showFiles &&
                   showFiles.map((d, i) => {
                     return (

@@ -593,7 +593,7 @@ const AuthorityMapping = () => {
                     <>
                       <Select
                         type="text"
-                        className="form-control"
+                        // className="form-control"
                         id="submodule_name"
                         name="submodule_name"
                         options={submodulename}
