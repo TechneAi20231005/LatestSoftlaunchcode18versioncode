@@ -88,28 +88,24 @@ export default function HrDashboard(props) {
     }
   };
 
-  async function get() {
+  const get = useCallback(async () => {
     const id = sessionStorage.getItem('id');
-    await getData(id).then((res) => {
-      if (res.status === 200) {
-        setCount(res.data.data.count);
-        setDailyTask(res.data.data.dailyTask);
-        setPreviousTask(res.data.data.previousTask);
-        setUpcomingTask(res.data.data.upcomingTask);
-        const updatedChartData = {
-          ...chartData,
-          series: [
-            res.data.data.count.pendingTask
-              ? res.data.data.count.pendingTask
-              : 0,
-            res.data.data.count.workingTask,
-            res.data.data.count.completedTask
-          ]
-        };
-        setChartData(updatedChartData);
-      }
-    });
-  }
+    const res = await getData(id);
+    if (res.status === 200) {
+      setCount(res.data.data.count);
+      setDailyTask(res.data.data.dailyTask);
+      setPreviousTask(res.data.data.previousTask);
+      setUpcomingTask(res.data.data.upcomingTask);
+      setChartData((prevChartData) => ({
+        ...prevChartData,
+        series: [
+          res.data.data.count.pendingTask || 0,
+          res.data.data.count.workingTask,
+          res.data.data.count.completedTask
+        ]
+      }));
+    }
+  }, []);
 
   const handleTimer = async (e, ticket_id, ticket_task_id, status) => {
     var data = {
@@ -281,7 +277,7 @@ export default function HrDashboard(props) {
   useEffect(() => {
     get();
     loadNotifcation();
-  }, []);
+  }, [get]);
 
   useEffect(() => {
     const account_for = localStorage.getItem('account_for');
@@ -538,9 +534,9 @@ export default function HrDashboard(props) {
                               const date = ele.created_at.split(' ')[0];
                               const time = ele.created_at.split(' ')[1];
 
-                              const parts1 = ele?.url?.split('/'); // Split the string by '/'
-                              const ticketID1 =
-                                parts1 && parts1[parts1?.length - 1];
+                              // const parts1 = ele?.url?.split('/'); // Split the string by '/'
+                              // const ticketID1 =
+                              //   parts1 && parts1[parts1?.length - 1];
 
                               return (
                                 <li
@@ -682,6 +678,7 @@ export default function HrDashboard(props) {
                   </div>
                 </div>
                 <a
+                  href="/"
                   title="view-members"
                   className="btn btn-link text-decoration-none  rounded-1"
                 >
@@ -708,6 +705,7 @@ export default function HrDashboard(props) {
                   </div>
                 </div>
                 <a
+                  href="/"
                   title="view-members"
                   className="btn btn-link text-decoration-none  rounded-1"
                 >
@@ -734,6 +732,7 @@ export default function HrDashboard(props) {
                   </div>
                 </div>
                 <a
+                  href="/"
                   title="view-members"
                   className="btn btn-link text-decoration-none  rounded-1"
                 >
@@ -760,6 +759,7 @@ export default function HrDashboard(props) {
                   </div>
                 </div>
                 <a
+                  href="/"
                   title="view-members"
                   className="btn btn-link text-decoration-none  rounded-1"
                 >
@@ -784,7 +784,7 @@ export default function HrDashboard(props) {
                 {dailyTask &&
                   dailyTask.length > 0 &&
                   dailyTask.map((ele, index) => {
-                    if (ele.time_status == 'STOP') {
+                    if (ele.time_status === 'STOP') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
@@ -853,14 +853,14 @@ export default function HrDashboard(props) {
                             </span>
                           )}
 
-                          {ele && ele && ele.status == 'TO_DO' ? (
+                          {ele && ele && ele.status === 'TO_DO' ? (
                             <span
                               style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-danger p-2"
                             >
                               {ele.status}
                             </span>
-                          ) : ele.status == 'IN_PROGRESS' ? (
+                          ) : ele.status === 'IN_PROGRESS' ? (
                             <span
                               style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-warning p-2"
@@ -911,13 +911,15 @@ export default function HrDashboard(props) {
                           </div>
                         </div>
                       );
+                    } else {
+                      return null;
                     }
                   })}
 
                 {dailyTask &&
                   dailyTask.length > 0 &&
                   dailyTask.map((ele, index) => {
-                    if (ele.time_status == 'START') {
+                    if (ele.time_status === 'START') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
@@ -944,7 +946,7 @@ export default function HrDashboard(props) {
                               </Link>
                             </div>
                           </div>
-                          {ele.status != 'COMPLETED' && (
+                          {ele.status !== 'COMPLETED' && (
                             <button
                               type="button"
                               style={{
@@ -971,14 +973,14 @@ export default function HrDashboard(props) {
                               ></i>
                             </button>
                           )}
-                          {ele && ele && ele.status == 'TO_DO' ? (
+                          {ele && ele && ele.status === 'TO_DO' ? (
                             <span
                               style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-danger p-2"
                             >
                               {ele.status}
                             </span>
-                          ) : ele.status == 'IN_PROGRESS' ? (
+                          ) : ele.status === 'IN_PROGRESS' ? (
                             <span
                               style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-warning p-2"
@@ -1030,6 +1032,8 @@ export default function HrDashboard(props) {
                           </div>
                         </div>
                       );
+                    } else {
+                      return null;
                     }
                   })}
               </div>
@@ -1050,7 +1054,7 @@ export default function HrDashboard(props) {
                 {previousTask &&
                   previousTask.length > 0 &&
                   previousTask.map((ele, index) => {
-                    if (ele.time_status == 'STOP') {
+                    if (ele.time_status === 'STOP') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
@@ -1074,7 +1078,7 @@ export default function HrDashboard(props) {
                             </div>
                           </div>
 
-                          {ele.status != 'COMPLETED' && (
+                          {ele.status !== 'COMPLETED' && (
                             <button
                               type="button"
                               style={{
@@ -1120,14 +1124,14 @@ export default function HrDashboard(props) {
                             </span>
                           )}
 
-                          {ele && ele && ele.status == 'TO_DO' ? (
+                          {ele && ele && ele.status === 'TO_DO' ? (
                             <span
                               style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-danger p-2"
                             >
                               {ele.status}
                             </span>
-                          ) : ele.status == 'IN_PROGRESS' ? (
+                          ) : ele.status === 'IN_PROGRESS' ? (
                             <span
                               style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-warning p-2"
@@ -1186,13 +1190,15 @@ export default function HrDashboard(props) {
                           </div>
                         </div>
                       );
+                    } else {
+                      return null;
                     }
                   })}
 
                 {previousTask &&
                   previousTask.length > 0 &&
                   previousTask.map((ele, index) => {
-                    if (ele.time_status == 'START') {
+                    if (ele.time_status === 'START') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
@@ -1215,7 +1221,7 @@ export default function HrDashboard(props) {
                               </Link>
                             </div>
                           </div>
-                          {ele.status != 'COMPLETED' && (
+                          {ele.status !== 'COMPLETED' && (
                             <button
                               type="button"
                               style={{
@@ -1242,14 +1248,14 @@ export default function HrDashboard(props) {
                               ></i>
                             </button>
                           )}
-                          {ele && ele && ele.status == 'TO_DO' ? (
+                          {ele && ele && ele.status === 'TO_DO' ? (
                             <span
                               style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-danger p-2"
                             >
                               {ele.status}
                             </span>
-                          ) : ele.status == 'IN_PROGRESS' ? (
+                          ) : ele.status === 'IN_PROGRESS' ? (
                             <span
                               style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-warning p-2"
@@ -1306,6 +1312,8 @@ export default function HrDashboard(props) {
                           </div>
                         </div>
                       );
+                    } else {
+                      return null;
                     }
                   })}
               </div>
@@ -1349,7 +1357,7 @@ export default function HrDashboard(props) {
               >
                 {upcomingTask &&
                   upcomingTask.map((ele, index) => {
-                    if (ele.time_status == 'STOP') {
+                    if (ele.time_status === 'STOP') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
@@ -1369,7 +1377,7 @@ export default function HrDashboard(props) {
                               </Link>
                             </div>
                           </div>
-                          {ele.status != 'COMPLETED' && (
+                          {ele.status !== 'COMPLETED' && (
                             <button
                               type="button"
                               style={{
@@ -1396,14 +1404,14 @@ export default function HrDashboard(props) {
                               ></i>
                             </button>
                           )}
-                          {ele && ele && ele.status == 'TO_DO' ? (
+                          {ele && ele && ele.status === 'TO_DO' ? (
                             <span
                               style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-danger p-2"
                             >
                               {ele.status}
                             </span>
-                          ) : ele.status == 'IN_PROGRESS' ? (
+                          ) : ele.status === 'IN_PROGRESS' ? (
                             <span
                               style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-warning p-2"
@@ -1448,12 +1456,14 @@ export default function HrDashboard(props) {
                           </div>
                         </div>
                       );
+                    } else {
+                      return null;
                     }
                   })}
 
                 {upcomingTask &&
                   upcomingTask.map((ele, index) => {
-                    if (ele.time_status == 'START') {
+                    if (ele.time_status === 'START') {
                       return (
                         <div
                           className="py-2 text-white d-flex align-items-center border-bottom flex-wrap"
@@ -1476,7 +1486,7 @@ export default function HrDashboard(props) {
                               </Link>
                             </div>
                           </div>
-                          {ele.status != 'COMPLETED' && (
+                          {ele.status !== 'COMPLETED' && (
                             <button
                               type="button"
                               style={{
@@ -1503,14 +1513,14 @@ export default function HrDashboard(props) {
                               ></i>
                             </button>
                           )}
-                          {ele && ele && ele.status == 'TO_DO' ? (
+                          {ele && ele && ele.status === 'TO_DO' ? (
                             <span
                               style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-danger p-2"
                             >
                               {ele.status}
                             </span>
-                          ) : ele.status == 'IN_PROGRESS' ? (
+                          ) : ele.status === 'IN_PROGRESS' ? (
                             <span
                               style={{ width: '80px', marginRight: '5px' }}
                               className="badge bg-warning p-2"
@@ -1567,6 +1577,8 @@ export default function HrDashboard(props) {
                           </div>
                         </div>
                       );
+                    } else {
+                      return null;
                     }
                   })}
               </div>
