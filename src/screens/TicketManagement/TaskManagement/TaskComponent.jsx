@@ -922,6 +922,12 @@ export default function TaskComponent() {
           <div>
             <div className="d-flex align-items-center justify-content-between">
               <h5 className="col-3">
+                {console.log(
+                  'tttt',
+                  tasksData &&
+                    tasksData?.length > 0 &&
+                    tasksData[0].ticket_id_name
+                )}
                 <strong>
                   Ticket -{' '}
                   {tasksData &&

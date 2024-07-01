@@ -704,7 +704,7 @@ function TaskAndTicketTypeMaster(props) {
 
     {
       name: 'Type Name',
-      width: '150px',
+      width: '170px',
       selector: (row) => row.type_name,
       sortable: true,
       cell: (row) => (
@@ -718,9 +718,9 @@ function TaskAndTicketTypeMaster(props) {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.type_name && row.type_name.length < 10
+                  {row.type_name && row.type_name.length < 20
                     ? row.type_name
-                    : row.type_name.substring(0, 10) + '....'}
+                    : row.type_name.substring(0, 20) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -731,7 +731,7 @@ function TaskAndTicketTypeMaster(props) {
 
     {
       name: 'Parent Name',
-      width: '150px',
+      width: '170px',
       selector: (row) => row.parent_name,
       sortable: true,
       cell: (row) => (
@@ -745,9 +745,9 @@ function TaskAndTicketTypeMaster(props) {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.parent_name && row.parent_name.length < 10
+                  {row.parent_name && row.parent_name.length < 15
                     ? row.parent_name
-                    : row.parent_name.substring(0, 10) + '....'}
+                    : row.parent_name.substring(0, 15) + '....'}
                 </span>
               </div>
             </OverlayTrigger>

@@ -122,6 +122,7 @@ function CreateDynamicForm() {
   // const [inputDataSource, setInputDataSource] = useState();
 
   const [selectedValue, setSelectedValue] = useState();
+
   const [inputLabelValue, setInputLabelValue] = useState();
   const [minDate, setMinDate] = useState();
 
@@ -798,6 +799,11 @@ function CreateDynamicForm() {
                                           </option>
                                         ))}
                                       </select>
+                                      {!selectedValue && (
+                                        <small style={{ color: 'red' }}>
+                                          <b>Select Data Source</b>
+                                        </small>
+                                      )}
                                     </span>
                                   )}
 
@@ -807,10 +813,13 @@ function CreateDynamicForm() {
                                         className="form-control form-control-sm"
                                         onChange={handleChange(idx)}
                                         id="inputOnChangeSource"
+                                        required
                                         name="inputOnChangeSource"
                                         // defaultValue={selectedValue}
                                       >
-                                        <option>Select Data Source</option>
+                                        <option required>
+                                          Select Data Source
+                                        </option>
 
                                         {dropdown &&
                                           dropdown.map((d, i) => {
@@ -833,7 +842,6 @@ function CreateDynamicForm() {
                                     <span>
                                       <select
                                         className="form-control form-control-sm"
-                                        // onChange={props.onGetChange}
                                         onChange={handleChange(idx)}
                                         id="inputOnChangeSource"
                                         name="inputOnChangeSource"
@@ -934,6 +942,7 @@ function CreateDynamicForm() {
                                         <label>Min Number:</label>
                                         <input
                                           type="number"
+                                          step="any"
                                           onChange={handleChange(idx)}
                                           id="inputRangeMin"
                                           name="inputRangeMin"
@@ -947,6 +956,7 @@ function CreateDynamicForm() {
                                         <label>Max Number:</label>
                                         <input
                                           type="number"
+                                          step="any"
                                           onChange={handleChange(idx)}
                                           id="inputRangeMax"
                                           name="inputRangeMax"
@@ -1353,10 +1363,10 @@ function CreateDynamicForm() {
                           </div>
                         )}
 
-                        {data.inputType === 'checkbox' && (
+                        {data?.inputType === 'checkbox' && (
                           <div className="row mt-3">
                             {data &&
-                              data.inputAddOn.inputRadio.map((i, index) => (
+                              data?.inputAddOn?.inputRadio.map((i, index) => (
                                 <div key={index} className="col">
                                   <div className="form-check">
                                     <input

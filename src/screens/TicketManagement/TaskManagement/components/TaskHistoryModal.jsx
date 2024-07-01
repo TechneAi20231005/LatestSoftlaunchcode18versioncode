@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 
 import Alert from '../../../../components/Common/Alert';
@@ -179,7 +179,7 @@ export default function TaskHistoryModal(props) {
     }
   ];
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
     await new getTaskHistory(props.taskId).then((res) => {
@@ -207,6 +207,7 @@ export default function TaskHistoryModal(props) {
               task_hours: d.task_hours,
               created_at: d.created_at,
               updated_at: d.updated_at,
+              parent_name: d.parent_name,
 
               created_by_name: d.created_by_name,
               updated_by_name: d.updated_by_name
@@ -219,11 +220,11 @@ export default function TaskHistoryModal(props) {
         }
       }
     });
-  };
+  }, [props.taskId]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
   return (
     <>
       {notify && <Alert alertData={notify} />}

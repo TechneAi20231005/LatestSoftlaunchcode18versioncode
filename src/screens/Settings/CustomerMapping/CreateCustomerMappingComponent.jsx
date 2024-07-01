@@ -226,6 +226,8 @@ export default function CreateCustomerMappingComponent() {
         e.value
       );
 
+      
+
       if (res.status === 200) {
         if (res.data.status === 1) {
           const dropdown = res.data.data

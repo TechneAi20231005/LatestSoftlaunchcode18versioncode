@@ -1926,7 +1926,7 @@ export default function MyTicketComponent() {
           .getTicketReport(formData)
           .then((res) => {
             if (res.status === 200) {
-              if (res?.data?.status === 1) {
+              if (res.data.status === 1) {
                 setSearchResult(null);
 
                 setSearchResult(res.data.data);

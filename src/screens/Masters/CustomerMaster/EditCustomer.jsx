@@ -144,7 +144,6 @@ function EditCustomer() {
     }
   };
   const [contactError, setContactError] = useState(null);
-
   const handleMobileValidation = (e) => {
     const contactNumber = e.target.value;
 

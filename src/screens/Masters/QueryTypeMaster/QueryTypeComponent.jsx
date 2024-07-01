@@ -24,6 +24,7 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import { toast } from 'react-toastify';
 
 function QueryTypeComponent() {
   //initial state
@@ -38,6 +39,7 @@ function QueryTypeComponent() {
 
   const [notify, setNotify] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [data, setData] = useState([]);
 
   // const [dataa, setDataa] = useState(null);
@@ -689,6 +691,7 @@ function QueryTypeComponent() {
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     setNotify(null);
     const form = new FormData(e.target);
     var flag = 1;
@@ -721,21 +724,26 @@ function QueryTypeComponent() {
             if (res.data.status === 1) {
               // setShowLoaderModal(false);
               setModal({ showModal: false, modalData: '', modalHeader: '' });
-              setNotify({ type: 'success', message: res.data.message });
+              toast.success(res?.data?.message);
+
+              // setNotify({ type: 'success', message: res.data.message });
               loadData();
               setIsActive(1);
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res?.data?.message);
+              // setNotify({ type: 'danger', message: res.data.message });
             }
-          } else {
-            setNotify({ type: 'danger', message: res.message });
-            new ErrorLogService().sendErrorLog(
-              'QueryType',
-              'Create_QueryType',
-              'INSERT',
-              res.message
-            );
           }
+
+          // else {
+          //   setNotify({ type: 'danger', message: res.message });
+          //   new ErrorLogService().sendErrorLog(
+          //     'QueryType',
+          //     'Create_QueryType',
+          //     'INSERT',
+          //     res.message
+          //   );
+          // }
         } else {
           form.delete('is_active');
           form.append('is_active', isActive);
@@ -1096,6 +1104,7 @@ function QueryTypeComponent() {
                     width: '80px',
                     padding: '8px'
                   }}
+                  disabled={isSubmitting}
                 >
                   Add
                 </button>

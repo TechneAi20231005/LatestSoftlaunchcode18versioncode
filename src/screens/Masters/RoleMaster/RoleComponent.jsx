@@ -118,10 +118,16 @@ function RoleComponent({ location }) {
       )
     },
 
-    { name: 'Sr', selector: (row) => row.counter, sortable: true },
+    {
+      name: 'Sr',
+      width: '150px',
+      selector: (row) => row.counter,
+      sortable: true
+    },
     {
       name: 'Role',
       id: 'role_id',
+      width: '170px',
       sortable: true,
       selector: (row) => {},
       cell: (row) => (
@@ -130,8 +136,8 @@ function RoleComponent({ location }) {
             <div>
               {/* <span className="ms-1"> {row.role}</span> */}
               <span>
-                {row.role.length > 12
-                  ? row.role.substring(0, 12) + '...'
+                {row.role.length > 20
+                  ? row.role.substring(0, 20) + '...'
                   : row.role}
               </span>
             </div>

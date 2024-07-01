@@ -595,6 +595,7 @@ const CreateTemplateComponent = () => {
                             <td>
                               {userData && (
                                 <Select
+                                  required={true}
                                   options={userData}
                                   id="basket_owner"
                                   name="basket_owner"

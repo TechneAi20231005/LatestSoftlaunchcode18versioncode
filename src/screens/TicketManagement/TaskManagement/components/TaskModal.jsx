@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Modal, Table } from 'react-bootstrap';
 import ErrorLogService from '../../../../services/ErrorLogService';
 import { _attachmentUrl } from '../../../../settings/constants';
@@ -260,7 +260,7 @@ export default function TaskModal(props) {
   // const [tasktypeDropdown, setTasktypeDropdown] = useState();
   const [parentTaskName, setParentTaskName] = useState(null);
 
-  const loadData = async () => {
+  const loadData = useCallback( async () => {
     setSelectedFile([]);
     const tempUserData = [];
     const tempDefaultUserData = [];
@@ -360,7 +360,7 @@ export default function TaskModal(props) {
         setTaskData(res?.data?.data);
       }
     });
-  };
+  },[props.data, props?.taskDropdown]);
 
   // const loadAttachment = async () => {
   //   setNotify(null);
@@ -432,6 +432,7 @@ export default function TaskModal(props) {
   const transformedOptions = transformData(taskData);
 
   const uploadAttachmentHandler = (e, type, id = null) => {
+    let file ;
     if (type === 'UPLOAD') {
       const selectedFilesCount = selectedFile?.length;
       const maxTotalSizeMB = 10; // Maximum total size in MB
@@ -478,15 +479,15 @@ export default function TaskModal(props) {
       }
     } else if (type === 'DELETE') {
       let filteredFileArray = selectedFile.filter(
-        (item, index) => id !== index
+        (index) => id !== index
       );
       setSelectedFile(filteredFileArray);
     } else if (type === 'CUSTOMER') {
-      var file = selectedFile;
+       file = selectedFile;
       file[id].show_to_customer = file[id].show_to_customer ? 0 : 1;
       setSelectedFile(file);
     } else if (type === 'PROJECT_OWNER') {
-      var file = selectedFile;
+       file = selectedFile;
       file[id].show_to_project_owner = file[id].show_to_project_owner ? 0 : 1;
       setSelectedFile(file);
     } else {
@@ -692,7 +693,7 @@ export default function TaskModal(props) {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
   return (
     <>
       <Modal
@@ -1306,6 +1307,7 @@ export default function TaskModal(props) {
                               href={`${_attachmentUrl + '/' + attach.path}`}
                               target="_blank"
                               className="btn btn-warning btn-sm p-0 px-1"
+                              rel="noreferrer"
                             >
                               <i
                                 className="icofont-download"

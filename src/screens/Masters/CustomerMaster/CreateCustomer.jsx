@@ -206,18 +206,18 @@ export default function CreateCustomer({ match }) {
     dispatch(getStateData());
     dispatch(getCountryDataSort());
     dispatch(getCityData());
-    if (!customerType.length) {
+    if (!customerType?.length) {
       dispatch(getCustomerType());
     }
-    if (!stateDropdown.length) {
+    if (!stateDropdown?.length) {
     }
-    if (!countryDropdown.length) {
+    if (!countryDropdown?.length) {
     }
-    if (!checkRole.length) {
+    if (!checkRole?.length) {
       dispatch(getRoles());
     }
 
-    if (!cityDropdownData.length) {
+    if (!cityDropdownData?.length) {
     }
   }, [
     checkRole.length,
@@ -330,6 +330,7 @@ export default function CreateCustomer({ match }) {
                       id="contact_no"
                       name="contact_no"
                       placeholder="Contact Number"
+                      required
                       minLength={10}
                       maxLength={10}
                       onKeyPress={(e) => {

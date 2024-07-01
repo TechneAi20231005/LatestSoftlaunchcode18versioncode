@@ -3,6 +3,9 @@ import * as Yup from 'yup';
 export const editTestCaseValidation = Yup.object().shape({
   project_id: Yup.string().required('Project name is required'),
   module_id: Yup.string().required('Module name is required'),
+  submodule_id: Yup.string()
+    .min(1, 'Please select at least one submodule')
+    .required('Submodule name is required'),
   function_id: Yup.string().required('Function is required'),
   type_id: Yup.string().required('Testing type is required'),
   group_id: Yup.string().required('Testing group is required'),

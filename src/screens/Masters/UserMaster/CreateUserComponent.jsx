@@ -30,6 +30,7 @@ import { getDesignationDataListThunk } from '../DesignationMaster/DesignationAct
 
 import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
 import { getRoleData } from '../RoleMaster/RoleMasterAction';
+import { toast } from 'react-toastify';
 
 function CreateUserComponent({ match }) {
   const [tabKey, setTabKey] = useState('All_Tickets');
@@ -69,6 +70,13 @@ function CreateUserComponent({ match }) {
     (DesignationSlice) =>
       DesignationSlice.designationMaster.sortedDesignationData
   );
+  console.log('designationDropdown', designationDropdown);
+  const sortDesignationDropdown = [...designationDropdown].sort((a, b) => {
+    if (a.label < b.label) return -1;
+    if (a.label > b.label) return 1;
+    return 0;
+  });
+
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 3)
   );
@@ -396,7 +404,12 @@ function CreateUserComponent({ match }) {
     ) {
       if (flag === 1) {
         dispatch(postUserData(form)).then((res) => {
-          if (res.payload.data.status === 1 && res.payload.status === 200) {
+          if (
+            res?.payload?.data?.status === 1 &&
+            res?.payload?.status === 200
+          ) {
+            toast.success(res?.payload?.data?.message);
+            navigate(`/${_base}/User`);
             dispatch(getEmployeeData());
             // setNotify({ type: 'success', message: res.payload.data.message });
             setTimeout(() => {
@@ -1219,7 +1232,7 @@ function CreateUserComponent({ match }) {
                         <Select
                           id="designation_id"
                           name="designation_id"
-                          options={designationDropdown}
+                          options={sortDesignationDropdown}
                           onChange={(event) => {
                             if (event.value === '') {
                               setInputState({

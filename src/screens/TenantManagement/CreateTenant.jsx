@@ -42,6 +42,11 @@ export default function CreateTenant() {
     (dashboardSlice) => dashboardSlice.dashboard.cityData
   );
 
+  console.log(
+    'filterdata',
+    AllcityDropDownData.filter((d) => d.is_active === 1)
+  );
+  console.log('AllcityDropDownData', AllcityDropDownData);
   const notify = useSelector(
     (TenantComponentSlice) => TenantComponentSlice.tenantMaster.notify
   );
@@ -76,15 +81,23 @@ export default function CreateTenant() {
     if (type === 'COUNTRY') {
       setStateDropdownData(
         stateDropdown
-          .filter((filterState) => filterState.country_id === e.value)
+          .filter(
+            (filterState) =>
+              filterState.is_active === 1 && filterState.country_id === e.value
+          )
           .map((d) => ({ value: d.id, label: d.state }))
       );
     }
     if (type === 'STATE') {
       setCityDropdownData(
         AllcityDropDownData.filter(
-          (filterState) => filterState.state_id === e.value
+          (filterState) =>
+            filterState.is_active === 1 && filterState.state_id === e.value
         ).map((d) => ({ value: d.id, label: d.city }))
+
+        // AllcityDropDownData.filter(
+        //   (filterState) => filterState.state_id === e.value
+        // ).map((d) => ({ value: d.id, label: d.city }))
       );
     }
   };
