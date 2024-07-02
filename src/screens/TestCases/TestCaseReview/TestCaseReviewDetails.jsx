@@ -9,7 +9,8 @@ import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFil
 import { _base } from '../../../settings/constants';
 import {
   approveRejectByReviewerMasterThunk,
-  getByTestPlanIDListThunk
+  getByTestPlanIDListThunk,
+  getExportByTestPlanIDListThunk
 } from '../../../redux/services/testCases/testCaseReview';
 import { getReviewCommentMasterListThunk } from '../../../redux/services/testCases/reviewCommentMaster';
 import EditTestCaseModal from '../TestDraft/EditTestCaseModal';
@@ -91,9 +92,12 @@ function TestCaseReviewDetails() {
   const planID = id;
   const dispatch = useDispatch();
 
-  const { testPlanIdData, allTestPlanIDData, filterTestPlanData } = useSelector(
-    (state) => state?.testCaseReview
-  );
+  const {
+    testPlanIdData,
+    allTestPlanIDData,
+    filterTestPlanData,
+    exportTestCaseReviewData
+  } = useSelector((state) => state?.testCaseReview);
   const { getFilterReviewCommentMasterList } = useSelector(
     (state) => state?.reviewCommentMaster
   );
@@ -110,10 +114,14 @@ function TestCaseReviewDetails() {
     open: false
   });
 
+  const [errorMessage, setErrorMessage] = useState('');
+
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const [rowData, setRowData] = useState([]);
   const [commonComment, setCommonComment] = useState('');
   const [commonRemark, setCommonRemark] = useState('');
+  const [comments, setComments] = useState({});
+  const [remarks, setRemarks] = useState({});
 
   const {
     filterType,
@@ -137,7 +145,7 @@ function TestCaseReviewDetails() {
 
   const generateOptions = (options) => {
     return [
-      <option key="default" value="" disabled>
+      <option key="default" value="">
         Select Reviewer comment
       </option>,
       ...options.map((option) => (
@@ -149,6 +157,11 @@ function TestCaseReviewDetails() {
   };
 
   const handleRowChange = (id, field, value) => {
+    if (field === 'comment_id') {
+      setComments((prev) => ({ ...prev, [id]: value }));
+    } else if (field === 'other_remark') {
+      setRemarks((prev) => ({ ...prev, [id]: value }));
+    }
     setRowData((prevData) =>
       prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row))
     );
@@ -169,12 +182,14 @@ function TestCaseReviewDetails() {
     });
   };
   const handleSubmit = async (status) => {
-    const updatedRows = rowData
-      .filter((row) => selectedRows.includes(row.id))
+    const updatedRows = exportTestCaseReviewData
+      // .filter((row) => selectedRows.includes(row.id))
       .map((row) => ({
         id: row.id,
-        comment_id: row.comment_id !== '' ? row.comment_id : '',
-        other_remark: row.other_remark !== '' ? row.other_remark : ''
+        // comment_id: row.comment_id !== '' ? row.comment_id : '',
+        // other_remark: row.other_remark !== '' ? row.other_remark : ''
+        comment_id: comments[row.id] || row.comment_id,
+        other_remark: remarks[row.id] || row.other_remark
       }));
     const formData = {
       review_testcase_data: updatedRows,
@@ -185,6 +200,7 @@ function TestCaseReviewDetails() {
 
     dispatch(
       approveRejectByReviewerMasterThunk({
+        planID,
         formData,
         onSuccessHandler: () => {
           setCommonComment('');
@@ -209,7 +225,7 @@ function TestCaseReviewDetails() {
     localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: newSelectAllNames });
 
     if (newSelectAllNames) {
-      const draftRowIds = rowData.map((row) => row.id);
+      const draftRowIds = exportTestCaseReviewData.map((row) => row.id);
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
     } else {
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
@@ -217,9 +233,10 @@ function TestCaseReviewDetails() {
   };
 
   useEffect(() => {
-    if (testPlanIdData) {
-      setRowData(testPlanIdData);
-    }
+    // if (testPlanIdData) {
+    //   setRowData(testPlanIdData);
+    // }
+    setRowData(testPlanIdData);
   }, [testPlanIdData]);
 
   const columns = [
@@ -238,7 +255,7 @@ function TestCaseReviewDetails() {
             }
           />
 
-          <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.id}`}>
+          <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.tc_id}`}>
             <i class="icofont-history cp   btn btn-outline-secondary fw-bold" />
           </Link>
         </div>
@@ -532,12 +549,12 @@ function TestCaseReviewDetails() {
         <div>
           <span>Test Id</span>
           <i
-            onClick={(e) => handleFilterClick(e, 'id', 'Test Id', 'number')}
+            onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'number')}
             className="icofont-filter ms-2"
           />
         </div>
       ),
-      selector: (row) => row.id,
+      selector: (row) => row.tc_id,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -546,10 +563,10 @@ function TestCaseReviewDetails() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.id && (
-            <OverlayTrigger overlay={<Tooltip>{row.id} </Tooltip>}>
+          {row.tc_id && (
+            <OverlayTrigger overlay={<Tooltip>{row.tc_id} </Tooltip>}>
               <div>
-                <span className="ms-1">{row.id}</span>
+                <span className="ms-1">{row.tc_id}</span>
               </div>
             </OverlayTrigger>
           )}
@@ -777,7 +794,8 @@ function TestCaseReviewDetails() {
         <select
           className="form-select"
           aria-label="Default select example"
-          value={row.comment_id || ''}
+          // value={row.comment_id || ''}
+          value={comments[row.id] || row.comment_id || ''}
           id="comment_id"
           name="comment_id"
           onChange={(e) =>
@@ -801,6 +819,7 @@ function TestCaseReviewDetails() {
           name="other_remark"
           placeholder="Enter Remark"
           aria-label="default input example"
+          value={remarks[row.id] || row.other_remark || ''}
           onChange={(e) =>
             handleRowChange(row.id, 'other_remark', e.target.value)
           }
@@ -1030,7 +1049,7 @@ function TestCaseReviewDetails() {
     field: 'field',
     platform: 'platform',
     type_name: 'type_id',
-    id: 'id',
+    tc_id: 'tc_id',
     severity: 'severity',
     group_name: 'group_id',
     steps: 'steps',
@@ -1047,7 +1066,7 @@ function TestCaseReviewDetails() {
     { title: 'Field', field: 'field' },
     { title: 'Testing Type', field: 'type_name' },
     { title: 'Testing Group', field: 'group_name' },
-    { title: 'Test ID', field: 'id' },
+    { title: 'Test ID', field: 'tc_id' },
     { title: 'Test Description', field: 'test_description' },
     { title: 'Steps', field: 'steps' },
     { title: 'Severity', field: 'severity' },
@@ -1068,7 +1087,7 @@ function TestCaseReviewDetails() {
       field: 'field_names',
       platform: 'platforms',
       type_name: 'type_names',
-      id: 'ids',
+      tc_id: 'ids',
       severity: 'severities',
       group_name: 'group_names',
       steps: 'steps',
@@ -1093,6 +1112,18 @@ function TestCaseReviewDetails() {
       payload: { top: rect.bottom, left: rect.left }
     });
   };
+
+  const handleSearchChange = (e) => {
+    const term = e.target.value;
+    localDispatch({
+      type: 'SET_SEARCH_TERM',
+      payload: term
+    });
+  };
+
+  const filteredResults = filterValues?.filter((item) =>
+    item?.name?.toLowerCase()?.includes(searchTerm.toLowerCase())
+  );
 
   const closeModal = () => {
     localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -1167,6 +1198,22 @@ function TestCaseReviewDetails() {
     } else {
       const newValues = [...betweenValues];
       newValues[index] = value;
+      if (
+        newValues[0] !== undefined &&
+        newValues[1] !== undefined &&
+        newValues[0] !== '' &&
+        newValues[1] !== ''
+      ) {
+        if (newValues[0] !== undefined && newValues[1] !== undefined) {
+          if (newValues[0] > newValues[1]) {
+            setErrorMessage(
+              'The first value should not be greater than the second value.'
+            );
+          } else {
+            setErrorMessage('');
+          }
+        }
+      }
       localDispatch({ type: 'SET_BETWEEN_VALUES', payload: newValues });
     }
   };
@@ -1180,7 +1227,6 @@ function TestCaseReviewDetails() {
   };
 
   const handleApplyFilter = async () => {
-    console.log('sort', sortOrder);
     const newFilter =
       filterType === 'is not between' || filterType === 'is between'
         ? {
@@ -1199,6 +1245,28 @@ function TestCaseReviewDetails() {
           };
 
     const updatedFilters = [...filters, newFilter];
+    localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+
+    try {
+      dispatch(
+        getByTestPlanIDListThunk({
+          id: id,
+          limit: paginationData.rowPerPage,
+          page: paginationData.currentPage,
+          filter_testcase_data: updatedFilters
+        })
+      );
+      localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
+      localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
+      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+    } catch (error) {}
+  };
+
+  const handleClearAllFilter = async () => {
+    const updatedFilters = filters?.filter(
+      (filter) => filter.column !== filterColumnId
+    );
+
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
 
     try {
@@ -1260,16 +1328,44 @@ function TestCaseReviewDetails() {
   }, [sortOrder]);
 
   useEffect(() => {
+    const newFilter =
+      filterType === 'is not between' || filterType === 'is between'
+        ? {
+            column: filterColumnId,
+            column_name: filterColumn,
+            filter: filterType,
+            searchText: getFilteredValues(),
+            sort: sortOrder
+          }
+        : {
+            column: filterColumnId,
+            column_name: filterColumn,
+            searchText: type === 'text' ? filterText : betweenValues,
+            filter: filterType,
+            sort: sortOrder
+          };
+
+    const updatedFilters = [...filters, newFilter];
     dispatch(
       getByTestPlanIDListThunk({
         id: id,
         limit: paginationData.rowPerPage,
-        page: paginationData.currentPage
+        page: paginationData.currentPage,
+        filter_testcase_data:
+          updatedFilters?.length === 1 &&
+          updatedFilters[0]?.column === filterColumnId
+            ? []
+            : updatedFilters
+      })
+    );
+    dispatch(
+      getExportByTestPlanIDListThunk({
+        id: id,
+        type: 'ALL'
       })
     );
     dispatch(getReviewCommentMasterListThunk());
   }, [paginationData.rowPerPage, paginationData.currentPage]);
-
   return (
     <div className="container-xxl">
       <PageHeader
@@ -1280,14 +1376,18 @@ function TestCaseReviewDetails() {
               <button
                 onClick={handleButtonClick}
                 className="btn btn-primary text-white me-2"
-                disabled={filterTestPlanData?.payload === 'null'}
+                disabled={
+                  !rowData ||
+                  rowData?.length <= 0 ||
+                  filterTestPlanData?.payload === 'null'
+                }
               >
                 Clear All Filter
               </button>
               <ExportToExcel
                 className="btn btn-sm btn-danger "
                 fileName="Test Case Review List"
-                apiData={testPlanIdData}
+                apiData={exportTestCaseReviewData}
                 columns={exportColumns}
               />
             </div>
@@ -1310,9 +1410,7 @@ function TestCaseReviewDetails() {
             setPaginationData({ rowPerPage: newPageSize });
             setPaginationData({ currentPage: 1 });
           }}
-          paginationRowsPerPageOptions={[
-            50, 100, 150, 200, 300, 500, 700, 1000
-          ]}
+          paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
@@ -1321,9 +1419,7 @@ function TestCaseReviewDetails() {
 
       <div className="row mt-4">
         <div className="col-md-3">
-          <label className="form-label font-weight-bold">
-            Comment Type :<Astrick color="red" size="13px" />{' '}
-          </label>
+          <label className="form-label font-weight-bold">Comment Type :</label>
 
           <select
             className="form-select"
@@ -1352,6 +1448,7 @@ function TestCaseReviewDetails() {
           type="submit"
           onClick={() => handleSubmit('RESEND')}
           className="btn btn-sm btn-warning text-white"
+          disabled={!rowData || rowData?.length <= 0}
         >
           <i class="icofont-paper-plane icon-large mx-2"></i>
           Send For Modification
@@ -1359,6 +1456,7 @@ function TestCaseReviewDetails() {
         <button
           onClick={() => handleSubmit('REJECTED')}
           type="submit"
+          disabled={!rowData || rowData?.length <= 0}
           className="btn btn-lg btn-danger text-white "
         >
           Reject
@@ -1368,6 +1466,7 @@ function TestCaseReviewDetails() {
           type="submit"
           className="btn btn-lg  btn-success  text-white "
           onClick={() => handleSubmit('APPROVED')}
+          disabled={!rowData || rowData?.length <= 0}
         >
           Approve
         </button>
@@ -1394,7 +1493,7 @@ function TestCaseReviewDetails() {
           handleCheckboxChange={handleFilterCheckboxChange}
           selectedFilters={selectedFilters}
           handleSelectAll={handleSelectAll}
-          filterData={filterValues}
+          filterData={filteredResults}
           searchTerm={searchTerm}
           filterType={filterType}
           paginationData={paginationData}
@@ -1405,6 +1504,9 @@ function TestCaseReviewDetails() {
           type={type}
           handleApplyButton={handleApplyButton}
           localDispatch={localDispatch}
+          handleSearchChange={handleSearchChange}
+          handleClearAllFilter={handleClearAllFilter}
+          errorMessage={errorMessage}
         />
       )}
     </div>
