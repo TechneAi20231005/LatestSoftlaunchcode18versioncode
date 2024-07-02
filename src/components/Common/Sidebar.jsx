@@ -17,7 +17,6 @@ const Sidebar = ({ activekey }) => {
   const role_id = localStorage.getItem('role_id');
   //Redux State
   const { sidebarMenuList } = useSelector((state) => state?.sidebar);
-  // const menuListData = menuList?.menu;
 
   const [isSidebarMini, setIsSidebarMini] = useState(false);
   const [darkLightMode, setDarkLightMode] = useState('light');
