@@ -16,8 +16,7 @@ const Sidebar = ({ activekey }) => {
   const user_id = localStorage.getItem('id');
   const role_id = localStorage.getItem('role_id');
   //Redux State
-  const { menuList } = useSelector((state) => state?.sidebar);
-  const menuListData = menuList?.menu;
+  const { menu } = useSelector((state) => state?.sidebar?.menuList || {});
 
   const [isSidebarMini, setIsSidebarMini] = useState(false);
   const [darkLightMode, setDarkLightMode] = useState('light');
@@ -98,8 +97,6 @@ const Sidebar = ({ activekey }) => {
     setIsSidebarMini(!isSidebarMini);
   };
 
-  useEffect(() => {}, [menuListData]);
-
   useEffect(() => {
     dispatch(getEmployeeListThunk({ user_id: user_id }));
 
@@ -136,14 +133,14 @@ const Sidebar = ({ activekey }) => {
           <span className="logo-text">My-Task</span>
         </a>
         <ul className="menu-list flex-grow-1 mt-3">
-          {menuListData?.map((d, i) => {
+          {menu?.map((d, i) => {
             if (d.isToggled) {
               return (
                 <li key={'shsdg' + i}>
-                  <a className={`m-link `} href="#!">
+                  <Link className={`m-link `} href="#!">
                     <i className={d.iconClass}></i>
                     <span>{d.name}hii</span>
-                  </a>
+                  </Link>
                 </li>
               );
             }
