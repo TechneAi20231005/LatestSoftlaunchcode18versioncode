@@ -20,7 +20,11 @@ const CustomFilterModal = ({
   type,
   handleApplyButton,
   filterData,
-  localDispatch
+  localDispatch,
+  handleClearAllButton,
+  handleSearchChange,
+  handleClearAllFilter,
+  errorMessage
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -50,7 +54,7 @@ const CustomFilterModal = ({
       label: 'End with'
     },
     {
-      value: 'does not begin with',
+      value: 'does not end with',
       label: 'Does Not End with'
     },
     {
@@ -160,7 +164,7 @@ const CustomFilterModal = ({
                     {numberFilterData.map((option) => (
                       <p
                         key={option.value}
-                        className="mb-2 "
+                        className="mb-2 cp "
                         onClick={() => handleShow(option.value)}
                       >
                         {option.label}
@@ -267,9 +271,18 @@ const CustomFilterModal = ({
                         </>
                       )}
                     </div>
+                    {errorMessage && (
+                      <div className="col">
+                        <span className="text-danger">{errorMessage}</span>
+                      </div>
+                    )}
                   </Modal.Body>
                   <Modal.Footer className="modal-footer custom-modal-footer">
-                    <Button className="bg-custom-color" onClick={handleApply}>
+                    <Button
+                      disabled={errorMessage}
+                      className="bg-custom-color"
+                      onClick={handleApply}
+                    >
                       OK
                     </Button>
                     <Button variant="warning" onClick={handleClose}>
@@ -291,12 +304,13 @@ const CustomFilterModal = ({
               placeholder="Search Here"
               className="form-control pe-5"
               value={searchTerm}
-              onChange={(e) => {
-                localDispatch({
-                  type: 'SET_SEARCH_TERM',
-                  payload: e.target.value
-                });
-              }}
+              // onChange={(e) => {
+              //   localDispatch({
+              //     type: 'SET_SEARCH_TERM',
+              //     payload: e.target.value
+              //   });
+              // }}
+              onChange={handleSearchChange}
             />
             <i className="icofont-ui-search position-absolute top-50 end-0 translate-middle-y me-3 cp"></i>
           </div>
@@ -340,7 +354,12 @@ const CustomFilterModal = ({
       <button className="btn btn-sm btn-warning mt-3" onClick={handleClose}>
         Cancel
       </button>
-      <button className="btn btn-sm btn-outline-dark mt-3">Clear All</button>
+      <button
+        onClick={handleClearAllFilter}
+        className="btn btn-sm btn-outline-dark mt-3"
+      >
+        Clear All
+      </button>
     </div>
   );
 };

@@ -86,7 +86,7 @@ function EditTestCaseModal({
       type === 'EDIT' ? currentTestCasesData?.function_id?.toString() : '',
     field: type === 'EDIT' ? currentTestCasesData?.field : '',
     type_id: type === 'EDIT' ? currentTestCasesData?.type_id?.toString() : '',
-    id: type === 'EDIT' ? currentTestCasesData?.id?.toString() : '',
+    tc_id: type === 'EDIT' ? currentTestCasesData?.tc_id?.toString() : '',
     group_id: type === 'EDIT' ? currentTestCasesData?.group_id?.toString() : '',
     severity: type === 'EDIT' ? currentTestCasesData?.severity : '',
     steps: type === 'EDIT' ? currentTestCasesData?.steps : '',
@@ -95,12 +95,11 @@ function EditTestCaseModal({
     expected_result:
       type === 'EDIT' ? currentTestCasesData?.expected_result : ''
   };
-
   const handleEditTestCase = ({ formData }) => {
     setDisable(true);
     dispatch(
       editTestCaseThunk({
-        currentId: currentTestCasesData?.id,
+        currentId: currentTestCasesData?.tc_id,
         formData: formData,
         onSuccessHandler: () => {
           close();
@@ -271,21 +270,20 @@ function EditTestCaseModal({
                 <Col md={4} lg={4}>
                   <Field
                     component={CustomInput}
-                    name="id"
+                    name="tc_id"
                     label="Test Id"
                     placeholder="Enter testing id"
                     requiredField
                     disabled
                   />
                 </Col>
+
                 <Col md={4} lg={4}>
                   <Field
-                    data={filterTestingGroupMasterList}
-                    component={CustomDropdown}
+                    options={filterTestingGroupMasterList}
+                    component={CustomReactSelect}
                     name="group_id"
                     label="Testing Group"
-                    placeholder="Enter testing group name"
-                    requiredField
                   />
                 </Col>
 
@@ -332,7 +330,7 @@ function EditTestCaseModal({
 
               <div className="d-flex justify-content-end gap-2">
                 <button
-                  disabled={disable}
+                  // disabled={disable}
                   className="btn btn-dark px-4"
                   type="submit"
                 >

@@ -151,6 +151,7 @@ function ReviewedTestDraftComponent() {
     data: '',
     open: false
   });
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleDownloadModal = (data) => {
     setDownloadModal(data);
@@ -325,10 +326,25 @@ function ReviewedTestDraftComponent() {
     } else {
       const newValues = [...betweenValues];
       newValues[index] = value;
+      if (
+        newValues[0] !== undefined &&
+        newValues[1] !== undefined &&
+        newValues[0] !== '' &&
+        newValues[1] !== ''
+      ) {
+        if (newValues[0] !== undefined && newValues[1] !== undefined) {
+          if (newValues[0] > newValues[1]) {
+            setErrorMessage(
+              'The first value should not be greater than the second value.'
+            );
+          } else {
+            setErrorMessage('');
+          }
+        }
+      }
       localDispatch({ type: 'SET_BETWEEN_VALUES', payload: newValues });
     }
   };
-
   const getFilteredValues = () => {
     if (filterType === 'is not between' || filterType === 'is between') {
       return betweenValues.map((value) => Number(value));
@@ -373,6 +389,39 @@ function ReviewedTestDraftComponent() {
     } catch (error) {}
   };
 
+  const handleSearchChange = (e) => {
+    const term = e.target.value;
+    localDispatch({
+      type: 'SET_SEARCH_TERM',
+      payload: term
+    });
+  };
+
+  const handleClearAllFilter = async () => {
+    const updatedFilters = filters?.filter(
+      (filter) => filter.column !== filterColumnId
+    );
+
+    localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+
+    try {
+      dispatch(
+        getByTestPlanIDReviewedListThunk({
+          id: id,
+          limit: paginationData.rowPerPage,
+          page: paginationData.currentPage,
+          filter_testcase_data: updatedFilters
+        })
+      );
+      localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
+      localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
+      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+    } catch (error) {}
+  };
+
+  const filteredResults = filterValues?.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   const handleApplyButton = async () => {
     const newFilter = {
       column: filterColumnId,
@@ -1172,12 +1221,34 @@ function ReviewedTestDraftComponent() {
 
   useEffect(() => {
     dispatch(getReviewCommentMasterListThunk());
+    const newFilter =
+      filterType === 'is not between' || filterType === 'is between'
+        ? {
+            column: filterColumnId,
+            column_name: filterColumn,
+            filter: filterType,
+            searchText: getFilteredValues(),
+            sort: sortOrder
+          }
+        : {
+            column: filterColumnId,
+            column_name: filterColumn,
+            searchText: type === 'text' ? filterText : betweenValues,
+            filter: filterType,
+            sort: sortOrder
+          };
 
+    const updatedFilters = [...filters, newFilter];
     dispatch(
       getByTestPlanIDReviewedListThunk({
         id: id,
         limit: paginationData.rowPerPage,
-        page: paginationData.currentPage
+        page: paginationData.currentPage,
+        filter_testcase_data:
+          updatedFilters?.length === 1 &&
+          updatedFilters[0]?.column === filterColumnId
+            ? []
+            : updatedFilters
       })
     );
   }, [paginationData.rowPerPage, paginationData.currentPage]);
@@ -1253,9 +1324,7 @@ function ReviewedTestDraftComponent() {
             setPaginationData({ rowPerPage: newPageSize });
             setPaginationData({ currentPage: 1 });
           }}
-          paginationRowsPerPageOptions={[
-            50, 100, 150, 200, 300, 500, 700, 1000
-          ]}
+          paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
         />
@@ -1374,7 +1443,7 @@ function ReviewedTestDraftComponent() {
           handleCheckboxChange={handleFilterCheckboxChange}
           selectedFilters={selectedFilters}
           handleSelectAll={handleSelectAll}
-          filterData={filterValues}
+          filterData={filteredResults}
           searchTerm={searchTerm}
           filterType={filterType}
           paginationData={paginationData}
@@ -1385,6 +1454,9 @@ function ReviewedTestDraftComponent() {
           type={type}
           handleApplyButton={handleApplyButton}
           localDispatch={localDispatch}
+          handleSearchChange={handleSearchChange}
+          handleClearAllFilter={handleClearAllFilter}
+          errorMessage={errorMessage}
         />
       )}
     </div>

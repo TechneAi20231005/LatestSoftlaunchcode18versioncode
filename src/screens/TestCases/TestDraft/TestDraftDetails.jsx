@@ -91,8 +91,13 @@ function localReducer(state, action) {
 function TestDraftDetails(props) {
   const dispatch = useDispatch();
 
-  const { getDraftTestListData, allDraftListData, isLoading, filterData } =
-    useSelector((state) => state?.downloadFormat);
+  const {
+    getDraftTestListData,
+    allDraftListData,
+    allDraftTestListData,
+    isLoading,
+    filterData
+  } = useSelector((state) => state?.downloadFormat);
 
   const testerData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.getAllTesterDataList
@@ -140,8 +145,8 @@ function TestDraftDetails(props) {
     { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
   );
   const [disable, setDisable] = useState(false);
-  console.log('disable', disable);
   const [reviewerError, setReviewerError] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const moduleMapping = {
     module_name: 'module_id',
@@ -150,7 +155,7 @@ function TestDraftDetails(props) {
     field: 'field',
     platform: 'platform',
     type_name: 'type_id',
-    id: 'id',
+    tc_id: 'tc_id',
     test_description: 'test_description',
     severity: 'severity',
     group_name: 'group_id',
@@ -169,7 +174,7 @@ function TestDraftDetails(props) {
     localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: newSelectAllNames });
 
     if (newSelectAllNames) {
-      const draftRowIds = getDraftTestListData
+      const draftRowIds = allDraftTestListData
         .filter((row) => row.status === 'DRAFT')
         .map((row) => row.id);
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
@@ -201,7 +206,7 @@ function TestDraftDetails(props) {
       field: 'field_names',
       platform: 'platforms',
       type_name: 'type_names',
-      id: 'ids',
+      tc_id: 'ids',
       test_description: 'test_descriptions',
 
       severity: 'severities',
@@ -216,6 +221,7 @@ function TestDraftDetails(props) {
       updated_by: 'updated_by'
     };
     const filteredData = filterData[filterKeyMap[column]];
+
     const columnId = moduleMapping[column];
     localDispatch({ type: 'SET_FILTER_TYPE', payload: '' });
     localDispatch({ type: 'SET_COLUMN_NAME', payload: name });
@@ -233,6 +239,17 @@ function TestDraftDetails(props) {
     });
   };
 
+  const handleSearchChange = (e) => {
+    const term = e.target.value;
+    localDispatch({
+      type: 'SET_SEARCH_TERM',
+      payload: term
+    });
+  };
+
+  const filteredResults = filterValues?.filter((item) =>
+    item?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+  );
   const closeModal = () => {
     localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
     localDispatch({ type: 'SET_FILTER_COLUMN', payload: '' });
@@ -281,7 +298,8 @@ function TestDraftDetails(props) {
       });
     }
   };
-
+  {
+  }
   const handleSelectAll = (event) => {
     if (event.target.checked) {
       localDispatch({
@@ -299,13 +317,28 @@ function TestDraftDetails(props) {
       localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: [] });
     }
   };
-
   const handleBetweenValueChange = (index, value) => {
     if (filterType !== 'is not between' && filterType !== 'is between') {
       localDispatch({ type: 'SET_BETWEEN_VALUES', payload: Number(value) });
     } else {
       const newValues = [...betweenValues];
       newValues[index] = value;
+      if (
+        newValues[0] !== undefined &&
+        newValues[1] !== undefined &&
+        newValues[0] !== '' &&
+        newValues[1] !== ''
+      ) {
+        if (newValues[0] !== undefined && newValues[1] !== undefined) {
+          if (newValues[0] > newValues[1]) {
+            setErrorMessage(
+              'The first value should not be greater than the second value.'
+            );
+          } else {
+            setErrorMessage('');
+          }
+        }
+      }
       localDispatch({ type: 'SET_BETWEEN_VALUES', payload: newValues });
     }
   };
@@ -316,6 +349,14 @@ function TestDraftDetails(props) {
     }
 
     return filterText;
+  };
+
+  const handleClearAllButton = () => {
+    localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+    // localDispatch({
+    //   type: 'SET_SORT_ORDER',
+    //   payload: null
+    // });
   };
 
   const handleApplyFilter = async () => {
@@ -379,6 +420,27 @@ function TestDraftDetails(props) {
     } catch (error) {}
   };
 
+  const handleClearAllFilter = async () => {
+    const updatedFilters = filters?.filter(
+      (filter) => filter.column !== filterColumnId
+    );
+
+    localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+
+    try {
+      dispatch(
+        getDraftTestCaseList({
+          limit: paginationData?.rowPerPage,
+          page: paginationData?.currentPage,
+          filter_testcase_data: updatedFilters
+        })
+      );
+      localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
+      localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
+      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+    } catch (error) {}
+  };
+
   const columns = [
     {
       name: 'Action',
@@ -394,7 +456,7 @@ function TestDraftDetails(props) {
                 type: 'EDIT',
                 data: row,
                 open: true,
-                id: row.id
+                id: row.tc_id
               })
             }
           />
@@ -735,24 +797,24 @@ function TestDraftDetails(props) {
         <div>
           <span>Test Id</span>
           <i
-            onClick={(e) => handleFilterClick(e, 'id', 'Test Id', 'number')}
+            onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'number')}
             className="icofont-filter ms-2"
           />
         </div>
       ),
-      selector: (row) => row.id,
+      selector: (row) => row.tc_id,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.id && (
-            <OverlayTrigger overlay={<Tooltip>{row.id} </Tooltip>}>
+          {row.tc_id && (
+            <OverlayTrigger overlay={<Tooltip>{row.tc_id} </Tooltip>}>
               <div>
-                <span className="ms-1">{row.id}</span>
+                <span className="ms-1">{row.tc_id}</span>
               </div>
             </OverlayTrigger>
           )}
@@ -1030,7 +1092,7 @@ function TestDraftDetails(props) {
       ),
       selector: (row) => row.created_at,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -1073,7 +1135,7 @@ function TestDraftDetails(props) {
       ),
       selector: (row) => row.created_by,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -1116,7 +1178,7 @@ function TestDraftDetails(props) {
       ),
       selector: (row) => row.updated_at,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -1159,7 +1221,7 @@ function TestDraftDetails(props) {
       ),
       selector: (row) => row.updated_by,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -1252,10 +1314,33 @@ function TestDraftDetails(props) {
     }
   }, [sortOrder]);
   useEffect(() => {
+    const newFilter =
+      filterType === 'is not between' || filterType === 'is between'
+        ? {
+            column: filterColumnId,
+            column_name: filterColumn,
+            filter: filterType,
+            searchText: getFilteredValues(),
+            sort: sortOrder
+          }
+        : {
+            column: filterColumnId,
+            column_name: filterColumn,
+            searchText: type === 'text' ? filterText : betweenValues,
+            filter: filterType,
+            sort: sortOrder
+          };
+
+    const updatedFilters = [...filters, newFilter];
     dispatch(
       getDraftTestCaseList({
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage
+        limit: paginationData?.rowPerPage,
+        page: paginationData?.currentPage,
+        filter_testcase_data:
+          updatedFilters?.length === 1 &&
+          updatedFilters[0]?.column === filterColumnId
+            ? []
+            : updatedFilters
       })
     );
   }, [paginationData.rowPerPage, paginationData.currentPage]);
@@ -1278,9 +1363,7 @@ function TestDraftDetails(props) {
             setPaginationData({ rowPerPage: newPageSize });
             setPaginationData({ currentPage: 1 });
           }}
-          paginationRowsPerPageOptions={[
-            50, 100, 150, 200, 300, 500, 700, 1000
-          ]}
+          paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
@@ -1397,14 +1480,16 @@ function TestDraftDetails(props) {
           show={modalIsOpen}
           handleClose={closeModal}
           handleApply={handleApplyFilter}
+          handleClearAllButton={handleClearAllButton}
           position={modalPosition}
           filterColumn={filterColumn}
           filterColumnId={filterColumnId}
           handleCheckboxChange={handleFilterCheckboxChange}
           selectedFilters={selectedFilters}
           handleSelectAll={handleSelectAll}
-          filterData={filterValues}
+          filterData={filteredResults}
           searchTerm={searchTerm}
+          handleSearchChange={handleSearchChange}
           filterType={filterType}
           paginationData={paginationData}
           handleAscendingClick={handleAscendingClick}
@@ -1414,6 +1499,8 @@ function TestDraftDetails(props) {
           type={type}
           handleApplyButton={handleApplyButton}
           localDispatch={localDispatch}
+          handleClearAllFilter={handleClearAllFilter}
+          errorMessage={errorMessage}
         />
       )}
     </>
