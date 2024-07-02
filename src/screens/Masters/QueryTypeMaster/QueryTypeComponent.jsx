@@ -22,15 +22,30 @@ import CustomerService from '../../../services/MastersService/CustomerService';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
+import { toast } from 'react-toastify';
 
 function QueryTypeComponent() {
+  //initial state
   const dispatch = useDispatch();
+
+  //redux state
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 14)
+  );
+
+  //local state
+
   const [notify, setNotify] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [data, setData] = useState([]);
 
   const [dataa, setDataa] = useState(null);
   const [isActive, setIsActive] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -39,18 +54,12 @@ function QueryTypeComponent() {
   });
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  const [exportData, setExportData] = useState(null);
+  const [exportData, setExportData] = useState([]);
   const [exportQueryGroupData, setExportQueryGroupData] = useState(null);
 
   const [dynamicForm, setDynamicForm] = useState(null);
 
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState(null);
-
-  const roleId = sessionStorage.getItem('role_id');
-  // const [checkRole, setCheckRole] = useState(null);
-  const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 14)
-  );
 
   // ***************************** Edit & View Popup*************************************
   const [queryGroupData, setQueryGroupData] = useState(null);
@@ -64,17 +73,6 @@ function QueryTypeComponent() {
   const [selectedcustomer, setSelectedCustomer] = useState();
   const handleModalEditPopup = (editData) => {
     setModalEditPopup(editData);
-  };
-
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => {
-    setShow(true);
-    handleModalEditPopup({
-      showModal: false,
-      modalData: '',
-      modalHeader: ''
-    });
   };
 
   // ***************************** End Edit & View Popup*************************************
@@ -122,31 +120,19 @@ function QueryTypeComponent() {
       alert('Please Search Query Group Name');
     }
   };
-  const searchRef = useRef();
 
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  //search function
 
   const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+    const filteredList = customSearchHandler(data, searchTerm);
+    setFilteredData(filteredList);
   };
 
-  const [queryGroups, setQueryGroups] = useState();
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
+  };
 
   const handleModal = (data) => {
     setModal(data);
@@ -705,6 +691,7 @@ function QueryTypeComponent() {
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     setNotify(null);
     const form = new FormData(e.target);
     var flag = 1;
@@ -734,24 +721,30 @@ function QueryTypeComponent() {
           const res = await new QueryTypeService().postQueryType(form);
           if (res.status === 200) {
             setShowLoaderModal(false);
+            setIsSubmitting(false);
             if (res.data.status === 1) {
               setShowLoaderModal(false);
               setModal({ showModal: false, modalData: '', modalHeader: '' });
-              setNotify({ type: 'success', message: res.data.message });
+              toast.success(res?.data?.message);
+
+              // setNotify({ type: 'success', message: res.data.message });
               loadData();
               setIsActive(1);
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res?.data?.message);
+              // setNotify({ type: 'danger', message: res.data.message });
             }
-          } else {
-            setNotify({ type: 'danger', message: res.message });
-            new ErrorLogService().sendErrorLog(
-              'QueryType',
-              'Create_QueryType',
-              'INSERT',
-              res.message
-            );
           }
+
+          // else {
+          //   setNotify({ type: 'danger', message: res.message });
+          //   new ErrorLogService().sendErrorLog(
+          //     'QueryType',
+          //     'Create_QueryType',
+          //     'INSERT',
+          //     res.message
+          //   );
+          // }
         } else {
           form.delete('is_active');
           form.append('is_active', isActive);
@@ -808,6 +801,14 @@ function QueryTypeComponent() {
   }, []);
 
   useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
+
+  useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
@@ -843,79 +844,32 @@ function QueryTypeComponent() {
             );
           }}
         />
-
-        <div className="card card-body">
-          <div className="row">
-            <div className="col-md-9">
-              <input
-                type="text"
-                id="search_result"
-                className="form-control"
-                placeholder="Search by Query Type Name...."
-                ref={searchRef}
-                onKeyDown={handleKeyDown}
-              />
-            </div>
-            <div className="col-md-3">
-              <button
-                className="btn btn-sm btn-warning text-white"
-                type="button"
-                onClick={handleSearch}
-                style={{ marginTop: '0px', fontWeight: '600' }}
-              >
-                <i className="icofont-search-1 "></i> Search
-              </button>
-              <button
-                className="btn btn-sm btn-info text-white"
-                type="button"
-                onClick={() => window.location.reload(false)}
-                style={{ marginTop: '0px', fontWeight: '600' }}
-              >
-                <i className="icofont-refresh text-white"></i> Reset
-              </button>
-              <ExportToExcel
-                className="btn btn-sm btn-danger"
-                apiData={exportData}
-                fileName="Query Type master Records"
-              />
-            </div>
-          </div>
-        </div>
+        <SearchBoxHeader
+          setSearchTerm={setSearchTerm}
+          handleSearch={handleSearch}
+          handleReset={handleReset}
+          placeholder="Search by query name...."
+          exportFileName="Query Type Master Record"
+          exportData={exportData}
+          showExportButton={true}
+        />
 
         <div className="card mt-2">
-          <div className="card-body">
-            <div className="row clearfix g-3">
-              <div className="col-sm-12">
-                {isLoading && <TableLoadingSkelton />}
-                {!isLoading && data && (
-                  <DataTable
-                    columns={columns}
-                    data={data}
-                    defaultSortField="title"
-                    pagination
-                    progressPending={isLoading}
-                    progressComponent={<TableLoadingSkelton />}
-                    selectableRows={false}
-                    className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                    highlightOnHover={true}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
+          {isLoading && <TableLoadingSkelton />}
+          {!isLoading && data && (
+            <DataTable
+              columns={columns}
+              data={filteredData}
+              defaultSortField="title"
+              pagination
+              progressPending={isLoading}
+              progressComponent={<TableLoadingSkelton />}
+              selectableRows={false}
+              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+              highlightOnHover={true}
+            />
+          )}
         </div>
-
-        {/* <Modal show={showLoaderModal} centered>
-          <Modal.Body className="text-center">
-            <Spinner animation="grow" variant="primary" />
-            <Spinner animation="grow" variant="secondary" />
-            <Spinner animation="grow" variant="success" />
-            <Spinner animation="grow" variant="danger" />
-            <Spinner animation="grow" variant="warning" />
-            <Spinner animation="grow" variant="info" />
-            <Spinner animation="grow" variant="dark" />
-          </Modal.Body>
-        </Modal> */}
 
         <Modal
           centered
@@ -1151,6 +1105,7 @@ function QueryTypeComponent() {
                     width: '80px',
                     padding: '8px'
                   }}
+                  disabled={isSubmitting}
                 >
                   Add
                 </button>

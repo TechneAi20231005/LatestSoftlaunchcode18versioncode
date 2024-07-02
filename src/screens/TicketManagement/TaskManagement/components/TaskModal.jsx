@@ -19,6 +19,7 @@ import UserService from '../../../../services/MastersService/UserService';
 import TaskTicketTypeService from '../../../../services/MastersService/TaskTicketTypeService';
 import TestCasesService from '../../../../services/TicketService/TestCaseService';
 import { Astrick } from '../../../../components/Utilities/Style';
+import { toast } from 'react-toastify';
 
 export default function TaskModal(props) {
   const [notify, setNotify] = useState();
@@ -648,24 +649,27 @@ export default function TaskModal(props) {
             await postTask(formData).then((res) => {
               if (res.status === 200) {
                 if (res.data.status === 1) {
-                  setNotify({ type: 'success', message: res.data.message });
+                  toast.success(res?.data?.message);
+                  // setNotify({ type: 'success', message: res.data.message });
                   setLoading(false);
 
                   handleClose();
                   props.loadBasket();
                 } else {
                   setLoading(false);
-                  setNotify({ type: 'danger', message: res.data.message });
+                  toast.error(res?.data?.message);
+                  // setNotify({ type: 'danger', message: res.data.message });
                 }
               } else {
                 setLoading(false);
-                setNotify({ type: 'danger', message: res.data.message });
-                new ErrorLogService().sendErrorLog(
-                  'Ticket',
-                  'Edit_Task',
-                  'INSERT',
-                  res.message
-                );
+                toast.error(res?.data?.message);
+                // setNotify({ type: 'danger', message: res.data.message });
+                // new ErrorLogService().sendErrorLog(
+                //   'Ticket',
+                //   'Edit_Task',
+                //   'INSERT',
+                //   res.message
+                // );
               }
             });
           }

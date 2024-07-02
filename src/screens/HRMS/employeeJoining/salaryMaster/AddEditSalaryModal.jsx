@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Row, Stack } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,10 +20,8 @@ import {
   editSalaryMasterThunk,
   getSalaryMasterListThunk
 } from '../../../../redux/services/hrms/employeeJoining/salaryMaster';
-import { departmentData } from '../../../Masters/DepartmentMaster/DepartmentMasterAction';
-import { getDesignationData } from '../../../Dashboard/DashboardAction';
-import { getBranchMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/branchMaster';
 import { experienceLevel } from '../../../../settings/constants';
+import useDropdownData from '../../../../hooks/useDropdownData';
 
 function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
   // // initial state
@@ -50,17 +48,6 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
   const { isLoading: salaryMasterLoading } = useSelector(
     (state) => state?.salaryMaster
   );
-  const {
-    departmentData: departmentDataList,
-    status: isDepartmentDataListLoading
-  } = useSelector((state) => state?.department);
-  const {
-    getDesignationData: designationMasterList,
-    status: isDesignationMasterList
-  } = useSelector((DesignationSlice) => DesignationSlice.designationMaster);
-  const { branchMasterList, isLoading } = useSelector(
-    (state) => state?.branchMaster
-  );
 
   // // local state
   const [openConfirmModal, setOpenConfirmModal] = useState({
@@ -69,26 +56,14 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
   });
 
   // // dropdown data
-  const departmentType = departmentDataList
-    ?.filter((item) => item?.is_active === 1)
-    ?.map((item) => ({
-      label: item?.department,
-      value: item?.id
-    }));
-
-  const designationType = designationMasterList
-    ?.filter((item) => item?.is_active === 1)
-    ?.map((item) => ({
-      label: item?.designation,
-      value: item?.id
-    }));
-
-  const location = branchMasterList
-    ?.filter((item) => item?.is_active === 1)
-    ?.map((item) => ({
-      label: item?.location_name,
-      value: item?.id
-    }));
+  const {
+    preferredDepartmentDropdown,
+    preferredDepartmentDropdownLoading,
+    preferredDesignationDropdown,
+    preferredDesignationDropdownLoading,
+    preferredLocationDropdown,
+    preferredLocationDropdownLoading
+  } = useDropdownData({ render: show });
 
   // // function
   const handelAddEditSalary = () => {
@@ -124,20 +99,6 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
     }
   };
 
-  useEffect(() => {
-    if (show) {
-      if (!departmentDataList?.length) {
-        dispatch(departmentData());
-      }
-      if (!designationMasterList?.length) {
-        dispatch(getDesignationData());
-      }
-      if (!branchMasterList?.length) {
-        dispatch(getBranchMasterListThunk());
-      }
-    }
-  }, [show]);
-
   return (
     <>
       <CustomModal
@@ -159,12 +120,12 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                 <Row className="gap-3 gap-sm-0">
                   <Col sm={6} md={6} lg={3}>
                     <Field
-                      options={departmentType}
+                      options={preferredDepartmentDropdown}
                       component={CustomReactSelect}
                       name="department_id"
                       label="Department"
                       placeholder={
-                        isDepartmentDataListLoading === 'loading'
+                        preferredDepartmentDropdownLoading === 'loading'
                           ? 'Loading...'
                           : 'Select'
                       }
@@ -173,12 +134,12 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                   </Col>
                   <Col sm={6} md={6} lg={3}>
                     <Field
-                      options={designationType}
+                      options={preferredDesignationDropdown}
                       component={CustomReactSelect}
                       name="designation_id"
                       label="Designation"
                       placeholder={
-                        isDesignationMasterList === 'loading'
+                        preferredDesignationDropdownLoading
                           ? 'Loading...'
                           : 'Select'
                       }
@@ -187,12 +148,14 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                   </Col>
                   <Col sm={6} md={6} lg={3}>
                     <Field
-                      options={location}
+                      options={preferredLocationDropdown}
                       component={CustomReactSelect}
                       name="location_id"
                       label="Location"
                       placeholder={
-                        isLoading?.getBranchMasterList ? 'Loading...' : 'Select'
+                        preferredLocationDropdownLoading
+                          ? 'Loading...'
+                          : 'Select'
                       }
                       requiredField
                       isMulti
