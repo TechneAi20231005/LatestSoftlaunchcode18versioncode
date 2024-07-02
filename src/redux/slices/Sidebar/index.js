@@ -4,7 +4,8 @@ import { getEmployeeListThunk, getMenuListThunk } from '../../services/Sidebar';
 
 const initialState = {
   employeeList: [],
-  getMenuList: [],
+
+  menuList: [],
   filterMenuList: [],
 
   isLoading: {
@@ -46,20 +47,13 @@ const sidebarSlice = createSlice({
       })
       .addCase(getMenuListThunk.fulfilled, (state, action) => {
         state.isLoading.getMenuList = false;
-        state.menuList = action.payload.data;
-        state.filterMenuList = state?.menuList?.menu.filter((menu) => {
-          if (state.employeeList === 'SELF') {
-            return menu;
-          } else {
-            return menu?.id === 16;
-          }
-        });
+        state.sidebarMenuList = action?.payload?.data?.menu;
 
         state.successMsg.getMenuList = action.payload.msg;
       })
       .addCase(getMenuListThunk.rejected, (state, action) => {
         state.isLoading.getMenuList = false;
-        state.menuList = [];
+        state.sidebarMenuList = [];
         state.errorMsg.getMenuList = action.error.message;
       });
   }

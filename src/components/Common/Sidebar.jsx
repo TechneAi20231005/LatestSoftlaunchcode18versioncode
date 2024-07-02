@@ -1,9 +1,7 @@
 import React, { useState, useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import menu from '../Data/menu.json';
-import menu2 from '../Data/menu2.json';
 import { _base } from '../../settings/constants';
 
 import {
@@ -13,15 +11,13 @@ import {
 
 const Sidebar = ({ activekey }) => {
   // // initial state
-  const navigate = useNavigate();
+
   const dispatch = useDispatch();
   const user_id = localStorage.getItem('id');
   const role_id = localStorage.getItem('role_id');
   //Redux State
-  const { menuList, filterMenuList } = useSelector((state) => state?.sidebar);
-  const menuListData = menuList?.menu;
-  //local state
-  const [menuData, setMenuData] = useState(filterMenuList?.[0]);
+  const { sidebarMenuList } = useSelector((state) => state?.sidebar);
+
   const [isSidebarMini, setIsSidebarMini] = useState(false);
   const [darkLightMode, setDarkLightMode] = useState('light');
   const [updateRtl, setUpdateRtl] = useState(false);
@@ -79,16 +75,6 @@ const Sidebar = ({ activekey }) => {
     }
   };
 
-  const GotoChangeMenu = (val) => {
-    if (val === 'UI Components') {
-      navigate('/ui-alerts');
-      setMenuData([...menu2]);
-    } else {
-      navigate('/hr-dashboard');
-      setMenuData([...menu]);
-    }
-  };
-
   const onChangeDarkMode = () => {
     if (document.children[0].getAttribute('data-theme') === 'light') {
       document.children[0].setAttribute('data-theme', 'dark');
@@ -110,10 +96,6 @@ const Sidebar = ({ activekey }) => {
   const toggleSidebarMini = () => {
     setIsSidebarMini(!isSidebarMini);
   };
-
-  useEffect(() => {
-    setMenuData(menuListData);
-  }, [menuListData]);
 
   useEffect(() => {
     dispatch(getEmployeeListThunk({ user_id: user_id }));
@@ -151,21 +133,14 @@ const Sidebar = ({ activekey }) => {
           <span className="logo-text">My-Task</span>
         </a>
         <ul className="menu-list flex-grow-1 mt-3">
-          {menuData?.map((d, i) => {
+          {sidebarMenuList?.map((d, i) => {
             if (d.isToggled) {
               return (
                 <li key={'shsdg' + i}>
-                  <a
-                    className={`m-link `}
-                    href="#!"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      GotoChangeMenu(d.name);
-                    }}
-                  >
+                  <Link className={`m-link `} href="#!">
                     <i className={d.iconClass}></i>
                     <span>{d.name}hii</span>
-                  </a>
+                  </Link>
                 </li>
               );
             }
