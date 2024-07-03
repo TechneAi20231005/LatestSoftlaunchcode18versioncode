@@ -1,16 +1,16 @@
-import React, { useEffect, useState } from "react";
-import DataTable from "react-data-table-component";
-import { Modal, Spinner, Table } from "react-bootstrap";
-import { Astrick } from "../../components/Utilities/Style";
-import ErrorLogService from "../../services/ErrorLogService";
-import UserService from "../../services/MastersService/UserService";
-import ReportService from "../../services/ReportService/ReportService";
-import PageHeader from "../../components/Common/PageHeader";
-import Select from "react-select";
-import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
-import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
-import { getRoles } from "../Dashboard/DashboardAction";
-import { useDispatch, useSelector } from "react-redux";
+import React, { useEffect, useState } from 'react';
+import DataTable from 'react-data-table-component';
+import { Modal, Spinner, Accordion, table } from 'react-bootstrap';
+import { Astrick } from '../../components/Utilities/Style';
+import ErrorLogService from '../../services/ErrorLogService';
+import UserService from '../../services/MastersService/UserService';
+import ReportService from '../../services/ReportService/ReportService';
+import PageHeader from '../../components/Common/PageHeader';
+import Select from 'react-select';
+import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
+import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
+import { getRoles } from '../Dashboard/DashboardAction';
+import { useDispatch, useSelector } from 'react-redux';
 
 export default function ResourcePlanningReportComponent() {
   const dispatch = useDispatch();
@@ -20,63 +20,65 @@ export default function ResourcePlanningReportComponent() {
   const [userData, setUserData] = useState(null);
   const [data, setData] = useState(null);
   const [exportData, setExportData] = useState(null);
-  const roleId = sessionStorage.getItem("role_id");
+  const [selectedUser, setSelectedUser] = useState([]);
+  const [individualTask, setIndividualTask] = useState([]);
+  const roleId = sessionStorage.getItem('role_id');
   // const [checkRole, setCheckRole] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
 
-  const [todateformat, setTodateformat] = useState("");
-  const [fromdateformat, setFromdateformat] = useState("");
+  const [todateformat, setTodateformat] = useState('');
+  const [fromdateformat, setFromdateformat] = useState('');
 
   const columns = [
-    { name: "Sr", selector: (row) => row.sr, sortable: true, width: "75px" },
-    { name: "Ticket Id", selector: (row) => row.ticket_id, sortable: true },
+    { name: 'Sr', selector: (row) => row.sr, sortable: true, width: '75px' },
+    { name: 'Ticket Id', selector: (row) => row.ticket_id, sortable: true },
     {
-      name: "Task Owner",
+      name: 'Task Owner',
       selector: (row) => row.task_owner,
       sortable: true,
-      width: "175px",
+      width: '175px'
     },
     {
-      name: "Task Name",
+      name: 'Task Name',
       selector: (row) => row.task_name,
       sortable: true,
-      width: "175px",
+      width: '175px'
     },
     {
-      name: "Start Date",
+      name: 'Start Date',
       selector: (row) => row.task_start_Date,
-      sortable: true,
+      sortable: true
     },
 
     {
-      name: "Task Scheduled Hours",
+      name: 'Task Scheduled Hours',
       selector: (row) => row.task_scheduled_Hours,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Actual Worked",
+      name: 'Actual Worked',
       selector: (row) => row.task_actual_worked,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Delivery Scheduled",
+      name: 'Delivery Scheduled',
       selector: (row) => row.task_delivery_scheduled,
-      sortable: true,
+      sortable: true
     },
-    { name: "Status", selector: (row) => row.task_status, sortable: true },
+    { name: 'Status', selector: (row) => row.task_status, sortable: true },
     {
-      name: "Actual Status",
+      name: 'Actual Status',
       selector: (row) => row.task_actual_status,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Completed At",
+      name: 'Completed At',
       selector: (row) => row.task_completed_at,
-      sortable: true,
-    },
+      sortable: true
+    }
     // { name: 'Action', width:"18%", button: true,
     //     ignoreRowClick: true,
     //     allowOverflow: true,
@@ -94,22 +96,22 @@ export default function ResourcePlanningReportComponent() {
     const tempUserData = [];
     const exportTempData = [];
     const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
+      'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         const data = res.data.data.filter(
-          (d) => d.is_active == 1 && d.account_for === "SELF"
+          (d) => d.is_active == 1 && d.account_for === 'SELF'
         );
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,
             label:
               data[key].first_name +
-              " " +
+              ' ' +
               data[key].last_name +
-              " (" +
+              ' (' +
               data[key].id +
-              ")",
+              ')'
           });
         }
         const aa = tempUserData.sort(function (a, b) {
@@ -190,25 +192,30 @@ export default function ResourcePlanningReportComponent() {
 
   const handleFromDate = (e) => {
     const gettodatevalue = e.target.value;
-    const setdateformat = gettodatevalue.split("-");
+    const setdateformat = gettodatevalue.split('-');
     const settoyear = setdateformat[0];
     const settomonth = setdateformat[1];
     const settodate = setdateformat[2];
-    const settodateformat = settoyear + "" + settomonth + "" + settodate;
+    const settodateformat = settoyear + '' + settomonth + '' + settodate;
     setTodate(gettodatevalue);
     setTodateformat(settodateformat);
   };
 
   const handleToDate = (e) => {
     const getfromdatevalue = e.target.value;
-    const setfromformat = getfromdatevalue.split("-");
+    const setfromformat = getfromdatevalue.split('-');
     const setfromyear = setfromformat[0];
     const setfrommonth = setfromformat[1];
     const setfromdate = setfromformat[2];
     const setfromformatdate =
-      setfromyear + "" + setfrommonth + "" + setfromdate;
+      setfromyear + '' + setfrommonth + '' + setfromdate;
     setFromdate(getfromdatevalue);
     setFromdateformat(setfromformatdate);
+  };
+
+  const resetFunction = (e) => {
+    setSelectedUser([]);
+    setUserData([]);
   };
 
   const handleForm = async (e) => {
@@ -219,7 +226,7 @@ export default function ResourcePlanningReportComponent() {
     const exportTempData = [];
 
     if (todateformat > fromdateformat) {
-      alert("Please select Date After From date");
+      alert('Please select Date After From date');
     } else {
       var flag = 1;
       await new ReportService()
@@ -230,6 +237,20 @@ export default function ResourcePlanningReportComponent() {
             if (res.data.status == 1) {
               let sr = 1;
               const data = res.data.data;
+              const arr = [];
+              for (let i = 0; i < selectedUser.length; i++) {
+                const filterData = data.filter(
+                  (data) => data.task_owner_id === selectedUser[i]?.value
+                );
+                const payload = {
+                  task_owner: selectedUser[i]?.label,
+                  user_task: filterData
+                };
+                arr.push(payload);
+                setIndividualTask(arr);
+              }
+              console.log('individualtask', individualTask);
+
               if (data && data.length > 0) {
                 for (const key in data) {
                   tempData.push({
@@ -245,7 +266,7 @@ export default function ResourcePlanningReportComponent() {
                     task_status: data[key].task_status,
                     task_actual_status: data[key].task_actual_status,
                     task_updated_at: data[key].updated_at,
-                    task_completed_at: data[key].task_completed_at,
+                    task_completed_at: data[key].task_completed_at
                   });
                 }
                 setData(null);
@@ -265,7 +286,7 @@ export default function ResourcePlanningReportComponent() {
                     task_status: data[key].task_status,
                     task_actual_status: data[key].task_actual_status,
                     task_updated_at: data[key].updated_at,
-                    task_completed_at: data[key].task_completed_at,
+                    task_completed_at: data[key].task_completed_at
                   });
                 }
 
@@ -279,22 +300,22 @@ export default function ResourcePlanningReportComponent() {
             }
           } else {
             new ErrorLogService().sendErrorLog(
-              "VariantsReport",
-              "Get_VariantsReport",
-              "INSERT",
+              'VariantsReport',
+              'Get_VariantsReport',
+              'INSERT',
               res.message
             );
           }
         })
         .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          new ErrorLogService().sendErrorLog(
-            "VariantsReport",
-            "Get_VariantsReport",
-            "INSERT",
-            errorObject.data.message
-          );
+          // const { response } = error;
+          // const { request, ...errorObject } = response;
+          // new ErrorLogService().sendErrorLog(
+          //   'VariantsReport',
+          //   'Get_VariantsReport',
+          //   'INSERT',
+          //   errorObject.data.message
+          // );
         });
     }
   };
@@ -310,16 +331,17 @@ export default function ResourcePlanningReportComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, []);
+  console.log('individualTask', individualTask);
 
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Variance Report" />
 
-      <div className="card mt-2" style={{ zIndex: 10 }}>
-        <div className="card-body">
+      <div className="card mt-2">
+        <div className="card-body  ">
           <form onSubmit={handleForm}>
             <div className="row">
-              <div className="col-md-3">
+              <div className="col-md-4 px-2">
                 <label htmlFor="" className="">
                   <b>Select User :</b>
                 </label>
@@ -330,12 +352,13 @@ export default function ResourcePlanningReportComponent() {
                     name="user_id[]"
                     className="basic-multi-select"
                     classNamePrefix="select"
+                    onChange={(e) => setSelectedUser([...e])}
                     options={userData && userData}
                   />
                 )}
               </div>
 
-              <div className="col-md-3">
+              <div className="col-md-4 px-2">
                 <label htmlFor="" className="">
                   <b>
                     From Date : <Astrick color="red" size="13px" />
@@ -350,7 +373,7 @@ export default function ResourcePlanningReportComponent() {
                 />
               </div>
 
-              <div className="col-md-3">
+              <div className="col-md-4 px-2">
                 <label htmlFor="" className="">
                   <b>
                     To Date : <Astrick color="red" size="13px" />
@@ -365,65 +388,88 @@ export default function ResourcePlanningReportComponent() {
                 />
               </div>
             </div>
-            <div className="row">
-              <div className="col-md-2">
-                <button
-                  className="btn btn-sm btn-warning text-white"
-                  type="submit"
-                  style={{ marginTop: "20px", fontWeight: "600" }}
-                >
-                  <i className="icofont-search-1 "></i> Search
-                </button>
-                <button
-                  className="btn btn-sm btn-info text-white"
-                  type="button"
-                  onClick={() => window.location.reload(false)}
-                  style={{ marginTop: "20px", fontWeight: "600" }}
-                >
-                  <i className="icofont-refresh text-white"></i> Reset
-                </button>
-              </div>
-              {data && data.length > 0 && (
-                <div
-                  className="col-md-10"
-                  style={{
-                    textAlign: "right",
-                    marginTop: "20px",
-                    fontWeight: "600",
-                  }}
-                >
-                  <ExportToExcel
-                    className="btn btn-sm btn-danger"
-                    apiData={exportData && exportData}
-                    fileName="Variance Report"
-                  />
-                </div>
-              )}
+            <div className="px-2 mt-2 row gap-2 justify-content-end">
+              <button
+                className="col-md-2 col-lg-1  btn btn-sm btn-warning text-white"
+                type="submit"
+              >
+                <i className="icofont-search-1 "></i> Search
+              </button>
+              <button
+                className="col-md-2 col-lg-1 btn btn-sm btn-info text-white"
+                type="button"
+                onClick={resetFunction}
+                // window.location.reload(false);
+              >
+                <i className="icofont-refresh text-white"></i> Reset
+              </button>
             </div>
           </form>
         </div>
       </div>
 
-      <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {data && (
-                <DataTable
-                  columns={columns}
-                  data={data}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                  // expandableRows
-                  // expandableRowsComponent={ExpandedComponent}
-                />
-              )}
-            </div>
-          </div>
+      {data && data.length > 0 && (
+        <div className="px-2 my-2 text-end">
+          <ExportToExcel
+            className="btn btn-sm btn-danger"
+            apiData={exportData && exportData}
+            fileName="Variance Report"
+          />
         </div>
+      )}
+      <div className="mb-4 mt-2 text-primary fwt-bold">
+        <Accordion defaultActiveKey="0">
+          <Accordion.Item eventKey="0">
+            <Accordion.Header className="fwt-bold">
+              User Detailed Report
+            </Accordion.Header>
+            <Accordion.Body>
+              <table class="table table-md table-hover table-striped-columns">
+                <thead>
+                  <tr>
+                    {/* <th scope="col-">#</th> */}
+                    <th scope="col">User Name</th>
+                    <th scope="col">Total Task</th>
+                    <th scope="col">Total In-Time</th>
+                    <th scope="col">Total Delayed</th>
+                    <th scope="col">Total Scheduled</th>
+                    <th scope="col">Total Played</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr className="mt-2">
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                  </tr>
+                  <tr className="mt-2">
+                    <th scope="row">1</th>
+                    <td>Mark</td>
+                    <td>Otto</td>
+                    <td>@mdo</td>
+                  </tr>
+                </tbody>
+              </table>
+            </Accordion.Body>
+          </Accordion.Item>
+        </Accordion>
+      </div>
+
+      <div className="col-sm-12">
+        {data && (
+          <DataTable
+            columns={columns}
+            data={data}
+            defaultSortField="title"
+            pagination
+            selectableRows={false}
+            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+            highlightOnHover={true}
+            // expandableRows
+            // expandableRowsComponent={ExpandedComponent}
+          />
+        )}
       </div>
 
       <Modal show={showLoaderModal} centered>

@@ -24434,10 +24434,6 @@ abbr[title] {
   }
 }
 
-@media (min-width: 576px) and (max-width: 768px) {
-  .card {
-    width: 80%;
-  }
-}
+
 
 /* Add more media queries for other screen sizes as needed */
