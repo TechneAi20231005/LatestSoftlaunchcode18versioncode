@@ -109,6 +109,7 @@ function DownloadFormatFileModal({ show, close }) {
                     component={CustomDropdown}
                     name="project_id"
                     label="Project Name"
+                    requiredField
                     handleChange={(event) =>
                       handleProjectChange(event, setFieldValue)
                     }
@@ -120,6 +121,7 @@ function DownloadFormatFileModal({ show, close }) {
                     component={CustomDropdown}
                     name="module_id"
                     label="Module Name"
+                    requiredField
                     handleChange={(event) =>
                       handleModuleChange(event, setFieldValue)
                     }

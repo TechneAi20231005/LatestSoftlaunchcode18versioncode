@@ -119,6 +119,7 @@ function ReviewedTestDraftComponent() {
   const {
     allReviewDraftTestListDataByID,
     allReviewDraftTestListData,
+    allReviewDraftTestListDataTotal,
     filterReviewList
   } = useSelector((state) => state?.downloadFormat);
 
@@ -166,12 +167,12 @@ function ReviewedTestDraftComponent() {
     localDispatch({
       type: 'SET_SELECTED_ROWS',
       payload: (prevSelectedRows) => {
-        if (prevSelectedRows.includes(row.id)) {
+        if (prevSelectedRows.includes(row.tc_id)) {
           return prevSelectedRows.filter(
-            (selectedRow) => selectedRow !== row.id
+            (selectedRow) => selectedRow !== row.tc_id
           );
         } else {
-          return [...prevSelectedRows, row.id];
+          return [...prevSelectedRows, row.tc_id];
         }
       }
     });
@@ -184,14 +185,16 @@ function ReviewedTestDraftComponent() {
     field: 'field',
     platform: 'platform',
     type_name: 'type_id',
-    id: 'id',
+    tc_id: 'tc_id',
     severity: 'severity',
     group_name: 'group_id',
     steps: 'steps',
     expected_result: 'expected_result',
     status: 'status',
     project_name: 'project_id',
-    test_description: 'test_description'
+    test_description: 'test_description',
+    created_at: 'created_at',
+    created_by: 'created_by'
   };
 
   const generateOptions = (options) => {
@@ -215,13 +218,16 @@ function ReviewedTestDraftComponent() {
       field: 'field_names',
       platform: 'platforms',
       type_name: 'type_names',
-      id: 'ids',
+      tc_id: 'ids',
       severity: 'severities',
       group_name: 'group_names',
       steps: 'steps',
       expected_result: 'expected_results',
       status: 'status',
-      project_name: 'project_names'
+      project_name: 'project_names',
+      test_description: 'test_descriptions',
+      created_at: 'created_at',
+      created_by: 'created_by'
     };
     const filteredData = filterReviewList[filterKeyMap[column]];
     const columnId = moduleMapping[column];
@@ -267,7 +273,9 @@ function ReviewedTestDraftComponent() {
     localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: newSelectAllNames });
 
     if (newSelectAllNames) {
-      const draftRowIds = allReviewDraftTestListDataByID.map((row) => row.id);
+      const draftRowIds = allReviewDraftTestListDataByID.map(
+        (row) => row.tc_id
+      );
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
     } else {
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
@@ -490,7 +498,7 @@ function ReviewedTestDraftComponent() {
         <div>
           <input
             type="checkbox"
-            checked={selectedRows?.includes(row.id)}
+            checked={selectedRows?.includes(row.tc_id)}
             onChange={() => handleCheckboxChange(row)}
           />
         </div>
@@ -759,12 +767,14 @@ function ReviewedTestDraftComponent() {
         <div>
           <span>Testing Id</span>
           <i
-            onClick={(e) => handleFilterClick(e, 'id', 'Testing Id', 'number')}
+            onClick={(e) =>
+              handleFilterClick(e, 'tc_id', 'Testing Id', 'number')
+            }
             className="icofont-filter ms-2"
           />
         </div>
       ),
-      selector: (row) => row.id,
+      selector: (row) => row.tc_id,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -773,10 +783,10 @@ function ReviewedTestDraftComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.id && (
-            <OverlayTrigger overlay={<Tooltip>{row.id} </Tooltip>}>
+          {row.tc_id && (
+            <OverlayTrigger overlay={<Tooltip>{row.tc_id} </Tooltip>}>
               <div>
-                <span className="ms-1">{row.id}</span>
+                <span className="ms-1">{row.tc_id}</span>
               </div>
             </OverlayTrigger>
           )}
@@ -795,7 +805,9 @@ function ReviewedTestDraftComponent() {
         <div>
           <span>Severity</span>
           <i
-            onClick={(e) => handleFilterClick(e, 'id', 'Severity', 'text')}
+            onClick={(e) =>
+              handleFilterClick(e, 'severity', 'Severity', 'text')
+            }
             className="icofont-filter ms-2"
           />
         </div>
@@ -1307,6 +1319,10 @@ function ReviewedTestDraftComponent() {
           );
         }}
       />
+      {console.log(
+        'allReviewDraftTestListDataTotal',
+        allReviewDraftTestListDataTotal
+      )}
       <Container fluid className="employee_joining_details_container">
         <h5 className="mb-0 text-primary">Test Cases</h5>
         <hr className="primary_divider mt-1" />
@@ -1317,7 +1333,7 @@ function ReviewedTestDraftComponent() {
           pagination
           selectableRows={false}
           paginationServer
-          paginationTotalRows={allReviewDraftTestListData?.total}
+          paginationTotalRows={allReviewDraftTestListDataTotal?.data?.total}
           paginationDefaultPage={paginationData?.currentPage}
           onChangePage={(page) => setPaginationData({ currentPage: page })}
           onChangeRowsPerPage={(newPageSize) => {

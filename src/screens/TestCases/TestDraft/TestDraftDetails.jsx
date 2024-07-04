@@ -176,7 +176,7 @@ function TestDraftDetails(props) {
     if (newSelectAllNames) {
       const draftRowIds = allDraftTestListData
         .filter((row) => row.status === 'DRAFT')
-        .map((row) => row.id);
+        .map((row) => row.tc_id);
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
     } else {
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
@@ -187,12 +187,12 @@ function TestDraftDetails(props) {
     localDispatch({
       type: 'SET_SELECTED_ROWS',
       payload: (prevSelectedRows) => {
-        if (prevSelectedRows.includes(row.id)) {
+        if (prevSelectedRows.includes(row.tc_id)) {
           return prevSelectedRows.filter(
-            (selectedRow) => selectedRow !== row.id
+            (selectedRow) => selectedRow !== row.tc_id
           );
         } else {
-          return [...prevSelectedRows, row.id];
+          return [...prevSelectedRows, row.tc_id];
         }
       }
     });
@@ -479,12 +479,13 @@ function TestDraftDetails(props) {
         </div>
       ),
       selector: 'selectAll',
+      width: '5rem',
       center: true,
       cell: (row) => (
         <div>
           <input
             type="checkbox"
-            checked={selectedRows.includes(row.id)}
+            checked={selectedRows.includes(row.tc_id)}
             onChange={() => handleCheckboxChange(row)}
             disabled={row.status !== 'DRAFT'}
           />
@@ -803,7 +804,7 @@ function TestDraftDetails(props) {
         </div>
       ),
       selector: (row) => row.tc_id,
-      width: '10rem',
+      width: '7rem',
       sortable: false,
       cell: (row) => (
         <div
@@ -846,8 +847,8 @@ function TestDraftDetails(props) {
         </div>
       ),
       selector: (row) => row.test_description,
-      width: '10rem',
-      sortable: true,
+      width: '12rem',
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -859,7 +860,11 @@ function TestDraftDetails(props) {
               overlay={<Tooltip>{row.test_description} </Tooltip>}
             >
               <div>
-                <span className="ms-1">{row.test_description}</span>
+                <span>
+                  {row.test_description && row.test_description.length < 80
+                    ? row.test_description
+                    : row.test_description.substring(0, 80) + '....'}
+                </span>
               </div>
             </OverlayTrigger>
           )}
@@ -887,7 +892,7 @@ function TestDraftDetails(props) {
       ),
       selector: (row) => row.severity,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"

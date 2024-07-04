@@ -171,12 +171,12 @@ function TestCaseReviewDetails() {
     localDispatch({
       type: 'SET_SELECTED_ROWS',
       payload: (prevSelectedRows) => {
-        if (prevSelectedRows.includes(row.id)) {
+        if (prevSelectedRows.includes(row.tc_id)) {
           return prevSelectedRows.filter(
-            (selectedRow) => selectedRow !== row.id
+            (selectedRow) => selectedRow !== row.tc_id
           );
         } else {
-          return [...prevSelectedRows, row.id];
+          return [...prevSelectedRows, row.tc_id];
         }
       }
     });
@@ -220,13 +220,15 @@ function TestCaseReviewDetails() {
       })
     );
   };
+
   const handleSelectAllNamesChange = () => {
     const newSelectAllNames = !selectAllNames;
     localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: newSelectAllNames });
 
     if (newSelectAllNames) {
-      const draftRowIds = exportTestCaseReviewData.map((row) => row.id);
+      const draftRowIds = exportTestCaseReviewData.map((row) => row.tc_id);
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
+      console.log('draftRowIds', draftRowIds);
     } else {
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
     }
@@ -280,7 +282,7 @@ function TestCaseReviewDetails() {
         <div>
           <input
             type="checkbox"
-            checked={selectedRows?.includes(row.id)}
+            checked={selectedRows?.includes(row.tc_id)}
             onChange={() => handleCheckboxChange(row)}
           />
         </div>
@@ -819,6 +821,7 @@ function TestCaseReviewDetails() {
           name="other_remark"
           placeholder="Enter Remark"
           aria-label="default input example"
+          maxLength={100}
           value={remarks[row.id] || row.other_remark || ''}
           onChange={(e) =>
             handleRowChange(row.id, 'other_remark', e.target.value)

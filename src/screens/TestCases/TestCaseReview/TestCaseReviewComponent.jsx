@@ -116,7 +116,7 @@ function TestCaseReviewComponent() {
 
   const moduleMapping = {
     test_plan_id: 'test_plan_id',
-    reviewer_name: 'reviewer_name',
+    tester_name: 'tester_id',
     total_testcases: 'total_testcases',
     total_reviewed_testcases: 'total_reviewed_testcases',
     total_rejected_testcases: 'total_rejected_testcases',
@@ -128,7 +128,7 @@ function TestCaseReviewComponent() {
   const handleFilterClick = (event, column, name, type, id) => {
     const filterKeyMap = {
       test_plan_id: 'test_plan_ids',
-      reviewer_name: 'reviewer_names',
+      tester_name: 'tester_names',
       total_testcases: 'total_testcases',
       total_reviewed_testcases: 'total_reviewed_testcases',
       total_rejected_testcases: 'total_rejected_testcases',
@@ -402,17 +402,17 @@ function TestCaseReviewComponent() {
     {
       name: (
         <div>
-          <span>Reviewer Name</span>
+          <span>Tester Name</span>
           <i
             onClick={(e) =>
-              handleFilterClick(e, 'reviewer_name', 'Reviewer Name', 'text')
+              handleFilterClick(e, 'tester_name', 'Tester Name', 'text')
             }
             className="icofont-filter ms-2"
           />
         </div>
       ),
 
-      selector: (row) => row.reviewer_name,
+      selector: (row) => row.tester_name,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -421,9 +421,9 @@ function TestCaseReviewComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.reviewer_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.reviewer_name} </Tooltip>}>
-              <div>{row.reviewer_name}</div>
+          {row.tester_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.tester_name} </Tooltip>}>
+              <div>{row.tester_name}</div>
             </OverlayTrigger>
           )}
         </div>
@@ -656,48 +656,6 @@ function TestCaseReviewComponent() {
     {
       name: (
         <div>
-          <span>Updated At</span>
-          <i
-            onClick={(e, row) =>
-              handleFilterClick(e, 'updated_at', 'updated_at', 'text')
-            }
-            className="icofont-filter ms-2"
-          />
-        </div>
-      ),
-      selector: (row) => row.updated_at,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.updated_at && (
-            <OverlayTrigger overlay={<Tooltip>{row.updated_at} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row?.updated_at && row?.updated_at?.length < 20
-                    ? row?.updated_at
-                    : row?.updated_at?.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
-    },
-    {
-      name: (
-        <div>
           <span>Created By</span>
           <i
             onClick={(e, row) =>
@@ -724,6 +682,49 @@ function TestCaseReviewComponent() {
                   {row?.created_by && row?.created_by?.length < 20
                     ? row?.created_by
                     : row?.created_by?.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
+      )
+    },
+
+    {
+      name: (
+        <div>
+          <span>Updated At</span>
+          <i
+            onClick={(e, row) =>
+              handleFilterClick(e, 'updated_at', 'updated_at', 'text')
+            }
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
+      selector: (row) => row.updated_at,
+      width: '10rem',
+      sortable: false,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row?.updated_at && (
+            <OverlayTrigger overlay={<Tooltip>{row.updated_at} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row?.updated_at && row?.updated_at?.length < 20
+                    ? row?.updated_at
+                    : row?.updated_at?.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>

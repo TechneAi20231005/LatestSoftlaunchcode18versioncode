@@ -70,6 +70,7 @@ export default function TestDraftComponent({}) {
 
   const handleBulkModal = (data) => {
     setBulkModal(data);
+    setDisable(false);
   };
 
   const [disable, setDisable] = useState(false);

@@ -21,7 +21,6 @@ const CustomFilterModal = ({
   handleApplyButton,
   filterData,
   localDispatch,
-  handleClearAllButton,
   handleSearchChange,
   handleClearAllFilter,
   errorMessage

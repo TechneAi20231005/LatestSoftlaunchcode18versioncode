@@ -52,6 +52,14 @@ function EditTestCaseModal({
     getSubModuleData
   } = useSelector((state) => state?.downloadFormat);
 
+  const newModuleListData = getModuleData
+    ?.filter((d) => d.project_id === currentTestCasesData?.project_id)
+    ?.map((i) => ({ value: i.id, label: i.module_name }));
+
+  const newSubModuleListData = getSubModuleData
+    ?.filter((d) => d.module_id === currentTestCasesData?.module_id)
+    ?.map((i) => ({ value: i.id, label: i.sub_module_name }));
+
   const [moduleDropdown, setModuleDropdown] = useState();
 
   const [subModuleDropdown, setSubModuleDropdown] = useState();
@@ -145,6 +153,7 @@ function EditTestCaseModal({
     setFieldValue('module_id', '');
     setFieldValue('submodule_id', '');
     setModuleDropdown(null);
+    setSubModuleDropdown(null);
     const filteredModules = getModuleData
       .filter((d) => d.project_id === parseInt(e.target.value))
       .map((d) => ({ value: d.id, label: d.module_name }));
@@ -182,6 +191,7 @@ function EditTestCaseModal({
     dispatch(getFunctionMasterListThunk());
     dispatch(getTestingGroupMasterListThunk());
     dispatch(getTestingTypeMasterListThunk());
+    setSubModuleDropdown(newSubModuleListData);
   }, []);
 
   return (
@@ -212,7 +222,7 @@ function EditTestCaseModal({
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
-                    data={!moduleDropdown ? getModuleList : moduleDropdown}
+                    data={!moduleDropdown ? newModuleListData : moduleDropdown}
                     component={CustomDropdown}
                     name="module_id"
                     label="Module Name"
@@ -226,9 +236,7 @@ function EditTestCaseModal({
 
                 <Col md={4} lg={4}>
                   <Field
-                    data={
-                      !subModuleDropdown ? getSubModuleList : subModuleDropdown
-                    }
+                    data={subModuleDropdown}
                     component={CustomDropdown}
                     name="submodule_id"
                     label="SubModule Name"
