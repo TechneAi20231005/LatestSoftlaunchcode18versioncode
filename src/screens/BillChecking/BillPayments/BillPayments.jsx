@@ -4,7 +4,7 @@ import PageHeader from '../../../components/Common/PageHeader';
 import Select from 'react-select';
 import BillTransactionService from '../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService';
 import { Link } from 'react-router-dom';
-import { Modal, Dropdown, Col } from 'react-bootstrap';
+import { Modal, Dropdown, Col, Collapse, Button, Fade } from 'react-bootstrap';
 import { _base, userSessionData } from '../../../settings/constants';
 import BillPaymentServices from '../../../services/Bill Checking/BillPaymentsServices/BillPaymentsServices';
 import DataTable from 'react-data-table-component';
@@ -20,6 +20,7 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 const BillPayments = () => {
   const dispatch = useDispatch();
   const [filteredData, setFilteredData] = useState();
+  const [open, setOpen] = useState(false);
   const [exportFilteredData, setExportFilteredData] = useState();
 
   const [notify, setNotify] = useState();
@@ -307,41 +308,8 @@ const BillPayments = () => {
   return (
     <>
       <div className="container-xxl" style={{ width: '100%' }}>
-        <form method="POST" onSubmit={(e) => handleForm(e)} ref={myForm}>
-          {notify && <Alert alertData={notify} />}
-
-          <div className="btn btn-group d-flex justify-content-end">
-            <div className="">
-              <button
-                type="submit"
-                name="buttonType"
-                defaultValue="filterButton"
-                id="filterButton"
-                onClick={(e) => (myForm.current.buttonId = e.target.id)}
-                // style={{ marginTop: '15px', marginLeft: '60px' }}
-                className="btn btn-danger text-white"
-              >
-                <i className="icofont-filter" /> Filter
-              </button>
-            </div>
-            {filteredData &&
-              authorities &&
-              authorities.Bill_Payment === true && (
-                <div className="col-md-5 mt-3">
-                  <button
-                    className="btn  btn-info text-white"
-                    name="buttonType"
-                    defaultValue="downloadButton"
-                    id="downloadButton"
-                    type="submit"
-                    onClick={(e) => (myForm.current.buttonId = e.target.id)}
-                  >
-                    Download Txt Files <i className="icofont-download" />
-                  </button>
-                </div>
-              )}
-          </div>
-
+        {notify && <Alert alertData={notify} />}
+        <div className="d-flex justify-content-between align-items-center">
           <PageHeader
             headerTitle="Bill Payment"
             renderRight={() => {
@@ -382,210 +350,223 @@ const BillPayments = () => {
             }}
           />
 
-          <div className="card-mt-2" style={{ width: '100%' }}>
-            <div className="card card-body">
-              {/* <form method="POST" onSubmit={(e) => handleForm(e)} ref={myForm}> */}
-              <div className="row ">
-                <div className="col-md-3">
-                  <label className=" col-form-label">
-                    <b>Bill Type : </b>
-                  </label>
-                  {billTypeDropdown && (
-                    <Select
-                      type="text"
-                      options={billTypeDropdown}
-                      isMulti
-                      id="bill_type"
-                      name="bill_type[]"
-                      placeholder="Bill Type"
-                    />
-                  )}
-                </div>
-
-                <div className="col-md-3" style={{ marginLeft: '20px' }}>
-                  <label className=" col-form-label">
-                    <b>
-                      Till Date :<Astrick color="red" />
-                    </b>
-                  </label>
-                  <input
-                    type="date"
-                    className="form-control form-control-sm"
-                    id="date"
-                    name="date"
-                    max={formattedDate}
-                    onChange={(e) => handleTillDate(e)}
-                  />
-                </div>
-
-                {/* <div className="btn btn-group d-flex col-md-4 mt-3">
-                  <div className="col-md-5 ">
-                    <button
-                      type="submit"
-                      name="buttonType"
-                      defaultValue="filterButton"
-                      id="filterButton"
-                      onClick={(e) => (myForm.current.buttonId = e.target.id)}
-                      style={{ marginTop: '15px', marginLeft: '60px' }}
-                      className="btn btn-danger text-white"
-                    >
-                      <i className="icofont-filter" /> Filter
-                    </button>
-                  </div>
-                  {filteredData &&
-                    authorities &&
-                    authorities.Bill_Payment === true && (
-                      <div className="col-md-5 mt-3 ">
-                        <button
-                          className="btn  btn-info text-white"
-                          name="buttonType"
-                          defaultValue="downloadButton"
-                          id="downloadButton"
-                          type="submit"
-                          onClick={(e) =>
-                            (myForm.current.buttonId = e.target.id)
-                          }
-                        >
-                          Download Txt Files <i className="icofont-download" />
-                        </button>
-                      </div>
-                    )}
-                </div> */}
-              </div>
-              {/* </form> */}
-            </div>
-          </div>
-        </form>
-
-        <div className="card mt-2">
-          <div className="card-body">
-            <div className="row clearfix g-3">
-              <div className="col-sm-12">
-                {filteredData && filteredData.length > 0 ? (
-                  <DataTable
-                    columns={columns}
-                    data={filteredData}
-                    defaultSortField="title"
-                    pagination
-                    selectableRows={false}
-                    className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                    highlightOnHover={true}
-                  />
-                ) : (
-                  <p className="d-flex justify-content-center">
-                    {' '}
-                    No Data Found{' '}
-                  </p>
-                )}
-              </div>
-            </div>
+          <div className="d-flex justify-content-end">
+            <Button
+              style={{ marginTop: '-37px' }}
+              onClick={() => setOpen(!open)}
+              aria-controls="example-collapse-text"
+              aria-expanded={open}
+            >
+              Search
+            </Button>
           </div>
         </div>
-        <Modal
-          centered
-          show={modal.showModal}
-          size="md"
-          onHide={(e) => {
-            handleModal({
-              showModal: false,
-              modalData: '',
-              modalHeader: ''
-            });
-          }}
-        >
-          <form
-            method="post"
-            onSubmit={handlePaymentUpdate}
-            encType="multipart/form-data"
-          >
-            <Modal.Header closeButton>
-              <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <div className=" col-sm ">
-                <label className="col-form-label">
-                  <b>Update Payment List :</b>
-                </label>
-                <input
-                  type="file"
-                  name="file"
-                  id="file"
-                  multiple
-                  className="form-control"
-                ></input>
+
+        <Fade in={open}>
+          <div id="example-fade-text">
+            <div className="card-mt-2" style={{ width: '100%' }}>
+              <div className="card card-body">
+                <form
+                  method="POST"
+                  onSubmit={(e) => handleForm(e)}
+                  ref={myForm}
+                >
+                  <div className="row align-items-center justify-content-between">
+                    <div className="col-md-6 d-flex gap-4">
+                      <div className="col-md-6">
+                        <label className=" col-form-label">
+                          <b>Bill Type : </b>
+                        </label>
+                        {billTypeDropdown && (
+                          <Select
+                            type="text"
+                            options={billTypeDropdown}
+                            isMulti
+                            id="bill_type"
+                            name="bill_type[]"
+                            placeholder="Bill Type"
+                          />
+                        )}
+                      </div>
+                      <div className="col-md-6">
+                        <label className=" col-form-label">
+                          <b>
+                            Till Date :<Astrick color="red" />
+                          </b>
+                        </label>
+                        <input
+                          type="date"
+                          className="form-control"
+                          id="date"
+                          name="date"
+                          max={formattedDate}
+                          onChange={(e) => handleTillDate(e)}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 text-end">
+                      <div className="btn btn-group">
+                        {filteredData &&
+                          authorities &&
+                          authorities.Bill_Payment === true && (
+                            <div className=" mt-3 ">
+                              <button
+                                className="btn  btn-info text-white"
+                                name="buttonType"
+                                defaultValue="downloadButton"
+                                id="downloadButton"
+                                type="submit"
+                                onClick={(e) =>
+                                  (myForm.current.buttonId = e.target.id)
+                                }
+                              >
+                                Download Txt Files{' '}
+                                <i className="icofont-download" />
+                              </button>
+                            </div>
+                          )}
+                      </div>
+
+                      {/* <div className="col-md-2"> */}
+                      <button
+                        type="submit"
+                        name="buttonType"
+                        defaultValue="filterButton"
+                        id="filterButton"
+                        onClick={(e) => (myForm.current.buttonId = e.target.id)}
+                        className="btn btn-warning text-white"
+                      >
+                        <i className="icofont-filter" /> filter
+                      </button>
+                      {/* </div> */}
+                    </div>
+                  </div>
+                </form>
               </div>
-            </Modal.Body>
-            <Modal.Footer className="justify-content-center">
-              <button
-                type="submit"
-                className="btn btn-sm btn-primary"
-                style={{ backgroundColor: '#484C7F' }}
-              >
-                Upload
-              </button>
-            </Modal.Footer>
-          </form>
-        </Modal>
+            </div>
+          </div>
+        </Fade>
 
-        <Modal
-          centered
-          show={modals.showModals}
-          size="xl"
-          onHide={(e) => {
-            handleModals({
-              showModals: false,
-              modalsData: '',
-              modalsHeader: ''
-            });
-          }}
-        >
-          <form method="post">
-            <Modal.Header closeButton>
-              <Modal.Title className="fw-bold">
-                {modals.modalsHeader}
-              </Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <Table>
-                <thead>
-                  <tr>
-                    <th>Bill Id</th>
-                    <th>Vendor Name</th>
-                    <th>Amount</th>
-                    <th>TDS</th>
-                    <th>IGST</th>
-                    <th>GST</th>
-                    <th>Net Payment</th>
-                    <th>Amount To Be Paid </th>
-                    <th>Payment Date </th>
-                    <th>Payment Status </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {d &&
-                    d.map((data) => {
-                      return (
-                        <tr>
-                          <td>{data.bc_id}</td>
-                          <td>{data.vendor_name}</td>
-                          <td>{data.bill_amount}</td>
-
-                          <td>{data.tds_amount}</td>
-                          <td>{data.igst_amount}</td>
-                          <td width="100px">{data.gst_amount}</td>
-                          <td width="100px">{data.net_payment}</td>
-                          <td width="100px">{data.amount_to_be_paid}</td>
-                          <td width="100px">{data.payment_date}</td>
-                          <td width="100px">{data.convention_name}</td>
-                        </tr>
-                      );
-                    })}
-                </tbody>
-              </Table>
-            </Modal.Body>
-          </form>
-        </Modal>
+        <div className="col-sm-12">
+          {filteredData && filteredData.length > 0 ? (
+            <div className="card mt-2">
+              <DataTable
+                columns={columns}
+                data={filteredData}
+                defaultSortField="title"
+                pagination
+                selectableRows={false}
+                className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                highlightOnHover={true}
+              />
+            </div>
+          ) : (
+            <></>
+          )}
+        </div>
       </div>
+      <Modal
+        centered
+        show={modal.showModal}
+        size="md"
+        onHide={(e) => {
+          handleModal({
+            showModal: false,
+            modalData: '',
+            modalHeader: ''
+          });
+        }}
+      >
+        <form
+          method="post"
+          onSubmit={handlePaymentUpdate}
+          encType="multipart/form-data"
+        >
+          <Modal.Header closeButton>
+            <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className=" col-sm ">
+              <label className="col-form-label">
+                <b>Update Payment List :</b>
+              </label>
+              <input
+                type="file"
+                name="file"
+                id="file"
+                multiple
+                className="form-control"
+              ></input>
+            </div>
+          </Modal.Body>
+          <Modal.Footer className="justify-content-center">
+            <button
+              type="submit"
+              className="btn btn-sm btn-primary"
+              style={{ backgroundColor: '#484C7F' }}
+            >
+              Upload
+            </button>
+          </Modal.Footer>
+        </form>
+      </Modal>
+
+      <Modal
+        centered
+        show={modals.showModals}
+        size="xl"
+        onHide={(e) => {
+          handleModals({
+            showModals: false,
+            modalsData: '',
+            modalsHeader: ''
+          });
+        }}
+      >
+        <form method="post">
+          <Modal.Header closeButton>
+            <Modal.Title className="fw-bold">{modals.modalsHeader}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Table>
+              <thead>
+                <tr>
+                  <th>Bill Id</th>
+                  <th>Vendor Name</th>
+                  <th>Amount</th>
+                  <th>TDS</th>
+                  <th>IGST</th>
+                  <th>GST</th>
+                  <th>Net Payment</th>
+                  <th>Amount To Be Paid </th>
+                  <th>Payment Date </th>
+                  <th>Payment Status </th>
+                </tr>
+              </thead>
+              <tbody>
+                {d &&
+                  d.map((data) => {
+                    return (
+                      <tr>
+                        <td>{data.bc_id}</td>
+                        <td>{data.vendor_name}</td>
+                        <td>{data.bill_amount}</td>
+
+                        <td>{data.tds_amount}</td>
+                        <td>{data.igst_amount}</td>
+                        <td width="100px">{data.gst_amount}</td>
+                        <td width="100px">{data.net_payment}</td>
+                        <td width="100px">{data.amount_to_be_paid}</td>
+                        <td width="100px">{data.payment_date}</td>
+                        <td width="100px">{data.convention_name}</td>
+                      </tr>
+                    );
+                  })}
+              </tbody>
+            </Table>
+          </Modal.Body>
+        </form>
+      </Modal>
     </>
   );
 };
