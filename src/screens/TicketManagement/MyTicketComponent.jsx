@@ -211,16 +211,6 @@ export default function MyTicketComponent() {
         }
       });
   };
-  const menuStyle = {
-    position: 'absolute',
-    bottom: '100%',
-    left: 0,
-    transform: 'translateY(-5px)',
-    backgroundColor: '#fff',
-    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-    borderRadius: '4px',
-    padding: '10px'
-  };
 
   const handleModal = (data) => {
     setModal(data);
@@ -263,18 +253,7 @@ export default function MyTicketComponent() {
                   </li>
                 ))}
 
-              <li>
-                {' '}
-                <Link
-                  to={`/${_base}/Ticket/View/` + data.id}
-                  className="btn btn-sm btn-info text-white"
-                  style={{ width: '100%', zIndex: 100 }}
-                >
-                  <i className="icofont-external-link "></i> View
-                </Link>{' '}
-              </li>
-
-              {data.created_by != localStorage.getItem('id') &&
+              {data.created_by !== localStorage.getItem('id') &&
                 data.basket_configured === 0 &&
                 localStorage.getItem('account_for') === 'SELF' &&
                 data.status_name != 'Solved' &&
@@ -291,13 +270,9 @@ export default function MyTicketComponent() {
                   </li>
                 )}
 
-              {(data.created_by != localStorage.getItem('id') &&
+              {data.created_by !== localStorage.getItem('id') &&
                 data.basket_configured > 0 &&
-                data.status_name != 'Solved' &&
-                localStorage.getItem('account_for' === 'SELF')) ||
-                (data?.projectowner?.filter(
-                  (d) => d.user_id == localStorage.getItem('id')
-                ) && (
+                localStorage.getItem('account_for') === 'SELF' && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Task/` + data.id}
@@ -307,17 +282,40 @@ export default function MyTicketComponent() {
                       <i className="icofont-tasks"></i> Task
                     </Link>
                   </li>
-                ))}
+                )}
 
               <li>
+                {' '}
                 <Link
-                  to={`/${_base}/TicketHistory/` + data.id}
-                  className="btn btn-sm btn-primary text-white"
+                  to={`/${_base}/Ticket/View/` + data.id}
+                  className="btn btn-sm btn-info text-white"
                   style={{ width: '100%', zIndex: 100 }}
                 >
-                  <i className="icofont-history"></i> History
-                </Link>
+                  <i className="icofont-external-link "></i> View
+                </Link>{' '}
               </li>
+              {data?.passed_status !== 'UNPASS' && (
+                <>
+                  <li>
+                    <Link
+                      to={`/${_base}/TicketHistory/` + data.id}
+                      className="btn btn-sm btn-primary text-white"
+                      style={{ width: '100%', zIndex: 100 }}
+                    >
+                      <i className="icofont-history"></i> History
+                    </Link>
+                  </li>
+                  <li>
+                    <button
+                      className=" btn btn-sm  btn-secondary text-white"
+                      style={{ width: '100%', zIndex: 100 }}
+                      onClick={(e) => handleConfirmationModal(e, data)}
+                    >
+                      Confirm
+                    </button>
+                  </li>
+                </>
+              )}
             </Dropdown.Menu>
           </Dropdown>
         );
@@ -844,7 +842,7 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Description',
-      width: '18.75rem',
+      width: '120px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -862,9 +860,9 @@ export default function MyTicketComponent() {
             {row.description && (
               <OverlayTrigger overlay={<Tooltip>{row.description} </Tooltip>}>
                 <div>
-                  <span className="ms-1">
+                  <span>
                     {' '}
-                    {row.description && row.description.length < 123
+                    {row.description && row.description.length < 120
                       ? row.description
                       : row.description.substring(0, 123) + '....'}
                   </span>
@@ -942,6 +940,7 @@ export default function MyTicketComponent() {
     {
       name: 'Action',
       button: true,
+      width: '170px',
       ignoreRowClick: true,
       allowOverflow: false,
       width: `${
@@ -951,12 +950,13 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Sr',
-      width: '4rem',
+      width: '170px',
       center: true,
       cell: (row, index) => index + 1
     },
     {
       name: 'Ticket Id',
+      width: '170px',
       cell: (row) => (
         <Link to={`/${_base}/Ticket/View/` + row.id}>
           <span className="fw-bold text-secondary">{row.ticket_id}</span>
@@ -966,7 +966,7 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Description',
-      width: '18.75rem',
+      width: '170px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -1005,15 +1005,17 @@ export default function MyTicketComponent() {
       name: 'Ticket Date',
       selector: (row) => row.ticket_date,
       sortable: true,
-      width: '120px'
+      width: '170px'
     },
     {
       name: 'Expected Solve Date',
       selector: (row) => row.expected_solve_date,
-      sortable: true
+      sortable: true,
+      width: '170px'
     },
     {
       name: 'Priority',
+      width: '170px',
       cell: (row) => (
         <div>
           {row.priority === 'Very High' && (
@@ -1040,14 +1042,25 @@ export default function MyTicketComponent() {
       ),
       sortable: true
     },
-    { name: 'Type', cell: (row) => row.query_type_name, sortable: true },
+    {
+      name: 'Type',
+      width: '170px',
+      cell: (row) => row.query_type_name,
+      sortable: true
+    },
     { name: 'Status', cell: (row) => row.status_name, sortable: true },
     {
       name: 'Assign To Dept',
+      width: '170px',
       cell: (row) => row.assign_to_department,
       sortable: true
     },
-    { name: 'Assinged To', cell: (row) => row.assign_to_user, sortable: true },
+    {
+      name: 'Assinged To',
+      width: '170px',
+      cell: (row) => row.assign_to_user,
+      sortable: true
+    },
     { name: 'Created By', cell: (row) => row.created_by_name, sortable: true }
   ];
 
@@ -1055,15 +1068,17 @@ export default function MyTicketComponent() {
     {
       name: 'Action',
       button: true,
+      width: '80px',
 
       width: `${
-        assignedToMe ? (assignedToMe.length > 0 ? '4rem' : '30rem') : 'auto'
+        assignedToMe ? (assignedToMe.length > 0 ? '4rem' : '20.625rem') : 'auto'
       }`,
       cell: (row) => actionComponent(row, 'ASSIGNED_TO_ME')
     },
-    { name: 'Sr', width: '4rem', cell: (row, index) => index + 1 },
+    { name: 'Sr', width: '80px', cell: (row, index) => index + 1 },
     {
       name: 'Ticket Id',
+      width: '150px',
       cell: (row) => (
         <Link to={`/${_base}/Ticket/View/` + row.id}>
           <span className="fw-bold text-secondary">{row.ticket_id}</span>
@@ -1073,7 +1088,7 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Description',
-      width: '18.75rem',
+      width: '150px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -1112,15 +1127,17 @@ export default function MyTicketComponent() {
       name: 'Ticket Date',
       selector: (row) => row.ticket_date,
       sortable: true,
-      width: '120px'
+      width: '150px'
     },
     {
       name: 'Expected Solve Date',
+      width: '150px',
       selector: (row) => row.expected_solve_date,
       sortable: true
     },
     {
       name: 'Priority',
+      width: '150px',
       cell: (row) => (
         <div>
           {row.priority === 'Very High' && (
@@ -1147,21 +1164,46 @@ export default function MyTicketComponent() {
       ),
       sortable: true
     },
-    { name: 'Type', cell: (row) => row.query_type_name, sortable: true },
-    { name: 'Status', cell: (row) => row.status_name, sortable: true },
+    {
+      name: 'Type',
+      width: '150px',
+      cell: (row) => row.query_type_name,
+      sortable: true
+    },
+    {
+      name: 'Status',
+      width: '150px',
+
+      cell: (row) => row.status_name,
+      sortable: true
+    },
     {
       name: 'Assign To Dept',
+      width: '150px',
       cell: (row) => row.assign_to_department,
       sortable: true
     },
-    { name: 'Assinged To', cell: (row) => row.assign_to_user, sortable: true },
-    { name: 'Created By', cell: (row) => row.created_by_name, sortable: true }
+    {
+      name: 'Assinged To',
+      width: '150px',
+
+      cell: (row) => row.assign_to_user,
+      sortable: true
+    },
+    {
+      name: 'Created By',
+      width: '150px',
+
+      cell: (row) => row.created_by_name,
+      sortable: true
+    }
   ];
 
   const createdByMeColumns = [
     {
       name: 'Action',
       button: true,
+      width: '150px',
       ignoreRowClick: true,
       width: `${
         createdByMe ? (createdByMe.length > 0 ? '4rem' : '20.625rem') : 'auto'
@@ -1171,12 +1213,13 @@ export default function MyTicketComponent() {
 
     {
       name: 'Sr',
-      width: '4rem',
+      width: '150px',
       center: true,
       cell: (row, index) => index + 1
     },
     {
       name: 'Ticket Id',
+      width: '150px',
       cell: (row) => (
         <Link to={`/${_base}/Ticket/View/` + row.id}>
           <span className="fw-bold text-secondary">{row.ticket_id}</span>
@@ -1186,7 +1229,7 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Description',
-      width: '18.75rem',
+      width: '150px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -1225,15 +1268,17 @@ export default function MyTicketComponent() {
       name: 'Ticket Date',
       selector: (row) => row.ticket_date,
       sortable: true,
-      width: '120px'
+      width: '150px'
     },
     {
       name: 'Expected Solve Date',
       selector: (row) => row.expected_solve_date,
-      sortable: true
+      sortable: true,
+      width: '150px'
     },
     {
       name: 'Priority',
+      width: '150px',
       cell: (row) => (
         <div>
           {row.priority === 'Very High' && (
@@ -1260,16 +1305,38 @@ export default function MyTicketComponent() {
       ),
       sortable: true
     },
-    { name: 'Type', cell: (row) => row.query_type_name, sortable: true },
-    { name: 'Passed Status', cell: (row) => row.passed_status, sortable: true },
+    {
+      name: 'Type',
+      width: '150px',
+      cell: (row) => row.query_type_name,
+      sortable: true
+    },
+    {
+      name: 'Passed Status',
+      width: '150px',
+
+      cell: (row) => row.passed_status,
+      sortable: true
+    },
     { name: 'Status', cell: (row) => row.status_name, sortable: true },
     {
       name: 'Assign To Dept',
+      width: '150px',
       cell: (row) => row.assign_to_department,
       sortable: true
     },
-    { name: 'Assinged To', cell: (row) => row.assign_to_user, sortable: true },
-    { name: 'Created By', cell: (row) => row.created_by_name, sortable: true }
+    {
+      name: 'Assinged To',
+      width: '150px',
+      cell: (row) => row.assign_to_user,
+      sortable: true
+    },
+    {
+      name: 'Created By',
+      width: '150px',
+      cell: (row) => row.created_by_name,
+      sortable: true
+    }
   ];
 
   const handleCheckboxChangee = (row) => {
@@ -1285,6 +1352,7 @@ export default function MyTicketComponent() {
   const unpassedColumns = [
     {
       name: 'Action',
+      width: '150px',
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
@@ -1314,7 +1382,7 @@ export default function MyTicketComponent() {
         </div>
       ),
       selector: 'selectAll',
-      width: '7rem',
+      width: '150px',
       center: true,
       cell: (row) => (
         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -1330,12 +1398,13 @@ export default function MyTicketComponent() {
 
     {
       name: 'Sr',
-      width: '4rem',
+      width: '150px',
       center: true,
       cell: (row, index) => index + 1
     },
     {
       name: 'Ticket Id',
+      width: '150px',
       cell: (row) => (
         <Link to={`/${_base}/Ticket/View/` + row.id}>
           <span className="fw-bold text-secondary">{row.ticket_id}</span>
@@ -1345,7 +1414,7 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Description',
-      width: '18.75rem',
+      width: '150px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -1382,17 +1451,18 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Ticket Date',
-      selector: (row) => row.ticket_date,
-      sortable: true,
-      width: '120px'
+      width: '150px',
+      selector: (row) => row.ticket_date
     },
     {
       name: 'Expected Solve Date',
+      width: '150px',
       selector: (row) => row.expected_solve_date,
       sortable: true
     },
     {
       name: 'Priority',
+      width: '150px',
       cell: (row) => (
         <div>
           {row.priority === 'Very High' && (
@@ -1419,23 +1489,48 @@ export default function MyTicketComponent() {
       ),
       sortable: true
     },
-    { name: 'Type', cell: (row) => row.query_type_name, sortable: true },
-    { name: 'Status', cell: (row) => row.status_name, sortable: true },
+    {
+      name: 'Type',
+      width: '150px',
+      cell: (row) => row.query_type_name,
+      sortable: true
+    },
+    {
+      name: 'Status',
+      width: '150px',
+
+      cell: (row) => row.status_name,
+      sortable: true
+    },
     {
       name: 'Assign To Dept',
+      width: '150px',
       cell: (row) => row.assign_to_department,
       sortable: true
     },
-    { name: 'Assinged To', cell: (row) => row.assign_to_user, sortable: true },
-    { name: 'Created By', cell: (row) => row.created_by_name, sortable: true },
+    {
+      name: 'Assinged To',
+      width: '150px',
+      cell: (row) => row.assign_to_user,
+      sortable: true
+    },
+    {
+      name: 'Created By',
+      width: '150px',
+
+      cell: (row) => row.created_by_name,
+      sortable: true
+    },
     {
       name: 'Solved Date',
+      width: '150px',
       maxWidth: 'auto',
       selector: (row) => row.ticket_solved_date,
       sortable: true
     },
     {
       name: 'Solved By',
+      width: '150px',
       maxWidth: 'auto',
       selector: (row) => row.ticket_solved_by,
       sortable: true
@@ -1446,6 +1541,7 @@ export default function MyTicketComponent() {
     {
       name: 'Action',
       button: true,
+      width: '170px',
       center: true,
       ignoreRowClick: true,
       allowOverflow: false,
@@ -1460,12 +1556,13 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Sr',
-      width: '4rem',
+      width: '170px',
       center: true,
       cell: (row, index) => index + 1
     },
     {
       name: 'Ticket Id',
+      width: '170px',
       cell: (row) => (
         <Link to={`/${_base}/Ticket/View/` + row.id}>
           <span className="fw-bold text-secondary">{row.ticket_id}</span>
@@ -1475,7 +1572,7 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Description',
-      width: '18.75rem',
+      width: '170px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -1514,15 +1611,17 @@ export default function MyTicketComponent() {
       name: 'Ticket Date',
       selector: (row) => row.ticket_date,
       sortable: true,
-      width: '120px'
+      width: '170px'
     },
     {
       name: 'Expected Solve Date',
       selector: (row) => row.expected_solve_date,
-      sortable: true
+      sortable: true,
+      width: '150px'
     },
     {
       name: 'Priority',
+      width: '170px',
       cell: (row) => (
         <div>
           {row.priority === 'Very High' && (
@@ -1549,14 +1648,27 @@ export default function MyTicketComponent() {
       ),
       sortable: true
     },
-    { name: 'Type', cell: (row) => row.query_type_name, sortable: true },
+    {
+      name: 'Type',
+      width: '150px',
+
+      cell: (row) => row.query_type_name,
+      sortable: true
+    },
     { name: 'Status', cell: (row) => row.status_name, sortable: true },
     {
       name: 'Assign To Dept',
+      width: '150px',
       cell: (row) => row.assign_to_department,
       sortable: true
     },
-    { name: 'Assinged To', cell: (row) => row.assign_to_user, sortable: true },
+    {
+      name: 'Assinged To',
+      width: '150px',
+
+      cell: (row) => row.assign_to_user,
+      sortable: true
+    },
     { name: 'Created By', cell: (row) => row.created_by_name, sortable: true }
   ];
 
@@ -2248,15 +2360,15 @@ export default function MyTicketComponent() {
             setAssignedToMe(
               res?.data?.data?.data.filter((d) => d.passed_status !== 'REJECT')
             );
-
+            setIsLoading(false);
             if (type == 'PLUS' && res.data.data.data.length > 0) {
               setAssignedToMeData({
                 ...assignedToMeData,
                 current_page: assignedToMeData.current_page + 1
               });
             }
+            setIsLoading(false);
           }
-          setIsLoading(false);
         }
       })
       .catch(() => {
@@ -2295,6 +2407,8 @@ export default function MyTicketComponent() {
               res?.data?.data?.data.filter((d) => d.passed_status !== 'REJECT')
             );
 
+            setIsLoading(false);
+
             if (type == 'PLUS' && res.data.data.data.length > 0) {
               setCreatedByMeData({
                 ...createdByMeData,
@@ -2302,8 +2416,8 @@ export default function MyTicketComponent() {
               });
             }
           }
+          setIsLoading(false);
         }
-        setIsLoading(false);
       })
       .catch(() => {
         setIsLoading(false);
@@ -2340,6 +2454,7 @@ export default function MyTicketComponent() {
             setDepartmentwiseTicket(
               res.data.data.data.filter((d) => d.passed_status !== 'REJECT')
             );
+            setIsLoading(false);
 
             if (type == 'PLUS' && res.data.data.data.length > 0) {
               setDepartmentWiseData({
@@ -2348,8 +2463,8 @@ export default function MyTicketComponent() {
               });
             }
           }
+          setIsLoading(false);
         }
-        setIsLoading(false);
       })
       .catch(() => {
         setIsLoading(false);
@@ -2382,11 +2497,11 @@ export default function MyTicketComponent() {
       .getUserTicketsTest(form)
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status === 1) {
+          if (res.data.status == 1) {
             setYourTask(
               res.data.data.data.filter((d) => d.passed_status !== 'REJECT')
             );
-
+            setIsLoading(false);
             if (type == 'PLUS' && res.data.data.data.length > 0) {
               setYourTaskData({
                 ...yourTaskData,
@@ -2394,8 +2509,8 @@ export default function MyTicketComponent() {
               });
             }
           }
+          setIsLoading(false);
         }
-        setIsLoading(false);
       })
       .catch((res) => {
         setNotify({ type: 'danger', message: res.data.message });
@@ -2433,15 +2548,15 @@ export default function MyTicketComponent() {
         if (res.status === 200) {
           if (res.data.status == 1) {
             setUnpassedTickets(res.data.data.data);
-
+            setIsLoading(false);
             setUnpassedData({
               ...unpassedData,
               current_page: res.data.data.current_page
             });
           }
-        }
 
-        setIsLoading(false);
+          setIsLoading(false);
+        }
       })
       .catch((res) => {
         setNotify({ type: 'danger', message: res.data.message });
@@ -2449,10 +2564,18 @@ export default function MyTicketComponent() {
       });
   };
 
+  // const customStyles = {
+  //   rows: {
+  //     style: {
+  //       minHeight: "120px",
+  //     },
+  //   },
+  // };
+
   const customStyles = {
-    rows: {
+    table: {
       style: {
-        minHeight: '120px'
+        height: '100vh'
       }
     }
   };
@@ -2826,26 +2949,26 @@ export default function MyTicketComponent() {
                             fileName={`Export Filter Result ${formattedDate} ${formattedTimeString}`}
                           />
                         )}
-                        {isLoading && <TableLoadingSkelton />}
-
-                        {!isLoading &&
-                          (searchResult && searchResult.length > 0 ? (
-                            <DataTable
-                              columns={searchResultColumns}
-                              data={searchResult}
-                              defaultSortField="title"
-                              pagination
-                              fixedHeader={true}
-                              fixedHeaderScrollHeight={'500px'}
-                              selectableRows={false}
-                              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                              highlightOnHover={true}
-                            />
-                          ) : (
-                            <div className="text-center no-data-message">
-                              No data found
-                            </div>
-                          ))}
+                        {isLoading ? (
+                          <TableLoadingSkelton />
+                        ) : searchResult && searchResult?.length > 0 ? (
+                          <DataTable
+                            columns={searchResultColumns}
+                            data={searchResult}
+                            customStyles={customStyles}
+                            defaultSortField="title"
+                            paginations
+                            fixedHeader={true}
+                            fixedHeaderScrollHeight={'500px'}
+                            selectableRows={false}
+                            className="table msyDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                            highlightOnHover={true}
+                          />
+                        ) : (
+                          <div className="text-center mt-4">
+                            <p>No data found</p>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </Tab>
@@ -2864,22 +2987,26 @@ export default function MyTicketComponent() {
                         {isLoading && <TableLoadingSkelton />}
 
                         {!isLoading &&
-                          (assignedToMe && assignedToMe.length > 0 ? (
-                            <DataTable
-                              columns={assignedToMeColumns}
-                              data={assignedToMe}
-                              defaultSortField="title"
-                              fixedHeader={true}
-                              fixedHeaderScrollHeight={'700px'}
-                              selectableRows={false}
-                              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                              highlightOnHover={true}
-                            />
-                          ) : (
-                            <div className="text-center no-data-message">
-                              No data found
+                        assignedToMe &&
+                        assignedToMe?.length > 0 ? (
+                          <DataTable
+                            customStyles={customStyles}
+                            columns={assignedToMeColumns}
+                            data={assignedToMe}
+                            defaultSortField="title"
+                            fixedHeader={true}
+                            fixedHeaderScrollHeight={'500px'}
+                            selectableRows={false}
+                            highlightOnHover={true}
+                            responsive={true}
+                          />
+                        ) : (
+                          !isLoading && (
+                            <div className="text-center mt-4">
+                              <p>No data found</p>
                             </div>
-                          ))}
+                          )
+                        )}
 
                         <div className="back-to-top pull-right mt-2 mx-2">
                           <label className="mx-2">rows per page</label>
@@ -2931,26 +3058,25 @@ export default function MyTicketComponent() {
                           typeOf="CreatedByMe"
                         />
                       )}
-
-                      {isLoading && <TableLoadingSkelton />}
-                      {!isLoading &&
-                        (createdByMe && createdByMe.length > 0 ? (
-                          <DataTable
-                            customStyles={customStyles}
-                            columns={createdByMeColumns}
-                            data={createdByMe}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={'500px'}
-                            selectableRows={false}
-                            highlightOnHover={true}
-                            responsive={true}
-                          />
-                        ) : (
-                          <div className="text-center no-data-message">
-                            No data found
-                          </div>
-                        ))}
+                      {isLoading ? (
+                        <TableLoadingSkelton />
+                      ) : createdByMe && createdByMe?.length > 0 ? (
+                        <DataTable
+                          customStyles={customStyles}
+                          columns={createdByMeColumns}
+                          data={createdByMe}
+                          defaultSortField="title"
+                          fixedHeader={true}
+                          fixedHeaderScrollHeight={'500px'}
+                          selectableRows={false}
+                          highlightOnHover={true}
+                          responsive={true}
+                        />
+                      ) : (
+                        <div className="text-center">
+                          <p>No data found</p>
+                        </div>
+                      )}
 
                       <div className="back-to-top pull-right mt-6 mx-2">
                         <label className="mx-2">rows per page</label>
@@ -2995,7 +3121,7 @@ export default function MyTicketComponent() {
                     eventKey="departmenyourTaskt"
                     title="Departmentwise Tickets"
                   >
-                    <div className="card mb-3 ">
+                    <div className="card mb-3 mt-3">
                       <div className="card-body">
                         {departmentwiseTicket && (
                           <ExportAllTicketsToExcel
@@ -3004,26 +3130,25 @@ export default function MyTicketComponent() {
                             typeOf="DepartmentWise"
                           />
                         )}
-                        {isLoading && <TableLoadingSkelton />}
-
-                        {!isLoading &&
-                          (departmentwiseTicket &&
-                          departmentwiseTicket.length > 0 ? (
-                            <DataTable
-                              columns={departmentwisetTicketColumns}
-                              data={departmentwiseTicket}
-                              defaultSortField="title"
-                              fixedHeader={true}
-                              fixedHeaderScrollHeight={'800px'}
-                              selectableRows={false}
-                              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                              highlightOnHover={true}
-                            />
-                          ) : (
-                            <div className="text-center no-data-message">
-                              No data found
-                            </div>
-                          ))}
+                        {isLoading ? (
+                          <TableLoadingSkelton />
+                        ) : departmentwiseTicket &&
+                          departmentwiseTicket?.length > 0 ? (
+                          <DataTable
+                            columns={departmentwisetTicketColumns}
+                            customStyles={customStyles}
+                            data={departmentwiseTicket}
+                            defaultSortField="title"
+                            fixedHeader={true}
+                            fixedHeaderScrollHeight={'500px'}
+                            selectableRows={false}
+                            highlightOnHover={true}
+                          />
+                        ) : (
+                          <div className="text-center">
+                            <p>No data found</p>
+                          </div>
+                        )}
 
                         <div className="back-to-top pull-right mt-2 mx-2">
                           <label className="mx-2">rows per page</label>
@@ -3077,24 +3202,18 @@ export default function MyTicketComponent() {
                           />
                         )}
                         {isLoading && <TableLoadingSkelton />}
-                        {!isLoading &&
-                          (yourTask && yourTask.length > 0 ? (
-                            <DataTable
-                              columns={yourTaskColumns}
-                              data={yourTask}
-                              defaultSortField="title"
-                              fixedHeader={true}
-                              fixedHeaderScrollHeight={'500px'}
-                              selectableRows={false}
-                              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                              highlightOnHover={true}
-                            />
-                          ) : (
-                            <div className="text-center no-data-message">
-                              No data found
-                            </div>
-                          ))}
-
+                        {!isLoading && yourTask && (
+                          <DataTable
+                            columns={yourTaskColumns}
+                            data={yourTask}
+                            customStyles={customStyles}
+                            defaultSortField="title"
+                            fixedHeader={true}
+                            fixedHeaderScrollHeight={'500px'}
+                            selectableRows={false}
+                            highlightOnHover={true}
+                          />
+                        )}
                         <div className="back-to-top pull-right mt-2 mx-2">
                           <label className="mx-2">rows per page</label>
                           <select
@@ -3203,23 +3322,24 @@ export default function MyTicketComponent() {
                         </div>
                       </div>
 
-                      {isLoading && <TableLoadingSkelton />}
-
-                      {!isLoading &&
-                        (unpassedTickets && unpassedTickets.length > 0 ? (
-                          <DataTable
-                            columns={unpassedColumns}
-                            data={unpassedTickets}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={'500px'}
-                            selectableRows={false}
-                            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                            highlightOnHover={true}
-                          />
-                        ) : (
-                          <div className="text-center">No data found</div>
-                        ))}
+                      {isLoading ? (
+                        <TableLoadingSkelton />
+                      ) : unpassedTickets && unpassedTickets?.length > 0 ? (
+                        <DataTable
+                          columns={unpassedColumns}
+                          data={unpassedTickets}
+                          customStyles={customStyles}
+                          defaultSortField="title"
+                          fixedHeader={true}
+                          fixedHeaderScrollHeight={'500px'}
+                          selectableRows={false}
+                          highlightOnHover={true}
+                        />
+                      ) : (
+                        <div className="text-center mt-4">
+                          <p>No data found</p>
+                        </div>
+                      )}
 
                       <div className="back-to-top pull-right mt-2 mx-2">
                         <label className="mx-2">rows per page</label>

@@ -10,21 +10,26 @@ import AddEditSalaryModal from './AddEditSalaryModal';
 import StatusBadge from '../../../../components/custom/Badges/StatusBadge';
 import { getSalaryMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/salaryMaster';
 import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
-import { customSearchHandler, formatNumberWithCurrency } from '../../../../utils/customFunction';
+import {
+  customSearchHandler,
+  formatNumberWithCurrency
+} from '../../../../utils/customFunction';
 
 function SalaryMaster() {
   // // initial state
   const dispatch = useDispatch();
 
   // // redux state
-  const { salaryMasterList, isLoading } = useSelector(state => state?.salaryMaster);
+  const { salaryMasterList, isLoading } = useSelector(
+    (state) => state?.salaryMaster
+  );
 
   // // local state
   const [searchValue, setSearchValue] = useState('');
   const [addEditSalaryModal, setAddEditSalaryModal] = useState({
     type: '',
     data: '',
-    open: false,
+    open: false
   });
   const [filteredSalaryMasterList, setFilteredSalaryMasterList] = useState([]);
 
@@ -32,50 +37,78 @@ function SalaryMaster() {
   const columns = [
     {
       name: 'Action',
-      selector: row => (
+      selector: (row) => (
         <i
           className="icofont-edit text-primary cp"
-          onClick={() => setAddEditSalaryModal({ type: 'EDIT', data: row, open: true })}
+          onClick={() =>
+            setAddEditSalaryModal({ type: 'EDIT', data: row, open: true })
+          }
         />
       ),
       sortable: false,
-      width: '70px',
+      width: '70px'
     },
     {
       name: 'Sr. No.',
       selector: (row, index) => index + 1,
       sortable: false,
-      width: '70px',
+      width: '70px'
     },
     {
       name: 'Department',
-      selector: row => row?.department || '--',
+      selector: (row) =>
+        row?.department ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={
+              <Tooltip id={`tooltip-${row.id}`}>{row?.department}</Tooltip>
+            }
+          >
+            <span>{row?.department || '--'}</span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
       sortable: true,
-      width: '200px',
+      width: '200px'
     },
     {
       name: 'Designation',
-      selector: row => row?.designation || '--',
+      selector: (row) =>
+        row?.designation ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={
+              <Tooltip id={`tooltip-${row.id}`}>{row?.designation}</Tooltip>
+            }
+          >
+            <span>{row?.designation || '--'}</span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
       sortable: true,
-      width: '200px',
+      width: '200px'
     },
     {
       name: 'Location',
-      selector: row =>
+      selector: (row) =>
         row?.locations?.length ? (
           <OverlayTrigger
             placement="top"
             overlay={
               <Tooltip id={`tooltip-${row.id}`}>
-                {row?.locations?.map(location =>
-                  location?.location_name ? `${location?.location_name}, ` : '--',
+                {row?.locations?.map((location) =>
+                  location?.location_name
+                    ? `${location?.location_name}, `
+                    : '--'
                 )}
               </Tooltip>
             }
           >
             <span>
-              {row?.locations?.map(location =>
-                location?.location_name ? `${location?.location_name}, ` : '--',
+              {row?.locations?.map((location) =>
+                location?.location_name ? `${location?.location_name}, ` : '--'
               )}
             </span>
           </OverlayTrigger>
@@ -83,26 +116,27 @@ function SalaryMaster() {
           '--'
         ),
       sortable: true,
-      width: '300px',
+      width: '300px'
     },
     {
       name: 'Experience Level',
-      selector: row => row?.experience_level || '--',
+      selector: (row) => row?.experience_level || '--',
       sortable: true,
-      width: '150px',
+      width: '150px'
     },
     {
       name: 'Salary (Net)',
-      selector: row => (row?.max_salary ? formatNumberWithCurrency(row?.max_salary) : '--'),
+      selector: (row) =>
+        row?.max_salary ? formatNumberWithCurrency(row?.max_salary) : '--',
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
 
     {
       name: 'Remark',
       sortable: true,
       // selector: row => row?.remark || '--',
-      selector: row =>
+      selector: (row) =>
         row?.remark ? (
           <OverlayTrigger
             placement="top"
@@ -113,39 +147,39 @@ function SalaryMaster() {
         ) : (
           '--'
         ),
-      width: '300px',
+      width: '300px'
     },
     {
       name: 'Status',
-      selector: row => <StatusBadge status={row?.is_active} />,
+      selector: (row) => <StatusBadge status={row?.is_active} />,
       sortable: true,
-      width: '120px',
+      width: '120px'
     },
     {
       name: 'Created At',
-      selector: row => row?.created_at || '--',
+      selector: (row) => row?.created_at || '--',
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Created By',
-      selector: row => row?.created_by || '--',
+      selector: (row) => row?.created_by || '--',
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
 
     {
       name: 'Updated At',
-      selector: row => row?.updated_at || '--',
+      selector: (row) => row?.updated_at || '--',
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated By',
-      selector: row => row?.updated_by || '--',
+      selector: (row) => row?.updated_by || '--',
       sortable: true,
-      width: '175px',
-    },
+      width: '175px'
+    }
   ];
 
   // Function to handle search button click
@@ -160,12 +194,14 @@ function SalaryMaster() {
     setFilteredSalaryMasterList(salaryMasterList);
   };
 
-  const transformDataForExport = data => {
+  const transformDataForExport = (data) => {
     return data?.map((row, index) => ({
       'Sr No.': index + 1,
       Department: row?.department || '--',
       Designation: row?.designation || '--',
-      Location: row?.locations?.map(location => location?.location_name || '--').join(', '),
+      Location: row?.locations
+        ?.map((location) => location?.location_name || '--')
+        .join(', '),
       'Experience Level': row?.experience_level || '--',
       'Salary (Net)': row?.max_salary || '--',
       Remark: row?.remark || '--',
@@ -173,7 +209,7 @@ function SalaryMaster() {
       'Created At': row?.created_at || '--',
       'Created By': row?.created_by || '--',
       'Updated At': row?.updated_at || '--',
-      'Updated By': row?.updated_by || '--',
+      'Updated By': row?.updated_by || '--'
     }));
   };
 
@@ -201,7 +237,9 @@ function SalaryMaster() {
             return (
               <button
                 className="btn btn-dark px-5"
-                onClick={() => setAddEditSalaryModal({ type: 'ADD', data: '', open: true })}
+                onClick={() =>
+                  setAddEditSalaryModal({ type: 'ADD', data: '', open: true })
+                }
               >
                 <i className="icofont-plus me-2 fs-6" />
                 Add Salary
@@ -215,16 +253,29 @@ function SalaryMaster() {
               type="search"
               name="interview_search"
               value={searchValue}
-              onChange={e => setSearchValue(e?.target?.value)}
+              onChange={(e) => setSearchValue(e?.target?.value)}
               placeholder="Search..."
               className="form-control"
             />
           </Col>
-          <Col xs={12} md={5} xxl={4} className="d-flex justify-content-sm-end btn_container">
-            <button className="btn btn-warning text-white" type="button" onClick={handleSearch}>
+          <Col
+            xs={12}
+            md={5}
+            xxl={4}
+            className="d-flex justify-content-sm-end btn_container"
+          >
+            <button
+              className="btn btn-warning text-white"
+              type="button"
+              onClick={handleSearch}
+            >
               <i className="icofont-search-1 " /> Search
             </button>
-            <button className="btn btn-info text-white" type="button" onClick={handleReset}>
+            <button
+              className="btn btn-info text-white"
+              type="button"
+              onClick={handleReset}
+            >
               <i className="icofont-refresh text-white" /> Reset
             </button>
             <ExportToExcel
@@ -252,7 +303,7 @@ function SalaryMaster() {
         show={addEditSalaryModal?.open}
         type={addEditSalaryModal?.type}
         currentSalaryData={addEditSalaryModal?.data}
-        close={prev => setAddEditSalaryModal({ ...prev, open: false })}
+        close={(prev) => setAddEditSalaryModal({ ...prev, open: false })}
       />
     </>
   );

@@ -1,37 +1,39 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Modal } from "react-bootstrap";
-import DataTable from "react-data-table-component";
-import ErrorLogService from "../../../services/ErrorLogService";
-import CountryService from "../../../services/MastersService/CountryService";
-import PageHeader from "../../../components/Common/PageHeader";
-import Select from "react-select";
-import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
-import Alert from "../../../components/Common/Alert";
-import StateService from "../../../services/MastersService/StateService";
-import CityService from "../../../services/MastersService/CityService";
+import React, { useEffect, useState, useRef } from 'react';
+import { Modal } from 'react-bootstrap';
+import DataTable from 'react-data-table-component';
+import ErrorLogService from '../../../services/ErrorLogService';
+import CountryService from '../../../services/MastersService/CountryService';
+import PageHeader from '../../../components/Common/PageHeader';
+import Select from 'react-select';
+import { Astrick } from '../../../components/Utilities/Style';
+import * as Validation from '../../../components/Utilities/Validation';
+import Alert from '../../../components/Common/Alert';
+import StateService from '../../../services/MastersService/StateService';
+import CityService from '../../../services/MastersService/CityService';
 import {
   getAttachment,
-  deleteAttachment,
-} from "../../../services/OtherService/AttachmentService";
+  deleteAttachment
+} from '../../../services/OtherService/AttachmentService';
 import {
   _pincodeUrl,
   attachmentUrl,
-  userSessionData,
-} from "../../../settings/constants";
-import VendorMasterService from "../../../services/Bill Checking/Masters/VendorMasterService";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
-import { _attachmentUrl } from "../../../settings/constants";
-import PaymentTemplateService from "../../../services/Bill Checking/Masters/PaymentTemplateService";
-import BillCheckingTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
-import { Link } from "react-router-dom";
-import { _base } from "../../../settings/constants";
-import { Table } from "react-bootstrap";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
+  userSessionData
+} from '../../../settings/constants';
+import VendorMasterService from '../../../services/Bill Checking/Masters/VendorMasterService';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import { _attachmentUrl } from '../../../settings/constants';
+import PaymentTemplateService from '../../../services/Bill Checking/Masters/PaymentTemplateService';
+import BillCheckingTransactionService from '../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService';
+import { Link } from 'react-router-dom';
+import { _base } from '../../../settings/constants';
+import { Table } from 'react-bootstrap';
+import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function VendorMaster({ match }) {
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [panattachment, setPanAttachment] = useState([]);
   const [adharattachment, setAdharattachment] = useState([]);
   const [MSMEselectedFiles, setMSMESelectedFiles] = useState([]);
@@ -40,7 +42,7 @@ function VendorMaster({ match }) {
     useState([]);
   const [vendorId, setVendorId] = useState(null);
   const [attachment, setAttachment] = useState();
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = sessionStorage.getItem('role_id');
   const [checkRole, setCheckRole] = useState(null);
   const [uppercase, SetUpperCase] = useState();
   const [Panuppercase, SetPanUpeeerCase] = useState();
@@ -51,14 +53,14 @@ function VendorMaster({ match }) {
   const [notify, setNotify] = useState();
   const [modal, setModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
 
   const [bulkModal, setBulkModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
 
   const handleBulkModal = (data) => {
@@ -73,7 +75,7 @@ function VendorMaster({ match }) {
     return data.filter((d) => {
       for (const key in d) {
         if (
-          typeof d[key] === "string" &&
+          typeof d[key] === 'string' &&
           d[key].toLowerCase().includes(lowercaseSearch)
         ) {
           return true;
@@ -82,16 +84,25 @@ function VendorMaster({ match }) {
       return false;
     });
   }
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
+
+  //search function
 
   const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+    const filteredList = customSearchHandler(data, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
   };
 
   const handleModal = (data) => {
     if (data) {
-      if (data.modalData.consider_in_payment == "PETTY_CASH") {
+      if (data.modalData.consider_in_payment == 'PETTY_CASH') {
         setConsiderInPay(true);
       } else {
         setConsiderInPay(false);
@@ -121,8 +132,8 @@ function VendorMaster({ match }) {
   const panAttachmentRef = useRef(null);
   const columns = [
     {
-      name: "Action",
-      className: "font-weight-bold",
+      name: 'Action',
+      className: 'font-weight-bold',
       selector: (row) => {},
 
       sortable: false,
@@ -149,7 +160,7 @@ function VendorMaster({ match }) {
               handleModal({
                 showModal: true,
                 modalData: row,
-                modalHeader: "Edit Vendor",
+                modalHeader: 'Edit Vendor'
               });
               setError(null);
             }}
@@ -159,40 +170,40 @@ function VendorMaster({ match }) {
           <Link
             to={`/${_base}/ViewVendorDetails/` + row.id}
             className="btn btn-sm btn-primary text-white"
-            style={{ borderRadius: "50%", height: "30px", marginLeft: "5px" }}
+            style={{ borderRadius: '50%', height: '30px', marginLeft: '5px' }}
           >
             <i className="icofont-eye-alt"></i>
           </Link>
         </div>
-      ),
+      )
     },
-    { name: "ID", id: "id", selector: (row) => row.id, sortable: true },
+    { name: 'ID', id: 'id', selector: (row) => row.id, sortable: true },
     {
-      name: "Status",
+      name: 'Status',
       selector: (row) => row.is_active,
       sortable: false,
 
       cell: (row) => (
         <div>
           {row.is_active === 1 && (
-            <span style={{ width: "60px" }} className="badge bg-primary">
+            <span style={{ width: '60px' }} className="badge bg-primary">
               Active
             </span>
           )}
           {row.is_active === 0 && (
-            <span style={{ width: "60px" }} className="badge bg-danger">
+            <span style={{ width: '60px' }} className="badge bg-danger">
               Deactive
             </span>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: "Vendor Name",
+      name: 'Vendor Name',
       selector: (row) => row.vendor_name,
       sortable: true,
-      width: "160px",
+      width: '160px',
 
       cell: (row) => (
         <div
@@ -204,23 +215,23 @@ function VendorMaster({ match }) {
             <OverlayTrigger overlay={<Tooltip>{row.vendor_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.vendor_name && row.vendor_name.length < 30
                     ? row.vendor_name
-                    : row.vendor_name.substring(0, 10) + "...."}
+                    : row.vendor_name.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: "Address",
+      name: 'Address',
       selector: (row) => row.address,
       sortable: true,
-      width: "160px",
+      width: '160px',
 
       cell: (row) => (
         <div
@@ -232,28 +243,28 @@ function VendorMaster({ match }) {
             <OverlayTrigger overlay={<Tooltip>{row.address} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.address && row.address.length < 30
                     ? row.address
-                    : row.address.substring(0, 10) + "...."}
+                    : row.address.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
-    { name: "Country", selector: (row) => row.country, sortable: true },
-    { name: "State", selector: (row) => row.state, sortable: true },
-    { name: "City", selector: (row) => row.city, sortable: true },
-    { name: "Pincode", selector: (row) => row.pincode, sortable: true },
-    { name: "Mobile", selector: (row) => row.mobile_no, sortable: true },
+    { name: 'Country', selector: (row) => row.country, sortable: true },
+    { name: 'State', selector: (row) => row.state, sortable: true },
+    { name: 'City', selector: (row) => row.city, sortable: true },
+    { name: 'Pincode', selector: (row) => row.pincode, sortable: true },
+    { name: 'Mobile', selector: (row) => row.mobile_no, sortable: true },
 
     {
-      name: "Email",
+      name: 'Email',
       selector: (row) => row.email,
       sortable: true,
-      width: "160px",
+      width: '160px',
 
       cell: (row) => (
         <div
@@ -265,23 +276,23 @@ function VendorMaster({ match }) {
             <OverlayTrigger overlay={<Tooltip>{row.email} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.email && row.email.length < 20
                     ? row.email
-                    : row.email.substring(0, 15) + "...."}
+                    : row.email.substring(0, 15) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: "Aadhaar",
+      name: 'Aadhaar',
       selector: (row) => row.adhar_no,
       sortable: true,
-      width: "160px",
+      width: '160px',
 
       cell: (row) => (
         <div
@@ -293,23 +304,23 @@ function VendorMaster({ match }) {
             <OverlayTrigger overlay={<Tooltip>{row.adhar_no} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.adhar_no && row.adhar_no.length < 20
                     ? row.adhar_no
-                    : row.adhar_no.substring(0, 15) + "...."}
+                    : row.adhar_no.substring(0, 15) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: " PAN ",
+      name: ' PAN ',
       selector: (row) => row.pan_no,
       sortable: true,
-      width: "160px",
+      width: '160px',
 
       cell: (row) => (
         <div
@@ -321,24 +332,24 @@ function VendorMaster({ match }) {
             <OverlayTrigger overlay={<Tooltip>{row.pan_no} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.pan_no && row.pan_no.length < 20
                     ? row.pan_no
-                    : row.pan_no.substring(0, 15) + "...."}
+                    : row.pan_no.substring(0, 15) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
-    { name: " MSME NO ", selector: (row) => row.msme_no, sortable: true },
+    { name: ' MSME NO ', selector: (row) => row.msme_no, sortable: true },
 
     {
-      name: " GST NO ",
+      name: ' GST NO ',
       selector: (row) => row.gst_no,
       sortable: true,
-      width: "160px",
+      width: '160px',
 
       cell: (row) => (
         <div
@@ -350,29 +361,29 @@ function VendorMaster({ match }) {
             <OverlayTrigger overlay={<Tooltip>{row.gst_no} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.gst_no && row.gst_no.length < 20
                     ? row.gst_no
-                    : row.gst_no.substring(0, 15) + "...."}
+                    : row.gst_no.substring(0, 15) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
-    { name: " Bank Name ", selector: (row) => row.bank_name, sortable: true },
+    { name: ' Bank Name ', selector: (row) => row.bank_name, sortable: true },
     {
-      name: " Bank Branch Name ",
+      name: ' Bank Branch Name ',
       selector: (row) => row.bank_branch_name,
-      sortable: true,
+      sortable: true
     },
 
     {
-      name: " Account No ",
+      name: ' Account No ',
       selector: (row) => row.account_no,
       sortable: true,
-      width: "160px",
+      width: '160px',
 
       cell: (row) => (
         <div
@@ -384,23 +395,23 @@ function VendorMaster({ match }) {
             <OverlayTrigger overlay={<Tooltip>{row.account_no} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.account_no && row.account_no.length < 20
                     ? row.account_no
-                    : row.account_no.substring(0, 10) + "...."}
+                    : row.account_no.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: " IFSC Code ",
+      name: ' IFSC Code ',
       selector: (row) => row.ifsc_code,
       sortable: true,
-      width: "160px",
+      width: '160px',
 
       cell: (row) => (
         <div
@@ -412,23 +423,23 @@ function VendorMaster({ match }) {
             <OverlayTrigger overlay={<Tooltip>{row.ifsc_code} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.ifsc_code && row.ifsc_code.length < 20
                     ? row.ifsc_code
-                    : row.ifsc_code.substring(0, 10) + "...."}
+                    : row.ifsc_code.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: " Benificiary Name ",
+      name: ' Benificiary Name ',
       selector: (row) => row.beneficiary_name,
       sortable: true,
-      width: "160px",
+      width: '160px',
 
       cell: (row) => (
         <div
@@ -442,45 +453,45 @@ function VendorMaster({ match }) {
             >
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.beneficiary_name && row.beneficiary_name.length < 20
                     ? row.beneficiary_name
-                    : row.beneficiary_name.substring(0, 15) + "...."}
+                    : row.beneficiary_name.substring(0, 15) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: " Consider In Pay ",
+      name: ' Consider In Pay ',
       selector: (row) => row.consider_in_payment,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "ERP Account Name ",
+      name: 'ERP Account Name ',
       selector: (row) => row.acme_account_name,
-      sortable: true,
+      sortable: true
     },
     {
-      name: " Ref Number ",
+      name: ' Ref Number ',
       selector: (row) => row.reference_number,
-      sortable: true,
+      sortable: true
     },
     {
-      name: " Card Number ",
+      name: ' Card Number ',
       selector: (row) => row.card_number,
-      sortable: true,
+      sortable: true
     },
-    { name: " Narration ", selector: (row) => row.narration, sortable: true },
+    { name: ' Narration ', selector: (row) => row.narration, sortable: true },
 
     {
-      name: " Template Name ",
+      name: ' Template Name ',
       selector: (row) => row.template_name,
       sortable: true,
-      width: "160px",
+      width: '160px',
 
       cell: (row) => (
         <div
@@ -492,41 +503,41 @@ function VendorMaster({ match }) {
             <OverlayTrigger overlay={<Tooltip>{row.template_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.template_name && row.template_name.length < 20
                     ? row.template_name
-                    : row.template_name.substring(0, 15) + "...."}
+                    : row.template_name.substring(0, 15) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
     {
-      name: " Created At ",
-      width: "200px",
+      name: ' Created At ',
+      width: '200px',
       selector: (row) => row.created_at,
-      sortable: true,
+      sortable: true
     },
     {
-      name: " Created By ",
-      width: "200px",
+      name: ' Created By ',
+      width: '200px',
       selector: (row) => row.created_by_name,
-      sortable: true,
+      sortable: true
     },
     {
-      name: " Updated At ",
-      width: "200px",
+      name: ' Updated At ',
+      width: '200px',
       selector: (row) => row.updated_at,
-      sortable: true,
+      sortable: true
     },
     {
-      name: " Updated By ",
-      width: "200px",
+      name: ' Updated By ',
+      width: '200px',
       selector: (row) => row.updated_by_name,
-      sortable: true,
-    },
+      sortable: true
+    }
   ];
 
   const loadData = async () => {
@@ -582,7 +593,7 @@ function VendorMaster({ match }) {
             acme_account_name: temp[key].acme_account_name,
             reference_number: temp[key].reference_number,
             card_number: temp[key].card_number,
-            narration: temp[key].narration,
+            narration: temp[key].narration
           });
         }
         setData(null);
@@ -609,7 +620,7 @@ function VendorMaster({ match }) {
             .filter((d) => d.is_active === 1)
             .map((d) => ({
               value: d.id,
-              label: d.country.charAt(0).toUpperCase() + d.country.slice(1),
+              label: d.country.charAt(0).toUpperCase() + d.country.slice(1)
             }))
         );
       }
@@ -630,7 +641,7 @@ function VendorMaster({ match }) {
         setStateDropdown(
           res.data.data.map((d) => ({
             value: d.id,
-            label: d.state,
+            label: d.state
           }))
         );
       }
@@ -644,7 +655,7 @@ function VendorMaster({ match }) {
             .filter((d) => d.is_active === 1)
             .map((i) => ({
               value: i.id,
-              label: i.city,
+              label: i.city
             }))
         );
       }
@@ -667,14 +678,14 @@ function VendorMaster({ match }) {
   const cityRef = useRef();
   const [considerInPay, setConsiderInPay] = useState();
   const [considerInPayment, setConsiderInPayment] = useState(false);
-  const [consider, setConsider] = useState("YES");
+  const [consider, setConsider] = useState('YES');
 
   const handleConsideredInPay = (e) => {
     setConsider(e.target.value);
     setConsiderInPayment(e.target.value);
 
     if (
-      e.target.value === "NO" ||
+      e.target.value === 'NO' ||
       (considerInRef &&
         considerInRef.current &&
         considerInRef.current.commonProps &&
@@ -688,7 +699,7 @@ function VendorMaster({ match }) {
       setConsiderInPayment(false);
     }
 
-    if (e.target.value === "PETTY_CASH") {
+    if (e.target.value === 'PETTY_CASH') {
       setConsiderInPay(true);
     } else {
       setConsiderInPay(false);
@@ -701,7 +712,7 @@ function VendorMaster({ match }) {
     setError(null);
     setNotify(null);
     var flag = 1;
-    var msg = "";
+    var msg = '';
 
     if (panattachment?.length > 0) {
       for (let i = 0; i < panattachment.length; i++) {
@@ -711,72 +722,72 @@ function VendorMaster({ match }) {
       }
     }
     if (inputState.VendorNameErr) {
-      alert("Invalid Vendor Name");
+      alert('Invalid Vendor Name');
       return;
     }
     if (inputState.contactNoErr) {
-      alert("Invalid contact Number");
+      alert('Invalid contact Number');
       return;
     }
     if (inputState.emailError) {
-      alert("Invalid Email");
+      alert('Invalid Email');
       return;
     }
     if (inputState.AddressErr) {
-      alert("Invaild Address");
+      alert('Invaild Address');
       return;
     }
     if (inputState.PinCodeErr) {
-      alert("Invalid Pincode");
+      alert('Invalid Pincode');
       return;
     }
     if (inputState.AdharNumErr) {
-      alert("Invalid Adhaar Number ");
+      alert('Invalid Adhaar Number ');
       return;
     }
     if (inputState.PanNumberErr) {
-      alert("Invalid Pan Number ");
+      alert('Invalid Pan Number ');
       return;
     }
 
     if (inputState.GSTNumberErr) {
-      alert("Invalid GST Number ");
+      alert('Invalid GST Number ');
       return;
     }
 
     if (inputState.BankNameErr) {
-      alert("Invalid Bank Name ");
+      alert('Invalid Bank Name ');
       return;
     }
     if (inputState.BranchNameErr) {
-      alert("Invalid Bank Branch Name ");
+      alert('Invalid Bank Branch Name ');
       return;
     }
 
     if (inputState.AccountNumberErr) {
-      alert("Invalid Account Number ");
+      alert('Invalid Account Number ');
       return;
     }
 
     if (inputState.ifscCodeErr) {
-      alert("Invalid IFSC Number ");
+      alert('Invalid IFSC Number ');
       return;
     }
 
     if (inputState.BeneficiaryErr) {
-      alert("Invalid Beneficiary Name ");
+      alert('Invalid Beneficiary Name ');
       return;
     }
 
     if (inputState.ERPAccErr) {
-      alert("Invalid ERP Acc Name ");
+      alert('Invalid ERP Acc Name ');
       return;
     }
     if (inputState.CardNumberError) {
-      alert("Invalid Card Nubmer");
+      alert('Invalid Card Nubmer');
     }
     if (inputState.RefNumberError) {
-      alert("Invalid Referance Nubmer");
+      alert('Invalid Referance Nubmer');
     }
 
     if (!id) {
@@ -787,22 +798,22 @@ function VendorMaster({ match }) {
         considerInRef.current.commonProps.hasValue === false &&
         considerInPayment === false
       ) {
-        alert("please select the template");
+        alert('please select the template');
         e.preventDefault();
         flag = 0;
       }
       if (countryRef && countryRef.current.commonProps.hasValue == false) {
-        alert("please select the country");
+        alert('please select the country');
         e.preventDefault();
         flag = 0;
       }
       if (stateRef && stateRef.current.commonProps.hasValue == false) {
-        alert("please select the state");
+        alert('please select the state');
         e.preventDefault();
         flag = 0;
       }
       if (cityRef && cityRef.current.commonProps.hasValue == false) {
-        alert("please select the city");
+        alert('please select the city');
         e.preventDefault();
         flag = 0;
       }
@@ -813,22 +824,22 @@ function VendorMaster({ match }) {
           .then((res) => {
             if (res.status === 200) {
               if (res.data.status === 1) {
-                setNotify({ type: "success", message: res.data.message });
-                setModal({ showModal: false, modalData: "", modalHeader: "" });
+                setNotify({ type: 'success', message: res.data.message });
+                setModal({ showModal: false, modalData: '', modalHeader: '' });
                 setPanAttachment([]);
                 loadData();
               } else {
-                setError({ type: "danger", message: res.data.message });
-                setModal({ showModal: true, modalData: "", modalHeader: "" });
+                setError({ type: 'danger', message: res.data.message });
+                setModal({ showModal: true, modalData: '', modalHeader: '' });
               }
             } else {
-              setError({ type: "danger", message: res.data.message });
-              setModal({ showModal: true, modalData: "", modalHeader: "" });
+              setError({ type: 'danger', message: res.data.message });
+              setModal({ showModal: true, modalData: '', modalHeader: '' });
 
               new ErrorLogService().sendErrorLog(
-                "Vendor",
-                "Create_Vendor",
-                "INSERT",
+                'Vendor',
+                'Create_Vendor',
+                'INSERT',
                 res.message
               );
             }
@@ -836,11 +847,11 @@ function VendorMaster({ match }) {
           .catch((error) => {
             const { response } = error;
             const { request, ...errorObject } = response;
-            setError({ type: "danger", message: "Request Error !!!" });
+            setError({ type: 'danger', message: 'Request Error !!!' });
             new ErrorLogService().sendErrorLog(
-              "Vendor",
-              "Create_Vendor",
-              "INSERT",
+              'Vendor',
+              'Create_Vendor',
+              'INSERT',
               errorObject.data.message
             );
           });
@@ -851,24 +862,24 @@ function VendorMaster({ match }) {
         considerInRef.current &&
         considerInRef.current.commonProps &&
         considerInRef.current.commonProps.hasValue === false &&
-        modal.modalData.consider_in_payment !== "NO"
+        modal.modalData.consider_in_payment !== 'NO'
       ) {
-        alert("please select the template");
+        alert('please select the template');
         e.preventDefault();
         flag = 0;
       }
       if (countryRef && countryRef.current.commonProps.hasValue == false) {
-        alert("please select the country");
+        alert('please select the country');
         e.preventDefault();
         flag = 0;
       }
       if (stateRef && stateRef.current.commonProps.hasValue == false) {
-        alert("please select the state");
+        alert('please select the state');
         e.preventDefault();
         flag = 0;
       }
       if (cityRef && cityRef.current.commonProps.hasValue == false) {
-        alert("please select the city");
+        alert('please select the city');
         e.preventDefault();
         flag = 0;
       }
@@ -879,18 +890,18 @@ function VendorMaster({ match }) {
           .then((res) => {
             if (res.status === 200) {
               if (res.data.status === 1) {
-                setNotify({ type: "success", message: res.data.message });
-                setModal({ showModal: false, modalData: "", modalHeader: "" });
+                setNotify({ type: 'success', message: res.data.message });
+                setModal({ showModal: false, modalData: '', modalHeader: '' });
                 loadData();
               } else {
-                setError({ type: "danger", message: res.data.message });
+                setError({ type: 'danger', message: res.data.message });
               }
             } else {
-              setError({ type: "danger", message: res.data.message });
+              setError({ type: 'danger', message: res.data.message });
               new ErrorLogService().sendErrorLog(
-                "Vendor",
-                "Create_Vendor",
-                "INSERT",
+                'Vendor',
+                'Create_Vendor',
+                'INSERT',
                 res.message
               );
             }
@@ -898,11 +909,11 @@ function VendorMaster({ match }) {
           .catch((error) => {
             const { response } = error;
             const { request, ...errorObject } = response;
-            setError({ type: "danger", message: "Request Error !!!" });
+            setError({ type: 'danger', message: 'Request Error !!!' });
             new ErrorLogService().sendErrorLog(
-              "Vendor",
-              "Create_Vendor",
-              "INSERT",
+              'Vendor',
+              'Create_Vendor',
+              'INSERT',
               errorObject.data.message
             );
           });
@@ -913,13 +924,20 @@ function VendorMaster({ match }) {
   const [erp, setErp] = useState();
 
   const handleErp = (e) => {
-    var erpValue = document.getElementById("vendor_name");
-    document.getElementById("acme_account_name").value = erpValue.value;
+    var erpValue = document.getElementById('vendor_name');
+    document.getElementById('acme_account_name').value = erpValue.value;
   };
 
   useEffect(() => {
     loadData();
   }, []);
+  useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   function validateIFSCCode(ifscCode) {
     const regex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
@@ -933,7 +951,7 @@ function VendorMaster({ match }) {
   const loadAttachment = async (id) => {
     setError(null);
     if (id) {
-      await getAttachment(id, "BILL_CHECK").then((res) => {
+      await getAttachment(id, 'BILL_CHECK').then((res) => {
         if (res.status === 200) {
           setAttachment(null);
           setAttachment(res.data.data);
@@ -951,13 +969,13 @@ function VendorMaster({ match }) {
     id = null,
     attachmentId
   ) => {
-    if (type === "UPLOAD") {
+    if (type === 'UPLOAD') {
       if (
         gstAttachment?.length + (gstInputRef?.current?.files?.length || 0) >
         2
       ) {
-        gstInputRef.current.value = "";
-        alert("Cannot attach more than 2 attachments");
+        gstInputRef.current.value = '';
+        alert('Cannot attach more than 2 attachments');
         return;
       }
       const files = gstInputRef?.current?.files;
@@ -966,14 +984,14 @@ function VendorMaster({ match }) {
           let tempSelectedFile = {
             file: files[i],
             fileName: files[i].name,
-            tempUrl: URL.createObjectURL(files[i]),
+            tempUrl: URL.createObjectURL(files[i])
           };
           setGstAttachment((prevState) => [...prevState, tempSelectedFile]);
         }
       } else {
       }
-    } else if (type === "DELETE") {
-      gstInputRef.current.value = "";
+    } else if (type === 'DELETE') {
+      gstInputRef.current.value = '';
       let filteredFileArray = gstAttachment.filter(
         (item, index) => id !== index
       );
@@ -1003,14 +1021,14 @@ function VendorMaster({ match }) {
     id = null,
     attachmentId
   ) => {
-    if (type === "UPLOAD") {
+    if (type === 'UPLOAD') {
       if (
         panattachment?.length +
           (panAttachmentRef?.current?.files?.length || 0) >
         2
       ) {
-        panAttachmentRef.current.value = "";
-        alert("Cannot attach more than 2 attachments");
+        panAttachmentRef.current.value = '';
+        alert('Cannot attach more than 2 attachments');
 
         return;
       }
@@ -1020,14 +1038,14 @@ function VendorMaster({ match }) {
           let tempSelectedFile = {
             file: files[i],
             fileName: files[i].name,
-            tempUrl: URL.createObjectURL(files[i]),
+            tempUrl: URL.createObjectURL(files[i])
           };
           setPanAttachment((prevState) => [...prevState, tempSelectedFile]);
         }
       } else {
       }
-    } else if (type === "DELETE") {
-      panAttachmentRef.current.value = "";
+    } else if (type === 'DELETE') {
+      panAttachmentRef.current.value = '';
       let filteredFileArray = panattachment.filter(
         (item, index) => id !== index
       );
@@ -1050,14 +1068,14 @@ function VendorMaster({ match }) {
     id = null,
     attachmentId
   ) => {
-    if (type === "UPLOAD") {
+    if (type === 'UPLOAD') {
       if (
         adharattachment?.length +
           (aadharAttachmentRef?.current?.files?.length || 0) >
         2
       ) {
-        aadharAttachmentRef.current.value = "";
-        alert("Cannot attach more than 2 attachments");
+        aadharAttachmentRef.current.value = '';
+        alert('Cannot attach more than 2 attachments');
         return;
       }
       const files = aadharAttachmentRef?.current?.files;
@@ -1066,14 +1084,14 @@ function VendorMaster({ match }) {
           let tempSelectedFile = {
             file: files[i],
             fileName: files[i].name,
-            tempUrl: URL.createObjectURL(files[i]),
+            tempUrl: URL.createObjectURL(files[i])
           };
           setAdharattachment((prevState) => [...prevState, tempSelectedFile]);
         }
       } else {
       }
-    } else if (type === "DELETE") {
-      aadharAttachmentRef.current.value = "";
+    } else if (type === 'DELETE') {
+      aadharAttachmentRef.current.value = '';
       let filteredFileArray = adharattachment.filter(
         (item, index) => id !== index
       );
@@ -1097,14 +1115,14 @@ function VendorMaster({ match }) {
     id = null,
     attachmentId
   ) => {
-    if (type === "UPLOAD") {
+    if (type === 'UPLOAD') {
       if (
         MSMEselectedFiles?.length +
           (msmeInputRef?.current?.files?.length || 0) >
         2
       ) {
-        msmeInputRef.current.value = "";
-        alert("Cannot attach more than 2 attachments");
+        msmeInputRef.current.value = '';
+        alert('Cannot attach more than 2 attachments');
 
         return;
       }
@@ -1114,14 +1132,14 @@ function VendorMaster({ match }) {
           let tempSelectedFile = {
             file: files[i],
             fileName: files[i].name,
-            tempUrl: URL.createObjectURL(files[i]),
+            tempUrl: URL.createObjectURL(files[i])
           };
           setMSMESelectedFiles((prevState) => [...prevState, tempSelectedFile]);
         }
       } else {
       }
-    } else if (type === "DELETE") {
-      msmeInputRef.current.value = "";
+    } else if (type === 'DELETE') {
+      msmeInputRef.current.value = '';
       let filteredFileArray = MSMEselectedFiles.filter(
         (item, index) => id !== index
       );
@@ -1145,14 +1163,14 @@ function VendorMaster({ match }) {
     id = null,
     attachmentId
   ) => {
-    if (type === "UPLOAD") {
+    if (type === 'UPLOAD') {
       if (
         passBookSelectedFiles?.length +
           (passbookInputRef?.current?.files?.length || 0) >
         2
       ) {
-        passbookInputRef.current.value = "";
-        alert("Cannot attach more than 2 attachments");
+        passbookInputRef.current.value = '';
+        alert('Cannot attach more than 2 attachments');
 
         return;
       }
@@ -1162,17 +1180,17 @@ function VendorMaster({ match }) {
           let tempSelectedFile = {
             file: files[i],
             fileName: files[i].name,
-            tempUrl: URL.createObjectURL(files[i]),
+            tempUrl: URL.createObjectURL(files[i])
           };
           setPassBookSelectedFiles((prevState) => [
             ...prevState,
-            tempSelectedFile,
+            tempSelectedFile
           ]);
         }
       } else {
       }
-    } else if (type === "DELETE") {
-      passbookInputRef.current.value = "";
+    } else if (type === 'DELETE') {
+      passbookInputRef.current.value = '';
       let filteredFileArray = passBookSelectedFiles.filter(
         (item, index) => id !== index
       );
@@ -1198,14 +1216,14 @@ function VendorMaster({ match }) {
     id = null,
     attachmentId
   ) => {
-    if (type === "UPLOAD") {
+    if (type === 'UPLOAD') {
       if (
         chequeAttachmentSelectedFiles?.length +
           (chequeInputRef?.current?.files?.length || 0) >
         2
       ) {
-        chequeInputRef.current.value = "";
-        alert("Cannot attach more than 2 attachments");
+        chequeInputRef.current.value = '';
+        alert('Cannot attach more than 2 attachments');
         return;
       }
       const files = chequeInputRef?.current?.files;
@@ -1214,17 +1232,17 @@ function VendorMaster({ match }) {
           let tempSelectedFile = {
             file: files[i],
             fileName: files[i].name,
-            tempUrl: URL.createObjectURL(files[i]),
+            tempUrl: URL.createObjectURL(files[i])
           };
           setChequeAttachmentSelectedFiles((prevState) => [
             ...prevState,
-            tempSelectedFile,
+            tempSelectedFile
           ]);
         }
       } else {
       }
-    } else if (type === "DELETE") {
-      chequeInputRef.current.value = "";
+    } else if (type === 'DELETE') {
+      chequeInputRef.current.value = '';
       let filteredFileArray = chequeAttachmentSelectedFiles.filter(
         (item, index) => id !== index
       );
@@ -1246,41 +1264,41 @@ function VendorMaster({ match }) {
   const [emailError, setEmailError] = useState(null);
 
   const [mailError, setMailError] = useState(false);
-  const [bankNameError, setBankNameError] = useState("");
+  const [bankNameError, setBankNameError] = useState('');
 
   const [inputState, setInputState] = useState({
-    emailErr: "",
-    VendorNameErr: "",
-    AddressErr: "",
-    PinCodeErr: "",
-    AdharNumErr: "",
-    PanNumberErr: "",
-    GSTNumberErr: "",
-    MSMENumberErr: "",
-    BankNameErr: "",
-    BranchNameErr: "",
-    AccountNumberErr: "",
-    ifscCodeErr: "",
-    BeneficiaryErr: "",
-    ERPAccErr: "",
-    bankNameError: "",
-    branchNameError: "",
-    CardNumberError: "",
-    RefNumberError: "",
+    emailErr: '',
+    VendorNameErr: '',
+    AddressErr: '',
+    PinCodeErr: '',
+    AdharNumErr: '',
+    PanNumberErr: '',
+    GSTNumberErr: '',
+    MSMENumberErr: '',
+    BankNameErr: '',
+    BranchNameErr: '',
+    AccountNumberErr: '',
+    ifscCodeErr: '',
+    BeneficiaryErr: '',
+    ERPAccErr: '',
+    bankNameError: '',
+    branchNameError: '',
+    CardNumberError: '',
+    RefNumberError: ''
   });
 
   const handleEmail = (e) => {
     const email = e.target.value;
     const emailRegex =
       /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
-    if (email === "") {
-      setEmailError("");
+    if (email === '') {
+      setEmailError('');
       setMailError(false);
     } else if (emailRegex.test(email) === false) {
-      setEmailError("Invalid Email");
+      setEmailError('Invalid Email');
       setMailError(true);
     } else {
-      setEmailError("");
+      setEmailError('');
       setMailError(false);
     }
   };
@@ -1290,7 +1308,7 @@ function VendorMaster({ match }) {
   const [contactNumber, setContactNumber] = useState(null);
 
   const url = `${_attachmentUrl}/${modal.modalData.pan_attachment}`;
-  const fileName = url.split("/").pop();
+  const fileName = url.split('/').pop();
 
   const handleContactValidation = (e) => {
     const contactValidation = e.target.value;
@@ -1298,27 +1316,27 @@ function VendorMaster({ match }) {
     if (contactValidation.length === 0) {
       setInputState({
         ...state,
-        contactNoErr: "",
+        contactNoErr: ''
       });
       return;
     }
     if (
-      contactValidation.charAt(0) == "9" ||
-      contactValidation.charAt(0) == "8" ||
-      contactValidation.charAt(0) == "7" ||
-      contactValidation.charAt(0) == "6" ||
-      contactValidation.charAt(0) == "4"
+      contactValidation.charAt(0) == '9' ||
+      contactValidation.charAt(0) == '8' ||
+      contactValidation.charAt(0) == '7' ||
+      contactValidation.charAt(0) == '6' ||
+      contactValidation.charAt(0) == '4'
     ) {
-      setInputState({ ...state, contactNoErr: "" });
+      setInputState({ ...state, contactNoErr: '' });
       setContactValid(false);
     } else {
       setContactValid(true);
     }
 
-    if (contactValidation.includes("000000000")) {
+    if (contactValidation.includes('000000000')) {
       setInputState({
         ...state,
-        contactNoErr: "System not accepting 9 Consecutive Zeros here.",
+        contactNoErr: 'System not accepting 9 Consecutive Zeros here.'
       });
       setContactValid(true);
     }
@@ -1327,13 +1345,13 @@ function VendorMaster({ match }) {
       if (contactValidation.length === 0) {
         setInputState({
           ...state,
-          contactNoErr: "please enter Mobile Number",
+          contactNoErr: 'please enter Mobile Number'
         });
         setContactValid(true);
       }
       setInputState({
         ...state,
-        contactNoErr: "Invalid Mobile Number",
+        contactNoErr: 'Invalid Mobile Number'
       });
       setContactValid(true);
     }
@@ -1344,7 +1362,7 @@ function VendorMaster({ match }) {
   };
 
   const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
+    if (event.key === 'Enter') {
       handleSearch();
     }
   };
@@ -1377,54 +1395,54 @@ function VendorMaster({ match }) {
   };
 
   const validFileTypes = [
-    "image/png",
-    "image/jpeg",
-    "image/jpg",
-    "application/pdf",
+    'image/png',
+    'image/jpeg',
+    'image/jpg',
+    'application/pdf'
   ];
 
   const maxLengthCheck = (e, type) => {
-    if (type == "ADHAR") {
+    if (type == 'ADHAR') {
       if (e.target.files.length > 2) {
-        alert("You Can Upload Only 2 Attachments");
-        document.getElementById("adhar_attachment").value = null;
+        alert('You Can Upload Only 2 Attachments');
+        document.getElementById('adhar_attachment').value = null;
       }
     }
 
-    if (type == "PAN") {
+    if (type == 'PAN') {
       if (e.target.files.length > 2) {
-        alert("You Can Upload Only 2 Attachments");
-        document.getElementById("pan_attachment").value = null;
+        alert('You Can Upload Only 2 Attachments');
+        document.getElementById('pan_attachment').value = null;
         setPanAttachment([]);
       }
     }
 
-    if (type == "MSME") {
+    if (type == 'MSME') {
       if (e.target.files.length > 2) {
-        alert("You Can Upload Only 2 Attachments");
-        document.getElementById("msme_attachment").value = null;
+        alert('You Can Upload Only 2 Attachments');
+        document.getElementById('msme_attachment').value = null;
         setMSMESelectedFiles([]);
       }
     }
-    if (type == "GST") {
+    if (type == 'GST') {
       if (e.target.files.length > 2) {
-        alert("You Can Upload Only 2 Attachments");
-        document.getElementById("gst_attachment").value = null;
+        alert('You Can Upload Only 2 Attachments');
+        document.getElementById('gst_attachment').value = null;
         setGstAttachment([]);
       }
     }
-    if (type == "PASSBOOK") {
+    if (type == 'PASSBOOK') {
       if (e.target.files.length > 2) {
-        alert("You Can Upload Only 2 Attachments");
-        document.getElementById("bank_passbook_attachment").value = null;
+        alert('You Can Upload Only 2 Attachments');
+        document.getElementById('bank_passbook_attachment').value = null;
         setPassBookSelectedFiles([]);
       }
     }
 
-    if (type == "CHEQUE") {
+    if (type == 'CHEQUE') {
       if (e.target.files.length > 2) {
-        alert("You Can Upload Only 2 Attachments");
-        document.getElementById("cheque_attachment").value = null;
+        alert('You Can Upload Only 2 Attachments');
+        document.getElementById('cheque_attachment').value = null;
         setChequeAttachmentSelectedFiles([]);
       }
     }
@@ -1433,7 +1451,7 @@ function VendorMaster({ match }) {
   // Expandable Component to render attachments
   const ExpandedComponent = ({ data }) => (
     <pre>
-      <Table style={{ width: "30%" }}>
+      <Table style={{ width: '30%' }}>
         <thead>
           <tr>
             <th>Sr</th>
@@ -1444,7 +1462,7 @@ function VendorMaster({ match }) {
         <tbody>
           <tr>
             <td>1</td>
-            <td style={{ fontWeight: "bold" }}>Adhaar Attachment</td>
+            <td style={{ fontWeight: 'bold' }}>Adhaar Attachment</td>
 
             {data?.adhar_attachment?.length ? (
               <td>
@@ -1454,11 +1472,11 @@ function VendorMaster({ match }) {
                     href={`${_attachmentUrl}/${attachment?.path}`}
                     target="_blank"
                     className="btn btn-primary btn-sm p-1 mr-1"
-                    style={{ marginBottom: "5px" }}
+                    style={{ marginBottom: '5px' }}
                   >
                     <i
                       className="icofont-eye"
-                      style={{ fontSize: "15px", height: "15px" }}
+                      style={{ fontSize: '15px', height: '15px' }}
                     ></i>
                   </a>
                 ))}
@@ -1469,7 +1487,7 @@ function VendorMaster({ match }) {
           </tr>
           <tr>
             <td>2</td>
-            <td style={{ fontWeight: "bold" }}>PAN Attachment</td>
+            <td style={{ fontWeight: 'bold' }}>PAN Attachment</td>
             {data.pan_attachment && data.pan_attachment.length > 0 ? (
               <td>
                 {data.pan_attachment.map((attachment, index) => (
@@ -1478,11 +1496,11 @@ function VendorMaster({ match }) {
                     href={`${_attachmentUrl}/${attachment?.path}`}
                     target="_blank"
                     className="btn btn-primary btn-sm p-1 mr-1"
-                    style={{ marginBottom: "5px" }}
+                    style={{ marginBottom: '5px' }}
                   >
                     <i
                       className="icofont-eye"
-                      style={{ fontSize: "15px", height: "15px" }}
+                      style={{ fontSize: '15px', height: '15px' }}
                     ></i>
                   </a>
                 ))}
@@ -1493,7 +1511,7 @@ function VendorMaster({ match }) {
           </tr>
           <tr>
             <td>3</td>
-            <td style={{ fontWeight: "bold" }}>GST Attachment</td>
+            <td style={{ fontWeight: 'bold' }}>GST Attachment</td>
             {data.gst_attachment && data.gst_attachment.length > 0 ? (
               <td>
                 {data.gst_attachment.map((attachment, index) => (
@@ -1502,11 +1520,11 @@ function VendorMaster({ match }) {
                     href={`${_attachmentUrl}/${attachment?.path}`}
                     target="_blank"
                     className="btn btn-primary btn-sm p-1 mr-1"
-                    style={{ marginBottom: "5px" }}
+                    style={{ marginBottom: '5px' }}
                   >
                     <i
                       className="icofont-eye"
-                      style={{ fontSize: "15px", height: "15px" }}
+                      style={{ fontSize: '15px', height: '15px' }}
                     ></i>
                   </a>
                 ))}
@@ -1518,7 +1536,7 @@ function VendorMaster({ match }) {
 
           <tr>
             <td>4</td>
-            <td style={{ fontWeight: "bold" }}>MSME Attachment</td>
+            <td style={{ fontWeight: 'bold' }}>MSME Attachment</td>
             {data.msme_attachment && data.msme_attachment.length > 0 ? (
               <td>
                 {data.msme_attachment.map((attachment, index) => (
@@ -1527,11 +1545,11 @@ function VendorMaster({ match }) {
                     href={`${_attachmentUrl}/${attachment?.path}`}
                     target="_blank"
                     className="btn btn-primary btn-sm p-1 mr-1"
-                    style={{ marginBottom: "5px" }}
+                    style={{ marginBottom: '5px' }}
                   >
                     <i
                       className="icofont-eye"
-                      style={{ fontSize: "15px", height: "15px" }}
+                      style={{ fontSize: '15px', height: '15px' }}
                     ></i>
                   </a>
                 ))}
@@ -1543,7 +1561,7 @@ function VendorMaster({ match }) {
 
           <tr>
             <td>5</td>
-            <td style={{ fontWeight: "bold" }}>Pasbook Attachment</td>
+            <td style={{ fontWeight: 'bold' }}>Pasbook Attachment</td>
             {data?.bank_passbook_attachment?.length ? (
               <td>
                 {data?.bank_passbook_attachment.map((attachment, index) => (
@@ -1552,11 +1570,11 @@ function VendorMaster({ match }) {
                     href={`${_attachmentUrl}/${attachment?.path}`}
                     target="_blank"
                     className="btn btn-primary btn-sm p-1 mr-1"
-                    style={{ marginBottom: "5px" }}
+                    style={{ marginBottom: '5px' }}
                   >
                     <i
                       className="icofont-eye"
-                      style={{ fontSize: "15px", height: "15px" }}
+                      style={{ fontSize: '15px', height: '15px' }}
                     ></i>
                   </a>
                 ))}
@@ -1567,7 +1585,7 @@ function VendorMaster({ match }) {
           </tr>
           <tr>
             <td>6</td>
-            <td style={{ fontWeight: "bold" }}>Cheque Attachment</td>
+            <td style={{ fontWeight: 'bold' }}>Cheque Attachment</td>
 
             {data?.cheque_attachment ? (
               <td>
@@ -1577,11 +1595,11 @@ function VendorMaster({ match }) {
                     href={`${_attachmentUrl}/${attachment?.path}`}
                     target="_blank"
                     className="btn btn-primary btn-sm p-1 mr-1"
-                    style={{ marginBottom: "5px" }}
+                    style={{ marginBottom: '5px' }}
                   >
                     <i
                       className="icofont-eye"
-                      style={{ fontSize: "15px", height: "15px" }}
+                      style={{ fontSize: '15px', height: '15px' }}
                     ></i>
                   </a>
                 ))}
@@ -1602,7 +1620,7 @@ function VendorMaster({ match }) {
         if (res.data.status == 1) {
           URL = `${_attachmentUrl}` + res.data.data;
 
-          window.open(URL, "_blank").focus();
+          window.open(URL, '_blank').focus();
         }
       }
     });
@@ -1613,13 +1631,13 @@ function VendorMaster({ match }) {
     const file = e.target.elements.attachment.files[0]; // Access the file from the event target
 
     if (!file) {
-      alert("Please choose a file.");
+      alert('Please choose a file.');
       return;
     }
 
     const form = new FormData();
-    form.append("attachment", file);
-    form.append("created_by", userSessionData.userId);
+    form.append('attachment', file);
+    form.append('created_by', userSessionData.userId);
 
     setError(null);
 
@@ -1627,13 +1645,13 @@ function VendorMaster({ match }) {
       if (res.status === 200) {
         if (res.data.status == 1) {
           handleBulkModal({ showModal: false });
-          setNotify({ type: "success", message: res.data.message });
+          setNotify({ type: 'success', message: res.data.message });
           loadData();
         } else {
-          setError({ type: "danger", message: res.data.message });
+          setError({ type: 'danger', message: res.data.message });
           URL = `${_attachmentUrl}` + res.data.data;
-          window.open(URL, "_blank")?.focus();
-          setNotify({ type: "danger", message: res.data.message });
+          window.open(URL, '_blank')?.focus();
+          setNotify({ type: 'danger', message: res.data.message });
         }
       }
     });
@@ -1654,8 +1672,8 @@ function VendorMaster({ match }) {
                   onClick={() => {
                     handleModal({
                       showModal: true,
-                      modalData: "",
-                      modalHeader: "Add Vendor",
+                      modalData: '',
+                      modalHeader: 'Add Vendor'
                     });
 
                     setPanAttachment([]);
@@ -1684,8 +1702,8 @@ function VendorMaster({ match }) {
                   onClick={() => {
                     handleBulkModal({
                       showModal: true,
-                      modalData: "",
-                      modalHeader: "Bulk Upload Vendor",
+                      modalData: '',
+                      modalHeader: 'Bulk Upload Vendor'
                     });
                   }}
                 >
@@ -1696,36 +1714,14 @@ function VendorMaster({ match }) {
           }}
         />
         {/* SEARCH FILTER */}
-        <div className="card card-body">
-          <div className="row">
-            <div className="col-md-8">
-              <input
-                type="text"
-                className="form-control"
-                placeholder="Search...."
-                onClick={(e) => handleSearch(e)}
-                onKeyDown={handleKeyDown}
-                ref={searchRef}
-              />
-            </div>
-            <div className="col-md-3">
-              <button
-                className="btn btn-sm btn-warning text-white"
-                type="button"
-                onClick={handleSearch}
-              >
-                <i className="icofont-search-1 "></i> Search
-              </button>
-              <button
-                className="btn btn-sm btn-info text-white"
-                type="button"
-                onClick={() => window.location.reload(false)}
-              >
-                <i className="icofont-refresh text-white"></i> Reset
-              </button>
-            </div>
-          </div>
-        </div>
+        <SearchBoxHeader
+          showInput={true}
+          setSearchTerm={setSearchTerm}
+          handleSearch={handleSearch}
+          handleReset={handleReset}
+          placeholder="Search by authority name...."
+          showExportButton={false}
+        />
 
         {/* DATA TABLE */}
         <div className="card mt-2">
@@ -1735,7 +1731,7 @@ function VendorMaster({ match }) {
                 {data && (
                   <DataTable
                     columns={columns}
-                    data={data}
+                    data={filteredData}
                     defaultSortFieldId="id"
                     expandableRows={true}
                     pagination
@@ -1758,14 +1754,14 @@ function VendorMaster({ match }) {
           onHide={(e) => {
             handleModal({
               showModal: false,
-              modalData: "",
-              modalHeader: "",
+              modalData: '',
+              modalHeader: ''
             });
           }}
         >
           <form
             method="post"
-            onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
+            onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
           >
             <Modal.Header closeButton>
               <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
@@ -1790,7 +1786,7 @@ function VendorMaster({ match }) {
                         handleErp(e);
                       }}
                       defaultValue={
-                        modal.modalData ? modal.modalData.vendor_name : ""
+                        modal.modalData ? modal.modalData.vendor_name : ''
                       }
                       required={true}
                     />
@@ -1807,7 +1803,7 @@ function VendorMaster({ match }) {
                         className="form-control form-control"
                         id="id"
                         name="id"
-                        defaultValue={modal.modalData ? modal.modalData.id : ""}
+                        defaultValue={modal.modalData ? modal.modalData.id : ''}
                         required
                         disabled
                       />
@@ -1827,7 +1823,7 @@ function VendorMaster({ match }) {
                       maxLength="10"
                       onChange={handleContactValidation}
                       defaultValue={
-                        modal.modalData ? modal.modalData.mobile_no : ""
+                        modal.modalData ? modal.modalData.mobile_no : ''
                       }
                       onKeyPress={(e) => {
                         Validation.MobileNumbersOnly(e);
@@ -1836,7 +1832,7 @@ function VendorMaster({ match }) {
                     {inputState && (
                       <small
                         style={{
-                          color: "red",
+                          color: 'red'
                         }}
                       >
                         {inputState.contactNoErr}
@@ -1844,7 +1840,7 @@ function VendorMaster({ match }) {
                     )}
                   </div>
 
-                  <div className={modal?.modalData ? "col-sm-3" : "col-sm-4"}>
+                  <div className={modal?.modalData ? 'col-sm-3' : 'col-sm-4'}>
                     <label className="form-label font-weight-bold">
                       Email Id :<Astrick color="red" size="13px" />
                     </label>
@@ -1854,7 +1850,7 @@ function VendorMaster({ match }) {
                       id="email"
                       name="email"
                       defaultValue={
-                        modal.modalData ? modal.modalData.email : ""
+                        modal.modalData ? modal.modalData.email : ''
                       }
                       onChange={handleEmail}
                       onKeyPress={(e) => {
@@ -1866,7 +1862,7 @@ function VendorMaster({ match }) {
                     {inputState && (
                       <small
                         style={{
-                          color: "red",
+                          color: 'red'
                         }}
                       >
                         {emailError}
@@ -1874,7 +1870,7 @@ function VendorMaster({ match }) {
                     )}
                   </div>
 
-                  <div className={modal?.modalData ? "col-sm-3" : "col-sm-3"}>
+                  <div className={modal?.modalData ? 'col-sm-3' : 'col-sm-3'}>
                     <label className="form-label font-weight-bold">
                       Address :<Astrick color="red" size="13px" />
                     </label>
@@ -1888,23 +1884,23 @@ function VendorMaster({ match }) {
                       maxLength={50}
                       required={true}
                       defaultValue={
-                        modal.modalData ? modal.modalData.address : ""
+                        modal.modalData ? modal.modalData.address : ''
                       }
                       onChange={(event) => {
-                        if (event.target.value === "") {
+                        if (event.target.value === '') {
                           setInputState({
                             ...state,
-                            AddressErr: "Address Required",
+                            AddressErr: 'Address Required'
                           });
                         } else {
-                          setInputState({ ...state, AddressErr: "" });
+                          setInputState({ ...state, AddressErr: '' });
                         }
                       }}
                     />
                     {inputState && (
                       <small
                         style={{
-                          color: "red",
+                          color: 'red'
                         }}
                       >
                         {inputState.AddressErr}
@@ -2002,7 +1998,7 @@ function VendorMaster({ match }) {
                       name="pincode"
                       maxLength={6}
                       defaultValue={
-                        modal.modalData ? modal.modalData.pincode : ""
+                        modal.modalData ? modal.modalData.pincode : ''
                       }
                       onKeyPress={(e) => {
                         Validation.NumbersOnly(e);
@@ -2021,25 +2017,25 @@ function VendorMaster({ match }) {
 
                         const pincodeRegex = /^\d{6}$/; // regular expression to match 6 digits
 
-                        if (pincode === "") {
+                        if (pincode === '') {
                           setInputState({
                             ...state,
-                            PinCodeErr: "",
+                            PinCodeErr: ''
                           });
                         } else if (!pincodeRegex.test(pincode)) {
                           setInputState({
                             ...state,
-                            PinCodeErr: " Enter a 6 digit pin code.",
+                            PinCodeErr: ' Enter a 6 digit pin code.'
                           });
                         } else {
-                          setInputState({ ...state, PinCodeErr: "" });
+                          setInputState({ ...state, PinCodeErr: '' });
                         }
                       }}
                     />
                     {inputState && (
                       <small
                         style={{
-                          color: "red",
+                          color: 'red'
                         }}
                       >
                         {inputState.PinCodeErr}
@@ -2059,54 +2055,54 @@ function VendorMaster({ match }) {
                       name="adhar_no"
                       maxLength="12"
                       defaultValue={
-                        modal.modalData ? modal.modalData.adhar_no : ""
+                        modal.modalData ? modal.modalData.adhar_no : ''
                       }
                       onChange={(event) => {
                         const aadharNum = event.target.value.trim();
 
-                        if (aadharNum === "NA" || aadharNum === "na") {
+                        if (aadharNum === 'NA' || aadharNum === 'na') {
                           // Allow "NA" case-insensitively
                           setInputState({
                             ...state,
-                            AdharNumErr: "",
+                            AdharNumErr: ''
                           });
                         } else if (!aadharNum) {
                           setInputState({
                             ...state,
-                            AdharNumErr: "",
+                            AdharNumErr: ''
                           });
                         } else if (/[^0-9]/.test(aadharNum)) {
                           setInputState({
                             ...state,
                             AdharNumErr:
-                              "Aadhar number should contain digits only.",
+                              'Aadhar number should contain digits only.'
                           });
                         } else if (aadharNum.length < 12) {
                           setInputState({
                             ...state,
                             AdharNumErr:
-                              "Aadhar number should be 12 digits long.",
+                              'Aadhar number should be 12 digits long.'
                           });
                         } else if (/0{5,}/.test(aadharNum)) {
                           setInputState({
                             ...state,
                             AdharNumErr:
-                              "Aadhar number should not contain more than 4 consecutive zeros.",
+                              'Aadhar number should not contain more than 4 consecutive zeros.'
                           });
                         } else if (/^[01]/.test(aadharNum)) {
                           setInputState({
                             ...state,
                             AdharNumErr:
-                              "Aadhar number should not start with 0 or 1.",
+                              'Aadhar number should not start with 0 or 1.'
                           });
                         } else {
-                          setInputState({ ...state, AdharNumErr: "" });
+                          setInputState({ ...state, AdharNumErr: '' });
                         }
                       }}
                     />
 
                     {inputState.AdharNumErr && (
-                      <small style={{ color: "red" }}>
+                      <small style={{ color: 'red' }}>
                         {inputState.AdharNumErr}
                       </small>
                     )}
@@ -2130,29 +2126,29 @@ function VendorMaster({ match }) {
 
                         // Check if the file type is one of the allowed types
                         if (
-                          selectedFile.type === "image/jpg" ||
-                          selectedFile.type === "image/jpeg" ||
-                          selectedFile.type === "image/png" ||
-                          selectedFile.type === "application/pdf"
+                          selectedFile.type === 'image/jpg' ||
+                          selectedFile.type === 'image/jpeg' ||
+                          selectedFile.type === 'image/png' ||
+                          selectedFile.type === 'application/pdf'
                         ) {
                           // File type is allowed
                         } else {
                           // Check if the file type is BMP
-                          if (selectedFile.type === "image/bmp") {
+                          if (selectedFile.type === 'image/bmp') {
                             alert(
-                              "Invalid file format. BMP files are not allowed."
+                              'Invalid file format. BMP files are not allowed.'
                             );
                           } else {
                             alert(
-                              "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                              'Invalid file format. Only jpg, jpeg, png, and pdf are allowed.'
                             );
                           }
-                          e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                          e.target.value = ''; // Clear the input to prevent the user from submitting an invalid file
                         }
                         // Check if attachment is required and input field is empty
 
-                        uploadAdharAttachmentHandler(e, "UPLOAD", "");
-                        maxLengthCheck(e, "PAN");
+                        uploadAdharAttachmentHandler(e, 'UPLOAD', '');
+                        maxLengthCheck(e, 'PAN');
                       }}
                       capture="camera"
                     />
@@ -2161,21 +2157,21 @@ function VendorMaster({ match }) {
                     {adharattachment &&
                       adharattachment.map((attachment, index) => {
                         const splittedArray = attachment?.path
-                          ? attachment?.path?.split("/")
+                          ? attachment?.path?.split('/')
                           : null;
                         return (
                           <div
                             key={index}
                             className="justify-content-end px-0"
                             style={{
-                              marginRight: "20px",
-                              padding: "5px",
-                              maxWidth: "250px",
+                              marginRight: '20px',
+                              padding: '5px',
+                              maxWidth: '250px'
                             }}
                           >
                             <div
                               className="card"
-                              style={{ backgroundColor: "#EBF5FB" }}
+                              style={{ backgroundColor: '#EBF5FB' }}
                             >
                               <div className="card-header p-1">
                                 <div className="d-flex justify-content-between align-items-center p-0 ">
@@ -2201,7 +2197,7 @@ function VendorMaster({ match }) {
                                     onClick={(e) => {
                                       uploadAdharAttachmentHandler(
                                         e,
-                                        "DELETE",
+                                        'DELETE',
                                         index,
                                         attachment?.id ? attachment?.id : null
                                       );
@@ -2209,7 +2205,7 @@ function VendorMaster({ match }) {
                                   >
                                     <i
                                       class="icofont-ui-delete"
-                                      style={{ fontSize: "15px" }}
+                                      style={{ fontSize: '15px' }}
                                     ></i>
                                   </button>
                                 </div>
@@ -2235,42 +2231,42 @@ function VendorMaster({ match }) {
                         input.value = input.value.toUpperCase();
                       }}
                       defaultValue={
-                        modal.modalData ? modal.modalData.pan_no : ""
+                        modal.modalData ? modal.modalData.pan_no : ''
                       }
                       required={true}
                       onChange={(event) => {
                         const panNumber = event.target.value.trim();
                         event.target.value = panNumber;
 
-                        if (panNumber === "") {
+                        if (panNumber === '') {
                           setInputState({
                             ...state,
-                            PanNumberErr: "",
+                            PanNumberErr: ''
                           });
-                        } else if (panNumber === "NA") {
+                        } else if (panNumber === 'NA') {
                           setInputState({
                             ...state,
-                            PanNumberErr: "", // Clear error message for "NA"
+                            PanNumberErr: '' // Clear error message for "NA"
                           });
                         } else if (panNumber.length !== 10) {
                           setInputState({
                             ...state,
-                            PanNumberErr: "Invalid PAN number length.",
+                            PanNumberErr: 'Invalid PAN number length.'
                           });
                         } else if (
                           !/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(panNumber)
                         ) {
                           setInputState({
                             ...state,
-                            PanNumberErr: "Invalid PAN number format.",
+                            PanNumberErr: 'Invalid PAN number format.'
                           });
                         } else {
-                          setInputState({ ...state, PanNumberErr: "" });
+                          setInputState({ ...state, PanNumberErr: '' });
                         }
                       }}
                     />
                     {inputState.PanNumberErr && (
-                      <small style={{ color: "red" }}>
+                      <small style={{ color: 'red' }}>
                         {inputState.PanNumberErr}
                       </small>
                     )}
@@ -2293,29 +2289,29 @@ function VendorMaster({ match }) {
                       onChange={(e) => {
                         const selectedFile = e.target.files[0];
                         if (
-                          selectedFile.type === "image/jpg" ||
-                          selectedFile.type === "image/jpeg" ||
-                          selectedFile.type === "image/png" ||
-                          selectedFile.type === "application/pdf"
+                          selectedFile.type === 'image/jpg' ||
+                          selectedFile.type === 'image/jpeg' ||
+                          selectedFile.type === 'image/png' ||
+                          selectedFile.type === 'application/pdf'
                         ) {
                           // File type is allowed
                         } else {
                           // Check if the file type is BMP
-                          if (selectedFile.type === "image/bmp") {
+                          if (selectedFile.type === 'image/bmp') {
                             alert(
-                              "Invalid file format. BMP files are not allowed."
+                              'Invalid file format. BMP files are not allowed.'
                             );
                           } else {
                             alert(
-                              "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                              'Invalid file format. Only jpg, jpeg, png, and pdf are allowed.'
                             );
                           }
-                          e.target.value = "";
-                          panAttachmentRef.current.value = "";
+                          e.target.value = '';
+                          panAttachmentRef.current.value = '';
                         }
 
-                        uploadPanAttachmentHandler(e, "UPLOAD", "");
-                        maxLengthCheck(e, "PAN");
+                        uploadPanAttachmentHandler(e, 'UPLOAD', '');
+                        maxLengthCheck(e, 'PAN');
                       }}
                       accept="image/jpg,image/jpeg,image/png,application/pdf"
                       ref={panAttachmentRef}
@@ -2326,21 +2322,21 @@ function VendorMaster({ match }) {
                     {panattachment &&
                       panattachment.map((attachment, index) => {
                         const splittedArray = attachment?.path
-                          ? attachment?.path?.split("/")
+                          ? attachment?.path?.split('/')
                           : null;
                         return (
                           <div
                             key={index}
                             className="justify-content-end px-0"
                             style={{
-                              marginRight: "20px",
-                              padding: "5px",
-                              maxWidth: "250px",
+                              marginRight: '20px',
+                              padding: '5px',
+                              maxWidth: '250px'
                             }}
                           >
                             <div
                               className="card"
-                              style={{ backgroundColor: "#EBF5FB" }}
+                              style={{ backgroundColor: '#EBF5FB' }}
                             >
                               <div className="p-1 card-header">
                                 <div className="d-flex justify-content-between align-items-center p-0 ">
@@ -2366,7 +2362,7 @@ function VendorMaster({ match }) {
                                     onClick={(e) => {
                                       uploadPanAttachmentHandler(
                                         e,
-                                        "DELETE",
+                                        'DELETE',
                                         index,
                                         attachment?.id ? attachment?.id : null
                                       );
@@ -2374,7 +2370,7 @@ function VendorMaster({ match }) {
                                   >
                                     <i
                                       class="icofont-ui-delete"
-                                      style={{ fontSize: "15px" }}
+                                      style={{ fontSize: '15px' }}
                                     ></i>
                                   </button>
                                 </div>
@@ -2396,7 +2392,7 @@ function VendorMaster({ match }) {
                       name="gst_no"
                       maxLength="15"
                       defaultValue={
-                        modal.modalData ? modal.modalData.gst_no : ""
+                        modal.modalData ? modal.modalData.gst_no : ''
                       }
                       onChange={(event) => {
                         event.target.value = event.target.value.toUpperCase();
@@ -2407,33 +2403,33 @@ function VendorMaster({ match }) {
                         if (!gstNumber) {
                           setInputState({
                             ...state,
-                            GSTNumberErr: "",
+                            GSTNumberErr: ''
                           });
-                        } else if (gstNumber === "NA") {
+                        } else if (gstNumber === 'NA') {
                           setInputState({
                             ...state,
-                            GSTNumberErr: "",
+                            GSTNumberErr: ''
                           });
                         } else if (gstNumber.length !== 15) {
                           setInputState({
                             ...state,
                             GSTNumberErr:
-                              "GST number should be 15 characters long.",
+                              'GST number should be 15 characters long.'
                           });
                         } else if (!gstNumberRegex.test(gstNumber)) {
                           setInputState({
                             ...state,
-                            GSTNumberErr: "Invalid GST number format.",
+                            GSTNumberErr: 'Invalid GST number format.'
                           });
                         } else {
-                          setInputState({ ...state, GSTNumberErr: "" });
+                          setInputState({ ...state, GSTNumberErr: '' });
                         }
                       }}
                     />
                     {inputState && (
                       <small
                         style={{
-                          color: "red",
+                          color: 'red'
                         }}
                       >
                         {inputState.GSTNumberErr}
@@ -2459,29 +2455,29 @@ function VendorMaster({ match }) {
 
                         // Check if the file type is one of the allowed types
                         if (
-                          selectedFile.type === "image/jpg" ||
-                          selectedFile.type === "image/jpeg" ||
-                          selectedFile.type === "image/png" ||
-                          selectedFile.type === "application/pdf"
+                          selectedFile.type === 'image/jpg' ||
+                          selectedFile.type === 'image/jpeg' ||
+                          selectedFile.type === 'image/png' ||
+                          selectedFile.type === 'application/pdf'
                         ) {
                           // File type is allowed
                         } else {
                           // Check if the file type is BMP
-                          if (selectedFile.type === "image/bmp") {
+                          if (selectedFile.type === 'image/bmp') {
                             alert(
-                              "Invalid file format. BMP files are not allowed."
+                              'Invalid file format. BMP files are not allowed.'
                             );
                           } else {
                             alert(
-                              "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                              'Invalid file format. Only jpg, jpeg, png, and pdf are allowed.'
                             );
                           }
-                          e.target.value = "";
-                          gstInputRef.current.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                          e.target.value = '';
+                          gstInputRef.current.value = ''; // Clear the input to prevent the user from submitting an invalid file
                         }
 
-                        uploadGstAttachmentHandler(e, "UPLOAD", "");
-                        maxLengthCheck(e, "GST");
+                        uploadGstAttachmentHandler(e, 'UPLOAD', '');
+                        maxLengthCheck(e, 'GST');
                       }}
                     />
 
@@ -2490,21 +2486,21 @@ function VendorMaster({ match }) {
                     {gstAttachment &&
                       gstAttachment.map((attachment, index) => {
                         const splittedArray = attachment?.path
-                          ? attachment?.path?.split("/")
+                          ? attachment?.path?.split('/')
                           : null;
                         return (
                           <div
                             key={index}
                             className="justify-content-end px-0"
                             style={{
-                              marginRight: "20px",
-                              padding: "5px",
-                              maxWidth: "250px",
+                              marginRight: '20px',
+                              padding: '5px',
+                              maxWidth: '250px'
                             }}
                           >
                             <div
                               className="card"
-                              style={{ backgroundColor: "#EBF5FB" }}
+                              style={{ backgroundColor: '#EBF5FB' }}
                             >
                               <div className="p-1 card-header">
                                 <div className="d-flex justify-content-between align-items-center p-0">
@@ -2530,7 +2526,7 @@ function VendorMaster({ match }) {
                                     onClick={(e) => {
                                       uploadGstAttachmentHandler(
                                         e,
-                                        "DELETE",
+                                        'DELETE',
                                         index,
                                         attachment?.id ? attachment?.id : null
                                       );
@@ -2538,7 +2534,7 @@ function VendorMaster({ match }) {
                                   >
                                     <i
                                       class="icofont-ui-delete"
-                                      style={{ fontSize: "15px" }}
+                                      style={{ fontSize: '15px' }}
                                     ></i>
                                   </button>
                                 </div>
@@ -2561,7 +2557,7 @@ function VendorMaster({ match }) {
                       maxLength={12}
                       ref={fileInputRef}
                       defaultValue={
-                        modal.modalData ? modal.modalData.msme_no : ""
+                        modal.modalData ? modal.modalData.msme_no : ''
                       }
                       onKeyPress={(e) => {
                         if (!/^([A-Za-z0-9]{1})$/.test(e.key)) {
@@ -2573,12 +2569,12 @@ function VendorMaster({ match }) {
                         if (msmeNo.length > 0) {
                           setInputState({
                             ...state,
-                            MSMENumberErr: "",
+                            MSMENumberErr: ''
                           });
                         } else if (msmeNo.length < 19) {
                           setInputState({
                             ...state,
-                            MSMENumberErr: "Invalid MSME No.",
+                            MSMENumberErr: 'Invalid MSME No.'
                           });
                         } else if (
                           /^([A-Za-z]{5}\d{2}[A-Za-z0-9]{1,2}\d{7})|^(\d{20})$/.test(
@@ -2587,7 +2583,7 @@ function VendorMaster({ match }) {
                         ) {
                           setInputState({
                             ...state,
-                            MSMENumberErr: "Invalid MSME No.",
+                            MSMENumberErr: 'Invalid MSME No.'
                           });
                         } else if (
                           !/^([A-Za-z]{5}\d{2}\d{2}\d{7})|^(\d{19})$/.test(
@@ -2596,12 +2592,12 @@ function VendorMaster({ match }) {
                         ) {
                           setInputState({
                             ...state,
-                            MSMENumberErr: "Invalid Udyam No.",
+                            MSMENumberErr: 'Invalid Udyam No.'
                           });
                         } else {
                           setInputState({
                             ...state,
-                            MSMENumberErr: "",
+                            MSMENumberErr: ''
                           });
                         }
                       }}
@@ -2625,29 +2621,29 @@ function VendorMaster({ match }) {
                         const selectedFile = e.target.files[0];
 
                         if (
-                          selectedFile.type === "image/jpg" ||
-                          selectedFile.type === "image/jpeg" ||
-                          selectedFile.type === "image/png" ||
-                          selectedFile.type === "application/pdf"
+                          selectedFile.type === 'image/jpg' ||
+                          selectedFile.type === 'image/jpeg' ||
+                          selectedFile.type === 'image/png' ||
+                          selectedFile.type === 'application/pdf'
                         ) {
                           // File type is allowed
                         } else {
                           // Check if the file type is BMP
-                          if (selectedFile.type === "image/bmp") {
+                          if (selectedFile.type === 'image/bmp') {
                             alert(
-                              "Invalid file format. BMP files are not allowed."
+                              'Invalid file format. BMP files are not allowed.'
                             );
                           } else {
                             alert(
-                              "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                              'Invalid file format. Only jpg, jpeg, png, and pdf are allowed.'
                             );
                           }
-                          e.target.value = "";
-                          msmeInputRef.current.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                          e.target.value = '';
+                          msmeInputRef.current.value = ''; // Clear the input to prevent the user from submitting an invalid file
                         }
 
-                        uploadMSMEAttachmentHandler(e, "UPLOAD", "");
-                        maxLengthCheck(e, "MSME");
+                        uploadMSMEAttachmentHandler(e, 'UPLOAD', '');
+                        maxLengthCheck(e, 'MSME');
                       }}
                     />
 
@@ -2655,21 +2651,21 @@ function VendorMaster({ match }) {
                     {MSMEselectedFiles &&
                       MSMEselectedFiles.map((attachment, index) => {
                         const splittedArray = attachment?.path
-                          ? attachment?.path?.split("/")
+                          ? attachment?.path?.split('/')
                           : null;
                         return (
                           <div
                             key={index}
                             className="justify-content-start px-0"
                             style={{
-                              marginRight: "20px",
-                              padding: "5px",
-                              maxWidth: "250px",
+                              marginRight: '20px',
+                              padding: '5px',
+                              maxWidth: '250px'
                             }}
                           >
                             <div
                               className="card"
-                              style={{ backgroundColor: "#EBF5FB" }}
+                              style={{ backgroundColor: '#EBF5FB' }}
                             >
                               <div className="p-1 card-header">
                                 <div className="d-flex justify-content-between align-items-center p-0 ">
@@ -2695,7 +2691,7 @@ function VendorMaster({ match }) {
                                     onClick={(e) => {
                                       uploadMSMEAttachmentHandler(
                                         e,
-                                        "DELETE",
+                                        'DELETE',
                                         index,
                                         attachment?.id ? attachment?.id : null
                                       );
@@ -2703,7 +2699,7 @@ function VendorMaster({ match }) {
                                   >
                                     <i
                                       class="icofont-ui-delete"
-                                      style={{ fontSize: "15px" }}
+                                      style={{ fontSize: '15px' }}
                                     ></i>
                                   </button>
                                 </div>
@@ -2735,13 +2731,13 @@ function VendorMaster({ match }) {
                             : false
                         }
                         defaultValue={
-                          modal.modalData ? modal.modalData.bank_name : ""
+                          modal.modalData ? modal.modalData.bank_name : ''
                         }
                         onChange={(event) => {
                           const value = event.target.value;
-                          if (value === "") {
+                          if (value === '') {
                             setInputState({
-                              bankNameError: "",
+                              bankNameError: ''
                             });
                           } else if (
                             !value.match(
@@ -2749,15 +2745,15 @@ function VendorMaster({ match }) {
                             )
                           ) {
                             setInputState({
-                              bankNameError: "Invalid Bank Name",
+                              bankNameError: 'Invalid Bank Name'
                             });
                           } else if (value.length > 50) {
                             setInputState({
                               bankNameError:
-                                "Bank name can be up to 50 characters long.",
+                                'Bank name can be up to 50 characters long.'
                             });
                           } else {
-                            setInputState("");
+                            setInputState('');
                           }
                         }}
                         required={true}
@@ -2776,9 +2772,9 @@ function VendorMaster({ match }) {
                         required={true}
                         onChange={(event) => {
                           const value = event.target.value;
-                          if (value === "") {
+                          if (value === '') {
                             setInputState({
-                              bankNameError: "",
+                              bankNameError: ''
                             });
                           } else if (
                             !value.match(
@@ -2786,21 +2782,21 @@ function VendorMaster({ match }) {
                             )
                           ) {
                             setInputState({
-                              bankNameError: "Invalid Bank Name",
+                              bankNameError: 'Invalid Bank Name'
                             });
                           } else if (value.length > 50) {
                             setInputState({
                               bankNameError:
-                                "Bank name can be up to 50 characters long.",
+                                'Bank name can be up to 50 characters long.'
                             });
                           } else {
-                            setInputState("");
+                            setInputState('');
                           }
                         }}
                       />
                     )}
                     {inputState.bankNameError && (
-                      <small style={{ color: "red" }}>
+                      <small style={{ color: 'red' }}>
                         {inputState.bankNameError}
                       </small>
                     )}
@@ -2829,26 +2825,26 @@ function VendorMaster({ match }) {
                         onChange={(e) => {
                           const selectedFile = e.target.files[0];
                           if (
-                            selectedFile.type === "image/jpg" ||
-                            selectedFile.type === "image/jpeg" ||
-                            selectedFile.type === "image/png" ||
-                            selectedFile.type === "application/pdf"
+                            selectedFile.type === 'image/jpg' ||
+                            selectedFile.type === 'image/jpeg' ||
+                            selectedFile.type === 'image/png' ||
+                            selectedFile.type === 'application/pdf'
                           ) {
                           } else {
-                            if (selectedFile.type === "image/bmp") {
+                            if (selectedFile.type === 'image/bmp') {
                               alert(
-                                "Invalid file format. BMP files are not allowed."
+                                'Invalid file format. BMP files are not allowed.'
                               );
                             } else {
                               alert(
-                                "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                                'Invalid file format. Only jpg, jpeg, png, and pdf are allowed.'
                               );
                             }
-                            e.target.value = "";
-                            passbookInputRef.current.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                            e.target.value = '';
+                            passbookInputRef.current.value = ''; // Clear the input to prevent the user from submitting an invalid file
                           }
-                          uploadPassBookAttachmentHandler(e, "UPLOAD", "");
-                          maxLengthCheck(e, "PASSBOOK");
+                          uploadPassBookAttachmentHandler(e, 'UPLOAD', '');
+                          maxLengthCheck(e, 'PASSBOOK');
                         }}
                       />
                     }
@@ -2858,21 +2854,21 @@ function VendorMaster({ match }) {
                     {passBookSelectedFiles &&
                       passBookSelectedFiles.map((attachment, index) => {
                         const splittedArray = attachment?.path
-                          ? attachment?.path?.split("/")
+                          ? attachment?.path?.split('/')
                           : null;
                         return (
                           <div
                             key={index}
                             className="justify-content-start px-0"
                             style={{
-                              marginRight: "20px",
-                              padding: "5px",
-                              maxWidth: "250px",
+                              marginRight: '20px',
+                              padding: '5px',
+                              maxWidth: '250px'
                             }}
                           >
                             <div
                               className="card"
-                              style={{ backgroundColor: "#EBF5FB" }}
+                              style={{ backgroundColor: '#EBF5FB' }}
                             >
                               <div className="p-1 card-header">
                                 <div className="d-flex justify-content-between align-items-center p-0 ">
@@ -2898,7 +2894,7 @@ function VendorMaster({ match }) {
                                     onClick={(e) => {
                                       uploadPassBookAttachmentHandler(
                                         e,
-                                        "DELETE",
+                                        'DELETE',
                                         index,
                                         attachment?.id ? attachment?.id : null
                                       );
@@ -2906,7 +2902,7 @@ function VendorMaster({ match }) {
                                   >
                                     <i
                                       class="icofont-ui-delete"
-                                      style={{ fontSize: "15px" }}
+                                      style={{ fontSize: '15px' }}
                                     ></i>
                                   </button>
                                 </div>
@@ -2934,7 +2930,7 @@ function VendorMaster({ match }) {
                             : false
                         }
                         defaultValue={
-                          modal.modalData ? modal.modalData.account_no : ""
+                          modal.modalData ? modal.modalData.account_no : ''
                         }
                         onKeyPress={(e) => {
                           Validation.CardNumbersOnly(e);
@@ -2942,29 +2938,29 @@ function VendorMaster({ match }) {
                         onChange={(event) => {
                           const inputVal = event.target.value;
                           const regex = /^[a-zA-Z0-9]{1,25}$|^NA$/; // Allow alphanumeric or "NA" with a maximum length of 25 characters
-                          if (inputVal === "") {
+                          if (inputVal === '') {
                             setInputState({
                               ...state,
-                              AccountNumberErr: "",
+                              AccountNumberErr: ''
                             });
-                          } else if (inputVal === "NA") {
+                          } else if (inputVal === 'NA') {
                             setInputState({
                               ...state,
-                              AccountNumberErr: "",
+                              AccountNumberErr: ''
                             });
                           } else if (inputVal.length < 10) {
                             setInputState({
                               ...state,
-                              AccountNumberErr: "invalid account Number",
+                              AccountNumberErr: 'invalid account Number'
                             });
                           } else if (!regex.test(inputVal)) {
                             setInputState({
                               ...state,
                               AccountNumberErr:
-                                "Account Number should be alphanumeric and maximum length should be 25 characters.",
+                                'Account Number should be alphanumeric and maximum length should be 25 characters.'
                             });
                           } else {
-                            setInputState({ ...state, AccountNumberErr: "" });
+                            setInputState({ ...state, AccountNumberErr: '' });
                           }
                         }}
                         required={true}
@@ -2984,28 +2980,28 @@ function VendorMaster({ match }) {
                         onChange={(event) => {
                           const inputVal = event.target.value;
                           const regex = /^[a-zA-Z0-9]{1,25}$|^NA$/; // Allow alphanumeric or "NA" with a maximum length of 25 characters
-                          if (inputVal === "") {
+                          if (inputVal === '') {
                             setInputState({
                               ...state,
-                              AccountNumberErr: "",
+                              AccountNumberErr: ''
                             });
-                          } else if (inputVal === "NA") {
+                          } else if (inputVal === 'NA') {
                             setInputState({
                               ...state,
-                              AccountNumberErr: "",
+                              AccountNumberErr: ''
                             });
                           } else if (inputVal.length < 10) {
                             setInputState({
                               ...state,
-                              AccountNumberErr: "invalid Acc Number",
+                              AccountNumberErr: 'invalid Acc Number'
                             });
                           } else if (!regex.test(inputVal)) {
                             setInputState({
                               ...state,
-                              AccountNumberErr: "Invalid Account Number.",
+                              AccountNumberErr: 'Invalid Account Number.'
                             });
                           } else {
-                            setInputState({ ...state, AccountNumberErr: "" });
+                            setInputState({ ...state, AccountNumberErr: '' });
                           }
                         }}
                         required={true}
@@ -3016,7 +3012,7 @@ function VendorMaster({ match }) {
                     {inputState && (
                       <small
                         style={{
-                          color: "red",
+                          color: 'red'
                         }}
                       >
                         {inputState.AccountNumberErr}
@@ -3049,27 +3045,27 @@ function VendorMaster({ match }) {
 
                         // Check if the file type is one of the allowed types
                         if (
-                          selectedFile.type === "image/jpg" ||
-                          selectedFile.type === "image/jpeg" ||
-                          selectedFile.type === "image/png" ||
-                          selectedFile.type === "application/pdf"
+                          selectedFile.type === 'image/jpg' ||
+                          selectedFile.type === 'image/jpeg' ||
+                          selectedFile.type === 'image/png' ||
+                          selectedFile.type === 'application/pdf'
                         ) {
                           // File type is allowed
                         } else {
                           // Check if the file type is BMP
-                          if (selectedFile.type === "image/bmp") {
+                          if (selectedFile.type === 'image/bmp') {
                             alert(
-                              "Invalid file format. BMP files are not allowed."
+                              'Invalid file format. BMP files are not allowed.'
                             );
                           } else {
                             alert(
-                              "Invalid file format. Only jpg, jpeg, png, and pdf are allowed."
+                              'Invalid file format. Only jpg, jpeg, png, and pdf are allowed.'
                             );
                           }
-                          e.target.value = ""; // Clear the input to prevent the user from submitting an invalid file
+                          e.target.value = ''; // Clear the input to prevent the user from submitting an invalid file
                         }
-                        uploadPassChequeAttachmentHandler(e, "UPLOAD", "");
-                        maxLengthCheck(e, "CHEQUE");
+                        uploadPassChequeAttachmentHandler(e, 'UPLOAD', '');
+                        maxLengthCheck(e, 'CHEQUE');
                       }}
                     />
 
@@ -3078,21 +3074,21 @@ function VendorMaster({ match }) {
                     {chequeAttachmentSelectedFiles &&
                       chequeAttachmentSelectedFiles.map((attachment, index) => {
                         const splittedArray = attachment?.path
-                          ? attachment?.path?.split("/")
+                          ? attachment?.path?.split('/')
                           : null;
                         return (
                           <div
                             key={index}
                             className="justify-content-start px-0"
                             style={{
-                              marginRight: "20px",
-                              padding: "5px",
-                              maxWidth: "250px",
+                              marginRight: '20px',
+                              padding: '5px',
+                              maxWidth: '250px'
                             }}
                           >
                             <div
                               className="card"
-                              style={{ backgroundColor: "#EBF5FB" }}
+                              style={{ backgroundColor: '#EBF5FB' }}
                             >
                               <div className="p-1 card-header">
                                 <div className="d-flex justify-content-between align-items-center p-0">
@@ -3118,7 +3114,7 @@ function VendorMaster({ match }) {
                                     onClick={(e) => {
                                       uploadPassChequeAttachmentHandler(
                                         e,
-                                        "DELETE",
+                                        'DELETE',
                                         index,
                                         attachment?.id ? attachment?.id : null
                                       );
@@ -3126,7 +3122,7 @@ function VendorMaster({ match }) {
                                   >
                                     <i
                                       class="icofont-ui-delete"
-                                      style={{ fontSize: "15px" }}
+                                      style={{ fontSize: '15px' }}
                                     ></i>
                                   </button>
                                 </div>
@@ -3169,23 +3165,23 @@ function VendorMaster({ match }) {
                           setIfsccodeUppercase(inputVal);
 
                           const regex = /^[A-Z0-9]{1,25}$/; // alphanumeric with max length of 25
-                          if (inputVal === "") {
+                          if (inputVal === '') {
                             setInputState({
                               ...state,
-                              ifscCodeErr: "",
+                              ifscCodeErr: ''
                             });
-                          } else if (inputVal === "NA") {
+                          } else if (inputVal === 'NA') {
                             setInputState({
                               ...state,
-                              ifscCodeErr: "",
+                              ifscCodeErr: ''
                             });
                           } else if (!regex.test(inputVal)) {
                             setInputState({
                               ...state,
-                              ifscCodeErr: "Invalid IFSC  Number.",
+                              ifscCodeErr: 'Invalid IFSC  Number.'
                             });
                           } else {
-                            setInputState({ ...state, ifscCodeErr: "" });
+                            setInputState({ ...state, ifscCodeErr: '' });
                           }
                         }}
                       />
@@ -3200,7 +3196,7 @@ function VendorMaster({ match }) {
                         value={
                           ifscodeUppercase && ifscodeUppercase
                             ? ifscodeUppercase
-                            : ""
+                            : ''
                         }
                         onBlur={(e) => {
                           const isValid = validateIFSCCode(e.target.value);
@@ -3216,23 +3212,23 @@ function VendorMaster({ match }) {
                           setIfsccodeUppercase(inputVal);
 
                           const regex = /^[A-Z]{4}[A-Z0-9]{7}$/i; // alphanumeric with max length of 11
-                          if (inputVal === "" || inputVal === "NA") {
+                          if (inputVal === '' || inputVal === 'NA') {
                             setInputState({
                               ...state,
-                              ifscCodeErr: "",
+                              ifscCodeErr: ''
                             });
-                          } else if (inputVal === "NA") {
+                          } else if (inputVal === 'NA') {
                             setInputState({
                               ...state,
-                              ifscCodeErr: "",
+                              ifscCodeErr: ''
                             });
                           } else if (!regex.test(inputVal)) {
                             setInputState({
                               ...state,
-                              ifscCodeErr: "Invalid  IFSC Code.",
+                              ifscCodeErr: 'Invalid  IFSC Code.'
                             });
                           } else {
-                            setInputState({ ...state, ifscCodeErr: "" });
+                            setInputState({ ...state, ifscCodeErr: '' });
                           }
                         }}
                       />
@@ -3240,7 +3236,7 @@ function VendorMaster({ match }) {
                     {inputState && (
                       <small
                         style={{
-                          color: "red",
+                          color: 'red'
                         }}
                       >
                         {inputState.ifscCodeErr}
@@ -3268,24 +3264,24 @@ function VendorMaster({ match }) {
                         defaultValue={
                           modal.modalData
                             ? modal.modalData.beneficiary_name
-                            : ""
+                            : ''
                         }
                         onChange={(event) => {
                           const enteredValue = event.target.value;
                           const regex = /^[A-Za-z ]*$/; // regex to allow only letters, numbers, and spaces
 
-                          if (enteredValue === "") {
+                          if (enteredValue === '') {
                             setInputState({
                               ...state,
-                              BeneficiaryErr: "",
+                              BeneficiaryErr: ''
                             });
                           } else if (!regex.test(enteredValue)) {
                             setInputState({
                               ...state,
-                              BeneficiaryErr: "Invalid name",
+                              BeneficiaryErr: 'Invalid name'
                             });
                           } else {
-                            setInputState({ ...state, BeneficiaryErr: "" });
+                            setInputState({ ...state, BeneficiaryErr: '' });
                           }
                         }}
                         required={true}
@@ -3303,18 +3299,18 @@ function VendorMaster({ match }) {
                           const enteredValue = event.target.value;
                           const regex = /^[A-Za-z ]*$/;
 
-                          if (enteredValue === "") {
+                          if (enteredValue === '') {
                             setInputState({
                               ...state,
-                              BeneficiaryErr: "",
+                              BeneficiaryErr: ''
                             });
                           } else if (!regex.test(enteredValue)) {
                             setInputState({
                               ...state,
-                              BeneficiaryErr: "Invalid name.",
+                              BeneficiaryErr: 'Invalid name.'
                             });
                           } else {
-                            setInputState({ ...state, BeneficiaryErr: "" });
+                            setInputState({ ...state, BeneficiaryErr: '' });
                           }
                         }}
                       />
@@ -3323,7 +3319,7 @@ function VendorMaster({ match }) {
                     {inputState && (
                       <small
                         style={{
-                          color: "red",
+                          color: 'red'
                         }}
                       >
                         {inputState.BeneficiaryErr}
@@ -3353,13 +3349,13 @@ function VendorMaster({ match }) {
                         defaultValue={
                           modal.modalData
                             ? modal.modalData.bank_branch_name
-                            : ""
+                            : ''
                         }
                         onChange={(event) => {
                           const value = event.target.value;
-                          if (value === "") {
+                          if (value === '') {
                             setInputState({
-                              branchNameError: "",
+                              branchNameError: ''
                             });
                           } else if (
                             !value.match(
@@ -3367,15 +3363,15 @@ function VendorMaster({ match }) {
                             )
                           ) {
                             setInputState({
-                              branchNameError: "Invalid Branch Name",
+                              branchNameError: 'Invalid Branch Name'
                             });
                           } else if (value.length > 25) {
                             setInputState({
                               branchNameError:
-                                "Bank name can be up to 50 characters long.",
+                                'Bank name can be up to 50 characters long.'
                             });
                           } else {
-                            setInputState("");
+                            setInputState('');
                           }
                         }}
                         required={true}
@@ -3393,9 +3389,9 @@ function VendorMaster({ match }) {
                         }}
                         onChange={(event) => {
                           const value = event.target.value;
-                          if (value === "") {
+                          if (value === '') {
                             setInputState({
-                              branchNameError: "",
+                              branchNameError: ''
                             });
                           } else if (
                             !value.match(
@@ -3403,22 +3399,22 @@ function VendorMaster({ match }) {
                             )
                           ) {
                             setInputState({
-                              branchNameError: "Invalid Branch Name",
+                              branchNameError: 'Invalid Branch Name'
                             });
                           } else if (value.length > 25) {
                             setInputState({
                               branchNameError:
-                                "Bank name can be up to 50 characters long.",
+                                'Bank name can be up to 50 characters long.'
                             });
                           } else {
-                            setInputState("");
+                            setInputState('');
                           }
                         }}
                         required={true}
                       />
                     )}
                     {inputState.branchNameError && (
-                      <small style={{ color: "red" }}>
+                      <small style={{ color: 'red' }}>
                         {inputState.branchNameError}
                       </small>
                     )}
@@ -3519,26 +3515,26 @@ function VendorMaster({ match }) {
                           : false
                       }
                       defaultValue={
-                        modal.modalData ? modal.modalData.acme_account_name : ""
+                        modal.modalData ? modal.modalData.acme_account_name : ''
                       }
                       onKeyPress={(e) => {
                         Validation.CharactersNumbersSpeicalOnly(e);
                       }}
                       onChange={(event) => {
-                        if (event.target.value === "") {
+                        if (event.target.value === '') {
                           setInputState({
                             ...state,
-                            ERPAccErr: "Please enter ERP Acc Name",
+                            ERPAccErr: 'Please enter ERP Acc Name'
                           });
                         } else {
-                          setInputState({ ...state, ERPAccErr: "" });
+                          setInputState({ ...state, ERPAccErr: '' });
                         }
                       }}
                     />
                     {inputState && (
                       <small
                         style={{
-                          color: "red",
+                          color: 'red'
                         }}
                       >
                         {inputState.ERPAccErr}
@@ -3546,7 +3542,7 @@ function VendorMaster({ match }) {
                     )}
                   </div>
 
-                  {consider === "YES" && paymentDropdown && (
+                  {consider === 'YES' && paymentDropdown && (
                     <div className="col-sm-3 mt-3">
                       <label className="form-label font-weight-bold">
                         Template :<Astrick color="red" size="13px" />
@@ -3567,7 +3563,7 @@ function VendorMaster({ match }) {
                     </div>
                   )}
 
-                  {consider && consider === "PETTY_CASH" && considerInPay && (
+                  {consider && consider === 'PETTY_CASH' && considerInPay && (
                     <div className="col-sm-3 mt-3">
                       <label className="form-label font-weight-bold">
                         Card Number :
@@ -3580,32 +3576,32 @@ function VendorMaster({ match }) {
                         name="card_number"
                         maxLength={16}
                         defaultValue={
-                          modal.modalData ? modal.modalData.card_number : ""
+                          modal.modalData ? modal.modalData.card_number : ''
                         }
                         onKeyPress={(e) => {
                           Validation.CardNumbersOnly(e);
                         }}
                         onChange={(event) => {
-                          if (event.target.value === "") {
+                          if (event.target.value === '') {
                             setInputState({
                               ...state,
-                              CardNumberError: "",
+                              CardNumberError: ''
                             });
-                          } else if (event.target.value === "NA") {
+                          } else if (event.target.value === 'NA') {
                             setInputState({
                               ...state,
-                              CardNumberError: "",
+                              CardNumberError: ''
                             });
                           } else if (event.target.value.length < 16) {
                             setInputState({
                               ...state,
                               CardNumberError:
-                                "Card Number Should be 16 characters",
+                                'Card Number Should be 16 characters'
                             });
                           } else {
                             setInputState({
                               ...state,
-                              CardNumberError: "", // Clear the error if the length is 16 or greater
+                              CardNumberError: '' // Clear the error if the length is 16 or greater
                             });
                           }
                         }}
@@ -3617,7 +3613,7 @@ function VendorMaster({ match }) {
                       )}
                     </div>
                   )}
-                  {consider && consider === "PETTY_CASH" && considerInPay && (
+                  {consider && consider === 'PETTY_CASH' && considerInPay && (
                     <div className="col-sm-3 mt-4">
                       <label className="form-label font-weight-bold">
                         Ref Number :
@@ -3632,29 +3628,29 @@ function VendorMaster({ match }) {
                         defaultValue={
                           modal.modalData
                             ? modal.modalData.reference_number
-                            : ""
+                            : ''
                         }
                         onChange={(event) => {
-                          if (event.target.value === "") {
+                          if (event.target.value === '') {
                             setInputState({
                               ...state,
-                              RefNumberError: "",
+                              RefNumberError: ''
                             });
-                          } else if (event.target.value === "NA") {
+                          } else if (event.target.value === 'NA') {
                             setInputState({
                               ...state,
-                              RefNumberError: "",
+                              RefNumberError: ''
                             });
                           } else if (event.target.value.length < 10) {
                             setInputState({
                               ...state,
                               RefNumberError:
-                                "Ref Number Should be 25 characters",
+                                'Ref Number Should be 25 characters'
                             });
                           } else {
                             setInputState({
                               ...state,
-                              RefNumberError: "", // Clear the error if the length is 16 or greater
+                              RefNumberError: '' // Clear the error if the length is 16 or greater
                             });
                           }
                         }}
@@ -3670,7 +3666,7 @@ function VendorMaster({ match }) {
                       )}
                     </div>
                   )}
-                  {consider && consider === "PETTY_CASH" && considerInPay && (
+                  {consider && consider === 'PETTY_CASH' && considerInPay && (
                     <div className="col-sm-3">
                       <label className="form-label font-weight-bold">
                         Narrations :
@@ -3683,7 +3679,7 @@ function VendorMaster({ match }) {
                         name="narration"
                         maxLength={50}
                         defaultValue={
-                          modal.modalData ? modal.modalData.narration : ""
+                          modal.modalData ? modal.modalData.narration : ''
                         }
                         onKeyPress={(e) => {
                           Validation.NarrationAlphanumeric(e);
@@ -3754,7 +3750,7 @@ function VendorMaster({ match }) {
                 <button
                   type="submit"
                   className="btn btn-primary text-white"
-                  style={{ backgroundColor: "#484C7F" }}
+                  style={{ backgroundColor: '#484C7F' }}
                 >
                   Save
                 </button>
@@ -3763,7 +3759,7 @@ function VendorMaster({ match }) {
                 <button
                   type="submit"
                   className="btn btn-primary text-white"
-                  style={{ backgroundColor: "#484C7F" }}
+                  style={{ backgroundColor: '#484C7F' }}
                 >
                   Update
                 </button>
@@ -3774,8 +3770,8 @@ function VendorMaster({ match }) {
                 onClick={() => {
                   handleModal({
                     showModal: false,
-                    modalData: "",
-                    modalHeader: "",
+                    modalData: '',
+                    modalHeader: ''
                   });
                 }}
               >
@@ -3792,12 +3788,12 @@ function VendorMaster({ match }) {
           onHide={(e) => {
             handleBulkModal({
               showModal: false,
-              modalData: "",
-              modalHeader: "",
+              modalData: '',
+              modalHeader: ''
             });
           }}
         >
-          {" "}
+          {' '}
           <Modal.Header>
             <Modal.Title className="fw-bold">
               {bulkModal.modalHeader}
@@ -3830,7 +3826,7 @@ function VendorMaster({ match }) {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: "#484C7F" }}
+                style={{ backgroundColor: '#484C7F' }}
               >
                 Submit
               </button>
@@ -3840,8 +3836,8 @@ function VendorMaster({ match }) {
                 onClick={() => {
                   handleBulkModal({
                     showModal: false,
-                    modalData: "",
-                    modalHeader: "",
+                    modalData: '',
+                    modalHeader: ''
                   });
                 }}
               >

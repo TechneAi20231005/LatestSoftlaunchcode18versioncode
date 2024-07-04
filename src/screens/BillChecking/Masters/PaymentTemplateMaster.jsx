@@ -1,28 +1,29 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Modal } from "react-bootstrap";
-import { _base } from "../../../settings/constants";
-import { Link } from "react-router-dom";
+import React, { useEffect, useState, useRef } from 'react';
+import { Modal } from 'react-bootstrap';
+import { _base } from '../../../settings/constants';
+import { Link } from 'react-router-dom';
 
-import DataTable from "react-data-table-component";
-import ErrorLogService from "../../../services/ErrorLogService";
-import CountryService from "../../../services/MastersService/CountryService";
-import PageHeader from "../../../components/Common/PageHeader";
-import Select from "react-select";
-import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
-import Alert from "../../../components/Common/Alert";
-import StateService from "../../../services/MastersService/StateService";
-import CityService from "../../../services/MastersService/CityService";
-import PaymentTemplateService from "../../../services/Bill Checking/Masters/PaymentTemplateService";
-import DropdownService from "../../../services/Bill Checking/Bill Checking Transaction/DropdownService";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
+import DataTable from 'react-data-table-component';
+import ErrorLogService from '../../../services/ErrorLogService';
+import CountryService from '../../../services/MastersService/CountryService';
+import PageHeader from '../../../components/Common/PageHeader';
+import Select from 'react-select';
+import { Astrick } from '../../../components/Utilities/Style';
+import * as Validation from '../../../components/Utilities/Validation';
+import Alert from '../../../components/Common/Alert';
+import StateService from '../../../services/MastersService/StateService';
+import CityService from '../../../services/MastersService/CityService';
+import PaymentTemplateService from '../../../services/Bill Checking/Masters/PaymentTemplateService';
 
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import { useDispatch, useSelector } from "react-redux";
-import PaymentTemplateMasterSlice from "./BillTypeMaster/PaymentTemplateMasterSlice";
-import { paymentTemplate } from "./BillTypeMaster/PaymentTemplateMasterAction";
-import { getRoles } from "../../Dashboard/DashboardAction";
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+
+import { useDispatch, useSelector } from 'react-redux';
+
+import { paymentTemplate } from './BillTypeMaster/PaymentTemplateMasterAction';
+import { getRoles } from '../../Dashboard/DashboardAction';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function PaymentTemplateMaster() {
   const dispatch = useDispatch();
@@ -31,99 +32,89 @@ function PaymentTemplateMaster() {
       PaymentTemplateMasterSlice.paymentmaster.paymentTemplate
   );
   const checkRole = useSelector((DashbordSlice) =>
-  DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 46)
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 46)
   );
 
-  const [paymentType, setPaymentType] = useState("Weekly");
+  const [paymentType, setPaymentType] = useState('Weekly');
 
   const paymentModeRef = useRef(null);
 
-  const [days, setDays] = useState();
-
   const options = [
-    { value: "01", label: "1" },
-    { value: "02", label: "2" },
-    { value: "03", label: "3" },
-    { value: "04", label: "4" },
-    { value: "05", label: "5" },
-    { value: "06", label: "6" },
-    { value: "07", label: "7" },
-    { value: "08", label: "8" },
-    { value: "09", label: "9" },
-    { value: "10", label: "10" },
-    { value: "11", label: "11" },
-    { value: "12", label: "12" },
-    { value: "13", label: "13" },
-    { value: "14", label: "14" },
-    { value: "15", label: "15" },
-    { value: "16", label: "16" },
-    { value: "17", label: "17" },
-    { value: "18", label: "18" },
-    { value: "19", label: "19" },
-    { value: "20", label: "20" },
-    { value: "21", label: "21" },
-    { value: "22", label: "22" },
-    { value: "23", label: "23" },
-    { value: "24", label: "24" },
-    { value: "25", label: "25" },
-    { value: "26", label: "26" },
-    { value: "27", label: "26" },
-    { value: "28", label: "28" },
-    { value: "29", label: "29" },
-    { value: "30", label: "30" },
-    { value: "31", label: "31" },
+    { value: '01', label: '1' },
+    { value: '02', label: '2' },
+    { value: '03', label: '3' },
+    { value: '04', label: '4' },
+    { value: '05', label: '5' },
+    { value: '06', label: '6' },
+    { value: '07', label: '7' },
+    { value: '08', label: '8' },
+    { value: '09', label: '9' },
+    { value: '10', label: '10' },
+    { value: '11', label: '11' },
+    { value: '12', label: '12' },
+    { value: '13', label: '13' },
+    { value: '14', label: '14' },
+    { value: '15', label: '15' },
+    { value: '16', label: '16' },
+    { value: '17', label: '17' },
+    { value: '18', label: '18' },
+    { value: '19', label: '19' },
+    { value: '20', label: '20' },
+    { value: '21', label: '21' },
+    { value: '22', label: '22' },
+    { value: '23', label: '23' },
+    { value: '24', label: '24' },
+    { value: '25', label: '25' },
+    { value: '26', label: '26' },
+    { value: '27', label: '26' },
+    { value: '28', label: '28' },
+    { value: '29', label: '29' },
+    { value: '30', label: '30' },
+    { value: '31', label: '31' }
   ];
 
   const weeks = [
-    "Monday",
-    "Tuesday",
-    "Wednesday",
-    "Thursday",
-    "Friday",
-    "Saturday",
-    "Sunday",
+    'Monday',
+    'Tuesday',
+    'Wednesday',
+    'Thursday',
+    'Friday',
+    'Saturday',
+    'Sunday'
   ];
 
-  const [data, setData] = useState(null);
   const [notify, setNotify] = useState();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
+
+  //search function
+
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(paymentdata, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(paymentdata);
+  };
+
   const [modal, setModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
 
   const handleModal = (data) => {
-    setPaymentType(data ? data.modalData.payment_type_name : "");
+    setPaymentType(data ? data.modalData.payment_type_name : '');
     setModal(data);
   };
   const handlePaymentType = (e) => {
     setPaymentType(e.target.value);
   };
-  const searchRef = useRef();
-
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === "string" &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
 
   const billDayRef = useRef(null);
-
-  const [searchTerm, setSearchTerm] = useState("");
-
-  const [filteredData, setFilteredData] = useState([]);
-
-  const handleSearch = (value) => {};
 
   const [country, setCountry] = useState();
   const [state, setState] = useState();
@@ -132,11 +123,9 @@ function PaymentTemplateMaster() {
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
 
-  const roleId = sessionStorage.getItem("role_id");
-
   const columns = [
     {
-      name: "Action",
+      name: 'Action',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -154,7 +143,7 @@ function PaymentTemplateMaster() {
               handleModal({
                 showModal: true,
                 modalData: row,
-                modalHeader: "Edit Payment Template",
+                modalHeader: 'Edit Payment Template'
               });
             }}
           >
@@ -164,16 +153,16 @@ function PaymentTemplateMaster() {
           <Link
             to={`/${_base}/ViewPaymentTemplateDetails/` + row.id}
             className="btn btn-sm btn-primary text-white"
-            style={{ borderRadius: "50%", height: "30px", marginLeft: "5px" }}
+            style={{ borderRadius: '50%', height: '30px', marginLeft: '5px' }}
           >
             <i className="icofont-eye-alt"></i>
           </Link>
         </div>
-      ),
+      )
     },
-    { name: "Sr", id: "id", selector: (row) => row.counter, sortable: true },
+    { name: 'Sr', id: 'id', selector: (row) => row.counter, sortable: true },
     {
-      name: "Status",
+      name: 'Status',
       selector: (row) => row.is_active,
       sortable: false,
       cell: (row) => (
@@ -185,12 +174,12 @@ function PaymentTemplateMaster() {
             <span className="badge bg-danger">Deactive</span>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: "Template Name",
-      width: "150px",
+      name: 'Template Name',
+      width: '150px',
 
       selector: (row) => row.template_name,
       sortable: true,
@@ -204,36 +193,36 @@ function PaymentTemplateMaster() {
             <OverlayTrigger overlay={<Tooltip>{row.template_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.template_name && row.template_name.length < 20
                     ? row.template_name
-                    : row.template_name.substring(0, 12) + "...."}
+                    : row.template_name.substring(0, 12) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: "Payment Type",
+      name: 'Payment Type',
       selector: (row) => row.payment_type_name,
-      width: "150px",
-      sortable: true,
+      width: '150px',
+      sortable: true
     },
     {
-      name: "Bill Type",
+      name: 'Bill Type',
       selector: (row) => row.bill_type_name,
-      width: "200px",
-      sortable: true,
+      width: '200px',
+      sortable: true
     },
-    { name: "Min Days", selector: (row) => row.min_days, sortable: true },
+    { name: 'Min Days', selector: (row) => row.min_days, sortable: true },
     {
-      name: "Bill Day",
+      name: 'Bill Day',
       selector: (row) => row.bill_day,
       sortable: true,
-      width: "150px",
+      width: '150px',
 
       cell: (row) => (
         <div
@@ -249,12 +238,12 @@ function PaymentTemplateMaster() {
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: "Paymemt Weekly",
-      width: "200px",
+      name: 'Paymemt Weekly',
+      width: '200px',
 
       selector: (row) => row.payment_weekly_name,
       sortable: true,
@@ -270,23 +259,23 @@ function PaymentTemplateMaster() {
             >
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.payment_weekly_name &&
                   row.payment_weekly_name.length < 20
                     ? row.payment_weekly_name
-                    : row.payment_weekly_name.substring(0, 12) + "...."}
+                    : row.payment_weekly_name.substring(0, 12) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
-      name: "Remark",
+      name: 'Remark',
       selector: (row) => row.remark,
-      width: "150px",
+      width: '150px',
       sortable: true,
 
       cell: (row) => (
@@ -301,46 +290,46 @@ function PaymentTemplateMaster() {
                 <span className="ms-1">
                   {row.remark && row.remark.length < 20
                     ? row.remark
-                    : row.remark.substring(0, 12) + "...."}
+                    : row.remark.substring(0, 12) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
     {
-      name: "Created At",
+      name: 'Created At',
       selector: (row) => row.created_at,
-      width: "200px",
-      sortable: true,
+      width: '200px',
+      sortable: true
     },
     {
-      name: "Created By",
+      name: 'Created By',
       selector: (row) => row.created_by,
-      width: "200px",
-      sortable: true,
+      width: '200px',
+      sortable: true
     },
     {
-      name: "Updated At",
+      name: 'Updated At',
       selector: (row) => row.updated_at,
-      width: "200px",
-      sortable: true,
+      width: '200px',
+      sortable: true
     },
     {
-      name: "Updated By",
+      name: 'Updated By',
       selector: (row) => row.updated_by,
-      width: "200px",
-      sortable: true,
-    },
+      width: '200px',
+      sortable: true
+    }
   ];
-  const [mindays, setMindays] = useState();
+
   const minDaysRef = useRef();
-  const [toolTip, setToolTip] = useState({ id: "EMPTY", message: "NOTHING" });
+  const [toolTip, setToolTip] = useState({ id: 'EMPTY', message: 'NOTHING' });
 
   const handleMinDaysLength = (e) => {
     if (e.target.value > 366) {
-      minDaysRef.current.value = "";
+      minDaysRef.current.value = '';
     } else {
     }
   };
@@ -355,7 +344,7 @@ function PaymentTemplateMaster() {
         setCountryDropdown(
           res.data.data.map((d) => ({
             value: d.id,
-            label: d.country,
+            label: d.country
           }))
         );
       }
@@ -367,7 +356,7 @@ function PaymentTemplateMaster() {
         setStateDropdown(
           res.data.data.map((d) => ({
             value: d.id,
-            label: d.state,
+            label: d.state
           }))
         );
       }
@@ -379,7 +368,7 @@ function PaymentTemplateMaster() {
         setCityDropdown(
           res.data.data.map((d) => ({
             value: d.id,
-            label: d.city,
+            label: d.city
           }))
         );
       }
@@ -392,11 +381,11 @@ function PaymentTemplateMaster() {
     setNotify(null);
     if (
       paymentModeRef &&
-      paymentModeRef.current.value == "Monthly" &&
+      paymentModeRef.current.value == 'Monthly' &&
       billDayRef.current &&
       billDayRef.current.commonProps.hasValue === false
     ) {
-      alert("please select  bill days");
+      alert('please select  bill days');
       e.preventDefault();
       billDayRef.current.clearValue();
       return;
@@ -408,18 +397,18 @@ function PaymentTemplateMaster() {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              setNotify({ type: "success", message: res.data.message });
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
+              setNotify({ type: 'success', message: res.data.message });
+              setModal({ showModal: false, modalData: '', modalHeader: '' });
               dispatch(paymentTemplate());
             } else {
-              setNotify({ type: "danger", message: res.data.message });
+              setNotify({ type: 'danger', message: res.data.message });
             }
           } else {
-            setNotify({ type: "danger", message: res.data.message });
+            setNotify({ type: 'danger', message: res.data.message });
             new ErrorLogService().sendErrorLog(
-              "Payment_template",
-              "Create_Payment_template",
-              "INSERT",
+              'Payment_template',
+              'Create_Payment_template',
+              'INSERT',
               res.message
             );
           }
@@ -427,11 +416,11 @@ function PaymentTemplateMaster() {
         .catch((error) => {
           const { response } = error;
           const { request, ...errorObject } = response;
-          setNotify({ type: "danger", message: "Request Error !!!" });
+          setNotify({ type: 'danger', message: 'Request Error !!!' });
           new ErrorLogService().sendErrorLog(
-            "Payment_template",
-            "Create_Payment_template",
-            "INSERT",
+            'Payment_template',
+            'Create_Payment_template',
+            'INSERT',
             errorObject.data.message
           );
         });
@@ -441,18 +430,18 @@ function PaymentTemplateMaster() {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              setNotify({ type: "success", message: res.data.message });
-              setModal({ showModal: false, modalData: "", modalHeader: "" });
+              setNotify({ type: 'success', message: res.data.message });
+              setModal({ showModal: false, modalData: '', modalHeader: '' });
               dispatch(paymentTemplate());
             } else {
-              setNotify({ type: "danger", message: res.data.message });
+              setNotify({ type: 'danger', message: res.data.message });
             }
           } else {
-            setNotify({ type: "danger", message: res.data.message });
+            setNotify({ type: 'danger', message: res.data.message });
             new ErrorLogService().sendErrorLog(
-              "Payment_template",
-              "Create_Payment_template",
-              "INSERT",
+              'Payment_template',
+              'Create_Payment_template',
+              'INSERT',
               res.message
             );
           }
@@ -460,20 +449,14 @@ function PaymentTemplateMaster() {
         .catch((error) => {
           const { response } = error;
           const { request, ...errorObject } = response;
-          setNotify({ type: "danger", message: "Request Error !!!" });
+          setNotify({ type: 'danger', message: 'Request Error !!!' });
           new ErrorLogService().sendErrorLog(
-            "Payment_template",
-            "Create_Payment_template",
-            "INSERT",
+            'Payment_template',
+            'Create_Payment_template',
+            'INSERT',
             errorObject.data.message
           );
         });
-    }
-  };
-
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      handleSearch();
     }
   };
 
@@ -481,6 +464,13 @@ function PaymentTemplateMaster() {
     loadData();
   }, []);
 
+  useEffect(() => {
+    setFilteredData(paymentdata);
+  }, [paymentdata]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -500,8 +490,8 @@ function PaymentTemplateMaster() {
                 onClick={() => {
                   handleModal({
                     showModal: true,
-                    modalData: "",
-                    modalHeader: "Add Template",
+                    modalData: '',
+                    modalHeader: 'Add Template'
                   });
                 }}
               >
@@ -512,38 +502,15 @@ function PaymentTemplateMaster() {
         }}
       />
       {/* SEARCH FILTER */}
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-8">
-            <input
-              type="text"
-              className="form-control"
-              id="search"
-              name="search"
-              placeholder="Search...."
-              ref={searchRef}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-          </div>
-        </div>
-      </div>
+
+      <SearchBoxHeader
+        showInput={true}
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by payment template name...."
+        showExportButton={false}
+      />
 
       {/* DATA TABLE */}
       <div className="card mt-2">
@@ -553,24 +520,7 @@ function PaymentTemplateMaster() {
               {paymentdata && (
                 <DataTable
                   columns={columns}
-                  data={paymentdata.filter((customer) => {
-                    if (typeof searchTerm === "string") {
-                      if (typeof customer === "string") {
-                        return customer
-                          .toLowerCase()
-                          .includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === "object") {
-                        return Object.values(customer).some(
-                          (value) =>
-                            typeof value === "string" &&
-                            value
-                              .toLowerCase()
-                              .includes(searchTerm.toLowerCase())
-                        );
-                      }
-                    }
-                    return false;
-                  })}
+                  data={filteredData}
                   defaultSortFieldId="id"
                   pagination
                   selectableRows={false}
@@ -591,14 +541,14 @@ function PaymentTemplateMaster() {
         onHide={(e) => {
           handleModal({
             showModal: false,
-            modalData: "",
-            modalHeader: "",
+            modalData: '',
+            modalHeader: ''
           });
         }}
       >
         <form
           method="post"
-          onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
+          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
         >
           <Modal.Header closeButton>
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
@@ -621,7 +571,7 @@ function PaymentTemplateMaster() {
                       Validation.validateTemplateName(e);
                     }}
                     defaultValue={
-                      modal.modalData ? modal.modalData.template_name : ""
+                      modal.modalData ? modal.modalData.template_name : ''
                     }
                   />
                 </div>
@@ -640,7 +590,7 @@ function PaymentTemplateMaster() {
                     ref={paymentModeRef}
                     onChange={(e) => handlePaymentType(e)}
                     defaultValue={
-                      modal.modalData ? modal.modalData.payment_type_name : ""
+                      modal.modalData ? modal.modalData.payment_type_name : ''
                     }
                   >
                     <option value="">Select Payment Type</option>
@@ -661,7 +611,7 @@ function PaymentTemplateMaster() {
                       name="bill_type"
                       required={true}
                       defaultValue={
-                        modal.modalData ? modal.modalData.bill_type_name : ""
+                        modal.modalData ? modal.modalData.bill_type_name : ''
                       }
                     >
                       <option value="">Select Bill Type</option>
@@ -678,7 +628,7 @@ function PaymentTemplateMaster() {
                       name="bill_type"
                       required={true}
                       defaultValue={
-                        modal.modalData ? modal.modalData.bill_type_name : ""
+                        modal.modalData ? modal.modalData.bill_type_name : ''
                       }
                     >
                       <option value="">Select Bill Type</option>
@@ -690,7 +640,7 @@ function PaymentTemplateMaster() {
               </div>
 
               <div className="row g-3 mb-3">
-                {paymentType && paymentType === "Weekly" && (
+                {paymentType && paymentType === 'Weekly' && (
                   <div className="col-sm-4">
                     <label className="form-label font-weight-bold">
                       Payment Weekly :<Astrick color="red" size="13px" />
@@ -716,7 +666,7 @@ function PaymentTemplateMaster() {
                   </div>
                 )}
 
-                {paymentType && paymentType === "Monthly" && (
+                {paymentType && paymentType === 'Monthly' && (
                   <div className="col-sm-4">
                     <label className="form-label font-weight-bold">
                       Bill Date :<Astrick color="red" size="13px" />
@@ -734,7 +684,7 @@ function PaymentTemplateMaster() {
                           modal?.modalData?.bill_day
                             ? options.filter((option) =>
                                 modal.modalData.bill_day
-                                  .split(",")
+                                  .split(',')
                                   .includes(option.value)
                               )
                             : null
@@ -773,7 +723,7 @@ function PaymentTemplateMaster() {
                     }}
                     ref={minDaysRef}
                     defaultValue={
-                      modal.modalData ? modal.modalData.min_days : ""
+                      modal.modalData ? modal.modalData.min_days : ''
                     }
                     onKeyPress={(e) => {
                       Validation.NumbersOnly(e);
@@ -788,7 +738,7 @@ function PaymentTemplateMaster() {
                     }}
                   />
 
-                  {toolTip && toolTip.id == "MIN_DAYS" && (
+                  {toolTip && toolTip.id == 'MIN_DAYS' && (
                     <small class="text-danger">
                       <b>{toolTip.message}</b>
                     </small>
@@ -805,7 +755,7 @@ function PaymentTemplateMaster() {
                     className="form-control form-control-sm"
                     id="remark"
                     name="remark"
-                    defaultValue={modal.modalData ? modal.modalData.remark : ""}
+                    defaultValue={modal.modalData ? modal.modalData.remark : ''}
                     rows="4"
                     maxLength={10000}
                   />
@@ -870,7 +820,7 @@ function PaymentTemplateMaster() {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: "#484C7F" }}
+                style={{ backgroundColor: '#484C7F' }}
               >
                 Save
               </button>
@@ -879,7 +829,7 @@ function PaymentTemplateMaster() {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: "#484C7F" }}
+                style={{ backgroundColor: '#484C7F' }}
               >
                 Update
               </button>
@@ -890,8 +840,8 @@ function PaymentTemplateMaster() {
               onClick={() => {
                 handleModal({
                   showModal: false,
-                  modalData: "",
-                  modalHeader: "",
+                  modalData: '',
+                  modalHeader: ''
                 });
               }}
             >

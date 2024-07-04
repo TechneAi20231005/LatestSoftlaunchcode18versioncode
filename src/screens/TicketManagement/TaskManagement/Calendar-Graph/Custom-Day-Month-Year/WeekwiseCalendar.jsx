@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './custom-style.css';
-import SprintService from '../../../../../services/TicketService/SprintService';
+import CalendarSkeleton from './Skeleton/CalendarSkeleton';
 const WeekwiseCalendar = (props) => {
-  const { daysOfWeek, data, bgColor, firstDate, lastDate } = props;
+  const { daysOfWeek, data, bgColor, isLoading } = props;
   const [tooltipContent, setTooltipContent] = useState('');
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
@@ -58,60 +58,65 @@ const WeekwiseCalendar = (props) => {
 
   return (
     <>
-      <div className="d-flex mt-3">
-        {data?.map((dataItems, index) => {
-          const formatedDate = getFormattedDate(dataItems?.date);
-          const taskDataArray = dataItems?.task_data || [];
+      {isLoading && <CalendarSkeleton />}
+      {!isLoading && (
+        <div className="d-flex mt-3">
+          {data?.map((dataItems, index) => {
+            const formatedDate = getFormattedDate(dataItems?.date);
+            const taskDataArray = dataItems?.task_data || [];
 
-          while (taskDataArray.length < 6) {
-            taskDataArray.push({});
-          }
-          return (
-            <div className="custom-col d-flex flex-column" key={index}>
-              <div className="  border d-flex pb-2 pt-1 mb-1 justify-content-between">
-                <div className="px-1">
-                  <h4 className="mb-0">{formatedDate.date}</h4>
-                  <p className="mb-0">{formatedDate.day}</p>
-                </div>
-                <div className="px-1">
-                  <p className="mb-0">{formatedDate.month}</p>
-                </div>
-              </div>
-              {taskDataArray.map((task, idx) => {
-                let actualStatus = task?.task_status;
-                let filteredBgColor = bgColor?.filter(
-                  (bgcolor) => bgcolor?.statusName === actualStatus
-                );
-                const colorChange =
-                  Object.keys(task).length > 0 ? filteredBgColor[0]?.color : '';
-
-                const truncateText = (text) =>
-                  text.length > 25 ? `${text.slice(0, 20)}...` : text;
-                return (
-                  <div
-                    className="calendar-card  border ps-2   py-2"
-                    style={{ backgroundColor: colorChange }}
-                    key={idx}
-                    onMouseEnter={(event) => handleMouseEnter(event, task)}
-                    onMouseLeave={handleMouseLeave}
-                  >
-                    {task?.basket_name && (
-                      <p className="mb-0 fw-bold">
-                        {truncateText(task?.basket_name)}
-                      </p>
-                    )}
-                    {task?.task_name && (
-                      <p className="mb-0" onClick={goPrevTab}>
-                        {truncateText(task?.task_name)}
-                      </p>
-                    )}
+            while (taskDataArray.length < 6) {
+              taskDataArray.push({});
+            }
+            return (
+              <div className="custom-col d-flex flex-column" key={index}>
+                <div className="  border d-flex pb-2 pt-1 mb-1 justify-content-between">
+                  <div className="px-1">
+                    <h4 className="mb-0">{formatedDate.date}</h4>
+                    <p className="mb-0">{formatedDate.day}</p>
                   </div>
-                );
-              })}
-            </div>
-          );
-        })}
-      </div>
+                  <div className="px-1">
+                    <p className="mb-0">{formatedDate.month}</p>
+                  </div>
+                </div>
+                {taskDataArray.map((task, idx) => {
+                  let actualStatus = task?.task_actual_status;
+                  let filteredBgColor = bgColor?.filter(
+                    (bgcolor) => bgcolor?.statusName === actualStatus
+                  );
+                  const colorChange =
+                    Object.keys(task).length > 0
+                      ? filteredBgColor[0]?.color
+                      : '';
+
+                  const truncateText = (text) =>
+                    text.length > 25 ? `${text.slice(0, 20)}...` : text;
+                  return (
+                    <div
+                      className="calendar-card  border ps-2   py-2"
+                      style={{ backgroundColor: colorChange }}
+                      key={idx}
+                      onMouseEnter={(event) => handleMouseEnter(event, task)}
+                      onMouseLeave={handleMouseLeave}
+                    >
+                      {task?.basket_name && (
+                        <p className="mb-0 fw-bold">
+                          {truncateText(task?.basket_name)}
+                        </p>
+                      )}
+                      {task?.task_name && (
+                        <p className="mb-0" onClick={goPrevTab}>
+                          {truncateText(task?.task_name)}
+                        </p>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            );
+          })}
+        </div>
+      )}
 
       {tooltipContent && (
         <div

@@ -30,6 +30,7 @@ import {
 } from '../../Dashboard/DashboardAction';
 
 import RoleService from '../../../services/MastersService/RoleService';
+import { toast } from 'react-toastify';
 function EditUserComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
@@ -84,7 +85,14 @@ function EditUserComponent({ match }) {
     }
   ]);
 
-  const [designationDropdown, setDesignationDropdown] = useState(null);
+  const [designationDropdown, setDesignationDropdown] = useState([]);
+  console.log('designationDropdown', designationDropdown);
+  const sortDesignationDropdown = [...designationDropdown].sort((a, b) => {
+    if (a.label < b.label) return -1;
+    if (a.label > b.label) return 1;
+    return 0;
+  });
+  console.log('sortDesignationDropdown', sortDesignationDropdown);
 
   const [updateStatus, setUpdateStatus] = useState({});
 
@@ -308,7 +316,7 @@ function EditUserComponent({ match }) {
     }
 
     var selectDepartment = form.getAll('department_id[]');
-    if (selectDepartment == '') {
+    if (selectDepartment === '') {
       setInputState({ ...state, departmentErr: ' Please Select Department' });
       return false;
     }
@@ -318,7 +326,7 @@ function EditUserComponent({ match }) {
       return;
     }
     var selectTicketTypeShow = form.getAll('ticket_show_type_id[]');
-    if (selectTicketTypeShow == '') {
+    if (selectTicketTypeShow === '') {
       setInputState({
         ...state,
         ticketTypeShowErr: ' Please Select Ticket Type Show'
@@ -330,43 +338,50 @@ function EditUserComponent({ match }) {
       await new UserService()
         .updateUser(userId, form)
         .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setNotify({ type: 'success', message: res.data.message });
+          if (res?.status === 200) {
+            if (res?.data?.status === 1) {
+              toast.success(res?.data?.message);
+              navigate(`/${_base}/User`);
+
+              // setNotify({ type: 'success', message: res.data.message });
 
               dispatch(getEmployeeData());
 
-              setTimeout(() => {
-                navigate(`/${_base}/User`, {
-                  state: {
-                    alert: { type: 'success', message: res.data.message }
-                  }
-                });
-              }, 3000);
+              // setTimeout(() => {
+              //   navigate(`/${_base}/User`, {
+              //     state: {
+              //       alert: { type: 'success', message: res.data.message }
+              //     }
+              //   });
+              // }, 3000);
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res?.data?.message);
+              // setNotify({ type: 'danger', message: res.data.message });
             }
-          } else {
-            setNotify({ type: 'danger', message: res.message });
-            new ErrorLogService().sendErrorLog(
-              'User',
-              'Create_User',
-              'INSERT',
-              res.message
-            );
           }
+
+          // else {
+          // setNotify({ type: 'danger', message: res.message });
+          // new ErrorLogService().sendErrorLog(
+          //   'User',
+          //   'Create_User',
+          //   'INSERT',
+          //   res.message
+          // );
+          // }
         })
-        .catch((error) => {
-          if (error.response) {
-            const { request, ...errorObject } = error.response;
-            new ErrorLogService().sendErrorLog(
-              'User',
-              'Create_User',
-              'INSERT',
-              errorObject.data.message
-            );
-          } else {
-          }
+        .catch((res) => {
+          toast.error(res?.data?.message);
+          // if (error.response) {
+          //   const { request, ...errorObject } = error.response;
+          //   new ErrorLogService().sendErrorLog(
+          //     'User',
+          //     'Create_User',
+          //     'INSERT',
+          //     errorObject.data.message
+          //   );
+          // } else {
+          // }
         });
       // }
     }
@@ -469,8 +484,8 @@ function EditUserComponent({ match }) {
     });
 
     await new DesignationService().getDesignation().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
           setDesignationDropdown(
             res.data.data
               .filter((d) => d.is_active === 1)
@@ -1343,12 +1358,12 @@ function EditUserComponent({ match }) {
                             <Select
                               id="designation_id"
                               name="designation_id"
-                              options={designationDropdown}
+                              options={sortDesignationDropdown}
                               defaultValue={
                                 data &&
                                 designationDropdown &&
                                 designationDropdown.filter(
-                                  (d) => d.value == data.designation_id
+                                  (d) => d.value === data.designation_id
                                 )
                               }
                             />

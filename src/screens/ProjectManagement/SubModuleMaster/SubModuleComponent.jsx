@@ -1,68 +1,59 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
-import DataTable from "react-data-table-component";
-import { _base } from "../../../settings/constants";
-import ErrorLogService from "../../../services/ErrorLogService";
-import SubModuleService from "../../../services/ProjectManagementService/SubModuleService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import PageHeader from "../../../components/Common/PageHeader";
-import Alert from "../../../components/Common/Alert";
-import { Modal } from "react-bootstrap";
-import { Spinner } from "react-bootstrap";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import { getRoles } from "../../Dashboard/DashboardAction";
-import { useDispatch, useSelector } from "react-redux";
-import TableLoadingSkelton from "../../../components/custom/loader/TableLoadingSkelton";
+import React, { useEffect, useState, useRef } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import DataTable from 'react-data-table-component';
+import { _base } from '../../../settings/constants';
+import ErrorLogService from '../../../services/ErrorLogService';
+import SubModuleService from '../../../services/ProjectManagementService/SubModuleService';
+
+import PageHeader from '../../../components/Common/PageHeader';
+import Alert from '../../../components/Common/Alert';
+
+import { getRoles } from '../../Dashboard/DashboardAction';
+import { useDispatch, useSelector } from 'react-redux';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { customSearchHandler } from '../../../utils/customFunction';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 
 function SubModuleComponent() {
-  const location = useLocation();
+  //initial state
+  const dispatch = useDispatch();
+
+  //redux state
+
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 22)
+  );
+
+  //local state
 
   const [notify, setNotify] = useState(null);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
-  const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null);
-  const dispatch = useDispatch();
-  const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 22)
-  );
   const [exportData, setExportData] = useState(null);
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
-  const searchRef = useRef();
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === "string" &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  //search function
 
   const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+    const filteredList = customSearchHandler(data, searchTerm);
+    setFilteredData(filteredList);
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
   };
+
+  //Data Table columns
 
   const columns = [
     {
-      name: "Action",
+      name: 'Action',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -74,22 +65,22 @@ function SubModuleComponent() {
             <i className="icofont-edit text-success"></i>
           </Link>
         </div>
-      ),
+      )
     },
-    { name: "Sr", selector: (row) => row.counter, sortable: true },
+    { name: 'Sr', selector: (row) => row.counter, sortable: true },
     {
-      name: "Sub Module Name",
+      name: 'Sub Module Name',
       selector: (row) => row.sub_module_name,
-      sortable: true,
+      sortable: true
     },
-    { name: "Module Name", selector: (row) => row.module_name, sortable: true },
+    { name: 'Module Name', selector: (row) => row.module_name, sortable: true },
     {
-      name: "Project Name",
+      name: 'Project Name',
       selector: (row) => row.project_name,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Status",
+      name: 'Status',
       selector: (row) => row.is_active,
       sortable: false,
       cell: (row) => (
@@ -101,24 +92,24 @@ function SubModuleComponent() {
             <span className="badge bg-danger">Deactive</span>
           )}
         </div>
-      ),
+      )
     },
-    { name: "Remark", selector: (row) => row.remark, sortable: true },
+    { name: 'Remark', selector: (row) => row.remark, sortable: true },
     {
-      name: "Created At",
-      width: "10%",
+      name: 'Created At',
+      width: '10%',
       selector: (row) => row.created_at,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Created By",
-      width: "10%",
+      name: 'Created By',
+      width: '10%',
       selector: (row) => row.created_by,
-      sortable: true,
+      sortable: true
     },
-    { name: "Updated At", selector: (row) => row.updated_at, sortable: true },
+    { name: 'Updated At', selector: (row) => row.updated_at, sortable: true },
 
-    { name: "Updated By", selector: (row) => row.updated_by, sortable: true },
+    { name: 'Updated By', selector: (row) => row.updated_by, sortable: true }
   ];
 
   const loadData = async () => {
@@ -148,7 +139,7 @@ function SubModuleComponent() {
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,
               updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
+              updated_by: temp[key].updated_by
             });
           }
           setData(null);
@@ -162,21 +153,21 @@ function SubModuleComponent() {
               sub_module_name: temp[key].sub_module_name,
               module_name: temp[key].module_name,
               project_name: temp[key].project_name,
-              is_active: temp[key].is_active == 1 ? "Active" : "Deactive",
+              is_active: temp[key].is_active == 1 ? 'Active' : 'Deactive',
               remark: temp[key].remark,
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,
               updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
+              updated_by: temp[key].updated_by
             });
           }
 
           setExportData(exportTempData);
         } else {
           new ErrorLogService().sendErrorLog(
-            "SubModule Master",
-            "Get_SubModule",
-            "INSERT",
+            'SubModule Master',
+            'Get_SubModule',
+            'INSERT',
             res.message
           );
         }
@@ -185,24 +176,13 @@ function SubModuleComponent() {
         const { response } = error;
         const { request, ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
-          "SubModule Master",
-          "Get_SubModule",
-          "INSERT",
+          'SubModule Master',
+          'Get_SubModule',
+          'INSERT',
           errorObject.data.message
         );
       });
     dispatch(getRoles());
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
   };
 
   useEffect(() => {
@@ -214,6 +194,13 @@ function SubModuleComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, []);
+  useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -233,57 +220,30 @@ function SubModuleComponent() {
                   Sub-Module
                 </Link>
               ) : (
-                ""
+                ''
               )}
             </div>
           );
         }}
       />
+      <SearchBoxHeader
+               showInput={true}
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by submodule name...."
+        exportFileName="submodule Master Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
 
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search...."
-              ref={searchRef}
-              onKeyDown={handleKeyDown}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              onClick={handleSearch}
-              style={{ marginTop: "0px", fontWeight: "600" }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Module master Records"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="row clearfix g-3">
+      <div className="card mt-2">
         <div className="col-sm-12">
           {isLoading && <TableLoadingSkelton />}
           {!isLoading && data && (
             <DataTable
               columns={columns}
-              data={data}
+              data={filteredData}
               defaultSortField="title"
               pagination
               selectableRows={false}
@@ -292,8 +252,6 @@ function SubModuleComponent() {
             />
           )}
         </div>
-       
-       
       </div>
     </div>
   );
@@ -312,7 +270,7 @@ function SubModuleDropdown(props) {
           tempData.push({
             counter: counter++,
             id: data[key].id,
-            sub_module_name: data[key].sub_module_name,
+            sub_module_name: data[key].sub_module_name
           });
         }
         setData(null);

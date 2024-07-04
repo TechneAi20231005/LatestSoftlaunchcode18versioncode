@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import {
   ButtonComponent,
   DropdownComponent,
-  SearchComponent,
+  SearchComponent
 } from '../../../components/Utilities/Button/Button';
 import PageHeader from '../../../components/Common/PageHeader';
 import { Modal } from 'react-bootstrap';
@@ -14,13 +14,15 @@ import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 // for task type created customoption function
 
 const CustomOption = ({ label, options, onClick, closeDropdown }) => {
   const [expanded, setExpanded] = useState(false);
   const [openOptions, setOpenOptions] = useState([]);
 
-  const handleClick = e => {
+  const handleClick = (e) => {
     setExpanded(!expanded);
     onClick(label);
     closeDropdown(); // Close the dropdown after clicking the option
@@ -34,14 +36,14 @@ const CustomOption = ({ label, options, onClick, closeDropdown }) => {
     <div
       style={{
         padding: '8px',
-        cursor: 'pointer',
+        cursor: 'pointer'
       }}
       onClick={handleClick}
     >
       {label}
       {expanded && options && (
         <div style={{ marginLeft: '20px' }}>
-          {options.map(option => (
+          {options.map((option) => (
             <CustomOption
               key={option.label}
               label={option.label}
@@ -62,7 +64,7 @@ const CustomOption = ({ label, options, onClick, closeDropdown }) => {
 
 const CustomOptionTicket = ({ label, options, onClick, closeDropdown }) => {
   const [expanded, setExpanded] = useState(false);
-  const handleClick = e => {
+  const handleClick = (e) => {
     setExpanded(!expanded);
     onClick(label);
     closeDropdown(); // Close the dropdown after clicking the option
@@ -72,14 +74,14 @@ const CustomOptionTicket = ({ label, options, onClick, closeDropdown }) => {
     <div
       style={{
         padding: '8px',
-        cursor: 'pointer',
+        cursor: 'pointer'
       }}
       onClick={handleClick}
     >
       {label}
       {expanded && options && (
         <div style={{ marginLeft: '20px' }}>
-          {options.map(option => (
+          {options.map((option) => (
             <CustomOptionTicket
               key={option.label}
               label={option.label}
@@ -104,15 +106,15 @@ const CustomMenuList = ({ options, onSelect }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
-  const handleKeyDown = e => {
+  const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       setOpenOptions(true);
     }
   };
 
-  const toggleOptions = label => {
+  const toggleOptions = (label) => {
     if (openOptions.includes(label)) {
-      setOpenOptions(openOptions.filter(item => item !== label));
+      setOpenOptions(openOptions.filter((item) => item !== label));
     } else {
       setOpenOptions([...openOptions, label]);
     }
@@ -126,7 +128,7 @@ const CustomMenuList = ({ options, onSelect }) => {
   };
 
   const filterOptions = (options, term) => {
-    return options.filter(option => {
+    return options.filter((option) => {
       const lowerCaseTerm = term.toLowerCase();
       const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
       const matchChildOptions =
@@ -138,7 +140,7 @@ const CustomMenuList = ({ options, onSelect }) => {
     });
   };
 
-  const handleMouseEnter = label => {
+  const handleMouseEnter = (label) => {
     setHoveredIndex(label);
   };
 
@@ -146,7 +148,7 @@ const CustomMenuList = ({ options, onSelect }) => {
     setHoveredIndex(null);
   };
 
-  const renderOptions = options => {
+  const renderOptions = (options) => {
     return options.map((option, index) => (
       <React.Fragment key={option.label}>
         <div
@@ -154,8 +156,11 @@ const CustomMenuList = ({ options, onSelect }) => {
             display: 'flex',
             alignItems: 'center',
             padding: '0.4rem',
-            backgroundColor: hoveredIndex === option.label ? 'rgba(79, 184, 201, 0.5)' : 'white',
-            transition: 'background-color 0.3s',
+            backgroundColor:
+              hoveredIndex === option.label
+                ? 'rgba(79, 184, 201, 0.5)'
+                : 'white',
+            transition: 'background-color 0.3s'
           }}
           onMouseEnter={() => handleMouseEnter(option.label)}
           onMouseLeave={handleMouseLeave}
@@ -168,7 +173,7 @@ const CustomMenuList = ({ options, onSelect }) => {
             }
             style={{
               marginRight: '5px',
-              cursor: 'pointer',
+              cursor: 'pointer'
             }}
             onClick={() => toggleOptions(option.label)}
           ></i>
@@ -177,7 +182,7 @@ const CustomMenuList = ({ options, onSelect }) => {
             onClick={() => handleSelect(option.label, option.ID)}
             style={{
               cursor: 'pointer',
-              transition: 'color 0.3s',
+              transition: 'color 0.3s'
             }}
           >
             {option.label}
@@ -189,7 +194,9 @@ const CustomMenuList = ({ options, onSelect }) => {
           openOptions.includes(option.label) &&
           option.options && (
             <div style={{ marginLeft: '1rem' }}>
-              <div style={{ marginLeft: '1rem' }}>{renderOptions(option.options)}</div>
+              <div style={{ marginLeft: '1rem' }}>
+                {renderOptions(option.options)}
+              </div>
             </div>
           )}
       </React.Fragment>
@@ -212,7 +219,7 @@ const CustomMenuList = ({ options, onSelect }) => {
             boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
             backgroundColor: 'white',
             borderBottomRightRadius: '4px',
-            borderBottomLeftRadius: '4px',
+            borderBottomLeftRadius: '4px'
           }}
           tabIndex={0}
           onKeyDown={handleKeyDown}
@@ -224,11 +231,13 @@ const CustomMenuList = ({ options, onSelect }) => {
               padding: '8px',
               border: 'none',
               width: '100%',
-              boxSizing: 'border-box',
+              boxSizing: 'border-box'
             }}
-            onChange={e => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <div style={{ overflowY: 'auto' }}>{renderOptions(filteredOptions)}</div>
+          <div style={{ overflowY: 'auto' }}>
+            {renderOptions(filteredOptions)}
+          </div>
         </div>
       )}
     </>
@@ -244,15 +253,15 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
-  const handleKeyDown = e => {
+  const handleKeyDown = (e) => {
     if (e.key === 'Enter') {
       setOpenOptions(true);
     }
   };
 
-  const toggleOptions = label => {
+  const toggleOptions = (label) => {
     if (openOptions.includes(label)) {
-      setOpenOptions(openOptions.filter(item => item !== label));
+      setOpenOptions(openOptions.filter((item) => item !== label));
     } else {
       setOpenOptions([...openOptions, label]);
     }
@@ -266,7 +275,7 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
   };
 
   const filterOptions = (options, term) => {
-    return options.filter(option => {
+    return options.filter((option) => {
       const lowerCaseTerm = term.toLowerCase();
       const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
       const matchChildOptions =
@@ -278,7 +287,7 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
     });
   };
 
-  const handleMouseEnter = label => {
+  const handleMouseEnter = (label) => {
     setHoveredIndex(label);
   };
 
@@ -286,7 +295,7 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
     setHoveredIndex(null);
   };
 
-  const renderOptions = options => {
+  const renderOptions = (options) => {
     return options.map((option, index) => (
       <React.Fragment key={option.label}>
         <div
@@ -294,8 +303,11 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
             display: 'flex',
             alignItems: 'center',
             padding: '0.4rem',
-            backgroundColor: hoveredIndex === option.label ? 'rgba(79, 184, 201, 0.5)' : 'white',
-            transition: 'background-color 0.3s',
+            backgroundColor:
+              hoveredIndex === option.label
+                ? 'rgba(79, 184, 201, 0.5)'
+                : 'white',
+            transition: 'background-color 0.3s'
           }}
           onMouseEnter={() => handleMouseEnter(option.label)}
           onMouseLeave={handleMouseLeave}
@@ -308,7 +320,7 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
             }
             style={{
               marginRight: '5px',
-              cursor: 'pointer',
+              cursor: 'pointer'
             }}
             onClick={() => toggleOptions(option.label)}
           ></i>
@@ -317,7 +329,7 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
             onClick={() => handleSelect(option.label, option.ID)}
             style={{
               cursor: 'pointer',
-              transition: 'color 0.3s',
+              transition: 'color 0.3s'
             }}
           >
             {option.label}
@@ -329,7 +341,9 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
           openOptions.includes(option.label) &&
           option.options && (
             <div style={{ marginLeft: '1rem' }}>
-              <div style={{ marginLeft: '1rem' }}>{renderOptions(option.options)}</div>
+              <div style={{ marginLeft: '1rem' }}>
+                {renderOptions(option.options)}
+              </div>
             </div>
           )}
       </React.Fragment>
@@ -352,7 +366,7 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
             boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
             backgroundColor: 'white',
             borderBottomRightRadius: '4px',
-            borderBottomLeftRadius: '4px',
+            borderBottomLeftRadius: '4px'
           }}
           tabIndex={0}
           onKeyDown={handleKeyDown}
@@ -364,11 +378,13 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
               padding: '8px',
               border: 'none',
               width: '100%',
-              boxSizing: 'border-box',
+              boxSizing: 'border-box'
             }}
-            onChange={e => setSearchTerm(e.target.value)}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <div style={{ overflowY: 'auto' }}>{renderOptions(filteredOptions)}</div>
+          <div style={{ overflowY: 'auto' }}>
+            {renderOptions(filteredOptions)}
+          </div>
         </div>
       )}
     </>
@@ -399,7 +415,7 @@ function TaskAndTicketTypeMaster(props) {
     setParentTaskName('');
     setParentTicketName('');
   };
-  const toggleDropdown = e => {
+  const toggleDropdown = (e) => {
     setIsOpen(!isOpen);
   };
 
@@ -415,93 +431,107 @@ function TaskAndTicketTypeMaster(props) {
   const [modal, setModal] = useState({
     showModal: false,
     modalData: '',
-    modalHeader: '',
+    modalHeader: ''
   });
-  const dropdownData = [
-    { value: 'TASK', label: 'TASK' },
-    { value: 'TICKET', label: 'TICKET' },
-  ];
+
+  // const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
+
+  //search function
+
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(data, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
+  };
   const loadData = async () => {
     const exportTempData = [];
     setIsLoading(true);
 
-    await new TaskTicketTypeService().getAllTaskTicketType(selectedType).then(res => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          let counter = 1;
-          var tempData = [];
-          const temp = res.data.data;
-          for (const key in temp) {
-            tempData.push({
-              counter: counter++,
-              id: temp[key].id,
-              type: temp[key].type,
-              parent_id: temp[key].parent_id,
-              type_name: temp[key].type_name,
-              parent_name:
-                temp[key].parent_name === null && temp[key].parent_id == 0
-                  ? 'Primary'
-                  : temp[key].parent_name,
+    await new TaskTicketTypeService()
+      .getAllTaskTicketType(selectedType)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            let counter = 1;
+            var tempData = [];
+            const temp = res.data.data;
+            for (const key in temp) {
+              tempData.push({
+                counter: counter++,
+                id: temp[key].id,
+                type: temp[key].type,
+                parent_id: temp[key].parent_id,
+                type_name: temp[key].type_name,
+                parent_name:
+                  temp[key].parent_name === null && temp[key].parent_id == 0
+                    ? 'Primary'
+                    : temp[key].parent_name,
 
-              remark: temp[key].remark,
-              is_active: temp[key].is_active,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
-            });
+                remark: temp[key].remark,
+                is_active: temp[key].is_active,
+                created_at: temp[key].created_at,
+                created_by: temp[key].created_by,
+                updated_at: temp[key].updated_at,
+                updated_by: temp[key].updated_by
+              });
+            }
+            setData(null);
+            setData(tempData);
+            setIsLoading(false);
+            for (const i in temp) {
+              exportTempData.push({
+                SrNo: exportTempData.length + 1,
+
+                // id: temp[i].id,
+                type: temp[i].type,
+
+                type_name: temp[i].type_name,
+                parent_name:
+                  temp[i].parent_name === null && temp[i].parent_id == 0
+                    ? 'Primary'
+                    : temp[i].parent_name,
+
+                remark: temp[i].remark,
+                is_active: temp[i].is_active == 1 ? 'Active' : 'Deactive',
+                created_at: temp[i].created_at,
+                created_by: temp[i].created_by,
+                updated_at: temp[i].updated_at,
+                updated_by: temp[i].updated_by
+              });
+            }
+
+            setExportData(null);
+            setIsLoading(false);
+
+            setExportData(exportTempData);
           }
-          setData(null);
-          setData(tempData);
-          setIsLoading(false);
-          for (const i in temp) {
-            exportTempData.push({
-              SrNo: exportTempData.length + 1,
-
-              // id: temp[i].id,
-              type: temp[i].type,
-
-              type_name: temp[i].type_name,
-              parent_name:
-                temp[i].parent_name === null && temp[i].parent_id == 0
-                  ? 'Primary'
-                  : temp[i].parent_name,
-
-              remark: temp[i].remark,
-              is_active: temp[i].is_active == 1 ? 'Active' : 'Deactive',
-              created_at: temp[i].created_at,
-              created_by: temp[i].created_by,
-              updated_at: temp[i].updated_at,
-              updated_by: temp[i].updated_by,
-            });
-          }
-
-          setExportData(null);
-          setIsLoading(false);
-
-          setExportData(exportTempData);
         }
-      }
-    });
+      });
 
-    await new TaskTicketTypeService().getParent().then(res => {
+    await new TaskTicketTypeService().getParent().then((res) => {
       if (res.status === 200) {
-        const mappedData = res.data.data.map(d => ({
+        const mappedData = res.data.data.map((d) => ({
           value: d.id,
-          label: d.type_name,
+          label: d.type_name
         }));
         setParent(mappedData);
       } else {
       }
     });
 
-    await new TaskTicketTypeService()?.getTaskType()?.then(res => {
+    await new TaskTicketTypeService()?.getTaskType()?.then((res) => {
       if (res?.status === 200) {
         setTaskData(res?.data?.data);
       }
     });
 
-    await new TaskTicketTypeService()?.getTicketType()?.then(res => {
+    await new TaskTicketTypeService()?.getTicketType()?.then((res) => {
       if (res?.status === 200) {
         setTicketData(res?.data?.data);
       }
@@ -510,7 +540,7 @@ function TaskAndTicketTypeMaster(props) {
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const handleSelectOptionClick = e => {
+  const handleSelectOptionClick = (e) => {
     setIsMenuOpen(!isMenuOpen);
   };
 
@@ -524,13 +554,13 @@ function TaskAndTicketTypeMaster(props) {
         ID: null,
         label: primaryLabel,
         isStatic: true,
-        options: [],
+        options: []
       });
       hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
     }
 
     // Process the taskData
-    taskData?.forEach(item => {
+    taskData?.forEach((item) => {
       const label = item.type_name;
 
       if (label !== primaryLabel) {
@@ -538,7 +568,9 @@ function TaskAndTicketTypeMaster(props) {
         options.push({
           ID: item.parent_id,
           label: label,
-          options: item.children ? transformData(item.children, hasPrimaryLabel) : [],
+          options: item.children
+            ? transformData(item.children, hasPrimaryLabel)
+            : []
         });
       }
     });
@@ -559,13 +591,13 @@ function TaskAndTicketTypeMaster(props) {
         ID: null,
         label: primaryLabel,
         isStatic: true,
-        options: [],
+        options: []
       });
       hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
     }
 
     // Process the ticketData
-    ticketData?.forEach(item => {
+    ticketData?.forEach((item) => {
       const label = item.type_name;
 
       if (label !== primaryLabel) {
@@ -573,7 +605,9 @@ function TaskAndTicketTypeMaster(props) {
         options.push({
           ID: item.parent_id,
           label: label,
-          options: item.children ? transformDataTicket(item.children, hasPrimaryLabel) : [],
+          options: item.children
+            ? transformDataTicket(item.children, hasPrimaryLabel)
+            : []
         });
       }
     });
@@ -586,155 +620,166 @@ function TaskAndTicketTypeMaster(props) {
 
   const [expandedRows, setExpandedRows] = useState([]);
 
-  const handleRowExpandToggle = row => {
+  const handleRowExpandToggle = (row) => {
     const isRowExpanded = expandedRows.includes(row.id);
     const newExpandedRows = isRowExpanded
-      ? expandedRows.filter(id => id !== row.id)
+      ? expandedRows.filter((id) => id !== row.id)
       : [...expandedRows, row.id];
     setExpandedRows(newExpandedRows);
   };
 
   const [selectedType, setSelectedType] = useState('TASK'); // State to track selected type
-  const handleType = async e => {
+  const handleType = async (e) => {
     setData([]);
     setSelectedType(e.target.value); // Update the selected type when a radio button is clicked
-    await new TaskTicketTypeService().getAllTaskTicketType(e.target.value).then(res => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          let counter = 1;
-          var tempData = [];
-          const temp = res.data.data;
-          for (const key in temp) {
-            tempData.push({
-              counter: counter++,
-              id: temp[key].id,
-              type: temp[key].type,
-              parent_id: temp[key].parent_id,
-              type_name: temp[key].type_name,
-              parent_name:
-                temp[key].parent_name === null && temp[key].parent_id == 0
-                  ? 'Primary'
-                  : temp[key].parent_name,
-              remark: temp[key].remark,
-              is_active: temp[key].is_active,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
-            });
+    await new TaskTicketTypeService()
+      .getAllTaskTicketType(e.target.value)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            let counter = 1;
+            var tempData = [];
+            const temp = res.data.data;
+            for (const key in temp) {
+              tempData.push({
+                counter: counter++,
+                id: temp[key].id,
+                type: temp[key].type,
+                parent_id: temp[key].parent_id,
+                type_name: temp[key].type_name,
+                parent_name:
+                  temp[key].parent_name === null && temp[key].parent_id == 0
+                    ? 'Primary'
+                    : temp[key].parent_name,
+                remark: temp[key].remark,
+                is_active: temp[key].is_active,
+                created_at: temp[key].created_at,
+                created_by: temp[key].created_by,
+                updated_at: temp[key].updated_at,
+                updated_by: temp[key].updated_by
+              });
+            }
+            setData(null);
+            setData(tempData);
+            let exportTempData = [];
+            for (const i in temp) {
+              exportTempData.push({
+                SrNo: exportTempData.length + 1,
+
+                id: temp[i].id,
+                type: temp[i].type,
+
+                parent_name: temp[i].parent_name,
+                type_name: temp[i].type_name,
+                remark: temp[i].remark,
+                is_active: temp[i].is_active,
+                created_at: temp[i].created_at,
+                created_by: temp[i].created_by,
+                updated_at: temp[i].updated_at,
+                updated_by: temp[i].updated_by
+              });
+            }
+
+            setExportData(null);
+
+            setExportData(exportTempData);
           }
-          setData(null);
-          setData(tempData);
-          let exportTempData = [];
-          for (const i in temp) {
-            exportTempData.push({
-              SrNo: exportTempData.length + 1,
-
-              id: temp[i].id,
-              type: temp[i].type,
-
-              parent_name: temp[i].parent_name,
-              type_name: temp[i].type_name,
-              remark: temp[i].remark,
-              is_active: temp[i].is_active,
-              created_at: temp[i].created_at,
-              created_by: temp[i].created_by,
-              updated_at: temp[i].updated_at,
-              updated_by: temp[i].updated_by,
-            });
-          }
-
-          setExportData(null);
-
-          setExportData(exportTempData);
         }
-      }
-    });
+      });
   };
 
   const columns = [
     {
       name: 'Action',
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
-      cell: row => (
+      cell: (row) => (
         <div className="btn-group" role="group">
           <button
             type="button"
             className="btn btn-outline-secondary"
             data-bs-toggle="modal"
             data-bs-target="#edit"
-            onClick={e => {
-              const modalHeader = selectedType === 'TASK' ? 'Edit Task Type' : 'Edit Ticket Type';
+            onClick={(e) => {
+              const modalHeader =
+                selectedType === 'TASK' ? 'Edit Task Type' : 'Edit Ticket Type';
               handleModal({
                 showModal: true,
                 modalData: row,
-                modalHeader: modalHeader,
+                modalHeader: modalHeader
               });
             }}
           >
             <i className="icofont-edit text-success"></i>
           </button>
         </div>
-      ),
+      )
     },
     {
       name: 'Sr.No',
-      selector: row => row.counter,
-      sortable: true,
+      selector: (row) => row.counter,
+      sortable: true
     },
 
     {
       name: 'Type Name',
-      width: '150px',
-      selector: row => row.type_name,
+      width: '170px',
+      selector: (row) => row.type_name,
       sortable: true,
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.type_name && (
             <OverlayTrigger overlay={<Tooltip>{row.type_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.type_name && row.type_name.length < 10
+                  {row.type_name && row.type_name.length < 20
                     ? row.type_name
-                    : row.type_name.substring(0, 10) + '....'}
+                    : row.type_name.substring(0, 20) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
       name: 'Parent Name',
-      width: '150px',
-      selector: row => row.parent_name,
+      width: '170px',
+      selector: (row) => row.parent_name,
       sortable: true,
-      cell: row => (
-        <div className="btn-group" role="group" aria-label="Basic outlined example">
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
           {row.parent_name && (
             <OverlayTrigger overlay={<Tooltip>{row.parent_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.parent_name && row.parent_name.length < 10
+                  {row.parent_name && row.parent_name.length < 15
                     ? row.parent_name
-                    : row.parent_name.substring(0, 10) + '....'}
+                    : row.parent_name.substring(0, 15) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
           )}
         </div>
-      ),
+      )
     },
 
     {
       name: 'Status',
-      selector: row => row.is_active,
+      selector: (row) => row.is_active,
       sortable: true,
-      cell: row => (
+      cell: (row) => (
         <div>
           {row.is_active == 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
@@ -747,78 +792,43 @@ function TaskAndTicketTypeMaster(props) {
             </span>
           )}
         </div>
-      ),
+      )
     },
     {
       name: 'Created At',
-      selector: row => row.created_at,
+      selector: (row) => row.created_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Created By',
-      selector: row => row.created_by,
+      selector: (row) => row.created_by,
       sortable: true,
-      width: '150px',
+      width: '150px'
     },
     {
       name: 'Updated At',
-      selector: row => row.updated_at,
+      selector: (row) => row.updated_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated By',
-      selector: row => row.updated_by,
+      selector: (row) => row.updated_by,
       sortable: true,
-      width: '150px',
-    },
+      width: '150px'
+    }
   ];
-  const searchRef = useRef();
 
-  const handleReset = () => {
-    setSearchTerm(''); // Clear the search term state
-    if (searchRef.current) {
-      searchRef.current.value = ''; // Clear the input field value
-    }
-  };
-
-  function searchInData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter(d => {
-      for (const key in d) {
-        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
-
-  const handleSearch = () => {
-    const searchValue = searchRef.current.value;
-    const result = searchInData(data, searchValue);
-    setData(result);
-  };
-  const handleKeyDown = event => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
-  };
-  const handleButtonClick = e => {
+  const handleButtonClick = (e) => {
     setModal({ showModal: false });
   };
 
-  const handleModal = data => {
+  const handleModal = (data) => {
     setModal(data);
   };
 
-  const handleDropdownChange = e => {
-    setSelectedValue(e.target.value);
-  };
-
-  const handleForm = id => async e => {
+  const handleForm = (id) => async (e) => {
     e.preventDefault();
 
     if (id) {
@@ -847,13 +857,13 @@ function TaskAndTicketTypeMaster(props) {
               ? selectedOptionId
               : modal?.modalData?.parent_name !== null
               ? modal?.modalData?.parent_name
-              : 'Primary',
+              : 'Primary'
           );
         }
 
         form.append('type', selectedType);
         setNotify(null);
-        await new TaskTicketTypeService().postType(form).then(res => {
+        await new TaskTicketTypeService().postType(form).then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
               setNotify({ type: 'success', message: res.data.message });
@@ -866,7 +876,10 @@ function TaskAndTicketTypeMaster(props) {
           }
         });
       } else {
-        if (selectedOptionId === 'Primary' || modal.modalData.parent_name === 'Primary') {
+        if (
+          selectedOptionId === 'Primary' ||
+          modal.modalData.parent_name === 'Primary'
+        ) {
           form.append('parent_id', 0);
         } else {
           form.append(
@@ -876,13 +889,13 @@ function TaskAndTicketTypeMaster(props) {
               ? selectedOptionId
               : modal?.modalData?.parent_name !== null
               ? modal?.modalData?.parent_name
-              : 'Primary',
+              : 'Primary'
           );
         }
 
         form.append('type', selectedType);
 
-        await new TaskTicketTypeService()._updateType(id, form).then(res => {
+        await new TaskTicketTypeService()._updateType(id, form).then((res) => {
           if (res.status === 200) {
             if (res.data.status == 1) {
               setNotify({ type: 'success', message: res.data.message });
@@ -906,6 +919,14 @@ function TaskAndTicketTypeMaster(props) {
   }, []);
 
   useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
+
+  useEffect(() => {
     // Check if the modal is closed
     if (!modal.showModal) {
       setIsMenuOpen(false); // Close the menu when modal is closed
@@ -925,7 +946,7 @@ function TaskAndTicketTypeMaster(props) {
 
   const elementStyle = {
     color: isHovered ? 'red' : 'black',
-    transition: 'color 0.3s',
+    transition: 'color 0.3s'
   };
 
   function extractLabelsAndParentIDs(taskData) {
@@ -936,12 +957,12 @@ function TaskAndTicketTypeMaster(props) {
         result.push({ label: obj.type_name, parentId: id });
       }
       if (obj.children && obj.children.length > 0) {
-        obj.children.forEach(option => {
+        obj.children.forEach((option) => {
           extractLabelsAndParentIDsRecursive(option, obj.id);
         });
       }
     }
-    taskData?.forEach(item => {
+    taskData?.forEach((item) => {
       extractLabelsAndParentIDsRecursive(item);
     });
 
@@ -971,11 +992,14 @@ function TaskAndTicketTypeMaster(props) {
                     alert('Please select a type first');
                     return; // Exit the function if selectedType is not selected
                   }
-                  const modalHeader = selectedType === 'TASK' ? 'Add Task Type' : 'Add Ticket Type';
+                  const modalHeader =
+                    selectedType === 'TASK'
+                      ? 'Add Task Type'
+                      : 'Add Ticket Type';
                   handleModal({
                     showModal: true,
                     modalData: '',
-                    modalHeader: modalHeader,
+                    modalHeader: modalHeader
                   });
                   setSelectedValue(''); // Reset any selected value if needed
                 }}
@@ -987,45 +1011,16 @@ function TaskAndTicketTypeMaster(props) {
         }}
       />
 
-      <div>
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by State Name...."
-              ref={searchRef}
-              // onKeyDown={handleKeyDown}
-              onChange={e => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              // onClick={() => window.location.reload(false)}
-              onClick={handleReset}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName={selectedType === 'TASK' ? 'Task master Records' : 'Ticket Master Record'}
-            />
-          </div>
-        </div>
-      </div>
+      <SearchBoxHeader
+        showInput={true}
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by task and ticket type name...."
+        exportFileName="Task And Ticket Type Master Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
 
       <div className="col-sm-8 mt-3">
         <div className="row">
@@ -1037,7 +1032,7 @@ function TaskAndTicketTypeMaster(props) {
                 name="type"
                 id="TASK"
                 value="TASK"
-                onClick={e => handleType(e)}
+                onClick={(e) => handleType(e)}
                 checked={selectedType === 'TASK'} // Set checked based on selected type
               />
               <label className="form-check-label" htmlFor="TASK">
@@ -1053,7 +1048,7 @@ function TaskAndTicketTypeMaster(props) {
                 name="type"
                 id="TICKET"
                 value="TICKET"
-                onClick={e => handleType(e)}
+                onClick={(e) => handleType(e)}
                 checked={selectedType === 'TICKET'} // Set checked based on selected type
               />
               <label className="form-check-label" htmlFor="TICKET">
@@ -1068,11 +1063,11 @@ function TaskAndTicketTypeMaster(props) {
       <Modal
         centered
         show={modal.showModal}
-        onHide={e => {
+        onHide={(e) => {
           handleModal({
             showModal: false,
             modalData: '',
-            modalHeader: '',
+            modalHeader: ''
           });
         }}
       >
@@ -1080,13 +1075,19 @@ function TaskAndTicketTypeMaster(props) {
           <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
+          <form
+            method="post"
+            onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+          >
             <div className="deadline-form">
               <div className="row g-3 mb-3">
                 {selectedType && selectedType === 'TICKET' ? (
                   <div>
                     <div>
-                      <label className="form-label font-weight-bold" readOnly={true}>
+                      <label
+                        className="form-label font-weight-bold"
+                        readOnly={true}
+                      >
                         Parent ticket Type: <Astrick color="red" size="13px" />
                       </label>
 
@@ -1095,12 +1096,12 @@ function TaskAndTicketTypeMaster(props) {
                           style={{
                             position: 'relative',
                             display: 'inline-block',
-                            width: '100%',
+                            width: '100%'
                           }}
                         >
                           <div
                             className="form-control form-control-sm"
-                            onClick={e => handleSelectOptionClick(e)}
+                            onClick={(e) => handleSelectOptionClick(e)}
                           >
                             {selectedOption
                               ? selectedOption
@@ -1121,13 +1122,15 @@ function TaskAndTicketTypeMaster(props) {
                                 // scrollbarWidth: "none", // Hide scrollbar in Firefox
                                 msOverflowStyle: 'none', // Hide scrollbar in IE/Edge
                                 '&::-webkit-scrollbar': {
-                                  display: 'none', // Hide scrollbar in Webkit browsers
-                                },
+                                  display: 'none' // Hide scrollbar in Webkit browsers
+                                }
                               }}
                             >
                               <CustomMenuListTicket
                                 options={transformedOptionsTicket}
-                                onSelect={(label, ID) => handleSelect(label, ID)}
+                                onSelect={(label, ID) =>
+                                  handleSelect(label, ID)
+                                }
                               />
                             </div>
                           )}
@@ -1135,7 +1138,7 @@ function TaskAndTicketTypeMaster(props) {
                         {parentTicketName && (
                           <small
                             style={{
-                              color: 'red',
+                              color: 'red'
                             }}
                           >
                             {parentTicketName}
@@ -1156,12 +1159,16 @@ function TaskAndTicketTypeMaster(props) {
                           ref={typeNameRef}
                           maxLength={100}
                           required
-                          defaultValue={modal.modalData && modal?.modalData?.type_name}
+                          defaultValue={
+                            modal.modalData && modal?.modalData?.type_name
+                          }
                         />
                       </div>
 
                       <div className="col-sm-12 mt-2">
-                        <label className="form-label font-weight-bold">Remark :</label>
+                        <label className="form-label font-weight-bold">
+                          Remark :
+                        </label>
                         <textarea
                           type="text"
                           rows={4}
@@ -1169,14 +1176,19 @@ function TaskAndTicketTypeMaster(props) {
                           id="remark"
                           name="remark"
                           maxLength={100}
-                          defaultValue={modal.modalData && modal.modalData.remark}
+                          defaultValue={
+                            modal.modalData && modal.modalData.remark
+                          }
                         />
                       </div>
                     </div>
                   </div>
                 ) : (
                   <div>
-                    <label className="form-label font-weight-bold" readOnly={true}>
+                    <label
+                      className="form-label font-weight-bold"
+                      readOnly={true}
+                    >
                       Parent Task Type: <Astrick color="red" size="13px" />
                     </label>
 
@@ -1184,12 +1196,12 @@ function TaskAndTicketTypeMaster(props) {
                       style={{
                         position: 'relative',
                         display: 'inline-block',
-                        width: '100%',
+                        width: '100%'
                       }}
                     >
                       <div
                         className="form-control form-control-sm"
-                        onClick={e => handleSelectOptionClick(e)}
+                        onClick={(e) => handleSelectOptionClick(e)}
                       >
                         {selectedOption
                           ? selectedOption
@@ -1207,8 +1219,8 @@ function TaskAndTicketTypeMaster(props) {
                             maxHeight: '220px', // Adjust the maxHeight here as needed
                             msOverflowStyle: 'none', // Hide scrollbar in IE/Edge
                             '&::-webkit-scrollbar': {
-                              display: 'none', // Hide scrollbar in Webkit browsers
-                            },
+                              display: 'none' // Hide scrollbar in Webkit browsers
+                            }
                           }}
                         >
                           <CustomMenuList
@@ -1216,7 +1228,7 @@ function TaskAndTicketTypeMaster(props) {
                             onSelect={(label, ID) => handleSelect(label, ID)}
                             closeAllDropdowns={closeAllDropdowns}
                             isMenuOpen={isMenuOpen}
-                            onClick={e => handleSelectOptionClick(e)}
+                            onClick={(e) => handleSelectOptionClick(e)}
                           />
                         </div>
                       )}
@@ -1224,7 +1236,7 @@ function TaskAndTicketTypeMaster(props) {
                       {parentTaskName && (
                         <small
                           style={{
-                            color: 'red',
+                            color: 'red'
                           }}
                         >
                           {parentTaskName}
@@ -1245,12 +1257,16 @@ function TaskAndTicketTypeMaster(props) {
                         ref={typeNameRef}
                         maxLength={100}
                         required
-                        defaultValue={modal.modalData && modal?.modalData?.type_name}
+                        defaultValue={
+                          modal.modalData && modal?.modalData?.type_name
+                        }
                       />
                     </div>
 
                     <div className="col-sm-12 mt-2">
-                      <label className="form-label font-weight-bold">Remark :</label>
+                      <label className="form-label font-weight-bold">
+                        Remark :
+                      </label>
                       <textarea
                         type="text"
                         rows={4}
@@ -1280,14 +1296,18 @@ function TaskAndTicketTypeMaster(props) {
                               id="is_active_1"
                               value="1"
                               defaultChecked={
-                                modal.modalData && modal.modalData.is_active === 1
+                                modal.modalData &&
+                                modal.modalData.is_active === 1
                                   ? true
                                   : !modal.modalData
                                   ? true
                                   : false
                               }
                             />
-                            <label className="form-check-label" htmlFor="is_active_1">
+                            <label
+                              className="form-check-label"
+                              htmlFor="is_active_1"
+                            >
                               Active
                             </label>
                           </div>
@@ -1302,10 +1322,16 @@ function TaskAndTicketTypeMaster(props) {
                               value="0"
                               readOnly={modal.modalData ? false : true}
                               defaultChecked={
-                                modal.modalData && modal.modalData.is_active === 0 ? true : false
+                                modal.modalData &&
+                                modal.modalData.is_active === 0
+                                  ? true
+                                  : false
                               }
                             />
-                            <label className="form-check-label" htmlFor="is_active_0">
+                            <label
+                              className="form-check-label"
+                              htmlFor="is_active_0"
+                            >
                               Deactive
                             </label>
                           </div>
@@ -1317,7 +1343,10 @@ function TaskAndTicketTypeMaster(props) {
               </div>
             </div>
             <Modal.Footer>
-              <ButtonComponent type="submit" text={modal?.modalData ? 'Update' : 'Submit'} />
+              <ButtonComponent
+                type="submit"
+                text={modal?.modalData ? 'Update' : 'Submit'}
+              />
               <ButtonComponent
                 type="button"
                 buttonColor="danger"
@@ -1337,20 +1366,7 @@ function TaskAndTicketTypeMaster(props) {
               {data && (
                 <DataTable
                   columns={columns}
-                  data={data.filter(customer => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(
-                          value =>
-                            typeof value === 'string' &&
-                            value.toLowerCase().includes(searchTerm.toLowerCase()),
-                        );
-                      }
-                    }
-                    return false;
-                  })}
+                  data={filteredData}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}

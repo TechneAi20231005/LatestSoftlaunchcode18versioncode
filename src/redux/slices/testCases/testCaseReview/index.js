@@ -9,23 +9,31 @@ import {
 const initialState = {
   testCaseReviewList: [],
   testPlanIdData: [],
+  filterTestPlanData: [],
   approveRejectData: [],
   allTestPlanIDData: [],
+  filterTestCaseReviewList: [],
   isLoading: {
     testCaseReviewList: false,
-    testPlanIdData: false
+    testPlanIdData: false,
+    filterTestPlanData: false,
+    filterTestCaseReviewList: false
   },
   errorMsg: {
     testCaseReviewList: '',
     testPlanIdData: '',
     approveRejectData: '',
-    allTestPlanIDData: ''
+    allTestPlanIDData: '',
+    filterTestPlanData: '',
+    filterTestCaseReviewList: ''
   },
   successMsg: {
     testCaseReviewList: '',
     testPlanIdData: '',
     approveRejectData: '',
-    allTestPlanIDData: ''
+    allTestPlanIDData: '',
+    filterTestPlanData: '',
+    filterTestCaseReviewList: ''
   }
 };
 const testCaseReviewSlice = createSlice({
@@ -41,7 +49,8 @@ const testCaseReviewSlice = createSlice({
       })
       .addCase(getTestCaseReviewListThunk.fulfilled, (state, action) => {
         state.isLoading.testCaseReviewList = false;
-        state.testCaseReviewList = action?.payload?.data;
+        state.testCaseReviewList = action?.payload?.data?.data?.data;
+        state.filterTestCaseReviewList = action?.payload?.data?.filter_data;
         state.successMsg.testCaseReviewList = action?.payload?.message;
       })
       .addCase(getTestCaseReviewListThunk.rejected, (state, action) => {
@@ -55,7 +64,8 @@ const testCaseReviewSlice = createSlice({
       })
       .addCase(getByTestPlanIDListThunk.fulfilled, (state, action) => {
         state.isLoading.testPlanIdData = false;
-        state.testPlanIdData = action?.payload?.data?.data;
+        state.testPlanIdData = action?.payload?.data?.data?.data;
+        state.filterTestPlanData = action?.payload?.data?.filter_data;
         state.allTestPlanIDData = action?.payload?.data;
 
         state.successMsg.testPlanIdData = action?.payload?.message;

@@ -12,100 +12,104 @@ import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel
 
 import { Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { getStatusData, postStatusData, updateStatusData } from './StatusComponentAction';
+import {
+  getStatusData,
+  postStatusData,
+  updateStatusData
+} from './StatusComponentAction';
 import { statusMasterSlice } from './StatusComponentSlice';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { handleModalClose, handleModalOpen } from './StatusComponentSlice';
 import { DashbordSlice } from '../../Dashboard/DashbordSlice';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
 
 function StatusComponent() {
   const dispatch = useDispatch();
   const statusData = useSelector(
-    statusMasterSlice => statusMasterSlice.statusMaster.filterStatusData,
+    (statusMasterSlice) => statusMasterSlice.statusMaster.filterStatusData
   );
   const isLoading = useSelector(
-    statusMasterSlice => statusMasterSlice.statusMaster.isLoading.statusData,
+    (statusMasterSlice) => statusMasterSlice.statusMaster.isLoading.statusData
   );
 
   const exportData = useSelector(
-    statusMasterSlice => statusMasterSlice.statusMaster.exportStatusData,
+    (statusMasterSlice) => statusMasterSlice.statusMaster.exportStatusData
   );
-  const checkRole = useSelector(DashbordSlice =>
-    DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 11),
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 11)
   );
-  const modal = useSelector(statusMasterSlice => statusMasterSlice.statusMaster.modal);
-  const notify = useSelector(statusMasterSlice => statusMasterSlice.statusMaster.notify);
-
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
-
-  const roleId = sessionStorage.getItem('role_id');
-
-  const searchRef = useRef();
-
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter(d => {
-      for (const key in d) {
-        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  const modal = useSelector(
+    (statusMasterSlice) => statusMasterSlice.statusMaster.modal
+  );
+  const notify = useSelector(
+    (statusMasterSlice) => statusMasterSlice.statusMaster.notify
+  );
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleSearch = value => {};
+  const [filteredData, setFilteredData] = useState([]);
+
+  //search function
+
+  const handleSearch = () => {
+    const filteredList = customSearchHandler(statusData, searchTerm);
+    setFilteredData(filteredList);
+  };
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(statusData);
+  };
 
   const columns = [
     {
       name: 'Action',
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
       width: '80px',
-      cell: row => (
+      cell: (row) => (
         <div className="btn-group" role="group">
           <button
             type="button"
             className="btn btn-outline-secondary"
             data-bs-toggle="modal"
             data-bs-target="#edit"
-            onClick={e => {
+            onClick={(e) => {
               dispatch(
                 handleModalOpen({
                   showModal: true,
                   modalData: row,
-                  modalHeader: 'Edit Status',
-                }),
+                  modalHeader: 'Edit Status'
+                })
               );
             }}
           >
             <i className="icofont-edit text-success"></i>
           </button>
         </div>
-      ),
+      )
     },
     {
       name: 'Sr',
-      selector: row => row.counter,
+      selector: (row) => row.counter,
       sortable: true,
-      width: '60px',
+      width: '60px'
     },
     {
       name: 'Status Name',
-      selector: row => row.status,
+      selector: (row) => row.status,
       sortable: true,
-      width: '150px',
+      width: '150px'
     },
     {
       name: 'Status',
-      selector: row => row.is_active,
+      selector: (row) => row.is_active,
       sortable: true,
       width: '150px',
-      cell: row => (
+      cell: (row) => (
         <div>
           {row.is_active == 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
@@ -118,37 +122,37 @@ function StatusComponent() {
             </span>
           )}
         </div>
-      ),
+      )
     },
     {
       name: 'Created At',
-      selector: row => row.created_at,
+      selector: (row) => row.created_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Created By',
-      selector: row => row.created_by,
+      selector: (row) => row.created_by,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated At',
-      selector: row => row.updated_at,
+      selector: (row) => row.updated_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated By',
-      selector: row => row.updated_by,
+      selector: (row) => row.updated_by,
       sortable: true,
-      width: '175px',
-    },
+      width: '175px'
+    }
   ];
 
   const loadData = async () => {};
 
-  const handleForm = id => async e => {
+  const handleForm = (id) => async (e) => {
     e.preventDefault();
     // setNotify(null);
     const form = new FormData(e.target);
@@ -158,12 +162,6 @@ function StatusComponent() {
     } else {
       dispatch(updateStatusData({ id: id, payload: form }));
       dispatch(getStatusData());
-    }
-  };
-
-  const handleKeyDown = event => {
-    if (event.key === 'Enter') {
-      handleSearch();
     }
   };
 
@@ -181,6 +179,13 @@ function StatusComponent() {
       dispatch(getRoles());
     }
   }, []);
+  useEffect(() => {
+    setFilteredData(statusData);
+  }, [statusData]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -198,8 +203,8 @@ function StatusComponent() {
                       handleModalOpen({
                         showModal: true,
                         modalData: null,
-                        modalHeader: 'Add Status',
-                      }),
+                        modalHeader: 'Add Status'
+                      })
                     );
                   }}
                 >
@@ -212,44 +217,16 @@ function StatusComponent() {
           );
         }}
       />
-
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search By Status Name...."
-              ref={searchRef}
-              onChange={e => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Status master Records"
-            />
-          </div>
-        </div>
-      </div>
+      <SearchBoxHeader
+         showInput={true}
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by status name...."
+        exportFileName="status Master Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
 
       <div className="card mt-2">
         <div className="card-body">
@@ -258,22 +235,7 @@ function StatusComponent() {
               {statusData && (
                 <DataTable
                   columns={columns}
-                  // data={statusData}
-
-                  data={statusData.filter(customer => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(
-                          value =>
-                            typeof value === 'string' &&
-                            value.toLowerCase().includes(searchTerm.toLowerCase()),
-                        );
-                      }
-                    }
-                    return false;
-                  })}
+                  data={filteredData}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
@@ -291,17 +253,20 @@ function StatusComponent() {
       <Modal
         centered
         show={modal.showModal}
-        onHide={e => {
+        onHide={(e) => {
           dispatch(
             handleModalClose({
               showModal: false,
               modalData: '',
-              modalHeader: '',
-            }),
+              modalHeader: ''
+            })
           );
         }}
       >
-        <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
+        <form
+          method="post"
+          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+        >
           <Modal.Header closeButton>
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
@@ -320,21 +285,23 @@ function StatusComponent() {
                     required
                     maxLength={30}
                     defaultValue={modal.modalData ? modal.modalData.status : ''}
-                    onKeyPress={e => {
+                    onKeyPress={(e) => {
                       Validation.CharacterWithSpace(e);
                     }}
-                    onPaste={e => {
+                    onPaste={(e) => {
                       e.preventDefault();
                       return false;
                     }}
-                    onCopy={e => {
+                    onCopy={(e) => {
                       e.preventDefault();
                       return false;
                     }}
                   />
                 </div>
                 <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">Remark :</label>
+                  <label className="form-label font-weight-bold">
+                    Remark :
+                  </label>
                   <input
                     type="text"
                     className="form-control form-control-sm"
@@ -366,7 +333,10 @@ function StatusComponent() {
                                 : false
                             }
                           />
-                          <label className="form-check-label" htmlFor="is_active_1">
+                          <label
+                            className="form-check-label"
+                            htmlFor="is_active_1"
+                          >
                             Active
                           </label>
                         </div>
@@ -381,10 +351,15 @@ function StatusComponent() {
                             value="0"
                             readOnly={modal.modalData ? false : true}
                             defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0 ? true : false
+                              modal.modalData && modal.modalData.is_active === 0
+                                ? true
+                                : false
                             }
                           />
-                          <label className="form-check-label" htmlFor="is_active_0">
+                          <label
+                            className="form-check-label"
+                            htmlFor="is_active_0"
+                          >
                             Deactive
                           </label>
                         </div>
@@ -403,7 +378,7 @@ function StatusComponent() {
                 style={{
                   backgroundColor: '#484C7F',
                   width: '80px',
-                  padding: '8px',
+                  padding: '8px'
                 }}
               >
                 Add
@@ -428,8 +403,8 @@ function StatusComponent() {
                   handleModalClose({
                     showModal: false,
                     modalData: '',
-                    modalHeader: '',
-                  }),
+                    modalHeader: ''
+                  })
                 );
               }}
             >
@@ -446,7 +421,7 @@ function StatusDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new StatusService().getStatus().then(res => {
+    new StatusService().getStatus().then((res) => {
       if (res.status == 200) {
         const data = res.data.data;
         let counter = 1;
@@ -455,7 +430,7 @@ function StatusDropdown(props) {
             tempData.push({
               counter: counter++,
               id: data[key].id,
-              status: data[key].status,
+              status: data[key].status
             });
           }
         }

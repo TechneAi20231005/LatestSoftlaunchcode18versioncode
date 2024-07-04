@@ -13,6 +13,7 @@ import { getRoles } from '../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
 import DropdownLoadingSkeleton from '../../components/custom/loader/DropdownLoadingSkeleton';
 import TableLoadingSkelton from '../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../components/Common/SearchBoxHeader ';
 
 export default function ResourcePlanningReportComponent() {
   const dispatch = useDispatch();
@@ -25,8 +26,6 @@ export default function ResourcePlanningReportComponent() {
 
   const [data, setData] = useState(null);
   const [exportData, setExportData] = useState(null);
-
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
@@ -84,7 +83,6 @@ export default function ResourcePlanningReportComponent() {
   ];
 
   const loadData = async () => {
-    setShowLoaderModal(true);
     const tempUserData = [];
 
     const inputRequired =
@@ -110,7 +108,6 @@ export default function ResourcePlanningReportComponent() {
           return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
         });
         setUserData(aa);
-        setShowLoaderModal(false);
       }
     });
 
@@ -139,6 +136,9 @@ export default function ResourcePlanningReportComponent() {
     setFromdate(getfromdatevalue);
     setFromdateformat(setfromformatdate);
   };
+  const handleReset = () => {
+    window.location.reload(false);
+  };
 
   const handleForm = async (e) => {
     setIsLoading(true);
@@ -155,7 +155,7 @@ export default function ResourcePlanningReportComponent() {
         .then((res) => {
           if (res.status === 200) {
             setIsLoading(false);
-            setShowLoaderModal(false);
+
             setSearchPerformed(true);
             if (res.data.status === 1) {
               let sr = 1;
@@ -243,59 +243,74 @@ export default function ResourcePlanningReportComponent() {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Variance Report" />
+      <div>
+        <div className="card mt-2">
+          <div className="card-body p-5">
+            <form onSubmit={handleForm}>
+              <div className="row">
+                <div className="col-md-3">
+                  <label htmlFor="" className="">
+                    <b>Select User :</b>
+                  </label>
 
-      <div className="card mt-2">
-        <div className="card-body">
-          <form onSubmit={handleForm}>
-            <div className="row">
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>Select User :</b>
-                </label>
-                {showLoaderModal && <DropdownLoadingSkeleton />}
-                {!showLoaderModal && userData && (
-                  <Select
-                    isMulti
-                    isSearchable={true}
-                    name="user_id[]"
-                    className="basic-multi-select"
-                    classNamePrefix="select"
-                    options={userData && userData}
+                  {userData && (
+                    <Select
+                      isMulti
+                      isSearchable={true}
+                      name="user_id[]"
+                      className="basic-multi-select"
+                      classNamePrefix="select"
+                      options={userData && userData}
+                    />
+                  )}
+                </div>
+
+                <div className="col-md-3">
+                  <label htmlFor="" className="">
+                    <b>
+                      From Date : <Astrick color="red" size="13px" />
+                    </b>
+                  </label>
+                  <input
+                    type="date"
+                    className="form-control form-control-sm"
+                    onChange={handleFromDate}
+                    name="from_date"
+                    required
                   />
-                )}
-              </div>
+                </div>
 
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>
-                    From Date : <Astrick color="red" size="13px" />
-                  </b>
-                </label>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  onChange={handleFromDate}
-                  name="from_date"
-                  required
+                <div className="col-md-3">
+                  <label htmlFor="" className="">
+                    <b>
+                      To Date : <Astrick color="red" size="13px" />
+                    </b>
+                  </label>
+                  <input
+                    type="date"
+                    className="form-control form-control-sm"
+                    onChange={handleToDate}
+                    name="to_date"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="row_gap_3">
+                <SearchBoxHeader
+                  showInput={false}
+                  title="Variance Report"
+                  // showtitle={true}
+                  handleReset={handleReset}
+                  submitButtonType="submit"
+                  resetButtonType="button"
+                  placeholder="Search by city name...."
+                  exportFileName="City Master Record"
+                  exportData={exportData}
+                  showExportButton={true}
                 />
               </div>
 
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>
-                    To Date : <Astrick color="red" size="13px" />
-                  </b>
-                </label>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  onChange={handleToDate}
-                  name="to_date"
-                  required
-                />
-              </div>
-            </div>
-            <div className="row mt-4">
+              {/* <div className="row mt-4">
               <div className="col-md-6">
                 <button
                   className="btn btn-sm btn-warning text-white"
@@ -320,42 +335,45 @@ export default function ResourcePlanningReportComponent() {
                   />
                 )}
               </div>
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {isLoading ? (
-                <TableLoadingSkelton />
-              ) : (
-                <>
-                  {data && data.length > 0 ? (
-                    <DataTable
-                      columns={columns}
-                      data={data}
-                      defaultSortField="title"
-                      pagination
-                      selectableRows={false}
-                      className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                      highlightOnHover={true}
-                    />
-                  ) : (
-                    <>
-                      {searchPerformed && !isLoading && (
-                        <div className="text-center">No data found</div>
-                      )}
-                    </>
-                  )}
-                </>
-              )}
-            </div>
+            </div> */}
+            </form>
           </div>
         </div>
       </div>
+
+      {/* <div className="card mt-2">
+        <div className="card-body">
+          <div className="row clearfix g-3">
+            <div className="col-sm-12"> */}
+      {isLoading ? (
+        <TableLoadingSkelton />
+      ) : (
+        <>
+          {data && data.length > 0 ? (
+            <div className="card mt-3">
+              <DataTable
+                columns={columns}
+                data={data}
+                defaultSortField="title"
+                pagination
+                selectableRows={false}
+                className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                highlightOnHover={true}
+              />
+            </div>
+          ) : (
+            <>
+              {searchPerformed && !isLoading && (
+                <div className="text-center">No data found</div>
+              )}
+            </>
+          )}
+        </>
+      )}
     </div>
+    //       </div>
+    //     </div>
+    //   </div>
+    // </div>
   );
 }
