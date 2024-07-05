@@ -16,12 +16,15 @@ import { _attachmentUrl } from '../../../settings/constants';
 import { Astrick } from '../../../components/Utilities/Style';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 const BillPayments = () => {
   const dispatch = useDispatch();
   const [filteredData, setFilteredData] = useState();
   const [open, setOpen] = useState(false);
+
   const [exportFilteredData, setExportFilteredData] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [notify, setNotify] = useState();
   const roleId = sessionStorage.getItem('role_id');
@@ -196,6 +199,8 @@ const BillPayments = () => {
 
   const myForm = useRef();
   const handleForm = async (e) => {
+    setIsLoading(true);
+
     e.preventDefault();
     const form = new FormData(e.target);
     const tempData = [];
@@ -205,6 +210,7 @@ const BillPayments = () => {
     if (form.get('requestFor') == 'downloadButton') {
       await new BillPaymentServices().downloadTxtFile(form).then((res) => {
         if (res.status === 200) {
+          setIsLoading(false);
           if (res.data.status == 1) {
             var a = res.data.fileName;
             URL = 'http://3.108.206.34/' + res.data.data;
@@ -217,6 +223,8 @@ const BillPayments = () => {
       await new BillPaymentServices().getBillPayments(form).then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
+            setIsLoading(false);
+
             let counter = 1;
             const temp = res.data.data;
             if (temp.length > 0) {
@@ -338,13 +346,13 @@ const BillPayments = () => {
                     </button>
                   )}
 
-                  {filteredData && (
+                  {/* {filteredData && (
                     <ExportBillPaymentFile
                       className="btn btn-sm btn-danger"
                       apiData={exportFilteredData}
                       fileName="Bill Payemnt Report"
                     />
-                  )}
+                  )} */}
                 </div>
               );
             }}
@@ -436,6 +444,15 @@ const BillPayments = () => {
                       >
                         Search
                       </button>
+
+                      {filteredData && (
+                        <ExportBillPaymentFile
+                          className="btn btn-sm btn-danger"
+                          apiData={exportFilteredData}
+                          fileName="Bill Payemnt Report"
+                        />
+                      )}
+
                       {/* </div> */}
                     </div>
                   </div>
@@ -450,6 +467,8 @@ const BillPayments = () => {
             <div className="card mt-2">
               <DataTable
                 columns={columns}
+                progressComponent={<TableLoadingSkelton />}
+                progressPending={isLoading}
                 data={filteredData}
                 defaultSortField="title"
                 pagination
