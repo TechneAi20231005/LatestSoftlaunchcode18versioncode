@@ -79,7 +79,7 @@ export default function TaskComponent() {
   const [exportSprintData, setExportSprintData] = useState([]);
   const [sprintFirstDate, setSprintFirstDate] = useState('');
   const [sprintLastDate, setSprintLastDate] = useState('');
-
+  const [minEndDate, setMinEndDate] = useState('');
   const getTicketData = useCallback(async () => {
     await new MyTicketService()
       .getTicketById(ticketId)
@@ -432,6 +432,7 @@ export default function TaskComponent() {
       ...prevSate,
       [e.target.name]: e.target.value
     }));
+    setEndDateGreaterThanStartDate(e);
   };
 
   const sprintFormHandle = async () => {
@@ -803,6 +804,17 @@ export default function TaskComponent() {
     setData(basketData);
   };
 
+  const setEndDateGreaterThanStartDate = (e) => {
+    const { value } = e.target;
+    if (value) {
+      const startDate = new Date(value);
+      startDate.setDate(startDate.getDate() + 1);
+      const formattedMinDate = startDate.toISOString().split('T')[0];
+      setMinEndDate(formattedMinDate);
+      return formattedMinDate;
+    }
+  };
+
   var dragId;
   // var dropId;
 
@@ -922,12 +934,6 @@ export default function TaskComponent() {
           <div>
             <div className="d-flex align-items-center justify-content-between">
               <h5 className="col-3">
-                {console.log(
-                  'tttt',
-                  tasksData &&
-                    tasksData?.length > 0 &&
-                    tasksData[0].ticket_id_name
-                )}
                 <strong>
                   Ticket -{' '}
                   {tasksData &&
@@ -1806,7 +1812,7 @@ export default function TaskComponent() {
                             disabled={sprintModal?.modalHeader === 'View'}
                             onChange={(e) => sprintInputChangeHandler(e)}
                             defaultValue={sprintModal?.modalData?.end_date}
-                            min={ticketStartDate}
+                            min={minEndDate}
                             // min={new Date(sprintInput.startDate).getDate() + 1}
                             max={expectedSolveDate}
                             onKeyDown={(e) => e.preventDefault()}
