@@ -103,7 +103,7 @@ const Sidebar = ({ activekey }) => {
     dispatch(getMenuListThunk({ role_id: role_id }));
 
     document.children[0].setAttribute('data-theme', 'light');
-  }, [user_id, role_id]);
+  }, [dispatch, user_id, role_id]);
 
   return (
     <div
