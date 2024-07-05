@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 function CardLoadingSkeleton({ rowCount = 3 }) {
   return (

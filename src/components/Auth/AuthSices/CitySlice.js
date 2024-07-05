@@ -1,50 +1,45 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { getCity, getRole, postCityComponent } from "./CityAction";
-import { act } from "react-dom/test-utils";
+import { createSlice } from '@reduxjs/toolkit';
+import { getCity, getRole, postCityComponent } from './CityAction';
 
 const initialState = {
-  status: "",
-  error: "",
+  status: '',
+  error: '',
   cityDetails: {},
   data: [],
-  message: "",
+  message: '',
   modal: {
     showModal: false,
-    modalData: "",
-    modalHeader: "",
-  },
+    modalData: '',
+    modalHeader: ''
+  }
 };
 
 export const citySlice = createSlice({
-  name: "citySlice",
+  name: 'citySlice',
   initialState,
   reducers: {},
   extraReducers: (builder) => {
     builder.addCase(postCityComponent.pending, (state) => {
-      state.status = "loading";
+      state.status = 'loading';
     });
     builder.addCase(postCityComponent.fulfilled, (state, action) => {
-      state.status = "succeded";
+      state.status = 'succeded';
       state.data = action.payload;
       state.message = action.payload;
-
-
     });
     builder.addCase(postCityComponent.rejected, (state, action) => {
-      state.status = "failed";
+      state.status = 'failed';
       state.error = action.payload;
     });
     builder.addCase(getCity.fulfilled, (state, action) => {
-      state.status = "loading";
+      state.status = 'loading';
       state.data = action.payload.data;
-
     });
     builder.addCase(getRole.fulfilled, (state, action) => {
-      state.status = "loading";
+      state.status = 'loading';
       state.data = action.payload;
-    
     });
-  },
+  }
 });
 export const { setModal, setNotify } = citySlice.actions;
 export default citySlice.reducer;

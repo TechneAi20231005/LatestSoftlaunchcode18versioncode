@@ -3,7 +3,6 @@ import { useNavigate, Link } from 'react-router-dom';
 import PageHeader from '../../../components/Common/PageHeader';
 
 import Alert from '../../../components/Common/Alert';
-import TemplateService from '../../../services/MastersService/TemplateService';
 
 import { _base } from '../../../settings/constants';
 
@@ -15,17 +14,12 @@ import { name } from 'platform';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
-  getAllTypeData,
   getParentData,
   postTemplateData,
   templateData
 } from './TemplateComponetAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
-import {
-  handleModalClose,
-  handleModalOpen,
-  hideNotification
-} from './TemplateComponetSlice';
+import { handleModalClose, handleModalOpen } from './TemplateComponetSlice';
 
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
 import TaskTicketTypeService from '../../../services/MastersService/TaskTicketTypeService';
@@ -34,7 +28,7 @@ const CreateTemplateComponent = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 15)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 15)
   );
   const parent = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.getParentData
@@ -53,19 +47,6 @@ const CreateTemplateComponent = () => {
   );
   const [notify, setNotify] = useState(null);
 
-  const roleId = sessionStorage.getItem('role_id');
-
-  const mainJson = {
-    template_name: null,
-    template_data: [
-      {
-        basket_name: null,
-        basket_owner: null,
-        basket_task: [],
-        calculate_from: []
-      }
-    ]
-  };
   const [selectedBasket, setSelectedBasket] = useState();
   const [rows, setRows] = useState({
     template_name: null,
@@ -79,18 +60,9 @@ const CreateTemplateComponent = () => {
     ]
   });
 
-  const [stack, setStack] = useState({ SE: '', AB: '' });
-  const [data, setData] = useState([]);
+  const stack = { SE: '', AB: '' };
 
-  const [error, setError] = useState('');
-  const [ticketsData, setTicketsData] = useState([]);
   const [taskData, setTaskData] = useState([]);
-
-  // const loadData = async () => {
-  //   await new TemplateService().getTemplate().then((res) => {
-  //     setData(res.data.data);
-  //   });
-  // };
 
   const loadData = async () => {
     await new TaskTicketTypeService()?.getTaskType()?.then((res) => {
@@ -100,18 +72,6 @@ const CreateTemplateComponent = () => {
     });
   };
 
-  const handleParentchange = async (e) => {
-    if (typeRef.current) {
-      typeRef.current.clearValue();
-    }
-    dispatch(getAllTypeData());
-  };
-
-  const handleCheckInput = (e, idx) => {
-    if (rows.length > 1) {
-      rows.forEach((ele) => {});
-    }
-  };
   const handleAddRow = async () => {
     let flag = 1;
     const item = { basket_name: null, basket_owner: null, basket_task: [] };
@@ -150,7 +110,6 @@ const CreateTemplateComponent = () => {
   };
 
   const [show, setShow] = useState(false);
-  const [selectedOption, setSelectedOption] = useState('');
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState(null);
@@ -159,7 +118,6 @@ const CreateTemplateComponent = () => {
     setSelectedOptions(selectedOptions === label ? null : label);
     setSelectedOptionId(label);
     setIsMenuOpen(!isMenuOpen);
-    // closeAllDropdowns();
   };
   const handleSelectOptionClick = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -210,7 +168,7 @@ const CreateTemplateComponent = () => {
   const CustomMenuList = ({ options, onSelect }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [openOptions, setOpenOptions] = useState([]);
-    const [selectedOption, setSelectedOption] = useState(null);
+
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -229,7 +187,6 @@ const CreateTemplateComponent = () => {
     };
 
     const handleSelect = (label, ID) => {
-      setSelectedOption(label);
       onSelect(label, ID);
       setOpenOptions([]);
       setIsMenuOpen(!isMenuOpen);
@@ -374,18 +331,15 @@ const CreateTemplateComponent = () => {
 
   const [iscalulatedFromTaken, setIsCalculatedFromTaken] = useState('');
   const typeRef = useRef();
-  const shouldShowButton =
-    selectedOption === 'START_FROM' || selectedOption === 'END_FROM';
 
   const showHandler = (e) => {
     setShow(true);
   };
 
   const handleChange = (e, idx, type, name) => {
-    var value = type == 'select2' ? e.value : e.target.value;
-    if (type == 'select1') {
-      setSelectedOption(e.target.value);
-      if (e.target.name == 'basket_name' || e.target.name == 'basket_task') {
+    var value = type === 'select2' ? e.value : e.target.value;
+    if (type === 'select1') {
+      if (e.target.name === 'basket_name' || e.target.name === 'basket_task') {
         setRows((prev) => {
           const newPrev = { ...prev };
           newPrev.template_data[idx][e.target.name] = value;
@@ -411,15 +365,14 @@ const CreateTemplateComponent = () => {
     e.preventDefault();
     let a = 0;
     rows.template_data.forEach((ele, id) => {
-      if (ele.basket_task.length == 0) {
+      if (ele.basket_task.length === 0) {
         a++;
       }
     });
     if (a > 0) {
     } else {
-      // rows.append("parent_id", selectedOptionId);
       dispatch(postTemplateData(rows)).then((res) => {
-        if (res?.payload?.data?.status === 1 && res?.payload?.status == 200) {
+        if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
           setNotify({ type: 'success', message: res?.payload?.data?.message });
           dispatch(templateData());
 
@@ -456,8 +409,7 @@ const CreateTemplateComponent = () => {
     var form = new FormData(e.target);
     var temp = {
       task_name: form.get('taskName'),
-      // task_type_id: form.get("task_type_id"),
-      // parent_id: form.get("parent_id"),
+
       total_time: form.get('hours'),
       days: form.get('days'),
       start_days: form.get('start_days'),
@@ -468,7 +420,7 @@ const CreateTemplateComponent = () => {
 
     var tempData = rows;
     tempData.template_data[basket_id].basket_task.push(temp);
-    var a = tempData;
+
     setRows(null);
     setRows(tempData);
 
@@ -482,16 +434,16 @@ const CreateTemplateComponent = () => {
     if (typeRef && typeRef?.current?.commonProps?.hasValue === true) {
       typeRef.current.clearValue();
     }
-    if (document.getElementById('task_add').value != '') {
+    if (document.getElementById('task_add').value !== '') {
       document.getElementById('task_add').value = '';
     }
-    if (document.getElementById('days_add').value != '') {
+    if (document.getElementById('days_add').value !== '') {
       document.getElementById('days_add').value = '';
     }
-    if (document.getElementById('hours_add').value != '') {
+    if (document.getElementById('hours_add').value !== '') {
       document.getElementById('hours_add').value = '';
     }
-    if (document.getElementById('start_days').value != '') {
+    if (document.getElementById('start_days').value !== '') {
       document.getElementById('start_days').value = '';
     }
     setShow(false);
@@ -545,7 +497,7 @@ const CreateTemplateComponent = () => {
     if (!checkRole.length) {
       dispatch(getRoles());
     }
-  }, []);
+  }, [checkRole.length, dispatch, parent.length, userData.length]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
@@ -579,7 +531,7 @@ const CreateTemplateComponent = () => {
                         handleChange(e, name, 'select1');
                       }}
                     />
-                    {error && <small style={{ color: 'red' }}>{error}</small>}
+                    {/* {error && <small style={{ color: 'red' }}>{error}</small>} */}
                   </div>
 
                   <label
@@ -778,7 +730,7 @@ const CreateTemplateComponent = () => {
                           <b>Task Type Name : </b>
                           {
                             taskTypeDropdown.find(
-                              (item) => item.value == task.task_type_id
+                              (item) => item.value === task.task_type_id
                             )?.label
                           }
                         </p>
@@ -968,53 +920,7 @@ const CreateTemplateComponent = () => {
                                       </div>
                                     )}
                                   </div>
-                                  {/* <label>
-                                    <b>
-                                      Task Type Name:
-                                      <Astrick color="red" size="13px" />
-                                    </b>
-                                  </label>
-                                  <div
-                                    style={{
-                                      position: "relative",
-                                      display: "inline-block",
-                                      width: "100%",
-                                    }}
-                                  >
-                                    <div
-                                      style={{
-                                        padding: "8px",
-                                        border: "1px solid #ccc",
-                                        cursor: "pointer",
-                                        width: "100%",
-                                      }}
-                                      onClick={(e) =>
-                                        handleSelectOptionClick(e)
-                                      }
-                                    >
-                                      {selectedOptions
-                                        ? selectedOptions
-                                        : "Select an option"}
-                                    </div>
-                                    {isMenuOpen && (
-                                      <div
-                                        style={{
-                                          position: "absolute",
-                                          width: "100%", // Set the width to 100% to match the parent's width
-                                          top: "100%",
-                                          zIndex: 999, // Adjust the z-index as needed
-                                        }}
-                                      >
-                                        <CustomMenuList
-                                          options={transformedOptions}
-                                          onSelect={(label, ID) =>
-                                            handleSelect(label, ID)
-                                          }
-                                          // closeAllDropdowns={closeAllDropdowns}
-                                        />
-                                      </div>
-                                    )}
-                                  </div> */}
+
                                   <div className="col-sm-12">
                                     <label className="col-form-label">
                                       <b>
@@ -1094,86 +1000,7 @@ const CreateTemplateComponent = () => {
                                 </div>
                               </div>
 
-                              {/* })}  */}
-
                               <Modal.Footer>
-                                {/* <div>
-                                  <button
-                                    type="button"
-                                    onClick={(e) => {
-                                      // Validate the "Hours Required" field
-                                      const hoursInput =
-                                        document.getElementById(
-                                          "hours_required"
-                                        );
-                                      const enteredValue =
-                                        hoursInput.value.trim();
-                                      const timeRegex =
-                                        /^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/;
-
-                                      if (!timeRegex.test(enteredValue)) {
-                                        // If the format is invalid, show an alert and prevent further execution
-                                        alert(
-                                          "Invalid time format. Please use 'HH:mm' format"
-                                        );
-                                        return;
-                                      }
-                                      const taskName = document
-                                        .getElementById("task")
-                                        .value.trim();
-                                      const daysRequired = document
-                                        .getElementById("days")
-                                        .value.trim();
-                                      const hoursRequired = document
-                                        .getElementById("hours_required")
-                                        .value.trim();
-                                      const startDays = document
-                                        .getElementById("start_days")
-                                        .value.trim();
-
-                                      if (
-                                        !taskName ||
-                                        !daysRequired ||
-                                        !hoursRequired ||
-                                        !startDays
-                                      ) {
-                                        alert(
-                                          "Please fill out all required fields."
-                                        );
-                                        return; // Prevent further execution
-                                      }
-
-                                      dispatch(
-                                        handleModalClose({
-                                          showModal: false,
-                                          modalData: "",
-                                          modalHeader: "",
-                                        })
-                                      );
-                                    }}
-                                    className="btn btn-sm btn-primary"
-                                    style={{ backgroundColor: "#484C7F" }}
-                                  >
-                                    Submit
-                                  </button>
-
-                                  <button
-                                    type="button"
-                                    className="btn btn-sm btn-danger"
-                                    onClick={(e) =>
-                                      dispatch(
-                                        handleModalClose({
-                                          showModal: false,
-                                          modalData: "",
-                                          modalHeader: "",
-                                        })
-                                      )
-                                    }
-                                  >
-                                    Cancel
-                                  </button>
-                                </div> */}
-
                                 <div>
                                   <button
                                     type="button"
