@@ -350,21 +350,19 @@ const BillPayments = () => {
             }}
           />
 
-          <div className="d-flex justify-content-end">
-            <Button
-              style={{ marginTop: '-37px' }}
-              onClick={() => setOpen(!open)}
-              aria-controls="example-collapse-text"
-              aria-expanded={open}
-            >
-              Search
-            </Button>
-          </div>
+          <button
+            onClick={() => setOpen(!open)}
+            aria-controls="example-collapse-text"
+            className="btn btn-warning text-white"
+            aria-expanded={open}
+          >
+            <i className="icofont-filter" /> Filter
+          </button>
         </div>
 
-        <Fade in={open}>
-          <div id="example-fade-text">
-            <div className="card-mt-2" style={{ width: '100%' }}>
+        <Collapse in={open}>
+          <div id="example-collapse-text">
+            <div className="card">
               <div className="card card-body">
                 <form
                   method="POST"
@@ -434,9 +432,9 @@ const BillPayments = () => {
                         defaultValue="filterButton"
                         id="filterButton"
                         onClick={(e) => (myForm.current.buttonId = e.target.id)}
-                        className="btn btn-warning text-white"
+                        className="btn btn-primary text-white"
                       >
-                        <i className="icofont-filter" /> filter
+                        Search
                       </button>
                       {/* </div> */}
                     </div>
@@ -445,7 +443,7 @@ const BillPayments = () => {
               </div>
             </div>
           </div>
-        </Fade>
+        </Collapse>
 
         <div className="col-sm-12">
           {filteredData && filteredData.length > 0 ? (
@@ -461,7 +459,9 @@ const BillPayments = () => {
               />
             </div>
           ) : (
-            <></>
+            <div className="card card-body mt-2">
+              <p className="text-center">No Data Found</p>
+            </div>
           )}
         </div>
       </div>
