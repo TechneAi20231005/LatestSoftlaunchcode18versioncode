@@ -3,7 +3,6 @@ import { Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link, useParams } from 'react-router-dom';
-import { Astrick } from '../../../components/Utilities/Style';
 import PageHeader from '../../../components/Common/PageHeader';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
 import { _base } from '../../../settings/constants';
@@ -15,6 +14,7 @@ import {
 import { getReviewCommentMasterListThunk } from '../../../redux/services/testCases/reviewCommentMaster';
 import EditTestCaseModal from '../TestDraft/EditTestCaseModal';
 import CustomFilterModal from '../Modal/CustomFilterModal';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 const initialState = {
   filterType: '',
@@ -96,7 +96,8 @@ function TestCaseReviewDetails() {
     testPlanIdData,
     allTestPlanIDData,
     filterTestPlanData,
-    exportTestCaseReviewData
+    exportTestCaseReviewData,
+    isLoading
   } = useSelector((state) => state?.testCaseReview);
   const { getFilterReviewCommentMasterList } = useSelector(
     (state) => state?.reviewCommentMaster
@@ -157,6 +158,7 @@ function TestCaseReviewDetails() {
   };
 
   const handleRowChange = (id, field, value) => {
+    setCommentIdError('');
     if (field === 'comment_id') {
       setComments((prev) => ({ ...prev, [id]: value }));
     } else if (field === 'other_remark') {
@@ -181,44 +183,60 @@ function TestCaseReviewDetails() {
       }
     });
   };
+
+  const [commentIdError, setCommentIdError] = useState('');
   const handleSubmit = async (status) => {
     const updatedRows = exportTestCaseReviewData
-      // .filter((row) => selectedRows.includes(row.id))
-      .map((row) => ({
-        id: row.id,
-        // comment_id: row.comment_id !== '' ? row.comment_id : '',
-        // other_remark: row.other_remark !== '' ? row.other_remark : ''
+      ?.filter((row) => selectedRows?.includes(row.tc_id))
+      ?.map((row) => ({
+        tc_id: row.tc_id,
+
         comment_id: comments[row.id] || row.comment_id,
         other_remark: remarks[row.id] || row.other_remark
       }));
-    const formData = {
-      review_testcase_data: updatedRows,
-      status: status,
-      common_comment_id: commonComment,
-      common_remark: commonRemark
-    };
 
-    dispatch(
-      approveRejectByReviewerMasterThunk({
-        planID,
-        formData,
-        onSuccessHandler: () => {
-          setCommonComment('');
-          setCommonRemark('');
-          dispatch(
-            getByTestPlanIDListThunk({
-              id: id,
-              limit: paginationData.rowPerPage,
-              page: paginationData.currentPage
-            })
-          );
-          localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: false });
-          localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
-          setRowData(testPlanIdData);
-        },
-        onErrorHandler: () => {}
-      })
-    );
+    const newCommentIdErrors = [];
+
+    updatedRows?.forEach((row) => {
+      if (!row?.comment_id) {
+        newCommentIdErrors[row.tc_id] = 'Reviewer comment is required';
+      }
+    });
+
+    if (newCommentIdErrors?.length > 0) {
+      setCommentIdError(newCommentIdErrors);
+    } else {
+      setCommentIdError('');
+
+      const formData = {
+        review_testcase_data: updatedRows,
+        status: status,
+        common_comment_id: commonComment,
+        common_remark: commonRemark
+      };
+
+      dispatch(
+        approveRejectByReviewerMasterThunk({
+          planID,
+          formData,
+          onSuccessHandler: () => {
+            setCommonComment('');
+            setCommonRemark('');
+            dispatch(
+              getByTestPlanIDListThunk({
+                id: id,
+                limit: paginationData.rowPerPage,
+                page: paginationData.currentPage
+              })
+            );
+            localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: false });
+            localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
+            setRowData(testPlanIdData);
+          },
+          onErrorHandler: () => {}
+        })
+      );
+    }
   };
 
   const handleSelectAllNamesChange = () => {
@@ -228,7 +246,6 @@ function TestCaseReviewDetails() {
     if (newSelectAllNames) {
       const draftRowIds = exportTestCaseReviewData.map((row) => row.tc_id);
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
-      console.log('draftRowIds', draftRowIds);
     } else {
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
     }
@@ -793,21 +810,37 @@ function TestCaseReviewDetails() {
 
       width: '250px',
       cell: (row) => (
-        <select
-          className="form-select"
-          aria-label="Default select example"
-          // value={row.comment_id || ''}
-          value={comments[row.id] || row.comment_id || ''}
-          id="comment_id"
-          name="comment_id"
-          onChange={(e) =>
-            handleRowChange(row.id, 'comment_id', e.target.value)
-          }
-        >
-          {generateOptions(getFilterReviewCommentMasterList)}
-        </select>
+        <div>
+          <select
+            className="form-select"
+            aria-label="Default select example"
+            // value={row.comment_id || ''}
+            // value={comments[row.id] || row.comment_id || ''}
+            value={
+              selectedRows && selectedRows.includes(row.tc_id)
+                ? comments[row.id] || row.comment_id
+                : commonComment
+            }
+            id="comment_id"
+            name="comment_id"
+            onChange={(e) =>
+              handleRowChange(row.id, 'comment_id', e.target.value)
+            }
+          >
+            {generateOptions(getFilterReviewCommentMasterList)}
+          </select>
+
+          {commentIdError[row.tc_id] &&
+            selectedRows &&
+            selectedRows.includes(row.tc_id) && (
+              <div className="col">
+                <span className="text-danger">{commentIdError[row.tc_id]}</span>
+              </div>
+            )}
+        </div>
       )
     },
+
     {
       name: 'Remark',
       selector: (row) => row?.remark,
@@ -822,7 +855,11 @@ function TestCaseReviewDetails() {
           placeholder="Enter Remark"
           aria-label="default input example"
           maxLength={100}
-          value={remarks[row.id] || row.other_remark || ''}
+          value={
+            selectedRows && selectedRows.includes(row.id)
+              ? remarks[row.id] || row.other_remark
+              : commonRemark
+          }
           onChange={(e) =>
             handleRowChange(row.id, 'other_remark', e.target.value)
           }
@@ -1413,6 +1450,8 @@ function TestCaseReviewDetails() {
             setPaginationData({ rowPerPage: newPageSize });
             setPaginationData({ currentPage: 1 });
           }}
+          progressPending={isLoading?.testPlanIdData}
+          progressComponent={<TableLoadingSkelton />}
           paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"

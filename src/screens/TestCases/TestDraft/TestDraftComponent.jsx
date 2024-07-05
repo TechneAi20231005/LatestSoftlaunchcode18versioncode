@@ -145,13 +145,15 @@ export default function TestDraftComponent({}) {
       ? dispatch(
           getDraftTestCaseList({
             limit: paginationData.rowPerPage,
-            page: paginationData.currentPage
+            page: paginationData.currentPage,
+            filter_testcase_data: []
           })
         )
       : dispatch(
           getAllReviewTestDraftList({
             limit: paginationData.rowPerPage,
-            page: paginationData.currentPage
+            page: paginationData.currentPage,
+            filter_testcase_data: []
           })
         );
   };
