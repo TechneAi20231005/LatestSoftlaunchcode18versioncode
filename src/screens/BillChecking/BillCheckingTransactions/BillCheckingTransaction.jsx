@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Dropdown, Spinner } from 'react-bootstrap';
+import { Collapse, Dropdown, Stack } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
 import PageHeader from '../../../components/Common/PageHeader';
@@ -32,6 +32,7 @@ import { getVendorMasterData } from '../Slices/VendorMasterAction';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import CustomTab from '../../../components/custom/tabs/CustomTab';
 
 function BillCheckingTransaction() {
   const location = useLocation();
@@ -40,6 +41,16 @@ function BillCheckingTransaction() {
   const [notify, setNotify] = useState();
   const [exportData, setExportData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+
+  const [currentTab, setCurrentTab] = useState('filter_by_bill');
+  const tabsLabel = [
+    {
+      label: 'Filter By Bill',
+      value: 'filter_by_bill'
+    },
+    { label: 'Filter By Date', value: 'filter_by_date' },
+    { label: 'Filter By Amount', value: 'filter_by_amount' }
+  ];
 
   const dispatch = useDispatch();
   const AllBillCheckingData = useSelector(
@@ -71,7 +82,6 @@ function BillCheckingTransaction() {
   const [filteredData, setFilteredData] = useState([]);
 
   //search function
-
   const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(data, searchTerm);
     setFilteredData(filteredList);
@@ -190,6 +200,7 @@ function BillCheckingTransaction() {
     }
 
     setIsOriginalBillReceived(false);
+    loadData();
   };
 
   const [userDropdown, setUserDropdown] = useState();
@@ -1141,33 +1152,6 @@ function BillCheckingTransaction() {
     handleSearch();
   }, [handleSearch, searchTerm]);
 
-  // function LoaderComponent() {
-  //   return (
-  //     // Container to center-align the spinner and loading text
-  //     <div style={{ textAlign: 'center', marginTop: '50px' }}>
-  //       {/* Spinner element with custom styling */}
-  //       <Spinner
-  //         animation="border"
-  //         role="status"
-  //         style={{
-  //           width: '100px',
-  //           height: '100px',
-  //           borderWidth: '5px',
-  //           color: '#484c7f',
-  //           marginBottom: '10px'
-  //         }}
-  //       >
-  //         {/* Visually hidden loading text for accessibility */}
-  //         <span className="visually-hidden">Loading...</span>
-  //       </Spinner>
-  //       {/* Loading text displayed below the spinner */}
-  //       <div style={{ color: '#484c7f', fontSize: '16px', fontWeight: 'bold' }}>
-  //         Loading...
-  //       </div>
-  //     </div>
-  //   );
-  // }
-
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
@@ -1203,428 +1187,416 @@ function BillCheckingTransaction() {
         }}
       />
 
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by Bill Id ...."
+        exportFileName="Bill checking  Master Record"
+        showExportButton={true}
+        exportData={exportData}
+      />
+
       {/* SEARCH FILTER */}
-      {showFilterFields && (
-        // <div className="container-xxl ">
-        <form method="post" onSubmit={handleFilter}>
-          <div className="card mt-2" style={{ zIndex: 10 }}>
-            <div className="card-body">
-              <div className="form-group row">
-                <div className="col-sm-1">
-                  <label>
-                    <b>Bill ID:</b>
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="id"
-                    id="id"
-                    ref={selectInputRef}
+      <Collapse in={showFilterFields}>
+        <form method="post" onSubmit={handleFilter} className="mt-2">
+          <CustomTab
+            tabsData={tabsLabel}
+            currentTab={currentTab}
+            setCurrentTab={setCurrentTab}
+          />
+          <Collapse in={currentTab === 'filter_by_bill'}>
+            <div className="row mb-3 row_gap_3">
+              <div className="col-sm-6 col-md-4 col-lg-2">
+                <label>Bill ID:</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="id"
+                  id="id"
+                  ref={selectInputRef}
+                  placeholder="Enter Bill Id"
+                />
+              </div>
+              <div className="col-sm-6 col-md-4 col-lg-2">
+                <label>Vendor Bill No:</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="vendor_bill_no"
+                  id="vendor_bill_no"
+                  ref={selectVendorRef}
+                  placeholder="Enter Vendor Bill No"
+                />
+              </div>
+              <div className="col-sm-6 col-md-4 col-lg-2">
+                <label>Vendor Name:</label>
+                {vendorDropdown && (
+                  <Select
+                    id="vendor_name"
+                    name="vendor_name[]"
+                    isMulti
+                    options={vendorDropdown}
+                    ref={selectVendorNameRef}
+                    placeholder="Vendor Name"
                   />
-                </div>
-
-                <div className="col-sm-2">
-                  <label>
-                    <b>Vendor Bill No:</b>
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="vendor_bill_no"
-                    id="vendor_bill_no"
-                    ref={selectVendorRef}
+                )}
+              </div>
+              <div className="col-sm-6 col-md-4 col-lg-2">
+                <label>Bill Status:</label>
+                {statusDropdown && (
+                  <Select
+                    id="bill_status"
+                    name="bill_status[]"
+                    isMulti
+                    options={statusDropdown}
+                    placeholder="Bill Status"
+                    ref={selectBillStatusRef}
                   />
-                </div>
-
-                <div className="col-sm-2">
-                  <label>
-                    <b>Vendor Name:</b>
-                  </label>
-                  {vendorDropdown && (
-                    <Select
-                      id="vendor_name"
-                      name="vendor_name[]"
-                      isMulti
-                      options={vendorDropdown}
-                      ref={selectVendorNameRef}
-                      placeholder="Vendor Name"
-                    />
-                  )}
-                </div>
-                <div className="col-sm-2">
-                  <label>
-                    <b>Bill Status:</b>
-                  </label>
-                  {statusDropdown && (
-                    <Select
-                      id="bill_status"
-                      name="bill_status[]"
-                      isMulti
-                      options={statusDropdown}
-                      placeholder="bill_status"
-                      ref={selectBillStatusRef}
-                    />
-                  )}
-                </div>
-                <div className="col-sm-2">
-                  <label>
-                    <b>Bill Type:</b>
-                  </label>
-                  {billTypeDropdown && (
-                    <Select
-                      options={billTypeDropdown}
-                      id="bill_type"
-                      isMulti
-                      name="bill_type[]"
-                      placeholder="Bill Type"
-                      ref={selectBillTypeRef}
-                    />
-                  )}
-                </div>
-
-                <div className="col-sm-2 ">
-                  <label>
-                    <b>Assigned To:</b>
-                  </label>
-                  {userDropdown && (
-                    <Select
-                      options={userDropdown}
-                      id="assign_to"
-                      name="assign_to[]"
-                      isMulti
-                      placeholder="Assign To"
-                      ref={selectAssignToRef}
-                    />
-                  )}
-                </div>
-
-                <div className="col-sm-2 mt-4">
-                  <label>
-                    <b>From Bill Date:</b>
-                  </label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    name="from_bill_date"
-                    id="from_bill_date"
-                    onChange={(e) => handleBillDate(e)}
-                    max={formattedDate}
-                    ref={selectFromBillRef}
-                    value={fromBillDate}
+                )}
+              </div>
+              <div className="col-sm-6 col-md-4 col-lg-2">
+                <label>Bill Type:</label>
+                {billTypeDropdown && (
+                  <Select
+                    options={billTypeDropdown}
+                    id="bill_type"
+                    isMulti
+                    name="bill_type[]"
+                    placeholder="Bill Type"
+                    ref={selectBillTypeRef}
                   />
-                </div>
-
-                <div className="col-sm-2 mt-4">
-                  <label>
-                    <b>To Bill Date:</b>
-                  </label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    name="to_bill_date"
-                    id="to_bill_date"
-                    min={fromBillDate}
-                    required={isToBillDateRequired}
-                    max={formattedDate}
-                    ref={selectToBillRef}
-                    value={toBillDate}
-                    onChange={(e) => setToBillDate(e.target.value)}
+                )}
+              </div>
+              <div className="col-sm-6 col-md-4 col-lg-2 ">
+                <label>Assigned To:</label>
+                {userDropdown && (
+                  <Select
+                    options={userDropdown}
+                    id="assign_to"
+                    name="assign_to[]"
+                    isMulti
+                    placeholder="Assign To"
+                    ref={selectAssignToRef}
                   />
-                </div>
+                )}
+              </div>
+            </div>
+          </Collapse>
+          <Collapse in={currentTab === 'filter_by_date'}>
+            <div className="row  row_gap_3">
+              <div className="col-sm-6 col-md-4 col-lg-2">
+                <label>From Bill Date:</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  name="from_bill_date"
+                  id="from_bill_date"
+                  onChange={(e) => handleBillDate(e)}
+                  max={formattedDate}
+                  ref={selectFromBillRef}
+                  value={fromBillDate}
+                />
+              </div>
+              <div className="col-sm-6 col-md-4 col-lg-2">
+                <label>To Bill Date:</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  name="to_bill_date"
+                  id="to_bill_date"
+                  min={fromBillDate}
+                  required={isToBillDateRequired}
+                  max={formattedDate}
+                  ref={selectToBillRef}
+                  value={toBillDate}
+                  onChange={(e) => setToBillDate(e.target.value)}
+                />
+              </div>
+              <div className="col-sm-6 col-md-4 col-lg-2">
+                <label>From Received Date:</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  name="from_received_date"
+                  id="from_received_date"
+                  ref={selectFromReceivedRef}
+                  value={receivedate}
+                  onChange={(e) => handleReceiveDate(e)}
+                />
+              </div>
+              <div className="col-sm-6 col-md-4 col-lg-2">
+                <label>To Received Date:</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  name="to_received_date"
+                  id="to_received_date"
+                  min={receivedate}
+                  ref={selectToReceivedRef}
+                  value={toRecive}
+                  required={isToReceiveRequired}
+                  onChange={(e) => setToReceive(e.target.value)}
+                />
+              </div>
+              <div className="col-sm-6 col-md-4 col-lg-2">
+                <label>From Payment Date:</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  name="from_payment_date"
+                  id="from_payment_date"
+                  value={datee}
+                  onChange={(e) => handleFromDate(e)}
+                  ref={selectFromPaymentRef}
+                />
+              </div>
+              <div className="col-sm-6 col-md-4 col-lg-2">
+                <label>To Payment Date:</label>
+                <input
+                  type="date"
+                  className="form-control"
+                  name="to_payment_date"
+                  id="to_payment_date"
+                  min={datee}
+                  ref={selectToPaymentRef}
+                  required={isToPaymentRequired}
+                  value={toPaymentDate}
+                  onChange={(e) => setToPaymentDate(e.target.value)}
+                />
+              </div>
+              <h6 className="mt-1 text-danger">
+                Note:- If you are selecting any from date selection, then to
+                date is Mandatory
+              </h6>
+            </div>
+          </Collapse>
+          <Collapse in={currentTab === 'filter_by_amount'}>
+            <div className="row mb-3 row_gap_3">
+              <div className="col-sm-6 col-md-4 col-lg-2">
+                <label>From Bill Amount:</label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm"
+                  id="from_bill_amount"
+                  name="from_bill_amount"
+                  placeholder="From Bill Amount"
+                  maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
+                  onChange={(e) => handleFromBillAmount(e)}
+                  ref={selectFromBillAmountRef}
+                  onKeyPress={(e) => {
+                    const allowedKeys = [
+                      '0',
+                      '1',
+                      '2',
+                      '3',
+                      '4',
+                      '5',
+                      '6',
+                      '7',
+                      '8',
+                      '9',
+                      '.',
+                      'Backspace'
+                    ];
+                    const inputValue = e.key;
 
-                <div className="col-sm-2 mt-4">
-                  <label>
-                    <b>From Received Date:</b>
-                  </label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    name="from_received_date"
-                    id="from_received_date"
-                    ref={selectFromReceivedRef}
-                    value={receivedate}
-                    onChange={(e) => handleReceiveDate(e)}
-                  />
-                </div>
-                <div className="col-sm-2 mt-4">
-                  <label>
-                    <b>To Received Date:</b>
-                  </label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    name="to_received_date"
-                    id="to_received_date"
-                    min={receivedate}
-                    ref={selectToReceivedRef}
-                    value={toRecive}
-                    required={isToReceiveRequired}
-                    onChange={(e) => setToReceive(e.target.value)}
-                  />
-                </div>
+                    if (!allowedKeys.includes(inputValue)) {
+                      e.preventDefault();
+                    }
 
-                <div className="col-sm-2 mt-4">
-                  <label>
-                    <b>From Payment Date:</b>
-                  </label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    name="from_payment_date"
-                    id="from_payment_date"
-                    value={datee}
-                    onChange={(e) => handleFromDate(e)}
-                    ref={selectFromPaymentRef}
-                  />
-                </div>
-                <div className="col-sm-2 mt-4">
-                  <label>
-                    <b>To Payment Date:</b>
-                  </label>
-                  <input
-                    type="date"
-                    className="form-control"
-                    name="to_payment_date"
-                    id="to_payment_date"
-                    min={datee}
-                    ref={selectToPaymentRef}
-                    required={isToPaymentRequired}
-                    value={toPaymentDate}
-                    onChange={(e) => setToPaymentDate(e.target.value)}
-                  />
-                </div>
+                    const currentInput = e.target.value;
+                    const decimalIndex = currentInput.indexOf('.');
 
-                <div className="col-sm-2 mt-4">
-                  <label>
-                    <b>From Bill Amount:</b>
-                  </label>
+                    if (
+                      decimalIndex !== -1 &&
+                      currentInput.length - decimalIndex > 2
+                    ) {
+                      e.preventDefault();
+                    }
 
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="from_bill_amount"
-                    name="from_bill_amount"
-                    maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
-                    onChange={(e) => handleFromBillAmount(e)}
-                    ref={selectFromBillAmountRef}
-                    onKeyPress={(e) => {
-                      const allowedKeys = [
-                        '0',
-                        '1',
-                        '2',
-                        '3',
-                        '4',
-                        '5',
-                        '6',
-                        '7',
-                        '8',
-                        '9',
-                        '.',
-                        'Backspace'
-                      ];
-                      const inputValue = e.key;
+                    if (
+                      currentInput.length >= 10 &&
+                      inputValue !== '.' &&
+                      decimalIndex === -1
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
+                />
+              </div>
+              <div className="col-sm-6 col-md-4 col-lg-2">
+                <label>To Bill Amount:</label>
 
-                      if (!allowedKeys.includes(inputValue)) {
-                        e.preventDefault();
-                      }
+                <input
+                  type="text"
+                  className="form-control form-control-sm"
+                  id="to_bill_amount"
+                  name="to_bill_amount"
+                  placeholder="To Bill Amount"
+                  maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
+                  onChange={(e) => handleToBillAmount(e)}
+                  ref={selectToBillAmountRef}
+                  onKeyPress={(e) => {
+                    const allowedKeys = [
+                      '0',
+                      '1',
+                      '2',
+                      '3',
+                      '4',
+                      '5',
+                      '6',
+                      '7',
+                      '8',
+                      '9',
+                      '.',
+                      'Backspace'
+                    ];
+                    const inputValue = e.key;
 
-                      const currentInput = e.target.value;
-                      const decimalIndex = currentInput.indexOf('.');
+                    if (!allowedKeys.includes(inputValue)) {
+                      e.preventDefault();
+                    }
 
-                      if (
-                        decimalIndex !== -1 &&
-                        currentInput.length - decimalIndex > 2
-                      ) {
-                        e.preventDefault();
-                      }
+                    const currentInput = e.target.value;
+                    const decimalIndex = currentInput.indexOf('.');
 
-                      if (
-                        currentInput.length >= 10 &&
-                        inputValue !== '.' &&
-                        decimalIndex === -1
-                      ) {
-                        e.preventDefault();
-                      }
-                    }}
-                  />
-                </div>
-                <div className="col-sm-2 mt-4">
-                  <label>
-                    <b>To Bill Amount:</b>
-                  </label>
+                    if (
+                      decimalIndex !== -1 &&
+                      currentInput.length - decimalIndex > 2
+                    ) {
+                      e.preventDefault();
+                    }
 
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="to_bill_amount"
-                    name="to_bill_amount"
-                    maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
-                    onChange={(e) => handleToBillAmount(e)}
-                    ref={selectToBillAmountRef}
-                    onKeyPress={(e) => {
-                      const allowedKeys = [
-                        '0',
-                        '1',
-                        '2',
-                        '3',
-                        '4',
-                        '5',
-                        '6',
-                        '7',
-                        '8',
-                        '9',
-                        '.',
-                        'Backspace'
-                      ];
-                      const inputValue = e.key;
+                    if (
+                      currentInput.length >= 10 &&
+                      inputValue !== '.' &&
+                      decimalIndex === -1
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
+                />
 
-                      if (!allowedKeys.includes(inputValue)) {
-                        e.preventDefault();
-                      }
+                <small
+                  style={{
+                    color: 'red'
+                  }}
+                >
+                  {toBillAmountErr}
+                </small>
+              </div>
+              <div className="col-sm-6 col-md-4 col-lg-2">
+                <label>From Hold Amount:</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="from_hold_amount"
+                  id="from_hold_amount"
+                  placeholder="From Hold Amount"
+                  ref={selectFromHoldAmountRef}
+                  onKeyPress={(e) => {
+                    const allowedKeys = [
+                      '0',
+                      '1',
+                      '2',
+                      '3',
+                      '4',
+                      '5',
+                      '6',
+                      '7',
+                      '8',
+                      '9',
+                      '.',
+                      'Backspace'
+                    ];
+                    const inputValue = e.key;
 
-                      const currentInput = e.target.value;
-                      const decimalIndex = currentInput.indexOf('.');
+                    if (!allowedKeys.includes(inputValue)) {
+                      e.preventDefault();
+                    }
 
-                      if (
-                        decimalIndex !== -1 &&
-                        currentInput.length - decimalIndex > 2
-                      ) {
-                        e.preventDefault();
-                      }
+                    const currentInput = e.target.value;
+                    const decimalIndex = currentInput.indexOf('.');
 
-                      if (
-                        currentInput.length >= 10 &&
-                        inputValue !== '.' &&
-                        decimalIndex === -1
-                      ) {
-                        e.preventDefault();
-                      }
-                    }}
-                  />
+                    if (
+                      decimalIndex !== -1 &&
+                      currentInput.length - decimalIndex > 2
+                    ) {
+                      e.preventDefault();
+                    }
 
-                  <small
-                    style={{
-                      color: 'red'
-                    }}
-                  >
-                    {toBillAmountErr}
-                  </small>
-                </div>
-                <div className="col-sm-2 mt-4">
-                  <label>
-                    <b>From Hold Amount:</b>
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="from_hold_amount"
-                    id="from_hold_amount"
-                    ref={selectFromHoldAmountRef}
-                    onKeyPress={(e) => {
-                      const allowedKeys = [
-                        '0',
-                        '1',
-                        '2',
-                        '3',
-                        '4',
-                        '5',
-                        '6',
-                        '7',
-                        '8',
-                        '9',
-                        '.',
-                        'Backspace'
-                      ];
-                      const inputValue = e.key;
+                    if (
+                      currentInput.length >= 10 &&
+                      inputValue !== '.' &&
+                      decimalIndex === -1
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onChange={(e) => handleFromHoldAmount(e)}
+                />
+              </div>
+              <div className="col-sm-6 col-md-4 col-lg-2">
+                <label>To Hold Amount:</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  name="to_hold_amount"
+                  id="to_hold_amount"
+                  ref={selectToHoldAmountRef}
+                  placeholder="To Hold Amount"
+                  onKeyPress={(e) => {
+                    const allowedKeys = [
+                      '0',
+                      '1',
+                      '2',
+                      '3',
+                      '4',
+                      '5',
+                      '6',
+                      '7',
+                      '8',
+                      '9',
+                      '.',
+                      'Backspace'
+                    ];
+                    const inputValue = e.key;
 
-                      if (!allowedKeys.includes(inputValue)) {
-                        e.preventDefault();
-                      }
+                    if (!allowedKeys.includes(inputValue)) {
+                      e.preventDefault();
+                    }
 
-                      const currentInput = e.target.value;
-                      const decimalIndex = currentInput.indexOf('.');
+                    const currentInput = e.target.value;
+                    const decimalIndex = currentInput.indexOf('.');
 
-                      if (
-                        decimalIndex !== -1 &&
-                        currentInput.length - decimalIndex > 2
-                      ) {
-                        e.preventDefault();
-                      }
+                    if (
+                      decimalIndex !== -1 &&
+                      currentInput.length - decimalIndex > 2
+                    ) {
+                      e.preventDefault();
+                    }
 
-                      if (
-                        currentInput.length >= 10 &&
-                        inputValue !== '.' &&
-                        decimalIndex === -1
-                      ) {
-                        e.preventDefault();
-                      }
-                    }}
-                    onChange={(e) => handleFromHoldAmount(e)}
-                  />
-                </div>
-                <div className="col-sm-2 mt-4">
-                  <label>
-                    <b>To Hold Amount:</b>
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control"
-                    name="to_hold_amount"
-                    id="to_hold_amount"
-                    ref={selectToHoldAmountRef}
-                    onKeyPress={(e) => {
-                      const allowedKeys = [
-                        '0',
-                        '1',
-                        '2',
-                        '3',
-                        '4',
-                        '5',
-                        '6',
-                        '7',
-                        '8',
-                        '9',
-                        '.',
-                        'Backspace'
-                      ];
-                      const inputValue = e.key;
-
-                      if (!allowedKeys.includes(inputValue)) {
-                        e.preventDefault();
-                      }
-
-                      const currentInput = e.target.value;
-                      const decimalIndex = currentInput.indexOf('.');
-
-                      if (
-                        decimalIndex !== -1 &&
-                        currentInput.length - decimalIndex > 2
-                      ) {
-                        e.preventDefault();
-                      }
-
-                      if (
-                        currentInput.length >= 10 &&
-                        inputValue !== '.' &&
-                        decimalIndex === -1
-                      ) {
-                        e.preventDefault();
-                      }
-                    }}
-                    onChange={(e) => handleToHoldAmount(e)}
-                  />
-                  <small
-                    style={{
-                      color: 'red'
-                    }}
-                  >
-                    {toHoldAmountErr}
-                  </small>
-                </div>
-                <div className="col-sm-2 mt-4">
-                  <label>
-                    <b>Is Original bill Received:</b>
-                  </label>
+                    if (
+                      currentInput.length >= 10 &&
+                      inputValue !== '.' &&
+                      decimalIndex === -1
+                    ) {
+                      e.preventDefault();
+                    }
+                  }}
+                  onChange={(e) => handleToHoldAmount(e)}
+                />
+                <small
+                  style={{
+                    color: 'red'
+                  }}
+                >
+                  {toHoldAmountErr}
+                </small>
+              </div>
+              <div className="col-sm-6 col-md-4 col-lg-4">
+                <label className="cp">
                   <input
                     type="checkbox"
                     className="sm-1 mx-2"
@@ -1634,74 +1606,81 @@ function BillCheckingTransaction() {
                     checked={isOriginalBillReceived}
                     ref={selectIsOriginalBillRef}
                   />
-                </div>
-
-                <div className="col-md-2 mt-4">
-                  <button
-                    className="btn btn-sm btn-warning text-white"
-                    type="submit"
-                    style={{ marginTop: '20px', fontWeight: '600' }}
-                  >
-                    <i className="icofont-search-1 "></i> Search
-                  </button>
-                  <button
-                    className="btn btn-sm btn-info text-white"
-                    type="button"
-                    onClick={handleClearData}
-                    style={{ marginTop: '20px', fontWeight: '600' }}
-                  >
-                    <i className="icofont-refresh text-white"></i> Reset
-                  </button>
-                </div>
-                <span className="fw-bold mt-2" style={{ color: 'red' }}>
-                  Note:- If you are selecting any from date selection, then to
-                  date is Mandatory
-                </span>
+                  Is Original bill Received:
+                </label>
               </div>
             </div>
+          </Collapse>
+          <div className="d-flex justify-content-end align-items-end">
+            <button className="btn btn-warning text-white" type="submit">
+              <i className="icofont-search-1 "></i> Search
+            </button>
+            <button
+              className="btn btn-info text-white"
+              type="button"
+              onClick={handleClearData}
+            >
+              <i className="icofont-refresh text-white"></i> Reset
+            </button>
           </div>
         </form>
-        // </div>
-      )}
+      </Collapse>
+
       {/* Search Filter  */}
 
-      <div className="mt-2">
-        <SearchBoxHeader
-          setSearchTerm={setSearchTerm}
-          handleSearch={handleSearch}
-          handleReset={handleReset}
-          placeholder="Search by Bill Id ...."
-          exportFileName="Bill checking  Master Record"
-          showExportButton={true}
-          exportData={exportData}
-        />
-      </div>
-      {/* DATA TABLE */}
-
-      <div className="card mt-2">
-        {/* <div className="card-body"> */}
-        {/* <div className="row clearfix g-3"> */}
-
-        <div className="col-sm-12">
-          {AllBillCheckingData && (
-            <DataTable
-              columns={columns}
-              data={filteredData}
-              pagination
-              progressComponent={<TableLoadingSkelton />}
-              progressPending={isLoading}
-              selectableRows={false}
-              defaultSortAsc={false}
-              fixedHeader={true}
-              fixedHeaderScrollHeight="900px"
-              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-              highlightOnHover={true}
-            />
-          )}
+      {/* <div className="container-xxl mt-2">
+        <div className="card card-body">
+          <div className="row">
+            <div className="col-md-10">
+              <input
+                type="text"
+                id="search"
+                className="form-control"
+                placeholder="Search By Bill ID...."
+                onClick={(e) => handleSearch(e)}
+                // onKeyDown={handleKeyDown}
+                ref={searchRef}
+              />
+            </div>
+            <div className="col-md-2">
+              <button
+                className="btn btn-sm btn-warning text-white"
+                type="button"
+                onClick={handleSearch}
+                style={{ marginTop: '0px', fontWeight: '600' }}
+              >
+                <i className="icofont-search-1 "></i> Search
+              </button>
+              <button
+                className="btn btn-sm btn-info text-white"
+                type="button"
+                // onClick={handleClearSearchData}
+                onClick={() => window.location.reload(false)}
+                style={{ marginTop: '0px', fontWeight: '600' }}
+              >
+                <i className="icofont-refresh text-white"></i> Reset
+              </button>
+            </div>
+          </div>
         </div>
+      </div> */}
 
-        {/* </div> */}
-      </div>
+      {/* DATA TABLE */}
+      {AllBillCheckingData && (
+        <DataTable
+          columns={columns}
+          data={filteredData}
+          pagination
+          progressComponent={<TableLoadingSkelton />}
+          progressPending={isLoading}
+          selectableRows={false}
+          defaultSortAsc={false}
+          fixedHeader={true}
+          fixedHeaderScrollHeight="900px"
+          className="mt-3"
+          highlightOnHover={true}
+        />
+      )}
     </div>
     // </div>
   );
