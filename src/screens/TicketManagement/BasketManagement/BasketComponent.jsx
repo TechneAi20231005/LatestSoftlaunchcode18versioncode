@@ -1,21 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Dropdown } from 'react-bootstrap';
+import { useNavigate, useParams } from 'react-router-dom';
+
 import PageHeader from '../../../components/Common/PageHeader';
 import Alert from '../../../components/Common/Alert';
 import ErrorLogService from '../../../services/ErrorLogService';
-import MyTicketService from '../../../services/TicketService/MyTicketService';
+
 import UserService from '../../../services/MastersService/UserService';
 import BasketService from '../../../services/TicketService/BasketService';
-import Select from 'react-select';
-import { UserDropdown } from '../../Masters/UserMaster/UserComponent';
+
 import { _base } from '../../../settings/constants';
 import * as Validation from '../../../components/Utilities/Validation';
-import { logDOM } from '@testing-library/react';
+
 import { Astrick } from '../../../components/Utilities/Style';
 
 export default function BasketComponent({ match }) {
-  const currentDate = new Date();
   const [userData, setUserData] = useState(null);
   const [notify, setNotify] = useState(null);
   const { id: ticketId } = useParams();
@@ -29,21 +27,21 @@ export default function BasketComponent({ match }) {
   };
 
   const [data, setData] = useState([mainJson]);
-  const [index, setIndex] = useState({ index: 0 });
+  // const [index, setIndex] = useState({ index: 0 });
   const [dateAlert, setDateAlert] = useState(false);
   const handleChange = (idx) => (e) => {
-    setIndex({ index: idx });
-    const { name, value } = e.target;
+    // setIndex({ index: idx });
+    const { value } = e.target;
 
     var flag = 1;
 
     for (const key in data) {
-      if (data[key].basket_name == value) {
+      if (data[key].basket_name === value) {
         alert('Same basket name already exists !!!');
         flag = 0;
       }
     }
-    if (flag == 1) {
+    if (flag === 1) {
       var startDate = document.getElementById('start_date').value;
       var endDate = document.getElementById('end_date').value;
       if (endDate < startDate) {
@@ -56,42 +54,12 @@ export default function BasketComponent({ match }) {
         setDateAlert(false);
       }
     }
-
-    // if(flag==1)
-    // {
-    //     if (name === "basket_name[]") {
-    //         data[idx].basket_name = value;
-    //     }
-    //     if (name === "basket_owner[]") {
-    //         data[idx].basket_owner = value;
-    //     }
-    //     if(name==="start_date[]"){
-    //         var todayDate = new Date();
-    //         var startDate = new Date(value);
-    //         if(startDate < todayDate){
-    //             data[idx].start_date = '';
-    //             setDateAlert({...dateAlert, startDateErr:'Given date is greater than the current date.'});
-    //         }else{
-    //             data[idx].start_date = value;
-    //         }
-    //     }
-    //     if(name==="end_date[]"){
-    //         var startdate = new Date(data[idx].start_date);
-    //         var endDate = new Date(value);
-    //         if(startdate > endDate){
-    //             setDateAlert({...dateAlert, startDateErr:'Given date is greater than the start date.'});
-    //         }else{
-    //             data[idx].end_date = value;
-    //         }
-    //     }
-    // }
   };
 
   const handleAddRow = async () => {
-    let flag = 1;
+    // let flag = 1;
     let last = data.length - 1;
     if ((!data[last].basket_name || !data[last].basket_owner) && last > 0) {
-      flag = 0;
     }
     const item = {
       id: Date.now(),
@@ -101,25 +69,13 @@ export default function BasketComponent({ match }) {
       start_date: null,
       end_date: null
     };
-    // if (flag == 1) {
+
     setData([...data, item]);
-    // } else {
-    //     setNotify({ show: true, type: "warning", message: "Please Fill Previous Row Values" });
-    // }
   };
 
   const handleRemoveSpecificRow = (idx) => () => {
     const filteredArray = data.filter((item) => item.id !== idx);
     setData(filteredArray);
-
-    // if (idx > 0) {
-    //     setData(data.filter((item) => item.id !== idx));
-    // }
-  };
-  const handleCheckInput = (e, idx) => {
-    if (data.length > 1) {
-      data.forEach((ele) => {});
-    }
   };
 
   const handleForm = async (e) => {
@@ -170,30 +126,6 @@ export default function BasketComponent({ match }) {
             errorObject.data.message
           );
         });
-
-      // var flag = 1;
-      // for (var i = 0; i < data.length; i++) {
-      //     saveBasket(rows[i]).then(res => {
-      //         if (res.status == 0) {
-      //             flag = 0;
-      //             return;
-      //         }
-      //     });
-      // }
-      // if (flag === 1) {
-      //     var returnValue = { show: true, type: "danger", message: "Not Inserted" };
-      //     if (flag == 0) {
-      //         returnValue.type = "danger";
-      //         returnValue.message = "Not Inserted";
-      //     } else {
-      //         returnValue.type = "success";
-      //         returnValue.message = "Inserted";
-      //         history({
-      //             pathname: `/${_base}/Ticket/Task/` + id,
-      //             state: { showAlert: true, alertData: returnValue }
-      //         });
-      //     }
-      // }
     }
   };
   const [fromDate, setFromDate] = useState();
@@ -217,7 +149,7 @@ export default function BasketComponent({ match }) {
           }
           return 0;
         });
-        // const temp = res.data.data.filter(d=> d.is_active ==1);
+
         for (const key in temp) {
           tempData.push({
             value: temp[key].id,
@@ -306,12 +238,6 @@ export default function BasketComponent({ match }) {
                         </td>
 
                         <td style={{ zIndex: 1000 }}>
-                          {/* <UserDropdown
-                                                    name="basket_owner[]"
-                                                    required={true}
-                                                    defaultValue={item.basket_owner}
-                                                    onChange={handleChange(idx)}
-                                              /> */}
                           <select
                             className="form-control form-control-sm"
                             name="basket_owner[]"
@@ -328,14 +254,6 @@ export default function BasketComponent({ match }) {
                                 );
                               })}
                           </select>
-
-                          {/* {userData &&
-                                                    <Select
-                                                        options={userData}
-                                                        id="basket_owner[]"
-                                                        name="basket_owner[]"
-                                                    />
-                                                } */}
                         </td>
 
                         <td>
@@ -344,7 +262,6 @@ export default function BasketComponent({ match }) {
                             type="date"
                             id="start_date"
                             name="start_date[]"
-                            // key={Math.random()}
                             defaultvalue=""
                             onChange={(e) => {
                               handleChange(idx);
@@ -368,7 +285,7 @@ export default function BasketComponent({ match }) {
                             className="form-control form-control-sm"
                             required
                           />
-                          {dateAlert && dateAlert == true ? (
+                          {dateAlert && dateAlert === true ? (
                             <span style={{ color: 'red', fontSize: '10px' }}>
                               End date should not be less than start date
                             </span>
@@ -378,7 +295,6 @@ export default function BasketComponent({ match }) {
                         </td>
 
                         <td>
-                          {/* {idx == data.length - 1 && */}
                           {idx === 0 && (
                             <button
                               type="button"
@@ -388,7 +304,7 @@ export default function BasketComponent({ match }) {
                               <i class="icofont-plus-circle"></i>
                             </button>
                           )}
-                          {/* // idx != data.length - 1 && */}
+
                           {idx !== 0 && (
                             <span>
                               <button
@@ -410,7 +326,6 @@ export default function BasketComponent({ match }) {
               <button type="Submit" className="btn btn-sm btn-primary">
                 Submit
               </button>
-              {/* <ButtonComponent type="Link" url={`/${_base}/Ticket`} buttonColor="danger" textColor="white" text="Cancel" /> */}
             </div>
           </form>
         </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import DataTable from 'react-data-table-component';
@@ -6,10 +6,6 @@ import DataTable from 'react-data-table-component';
 import DynamicFormService from '../../../services/MastersService/DynamicFormService';
 import PageHeader from '../../../components/Common/PageHeader';
 
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
-
-import { Spinner } from 'react-bootstrap';
-import { Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { dynamicFormData } from '../DynamicFormDropdown/Slices/DynamicFormDropDownAction';
@@ -23,12 +19,8 @@ import { customSearchHandler } from '../../../utils/customFunction';
 function DynamicFormComponent() {
   //initial state
   const location = useLocation();
-  const searchRef = useRef();
+
   const dispatch = useDispatch();
-
-  const [notify, setNotify] = useState(null);
-
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 13)
@@ -52,10 +44,10 @@ function DynamicFormComponent() {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(data, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [data, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -119,12 +111,12 @@ function DynamicFormComponent() {
       sortable: false,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -158,16 +150,16 @@ function DynamicFormComponent() {
     }
   ];
 
-  const loadData = async () => {
-    setShowLoaderModal(null);
-  };
+  // const loadData = async () => {
+  //   setShowLoaderModal(null);
+  // };
 
   useEffect(() => {
-    loadData();
+    // loadData();
     dispatch(dynamicFormData());
     dispatch(dynamicFormData());
     if (location && location.state) {
-      setNotify(location.state.alert);
+      // setNotify(location.state.alert);
     }
     if (!checkRole.length) {
       dispatch(getRoles());
@@ -176,7 +168,7 @@ function DynamicFormComponent() {
     }
     if (!exportData.length) {
     }
-  }, []);
+  }, [dispatch, data.length, exportData.length, location, checkRole.length]);
 
   useEffect(() => {
     setFilteredData(data);
@@ -184,7 +176,7 @@ function DynamicFormComponent() {
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -272,10 +264,10 @@ function DynamicFormDropdown(props) {
           onChange={props.getChangeValue}
           required={props.required ? true : false}
         >
-          {props.defaultValue == 0 && <option value="">Select Form</option>}
-          {props.defaultValue != 0 && <option value="">Select Form</option>}
+          {props.defaultValue === 0 && <option value="">Select Form</option>}
+          {props.defaultValue !== 0 && <option value="">Select Form</option>}
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.template_name}

@@ -26,18 +26,13 @@ import {
   dynamicFormData,
   getAllDropDownData
 } from '../DynamicFormDropdown/Slices/DynamicFormDropDownAction';
-import { masterURL } from '../../../settings/constants';
-import DynamicComponent from './DynamicComponent';
+
 import UserService from '../../../services/MastersService/UserService';
 import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
-import {
-  getDesignationData,
-  getDesignationDataListThunk
-} from '../DesignationMaster/DesignationAction';
-import { statusMasterSlice } from '../StatusMaster/StatusComponentSlice';
+import { getDesignationDataListThunk } from '../DesignationMaster/DesignationAction';
+
 import { getStatusData } from '../StatusMaster/StatusComponentAction';
 import QueryTypeService from '../../../services/MastersService/QueryTypeService';
-import { toast } from 'react-toastify';
 
 function CreateDynamicForm() {
   const [notify, setNotify] = useState(null);
@@ -106,7 +101,7 @@ function CreateDynamicForm() {
   );
 
   const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 13)
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 13)
   );
   const dropdown = useSelector(
     (DynamicFormDropDownSlice) =>
@@ -115,33 +110,23 @@ function CreateDynamicForm() {
 
   const statusData = useSelector((statusMasterSlice) =>
     statusMasterSlice.statusMaster.filterStatusData
-      .filter((d) => d.is_active == 1)
+      .filter((d) => d.is_active === 1)
       .map((d) => ({ value: d.id, label: d.status }))
   );
 
   const [rows, setRows] = useState([mainJson]);
-  const [labelNames, setLabelNames] = useState([]);
+  const labelNames = [];
 
   const [formShow, setFormShow] = useState(false);
 
-  const [index, setIndex] = useState({ index: 0 });
-
-  const [inputDataSource, setInputDataSource] = useState();
-
-  
-
-  const [radioSelect, setRadioSelect] = useState();
-
-  const [userData, setUserData] = useState(null);
+  // const [inputDataSource, setInputDataSource] = useState();
 
   const [selectedValue, setSelectedValue] = useState();
 
   const [inputLabelValue, setInputLabelValue] = useState();
   const [minDate, setMinDate] = useState();
 
-  const [selectedValueErr, setSelectedValueErr] = useState('');
-
-  const [selectMasterValue, setSelectMasterValue] = useState();
+  // const [selectMasterValue, setSelectMasterValue] = useState();
 
   const handleChange = (idx, type) => async (e) => {
     if (e.target.name === 'inputDateRange1') {
@@ -152,20 +137,14 @@ function CreateDynamicForm() {
     }
 
     if (e.target.name === 'inputDataSource') {
-      setSelectMasterValue(e.target.value);
+      // setSelectMasterValue(e.target.value);
     }
 
     if (selectedValue) {
-      setSelectedValueErr('');
     } else {
-      setSelectedValueErr('Select Data Source');
     }
 
     setFormShow(false);
-
-    setIndex({ index: idx });
-
-    const { name, value } = e.target;
 
     const notAllowed = [
       'ref_id',
@@ -207,7 +186,7 @@ function CreateDynamicForm() {
     if (
       !notAllowed.includes(
         e.target.value
-          .replace(/[&\/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, '_')
+          .replace(/[&/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, '_')
           .toLowerCase()
       )
     ) {
@@ -215,7 +194,7 @@ function CreateDynamicForm() {
         rows[idx].inputWidth = e.target.value;
       } else if (e.target.name === 'inputType') {
         rows[idx].inputType = e.target.value;
-        if (e.target.value == 'date') {
+        if (e.target.value === 'date') {
           rows[idx].inputFormat = 'y-MM-dd';
         } else {
           rows[idx].inputFormat = null;
@@ -223,7 +202,7 @@ function CreateDynamicForm() {
       } else if (e.target.name === 'inputLabel') {
         rows[idx].inputLabel = e.target.value;
         rows[idx].inputName = e.target.value
-          .replace(/[&\/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, '_')
+          .replace(/[&/\\#,+()$~%.'":*?<>{}^&*!@ ]/g, '_')
           .toLowerCase();
 
         labelNames[idx] = rows[idx].inputName;
@@ -235,19 +214,19 @@ function CreateDynamicForm() {
         rows[idx].inputMultiple = e.target.checked;
       } else if (e.target.name === 'inputDataOption') {
         rows[idx].inputOption = e.target.value;
-      } else if (e.target.name == 'inputRange') {
+      } else if (e.target.name === 'inputRange') {
         rows[idx].inputAddOn.inputRange = e.target.value;
-      } else if (e.target.name == 'inputRangeMin') {
+      } else if (e.target.name === 'inputRangeMin') {
         rows[idx].inputAddOn.inputRangeMin = e.target.value;
-      } else if (e.target.name == 'inputRangeMax') {
+      } else if (e.target.name === 'inputRangeMax') {
         rows[idx].inputAddOn.inputRangeMax = e.target.value;
-      } else if (e.target.name == 'inputDateRange1') {
+      } else if (e.target.name === 'inputDateRange1') {
         rows[idx].inputAddOn.inputDateRange1 = e.target.value;
-      } else if (e.target.name == 'inputDateRange2') {
+      } else if (e.target.name === 'inputDateRange2') {
         rows[idx].inputAddOn.inputDateRange2 = e.target.value;
-      } else if (e.target.name == 'datetime-local') {
+      } else if (e.target.name === 'datetime-local') {
         rows[idx].inputAddOn.inputDateTime = e.target.value;
-      } else if (e.target.name == 'inputFormat') {
+      } else if (e.target.name === 'inputFormat') {
         rows[idx].inputFormat = e.target.value;
       }
 
@@ -262,8 +241,8 @@ function CreateDynamicForm() {
         await new UserService()
           .getUserForMyTickets(inputRequired)
           .then((res) => {
-            if (res.status === 200) {
-              const data = res.data.data.filter((d) => d.is_active === 1);
+            if (res?.status === 200) {
+              const data = res?.data?.data.filter((d) => d.is_active === 1);
 
               for (const key in data) {
                 tempUserData.push({
@@ -280,9 +259,9 @@ function CreateDynamicForm() {
               const aa = tempUserData.sort(function (a, b) {
                 return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
               });
-              setUserData(aa);
+
               rows[idx].inputAddOn.inputDataSourceData = aa;
-              setInputDataSource(aa);
+              // setInputDataSource(aa);
             }
           });
       } else if (
@@ -290,69 +269,66 @@ function CreateDynamicForm() {
         e.target.value === 'city'
       ) {
         rows[idx].inputAddOn.inputDataSourceData = AllcityDropDownData;
-        setInputDataSource(AllcityDropDownData);
       } else if (
         e.target.name === 'inputDataSource' &&
         e.target.value === 'role'
       ) {
         rows[idx].inputAddOn.inputDataSourceData = roleDropdown;
-        setInputDataSource(roleDropdown);
+        // setInputDataSource(roleDropdown);
       } else if (
         e.target.name === 'inputDataSource' &&
         e.target.value === 'country'
       ) {
         rows[idx].inputAddOn.inputDataSourceData = CountryData;
-        setInputDataSource(CountryData);
+        // setInputDataSource(CountryData);
       } else if (
         e.target.name === 'inputDataSource' &&
         e.target.value === 'state'
       ) {
         rows[idx].inputAddOn.inputDataSourceData = stateDropdown;
-        setInputDataSource(stateDropdown);
+        // setInputDataSource(stateDropdown);
       } else if (
         e.target.name === 'inputDataSource' &&
         e.target.value === 'designation'
       ) {
         rows[idx].inputAddOn.inputDataSourceData = designationDropdown;
-        setInputDataSource(designationDropdown);
+        // setInputDataSource(designationDropdown);
       } else if (
         e.target.name === 'inputDataSource' &&
         e.target.value === 'customer'
       ) {
         rows[idx].inputAddOn.inputDataSourceData = CustomerData;
-        setInputDataSource(CustomerData);
+        // setInputDataSource(CustomerData);
       } else if (
         e.target.name === 'inputDataSource' &&
         e.target.value === 'department'
       ) {
         rows[idx].inputAddOn.inputDataSourceData = departmentDropdown;
-        setInputDataSource(departmentDropdown);
+        // setInputDataSource(departmentDropdown);
       } else if (
         e.target.name === 'inputDataSource' &&
         e.target.value === 'status'
       ) {
         rows[idx].inputAddOn.inputDataSourceData = statusData;
-        setInputDataSource(statusData);
+        // setInputDataSource(statusData);
       } else if (
         e.target.name === 'inputDataSource' &&
         e.target.value === 'query'
       ) {
         await new QueryTypeService().getQueryType().then((res) => {
-          if (res.status === 200) {
-            const data = res.data.data
-              .filter((d) => d.is_active == 1)
+          if (res?.status === 200) {
+            const data = res?.data?.data
+              .filter((d) => d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.query_type_name }));
 
             rows[idx].inputAddOn.inputDataSourceData = data;
 
-            setInputDataSource(data);
+            // setInputDataSource(data);
           }
         });
       }
 
       const test = e.target.value;
-
-      const dropDownID = selectedValue && selectedValue;
 
       const newValue = e.target.name;
 
@@ -364,35 +340,20 @@ function CreateDynamicForm() {
         await new DynamicFormDropdownMasterService()
           .getDropdownById(dropDownValue)
           .then((res) => {
-            if (res.status == 200) {
-              if (res.data.status == 1) {
-                const dropNames = res.data.data;
-                setRadioSelect(dropNames.master.dropdown_name);
+            if (res.status === 200) {
+              if (res.data.status === 1) {
                 const temp = [];
                 res.data.data.dropdown.forEach((d) => {
                   temp.push({ label: d.label, value: d.id });
                 });
                 rows[idx].inputAddOn.inputRadio = temp;
-                setInputDataSource(temp);
+                // setInputDataSource(temp);
                 rows[idx].inputAddOn.inputOnChangeSource = dropDownValue;
               }
             }
           });
       }
     }
-  };
-
-  const handleUserSelect = (selectedOptions, index) => {
-    const selectedUserIds = selectedOptions.value;
-
-    const updatedAssign = [...rows];
-
-    updatedAssign[index] = {
-      ...updatedAssign[index],
-      inputType: selectedUserIds
-    };
-
-    setRows(updatedAssign);
   };
 
   const handleAddRow = async () => {
@@ -466,25 +427,10 @@ function CreateDynamicForm() {
       setLabelErr('');
     }
 
-    setFormShow(formShow == true ? false : true);
+    setFormShow(formShow === true ? false : true);
   };
 
   const handleSubmit = async (e) => {
-    if (
-      rows.some(
-        (row) =>
-          row.inputType === 'checkbox' ||
-          row.inputType === 'select-master' ||
-          row.inputType === 'radio' ||
-          row.inputType === 'select'
-      ) &&
-      !selectedValue
-    ) {
-      toast.error('Please select Data Source');
-      e.preventDefault();
-      return false;
-    }
-    console.log(rows);
     e.preventDefault();
 
     const data = {
@@ -518,37 +464,7 @@ function CreateDynamicForm() {
     });
   };
 
-  const loadData = async () => {
-    //     if (res.status == 200) {
-    //         if (res.data.status == 1) {
-    //             // const temp=[];
-    //             // res.data.data.forEach(d=>{
-    //             //     temp.push({'label':d.dropdown_name,'value':d.id});
-    //             // })
-    //             // setDropdown(temp);
-    //             setDropdown(res.data.data.map((d) => ({ label: d.dropdown_name, value: d.id })))
-    //         }
-    //     }
-    // })
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //     if (res.status === 200) {
-    //     //   setShowLoaderModal(false);
-    //       if (res.data.status == 1) {
-    //         const getRoleId = sessionStorage.getItem("role_id");
-    //         setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //       }
-    //     }
-    //   });
-  };
-
-  const [dateValue, setDateValue] = useState(new Date());
-  const onChangeDate = (value) => {
-    setDateValue(new Date(value));
-  };
-
   useEffect(() => {
-    loadData();
-
     dispatch(getAllRoles());
     dispatch(departmentData());
 
@@ -574,7 +490,15 @@ function CreateDynamicForm() {
     }
     dispatch(getCustomerData());
     dispatch(getStatusData());
-  }, [rows]);
+  }, [
+    AllcityDropDownData.length,
+    checkRole.length,
+    designationDropdown.length,
+    dispatch,
+    dropdown.length,
+    rows,
+    stateDropdown.length
+  ]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
@@ -823,8 +747,8 @@ function CreateDynamicForm() {
 
                                 <td>
                                   {(rows[idx].inputType === 'select-master' ||
-                                    rows[idx].inputType == 'select' ||
-                                    rows[idx].inputType == 'checkbox') && (
+                                    rows[idx].inputType === 'select' ||
+                                    rows[idx].inputType === 'checkbox') && (
                                     <input
                                       type="checkbox"
                                       name="inputMultiple"
@@ -835,7 +759,7 @@ function CreateDynamicForm() {
                                 </td>
 
                                 <td>
-                                  {rows[idx].inputType == 'date' && (
+                                  {rows[idx].inputType === 'date' && (
                                     <select
                                       className="form-control form-control-sm"
                                       required
@@ -858,7 +782,7 @@ function CreateDynamicForm() {
                                 </td>
 
                                 <td>
-                                  {rows[idx].inputType == 'select-master' && (
+                                  {rows[idx].inputType === 'select-master' && (
                                     <span>
                                       <select
                                         className="form-control form-control-sm"
@@ -883,7 +807,7 @@ function CreateDynamicForm() {
                                     </span>
                                   )}
 
-                                  {rows[idx].inputType == 'radio' && (
+                                  {rows[idx].inputType === 'radio' && (
                                     <span>
                                       <select
                                         className="form-control form-control-sm"
@@ -914,7 +838,7 @@ function CreateDynamicForm() {
                                     </span>
                                   )}
 
-                                  {rows[idx].inputType == 'checkbox' && (
+                                  {rows[idx].inputType === 'checkbox' && (
                                     <span>
                                       <select
                                         className="form-control form-control-sm"
@@ -927,7 +851,7 @@ function CreateDynamicForm() {
                                         {dropdown &&
                                           dropdown.map((d, i) => {
                                             return (
-                                              <option required value={d.id}>
+                                              <option value={d.id}>
                                                 {d.dropdown_name}
                                               </option>
                                             );
@@ -941,7 +865,7 @@ function CreateDynamicForm() {
                                     </span>
                                   )}
 
-                                  {rows[idx].inputType == 'select' && (
+                                  {rows[idx].inputType === 'select' && (
                                     <span>
                                       <select
                                         className="form-control form-control-sm"
@@ -1191,7 +1115,7 @@ function CreateDynamicForm() {
                                 </td>
 
                                 <td>
-                                  {idx == 0 && (
+                                  {idx === 0 && (
                                     <button
                                       type="button"
                                       className="btn btn-sm btn-outline-primary pull-left"
@@ -1201,7 +1125,7 @@ function CreateDynamicForm() {
                                     </button>
                                   )}
 
-                                  {idx != 0 && (
+                                  {idx !== 0 && (
                                     <button
                                       type="button"
                                       className="btn btn-outline-danger btn-sm"
@@ -1257,15 +1181,14 @@ function CreateDynamicForm() {
             {formShow && rows && (
               <div className="row">
                 {rows.map((data, index) => {
-                  {
-                  }
+                  let range;
+
                   if (data.inputType && data.inputName && data.inputLabel) {
                     if (data.inputAddOn.inputRange) {
-                      var range = data.inputAddOn.inputRange.split('|');
+                      range = data.inputAddOn.inputRange.split('|');
                     } else if (data.inputAddOn.inputDateRange) {
-                      var range = data.inputAddOn.inputDateRange.split('|');
+                      range = data.inputAddOn.inputDateRange.split('|');
                     }
-
                     return (
                       <div key={index} className={`${data.inputWidth} mt-2`}>
                         <label>
@@ -1469,7 +1392,6 @@ function CreateDynamicForm() {
                         {data.inputType === 'decimal' && (
                           <div className="d-flex justify-content-between">
                             <div class="form-group">
-                              {/* <label>Number:</label> */}
                               <input
                                 type="number"
                                 id="inputRangeMin"
@@ -1478,20 +1400,6 @@ function CreateDynamicForm() {
                                 min={data.inputAddOn.inputRangeMin}
                               />
                             </div>
-
-                            {/* <div className="form-group">
-                              <label>Max Number:</label>
-                              <input
-                                type="number"
-                                // onChange={handleChange(idx)}
-
-                                id="inputRangeMax"
-                                name="inputRangeMax"
-                                className="form-control form-control-sm"
-                                defaultValue={data.inputAddOn.inputRangeMax}
-                                max={data.inputAddOn.inputRangeMax}
-                              />
-                            </div> */}
                           </div>
                         )}
 
@@ -1532,16 +1440,15 @@ function CreateDynamicForm() {
                         )}
                       </div>
                     );
+                  } else {
+                    return null;
                   }
                 })}
               </div>
             )}
           </div>{' '}
-          {/*ROW*/}
         </div>
-        {/*CONTAINER*/}
       </div>
-      {/*BODY*/}
     </>
   );
 }
