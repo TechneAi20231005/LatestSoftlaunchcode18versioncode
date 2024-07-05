@@ -1,74 +1,72 @@
-import React, { forwardRef } from "react";
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
-import Select from "react-select";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
+import React from 'react';
+import { Link } from 'react-router-dom';
 
-
+import Select from 'react-select';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
 export function ButtonComponent(props) {
   const getIcon = (type, color, size) => {
     const fontSize = size ? size : 15;
     switch (type) {
-      case "Add":
+      case 'Add':
         return (
           <i
-            className={`icofont-plus-circle text-${color ? color : "white"}`}
-            style={({ marginRight: "25px" }, { fontSize: fontSize })}
+            className={`icofont-plus-circle text-${color ? color : 'white'}`}
+            style={({ marginRight: '25px' }, { fontSize: fontSize })}
           ></i>
         );
         break;
-      case "Edit":
+      case 'Edit':
         return (
           <i
-            className={`icofont-edit text-${color ? color : "white"}`}
-            style={({ marginRight: "25px" }, { fontSize: fontSize })}
+            className={`icofont-edit text-${color ? color : 'white'}`}
+            style={({ marginRight: '25px' }, { fontSize: fontSize })}
           ></i>
         );
         break;
-      case "Cancel":
+      case 'Cancel':
         return (
           <i
-            className={`icofont-arrow-left text-${color ? color : "white"}`}
-            style={({ marginRight: "25px" }, { fontSize: fontSize })}
+            className={`icofont-arrow-left text-${color ? color : 'white'}`}
+            style={({ marginRight: '25px' }, { fontSize: fontSize })}
           ></i>
         );
         break;
-      case "Delete":
+      case 'Delete':
         return (
           <i
-            className={`icofont-ui-delete text-${color ? color : "white"}`}
-            style={({ marginRight: "25px" }, { fontSize: fontSize })}
+            className={`icofont-ui-delete text-${color ? color : 'white'}`}
+            style={({ marginRight: '25px' }, { fontSize: fontSize })}
           ></i>
         );
         break;
-      case "Task":
+      case 'Task':
         return (
           <i
-            class={`icofont-tasks text-${color ? color : "white"}`}
-            style={({ marginRight: "25px" }, { fontSize: fontSize })}
+            class={`icofont-tasks text-${color ? color : 'white'}`}
+            style={({ marginRight: '25px' }, { fontSize: fontSize })}
           ></i>
         );
-      case "View":
+      case 'View':
         return (
           <i
-            class={`icofont-paper text-${color ? color : "white"}`}
-            style={({ marginRight: "25px" }, { fontSize: fontSize })}
+            class={`icofont-paper text-${color ? color : 'white'}`}
+            style={({ marginRight: '25px' }, { fontSize: fontSize })}
           ></i>
         );
-      case "Detail":
+      case 'Detail':
         return (
           <i
-            class={`icofont-external text-${color ? color : "white"}`}
-            style={({ marginRight: "25px" }, { fontSize: fontSize })}
+            class={`icofont-external text-${color ? color : 'white'}`}
+            style={({ marginRight: '25px' }, { fontSize: fontSize })}
           ></i>
         );
       default:
-      case "Excel":
+      case 'Excel':
         return (
           <i
-            class={`icofont-file-excel text-${color ? color : "white"}`}
-            style={({ marginRight: "25px" }, { fontSize: fontSize })}
+            class={`icofont-file-excel text-${color ? color : 'white'}`}
+            style={({ marginRight: '25px' }, { fontSize: fontSize })}
           ></i>
         );
         break;
@@ -77,7 +75,7 @@ export function ButtonComponent(props) {
 
   return (
     <>
-      {props.type === "Link" && (
+      {props.type === 'Link' && (
         <Link
           to={props.url}
           className={`btn btn-${props.buttonColor} text-${props.textColor}`}
@@ -88,13 +86,13 @@ export function ButtonComponent(props) {
         </Link>
       )}
 
-      {props.type === "submit" && (
+      {props.type === 'submit' && (
         <button
           type="submit"
           to={props.url}
           className="btn btn-primary"
           title={props.title}
-          style={{ background: "#484c7f" }}
+          style={{ background: '#484c7f' }}
           disabled={props.disabled ? true : false}
         >
           {props.icon &&
@@ -103,7 +101,7 @@ export function ButtonComponent(props) {
         </button>
       )}
 
-      {props.type === "button" && (
+      {props.type === 'button' && (
         <button
           type="button"
           className={`btn btn-sm btn-${props.buttonColor} text-${props.textColor}`}
@@ -200,15 +198,11 @@ export function DropdownComponent(props) {
         name={props.name}
         required={props.required === true ? true : false}
         onChange={props.getInputValue}
-        // value={props.selectedValue ?props.selectedValue : ""}  
+        // value={props.selectedValue ?props.selectedValue : ""}
         placeholder={props.placeholder}
-
-   
         defaultValue={props.selectedValue} // Set the selected value of the dropdown
       >
-        {props.selectedValue == "" &&
-        <option> Select Type </option>
-          }
+        {props.selectedValue == '' && <option> Select Type </option>}
         {props.data.map((value, index) => {
           return (
             <option key={index} value={value.value}>
@@ -223,7 +217,7 @@ export function DropdownComponent(props) {
 
 export const SearchComponent = React.forwardRef((props, ref) => {
   const clearInput = () => {
-    ref.current.value = ""; // Clear the input value
+    ref.current.value = ''; // Clear the input value
   };
   return (
     <div className="card card-body">
@@ -256,12 +250,10 @@ export const SearchComponent = React.forwardRef((props, ref) => {
             {props.buttonName2}
           </button>
           <ExportToExcel
-              className={props.className3}
-               apiData={props.apiData} 
-              fileName={props.fileName}
-            />
-
-
+            className={props.className3}
+            apiData={props.apiData}
+            fileName={props.fileName}
+          />
         </div>
       </div>
     </div>
@@ -271,7 +263,7 @@ export const SearchComponent = React.forwardRef((props, ref) => {
 export function ReactSelectComponent(props) {
   const options = props.data.map((value, index) => ({
     value: value.value,
-    label: value.label,
+    label: value.label
   }));
 
   return (

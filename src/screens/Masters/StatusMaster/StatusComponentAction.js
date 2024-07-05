@@ -1,8 +1,8 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import StatusService from "../../../services/MastersService/StatusService";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import StatusService from '../../../services/MastersService/StatusService';
 
 export const getStatusData = createAsyncThunk(
-  "getStatusData",
+  'getStatusData',
   async (config, thunkapi) => {
     try {
       const service = new StatusService();
@@ -15,13 +15,12 @@ export const getStatusData = createAsyncThunk(
   }
 );
 export const postStatusData = createAsyncThunk(
-  "postStatusData",
+  'postStatusData',
   async (config, thunkapi) => {
     try {
       const service = new StatusService();
       const response = await service.postStatus(config);
 
-      
       return response;
     } catch (error) {
       throw error;
@@ -30,10 +29,8 @@ export const postStatusData = createAsyncThunk(
 );
 
 export const updateStatusData = createAsyncThunk(
-  "updateStatusData",
+  'updateStatusData',
   async (config, thunkapi) => {
-
-    
     try {
       const service = new StatusService();
       const response = await service.updateStatus(config.id, config.payload);
