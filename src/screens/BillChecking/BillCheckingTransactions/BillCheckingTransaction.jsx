@@ -31,6 +31,7 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import { getVendorMasterData } from '../Slices/VendorMasterAction';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function BillCheckingTransaction() {
   const location = useLocation();
@@ -38,7 +39,7 @@ function BillCheckingTransaction() {
 
   const [notify, setNotify] = useState();
   const [exportData, setExportData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const dispatch = useDispatch();
   const AllBillCheckingData = useSelector(
@@ -781,6 +782,8 @@ function BillCheckingTransaction() {
   const loadData = async (e) => {
     const data = [];
     var temprory = [];
+    setIsLoading(null);
+
     setIsLoading(true);
 
     await new BillCheckingService().getBillCheckData().then((res) => {
@@ -1138,32 +1141,32 @@ function BillCheckingTransaction() {
     handleSearch();
   }, [handleSearch, searchTerm]);
 
-  function LoaderComponent() {
-    return (
-      // Container to center-align the spinner and loading text
-      <div style={{ textAlign: 'center', marginTop: '50px' }}>
-        {/* Spinner element with custom styling */}
-        <Spinner
-          animation="border"
-          role="status"
-          style={{
-            width: '100px',
-            height: '100px',
-            borderWidth: '5px',
-            color: '#484c7f',
-            marginBottom: '10px'
-          }}
-        >
-          {/* Visually hidden loading text for accessibility */}
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
-        {/* Loading text displayed below the spinner */}
-        <div style={{ color: '#484c7f', fontSize: '16px', fontWeight: 'bold' }}>
-          Loading...
-        </div>
-      </div>
-    );
-  }
+  // function LoaderComponent() {
+  //   return (
+  //     // Container to center-align the spinner and loading text
+  //     <div style={{ textAlign: 'center', marginTop: '50px' }}>
+  //       {/* Spinner element with custom styling */}
+  //       <Spinner
+  //         animation="border"
+  //         role="status"
+  //         style={{
+  //           width: '100px',
+  //           height: '100px',
+  //           borderWidth: '5px',
+  //           color: '#484c7f',
+  //           marginBottom: '10px'
+  //         }}
+  //       >
+  //         {/* Visually hidden loading text for accessibility */}
+  //         <span className="visually-hidden">Loading...</span>
+  //       </Spinner>
+  //       {/* Loading text displayed below the spinner */}
+  //       <div style={{ color: '#484c7f', fontSize: '16px', fontWeight: 'bold' }}>
+  //         Loading...
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="container-xxl">
@@ -1678,25 +1681,25 @@ function BillCheckingTransaction() {
       <div className="card mt-2">
         {/* <div className="card-body"> */}
         {/* <div className="row clearfix g-3"> */}
-        {isLoading === true ? (
-          <LoaderComponent />
-        ) : (
-          <div className="col-sm-12">
-            {AllBillCheckingData && (
-              <DataTable
-                columns={columns}
-                data={filteredData}
-                pagination
-                selectableRows={false}
-                defaultSortAsc={false}
-                fixedHeader={true}
-                fixedHeaderScrollHeight="900px"
-                className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                highlightOnHover={true}
-              />
-            )}
-          </div>
-        )}
+
+        <div className="col-sm-12">
+          {AllBillCheckingData && (
+            <DataTable
+              columns={columns}
+              data={filteredData}
+              pagination
+              progressComponent={<TableLoadingSkelton />}
+              progressPending={isLoading}
+              selectableRows={false}
+              defaultSortAsc={false}
+              fixedHeader={true}
+              fixedHeaderScrollHeight="900px"
+              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+              highlightOnHover={true}
+            />
+          )}
+        </div>
+
         {/* </div> */}
       </div>
     </div>

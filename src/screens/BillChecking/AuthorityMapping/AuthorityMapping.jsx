@@ -31,6 +31,7 @@ import {
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 const AuthorityMapping = () => {
   //initial state
@@ -44,6 +45,11 @@ const AuthorityMapping = () => {
   const authorities = useSelector(
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.getModuleSettingData
+  );
+
+  const isLoading = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.isLoading
   );
   const userData = useSelector(
     (MyTicketComponentSlice) =>
@@ -509,6 +515,8 @@ const AuthorityMapping = () => {
                   defaultSortField="title"
                   pagination
                   data={filteredData}
+                  progressComponent={<TableLoadingSkelton />}
+                  progressPending={isLoading}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
