@@ -72,8 +72,9 @@ function localReducer(state, action) {
   }
 }
 
-function ReviewedTestDraftDetails() {
+function ReviewedTestDraftDetails(props) {
   const dispatch = useDispatch();
+  const clearAllFilter = props.clearData;
 
   const { allReviewDraftTestListData, isLoading, filterReviewedDraftTestList } =
     useSelector((state) => state?.downloadFormat);
@@ -116,6 +117,9 @@ function ReviewedTestDraftDetails() {
     updated_at: 'updated_at'
   };
   const handleFilterClick = (event, column, name, type, id) => {
+    if (clearAllFilter === true) {
+      localDispatch({ type: 'SET_FILTERS', payload: [] });
+    }
     const filterKeyMap = {
       test_plan_id: 'test_plan_ids',
       reviewer_name: 'reviewer_names',
@@ -246,6 +250,7 @@ function ReviewedTestDraftDetails() {
   };
 
   const handleApplyFilter = async () => {
+    props?.setClearData(false);
     const newFilter =
       filterType === 'is not between' || filterType === 'is between'
         ? {
@@ -314,6 +319,7 @@ function ReviewedTestDraftDetails() {
   );
 
   const handleApplyButton = async () => {
+    props?.setClearData(false);
     const newFilter = {
       column: filterColumnId,
       column_name: filterColumn,

@@ -211,6 +211,9 @@ function ReviewedTestDraftComponent() {
   };
 
   const handleFilterClick = (event, column, name, type, id) => {
+    if (clearData === true) {
+      localDispatch({ type: 'SET_FILTERS', payload: [] });
+    }
     const filterKeyMap = {
       module_name: 'module_names',
       sub_module_name: 'sub_module_names',
@@ -362,6 +365,7 @@ function ReviewedTestDraftComponent() {
   };
 
   const handleApplyFilter = async () => {
+    setClearData(false);
     const newFilter =
       filterType === 'is not between' || filterType === 'is between'
         ? {
@@ -431,6 +435,8 @@ function ReviewedTestDraftComponent() {
     item.name.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const handleApplyButton = async () => {
+    setClearData(false);
+
     const newFilter = {
       column: filterColumnId,
       column_name: filterColumn,
@@ -1264,8 +1270,10 @@ function ReviewedTestDraftComponent() {
       })
     );
   }, [paginationData.rowPerPage, paginationData.currentPage]);
+  const [clearData, setClearData] = useState(false);
 
   const handleButtonClick = () => {
+    setClearData(true);
     dispatch(
       getByTestPlanIDReviewedListThunk({
         id: id,
@@ -1319,10 +1327,7 @@ function ReviewedTestDraftComponent() {
           );
         }}
       />
-      {console.log(
-        'allReviewDraftTestListDataTotal',
-        allReviewDraftTestListDataTotal
-      )}
+
       <Container fluid className="employee_joining_details_container">
         <h5 className="mb-0 text-primary">Test Cases</h5>
         <hr className="primary_divider mt-1" />

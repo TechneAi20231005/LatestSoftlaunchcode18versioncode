@@ -89,6 +89,8 @@ function localReducer(state, action) {
 }
 
 function TestDraftDetails(props) {
+  const clearAllFilter = props.clearData;
+
   const dispatch = useDispatch();
 
   const {
@@ -197,8 +199,10 @@ function TestDraftDetails(props) {
       }
     });
   };
-
   const handleFilterClick = (event, column, name, type, id) => {
+    if (clearAllFilter === true) {
+      localDispatch({ type: 'SET_FILTERS', payload: [] });
+    }
     const filterKeyMap = {
       module_name: 'module_names',
       sub_module_name: 'sub_module_names',
@@ -360,6 +364,7 @@ function TestDraftDetails(props) {
   };
 
   const handleApplyFilter = async () => {
+    props?.setClearData(false);
     const newFilter =
       filterType === 'is not between' || filterType === 'is between'
         ? {
@@ -395,6 +400,7 @@ function TestDraftDetails(props) {
   };
 
   const handleApplyButton = async () => {
+    props?.setClearData(false);
     const newFilter = {
       column: filterColumnId,
       column_name: filterColumn,
@@ -414,6 +420,7 @@ function TestDraftDetails(props) {
           filter_testcase_data: updatedFilters
         })
       );
+
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
       localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
       localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });

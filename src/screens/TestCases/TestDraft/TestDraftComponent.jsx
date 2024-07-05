@@ -51,6 +51,7 @@ export default function TestDraftComponent({}) {
     modalHeader: ''
   });
 
+  const [clearData, setClearData] = useState(false);
   const handleResetLocationState = () => {
     setState(null);
     sessionStorage.removeItem('locationState');
@@ -139,8 +140,9 @@ export default function TestDraftComponent({}) {
     { title: 'Created At', field: 'created_at' },
     { title: 'Updated At', field: 'updated_at' }
   ];
-
   const handleButtonClick = () => {
+    setClearData(true);
+
     currentTab === 'test_summary'
       ? dispatch(
           getDraftTestCaseList({
@@ -285,10 +287,15 @@ export default function TestDraftComponent({}) {
         />
       </div>
       <RenderIf render={currentTab === 'test_summary'}>
-        <TestDraftDetails />
+        <TestDraftDetails clearData={clearData} setClearData={setClearData} />
       </RenderIf>
       <RenderIf render={currentTab === 'review_test_draft'}>
-        {currentTab === 'review_test_draft' && <ReviewedTestDraftDetails />}
+        {currentTab === 'review_test_draft' && (
+          <ReviewedTestDraftDetails
+            clearData={clearData}
+            setClearData={setClearData}
+          />
+        )}
       </RenderIf>
 
       {downloadmodal.showModal === true && (

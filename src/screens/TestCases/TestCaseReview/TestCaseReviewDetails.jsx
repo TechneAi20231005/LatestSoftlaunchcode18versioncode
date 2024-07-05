@@ -1120,6 +1120,9 @@ function TestCaseReviewDetails() {
   ];
 
   const handleFilterClick = (event, column, name, type, id) => {
+    if (clearData === true) {
+      localDispatch({ type: 'SET_FILTERS', payload: [] });
+    }
     const filterKeyMap = {
       module_name: 'module_names',
       sub_module_name: 'sub_module_names',
@@ -1267,6 +1270,7 @@ function TestCaseReviewDetails() {
   };
 
   const handleApplyFilter = async () => {
+    setClearData(false);
     const newFilter =
       filterType === 'is not between' || filterType === 'is between'
         ? {
@@ -1325,6 +1329,7 @@ function TestCaseReviewDetails() {
   };
 
   const handleApplyButton = async () => {
+    setClearData(false);
     const newFilter = {
       column: filterColumnId,
       column_name: filterColumn,
@@ -1351,12 +1356,16 @@ function TestCaseReviewDetails() {
     } catch (error) {}
   };
 
+  const [clearData, setClearData] = useState(false);
+
   const handleButtonClick = () => {
+    setClearData(true);
     dispatch(
       getByTestPlanIDListThunk({
         id: id,
         limit: paginationData.rowPerPage,
-        page: paginationData.currentPage
+        page: paginationData.currentPage,
+        filter_testcase_data: []
       })
     );
   };
