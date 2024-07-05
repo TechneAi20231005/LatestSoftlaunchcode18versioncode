@@ -1,9 +1,11 @@
-import React from "react";
+import React from 'react';
 
 const withTokenExpirationCheck = (WrappedComponent) => {
   return function WithTokenExpirationCheck(props) {
     const checkTokenExpiration = () => {
-      const tokenExpirationTime = sessionStorage.getItem("jwt_token_expiration");
+      const tokenExpirationTime = sessionStorage.getItem(
+        'jwt_token_expiration'
+      );
       const currentTime = new Date().getTime();
       return currentTime > Number(tokenExpirationTime);
     };

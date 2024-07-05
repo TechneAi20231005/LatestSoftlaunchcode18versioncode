@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
@@ -22,7 +22,6 @@ function ModuleComponent() {
   const [data, setData] = useState([]);
   const [exportData, setExportData] = useState();
   const [isLoading, setIsLoading] = useState(false);
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [checkRole, setCheckRole] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
@@ -30,10 +29,10 @@ function ModuleComponent() {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(data, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [data, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -80,10 +79,10 @@ function ModuleComponent() {
       sortable: false,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary">Active</span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger">Deactive</span>
           )}
         </div>
@@ -128,17 +127,14 @@ function ModuleComponent() {
     }
   ];
 
-  const loadData = async () => {
-    setShowLoaderModal(null);
+  const loadData = useCallback(async () => {
     setIsLoading(true);
-    setShowLoaderModal(true);
+
     const data = [];
     await new ModuleService()
       .getModule()
       .then((res) => {
         if (res.status === 200) {
-          setShowLoaderModal(false);
-
           let counter = 1;
           const temp = res.data.data;
           for (const key in temp) {
@@ -166,16 +162,15 @@ function ModuleComponent() {
           for (const key in data) {
             exportData.push({
               SrNo: exportData.length,
-              // id: data[key].id,
+
               module_name: data[key].module_name,
               project_name: data[key].project_name,
-              is_active: data[key].is_active == 1 ? 'Active' : 'Deactive',
+              is_active: data[key].is_active === 1 ? 'Active' : 'Deactive',
               remark: data[key].remark,
               updated_at: data[key].updated_at,
               updated_by: data[key].updated_by,
               created_by: temp[key].created_by,
 
-              updated_at: temp[key].updated_at,
               description: data[key].description
             });
           }
@@ -195,22 +190,20 @@ function ModuleComponent() {
 
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
-        setShowLoaderModal(false);
-
-        if (res.data.status == 1) {
+        if (res.data.status === 1) {
           const getRoleId = sessionStorage.getItem('role_id');
           setCheckRole(res.data.data.filter((d) => d.role_id === getRoleId));
         }
       }
     });
-  };
+  }, [roleId]);
 
   useEffect(() => {
     loadData();
     if (location && location.state) {
       setNotify(location.state.alert);
     }
-  }, []);
+  }, [loadData, location]);
 
   useEffect(() => {
     if (checkRole && checkRole[20]?.can_read === 0) {
@@ -225,7 +218,7 @@ function ModuleComponent() {
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -311,14 +304,14 @@ function ModuleDropdown(props) {
           onChange={props.getChangeValue}
           required={props.required ? true : false}
         >
-          {props.defaultValue == 0 && (
+          {props.defaultValue === 0 && (
             <option value="" selected>
               Select Module
             </option>
           )}
-          {props.defaultValue != 0 && <option value="">Select Module</option>}
+          {props.defaultValue !== 0 && <option value="">Select Module</option>}
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.module_name}

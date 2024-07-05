@@ -10,14 +10,14 @@ const CommentShimmer = () => {
           width: '100%',
           height: '20px',
           backgroundColor: '#eee',
-          marginBottom: '8px',
+          marginBottom: '8px'
         }}
       ></div>
       <div
         style={{
           width: '80%',
           height: '15px',
-          backgroundColor: '#eee',
+          backgroundColor: '#eee'
         }}
       ></div>
     </div>
