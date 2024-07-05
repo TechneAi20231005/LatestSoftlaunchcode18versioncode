@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Modal } from 'react-bootstrap';
 
 import { postTimerDataGroupActivity } from '../../../../services/TicketService/TaskService';
@@ -26,15 +26,13 @@ const GroupActivityModal = (props) => {
 
   const [taskOwners, setTaskOwners] = useState();
 
-  const loadData = () => {
-    const tempData = [];
-    props.data.taskOwners.map((d, i) => {
-      let a = { ...d, is_present: d.is_started === 'YES' ? 1 : 0 };
-
-      tempData.push(a);
+  const loadData = useCallback( () => {
+    const tempData = props.data.taskOwners.map((d, i) => {
+      return { ...d, is_present: d.is_started === 'YES' ? 1 : 0 };
     });
     setTaskOwners(tempData);
-  };
+  },[props.data.taskOwners]);
+
   const isPresentRef = useRef();
   const handleForm = async (e) => {
     e.preventDefault();
@@ -74,7 +72,7 @@ const GroupActivityModal = (props) => {
     if (props.data.time_status) {
       setTimerState(props.data.time_status);
     }
-  }, []);
+  }, [loadData, props.data.time_status]);
 
   return (
     <div>
@@ -152,7 +150,7 @@ const GroupActivityModal = (props) => {
                             ref={isPresentRef}
                             id={`${'is_present_' + i}`}
                             className="form-check-input"
-                            defaultChecked={d.is_present == 1}
+                            defaultChecked={d.is_present === 1}
                             onChange={(e) => handleCheckBox(e, i)}
                             disabled={
                               timerState === 'STOP' && d.is_present === 1

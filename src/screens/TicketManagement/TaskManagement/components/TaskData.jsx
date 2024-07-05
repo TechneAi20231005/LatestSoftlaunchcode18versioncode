@@ -179,7 +179,7 @@ export default function TaskData(props) {
     } else {
       setTimerState('START');
     }
-  }, []);
+  }, [props.data.time_status]);
   return (
     <div
       className="dd-handle mt-2"
@@ -494,6 +494,9 @@ export default function TaskData(props) {
                                 Regularization
                               </button>
                             );
+                          }else{
+                            return  null
+
                           }
                         })}
                     </li>
@@ -589,6 +592,8 @@ export default function TaskData(props) {
                             Regularization
                           </button>
                         );
+                      }else{
+                        return null
                       }
                     })}
                 </li>

@@ -1,21 +1,19 @@
-import React, { useEffect, useState, useRef } from "react";
-import Alert from "../../../components/Common/Alert";
-import PageHeader from "../../../components/Common/PageHeader";
-import Select from "react-select";
-import BillTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
-import { Link } from "react-router-dom";
-import { Modal, Dropdown } from "react-bootstrap";
-import { _base, userSessionData } from "../../../settings/constants";
-import BillPaymentServices from "../../../services/Bill Checking/BillPaymentsServices/BillPaymentsServices";
-import DataTable from "react-data-table-component";
-import { ExportBillPaymentFile } from "../../../components/Utilities/Table/ExportBillPaymentFile";
-import { Table } from "react-bootstrap";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import axios from "axios";
-import { _attachmentUrl } from "../../../settings/constants";
-import { Astrick } from "../../../components/Utilities/Style";
-import { useDispatch, useSelector } from "react-redux";
-import { getRoles } from "../../Dashboard/DashboardAction";
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import Alert from '../../../components/Common/Alert';
+import PageHeader from '../../../components/Common/PageHeader';
+import Select from 'react-select';
+import BillTransactionService from '../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService';
+
+import { Modal } from 'react-bootstrap';
+import { userSessionData } from '../../../settings/constants';
+import BillPaymentServices from '../../../services/Bill Checking/BillPaymentsServices/BillPaymentsServices';
+import DataTable from 'react-data-table-component';
+import { ExportBillPaymentFile } from '../../../components/Utilities/Table/ExportBillPaymentFile';
+import { Table } from 'react-bootstrap';
+
+import { Astrick } from '../../../components/Utilities/Style';
+import { useDispatch } from 'react-redux';
+import { getRoles } from '../../Dashboard/DashboardAction';
 
 const BillPayments = () => {
   const dispatch = useDispatch();
@@ -23,21 +21,20 @@ const BillPayments = () => {
   const [exportFilteredData, setExportFilteredData] = useState();
 
   const [notify, setNotify] = useState();
-  const roleId = sessionStorage.getItem("role_id");
 
   const [billTypeDropdown, setBillTypeDropdown] = useState(null);
-  const [data, setData] = useState();
+
   const [d, setD] = useState();
 
   const [modal, setModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
   const [modals, setModals] = useState({
     showModals: false,
-    modalsData: "",
-    modalsHeader: "",
+    modalsData: '',
+    modalsHeader: ''
   });
 
   const handleModal = (data) => {
@@ -50,15 +47,15 @@ const BillPayments = () => {
 
   const handleData = async (e, row) => {
     const payload = {
-      bill_type: row["bill Type Id"] ? row["bill Type Id"] : "",
-      vendor_id: row["Vendor id"],
-      date: tillDate,
+      bill_type: row['bill Type Id'] ? row['bill Type Id'] : '',
+      vendor_id: row['Vendor id'],
+      date: tillDate
     };
     await new BillTransactionService()
       .getBillDetailsOfPaymentGrid(userSessionData.userId, payload)
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status === 1) {
+          if (res?.data?.status === 1) {
             setD(res.data.data);
           }
         }
@@ -67,13 +64,13 @@ const BillPayments = () => {
 
   const currentDate = new Date();
   const year = currentDate.getFullYear();
-  const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-  const day = String(currentDate.getDate()).padStart(2, "0");
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
   const formattedDate = `${year}-${month}-${day}`;
 
   const columns = [
     {
-      name: "Action",
+      name: 'Action',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -83,98 +80,86 @@ const BillPayments = () => {
             className="btn btn-sm btn-info "
             data-bs-toggle="modal"
             data-bs-target="#depedit"
-            style={{ borderRadius: "20px" }}
+            style={{ borderRadius: '20px' }}
             onClick={(e) => {
               handleData(e, row);
               handleModals({
                 showModals: true,
-                modalsData: "",
-                modalsHeader: "",
+                modalsData: '',
+                modalsHeader: ''
               });
             }}
           >
             <i class="icofont-eye-alt text-white"></i>
           </button>
         </span>
-      ),
+      )
     },
     {
-      name: "Sr.No",
-      selector: (row) => row["Sr.No"],
+      name: 'Sr.No',
+      selector: (row) => row['Sr.No'],
 
-      sortable: false,
+      sortable: false
     },
     {
-      name: "Vendor Name",
-      selector: (row) => row["Vendor Name"],
-      sortable: false,
+      name: 'Vendor Name',
+      selector: (row) => row['Vendor Name'],
+      sortable: false
     },
 
-    { name: "Bill Type", selector: (row) => row["Bill Type"], sortable: false },
+    { name: 'Bill Type', selector: (row) => row['Bill Type'], sortable: false },
     {
-      name: "Payment Date",
-      selector: (row) => row["Payment Date"],
-      sortable: false,
+      name: 'Payment Date',
+      selector: (row) => row['Payment Date'],
+      sortable: false
     },
     {
-      name: "Payment Amount",
-      selector: (row) => row["Payment Amount"],
-      sortable: false,
+      name: 'Payment Amount',
+      selector: (row) => row['Payment Amount'],
+      sortable: false
     },
     {
-      name: "Vendor Bill No",
-      selector: (row) => row["Vendor Bill No"],
-      sortable: false,
+      name: 'Vendor Bill No',
+      selector: (row) => row['Vendor Bill No'],
+      sortable: false
     },
-    { name: "Bill ID", selector: (row) => row["Bill ID"], sortable: false },
+    { name: 'Bill ID', selector: (row) => row['Bill ID'], sortable: false },
 
-    { name: "Remark", selector: (row) => row["Remark"], sortable: false },
+    { name: 'Remark', selector: (row) => row['Remark'], sortable: false },
     {
-      name: "Beneficiary name",
-      selector: (row) => row["Beneficiary name"],
-      sortable: false,
+      name: 'Beneficiary name',
+      selector: (row) => row['Beneficiary name'],
+      sortable: false
     },
-    { name: "Bank Name", selector: (row) => row["Bank Name"], sortable: false },
+    { name: 'Bank Name', selector: (row) => row['Bank Name'], sortable: false },
     {
-      name: "Branch Name",
-      selector: (row) => row["Branch Name"],
-      sortable: false,
+      name: 'Branch Name',
+      selector: (row) => row['Branch Name'],
+      sortable: false
     },
     {
-      name: "Account Number",
-      selector: (row) => row["Account Number"],
-      sortable: false,
+      name: 'Account Number',
+      selector: (row) => row['Account Number'],
+      sortable: false
     },
-    { name: "IFSC Code", selector: (row) => row["IFSC Code"], sortable: false },
+    { name: 'IFSC Code', selector: (row) => row['IFSC Code'], sortable: false }
   ];
 
-  const [tillDate, setTillDate] = useState("");
+  const [tillDate, setTillDate] = useState('');
   const [authorities, SetAuthorities] = useState();
 
   const handleTillDate = (e) => {
     setTillDate(e.target.value);
   };
 
-  const handleDownloadPayment = async (e) => {
-    e.preventDefault();
-    const form = new FormData(e.target);
-    await new BillPaymentServices().downloadTxtFile(form).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-        }
-      }
-    });
-  };
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     await new BillTransactionService()
       ._getBillTypeDataDropdown()
       .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setData(res.data.data);
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
             setBillTypeDropdown(
-              res.data.data.map((d) => ({ value: d.id, label: d.bill_type }))
+              res?.data?.data.map((d) => ({ value: d.id, label: d.bill_type }))
             );
           }
         }
@@ -184,15 +169,12 @@ const BillPayments = () => {
 
     await new BillTransactionService().getUpdatedAuthorities().then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
-          const a = res.data.data;
-
+        if (res.data.status === 1) {
           SetAuthorities(res.data.data);
         }
       }
     });
-  };
-  const [deta, setDeta] = useState();
+  }, [dispatch]);
 
   const myForm = useRef();
   const handleForm = async (e) => {
@@ -200,56 +182,55 @@ const BillPayments = () => {
     const form = new FormData(e.target);
     const tempData = [];
     const FilterData = [];
-    form.append("requestFor", myForm.current.buttonId);
+    form.append('requestFor', myForm.current.buttonId);
 
-    if (form.get("requestFor") == "downloadButton") {
+    if (form.get('requestFor') === 'downloadButton') {
       await new BillPaymentServices().downloadTxtFile(form).then((res) => {
         if (res.status === 200) {
-          if (res.data.status == 1) {
-            var a = res.data.fileName;
-            URL = "http://3.108.206.34/" + res.data.data;
+          if (res?.data?.status === 1) {
             alert(res.data.data);
-            window.open(URL, "_blank").focus();
+            window
+              .open('http://3.108.206.34/' + res.data.data, '_blank')
+              .focus();
           }
         }
       });
     } else {
       await new BillPaymentServices().getBillPayments(form).then((res) => {
         if (res.status === 200) {
-          if (res.data.status == 1) {
+          if (res?.data?.status === 1) {
             let counter = 1;
             const temp = res.data.data;
             if (temp.length > 0) {
               for (const key in temp) {
                 tempData.push({
-                  "Sr.No": counter++,
-                  "Vendor Name": temp[key].vendor_name,
-                  "Bill Type": temp[key].bill_type,
-                  "Payment Date": temp[key].payment_date,
-                  "Payment Amount": temp[key].total_payment,
-                  "Vendor Bill No": temp[key].bill_no,
-                  "Bill ID": temp[key].bc_id,
-                  "SBI Amount": temp[key].balance,
+                  'Sr.No': counter++,
+                  'Vendor Name': temp[key].vendor_name,
+                  'Bill Type': temp[key].bill_type,
+                  'Payment Date': temp[key].payment_date,
+                  'Payment Amount': temp[key].total_payment,
+                  'Vendor Bill No': temp[key].bill_no,
+                  'Bill ID': temp[key].bc_id,
+                  'SBI Amount': temp[key].balance,
                   Remark: temp[key].remark,
-                  "Beneficiary name": temp[key].beneficiary_name,
-                  "Bank Name": temp[key].bank_name,
-                  "Branch Name": temp[key].bank_branch_name,
-                  "Account Number": temp[key].account_no,
-                  "IFSC Code": temp[key].ifsc_code,
+                  'Beneficiary name': temp[key].beneficiary_name,
+                  'Bank Name': temp[key].bank_name,
+                  'Branch Name': temp[key].bank_branch_name,
+                  'Account Number': temp[key].account_no,
+                  'IFSC Code': temp[key].ifsc_code,
                   Tds: temp[key].tds_amount,
                   IGST: temp[key].igst_amount,
 
                   GST: temp[key].gst_amount,
-                  "Net Payment": temp[key].net_payment,
-                  "IFSC Code": temp[key].ifsc_code,
+                  'Net Payment': temp[key].net_payment,
 
-                  "Amount to be paid": temp[key].amount_to_be_paid,
+                  'Amount to be paid': temp[key].amount_to_be_paid,
 
-                  "Payment status": temp[key].convention_name,
+                  'Payment status': temp[key].convention_name,
 
-                  "Vendor id": temp[key].vendor_id,
-                  "bill Type Id": temp[key].bill_type_id,
-                  bill_amount: temp[key].bill_amount,
+                  'Vendor id': temp[key].vendor_id,
+                  'bill Type Id': temp[key].bill_type_id,
+                  bill_amount: temp[key].bill_amount
                 });
               }
               setFilteredData(tempData);
@@ -258,19 +239,19 @@ const BillPayments = () => {
             if (temp.length > 0) {
               for (const key in temp) {
                 FilterData.push({
-                  "Sr.No": counter++,
-                  "Vendor Name": temp[key].vendor_name,
-                  "Bill Type": temp[key].bill_type,
-                  "Payment Date": temp[key].payment_date,
-                  "Payment Amount": temp[key].total_payment,
-                  "Vendor Bill No": temp[key].bill_no,
-                  "Bill ID": temp[key].bc_id,
+                  'Sr.No': counter++,
+                  'Vendor Name': temp[key].vendor_name,
+                  'Bill Type': temp[key].bill_type,
+                  'Payment Date': temp[key].payment_date,
+                  'Payment Amount': temp[key].total_payment,
+                  'Vendor Bill No': temp[key].bill_no,
+                  'Bill ID': temp[key].bc_id,
                   Remark: temp[key].remark,
-                  "Beneficiary name": temp[key].beneficiary_name,
-                  "Bank Name": temp[key].bank_name,
-                  "Branch Name": temp[key].bank_branch_name,
-                  "Account Number": temp[key].account_no,
-                  "IFSC Code": temp[key].ifsc_code,
+                  'Beneficiary name': temp[key].beneficiary_name,
+                  'Bank Name': temp[key].bank_name,
+                  'Branch Name': temp[key].bank_branch_name,
+                  'Account Number': temp[key].account_no,
+                  'IFSC Code': temp[key].ifsc_code
                 });
               }
               setFilteredData(tempData);
@@ -287,27 +268,27 @@ const BillPayments = () => {
     setNotify(null);
     const formData = new FormData(e.target);
     await new BillPaymentServices().autoUpdatePayment(formData).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          setNotify({ type: "success", message: res.data.message });
-          setModal({ showModal: false, modalData: "", modalHeader: "" });
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
+          setNotify({ type: 'success', message: res.data.message });
+          setModal({ showModal: false, modalData: '', modalHeader: '' });
           loadData();
         } else {
-          setNotify({ type: "danger", message: res.data.message });
+          setNotify({ type: 'danger', message: res.data.message });
         }
       } else {
-        setNotify({ type: "danger", message: res.data.message });
+        setNotify({ type: 'danger', message: res.data.message });
       }
     });
   };
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   return (
     <>
-      <div className="container-xxl" style={{ width: "100%" }}>
+      <div className="container-xxl" style={{ width: '100%' }}>
         {notify && <Alert alertData={notify} />}
 
         <PageHeader
@@ -321,15 +302,15 @@ const BillPayments = () => {
                     style={{
                       display:
                         authorities && authorities.Bill_Payment === false
-                          ? "none"
-                          : "block",
+                          ? 'none'
+                          : 'block'
                     }}
                     className="btn btn-primary btn-set-task w-sm-100"
                     onClick={(e) => {
                       handleModal({
                         showModal: true,
-                        modalData: "",
-                        modalHeader: "Upload Bank File",
+                        modalData: '',
+                        modalHeader: 'Upload Bank File'
                       });
                     }}
                   >
@@ -349,7 +330,7 @@ const BillPayments = () => {
             );
           }}
         />
-        <div className="card-mt-2" style={{ width: "100%" }}>
+        <div className="card-mt-2" style={{ width: '100%' }}>
           <div className="card card-body">
             <form method="POST" onSubmit={(e) => handleForm(e)} ref={myForm}>
               <div className="row ">
@@ -370,7 +351,7 @@ const BillPayments = () => {
                   )}
                 </div>
 
-                <div className="col-md-3 mt-2" style={{ marginLeft: "20px" }}>
+                <div className="col-md-3 mt-2" style={{ marginLeft: '20px' }}>
                   <label className=" col-form-label">
                     <b>
                       Till Date :<Astrick color="red" />
@@ -394,7 +375,7 @@ const BillPayments = () => {
                       defaultValue="filterButton"
                       id="filterButton"
                       onClick={(e) => (myForm.current.buttonId = e.target.id)}
-                      style={{ marginTop: "15px", marginLeft: "60px" }}
+                      style={{ marginTop: '15px', marginLeft: '60px' }}
                       className="btn btn-danger text-white"
                     >
                       <i className="icofont-filter" /> Filter
@@ -439,7 +420,7 @@ const BillPayments = () => {
                   highlightOnHover={true}
                 />
               ) : (
-                <b style={{ marginLeft: "700px" }}> No Data Found </b>
+                <b style={{ marginLeft: '700px' }}> No Data Found </b>
               )}
             </div>
           </div>
@@ -452,8 +433,8 @@ const BillPayments = () => {
         onHide={(e) => {
           handleModal({
             showModal: false,
-            modalData: "",
-            modalHeader: "",
+            modalData: '',
+            modalHeader: ''
           });
         }}
       >
@@ -483,7 +464,7 @@ const BillPayments = () => {
             <button
               type="submit"
               className="btn btn-sm btn-primary"
-              style={{ backgroundColor: "#484C7F" }}
+              style={{ backgroundColor: '#484C7F' }}
             >
               Upload
             </button>
@@ -498,8 +479,8 @@ const BillPayments = () => {
         onHide={(e) => {
           handleModals({
             showModals: false,
-            modalsData: "",
-            modalsHeader: "",
+            modalsData: '',
+            modalsHeader: ''
           });
         }}
       >

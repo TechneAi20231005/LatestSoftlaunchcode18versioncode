@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 
 import Alert from '../../../../components/Common/Alert';
@@ -11,55 +11,36 @@ import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadi
 const ApproveRequestModal = (props) => {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState([]);
-  // const [dataa, setDataa] = useState([]);
 
-  // const [showLoaderModal, setShowLoaderModal] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
+
 
   const ticketId = props.ticketId;
   const NotificatinID = props.notificationId;
 
   const rquestData = props?.data;
   const ticketIdName = props?.data && props.data[0]?.ticket_id_name;
-  const loadData = () => {
-    // setShowLoaderModal(true);
-    // Assuming getRegularizationTime is a function that returns a Promise
+  const loadData =useCallback( () => {
+
+
     new getRegularizationTime(ticketId)
 
       .then((res) => {
         if (res.status === 200) {
-          // setShowLoaderModal(false);
+
+
 
           if (res.data.data) {
-            // Process the data
-            // const temp = res.data.data.map((d) => ({
-            //   id: d.id,
-            //   created_by_name: d.created_by_name,
-            //   from_date: d.from_date,
-            //   to_date: d.to_date,
-            //   from_time: d.from_time,
-            //   to_time: d.to_time,
-            //   remark: d.remark,
-            //   is_checked: 0,
-            //   regularization_time_status: d.regularization_time_status,
-            //   task_name: d.task_name,
-            //   ticket_id_name: d.ticket_id_name,
-            //   actual_time: d.actual_time,
-            //   task_hours: d.task_hours,
-            //   scheduled_time: d.scheduled_time,
-            //   status: d.status_remark
-            // }));
 
-            // Assuming setDataa is a function to set the state
-            // setDataa(temp);
+
           } else {
           }
         }
       })
       .catch((error) => {
-        // Handle errors, e.g., show an error message to the user
+
+
       });
-  };
+  },[ticketId]);
 
   const [selectAll, setSelectAll] = useState(false);
 
@@ -153,7 +134,7 @@ const ApproveRequestModal = (props) => {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   return (
     <Modal

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Modal } from 'react-bootstrap';
 import ErrorLogService from '../../../../services/ErrorLogService';
 import Alert from '../../../../components/Common/Alert';
@@ -116,7 +116,7 @@ export default function BasketDetails(props) {
     }
   };
   // const [ticketData, setTicketData] = useState();
-  const loadData = async () => {
+  const loadData = useCallback( async () => {
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
@@ -143,10 +143,10 @@ export default function BasketDetails(props) {
         }
       }
     });
-  };
+  },[props.ticketId]);
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   return (
     <>

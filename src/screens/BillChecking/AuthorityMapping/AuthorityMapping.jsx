@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 
 import { Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 
@@ -67,18 +67,12 @@ const AuthorityMapping = () => {
 
   const [error, setError] = useState('');
 
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
-
-  const [read, setRead] = useState(true);
-
   const [empty, setEmpty] = useState([
     { user_id: [], from_date: null, to_date: null, readOnly: false }
   ]);
   const [assign, setAssign] = useState([
     { user_id: [], from_date: null, to_date: null, readOnly: false }
   ]);
-
-  const [value, setValue] = useState('');
 
   const [userErrors, setUserErrors] = useState(
     new Array(assign.length).fill('')
@@ -89,10 +83,10 @@ const AuthorityMapping = () => {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(authorities, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [authorities, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -173,13 +167,13 @@ const AuthorityMapping = () => {
       width: '130px',
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
 
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger " style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -250,7 +244,6 @@ const AuthorityMapping = () => {
       setError('Special characters are not allowed');
     } else {
       setError();
-      setValue();
     }
   };
   const [date, Setdate] = useState();
@@ -294,8 +287,6 @@ const AuthorityMapping = () => {
     } else {
       setEmpty([...empty, newRow]);
     }
-
-    setRead(false);
   };
 
   const handleRemoveSpecificRow = (index) => async () => {
@@ -356,8 +347,8 @@ const AuthorityMapping = () => {
 
         .then((res) => {
           if (res.status === 200) {
-            if (res.data.status === 1) {
-              const updatedAssign = res.data.data.map((item) => {
+            if (res?.data?.status === 1) {
+              const updatedAssign = res?.data?.data.map((item) => {
                 const from_dateReadOnly =
                   item.from_date &&
                   new Date(item.from_date) < new Date(todayDate);
@@ -378,10 +369,7 @@ const AuthorityMapping = () => {
     dispatch(getSubmoduleData(parseInt(row.submodule_name)));
   };
 
-  const loadData = async () => {
-    setShowLoaderModal(null);
-    setShowLoaderModal(true);
-
+  const loadData = useCallback(async () => {
     dispatch(getModuleSettingData());
 
     dispatch(getRoles());
@@ -391,7 +379,7 @@ const AuthorityMapping = () => {
     dispatch(getUserForMyTicketsData(inputRequired));
 
     dispatch(updateAuthority());
-  };
+  }, [dispatch]);
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
@@ -465,7 +453,7 @@ const AuthorityMapping = () => {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_cre === 0) {
@@ -478,7 +466,7 @@ const AuthorityMapping = () => {
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [handleSearch, searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -576,7 +564,7 @@ const AuthorityMapping = () => {
                     Submodule Name :<Astrick color="red" size="13px" />
                   </label>
 
-                  {modal.modalData && modal.modalHeader == 'Edit Authority'}
+                  {modal.modalData && modal.modalHeader === 'Edit Authority'}
 
                   {!modal.modalData && (
                     <div>
@@ -606,7 +594,7 @@ const AuthorityMapping = () => {
                           modal.modalData &&
                           submodulename
                             .filter(
-                              (d) => d.value == modal.modalData.submodule_name
+                              (d) => d.value === modal.modalData.submodule_name
                             )
                             .map((d) => ({ value: d.value, label: d.label }))
                         }
@@ -656,7 +644,7 @@ const AuthorityMapping = () => {
                               value={userData.filter((d) =>
                                 Array.isArray(item.user_id)
                                   ? item.user_id.includes(d.value)
-                                  : item.user_id == d.value
+                                  : item.user_id === d.value
                               )}
                               required
                               style={{ zIndex: '100' }}
@@ -854,7 +842,7 @@ const AuthorityMapping = () => {
                 </tbody>
               </table>
 
-              {modal.modalHeader == 'Add Authority' ? (
+              {modal.modalHeader === 'Add Authority' ? (
                 <div className="col-md-10 mt-4">
                   <label className="form-label font-weight-bold">
                     Remark :
@@ -865,7 +853,7 @@ const AuthorityMapping = () => {
                     id="remark"
                     rows="4"
                     defaultValue={modal.modalData.remark}
-                    readOnly={modal.modalHeader == 'Details'}
+                    readOnly={modal.modalHeader === 'Details'}
                     name="remark"
                     maxLength={100}
                   />
