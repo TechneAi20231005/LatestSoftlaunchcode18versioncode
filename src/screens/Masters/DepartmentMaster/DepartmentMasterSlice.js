@@ -56,7 +56,7 @@ export const departmentMasterSlice = createSlice({
         state.departmentData = [...departmentData];
         let exportDepartmentData = [];
 
-        let filterdata = payload.data.data.filter((d) => d.is_active == 1);
+        let filterdata = payload.data.data.filter((d) => d.is_active === 1);
         let sortDepartmentData = [];
         for (const key in filterdata) {
           if (filterdata[key].department) {

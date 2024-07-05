@@ -10,10 +10,9 @@ export const CalendarYearWise = (props) => {
   const params = useParams();
   const { id: ticketId } = params;
   const [calendarEvent, setCalendarEvent] = useState([]);
-  const [notify, setNotify] = useState({});
+  // const [notify, setNotify] = useState({});
 
   const localizer = momentLocalizer(moment);
-
   const frameStructureForCalendar = async () => {
     const formatDate = (dates) => {
       const date = new Date(dates);
@@ -65,10 +64,10 @@ export const CalendarYearWise = (props) => {
 
         setCalendarEvent((prevState) => [...prevState, ...newCalendarEvents]);
       } else {
-        setNotify({ type: 'danger', message: res?.data?.message });
+        // setNotify({ type: 'danger', message: res?.data?.message });
       }
     } catch (err) {
-      setNotify({ type: 'danger', message: err });
+      // setNotify({ type: 'danger', message: err });
     }
   };
   const ridirectToPreviousTab = () => {

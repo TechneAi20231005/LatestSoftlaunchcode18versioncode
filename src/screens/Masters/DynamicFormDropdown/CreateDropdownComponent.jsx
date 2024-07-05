@@ -1,46 +1,33 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
-import { _base } from "../../../settings/constants";
-import ErrorLogService from "../../../services/ErrorLogService";
+import { _base } from '../../../settings/constants';
+import ErrorLogService from '../../../services/ErrorLogService';
 
-import DynamicFormDropdownMasterService from "../../../services/MastersService/DynamicFormDropdownMasterService";
-import PageHeader from "../../../components/Common/PageHeader";
+import DynamicFormDropdownMasterService from '../../../services/MastersService/DynamicFormDropdownMasterService';
+import PageHeader from '../../../components/Common/PageHeader';
 
-import Alert from "../../../components/Common/Alert";
-import * as Validation from "../../../components/Utilities/Validation";
+import Alert from '../../../components/Common/Alert';
+import * as Validation from '../../../components/Utilities/Validation';
 
-import "react-data-table-component-extensions/dist/index.css";
-import { Astrick } from "../../../components/Utilities/Style";
+import 'react-data-table-component-extensions/dist/index.css';
+import { Astrick } from '../../../components/Utilities/Style';
 
-import { useDispatch, useSelector } from "react-redux";
-import { getRoles } from "../../Dashboard/DashboardAction";
+import { useDispatch, useSelector } from 'react-redux';
+import { getRoles } from '../../Dashboard/DashboardAction';
 
-export default function CreateDropdownComponent({ match }) {
+export default function CreateDropdownComponent() {
   const history = useNavigate();
-  const [value, setvalue] = useState({});
+
   const [data, setData] = useState([{ label: null, value: null }]);
 
   const [notify, setNotify] = useState(null);
 
-  const [modal, setModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
-  const roleId = sessionStorage.getItem("role_id");
-
   const dispatch = useDispatch();
 
   const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 37)
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 37)
   );
-
-  const handleChange = (idx) => (e) => {};
-
-  const handleModal = (data) => {
-    setModal(data);
-  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -53,23 +40,23 @@ export default function CreateDropdownComponent({ match }) {
           if (res.data.status === 1) {
             history(
               {
-                pathname: `/${_base}/DynamicFormDropdown`,
+                pathname: `/${_base}/DynamicFormDropdown`
               },
               {
                 state: {
-                  alert: { type: "success", message: res.data.message },
-                },
+                  alert: { type: 'success', message: res.data.message }
+                }
               }
             );
           } else {
-            setNotify({ type: "danger", message: res.data.message });
+            setNotify({ type: 'danger', message: res.data.message });
           }
         } else {
-          setNotify({ type: "danger", message: res.message });
+          setNotify({ type: 'danger', message: res.message });
           new ErrorLogService().sendErrorLog(
-            "User",
-            "Create_User",
-            "INSERT",
+            'User',
+            'Create_User',
+            'INSERT',
             res.message
           );
         }
@@ -78,41 +65,17 @@ export default function CreateDropdownComponent({ match }) {
         const { response } = error;
         const { request, ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
-          "Status",
-          "Get_Status",
-          "INSERT",
+          'Status',
+          'Get_Status',
+          'INSERT',
           errorObject.data.message
         );
       });
   };
 
-  const loadData = async () => {};
-
   const handleAddRow = () => {
     setData((prevState) => [...prevState, { label: null, value: null }]);
   };
-
-  //     setData(prevState => {
-  //       const newData = prevState
-  //         .filter((_, index) => index !== idx) // Remove the specified row
-  //         .map((item, index) => ({ ...item, index })); // Reindex the remaining rows
-
-  //       return newData;
-  //     });
-  //   };
-
-  // const handleRemoveSpecificRow = (idx) => {
-  //     setData(prevState => {
-  //       const newData = [...prevState];
-  //       newData.splice(idx, 1);
-  //       return newData.map((item, index) => {
-  //         if (index >= idx) {
-  //           return { label: null, value: null };
-  //         }
-  //         return item;
-  //       });
-  //     });
-  //   };
 
   const handleRemoveSpecificRow = (row) => {
     setData((prevState) => {
@@ -121,20 +84,13 @@ export default function CreateDropdownComponent({ match }) {
     });
   };
 
-  const [showtype, setShowType] = useState();
-  const handleAutoChanges = (e, type, method) => {
-    if (method == "REGULAR") {
-      setShowType("REGULAR");
-    } else if (method == "FETCHING") {
-      setShowType("FETCHING");
-    }
-  };
+  const showtype = '';
 
   useEffect(() => {
     if (!checkRole.length) {
       dispatch(getRoles());
     }
-  }, []);
+  }, [checkRole.length, dispatch]);
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -236,7 +192,7 @@ export default function CreateDropdownComponent({ match }) {
               </div>
             </div>
             {/* } */}
-            {showtype && showtype === "FETCHING" && (
+            {showtype && showtype === 'FETCHING' && (
               <div>
                 <div className="row mt-2">
                   <div className="col-md-2 mt-2">
