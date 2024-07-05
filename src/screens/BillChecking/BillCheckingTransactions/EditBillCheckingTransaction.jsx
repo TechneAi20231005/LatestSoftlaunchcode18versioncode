@@ -920,7 +920,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                       {billTypeDropdown && (
                         <Select
                           type="text"
-                          className="form-control form-control"
                           options={billTypeDropdown}
                           onChange={(e) => {
                             handleAssignToPerson(e);
@@ -956,7 +955,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                         {userDropdown && data ? (
                           <Select
                             type="text"
-                            className="form-control form-control-sm"
                             id="assign_to"
                             options={userDropdown}
                             name="assign_to"
@@ -983,7 +981,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                       </label>
                       {data && vendorDropdown && (
                         <Select
-                          className="form-control form-control-sm"
                           id="vendor_name"
                           name="vendor_name"
                           options={vendorDropdown}
@@ -1560,7 +1557,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                         {sectionDropdown && (
                           <Select
                             type="text"
-                            className="form-control form-control-sm"
                             id="tds_section"
                             name="tds_section"
                             placeholder="select..."
@@ -1610,7 +1606,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                         <span>
                           {constitutionDropdown && data && (
                             <Select
-                              className="form-control form-control-sm"
                               id="tds_constitution"
                               name="tds_constitution"
                               options={constitutionDropdown}
