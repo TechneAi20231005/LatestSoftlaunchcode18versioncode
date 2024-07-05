@@ -1807,6 +1807,7 @@ export default function TaskComponent() {
                             onChange={(e) => sprintInputChangeHandler(e)}
                             defaultValue={sprintModal?.modalData?.end_date}
                             min={ticketStartDate}
+                            // min={new Date(sprintInput.startDate).getDate() + 1}
                             max={expectedSolveDate}
                             onKeyDown={(e) => e.preventDefault()}
                             required

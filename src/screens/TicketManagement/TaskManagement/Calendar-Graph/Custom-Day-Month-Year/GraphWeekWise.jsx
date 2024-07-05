@@ -433,7 +433,7 @@ const GraphWeekWise = () => {
             ...prevChartData.options.chart,
             height: chartHeight,
             events: {
-              click: () => {
+              dataPointSelection: () => {
                 let prevTab = localStorage.getItem('PreviosTab');
                 localStorage.removeItem('PreviosTab');
                 if (prevTab) {
