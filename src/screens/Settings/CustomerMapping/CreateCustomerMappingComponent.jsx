@@ -109,18 +109,13 @@ export default function CreateCustomerMappingComponent() {
     user_policy_label: []
   });
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  const loadData = async () => {
-    await getDynamicForm();
-  };
-
-  const getDynamicForm = async () => {
+  const getDynamicForm = useCallback(async () => {
     try {
       const res = await new DynamicFormService().getDynamicForm();
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const data = res.data.data.filter((d) => d.is_active === 1);
-          const select = res.data.data
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
+          const data = res?.data?.data.filter((d) => d.is_active === 1);
+          const select = res?.data?.data
             .filter((d) => d.is_active === 1)
             .map((d) => ({ value: d.id, label: d.template_name }));
           setDynamicForm(data);
@@ -130,8 +125,11 @@ export default function CreateCustomerMappingComponent() {
     } catch (error) {
       console.error('Error fetching dynamic form:', error);
     }
-  };
+  }, []);
 
+  const loadData = useCallback(async () => {
+    await getDynamicForm();
+  }, [getDynamicForm]);
   const handleQueryType = async (e) => {
     setNotify(null);
     setDynamicForm(null);
@@ -162,10 +160,10 @@ export default function CreateCustomerMappingComponent() {
 
   const getDepartment = async () => {
     await new DepartmentService().getDepartment().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
           var defaultValue = [{ value: 0, label: 'Select Department' }];
-          var dropwdown = res.data.data
+          var dropwdown = res?.data?.data
             .filter((d) => d.is_active === 1)
             .map((d) => ({ value: d.id, label: d.department }));
           defaultValue = [...defaultValue, ...dropwdown];
@@ -179,9 +177,9 @@ export default function CreateCustomerMappingComponent() {
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active';
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
-      if (res.payload.status === 200) {
-        if (res.payload.data.status === 1) {
-          var dropwdown = res.payload.data.data
+      if (res?.payload?.status === 200) {
+        if (res?.payload?.data?.status === 1) {
+          var dropwdown = res?.payload?.data?.data
             .filter((d) => d.is_active === 1)
             .map((d) => ({
               value: d.id,
@@ -226,10 +224,8 @@ export default function CreateCustomerMappingComponent() {
         e.value
       );
 
-      
-
-      if (res.status === 200) {
-        if (res.data.status === 1) {
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
           const dropdown = res.data.data
 
             .filter(
@@ -404,8 +400,8 @@ export default function CreateCustomerMappingComponent() {
       await new CustomerMappingService()
         .postCustomerMapping(form)
         .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
+          if (res?.status === 200) {
+            if (res?.data?.status === 1) {
               toast.success(res?.data?.message);
 
               navigate(`/${_base}/CustomerMapping`);
