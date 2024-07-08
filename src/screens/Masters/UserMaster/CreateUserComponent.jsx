@@ -1150,7 +1150,7 @@ function CreateUserComponent({ match }) {
                           </InputGroup.Text>
                         </InputGroup>
 
-                        {inputState && (
+                        {inputState.confirmed_PassErr && (
                           <small
                             style={{
                               color: 'red',
@@ -1162,19 +1162,20 @@ function CreateUserComponent({ match }) {
                           </small>
                         )}
                       </div>
-                      {confirmPasswordError && (
-                        <span
-                          style={{
-                            color: 'red',
-                            position: 'relative',
-                            left: '67%'
-                          }}
-                        >
-                          Password Not matched
-                        </span>
-                      )}
+                      {!inputState.confirmed_PassErr &&
+                        confirmPasswordError && (
+                          <span
+                            style={{
+                              color: 'red',
+                              position: 'relative',
+                              left: '67%'
+                            }}
+                          >
+                            Password Not matched
+                          </span>
+                        )}
                     </div>
-                    {console.log('filterRole', filteredRoles)}
+
                     <div
                       className="form-group row mt-4"
                       style={{ position: 'relative', display: 'flex' }}
