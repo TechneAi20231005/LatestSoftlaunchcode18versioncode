@@ -31,6 +31,7 @@ import { Table } from 'react-bootstrap';
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function VendorMaster({ match }) {
   const [data, setData] = useState([]);
@@ -86,6 +87,7 @@ function VendorMaster({ match }) {
   }
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   //search function
 
@@ -541,9 +543,14 @@ function VendorMaster({ match }) {
   ];
 
   const loadData = async () => {
+    setIsLoading(null);
+    setIsLoading(true);
+
     const data = [];
     await new VendorMasterService().getVendors().then((res) => {
       if (res.status === 200) {
+        setIsLoading(false);
+
         let counter = 1;
         const temp = res.data.data;
         for (const key in temp) {
@@ -1736,6 +1743,8 @@ function VendorMaster({ match }) {
                     expandableRows={true}
                     pagination
                     expandableRowsComponent={ExpandedComponent}
+                    progressComponent={<TableLoadingSkelton />}
+                    progressPending={isLoading}
                     selectableRows={false}
                     defaultSortAsc={false}
                     className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline "

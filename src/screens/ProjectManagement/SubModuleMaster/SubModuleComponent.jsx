@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
 import ErrorLogService from '../../../services/ErrorLogService';
@@ -26,22 +26,22 @@ function SubModuleComponent() {
 
   //local state
 
-  const [notify, setNotify] = useState(null);
+  const notify = null;
+
   const [data, setData] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
 
   const [exportData, setExportData] = useState(null);
 
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(data, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [data, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -85,10 +85,10 @@ function SubModuleComponent() {
       sortable: false,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary">Active</span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger">Deactive</span>
           )}
         </div>
@@ -112,9 +112,7 @@ function SubModuleComponent() {
     { name: 'Updated By', selector: (row) => row.updated_by, sortable: true }
   ];
 
-  const loadData = async () => {
-    setShowLoaderModal(null);
-    setShowLoaderModal(true);
+  const loadData = useCallback(async () => {
     setIsLoading(true);
     const data = [];
     const exportTempData = [];
@@ -122,8 +120,6 @@ function SubModuleComponent() {
       .getSubModule()
       .then((res) => {
         if (res.status === 200) {
-          setShowLoaderModal(false);
-
           let counter = 1;
           let count = 1;
           const temp = res.data.data;
@@ -153,7 +149,7 @@ function SubModuleComponent() {
               sub_module_name: temp[key].sub_module_name,
               module_name: temp[key].module_name,
               project_name: temp[key].project_name,
-              is_active: temp[key].is_active == 1 ? 'Active' : 'Deactive',
+              is_active: temp[key].is_active === 1 ? 'Active' : 'Deactive',
               remark: temp[key].remark,
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,
@@ -183,24 +179,24 @@ function SubModuleComponent() {
         );
       });
     dispatch(getRoles());
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, []);
+  }, [checkRole]);
   useEffect(() => {
     setFilteredData(data);
   }, [data]);
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -289,16 +285,16 @@ function SubModuleDropdown(props) {
           onChange={props.getChangeValue}
           required={props.required ? true : false}
         >
-          {props.defaultValue == 0 && (
+          {props.defaultValue === 0 && (
             <option value={0} selected>
               Select Sub Module
             </option>
           )}
-          {props.defaultValue != 0 && (
+          {props.defaultValue !== 0 && (
             <option value={0}>Select Sub Module</option>
           )}
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.sub_module_name}

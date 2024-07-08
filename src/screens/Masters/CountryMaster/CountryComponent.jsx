@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Container, Modal } from 'react-bootstrap';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
 import CountryService from '../../../services/MastersService/CountryService';
@@ -9,9 +9,7 @@ import PageHeader from '../../../components/Common/PageHeader';
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
 import Alert from '../../../components/Common/Alert';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
-import { Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 import {
@@ -52,10 +50,10 @@ function CountryComponent() {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(countryData, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [countryData, searchTerm]);
   // Function to handle reset button click
   const handleReset = () => {
     setSearchTerm('');
@@ -179,20 +177,28 @@ function CountryComponent() {
     }
   }, [checkRole]);
 
+  // useEffect(() => {
+  //   dispatch(getCountryData());
+
+  //   if (!countryData.length || !checkRole.length) {
+  //     dispatch(getRoles());
+  //   }
+  // }, []);
   useEffect(() => {
     dispatch(getCountryData());
 
     if (!countryData.length || !checkRole.length) {
       dispatch(getRoles());
     }
-  }, []);
+  }, [dispatch, countryData.length, checkRole.length]);
+
   useEffect(() => {
     setFilteredData(countryData);
   }, [countryData]);
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -391,7 +397,7 @@ function CountryComponent() {
               </button>
             )}
 
-            {modal.modalData && checkRole && checkRole[0]?.can_update == 1 ? (
+            {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
               <button
                 type="submit"
                 className="btn btn-primary text-white"
@@ -432,7 +438,7 @@ function CountryDropdown(props) {
       if (res.status === 200) {
         const data = res.data.data;
         for (const key in data) {
-          if (data[key].is_active == 1) {
+          if (data[key].is_active === 1) {
             tempData.push({
               id: data[key].id,
               country: data[key].country
@@ -454,16 +460,16 @@ function CountryDropdown(props) {
           onChange={props?.getChangeValue}
           required={props?.required ? true : false}
         >
-          {props?.defaultValue == 0 && (
+          {props?.defaultValue === 0 && (
             <option value={0} selected>
               Select Country
             </option>
           )}
-          {props?.defaultValue != 0 && (
+          {props?.defaultValue !== 0 && (
             <option value={0}>Select Country</option>
           )}
           {data.map(function (item, i) {
-            if (props?.defaultValue && props?.defaultValue == item.id) {
+            if (props?.defaultValue && props?.defaultValue === item.id) {
               return (
                 <option key={i} value={item?.id} selected>
                   {item?.country}

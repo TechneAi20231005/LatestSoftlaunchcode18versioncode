@@ -1,48 +1,47 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Modal, Table } from 'react-bootstrap';
 import ErrorLogService from '../../../../services/ErrorLogService';
 import { _attachmentUrl } from '../../../../settings/constants';
-import { UserDropdown } from '../../../../screens/Masters/UserMaster/UserComponent';
+// import { UserDropdown } from '../../../../screens/Masters/UserMaster/UserComponent';
 import Select from 'react-select';
 import {
   postTask,
-  updateTask,
-  getTaskUser
+  updateTask
+  // getTaskUser
 } from '../../../../services/TicketService/TaskService';
-import {
-  getAttachment,
-  deleteAttachment
-} from '../../../../services/OtherService/AttachmentService';
+// import {
+//   getAttachment,
+//   deleteAttachment
+// } from '../../../../services/OtherService/AttachmentService';
 import Alert from '../../../../components/Common/Alert';
-import * as Validation from '../../../../components/Utilities/Validation';
+// import * as Validation from '../../../../components/Utilities/Validation';
 import UserService from '../../../../services/MastersService/UserService';
 import TaskTicketTypeService from '../../../../services/MastersService/TaskTicketTypeService';
-import TestCasesService from '../../../../services/TicketService/TestCaseService';
+// import TestCasesService from '../../../../services/TicketService/TestCaseService';
 import { Astrick } from '../../../../components/Utilities/Style';
-import { toast } from 'react-toastify';
 
 export default function TaskModal(props) {
   const [notify, setNotify] = useState();
-  const typeRef = useRef();
-  const [parent, setParent] = useState();
+  // const typeRef = useRef();
+  // const [parent, setParent] = useState();
   const priority = ['High', 'Medium', 'Low'];
-  const [allTask, setAllTask] = useState();
+  // const [allTask, setAllTask] = useState();
   const [userData, setUserData] = useState();
   const [defaultUserData, setDefaultUserData] = useState();
-  const [attachment, setAttachment] = useState([]);
+  const attachment = [];
   const [selectedFile, setSelectedFile] = useState([]);
   const fileInputRef = useRef(null);
-  const [loading, setLoading] = useState(false);
-  const [startDate, setStartDate] = useState(null);
+  // const [loading, setLoading] = useState(false);
+  // const [startDate, setStartDate] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [taskData, setTaskData] = useState([]);
 
-  const [todate, setTodate] = useState([]);
+  // const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
 
-  const [todateformat, setTodateformat] = useState('');
-  const [fromdateformat, setFromdateformat] = useState('');
+  const todateformat = '';
+  const fromdateformat = '';
   // const [taskDropdown, setTaskDropdown] = useState();
   const handleFromDate = (e) => {
     setFromdate(e.target.value);
@@ -56,7 +55,6 @@ export default function TaskModal(props) {
 
     // closeAllDropdowns();
   };
-  const handleToDate = (e) => {};
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -113,7 +111,7 @@ export default function TaskModal(props) {
   const CustomMenuList = ({ options, onSelect }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [openOptions, setOpenOptions] = useState([]);
-    const [selectedOption, setSelectedOption] = useState(null);
+    // const [selectedOption, setSelectedOption] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -132,7 +130,7 @@ export default function TaskModal(props) {
     };
 
     const handleSelect = (label, ID) => {
-      setSelectedOption(label);
+      // setSelectedOption(label);
       onSelect(label, ID);
       setOpenOptions([]);
       setIsMenuOpen(!isMenuOpen);
@@ -259,10 +257,10 @@ export default function TaskModal(props) {
     props.close();
   };
   const [filteredOptions, setFilteredOptions] = useState();
-  const [tasktypeDropdown, setTasktypeDropdown] = useState();
+  // const [tasktypeDropdown, setTasktypeDropdown] = useState();
   const [parentTaskName, setParentTaskName] = useState(null);
 
-  const loadData = async () => {
+  const loadData = useCallback( async () => {
     setSelectedFile([]);
     const tempUserData = [];
     const tempDefaultUserData = [];
@@ -279,12 +277,12 @@ export default function TaskModal(props) {
     // });
 
     setFilteredOptions(
-      props?.taskDropdown?.filter((d) => d.value != props.data.id)
+      props?.taskDropdown?.filter((d) => d.value !== props.data.id)
     );
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-      if (res.status == 200) {
+      if (res.status === 200) {
         const data1 = res.data.data;
         const data = data1.filter(
           (d) => d.is_active === 1 && d.account_for === 'SELF'
@@ -322,10 +320,10 @@ export default function TaskModal(props) {
         setUserData(aa);
       }
     });
-    const allTask = props.allTaskList.filter(
-      (task) => task.value != props.data.id
-    );
-    setAllTask(allTask);
+    // const allTask = props.allTaskList.filter(
+    //   (task) => task.value != props.data.id
+    // );
+    // setAllTask(allTask);
     // loadAttachment();
 
     // await new TaskTicketTypeService().getAllType().then((res) => {
@@ -345,12 +343,11 @@ export default function TaskModal(props) {
       if (res.status === 200) {
         if (res.data.status === 1) {
           if (res.status === 200) {
-            const mappedData = res.data.data.map((d) => ({
-              value: d.id,
-              label: d.type_name
-            }));
-
-            setParent(mappedData);
+            // const mappedData = res.data.data.map((d) => ({
+            //   value: d.id,
+            //   label: d.type_name
+            // }));
+            // setParent(mappedData);
             // parentName(mappedData);
           } else {
           }
@@ -363,7 +360,7 @@ export default function TaskModal(props) {
         setTaskData(res?.data?.data);
       }
     });
-  };
+  },[props.data, props?.taskDropdown]);
 
   // const loadAttachment = async () => {
   //   setNotify(null);
@@ -435,6 +432,7 @@ export default function TaskModal(props) {
   const transformedOptions = transformData(taskData);
 
   const uploadAttachmentHandler = (e, type, id = null) => {
+    let file ;
     if (type === 'UPLOAD') {
       const selectedFilesCount = selectedFile?.length;
       const maxTotalSizeMB = 10; // Maximum total size in MB
@@ -481,15 +479,15 @@ export default function TaskModal(props) {
       }
     } else if (type === 'DELETE') {
       let filteredFileArray = selectedFile.filter(
-        (item, index) => id !== index
+        (index) => id !== index
       );
       setSelectedFile(filteredFileArray);
     } else if (type === 'CUSTOMER') {
-      var file = selectedFile;
+       file = selectedFile;
       file[id].show_to_customer = file[id].show_to_customer ? 0 : 1;
       setSelectedFile(file);
     } else if (type === 'PROJECT_OWNER') {
-      var file = selectedFile;
+       file = selectedFile;
       file[id].show_to_project_owner = file[id].show_to_project_owner ? 0 : 1;
       setSelectedFile(file);
     } else {
@@ -504,7 +502,7 @@ export default function TaskModal(props) {
 
   const assignUserRef = useRef();
   const handleForm = async (e) => {
-    setLoading(true);
+    // setLoading(true);
 
     e.preventDefault();
     const formData = new FormData(e.target);
@@ -543,12 +541,12 @@ export default function TaskModal(props) {
 
       var totalCount = 0;
       for (const pair of formData.entries()) {
-        if (pair[0] == 'assign_to_user[]') {
+        if (pair[0] === 'assign_to_user[]') {
           totalCount++;
         }
       }
 
-      if (formData.get('type') == 'GROUP_ACTIVITY') {
+      if (formData.get('type') === 'GROUP_ACTIVITY') {
         if (totalCount <= 1) {
           alert('Please select minimum 2 user for group activity !!!');
           flag = 0;
@@ -556,7 +554,7 @@ export default function TaskModal(props) {
         }
       }
 
-      if (flag == 1) {
+      if (flag === 1) {
         if (!selectedOption && !props?.data?.parent_name) {
           setParentTaskName('Please select a parent task type.');
         } else {
@@ -566,9 +564,9 @@ export default function TaskModal(props) {
           alert('Please select End Date Greater than Start date');
         } else {
           if (formData.get('id')) {
-            const taskTypeId = typeRef?.current?.props?.value.map((d) => {
-              return d.value;
-            });
+            // const taskTypeId = typeRef?.current?.props?.value.map((d) => {
+            //   return d.value;
+            // });
 
             if (
               !selectedOption &&
@@ -601,16 +599,16 @@ export default function TaskModal(props) {
                     if (res.data.status === 1) {
                       // props.loadBasket();
                       setNotify({ type: 'success', message: res.data.message });
-                      setLoading(false);
+                      // setLoading(false);
 
                       handleClose();
                       props.loadBasket();
                     } else {
-                      setLoading(false);
+                      // setLoading(false);
                       setNotify({ type: 'danger', message: res.data.message });
                     }
                   } else {
-                    setLoading(false);
+                    // setLoading(false);
                     setNotify({ type: 'danger', message: res.message });
                     new ErrorLogService().sendErrorLog(
                       'Ticket',
@@ -621,7 +619,7 @@ export default function TaskModal(props) {
                   }
                 })
                 .catch((error) => {
-                  setLoading(false);
+                  // setLoading(false);
                   const { response } = error;
                   const { request, ...errorObject } = response;
                   new ErrorLogService().sendErrorLog(
@@ -649,27 +647,24 @@ export default function TaskModal(props) {
             await postTask(formData).then((res) => {
               if (res.status === 200) {
                 if (res.data.status === 1) {
-                  toast.success(res?.data?.message);
-                  // setNotify({ type: 'success', message: res.data.message });
-                  setLoading(false);
+                  setNotify({ type: 'success', message: res.data.message });
+                  // setLoading(false);
 
                   handleClose();
                   props.loadBasket();
                 } else {
-                  setLoading(false);
-                  toast.error(res?.data?.message);
-                  // setNotify({ type: 'danger', message: res.data.message });
+                  // setLoading(false);
+                  setNotify({ type: 'danger', message: res.data.message });
                 }
               } else {
-                setLoading(false);
-                toast.error(res?.data?.message);
-                // setNotify({ type: 'danger', message: res.data.message });
-                // new ErrorLogService().sendErrorLog(
-                //   'Ticket',
-                //   'Edit_Task',
-                //   'INSERT',
-                //   res.message
-                // );
+                // setLoading(false);
+                setNotify({ type: 'danger', message: res.data.message });
+                new ErrorLogService().sendErrorLog(
+                  'Ticket',
+                  'Edit_Task',
+                  'INSERT',
+                  res.message
+                );
               }
             });
           }
@@ -678,27 +673,27 @@ export default function TaskModal(props) {
     }
   };
 
-  const handleParentchange = async (e) => {
-    if (typeRef.current) {
-      typeRef.current.clearValue();
-    }
-    await new TaskTicketTypeService().getAllType().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const temp = res.data.data;
-          setTasktypeDropdown(
-            temp
-              .filter((d) => d.type === 'TICKET' && d.is_active == 1)
-              .map((d) => ({ value: d.id, label: d.type_name }))
-          );
-        }
-      }
-    });
-  };
+  // const handleParentchange = async (e) => {
+  //   if (typeRef.current) {
+  //     typeRef.current.clearValue();
+  //   }
+  //   await new TaskTicketTypeService().getAllType().then((res) => {
+  //     if (res.status === 200) {
+  //       if (res.data.status === 1) {
+  //         const temp = res.data.data;
+  //         setTasktypeDropdown(
+  //           temp
+  //             .filter((d) => d.type === 'TICKET' && d.is_active == 1)
+  //             .map((d) => ({ value: d.id, label: d.type_name }))
+  //         );
+  //       }
+  //     }
+  //   });
+  // };
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
   return (
     <>
       <Modal
@@ -1153,7 +1148,7 @@ export default function TaskModal(props) {
                     }
                   />
                 )}
-                {defaultUserData?.length == 0 && userData && (
+                {defaultUserData?.length === 0 && userData && (
                   <Select
                     isMulti
                     isSearchable={true}
@@ -1168,7 +1163,7 @@ export default function TaskModal(props) {
                       userData &&
                       userData
                         .map((d) => ({ value: d.value, label: d.label }))
-                        .filter((d) => d.value == localStorage.getItem('id'))
+                        .filter((d) => d.value === localStorage.getItem('id'))
                     }
                     isClearable
                     // isDisabled={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
@@ -1312,6 +1307,7 @@ export default function TaskModal(props) {
                               href={`${_attachmentUrl + '/' + attach.path}`}
                               target="_blank"
                               className="btn btn-warning btn-sm p-0 px-1"
+                              rel="noreferrer"
                             >
                               <i
                                 className="icofont-download"

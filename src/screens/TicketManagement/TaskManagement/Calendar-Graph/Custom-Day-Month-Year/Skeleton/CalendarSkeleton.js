@@ -11,7 +11,9 @@ const CalendarSkeleton = () => {
               <h4
                 className="mb-4 px-4 skeleton-task skeleton-text rounded-3"
                 style={{ width: '50px' }}
-              ></h4>
+              >
+                {' '}
+              </h4>
               <p
                 className="mb-0 skeleton-task skeleton-text rounded-3"
                 style={{ width: '30px' }}

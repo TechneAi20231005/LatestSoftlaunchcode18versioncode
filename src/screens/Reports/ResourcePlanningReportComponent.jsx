@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import { Table } from 'react-bootstrap';
 import ErrorLogService from '../../services/ErrorLogService';
@@ -8,7 +8,6 @@ import PageHeader from '../../components/Common/PageHeader';
 import Select from 'react-select';
 import { Astrick } from '../../components/Utilities/Style';
 import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
-
 import { Link } from 'react-router-dom';
 import { _base } from '../../settings/constants';
 
@@ -32,8 +31,8 @@ export default function ResourcePlanningReportComponent() {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 25)
   );
 
-  const [todate, setTodate] = useState([]);
-  const [fromdate, setFromdate] = useState([]);
+  // const [todate, setTodate] = useState([]);
+  // const [fromdate, setFromdate] = useState([]);
 
   const [todateformat, setTodateformat] = useState('');
   const [fromdateformat, setFromdateformat] = useState('');
@@ -60,14 +59,12 @@ export default function ResourcePlanningReportComponent() {
     }
   ];
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     const tempUserData = [];
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
-
-        
         const data = res.data.data.filter(
           (d) => d.is_active === 1 && d.account_for === 'SELF'
         );
@@ -91,7 +88,7 @@ export default function ResourcePlanningReportComponent() {
     });
 
     dispatch(getRoles());
-  };
+  }, []);
 
   const handleFromDate = (e) => {
     const gettodatevalue = e.target.value;
@@ -100,7 +97,7 @@ export default function ResourcePlanningReportComponent() {
     const settomonth = setdateformat[1];
     const settodate = setdateformat[2];
     const settodateformat = settoyear + '' + settomonth + '' + settodate;
-    setTodate(gettodatevalue);
+    // setTodate(gettodatevalue);
     setTodateformat(settodateformat);
   };
 
@@ -112,7 +109,7 @@ export default function ResourcePlanningReportComponent() {
     const setfromdate = setfromformat[2];
     const setfromformatdate =
       setfromyear + '' + setfrommonth + '' + setfromdate;
-    setFromdate(getfromdatevalue);
+    // setFromdate(getfromdatevalue);
     setFromdateformat(setfromformatdate);
   };
 
@@ -227,7 +224,6 @@ export default function ResourcePlanningReportComponent() {
               return (
                 <tr>
                   <td>{key + 1}</td>
-
                   <td>
                     <Link to={`/${_base}/Ticket/Task/${task.id}`}>
                       <span style={{ fontWeight: 'bold' }}>
@@ -248,7 +244,7 @@ export default function ResourcePlanningReportComponent() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
     if (isMenuRoleChecked && isMenuRoleChecked[0]?.can_read === 0) {
@@ -262,7 +258,7 @@ export default function ResourcePlanningReportComponent() {
       <div>
         <form onSubmit={handleForm}>
           <div className="card mt-2">
-            <div className="card-body p-5">
+            <div className="card-body p-3">
               <div className="row">
                 <div className="col-md-3">
                   <label htmlFor="" className="">
@@ -373,8 +369,11 @@ export default function ResourcePlanningReportComponent() {
           />
         </div>
       ) : (
-        searchPerformed &&
-        !isLoading && <div className="text-center">No data found</div>
+        searchPerformed && (
+          <div className="card card-body mt-2">
+            {!isLoading && <p className="text-center">No data found</p>}
+          </div>
+        )
       )}
     </div>
     // </div>

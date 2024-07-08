@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 
@@ -43,10 +43,10 @@ function CustomerComponent() {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(getAllCustomerData, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [getAllCustomerData, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -141,7 +141,7 @@ function CustomerComponent() {
     return () => {
       setNotify(null);
     };
-  }, []);
+  }, [checkRole.length, dispatch, location]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -155,7 +155,7 @@ function CustomerComponent() {
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [handleSearch, searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -223,10 +223,12 @@ function CustomerDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
+
     new CustomerService().getCustomer().then((res) => {
       if (res.status === 200) {
-        var data = res.data.data;
-        var data = data.filter((d) => d.is_active == 1);
+        var data = res?.data?.data;
+
+        // var data = data.filter((d) => d.is_active === 1);
         for (const key in data) {
           tempData.push({
             id: data[key].id,

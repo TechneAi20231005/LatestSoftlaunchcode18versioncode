@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
@@ -55,10 +55,10 @@ function DepartmentComponent() {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(department, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [department, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -178,7 +178,7 @@ function DepartmentComponent() {
     if (!department.length) {
       dispatch(getRoles());
     }
-  }, []);
+  }, [dispatch, department.length]);
 
   useEffect(() => {
     setFilteredData(department);
@@ -186,7 +186,7 @@ function DepartmentComponent() {
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -452,16 +452,16 @@ function DepartmentDropdown(props) {
           onChange={props.getChangeValue}
           required={props.required ? true : false}
         >
-          {props.defaultValue == 0 && (
+          {props.defaultValue === 0 && (
             <option value="" selected>
               Select Department
             </option>
           )}
-          {props.defaultValue != 0 && (
+          {props.defaultValue !== 0 && (
             <option value="">Select Department</option>
           )}
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.department}

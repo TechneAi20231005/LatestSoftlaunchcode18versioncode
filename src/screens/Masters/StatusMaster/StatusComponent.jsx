@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
@@ -8,19 +8,17 @@ import PageHeader from '../../../components/Common/PageHeader';
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
 import Alert from '../../../components/Common/Alert';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
-import { Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getStatusData,
   postStatusData,
   updateStatusData
 } from './StatusComponentAction';
-import { statusMasterSlice } from './StatusComponentSlice';
+
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { handleModalClose, handleModalOpen } from './StatusComponentSlice';
-import { DashbordSlice } from '../../Dashboard/DashbordSlice';
+
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
@@ -53,10 +51,10 @@ function StatusComponent() {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(statusData, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [statusData, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -87,7 +85,7 @@ function StatusComponent() {
               );
             }}
           >
-            <i className="icofont-edit text-success"></i>
+            <i className="icofont-edit text-success" />
           </button>
         </div>
       )
@@ -111,12 +109,12 @@ function StatusComponent() {
       width: '150px',
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -178,14 +176,14 @@ function StatusComponent() {
     if (!statusData.length) {
       dispatch(getRoles());
     }
-  }, []);
+  }, [dispatch, statusData.length]);
   useEffect(() => {
     setFilteredData(statusData);
   }, [statusData]);
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -422,11 +420,11 @@ function StatusDropdown(props) {
   useEffect(() => {
     const tempData = [];
     new StatusService().getStatus().then((res) => {
-      if (res.status == 200) {
+      if (res.status === 200) {
         const data = res.data.data;
         let counter = 1;
         for (const key in data) {
-          if (data[key].is_active == 1) {
+          if (data[key].is_active === 1) {
             tempData.push({
               counter: counter++,
               id: data[key].id,

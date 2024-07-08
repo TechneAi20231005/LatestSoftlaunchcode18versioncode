@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import ErrorLogService from '../../services/ErrorLogService';
 import ReportService from '../../services/ReportService/ReportService';
@@ -41,8 +41,6 @@ export default function TimelineReportComponent() {
         );
       });
   };
-
-  useEffect(() => {}, []);
 
   return (
     <div className="container-xxl">

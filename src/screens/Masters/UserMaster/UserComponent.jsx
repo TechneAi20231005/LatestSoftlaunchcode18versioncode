@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
 
@@ -18,7 +18,7 @@ import { customSearchHandler } from '../../../utils/customFunction';
 
 function UserComponent() {
   //initial state
-  const location = useLocation();
+
   const dispatch = useDispatch();
 
   //Redux State
@@ -37,16 +37,15 @@ function UserComponent() {
   );
   //local state
   const [searchTerm, setSearchTerm] = useState('');
-  const [notify, setNotify] = useState(null);
 
   const [filteredData, setFilteredData] = useState([]);
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(employeeData, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [employeeData, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -114,12 +113,13 @@ function UserComponent() {
       sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+
+          {row.is_active === 0 && (
             <span className="badge bg-danger " style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -157,7 +157,7 @@ function UserComponent() {
     const exportTempData = [];
 
     await new UserService().getExportTicket().then((res) => {
-      if (res.status == 200) {
+      if (res.status === 200) {
         const temp = res.data.data;
 
         for (const i in temp) {
@@ -214,15 +214,7 @@ function UserComponent() {
     dispatch(getEmployeeData());
     dispatch(getRoles());
     dispatch(departmentData());
-  }, []);
-  useEffect(() => {
-    if (location && location.state) {
-      setNotify(location.state);
-    }
-    return () => {
-      setNotify(null);
-    };
-  }, [location.state]);
+  }, [dispatch]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -235,7 +227,7 @@ function UserComponent() {
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl px-0">
@@ -258,6 +250,7 @@ function UserComponent() {
           );
         }}
       />
+
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
@@ -325,14 +318,15 @@ function UserDropdown(props) {
           required={props.required ? true : false}
           readonly={true}
         >
-          {props.defaultValue == 0 && (
+          {props.defaultValue === 0 && (
             <option value="" selected>
               Select User
             </option>
           )}
-          {props.defaultValue != 0 && <option value="">Select User</option>}
+          {props.defaultValue !== 0 && <option value="">Select User</option>}
+
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.name}

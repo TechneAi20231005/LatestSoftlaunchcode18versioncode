@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
-
+import { Modal, Spinner } from 'react-bootstrap';
 import { Astrick } from '../../components/Utilities/Style';
 import ErrorLogService from '../../services/ErrorLogService';
 import UserService from '../../services/MastersService/UserService';
@@ -11,13 +11,13 @@ import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
 
 import { getRoles } from '../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
-import DropdownLoadingSkeleton from '../../components/custom/loader/DropdownLoadingSkeleton';
 import TableLoadingSkelton from '../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../components/Common/SearchBoxHeader ';
+// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 
 export default function ResourcePlanningReportComponent() {
   const dispatch = useDispatch();
-  const isMenuRoleChecked = useSelector((DashboardSlice) =>
+  const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 38)
   );
   const [userData, setUserData] = useState(null);
@@ -27,8 +27,7 @@ export default function ResourcePlanningReportComponent() {
   const [data, setData] = useState(null);
   const [exportData, setExportData] = useState(null);
 
-  const [todate, setTodate] = useState([]);
-  const [fromdate, setFromdate] = useState([]);
+  const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [todateformat, setTodateformat] = useState('');
   const [fromdateformat, setFromdateformat] = useState('');
@@ -82,7 +81,7 @@ export default function ResourcePlanningReportComponent() {
     }
   ];
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     const tempUserData = [];
 
     const inputRequired =
@@ -112,7 +111,7 @@ export default function ResourcePlanningReportComponent() {
     });
 
     dispatch(getRoles());
-  };
+  }, [dispatch]);
 
   const handleFromDate = (e) => {
     const gettodatevalue = e.target.value;
@@ -121,7 +120,6 @@ export default function ResourcePlanningReportComponent() {
     const settomonth = setdateformat[1];
     const settodate = setdateformat[2];
     const settodateformat = settoyear + '' + settomonth + '' + settodate;
-    setTodate(gettodatevalue);
     setTodateformat(settodateformat);
   };
 
@@ -133,7 +131,6 @@ export default function ResourcePlanningReportComponent() {
     const setfromdate = setfromformat[2];
     const setfromformatdate =
       setfromyear + '' + setfrommonth + '' + setfromdate;
-    setFromdate(getfromdatevalue);
     setFromdateformat(setfromformatdate);
   };
   const handleReset = () => {
@@ -155,7 +152,6 @@ export default function ResourcePlanningReportComponent() {
         .then((res) => {
           if (res.status === 200) {
             setIsLoading(false);
-
             setSearchPerformed(true);
             if (res.data.status === 1) {
               let sr = 1;
@@ -218,6 +214,7 @@ export default function ResourcePlanningReportComponent() {
           }
         })
         .catch((error) => {
+          setIsLoading(false);
           const { response } = error;
           const { request, ...errorObject } = response;
           new ErrorLogService().sendErrorLog(
@@ -232,20 +229,20 @@ export default function ResourcePlanningReportComponent() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
-    if (isMenuRoleChecked && isMenuRoleChecked[0]?.can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, []);
+  }, [checkRole]);
 
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Variance Report" />
       <div>
-        <div className="card mt-2">
-          <div className="card-body p-5">
+        <div className="card mt-">
+          <div className="card-body p-3">
             <form onSubmit={handleForm}>
               <div className="row">
                 <div className="col-md-3">
@@ -315,6 +312,7 @@ export default function ResourcePlanningReportComponent() {
                 <button
                   className="btn btn-sm btn-warning text-white"
                   type="submit"
+                  style={{ marginTop: '20px', fontWeight: '600' }}
                 >
                   <i className="icofont-search-1 " /> Search
                 </button>
@@ -322,12 +320,20 @@ export default function ResourcePlanningReportComponent() {
                   className="btn btn-sm btn-info text-white"
                   type="button"
                   onClick={() => window.location.reload(false)}
+                  style={{ marginTop: '20px', fontWeight: '600' }}
                 >
                   <i className="icofont-refresh text-white" /> Reset
                 </button>
               </div>
-              <div className="col-md-6 d-flex justify-content-end">
-                {data && data.length > 0 && (
+              {data && data.length > 0 && (
+                <div
+                  className="col-md-10"
+                  style={{
+                    textAlign: 'right',
+                    marginTop: '20px',
+                    fontWeight: '600'
+                  }}
+                >
                   <ExportToExcel
                     className="btn btn-sm btn-danger"
                     apiData={exportData && exportData}
@@ -345,30 +351,46 @@ export default function ResourcePlanningReportComponent() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12"> */}
+      {/* {isLoading ? (
+        <TableLoadingSkelton />
+      ) : data && data.length > 0 ? (
+        <div className="card mt-3">
+          <DataTable
+            columns={columns}
+            data={data}
+            defaultSortField="title"
+            pagination
+            selectableRows={false}
+            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+            highlightOnHover={true}
+          />
+        </div>
+      ) : (
+        searchPerformed &&
+        !isLoading && <div className="text-center">No data found</div>
+      )} */}
+
       {isLoading ? (
         <TableLoadingSkelton />
+      ) : data && data.length > 0 ? (
+        <div className="card mt-3">
+          <DataTable
+            columns={columns}
+            data={data}
+            defaultSortField="title"
+            pagination
+            selectableRows={false}
+            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+            highlightOnHover={true}
+          />
+        </div>
       ) : (
-        <>
-          {data && data.length > 0 ? (
-            <div className="card mt-3">
-              <DataTable
-                columns={columns}
-                data={data}
-                defaultSortField="title"
-                pagination
-                selectableRows={false}
-                className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                highlightOnHover={true}
-              />
-            </div>
-          ) : (
-            <>
-              {searchPerformed && !isLoading && (
-                <div className="text-center">No data found</div>
-              )}
-            </>
-          )}
-        </>
+        searchPerformed &&
+        !isLoading && (
+          <div className=" card card-body mt-2">
+            <p className="text-center">No data found</p>
+          </div>
+        )
       )}
     </div>
     //       </div>

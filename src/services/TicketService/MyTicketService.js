@@ -14,8 +14,8 @@ const _createComment = _URL + '/comment/createComment';
 const _getAllComment = _URL + '/comment/getAllComment/';
 const _createGanttChart = _apiUrl + 'hoursWiseTaskRecord/';
 
-const _passTicket = _URL + '/passTicket';
-const _passBulkTicket = _URL + '/bulkpassTicket';
+const _passTicket = _URL + "/passTicket";
+// const _passBulkTicket = _URL + "/bulkpassTicket";
 
 export default class MyTicketService {
   getUserTickets() {

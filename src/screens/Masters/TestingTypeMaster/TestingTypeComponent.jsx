@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
@@ -7,7 +7,6 @@ import PageHeader from '../../../components/Common/PageHeader';
 import { Astrick } from '../../../components/Utilities/Style';
 
 import Alert from '../../../components/Common/Alert';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -43,7 +42,7 @@ function TestingTypeComponent() {
     (TestingTypeComponentSlices) => TestingTypeComponentSlices.testingData.modal
   );
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 39)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 39)
   );
   const notify = useSelector(
     (TestingTypeComponentSlices) =>
@@ -55,10 +54,10 @@ function TestingTypeComponent() {
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(testingtypeData, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [testingtypeData, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -113,12 +112,12 @@ function TestingTypeComponent() {
       sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -175,14 +174,14 @@ function TestingTypeComponent() {
     if (!testingtypeData.length) {
       dispatch(getRoles());
     }
-  }, []);
+  }, [dispatch, testingtypeData.length]);
   useEffect(() => {
     setFilteredData(testingtypeData);
   }, [testingtypeData]);
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -198,7 +197,7 @@ function TestingTypeComponent() {
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[0]?.can_create == 1 ? (
+              {checkRole && checkRole[0]?.can_create === 1 ? (
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
@@ -379,7 +378,7 @@ function TestingTypeComponent() {
                 Add
               </button>
             )}
-            {modal.modalData && checkRole && checkRole[0]?.can_update == 1 ? (
+            {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
               <button
                 type="submit"
                 className="btn btn-primary text-white"

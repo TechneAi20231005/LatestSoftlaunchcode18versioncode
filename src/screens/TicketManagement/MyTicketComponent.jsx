@@ -1,10 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
-import { Dropdown, Button, ButtonGroup } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import { _base } from '../../settings/constants';
 import Alert from '../../components/Common/Alert';
 import ErrorLogService from '../../services/ErrorLogService';
@@ -22,22 +22,19 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
 import './custome.css';
 import { Spinner } from 'react-bootstrap';
-import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
+
 import { ExportAllTicketsToExcel } from '../../components/Utilities/Table/ExportAllTicketsToExcel';
 import { useSelector, useDispatch } from 'react-redux';
-import TicketSlices, { hideNotification } from './Slices/TicketSlices';
+
 import { getRoles } from '../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../components/custom/loader/TableLoadingSkelton';
 
 export default function MyTicketComponent() {
   const [notify, setNotify] = useState(null);
-  const [data, setData] = useState(null);
+  // const [data, setData] = useState(null);
   const [userDropdown, setUserDropdown] = useState(null);
   const [customerUserDropdown, setCustomerUserDropdown] = useState(null);
 
-  const roleId = sessionStorage.getItem('role_id');
-
-  const [userName, setUserName] = useState('');
   const [user, setUser] = useState('');
 
   const [statusData, setStatusData] = useState(null);
@@ -49,28 +46,17 @@ export default function MyTicketComponent() {
 
   const [unpassedTickets, setUnpassedTickets] = useState(null);
 
-  const [unpassedTicketsExport, setUnpassedTicketsExport] = useState(null);
-
   const [assignedToMe, setAssignedToMe] = useState(null);
-  const [assignedToMeExport, setAssignedToMeExport] = useState(null);
 
   const [yourTask, setYourTask] = useState(null);
-  const [yourTaskExport, setYourTaskExport] = useState(null);
 
   const [createdByMe, setCreatedByMe] = useState(null);
-  const [createdByMeExport, setCreatedByMeExport] = useState(null);
 
   const [departmentwiseTicket, setDepartmentwiseTicket] = useState(null);
-  const [departmentwiseTicketExport, setDepartmentwiseTicketExport] =
-    useState(null);
-  const [ticketShowType, setTicketShowType] = useState(null);
 
-  const [userDepartment, setUserDepartment] = useState();
-
-  const [exportData, setExportData] = useState(null);
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 17)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 17)
   );
 
   const [modal, setModal] = useState({
@@ -79,12 +65,6 @@ export default function MyTicketComponent() {
     modalHeader: ''
   });
   const [remarkModal, setRemarkModal] = useState({
-    showModal: false,
-    modalData: '',
-    modalHeader: ''
-  });
-
-  const [bulkRemarkModal, setBulkRemarkModal] = useState({
     showModal: false,
     modalData: '',
     modalHeader: ''
@@ -105,7 +85,8 @@ export default function MyTicketComponent() {
   const handleShow = () => setShow(true);
   const [assignUserDropdown, setAssignUserDropdown] = useState(null);
   const [toDateRequired, setToDateRequired] = useState(false);
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  const showLoaderModal = false;
+  // const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [assignedToMeData, setAssignedToMeData] = useState();
   const [selectAllNames, setSelectAllNames] = useState(false);
   const [createdByMeData, setCreatedByMeData] = useState();
@@ -154,14 +135,15 @@ export default function MyTicketComponent() {
     const deptUser = [];
     for (var i = 0; i < e.length; i++) {
       const select = user
-        .filter((d) => d.department_id == e[i].value)
+        // eslint-disable-next-line no-loop-func
+        .filter((d) => d.department_id === e[i].value)
         .map((d) => ({ value: d.id, label: d.first_name + ' ' + d.last_name }));
       for (var j = 0; j < select.length; j++) {
         deptUser.push(select[j]);
       }
     }
     setUserDropdown(deptUser);
-    setUserName(null);
+    // setUserName(null);
 
     setEntryDepartment(e);
   };
@@ -197,7 +179,7 @@ export default function MyTicketComponent() {
       .verifyTicketConfirmationOtp(id, form)
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status == 1) {
+          if (res.data.status === 1) {
             setNotify({ type: 'success', message: res.data.message });
             setConfirmationModal({
               showModal: false,
@@ -234,13 +216,16 @@ export default function MyTicketComponent() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {data.created_by == localStorage.getItem('id') ||
-                data.assign_to_user_id == localStorage.getItem('id') ||
+              {console.log('createsby', data.created_by)}
+              {console.log(data.assign_to_user_id)}
+              {console.log('local', localStorage.getItem('id'))}
+              {data.created_by === localStorage.getItem('id') ||
+                data.assign_to_user_id === localStorage.getItem('id') ||
                 (data.status_name !== 'Solved' &&
                   data.passed_status !== 'REJECT' &&
                   localStorage.getItem('account_for' === 'SELF')) ||
                 (data?.projectowner?.filter(
-                  (d) => d.user_id == localStorage.getItem('id')
+                  (d) => d.user_id === localStorage.getItem('id')
                 ) && (
                   <li>
                     <Link
@@ -253,10 +238,21 @@ export default function MyTicketComponent() {
                   </li>
                 ))}
 
+              <li>
+                {' '}
+                <Link
+                  to={`/${_base}/Ticket/View/` + data.id}
+                  className="btn btn-sm btn-info text-white"
+                  style={{ width: '100%', zIndex: 100 }}
+                >
+                  <i className="icofont-external-link "></i> View
+                </Link>{' '}
+              </li>
+
               {data.created_by !== localStorage.getItem('id') &&
                 data.basket_configured === 0 &&
                 localStorage.getItem('account_for') === 'SELF' &&
-                data.status_name != 'Solved' &&
+                data.status_name !== 'Solved' &&
                 data.passed_status !== 'REJECT' &&
                 data.passed_status !== 'UNPASS' && (
                   <li>
@@ -270,9 +266,13 @@ export default function MyTicketComponent() {
                   </li>
                 )}
 
-              {data.created_by !== localStorage.getItem('id') &&
+              {(data.created_by !== localStorage.getItem('id') &&
                 data.basket_configured > 0 &&
-                localStorage.getItem('account_for') === 'SELF' && (
+                data.status_name !== 'Solved' &&
+                localStorage.getItem('account_for' === 'SELF')) ||
+                (data?.projectowner?.filter(
+                  (d) => d.user_id === localStorage.getItem('id')
+                ) && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Task/` + data.id}
@@ -282,49 +282,26 @@ export default function MyTicketComponent() {
                       <i className="icofont-tasks"></i> Task
                     </Link>
                   </li>
-                )}
+                ))}
 
               <li>
-                {' '}
                 <Link
-                  to={`/${_base}/Ticket/View/` + data.id}
-                  className="btn btn-sm btn-info text-white"
+                  to={`/${_base}/TicketHistory/` + data.id}
+                  className="btn btn-sm btn-primary text-white"
                   style={{ width: '100%', zIndex: 100 }}
                 >
-                  <i className="icofont-external-link "></i> View
-                </Link>{' '}
+                  <i className="icofont-history"></i> History
+                </Link>
               </li>
-              {data?.passed_status !== 'UNPASS' && (
-                <>
-                  <li>
-                    <Link
-                      to={`/${_base}/TicketHistory/` + data.id}
-                      className="btn btn-sm btn-primary text-white"
-                      style={{ width: '100%', zIndex: 100 }}
-                    >
-                      <i className="icofont-history"></i> History
-                    </Link>
-                  </li>
-                  <li>
-                    <button
-                      className=" btn btn-sm  btn-secondary text-white"
-                      style={{ width: '100%', zIndex: 100 }}
-                      onClick={(e) => handleConfirmationModal(e, data)}
-                    >
-                      Confirm
-                    </button>
-                  </li>
-                </>
-              )}
             </Dropdown.Menu>
           </Dropdown>
         );
       } else {
         return (
           <div className="d-flex justify-content-between">
-            {data.created_by == sessionStorage.getItem('id') ||
-              (data.assign_to_user_id == sessionStorage.getItem('id') &&
-                data.status_name != 'Solved' && (
+            {data.created_by === sessionStorage.getItem('id') ||
+              (data.assign_to_user_id === sessionStorage.getItem('id') &&
+                data.status_name !== 'Solved' && (
                   <Link
                     to={`/${_base}/Ticket/Edit/` + data.id}
                     className="btn btn-sm btn-warning text-white"
@@ -366,8 +343,8 @@ export default function MyTicketComponent() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {data.created_by == localStorage.getItem('id') ||
-                (data.assign_to_user_id == localStorage.getItem('id') && (
+              {data.created_by === localStorage.getItem('id') ||
+                (data.assign_to_user_id === localStorage.getItem('id') && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Edit/` + data.id}
@@ -410,8 +387,8 @@ export default function MyTicketComponent() {
       } else {
         return (
           <div className="d-flex justify-content-between">
-            {data.created_by == localStorage.getItem('id') ||
-              (data.assign_to_user_id == localStorage.getItem('id') && (
+            {data.created_by === localStorage.getItem('id') ||
+              (data.assign_to_user_id === localStorage.getItem('id') && (
                 <Link
                   to={`/${_base}/Ticket/Edit/` + data.id}
                   className="btn btn-sm btn-warning text-white"
@@ -485,9 +462,9 @@ export default function MyTicketComponent() {
                 </Link>
               </li>
 
-              {((data.created_by != localStorage.getItem('id') &&
+              {((data.created_by !== localStorage.getItem('id') &&
                 data.basket_configured === 0) ||
-                (data.assign_to_user_id == localStorage.getItem('id') &&
+                (data.assign_to_user_id === localStorage.getItem('id') &&
                   data.basket_configured === 0)) &&
                 localStorage.getItem('account_for') === 'SELF' && (
                   <li>
@@ -501,9 +478,9 @@ export default function MyTicketComponent() {
                   </li>
                 )}
 
-              {((data.created_by != localStorage.getItem('id') &&
+              {((data.created_by !== localStorage.getItem('id') &&
                 data.basket_configured > 0) ||
-                (data.assign_to_user_id == localStorage.getItem('id') &&
+                (data.assign_to_user_id === localStorage.getItem('id') &&
                   data.basket_configured > 0)) &&
                 localStorage.getItem('account_for') === 'SELF' && (
                   <li>
@@ -530,9 +507,9 @@ export default function MyTicketComponent() {
               <i className="icofont-history"></i> History
             </Link>
 
-            {((data.created_by != localStorage.getItem('id') &&
+            {((data.created_by !== localStorage.getItem('id') &&
               data.basket_configured === 0) ||
-              (data.assign_to_user_id == localStorage.getItem('id') &&
+              (data.assign_to_user_id === localStorage.getItem('id') &&
                 data.basket_configured === 0)) &&
               localStorage.getItem('account_for') === 'SELF' && (
                 <Link
@@ -597,7 +574,7 @@ export default function MyTicketComponent() {
                   <i className="icofont-external-link "></i> View
                 </Link>{' '}
               </li>
-              {data.created_by != localStorage.getItem('id') &&
+              {data.created_by !== localStorage.getItem('id') &&
                 data.basket_configured > 0 &&
                 localStorage.getItem('account_for') === 'SELF' && (
                   <li>
@@ -674,8 +651,8 @@ export default function MyTicketComponent() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {data.created_by == localStorage.getItem('id') ||
-                (data.assign_to_user_id == localStorage.getItem('id') && (
+              {data.created_by === localStorage.getItem('id') ||
+                (data.assign_to_user_id === localStorage.getItem('id') && (
                   <li>
                     <Link
                       to={`/${_base}/Ticket/Edit/` + data.id}
@@ -852,7 +829,7 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <a
-            href="#"
+            href="/"
             onClick={(e) => {
               handleModal({ showModal: true, modalData: row, modalHeader: '' });
             }}
@@ -940,7 +917,7 @@ export default function MyTicketComponent() {
     {
       name: 'Action',
       button: true,
-      width: '170px',
+      // width: '170px',
       ignoreRowClick: true,
       allowOverflow: false,
       width: `${
@@ -976,7 +953,7 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <a
-            href="#"
+            href="/"
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1068,7 +1045,7 @@ export default function MyTicketComponent() {
     {
       name: 'Action',
       button: true,
-      width: '80px',
+      // width: '80px',
 
       width: `${
         assignedToMe ? (assignedToMe.length > 0 ? '4rem' : '20.625rem') : 'auto'
@@ -1098,7 +1075,7 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <a
-            href="#"
+            href="/"
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1203,7 +1180,7 @@ export default function MyTicketComponent() {
     {
       name: 'Action',
       button: true,
-      width: '150px',
+      // width: '150px',
       ignoreRowClick: true,
       width: `${
         createdByMe ? (createdByMe.length > 0 ? '4rem' : '20.625rem') : 'auto'
@@ -1239,7 +1216,7 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <a
-            href="#"
+            href="/"
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1352,7 +1329,7 @@ export default function MyTicketComponent() {
   const unpassedColumns = [
     {
       name: 'Action',
-      width: '150px',
+      // width: '150px',
       button: true,
       ignoreRowClick: true,
       allowOverflow: false,
@@ -1424,7 +1401,7 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <a
-            href="#"
+            href="/"
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1541,7 +1518,7 @@ export default function MyTicketComponent() {
     {
       name: 'Action',
       button: true,
-      width: '170px',
+      // width: '170px',
       center: true,
       ignoreRowClick: true,
       allowOverflow: false,
@@ -1582,7 +1559,7 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <a
-            href="#"
+            href="/"
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1672,7 +1649,7 @@ export default function MyTicketComponent() {
     { name: 'Created By', cell: (row) => row.created_by_name, sortable: true }
   ];
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setIsLoading(true);
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active';
@@ -1682,11 +1659,11 @@ export default function MyTicketComponent() {
       .then((res) => {
         if (res.status === 200) {
           const tempData = [];
-          const temp = res.data.data.filter((d) => d.is_active == 1);
-          if (res.data.status == 1) {
-            const data = res.data.data.filter(
-              (d) => d.is_active == 1 && d.account_for === 'SELF'
-            );
+          const temp = res.data.data.filter((d) => d.is_active === 1);
+          if (res.data.status === 1) {
+            // const data = res.data.data.filter(
+            //   (d) => d.is_active == 1 && d.account_for === 'SELF'
+            // );
             setUser(temp);
           }
           for (const key in temp) {
@@ -1696,21 +1673,21 @@ export default function MyTicketComponent() {
             });
           }
           const select = res.data.data
-            .filter((d) => d.is_active == 1 && d.account_for === 'SELF')
+            .filter((d) => d.is_active === 1 && d.account_for === 'SELF')
             .map((d) => ({
               value: d.id,
               label: d.first_name + ' ' + d.last_name
             }));
 
           const select1 = res.data.data
-            .filter((d) => d.is_active == 1)
+            .filter((d) => d.is_active === 1)
             .map((d) => ({
               value: d.id,
               label: d.first_name + ' ' + d.last_name
             }));
 
           const select2 = res.data.data
-            .filter((d) => d.is_active == 1 && d.account_for === 'CUSTOMER')
+            .filter((d) => d.is_active === 1 && d.account_for === 'CUSTOMER')
             .map((d) => ({
               value: d.id,
               label: d.first_name + ' ' + d.last_name
@@ -1780,10 +1757,10 @@ export default function MyTicketComponent() {
         if (res.status === 200) {
           setIsLoading(false);
 
-          if (res.data.status == 1) {
+          if (res.data.status === 1) {
             if (res.status === 200) {
-              if (res.data.status == 1) {
-                setUserDepartment(res.data.data);
+              if (res.data.status === 1) {
+                // setUserDepartment(res.data.data);
               }
             }
           }
@@ -1794,18 +1771,18 @@ export default function MyTicketComponent() {
           const tempData = [];
           const temp = res.data.data;
           for (const key in temp) {
-            if (temp[key].is_active == 1) {
+            if (temp[key].is_active === 1) {
               tempData.push([temp[key].ticket_show_type]);
             }
           }
-          setTicketShowType(null);
-          setTicketShowType(tempData);
+          // setTicketShowType(null);
+          // setTicketShowType(tempData);
         }
       });
 
     await new MyTicketService().getUserTicketsTest().then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
+        if (res?.data?.status === 1) {
           setAssignedToMeData(res.data.data);
           setAssignedToMe(
             res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
@@ -1853,21 +1830,12 @@ export default function MyTicketComponent() {
             });
           }
 
-          setAssignedToMeExport(tempAssignToMeExport);
           setIsLoading(false);
         }
       }
     });
     dispatch(getRoles());
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.menu_id == 17));
-    //     }
-    //   }
-    // });
-  };
+  }, [dispatch]);
 
   const handlePassTicketForm = async (e) => {
     try {
@@ -1875,10 +1843,6 @@ export default function MyTicketComponent() {
       setNotify(null);
 
       const formData = new FormData(e.target);
-
-      // selectedRowss.forEach((id, index) => {
-      //   formData.append(`id[${index}]`, id);
-      // });
 
       if (remarkModal && Array.isArray(remarkModal.modalData)) {
         selectedRowss.forEach((id, index) => {
@@ -1908,7 +1872,7 @@ export default function MyTicketComponent() {
           setNotify({ type: 'success', message });
           await new MyTicketService().getUserTicketsTest(forms).then((res) => {
             if (res.status === 200) {
-              if (res.data.status == 1) {
+              if (res?.data?.status === 1) {
                 setUnpassedData(res.data.data);
                 setUnpassedTickets(res.data.data.data);
                 setIsLoading(false);
@@ -1925,9 +1889,8 @@ export default function MyTicketComponent() {
       setNotify({ type: 'danger', message: 'An error occurred.' });
     }
   };
-  const searchThroughEnter = () => {};
 
-  const handleForm = async (e) => {
+  const handleForm = useCallback(async (e) => {
     try {
       if (e) {
         e.preventDefault();
@@ -1936,7 +1899,7 @@ export default function MyTicketComponent() {
 
         // Check if any form field is filled
         let isAnyFieldFilled = false;
-        for (let [key, value] of formData.entries()) {
+        for (let [, value] of formData.entries()) {
           if (value) {
             isAnyFieldFilled = true;
             break;
@@ -1959,12 +1922,11 @@ export default function MyTicketComponent() {
         const form = document.getElementById('your_form_id');
         const formData = new FormData(form);
 
-        var flag = 1;
         await new ReportService()
           .getTicketReport(formData)
           .then((res) => {
             if (res.status === 200) {
-              if (res.data.status == 1) {
+              if (res.data.status === 1) {
                 setSearchResult(null);
 
                 setSearchResult(res.data.data);
@@ -2042,7 +2004,7 @@ export default function MyTicketComponent() {
       // Handle errors that may occur during the getTicketReport call
       // You can add additional error handling logic here, such as displaying an error message to the user.
     }
-  };
+  }, []);
   const passTicketHandler = () => {};
   const handleChangeStatus = (e) => {
     setStatusValue(e);
@@ -2101,7 +2063,7 @@ export default function MyTicketComponent() {
 
     const formData = new FormData(e.target);
     let isAnyFieldFilled = false;
-    for (let [key, value] of formData.entries()) {
+    for (let [value] of formData.entries()) {
       if (value) {
         isAnyFieldFilled = true;
         break;
@@ -2123,8 +2085,8 @@ export default function MyTicketComponent() {
       await new ReportService()
         .getTicketReport(formData)
         .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status == 1) {
+          if (res?.status === 200) {
+            if (res?.data?.status === 1) {
               setSearchResult(null);
               setSearchResult(res.data.data);
               setIsLoading(false);
@@ -2216,9 +2178,9 @@ export default function MyTicketComponent() {
 
   const handleAssignedDepartment = (e) => {
     const deptAssignedUser = [];
-    for (var i = 0; i < e.length; i++) {
+    for (let i = 0; i < e.length; i++) {
       const select = user
-        .filter((d) => d.department_id == e[i].value)
+        .filter((d) => d.department_id === e[i].value)
         .map((d) => ({ value: d.id, label: d.first_name + ' ' + d.last_name }));
 
       for (var j = 0; j < select.length; j++) {
@@ -2234,7 +2196,7 @@ export default function MyTicketComponent() {
     setIsLoading(true);
     e.preventDefault();
     var form;
-    if (k == 'Assigned_To_Me') {
+    if (k === 'Assigned_To_Me') {
       form = {
         limit: 10,
         typeOf: 'Assigned_To_Me',
@@ -2243,7 +2205,8 @@ export default function MyTicketComponent() {
       };
       await new MyTicketService().getUserTicketsTest(form).then((res) => {
         if (res.status === 200) {
-          if (res.data.status == 1) {
+          setIsLoading(false);
+          if (res.data.status === 1) {
             setAssignedToMe(
               res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
             );
@@ -2251,7 +2214,7 @@ export default function MyTicketComponent() {
         }
         setIsLoading(false);
       });
-    } else if (k == 'created_by_me') {
+    } else if (k === 'created_by_me') {
       const forms = {
         limit: 10,
         typeOf: 'CreatedByMe',
@@ -2267,7 +2230,7 @@ export default function MyTicketComponent() {
         }
         setIsLoading(false);
       });
-    } else if (k == 'departmenyourTaskt') {
+    } else if (k === 'departmenyourTaskt') {
       const forms = {
         limit: 10,
         typeOf: 'DepartmentWise',
@@ -2275,7 +2238,8 @@ export default function MyTicketComponent() {
       };
       await new MyTicketService().getUserTicketsTest(forms).then((res) => {
         if (res.status === 200) {
-          if (res.data.status == 1) {
+          setIsLoading(false);
+          if (res?.data?.status === 1) {
             setDepartmentWiseData(res.data.data);
 
             setDepartmentwiseTicket(
@@ -2285,7 +2249,7 @@ export default function MyTicketComponent() {
         }
         setIsLoading(false);
       });
-    } else if (k == 'your_task') {
+    } else if (k === 'your_task') {
       const forms = {
         limit: 10,
         typeOf: 'YouTask',
@@ -2294,7 +2258,7 @@ export default function MyTicketComponent() {
 
       await new MyTicketService().getUserTicketsTest(forms).then((res) => {
         if (res.status === 200) {
-          if (res.data.status == 1) {
+          if (res.data.status === 1) {
             setYourTaskData(res.data.data);
 
             setYourTask();
@@ -2305,7 +2269,7 @@ export default function MyTicketComponent() {
         }
         setIsLoading(false);
       });
-    } else if (k == 'unpassed_columns') {
+    } else if (k === 'unpassed_columns') {
       const forms = {
         limit: 10,
         typeOf: 'UnPassed',
@@ -2316,13 +2280,14 @@ export default function MyTicketComponent() {
         .getUserTicketsTest(forms)
         .then((res) => {
           if (res.status === 200) {
-            if (res.data.status == 1) {
-              setUnpassedData(res.data.data);
+            setIsLoading(false);
+            if (res?.data?.status === 1) {
+              setUnpassedData(res?.data?.data);
 
-              setUnpassedTickets(res.data.data.data);
+              setUnpassedTickets(res?.data?.data?.data);
             }
+            setIsLoading(false);
           }
-          setIsLoading(false);
         })
         .catch(() => {
           setIsLoading(false);
@@ -2333,19 +2298,19 @@ export default function MyTicketComponent() {
   const handleAssignedToMeRowChanged = async (e, type) => {
     e.preventDefault();
     var form;
-    if (type == 'LIMIT') {
+    if (type === 'LIMIT') {
       const limit = parseInt(e.target.value);
       form = {
         limit: limit,
         typeOf: 'AssignToMe',
         page: 1 // Resetting to the first page when limit changes
       };
-    } else if (type == 'MINUS') {
+    } else if (type === 'MINUS') {
       form = {
         typeOf: 'AssignToMe',
         page: assignedToMeData.current_page - 1
       };
-    } else if (type == 'PLUS') {
+    } else if (type === 'PLUS') {
       form = {
         typeOf: 'AssignToMe',
         page: assignedToMeData.current_page + 1
@@ -2356,18 +2321,17 @@ export default function MyTicketComponent() {
       .getUserTicketsTest(form)
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status == 1) {
+          if (res.data.status === 1) {
             setAssignedToMe(
               res?.data?.data?.data.filter((d) => d.passed_status !== 'REJECT')
             );
             setIsLoading(false);
-            if (type == 'PLUS' && res.data.data.data.length > 0) {
+            if (type === 'PLUS' && res.data.data.data.length > 0) {
               setAssignedToMeData({
                 ...assignedToMeData,
                 current_page: assignedToMeData.current_page + 1
               });
             }
-            setIsLoading(false);
           }
         }
       })
@@ -2379,19 +2343,19 @@ export default function MyTicketComponent() {
   const handleCreatedByMeRowChanged = async (e, type) => {
     e.preventDefault();
     var form;
-    if (type == 'LIMIT') {
+    if (type === 'LIMIT') {
       const limit = parseInt(e.target.value);
       form = {
         limit: limit,
         typeOf: 'CreatedByMe',
         page: createdByMeData.current_page
       };
-    } else if (type == 'MINUS') {
+    } else if (type === 'MINUS') {
       form = {
         typeOf: 'CreatedByMe',
         page: createdByMeData.current_page - 1
       };
-    } else if (type == 'PLUS') {
+    } else if (type === 'PLUS') {
       form = {
         typeOf: 'CreatedByMe',
         page: createdByMeData.current_page + 1
@@ -2402,21 +2366,21 @@ export default function MyTicketComponent() {
       .getUserTicketsTest(form)
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status == 1) {
+          if (res.data.status === 1) {
             setCreatedByMe(
               res?.data?.data?.data.filter((d) => d.passed_status !== 'REJECT')
             );
 
             setIsLoading(false);
 
-            if (type == 'PLUS' && res.data.data.data.length > 0) {
+            if (type === 'PLUS' && res.data.data.data.length > 0) {
               setCreatedByMeData({
                 ...createdByMeData,
                 current_page: createdByMeData.current_page + 1
               });
             }
+            setIsLoading(false);
           }
-          setIsLoading(false);
         }
       })
       .catch(() => {
@@ -2427,19 +2391,19 @@ export default function MyTicketComponent() {
   const handleDepartmentWiseRowChanged = async (e, type) => {
     e.preventDefault();
     var form;
-    if (type == 'LIMIT') {
+    if (type === 'LIMIT') {
       const limit = parseInt(e.target.value);
       form = {
         limit: limit,
         typeOf: 'DepartmentWise',
         page: departmentWiseData.current_page
       };
-    } else if (type == 'MINUS') {
+    } else if (type === 'MINUS') {
       form = {
         typeOf: 'DepartmentWise',
         page: departmentWiseData.current_page - 1
       };
-    } else if (type == 'PLUS') {
+    } else if (type === 'PLUS') {
       form = {
         typeOf: 'DepartmentWise',
         page: departmentWiseData.current_page + 1
@@ -2450,20 +2414,20 @@ export default function MyTicketComponent() {
       .getUserTicketsTest(form)
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status == 1) {
+          if (res.data.status === 1) {
             setDepartmentwiseTicket(
               res.data.data.data.filter((d) => d.passed_status !== 'REJECT')
             );
             setIsLoading(false);
 
-            if (type == 'PLUS' && res.data.data.data.length > 0) {
+            if (type === 'PLUS' && res.data.data.data.length > 0) {
               setDepartmentWiseData({
                 ...departmentWiseData,
                 current_page: departmentWiseData.current_page + 1
               });
             }
+            setIsLoading(false);
           }
-          setIsLoading(false);
         }
       })
       .catch(() => {
@@ -2474,19 +2438,19 @@ export default function MyTicketComponent() {
   const handleYourTaskRowChanged = async (e, type) => {
     e.preventDefault();
     var form;
-    if (type == 'LIMIT') {
+    if (type === 'LIMIT') {
       const limit = parseInt(e.target.value);
       form = {
         limit: limit,
         typeOf: 'YouTask',
         page: yourTaskData.current_page
       };
-    } else if (type == 'MINUS') {
+    } else if (type === 'MINUS') {
       form = {
         typeOf: 'YouTask',
         page: yourTaskData.current_page - 1
       };
-    } else if (type == 'PLUS') {
+    } else if (type === 'PLUS') {
       form = {
         typeOf: 'YouTask',
         page: yourTaskData.current_page + 1
@@ -2497,19 +2461,19 @@ export default function MyTicketComponent() {
       .getUserTicketsTest(form)
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status == 1) {
+          if (res.data.status === 1) {
             setYourTask(
               res.data.data.data.filter((d) => d.passed_status !== 'REJECT')
             );
             setIsLoading(false);
-            if (type == 'PLUS' && res.data.data.data.length > 0) {
+            if (type === 'PLUS' && res.data.data.data.length > 0) {
               setYourTaskData({
                 ...yourTaskData,
                 current_page: yourTaskData.current_page + 1
               });
             }
+            setIsLoading(false);
           }
-          setIsLoading(false);
         }
       })
       .catch((res) => {
@@ -2521,19 +2485,19 @@ export default function MyTicketComponent() {
   const handleUnpassedRowChanged = async (e, type) => {
     e.preventDefault();
     var form;
-    if (type == 'LIMIT') {
+    if (type === 'LIMIT') {
       const limit = parseInt(e.target.value);
       form = {
         limit: limit,
         typeOf: 'UnPassed',
         page: unpassedData.current_page
       };
-    } else if (type == 'MINUS') {
+    } else if (type === 'MINUS') {
       form = {
         typeOf: 'UnPassed',
         page: unpassedData.current_page - 1
       };
-    } else if (type == 'PLUS') {
+    } else if (type === 'PLUS') {
       form = {
         typeOf: 'UnPassed',
         page: unpassedData.current_page + 1
@@ -2546,16 +2510,10 @@ export default function MyTicketComponent() {
       .getUserTicketsTest(form)
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status == 1) {
+          if (res?.data?.status === 1) {
             setUnpassedTickets(res.data.data.data);
             setIsLoading(false);
-            setUnpassedData({
-              ...unpassedData,
-              current_page: res.data.data.current_page
-            });
           }
-
-          setIsLoading(false);
         }
       })
       .catch((res) => {
@@ -2563,14 +2521,6 @@ export default function MyTicketComponent() {
         setIsLoading(false);
       });
   };
-
-  // const customStyles = {
-  //   rows: {
-  //     style: {
-  //       minHeight: "120px",
-  //     },
-  //   },
-  // };
 
   const customStyles = {
     table: {
@@ -2587,7 +2537,7 @@ export default function MyTicketComponent() {
       setLocationState(a);
     }, 3000);
     return () => clearTimeout(timeoutId);
-  }, []);
+  }, [location.state]);
 
   useEffect(() => {
     const listener = (e) => {
@@ -2607,7 +2557,7 @@ export default function MyTicketComponent() {
   useEffect(() => {
     setNotify(null);
     loadData();
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -3510,7 +3460,7 @@ export default function MyTicketComponent() {
       >
         <Modal.Header closeButton>
           <Modal.Title className="fw-bold">
-            {remarkModal.status == 'PASS' ? 'PASS TICKET ' : 'REJECT TICKET'}
+            {remarkModal.status === 'PASS' ? 'PASS TICKET ' : 'REJECT TICKET'}
           </Modal.Title>
         </Modal.Header>
         <form onSubmit={handlePassTicketForm} method="post">
@@ -3524,9 +3474,9 @@ export default function MyTicketComponent() {
                 value={remarkModal.status}
               />
               {selectedRows &&
-                selectedRows.length == 0 &&
+                selectedRows.length === 0 &&
                 selectedRowss &&
-                selectedRowss.length == 0 && (
+                selectedRowss.length === 0 && (
                   <input
                     type="hidden"
                     className="form-control form-control-sm"

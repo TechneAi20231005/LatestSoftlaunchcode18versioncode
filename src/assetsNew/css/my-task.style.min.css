@@ -2538,7 +2538,7 @@ textarea.form-control-lg {
   background-size: contain;
   border: 1px solid rgba(0, 0, 0, 0.25);
   appearance: none;
-  color-adjust: exact;
+  print-color-adjust: exact;
 }
 
 .form-check-input[type='checkbox'] {
@@ -24431,12 +24431,6 @@ abbr[title] {
 @media (max-width: 576px) {
   .card {
     width: 100%;
-  }
-}
-
-@media (min-width: 576px) and (max-width: 768px) {
-  .card {
-    width: 80%;
   }
 }
 

@@ -1,6 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 
-import { EditCreateticket, getAllQueryGroupData, getCustomerMappingsetting, getDepartmentMappingByEmployeeIdData, getParentData, postCreateticket, queryTypeData, queryTypesData } from "./TicketAction";
+import { EditCreateticket, getAllQueryGroupData, getCustomerMappingsetting, getDepartmentMappingByEmployeeIdData, getParentData, postCreateticket,  queryTypesData } from "./TicketAction";
 
 const initialState = {
   status: "",
@@ -80,9 +80,9 @@ export const createTicketSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let queryGroupData = payload.data.data.filter((d) => d.is_active == 1)
+        let queryGroupData = payload.data.data.filter((d) => d.is_active === 1)
         let queryGroupDropDownData = payload.data.data
-          .filter((d) => d.is_active == 1)
+          .filter((d) => d.is_active === 1)
           .map((d) => ({ value: d.id, label: d.group_name }))
         state.queryGroupData = queryGroupData;
         state.queryGroupDropDownData = queryGroupDropDownData;

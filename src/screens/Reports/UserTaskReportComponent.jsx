@@ -1,47 +1,34 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import ErrorLogService from '../../services/ErrorLogService';
 import UserService from '../../services/MastersService/UserService';
 import ReportService from '../../services/ReportService/ReportService';
 import PageHeader from '../../components/Common/PageHeader';
 import Select from 'react-select';
-
+import { Spinner, Modal } from 'react-bootstrap';
 import * as Validation from '../../components/Utilities/Validation';
 import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../components/custom/loader/TableLoadingSkelton';
-import DropdownLoadingSkeleton from '../../components/custom/loader/DropdownLoadingSkeleton';
 import SearchBoxHeader from '../../components/Common/SearchBoxHeader ';
 
 function UserTaskReportComponent() {
   const dispatch = useDispatch();
-
-  const [isLoading, setISLoading] = useState(false);
-
-  const isMenuRoleChecked = useSelector((DashboardSlice) =>
+  const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 24)
   );
 
   const [userData, setUserData] = useState(null);
+  const [isLoading, setISLoading] = useState(false);
   const [data, setData] = useState(null);
 
   const [exportData, setExportData] = useState(null);
   const [searchPerformed, setSearchPerformed] = useState(false);
 
-  const [todate, setTodate] = useState([]);
-  const [fromdate, setFromdate] = useState([]);
-
   const [todateformat, setTodateformat] = useState('');
   const [fromdateformat, setFromdateformat] = useState('');
-  // const initialState = {
-  //   user_id: [],
-  //   task_name: '',
-  //   from_date: '',
-  //   to_date: ''
-  // };
-  // const [formState, setFormState] = useState(initialState);
 
   const columns = [
     {
@@ -67,7 +54,8 @@ function UserTaskReportComponent() {
     { name: 'Updated At', selector: (row) => row.updated_at, sortable: true }
   ];
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
+    // setShowLoaderModal(true);
     const tempUserData = [];
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active';
@@ -96,7 +84,7 @@ function UserTaskReportComponent() {
     });
 
     dispatch(getRoles);
-  };
+  }, [dispatch]);
 
   const handleFromDate = (e) => {
     const gettodatevalue = e.target.value;
@@ -105,7 +93,7 @@ function UserTaskReportComponent() {
     const settomonth = setdateformat[1];
     const settodate = setdateformat[2];
     const settodateformat = settoyear + '' + settomonth + '' + settodate;
-    setTodate(gettodatevalue);
+    // setTodate(gettodatevalue);
     setTodateformat(settodateformat);
   };
 
@@ -117,7 +105,7 @@ function UserTaskReportComponent() {
     const setfromdate = setfromformat[2];
     const setfromformatdate =
       setfromyear + '' + setfrommonth + '' + setfromdate;
-    setFromdate(getfromdatevalue);
+    // setFromdate(getfromdatevalue);
     setFromdateformat(setfromformatdate);
   };
 
@@ -200,13 +188,13 @@ function UserTaskReportComponent() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
-    if (isMenuRoleChecked && isMenuRoleChecked[0]?.can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, [isMenuRoleChecked]);
+  }, [checkRole]);
   const handleReset = () => {
     // ) => window.location.reload(false)
     window.location.reload(false);
@@ -215,81 +203,176 @@ function UserTaskReportComponent() {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="User Task Report" />
-      <form onSubmit={handleForm}>
-        <div className="card mt-2">
-          <div className="card-body p-5">
-            <form onSubmit={handleForm}>
-              <div className="row">
-                <div className="col-md-3">
-                  <label>
-                    <b>Select User :</b>
-                  </label>
-                  {/* {showLoaderModal && <DropdownLoadingSkeleton />} */}
-                  {userData && (
-                    <Select
-                      isMulti
-                      isSearchable={true}
-                      name="user_id[]"
-                      className="basic-multi-select"
-                      classNamePrefix="select"
-                      options={userData}
-                    />
-                  )}
-                </div>
-                <div className="col-md-3">
-                  <label>
-                    <b>Search Task :</b>
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    onKeyPress={(e) => {
-                      Validation.CharactersNumbersOnly(e);
-                    }}
-                    onKeyDown={handleKeyDown}
-                    name="task_name"
-                  />
-                </div>
 
-                <div className="col-md-3">
-                  <label>
-                    <b>From Date :</b>
-                  </label>
-                  <input
-                    type="date"
-                    className="form-control form-control-sm"
-                    name="from_date"
-                    onChange={handleFromDate}
-                  />
-                </div>
+      {/* <div className="card mt-2" style={{ zIndex: 10 }}>
+        <div className="card-body">
+          <form onSubmit={handleForm}>
+            <div className="row">
+              <div className="col-md-3">
+                <label>
+                  <b>Select User :</b>
+                </label>
+                <Select
+                  isMulti
+                  isSearchable={true}
+                  name="user_id[]"
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  options={userData}
+                />
+              </div>
+              <div className="col-md-3">
+                <label>
+                  <b>Search Task :</b>
+                </label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm"
+                  onKeyPress={(e) => {
+                    Validation.CharactersNumbersOnly(e);
+                  }}
+                  onKeyDown={handleKeyDown}
+                  name="task_name"
+                />
+              </div>
 
-                <div className="col-md-3">
-                  <label htmlFor="" className="">
-                    <b>To Date :</b>
-                  </label>
-                  <input
-                    type="date"
-                    className="form-control form-control-sm"
-                    name="to_date"
-                    onChange={handleToDate}
-                  />
-                </div>
-                <div className="row_gap_3 mt-3">
-                  <SearchBoxHeader
-                    showInput={false}
-                    title="User Task Report"
-                    // showtitle={true}
-                    handleReset={handleReset}
-                    submitButtonType="submit"
-                    resetButtonType="button"
-                    placeholder="Search by city name...."
-                    exportFileName="City Master Record"
-                    exportData={exportData}
-                    showExportButton={true}
-                  />
-                </div>
+              <div className="col-md-3">
+                <label>
+                  <b>From Date :</b>
+                </label>
+                <input
+                  type="date"
+                  className="form-control form-control-sm"
+                  name="from_date"
+                  onChange={handleFromDate}
+                />
+              </div>
 
-                {/* <div className="row mt-4">
+              <div className="col-md-3">
+                <label htmlFor="" className="">
+                  <b>To Date :</b>
+                </label>
+                <input
+                  type="date"
+                  className="form-control form-control-sm"
+                  name="to_date"
+                  onChange={handleToDate}
+                />
+              </div>
+
+              <div className="col-md-2">
+                <button
+                  className="btn btn-sm btn-warning text-white"
+                  type="submit"
+                  style={{ marginTop: '20px', fontWeight: '600' }}
+                >
+                  <i className="icofont-search-1 "></i> Search
+                </button>
+                <button
+                  className="btn btn-sm btn-info text-white"
+                  type="button"
+                  onClick={() => window.location.reload(false)}
+                  style={{ marginTop: '20px', fontWeight: '600' }}
+                >
+                  <i className="icofont-refresh text-white"></i> Reset
+                </button>
+              </div>
+            </div>
+          </form>
+          {data && data.length > 0 && (
+            <div
+              className="col"
+              style={{
+                textAlign: 'right',
+                marginTop: '20px',
+                fontWeight: '600'
+              }}
+            >
+              <ExportToExcel
+                className="btn btn-sm btn-danger"
+                apiData={exportData}
+                fileName="User Task Report"
+              />
+            </div>
+          )}
+        </div>
+      </div> */}
+
+      {/* {data && data.length > 0 && ( */}
+      <div className="card mt-2">
+        <div className="card-body p-3">
+          <form onSubmit={handleForm}>
+            <div className="row">
+              <div className="col-md-3">
+                <label>
+                  <b>Select User :</b>
+                </label>
+                {/* {showLoaderModal && <DropdownLoadingSkeleton />} */}
+                {userData && (
+                  <Select
+                    isMulti
+                    isSearchable={true}
+                    name="user_id[]"
+                    className="basic-multi-select"
+                    classNamePrefix="select"
+                    options={userData}
+                  />
+                )}
+              </div>
+              <div className="col-md-3">
+                <label>
+                  <b>Search Task :</b>
+                </label>
+                <input
+                  type="text"
+                  className="form-control form-control-sm"
+                  onKeyPress={(e) => {
+                    Validation.CharactersNumbersOnly(e);
+                  }}
+                  onKeyDown={handleKeyDown}
+                  name="task_name"
+                />
+              </div>
+
+              <div className="col-md-3">
+                <label>
+                  <b>From Date :</b>
+                </label>
+                <input
+                  type="date"
+                  className="form-control form-control-sm"
+                  name="from_date"
+                  onChange={handleFromDate}
+                />
+              </div>
+
+              <div className="col-md-3">
+                <label htmlFor="" className="">
+                  <b>To Date :</b>
+                </label>
+                <input
+                  type="date"
+                  className="form-control form-control-sm"
+                  name="to_date"
+                  onChange={handleToDate}
+                />
+              </div>
+              <div className="row_gap_3 mt-3">
+                <SearchBoxHeader
+                  showInput={false}
+                  title="User Task Report"
+                  // showtitle={true}
+                  handleReset={handleReset}
+                  submitButtonType="submit"
+                  resetButtonType="button"
+                  placeholder="Search by city name...."
+                  exportFileName="City Master Record"
+                  exportData={exportData}
+                  showExportButton={true}
+                />
+              </div>
+
+              {/* <div className="row mt-4">
                 <div className="col-md-6 ">
                   <button
                     className="btn btn-sm btn-warning text-white"
@@ -315,11 +398,11 @@ function UserTaskReportComponent() {
                   )}
                 </div>
               </div> */}
-              </div>
-            </form>
-          </div>
+            </div>
+          </form>
         </div>
-      </form>
+      </div>
+      {/* )} */}
 
       {isLoading ? (
         <TableLoadingSkelton />
@@ -337,7 +420,11 @@ function UserTaskReportComponent() {
         </div>
       ) : (
         searchPerformed &&
-        !isLoading && <div className="text-center mt-3">No data found</div>
+        !isLoading && (
+          <div className="card card-body mt-2">
+            <p className="text-center">No data found</p>
+          </div>
+        )
       )}
     </div>
   );
