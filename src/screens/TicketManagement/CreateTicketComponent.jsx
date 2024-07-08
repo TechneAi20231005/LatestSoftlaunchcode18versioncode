@@ -409,14 +409,14 @@ export default function CreateTicketComponent() {
 
         const filteredArray = dynamicForm.filter(
           (formInstance) =>
-            formInstance.inputType === 'select' &&
-            formInstance.inputAddOn.inputDataSource
+            formInstance?.inputType === 'select' &&
+            formInstance?.inputAddOn?.inputDataSource
         );
 
         await Promise.all(
           filteredArray.map((d) =>
             new DynamicFormDropdownMasterService().getDropdownById(
-              d.inputAddOn.inputDataSource
+              d?.inputAddOn?.inputDataSource
             )
           )
         )
@@ -1189,8 +1189,9 @@ export default function CreateTicketComponent() {
                         />
                       )}
 
-                      {data.inputType === 'radio' && data.inputAddOn.inputRadio
-                        ? data.inputAddOn.inputRadio.map((d) => {
+                      {data?.inputType === 'radio' &&
+                      data?.inputAddOn?.inputRadio
+                        ? data?.inputAddOn?.inputRadio.map((d) => {
                             return (
                               <div>
                                 <input
@@ -1207,9 +1208,9 @@ export default function CreateTicketComponent() {
                           })
                         : ''}
 
-                      {data.inputType === 'checkbox' &&
-                      data.inputAddOn.inputRadio
-                        ? data.inputAddOn.inputRadio.map((d) => {
+                      {data?.inputType === 'checkbox' &&
+                      data?.inputAddOn?.inputRadio
+                        ? data?.inputAddOn?.inputRadio.map((d) => {
                             return (
                               <div>
                                 <input
@@ -1244,8 +1245,8 @@ export default function CreateTicketComponent() {
                           defaultValue={data.inputDefaultValue}
                           required={data.inputMandatory === true ? true : false}
                           onChange={dynamicChangeHandle}
-                          min={data.inputAddOn.inputRangeMin}
-                          max={data.inputAddOn.inputRangeMax}
+                          min={data?.inputAddOn?.inputRangeMin}
+                          max={data?.inputAddOn?.inputRangeMax}
                           className="form-control form-control-sm"
                         />
                       )}
@@ -1261,8 +1262,8 @@ export default function CreateTicketComponent() {
                           required={data.inputMandatory === true ? true : false}
                           name={data.inputName}
                           onChange={dynamicChangeHandle}
-                          minLength={parseInt(data.inputAddOn.inputRangeMin)}
-                          maxLength={parseInt(data.inputAddOn.inputRangeMax)}
+                          minLength={parseInt(data?.inputAddOn?.inputRangeMin)}
+                          maxLength={parseInt(data?.inputAddOn?.inputRangeMax)}
                           className="form-control form-control-sm"
                         />
                       )}
@@ -1278,8 +1279,8 @@ export default function CreateTicketComponent() {
                           className="form-control form-control-sm"
                         >
                           <option> {data.inputDefaultValue}</option>
-                          {data.inputAddOn.inputRadio &&
-                            data.inputAddOn.inputRadio.map((option) => {
+                          {data?.inputAddOn?.inputRadio &&
+                            data?.inputAddOn?.inputRadio.map((option) => {
                               return (
                                 <option
                                   selected={
@@ -1303,13 +1304,13 @@ export default function CreateTicketComponent() {
                               ? data.inputName.replace(/ /g, '_').toLowerCase()
                               : ''
                           }
-                          defaultValue={data.inputAddOn.inputDataSource}
+                          defaultValue={data?.inputAddOn?.inputDataSource}
                           name={data.inputName}
                           className="form-control form-control-sm"
                         >
                           <option> {data.inputName}</option>
-                          {data.inputAddOn.inputDataSourceData &&
-                            data.inputAddOn.inputDataSourceData.map(
+                          {data?.inputAddOn?.inputDataSourceData &&
+                            data?.inputAddOn?.inputDataSourceData.map(
                               (option) => {
                                 return (
                                   <option
