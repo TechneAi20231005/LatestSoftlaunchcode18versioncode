@@ -405,7 +405,7 @@ export default function CreateTicketComponent() {
         );
         setQueryGroupTypeData(null);
       } else {
-        var dynamicForm = data[0].dynamic_form;
+        var dynamicForm = data[0]?.dynamic_form;
 
         const filteredArray = dynamicForm.filter(
           (formInstance) =>
@@ -414,7 +414,7 @@ export default function CreateTicketComponent() {
         );
 
         await Promise.all(
-          filteredArray.map((d) =>
+          filteredArray?.map((d) =>
             new DynamicFormDropdownMasterService().getDropdownById(
               d?.inputAddOn?.inputDataSource
             )
@@ -1189,16 +1189,16 @@ export default function CreateTicketComponent() {
                         />
                       )}
 
-                      {data?.inputType === 'radio' &&
+                      {data.inputType === 'radio' &&
                       data?.inputAddOn?.inputRadio
-                        ? data?.inputAddOn?.inputRadio.map((d) => {
+                        ? data?.inputAddOn?.inputRadio?.map((d) => {
                             return (
                               <div>
                                 <input
                                   value={d.value}
                                   onChange={handleRadioChange}
                                   defaultChecked={selectedValue === d.value}
-                                  name={data.inputName}
+                                  name={data?.inputName}
                                   className="mx-2"
                                   type="radio"
                                 />
@@ -1220,7 +1220,7 @@ export default function CreateTicketComponent() {
                                     selectedCheckBoxValue === d.value
                                   }
                                   required={
-                                    data.inputMandatory &&
+                                    data?.inputMandatory &&
                                     selectedCheckBoxValue === d.value
                                   }
                                   name={data.inputName}
@@ -1233,12 +1233,12 @@ export default function CreateTicketComponent() {
                           })
                         : ''}
 
-                      {data.inputType === 'number' && (
+                      {data?.inputType === 'number' && (
                         <input
-                          type={data.inputType}
+                          type={data?.inputType}
                           id={
-                            data.inputName
-                              ? data.inputName.replace(/ /g, '_').toLowerCase()
+                            data?.inputName
+                              ? data?.inputName.replace(/ /g, '_').toLowerCase()
                               : ''
                           }
                           name={data.inputName}
@@ -1258,9 +1258,11 @@ export default function CreateTicketComponent() {
                               ? data.inputName.replace(/ /g, '_').toLowerCase()
                               : ''
                           }
-                          defaultValue={data.inputDefaultValue}
-                          required={data.inputMandatory === true ? true : false}
-                          name={data.inputName}
+                          defaultValue={data?.inputDefaultValue}
+                          required={
+                            data?.inputMandatory === true ? true : false
+                          }
+                          name={data?.inputName}
                           onChange={dynamicChangeHandle}
                           minLength={parseInt(data?.inputAddOn?.inputRangeMin)}
                           maxLength={parseInt(data?.inputAddOn?.inputRangeMax)}
@@ -1268,17 +1270,17 @@ export default function CreateTicketComponent() {
                         />
                       )}
 
-                      {data.inputType === 'select' && (
+                      {data?.inputType === 'select' && (
                         <select
                           id={
-                            data.inputName
-                              ? data.inputName.replace(/ /g, '_').toLowerCase()
+                            data?.inputName
+                              ? data?.inputName.replace(/ /g, '_').toLowerCase()
                               : ''
                           }
                           name={data.inputName}
                           className="form-control form-control-sm"
                         >
-                          <option> {data.inputDefaultValue}</option>
+                          <option> {data?.inputDefaultValue}</option>
                           {data?.inputAddOn?.inputRadio &&
                             data?.inputAddOn?.inputRadio.map((option) => {
                               return (
@@ -1308,7 +1310,7 @@ export default function CreateTicketComponent() {
                           name={data.inputName}
                           className="form-control form-control-sm"
                         >
-                          <option> {data.inputName}</option>
+                          <option> {data?.inputName}</option>
                           {data?.inputAddOn?.inputDataSourceData &&
                             data?.inputAddOn?.inputDataSourceData.map(
                               (option) => {

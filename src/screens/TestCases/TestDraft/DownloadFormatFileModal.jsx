@@ -64,7 +64,6 @@ function DownloadFormatFileModal({ show, close }) {
   };
 
   const handleDownloadFormatFile = ({ formData }) => {
-    console.log('hey');
     const { project_id, module_id, submodule_id } = formData;
     dispatch(
       downloadFormatFileThunk({
@@ -73,26 +72,10 @@ function DownloadFormatFileModal({ show, close }) {
         submodule_id
       })
     ).then((res) => {
-      console.log('res', res?.meta?.requestStatus);
       if (res?.meta?.requestStatus === 'fulfilled') {
-        console.log('API Call Successful');
         close();
       }
     });
-    // if (
-    //   payload?.response?.status === 200 ||
-    //   payload?.response?.status === 201
-    // ) {
-    //   console.log('API Call Successful');
-    // }
-
-    // .then(() => {
-    //   console.log('API Call Successful'); // Debugging line
-    //   close(); // Close the modal upon success
-    // })
-    // .catch((error) => {
-    //   console.error('API Call Failed', error); // Debugging line
-    // });
   };
 
   useEffect(() => {
@@ -126,6 +109,7 @@ function DownloadFormatFileModal({ show, close }) {
                     component={CustomDropdown}
                     name="project_id"
                     label="Project Name"
+                    requiredField
                     handleChange={(event) =>
                       handleProjectChange(event, setFieldValue)
                     }
@@ -137,6 +121,7 @@ function DownloadFormatFileModal({ show, close }) {
                     component={CustomDropdown}
                     name="module_id"
                     label="Module Name"
+                    requiredField
                     handleChange={(event) =>
                       handleModuleChange(event, setFieldValue)
                     }
