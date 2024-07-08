@@ -1,9 +1,7 @@
 import React, { useState, useEffect, memo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 
-import menu from '../Data/menu.json';
-import menu2 from '../Data/menu2.json';
 import { _base } from '../../settings/constants';
 
 import {
@@ -13,15 +11,13 @@ import {
 
 const Sidebar = ({ activekey }) => {
   // // initial state
-  const navigate = useNavigate();
+
   const dispatch = useDispatch();
   const user_id = localStorage.getItem('id');
   const role_id = localStorage.getItem('role_id');
   //Redux State
-  const { menuList, filterMenuList } = useSelector((state) => state?.sidebar);
-  const menuListData = menuList?.menu;
-  //local state
-  const [menuData, setMenuData] = useState(filterMenuList?.[0]);
+  const { sidebarMenuList } = useSelector((state) => state?.sidebar);
+
   const [isSidebarMini, setIsSidebarMini] = useState(false);
   const [darkLightMode, setDarkLightMode] = useState('light');
   const [updateRtl, setUpdateRtl] = useState(false);
@@ -79,16 +75,6 @@ const Sidebar = ({ activekey }) => {
     }
   };
 
-  const GotoChangeMenu = (val) => {
-    if (val === 'UI Components') {
-      navigate('/ui-alerts');
-      setMenuData([...menu2]);
-    } else {
-      navigate('/hr-dashboard');
-      setMenuData([...menu]);
-    }
-  };
-
   const onChangeDarkMode = () => {
     if (document.children[0].getAttribute('data-theme') === 'light') {
       document.children[0].setAttribute('data-theme', 'dark');
@@ -110,10 +96,6 @@ const Sidebar = ({ activekey }) => {
   const toggleSidebarMini = () => {
     setIsSidebarMini(!isSidebarMini);
   };
-
-  useEffect(() => {
-    setMenuData(menuListData);
-  }, [menuListData]);
 
   useEffect(() => {
     dispatch(getEmployeeListThunk({ user_id: user_id }));
@@ -151,44 +133,37 @@ const Sidebar = ({ activekey }) => {
           <span className="logo-text">My-Task</span>
         </a>
         <ul className="menu-list flex-grow-1 mt-3">
-          {menuData?.map((d, i) => {
-            if (d.isToggled) {
+          {sidebarMenuList?.map((item, index) => {
+            if (item.isToggled) {
               return (
-                <li key={'shsdg' + i}>
-                  <a
-                    className={`m-link `}
-                    href="#!"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      GotoChangeMenu(d.name);
-                    }}
-                  >
-                    <i className={d.iconClass}></i>
-                    <span>{d.name}hii</span>
-                  </a>
+                <li key={'shsdg' + index}>
+                  <Link className={`m-link `} href="#!">
+                    <i className={item.iconClass}></i>
+                    <span>{item.name}hii</span>
+                  </Link>
                 </li>
               );
             }
 
-            if (d.children.length === 0) {
+            if (item.children.length === 0) {
               return (
-                <li key={'dsfshsdg' + i} className=" collapsed">
+                <li key={'dsfshsdg' + index} className=" collapsed">
                   <Link
-                    to={`/${_base + '/' + d.routerLink[0]}`}
+                    to={`/${_base + '/' + item.routerLink[0]}`}
                     className={`m-link`}
                   >
-                    <i className={d.iconClass}></i>
-                    <span>{d.name}</span>
+                    <i className={item.iconClass}></i>
+                    <span>{item.name}</span>
                     <span className="arrow icofont-dotted-down ms-auto text-end fs-5"></span>
                   </Link>
                 </li>
               );
             }
             return (
-              <li key={'shsdg' + i} className=" collapsed ">
+              <li key={'shsdg' + index} className=" collapsed ">
                 <a
                   className={`m-link ${
-                    d.children.filter(
+                    item.children.filter(
                       (d) => '/' + d.routerLink[0] === activekey
                     ).length > 0
                       ? 'active'
@@ -197,23 +172,23 @@ const Sidebar = ({ activekey }) => {
                   href="#!"
                   onClick={(e) => {
                     e.preventDefault();
-                    openChildren('menu-Pages' + i);
+                    openChildren('menu-Pages' + index);
                   }}
                 >
-                  <i className={d.iconClass}></i>
-                  <span style={{ fontSize: '1rem' }}>{d.name}</span>
+                  <i className={item.iconClass}></i>
+                  <span style={{ fontSize: '1rem' }}>{item.name}</span>
                   <span className="arrow icofont-dotted-down ms-auto text-end fs-5"></span>
                 </a>
-                {d.children?.length > 0 ? (
+                {item.children?.length > 0 ? (
                   <ul
                     className="sub-menu collapse has-children"
-                    id={'menu-Pages' + i}
+                    id={'menu-Pages' + index}
                   >
-                    {d.children?.map((data, ind) => {
-                      if (d.children.length > 0) {
+                    {item.children?.map((data, ind) => {
+                      if (item.children.length > 0) {
                         if (activekey === '/' + data.routerLink[0]) {
                           setTimeout(() => {
-                            openChildren1('menu-Pages' + i);
+                            openChildren1('menu-Pages' + index);
                           }, 500);
                         }
                       }

@@ -24,6 +24,7 @@ const initialState = {
   allReviewDraftTestListData: [],
   allReviewDraftTestListDataByID: [],
   allReviewDraftTestListData: [],
+  allReviewDraftTestListDataTotal: [],
   filterReviewList: [],
   filterData: { payload: null },
   getModuleData: [],
@@ -267,6 +268,8 @@ const downloadFormatSlice = createSlice({
         state.allReviewDraftTestListDataByID =
           action?.payload?.data?.data?.data;
         state.allReviewDraftTestListData = action?.payload?.data;
+        state.allReviewDraftTestListDataTotal = action?.payload?.data;
+
         state.filterReviewList = action?.payload?.data?.filter_data;
       })
       .addCase(getByTestPlanIDReviewedListThunk.rejected, (state, action) => {

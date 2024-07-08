@@ -3,6 +3,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import {
   approveRejectByReviewerMasterThunk,
   getByTestPlanIDListThunk,
+  getExportByTestPlanIDListThunk,
   getTestCaseReviewListThunk
 } from '../../../services/testCases/testCaseReview';
 
@@ -13,11 +14,13 @@ const initialState = {
   approveRejectData: [],
   allTestPlanIDData: [],
   filterTestCaseReviewList: [],
+  exportTestCaseReviewData: [],
   isLoading: {
     testCaseReviewList: false,
     testPlanIdData: false,
     filterTestPlanData: false,
-    filterTestCaseReviewList: false
+    filterTestCaseReviewList: false,
+    exportTestCaseReviewData: false
   },
   errorMsg: {
     testCaseReviewList: '',
@@ -25,7 +28,8 @@ const initialState = {
     approveRejectData: '',
     allTestPlanIDData: '',
     filterTestPlanData: '',
-    filterTestCaseReviewList: ''
+    filterTestCaseReviewList: '',
+    exportTestCaseReviewData: ''
   },
   successMsg: {
     testCaseReviewList: '',
@@ -33,7 +37,8 @@ const initialState = {
     approveRejectData: '',
     allTestPlanIDData: '',
     filterTestPlanData: '',
-    filterTestCaseReviewList: ''
+    filterTestCaseReviewList: '',
+    exportTestCaseReviewData: ''
   }
 };
 const testCaseReviewSlice = createSlice({
@@ -74,6 +79,22 @@ const testCaseReviewSlice = createSlice({
         state.isLoading.testPlanIdData = false;
         state.testPlanIdData = [];
         state.errorMsg.testPlanIdData = action?.error?.message;
+      })
+
+      // // export test case review
+
+      .addCase(getExportByTestPlanIDListThunk.pending, (state, action) => {
+        state.isLoading.exportTestCaseReviewData = true;
+      })
+      .addCase(getExportByTestPlanIDListThunk.fulfilled, (state, action) => {
+        state.isLoading.exportTestCaseReviewData = false;
+        state.exportTestCaseReviewData = action?.payload?.data?.data;
+        state.successMsg.exportTestCaseReviewData = action?.payload?.message;
+      })
+      .addCase(getExportByTestPlanIDListThunk.rejected, (state, action) => {
+        state.isLoading.exportTestCaseReviewData = false;
+        state.exportTestCaseReviewData = [];
+        state.errorMsg.exportTestCaseReviewData = action?.error?.message;
       })
 
       ////approve reject by reviewer
