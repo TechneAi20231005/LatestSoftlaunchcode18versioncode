@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Modal } from 'react-bootstrap';
 import Tooltip from 'react-bootstrap/Tooltip';
 
@@ -22,35 +22,44 @@ import CustomerService from '../../../services/MastersService/CustomerService';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
+import { toast } from 'react-toastify';
 
 function QueryTypeComponent() {
+  //initial state
   const dispatch = useDispatch();
+
+  //redux state
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 14)
+  );
+
+  //local state
+
   const [notify, setNotify] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [data, setData] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [data, setData] = useState([]);
 
-  const [dataa, setDataa] = useState(null);
+  // const [dataa, setDataa] = useState(null);
   const [isActive, setIsActive] = useState(1);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
   const [modal, setModal] = useState({
     showModal: false,
     modalData: '',
     modalHeader: ''
   });
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  // const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  const [exportData, setExportData] = useState(null);
+  const [exportData, setExportData] = useState([]);
   const [exportQueryGroupData, setExportQueryGroupData] = useState(null);
 
-  const [dynamicForm, setDynamicForm] = useState(null);
+  // const [dynamicForm, setDynamicForm] = useState(null);
 
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState(null);
-
-  const roleId = sessionStorage.getItem('role_id');
-  // const [checkRole, setCheckRole] = useState(null);
-  const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 14)
-  );
 
   // ***************************** Edit & View Popup*************************************
   const [queryGroupData, setQueryGroupData] = useState(null);
@@ -60,21 +69,10 @@ function QueryTypeComponent() {
     modalDataEditPopup: '',
     modalHeaderEditPopup: ''
   });
-  const [customerDropdown, setCustomerDropdown] = useState();
-  const [selectedcustomer, setSelectedCustomer] = useState();
+  // const [customerDropdown, setCustomerDropdown] = useState();
+  // const [selectedcustomer, setSelectedCustomer] = useState();
   const handleModalEditPopup = (editData) => {
     setModalEditPopup(editData);
-  };
-
-  const [show, setShow] = useState(false);
-  const handleClose = () => setShow(false);
-  const handleShow = () => {
-    setShow(true);
-    handleModalEditPopup({
-      showModal: false,
-      modalData: '',
-      modalHeader: ''
-    });
   };
 
   // ***************************** End Edit & View Popup*************************************
@@ -122,31 +120,19 @@ function QueryTypeComponent() {
       alert('Please Search Query Group Name');
     }
   };
-  const searchRef = useRef();
 
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
+  //search function
 
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  const handleSearch = useCallback(() => {
+    const filteredList = customSearchHandler(data, searchTerm);
+    setFilteredData(filteredList);
+  }, [data, searchTerm]);
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
   };
-
-  const [queryGroups, setQueryGroups] = useState();
 
   const handleModal = (data) => {
     setModal(data);
@@ -267,12 +253,12 @@ function QueryTypeComponent() {
       sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -375,7 +361,7 @@ function QueryTypeComponent() {
       sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span
               className="badge"
               style={{ width: '4rem', backgroundColor: '#484c7f' }}
@@ -383,7 +369,7 @@ function QueryTypeComponent() {
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -403,7 +389,7 @@ function QueryTypeComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          <a
+          <button
             href="#"
             onClick={(e) => {
               handleFormQueryGroup({
@@ -425,7 +411,7 @@ function QueryTypeComponent() {
                 </div>
               </OverlayTrigger>
             )}
-          </a>
+          </button>
         </div>
       )
     },
@@ -455,10 +441,10 @@ function QueryTypeComponent() {
     await new QueryTypeService()
       .getAllQueryGroup()
       .then((res) => {
-        if (res.data.status == 1) {
+        if (res.data.status === 1) {
           setQueryGroupDropdown(
             res.data.data
-              .filter((d) => d.is_active == 1)
+              .filter((d) => d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.group_name }))
           );
         }
@@ -597,21 +583,21 @@ function QueryTypeComponent() {
 
   // **************************************End Add Query Group *****************************************
 
-  function isQueryType(queryType) {
-    return /^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$/.test(queryType);
-  }
+  // function isQueryType(queryType) {
+  //   return /^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$/.test(queryType);
+  // }
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setIsLoading(true);
-    setShowLoaderModal(null);
-    setShowLoaderModal(true);
+    // setShowLoaderModal(null);
+    // setShowLoaderModal(true);
     const data = [];
     const exportTempData = [];
     await new QueryTypeService()
       .getQueryType()
       .then((res) => {
         if (res.status === 200) {
-          setShowLoaderModal(false);
+          // setShowLoaderModal(false);
 
           let counter = 1;
           const temp = res.data.data;
@@ -637,7 +623,7 @@ function QueryTypeComponent() {
           }
 
           setData(data);
-          setDataa(data);
+          // setDataa(data);
           setIsLoading(false);
 
           for (const i in data) {
@@ -670,33 +656,33 @@ function QueryTypeComponent() {
       });
 
     await new DynamicFormService().getDynamicForm().then((res) => {
-      if (res.data.status == 1) {
-        setShowLoaderModal(false);
+      if (res.data.status === 1) {
+        // setShowLoaderModal(false);
 
-        setDynamicForm(res.data.data.filter((d) => d.is_active === 1));
+        // setDynamicForm(res.data.data.filter((d) => d.is_active === 1));
         setDynamicFormDropdown(
           res.data.data
-            .filter((d) => d.is_active == 1)
+            .filter((d) => d.is_active === 1)
             .map((d) => ({ value: d.id, label: d.template_name }))
         );
       }
     });
 
     await new CustomerService().getCustomer().then((res) => {
-      if (res.data.status == 1) {
-        setSelectedCustomer(res.data.data.filter((d) => d.is_active === 1));
-        setCustomerDropdown(
-          res.data.data
-            .filter((d) => d.is_active == 1)
-            .map((d) => ({ value: d.id, label: d.name }))
-        );
+      if (res.data.status === 1) {
+        // setSelectedCustomer(res.data.data.filter((d) => d.is_active === 1));
+        // setCustomerDropdown(
+        //   res.data.data
+        //     .filter((d) => d.is_active === 1)
+        //     .map((d) => ({ value: d.id, label: d.name }))
+        // );
       }
     });
     dispatch(getRoles());
-  };
+  }, [dispatch]);
 
   const handleClearData = (e) => {
-    if (viewSearchRef.current.value != null) {
+    if (viewSearchRef.current.value !== null) {
       document.getElementById('search_resultt').value = '';
     }
     loadData();
@@ -705,12 +691,13 @@ function QueryTypeComponent() {
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
+    setIsSubmitting(true);
     setNotify(null);
     const form = new FormData(e.target);
     var flag = 1;
     setNotify(null);
     var selectFormId = form.getAll('form_id');
-    var selectCustomerId = form.getAll('customer_id');
+    // var selectCustomerId = form.getAll('customer_id');
     var selectQueryGroup = form.getAll('query_group_data[]');
 
     if (selectFormId.length === 0) {
@@ -733,31 +720,36 @@ function QueryTypeComponent() {
           form.append('is_active', 1);
           const res = await new QueryTypeService().postQueryType(form);
           if (res.status === 200) {
-            setShowLoaderModal(false);
+            // setShowLoaderModal(false);
             if (res.data.status === 1) {
-              setShowLoaderModal(false);
+              // setShowLoaderModal(false);
               setModal({ showModal: false, modalData: '', modalHeader: '' });
-              setNotify({ type: 'success', message: res.data.message });
+              toast.success(res?.data?.message);
+
+              // setNotify({ type: 'success', message: res.data.message });
               loadData();
               setIsActive(1);
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res?.data?.message);
+              // setNotify({ type: 'danger', message: res.data.message });
             }
-          } else {
-            setNotify({ type: 'danger', message: res.message });
-            new ErrorLogService().sendErrorLog(
-              'QueryType',
-              'Create_QueryType',
-              'INSERT',
-              res.message
-            );
           }
+
+          // else {
+          //   setNotify({ type: 'danger', message: res.message });
+          //   new ErrorLogService().sendErrorLog(
+          //     'QueryType',
+          //     'Create_QueryType',
+          //     'INSERT',
+          //     res.message
+          //   );
+          // }
         } else {
           form.delete('is_active');
           form.append('is_active', isActive);
           const res = await new QueryTypeService().updateQueryType(id, form);
           if (res.status === 200) {
-            setShowLoaderModal(false);
+            // setShowLoaderModal(false);
             if (res.data.status === 1) {
               setModal({ showModal: false, modalData: '', modalHeader: '' });
               setNotify({ type: 'success', message: res.data.message });
@@ -790,11 +782,11 @@ function QueryTypeComponent() {
     }
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === 'Enter') {
-      handleSearch();
-    }
-  };
+  // const handleKeyDown = (event) => {
+  //   if (event.key === 'Enter') {
+  //     handleSearch();
+  //   }
+  // };
   const handleViewSearchKeyDown = (event) => {
     if (event.key === 'Enter') {
       handleViewSearch();
@@ -805,7 +797,15 @@ function QueryTypeComponent() {
     loadData();
     loadDataEditPopup();
     setNotify(null);
-  }, []);
+  }, [loadData]);
+
+  useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm, handleSearch]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -843,79 +843,32 @@ function QueryTypeComponent() {
             );
           }}
         />
-
-        <div className="card card-body">
-          <div className="row">
-            <div className="col-md-9">
-              <input
-                type="text"
-                id="search_result"
-                className="form-control"
-                placeholder="Search by Query Type Name...."
-                ref={searchRef}
-                onKeyDown={handleKeyDown}
-              />
-            </div>
-            <div className="col-md-3">
-              <button
-                className="btn btn-sm btn-warning text-white"
-                type="button"
-                onClick={handleSearch}
-                style={{ marginTop: '0px', fontWeight: '600' }}
-              >
-                <i className="icofont-search-1 "></i> Search
-              </button>
-              <button
-                className="btn btn-sm btn-info text-white"
-                type="button"
-                onClick={() => window.location.reload(false)}
-                style={{ marginTop: '0px', fontWeight: '600' }}
-              >
-                <i className="icofont-refresh text-white"></i> Reset
-              </button>
-              <ExportToExcel
-                className="btn btn-sm btn-danger"
-                apiData={exportData}
-                fileName="Query Type master Records"
-              />
-            </div>
-          </div>
-        </div>
+        <SearchBoxHeader
+          setSearchTerm={setSearchTerm}
+          handleSearch={handleSearch}
+          handleReset={handleReset}
+          placeholder="Search by query name...."
+          exportFileName="Query Type Master Record"
+          exportData={exportData}
+          showExportButton={true}
+        />
 
         <div className="card mt-2">
-          <div className="card-body">
-            <div className="row clearfix g-3">
-              <div className="col-sm-12">
-                {isLoading && <TableLoadingSkelton />}
-                {!isLoading && data && (
-                  <DataTable
-                    columns={columns}
-                    data={data}
-                    defaultSortField="title"
-                    pagination
-                    progressPending={isLoading}
-                    progressComponent={<TableLoadingSkelton />}
-                    selectableRows={false}
-                    className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                    highlightOnHover={true}
-                  />
-                )}
-              </div>
-            </div>
-          </div>
+          {isLoading && <TableLoadingSkelton />}
+          {!isLoading && data && (
+            <DataTable
+              columns={columns}
+              data={filteredData}
+              defaultSortField="title"
+              pagination
+              progressPending={isLoading}
+              progressComponent={<TableLoadingSkelton />}
+              selectableRows={false}
+              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+              highlightOnHover={true}
+            />
+          )}
         </div>
-
-        {/* <Modal show={showLoaderModal} centered>
-          <Modal.Body className="text-center">
-            <Spinner animation="grow" variant="primary" />
-            <Spinner animation="grow" variant="secondary" />
-            <Spinner animation="grow" variant="success" />
-            <Spinner animation="grow" variant="danger" />
-            <Spinner animation="grow" variant="warning" />
-            <Spinner animation="grow" variant="info" />
-            <Spinner animation="grow" variant="dark" />
-          </Modal.Body>
-        </Modal> */}
 
         <Modal
           centered
@@ -971,7 +924,7 @@ function QueryTypeComponent() {
                         modal.modalData &&
                         dynamicFormDropdown &&
                         dynamicFormDropdown.filter(
-                          (d) => d.value == modal.modalData.form_id
+                          (d) => d.value === modal.modalData.form_id
                         )
                       }
                       required={true}
@@ -1151,6 +1104,7 @@ function QueryTypeComponent() {
                     width: '80px',
                     padding: '8px'
                   }}
+                  disabled={isSubmitting}
                 >
                   Add
                 </button>
@@ -1452,7 +1406,7 @@ function QueryTypeComponent() {
 
 function QueryTypeDropdown(props) {
   const [data, setData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     const tempData = [];
     new QueryTypeService().getQueryType().then((res) => {
@@ -1469,7 +1423,7 @@ function QueryTypeDropdown(props) {
           }
         }
         setData(tempData);
-        setIsLoading(false);
+        // setIsLoading(false);
       }
     });
   }, []);
@@ -1485,14 +1439,14 @@ function QueryTypeDropdown(props) {
           required={props.required ? true : false}
           readOnly={props.readonly ? true : false}
         >
-          {props.defaultValue == 0 && (
+          {props.defaultValue === 0 && (
             <option value="">Select Query Type</option>
           )}
-          {props.defaultValue != 0 && (
+          {props.defaultValue !== 0 && (
             <option value="">Select Query Type </option>
           )}
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.query_type_name}

@@ -1,21 +1,26 @@
-import React, { useEffect, useRef, useState, startTransition } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  startTransition,
+  useCallback
+} from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { Card, CardBody, Dropdown, Modal } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import PageHeader from '../../../components/Common/PageHeader';
-import { _attachmentUrl, userSessionData } from '../../../settings/constants';
+import { userSessionData } from '../../../settings/constants';
 import Alert from '../../../components/Common/Alert';
 import ErrorLogService from '../../../services/ErrorLogService';
 import MyTicketService from '../../../services/TicketService/MyTicketService';
 import BasketService from '../../../services/TicketService/BasketService';
 import {
   getTaskData,
-  getTaskPlanner,
   getRegularizationTime,
   getTaskHistory,
   getTaskRegularizationTime
 } from '../../../services/TicketService/TaskService';
-import { getAttachment } from '../../../services/OtherService/AttachmentService';
+
 import BasketDetails from './components/BasketDetails';
 import TaskData from './components/TaskData';
 import TaskModal from './components/TaskModal';
@@ -27,29 +32,27 @@ import TestCasesService from '../../../services/TicketService/TestCaseService';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-import { Spinner } from 'react-bootstrap';
+
 import Select from 'react-select';
 import { Astrick } from '../../../components/Utilities/Style';
 import SprintService from '../../../services/TicketService/SprintService';
 import DataTable from 'react-data-table-component';
 import CardLoadingSkeleton from '../../../components/custom/loader/CardLoadingSkeleton';
 
-export default function TaskComponent({ match }) {
+export default function TaskComponent() {
   const [notify, setNotify] = useState(null);
   const { id } = useParams();
   const ticketId = id;
-  const history = useNavigate();
 
   const [moduleSetting, setModuleSetting] = useState();
-  //Ticket Related
   const [ticketData, setTicketData] = useState();
-  const [attachment, setAttachment] = useState();
+
   const [expectedSolveDate, setExpectedSolveDate] = useState();
   const [ticketStartDate, setTicketStartDate] = useState();
   const [currentTaskStatus, setCurrentTaskStatus] = useState('PENDING');
 
   //Basket Modal Related
-  const [basketModal, setBasketModal] = useState(false);
+
   const [basketData, setBasketData] = useState(null);
   const [showBasketModal, setShowBasketModal] = useState(false);
 
@@ -76,8 +79,8 @@ export default function TaskComponent({ match }) {
   const [exportSprintData, setExportSprintData] = useState([]);
   const [sprintFirstDate, setSprintFirstDate] = useState('');
   const [sprintLastDate, setSprintLastDate] = useState('');
-
-  const getTicketData = async () => {
+  const [minEndDate, setMinEndDate] = useState('');
+  const getTicketData = useCallback(async () => {
     await new MyTicketService()
       .getTicketById(ticketId)
       .then((res) => {
@@ -86,11 +89,6 @@ export default function TaskComponent({ match }) {
             setTicketData(res.data.data);
             setTicketStartDate(res.data.data.ticket_date);
             setExpectedSolveDate(res.data.data.expected_solve_date);
-            // getAttachment(res.data.data.id, "TICKET").then((resp) => {
-            //   if (resp.status === 200) {
-            //     setAttachment(resp.data.data);
-            //   }
-            // });
           }
         }
       })
@@ -105,7 +103,7 @@ export default function TaskComponent({ match }) {
           errorObject.data.message
         );
       });
-  };
+  }, [ticketId]);
 
   const handleCloseBasketModal = () => {
     setShowBasketModal(false);
@@ -141,120 +139,119 @@ export default function TaskComponent({ match }) {
     setShowBasketModal(true);
   };
 
-  var sortingArr;
-  function sortFunc(a, b) {
-    return sortingArr.indexOf(a.id) - sortingArr.indexOf(b.id);
-  }
-
   //Basket & Task Data
   const [ownership, setOwnership] = useState([]);
   const [data, setData] = useState();
   const [basketIdArray, setBasketIdArray] = useState();
   const [isReviewer, setIsReviewer] = useState(null);
-  const [taskHistory, setTaskHistory] = useState();
+  // const [taskHistory, setTaskHistory] = useState();
   const [tasksData, setTasksData] = useState();
   const [allTaskList, setAllTaskList] = useState([]); //Defined as empty array
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  // const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
   const [basketStartDate, setBasketStartDate] = useState();
 
-  const getBasketData = async (sprint_id, task_status) => {
-    const tempAllTaskList = [];
-    const taskDataa = [];
-    const tasksDataa = [];
-    const sprintId = sprint_id ? sprint_id : 0;
-    toast.clearWaitingQueue();
-    const toastId = toast.loading('Fetching Latest Api Data... (0 sec)');
+  const getBasketData = useCallback(
+    async (sprint_id, task_status) => {
+      const tempAllTaskList = [];
 
-    let counter = 0;
-    const interval = setInterval(() => {
-      counter += 1;
-      toast.update(toastId, {
-        render: `Fetching Latest Api Data... (${counter} sec)`
-      });
-    }, 1000);
-    // setIsLoading(true);
-    try {
-      await new BasketService()
-        .getBasketTaskData(ticketId, sprintId, task_status)
-        .then((res) => {
-          if (res.status === 200) {
-            setShowLoaderModal(false);
-            setIsLoading(false);
-            if (res.data.status === 1) {
-              setIsLoading(false);
+      const tasksDataa = [];
+      const sprintId = sprint_id ? sprint_id : 0;
+      toast.clearWaitingQueue();
+      const toastId = toast.loading('Fetching Latest Api Data... (0 sec)');
 
-              const temp = res.data.data;
-              sortingArr = res.data.basket_id_array;
-              setIsReviewer(res.data.is_reviewer);
-              setOwnership(res.data.ownership);
-              setBasketIdArray(res.data.basket_id_array);
-              // setIsRegularised(res.data.is_regularized)
-              setData(null);
-              res.data.data.sort(sortFunc);
-
-              res.data.data.map((tasks, index) => {
-                setBasketStartDate(tasks.start_date);
-                tasks.taskData.forEach((d, i) => {
-                  let taskOwnerNames = d.taskOwners
-                    .map((owner) => owner.taskOwnerName)
-                    .join(', ');
-                  tasksDataa.push({
-                    ticket_id_name: d.ticket_id_name,
-                    Task_Names: d.task_name,
-                    Task_Hours: d.task_hours,
-                    Start_Date: d.task_start_date,
-                    End_Date: d.task_end_date,
-                    Status: d.status,
-                    Priority: d.priority,
-                    Total_Worked: d.total_worked,
-                    Basket_Name: tasks.basket_name,
-                    taskOwnerNames: taskOwnerNames,
-
-                    task_type: d.parent_name
-                  });
-                });
-              });
-              startTransition(() => {
-                setData(res.data.data);
-                setTasksData(tasksDataa);
-              });
-
-              res.data.data.forEach((dataa) => {
-                dataa.taskData.forEach((task) => {
-                  tempAllTaskList.push({
-                    value: task.id,
-                    label: task.task_name
-                  });
-                });
-              });
-              setAllTaskList([]);
-              setAllTaskList(tempAllTaskList);
-
-              setIsLoading(false); // Loading finished
-            }
-          }
-        });
-    } catch (error) {
-      toast.update(toastId, {
-        render: 'Error fetching data!',
-        type: toast.TYPE.ERROR,
-        isLoading: false,
-        autoClose: 3000
-      });
-    } finally {
-      clearInterval(interval);
-      if (toastId) {
+      let counter = 0;
+      const interval = setInterval(() => {
+        counter += 1;
         toast.update(toastId, {
-          render: 'Data fetched successfully!',
-          type: toast.TYPE.SUCCESS,
+          render: `Fetching Latest Api Data... (${counter} sec)`
+        });
+      }, 1000);
+      // setIsLoading(true);
+      try {
+        await new BasketService()
+          .getBasketTaskData(ticketId, sprintId, task_status)
+          .then((res) => {
+            if (res.status === 200) {
+              // setShowLoaderModal(false);
+              setIsLoading(false);
+              if (res.data.status === 1) {
+                setIsLoading(false);
+
+                // const temp = res.data.data;
+                // sortingArr = res.data.basket_id_array;
+                setIsReviewer(res.data.is_reviewer);
+                setOwnership(res.data.ownership);
+                setBasketIdArray(res.data.basket_id_array);
+                // setIsRegularised(res.data.is_regularized)
+                setData(null);
+                // res.data.data.sort(sortFunc);
+
+                res.data.data.forEach((tasks, index) => {
+                  setBasketStartDate(tasks.start_date);
+                  tasks.taskData.forEach((d, i) => {
+                    let taskOwnerNames = d.taskOwners
+                      .map((owner) => owner.taskOwnerName)
+                      .join(', ');
+                    tasksDataa.push({
+                      ticket_id_name: d.ticket_id_name,
+                      Task_Names: d.task_name,
+                      Task_Hours: d.task_hours,
+                      Start_Date: d.task_start_date,
+                      End_Date: d.task_end_date,
+                      Status: d.status,
+                      Priority: d.priority,
+                      Total_Worked: d.total_worked,
+                      Basket_Name: tasks.basket_name,
+                      taskOwnerNames: taskOwnerNames,
+
+                      task_type: d.parent_name
+                    });
+                  });
+                });
+
+                startTransition(() => {
+                  setData(res.data.data);
+                  setTasksData(tasksDataa);
+                });
+
+                res.data.data.forEach((dataa) => {
+                  dataa.taskData.forEach((task) => {
+                    tempAllTaskList.push({
+                      value: task.id,
+                      label: task.task_name
+                    });
+                  });
+                });
+                setAllTaskList([]);
+                setAllTaskList(tempAllTaskList);
+
+                setIsLoading(false); // Loading finished
+              }
+            }
+          });
+      } catch (error) {
+        toast.update(toastId, {
+          render: 'Error fetching data!',
+          type: toast.TYPE.ERROR,
           isLoading: false,
           autoClose: 3000
         });
+      } finally {
+        clearInterval(interval);
+        if (toastId) {
+          toast.update(toastId, {
+            render: 'Data fetched successfully!',
+            type: toast.TYPE.SUCCESS,
+            isLoading: false,
+            autoClose: 3000
+          });
+        }
       }
-    }
-  };
+    },
+    [ticketId]
+  );
 
   //Task Related
   const [showTaskModal, setShowTaskModal] = useState(false);
@@ -287,7 +284,7 @@ export default function TaskComponent({ match }) {
       await getTaskHistory(id).then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            setTaskHistory(res.data.data);
+            // setTaskHistory(res.data.data);
           }
         }
       });
@@ -301,38 +298,38 @@ export default function TaskComponent({ match }) {
   };
 
   /*  ********************************* PLANNER ************************************** */
-  const [showPlannerModal, setShowPlannerModal] = useState(false);
+  // const [showPlannerModal, setShowPlannerModal] = useState(false);
 
-  const handleClosePlannerModal = () => {
-    setShowPlannerModal(false);
-  };
+  // const handleClosePlannerModal = () => {
+  //   setShowPlannerModal(false);
+  // };
 
   /*  ********************************* Group Activity ************************************** */
   //Suyash 30/5/22
-  const [groupActivityModal, setGroupActivityModal] = useState(false);
-  const [groupActivityModalData, setGroupActivityModalData] = useState();
+  // const [groupActivityModal, setGroupActivityModal] = useState(false);
+  // const [groupActivityModalData, setGroupActivityModalData] = useState();
 
-  const handleShowGroupModal = (e, taskOwners, taskId, dataa) => {
-    setGroupActivityModal(true);
-    setGroupActivityModalData(null);
-    const temp = [];
-    taskOwners.forEach((user) => {
-      let t = user;
-      t = { ...t, status: null };
-      temp.push(t);
-    });
-    const data = { taskOwners: temp, taskId: taskId, all: dataa };
-    setGroupActivityModalData(data);
-  };
+  // const handleShowGroupModal = (e, taskOwners, taskId, dataa) => {
+  //   setGroupActivityModal(true);
+  //   setGroupActivityModalData(null);
+  //   const temp = [];
+  //   taskOwners.forEach((user) => {
+  //     let t = user;
+  //     t = { ...t, status: null };
+  //     temp.push(t);
+  //   });
+  //   const data = { taskOwners: temp, taskId: taskId, all: dataa };
+  //   setGroupActivityModalData(data);
+  // };
 
-  const hideGroupActivityModal = () => {
-    // setGroupActivityModalData([]);
-    setGroupActivityModal(false);
-  };
+  // const hideGroupActivityModal = () => {
+  //   // setGroupActivityModalData([]);
+  //   setGroupActivityModal(false);
+  // };
 
   /*  ********************************* Approval Request ************************************** */
   //Suyash 31/5/22
-  const [approvalRequest, setApprovalRequest] = useState({});
+  const approvalRequest = {};
 
   const handleRequestSubmit = (id, taskId) => {};
 
@@ -355,10 +352,10 @@ export default function TaskComponent({ match }) {
     data: null
   });
 
-  const handleShowApproveRequestModal = () => {
-    const data = null;
-    setApproveRequestModal({ show: true, data: data });
-  };
+  // const handleShowApproveRequestModal = () => {
+  //   const data = null;
+  //   setApproveRequestModal({ show: true, data: data });
+  // };
   const handleShowApproveTaskRequestModal = () => {
     const data = null;
     setApproveTaskRequestModal({ show: true, data: data });
@@ -383,17 +380,17 @@ export default function TaskComponent({ match }) {
     setSprintModal(data);
   };
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     await new ModuleSetting().getSettingByName('Ticket', 'Task').then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
           setModuleSetting(res.data.data);
         }
       }
     });
     await new TestCasesService().getTaskBytTicket(ticketId).then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
+        if (res.data.status === 1) {
           const temp = res.data.data;
           setTaskDropdown(
             temp.map((d) => ({ value: d.id, label: d.task_name }))
@@ -417,15 +414,13 @@ export default function TaskComponent({ match }) {
         setSprintLastDate(last_sprint_end_date);
       }
     });
-  };
+  }, [ticketId]);
 
-  const [buttonType, setButtontype] = useState();
-  const [basketList, setBasketList] = useState(null);
-  const pushForward = async (e) => {
+  const pushForward = async (basketIds) => {
     var sendArray = {
       user_id: parseInt(userSessionData.userId),
       ticket_id: parseInt(ticketId),
-      basket_id_array: basketIdArray
+      basket_id_array: basketIds
     };
 
     await new BasketService().pushForward(sendArray).then((res) => {});
@@ -437,6 +432,7 @@ export default function TaskComponent({ match }) {
       ...prevSate,
       [e.target.name]: e.target.value
     }));
+    setEndDateGreaterThanStartDate(e);
   };
 
   const sprintFormHandle = async () => {
@@ -510,7 +506,6 @@ export default function TaskComponent({ match }) {
       });
     }
   };
-
   const sprintDropDownHandler = async (selectedOption) => {
     // setDisableNextBtn(false);
     // setDisablePrevBtn(false);
@@ -769,11 +764,60 @@ export default function TaskComponent({ match }) {
       width: '10%'
     }
   ];
+  let taskDraggedFromId;
+  let taskWhichIsDragged;
+
+  const TaskdragStartHandler = (basketId, task) => {
+    taskDraggedFromId = basketId;
+    taskWhichIsDragged = task;
+  };
+
+  const TaskdragEndhandler = (e, ele) => {
+    e.preventDefault();
+  };
+
+  const TaskdragOverHandler = (e) => {
+    e.preventDefault();
+  };
+  const TaskdropHandler = (e, ele, task) => {
+    let basketData = [...data];
+    let taskRemoved;
+    for (let i = 0; i < basketData.length; i++) {
+      if (basketData[i].id === taskDraggedFromId) {
+        for (let j = 0; j < basketData[i].taskData.length; j++) {
+          if (basketData[i].taskData[j].id === taskWhichIsDragged.id) {
+            taskRemoved = basketData[i].taskData.splice(j, 1);
+          }
+        }
+      }
+    }
+
+    for (let i = 0; i < basketData.length; i++) {
+      if (basketData[i].id === ele.id) {
+        const findIndex = basketData[i].taskData.findIndex(
+          // eslint-disable-next-line no-self-compare
+          (task) => task.id === task.id
+        );
+        basketData[i].taskData.splice(findIndex, 0, taskRemoved[0]);
+      }
+    }
+    setData(basketData);
+  };
+
+  const setEndDateGreaterThanStartDate = (e) => {
+    const { value } = e.target;
+    if (value) {
+      const startDate = new Date(value);
+      startDate.setDate(startDate.getDate() + 1);
+      const formattedMinDate = startDate.toISOString().split('T')[0];
+      setMinEndDate(formattedMinDate);
+      return formattedMinDate;
+    }
+  };
 
   var dragId;
-  var dropId;
-  var basketIdArray1;
-  var basketIdArray2;
+  // var dropId;
+
   const dragStartHandler = (e, card) => {
     dragId = card.id;
   };
@@ -788,31 +832,37 @@ export default function TaskComponent({ match }) {
 
   const dropHandler = async (e, card) => {
     e.preventDefault();
-    dropId = card.id;
-
-    basketIdArray1 = basketIdArray;
-    var drag = basketIdArray1.indexOf(dragId);
-    var drop = basketIdArray1.indexOf(dropId);
-    if (drag > -1) {
-      basketIdArray1.splice(drag, 1);
-    }
-    basketIdArray1.splice(drop, 0, dragId);
-    basketIdArray2 = basketIdArray1.join();
-    setBasketIdArray(basketIdArray2);
-    pushForward();
+    // dropId = card.id;
+    let basketData = [...data];
+    const indexOfDraggedBasket = basketData.findIndex(
+      (basket) => basket.id === dragId
+    );
+    const indexOfDroppedOn = basketData.findIndex(
+      (basket) => basket.id === card.id
+    );
+    let draggedElm = basketData[indexOfDraggedBasket];
+    let droppedOverElm = basketData[indexOfDroppedOn];
+    basketData[indexOfDroppedOn] = draggedElm;
+    basketData[indexOfDraggedBasket] = droppedOverElm;
+    setData(basketData);
+    let basketIdForPayload = basketData.map((basket) => basket.id);
+    setBasketIdArray(basketIdForPayload);
+    pushForward(basketIdForPayload);
+    // basketIdArray1 = basketIdArray;
+    return;
   };
   const [showDetails, setShowDetails] = useState(false);
   const detailsHandler = () => {
     setShowDetails((prev) => !prev);
   };
-  const date = new Date();
+  // const date = new Date();
 
-  let day = date.getDate();
-  let month = date.getMonth() + 1;
-  let year = date.getFullYear();
+  // let day = date.getDate();
+  // let month = date.getMonth() + 1;
+  // let year = date.getFullYear();
 
   // This arrangement can be altered based on how we want the date's format to appear.
-  let currentDate = `${day}-${month}-${year}`;
+  // let currentDate = `${day}-${month}-${year}`;
   const goToSprintCalendarGraph = (module) => {
     let linkURL = `/${_base}/Ticket/Task/${ticketId}`;
     localStorage.setItem('PreviosTab', linkURL);
@@ -839,34 +889,40 @@ export default function TaskComponent({ match }) {
     );
     loadData();
     getTicketData();
-  }, []);
+  }, [
+    currentTaskStatus,
+    getBasketData,
+    getTicketData,
+    loadData,
+    selectedOption?.value
+  ]);
 
-  function LoaderComponent() {
-    return (
-      // Container to center-align the spinner and loading text
-      <div style={{ textAlign: 'center', marginTop: '50px' }}>
-        {/* Spinner element with custom styling */}
-        <Spinner
-          animation="border"
-          role="status"
-          style={{
-            width: '100px',
-            height: '100px',
-            borderWidth: '5px',
-            color: '#484c7f',
-            marginBottom: '10px'
-          }}
-        >
-          {/* Visually hidden loading text for accessibility */}
-          <span className="visually-hidden">Loading...</span>
-        </Spinner>
-        {/* Loading text displayed below the spinner */}
-        <div style={{ color: '#484c7f', fontSize: '16px', fontWeight: 'bold' }}>
-          Loading...
-        </div>
-      </div>
-    );
-  }
+  // function LoaderComponent() {
+  //   return (
+  //     // Container to center-align the spinner and loading text
+  //     <div style={{ textAlign: 'center', marginTop: '50px' }}>
+  //       {/* Spinner element with custom styling */}
+  //       <Spinner
+  //         animation="border"
+  //         role="status"
+  //         style={{
+  //           width: '100px',
+  //           height: '100px',
+  //           borderWidth: '5px',
+  //           color: '#484c7f',
+  //           marginBottom: '10px'
+  //         }}
+  //       >
+  //         {/* Visually hidden loading text for accessibility */}
+  //         <span className="visually-hidden">Loading...</span>
+  //       </Spinner>
+  //       {/* Loading text displayed below the spinner */}
+  //       <div style={{ color: '#484c7f', fontSize: '16px', fontWeight: 'bold' }}>
+  //         Loading...
+  //       </div>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div className="container-xxl">
@@ -1063,6 +1119,7 @@ export default function TaskComponent({ match }) {
                                 {attachment.name}
                                 <div className="d-flex justify-content-center p-0 mt-1">
                                   <a
+                                    href="/"
                                     // href={`${_attachmentUrl}/${attachment.path}`}
                                     target="_blank"
                                     className="btn btn-primary btn-sm p-1"
@@ -1437,7 +1494,7 @@ export default function TaskComponent({ match }) {
               </div>
             </CardBody>
           </Card>
-          {isLoading == true ? (
+          {isLoading === true ? (
             <CardLoadingSkeleton />
           ) : (
             <>
@@ -1446,129 +1503,146 @@ export default function TaskComponent({ match }) {
                   data.map((ele, index) => {
                     return (
                       <div
-                        draggable={true}
-                        onDragStart={(e) => dragStartHandler(e, ele)}
-                        onDragLeave={(e) => dragEndhandler(e)}
-                        onDragEnd={(e) => dragEndhandler(e, ele)}
-                        onDragOver={(e) => dragOverHandler(e)}
-                        onDrop={(e) => dropHandler(e, ele)}
                         id={`basket_${index}`}
                         key={`basket_${index}`}
-                        className="col-lg-4 col-md-12 col-sm-12"
+                        className={`col-lg-4 col-md-12 col-sm-12 `}
                       >
-                        <div className="p-0 m-0 d-flex justify-content-between">
-                          <h5>
-                            <strong> {ele.basket_name}</strong>
-                          </h5>
-                          <span
-                            className="badge bg-success text-end mt-2 p-1 px-3"
-                            style={{ fontSize: '14px' }}
-                          >
-                            {ele.total_worked ? ele.total_worked : 0}/
-                            {ele?.total_hours}
-                          </span>
-                        </div>
+                        <div
+                          draggable={true}
+                          onDragStart={(e) => dragStartHandler(e, ele)}
+                          onDragLeave={(e) => dragEndhandler(e)}
+                          onDragEnd={(e) => dragEndhandler(e, ele)}
+                          onDragOver={(e) => dragOverHandler(e)}
+                          onDrop={(e) => dropHandler(e, ele)}
+                        >
+                          <div className="p-0 m-0 d-flex justify-content-between">
+                            <h5>
+                              <strong> {ele.basket_name}</strong>
+                            </h5>
+                            <span
+                              className="badge bg-success text-end mt-2 p-1 px-3"
+                              style={{ fontSize: '14px' }}
+                            >
+                              {ele.total_worked ? ele.total_worked : 0}/
+                              {ele?.total_hours}
+                            </span>
+                          </div>
 
-                        <div className="p-0 m-0 d-flex justify-content-between mt-1">
-                          {ele &&
-                            (ele.ownership === 'TICKET' ||
-                              ele.ownership === 'BASKET' ||
-                              ele.ownership === 'PROJECT') && (
-                              <button
-                                type="button"
-                                key={`newTaskBtn_${index}`}
-                                className="btn btn-danger btn-sm text-white"
-                                style={{ padding: '10px 10px' }}
-                                name="newTaskButton"
-                                onClick={(e) => {
-                                  handleShowTaskModal(
-                                    ele.ticket_id,
-                                    ele.id,
-                                    null
-                                  );
-                                }}
-                              >
-                                <i
-                                  className="icofont-plus"
-                                  style={{
-                                    fontSize: '10px',
-                                    marginRight: '4px'
+                          <div className="p-0 m-0 d-flex justify-content-between mt-1">
+                            {ele &&
+                              (ele.ownership === 'TICKET' ||
+                                ele.ownership === 'BASKET' ||
+                                ele.ownership === 'PROJECT') && (
+                                <button
+                                  type="button"
+                                  key={`newTaskBtn_${index}`}
+                                  className="btn btn-danger btn-sm text-white"
+                                  style={{ padding: '10px 10px' }}
+                                  name="newTaskButton"
+                                  onClick={(e) => {
+                                    handleShowTaskModal(
+                                      ele.ticket_id,
+                                      ele.id,
+                                      null
+                                    );
                                   }}
-                                ></i>
-                                New Task
-                              </button>
-                            )}
+                                >
+                                  <i
+                                    className="icofont-plus"
+                                    style={{
+                                      fontSize: '10px',
+                                      marginRight: '4px'
+                                    }}
+                                  ></i>
+                                  New Task
+                                </button>
+                              )}
 
-                          <form
-                            method="post"
-                            onSubmit={(e) => {
-                              pushForward(e);
-                            }}
-                            encType="multipart/form-data"
-                          >
-                            <div>
-                              <input
-                                type="hidden"
-                                id="basket_id"
-                                name="basket_id"
-                                value={ele.id}
-                              />
-                              <input
-                                type="hidden"
-                                id="basket_id_array"
-                                name="basket_id_array"
-                                value={basketIdArray}
-                              />
-                            </div>
-                          </form>
+                            <form
+                              method="post"
+                              onSubmit={(e) => {
+                                pushForward(e);
+                              }}
+                              encType="multipart/form-data"
+                            >
+                              <div>
+                                <input
+                                  type="hidden"
+                                  id="basket_id"
+                                  name="basket_id"
+                                  value={ele.id}
+                                />
+                                <input
+                                  type="hidden"
+                                  id="basket_id_array"
+                                  name="basket_id_array"
+                                  value={basketIdArray}
+                                />
+                              </div>
+                            </form>
 
-                          {ele &&
-                            (ele.ownership === 'TICKET' ||
-                              ele.ownership === 'BASKET' ||
-                              ele.ownership === 'PROJECT') && (
-                              <button
-                                type="button"
-                                className="btn btn-primary text-white btn-sm"
-                                style={{ padding: '10px 10px' }}
-                                onClick={(e) => {
-                                  getTicketData();
+                            {ele &&
+                              (ele.ownership === 'TICKET' ||
+                                ele.ownership === 'BASKET' ||
+                                ele.ownership === 'PROJECT') && (
+                                <button
+                                  type="button"
+                                  className="btn btn-primary text-white btn-sm"
+                                  style={{ padding: '10px 10px' }}
+                                  onClick={(e) => {
+                                    getTicketData();
 
-                                  // Handle the click event here
-                                  handleShowBasketModal(ele.id);
-                                }}
-                              >
-                                <i
-                                  className="icofont-ui-edit"
-                                  style={{
-                                    fontSize: '13px',
-                                    marginRight: '4px'
+                                    // Handle the click event here
+                                    handleShowBasketModal(ele.id);
                                   }}
-                                ></i>
-                                Edit Basket
-                              </button>
-                            )}
+                                >
+                                  <i
+                                    className="icofont-ui-edit"
+                                    style={{
+                                      fontSize: '13px',
+                                      marginRight: '4px'
+                                    }}
+                                  ></i>
+                                  Edit Basket
+                                </button>
+                              )}
+                          </div>
                         </div>
-
                         <div className="ticket-container" key={ele.id}>
                           <div className="ticket">
                             {ele.taskData &&
                               ele.taskData.map((task) => {
                                 return (
-                                  <TaskData
-                                    key={task.id.toString()}
-                                    data={task}
-                                    date={basketStartDate}
-                                    loadBasket={() =>
-                                      getBasketData(
-                                        selectedOption?.value
-                                          ? selectedOption?.value
-                                          : 0,
-                                        currentTaskStatus
-                                      )
+                                  <div
+                                    draggable={true}
+                                    onDragStart={(e) =>
+                                      TaskdragStartHandler(ele.id, task)
                                     }
-                                    onShowTaskModal={handleShowTaskModal}
-                                    isReviewer={isReviewer}
-                                  />
+                                    onDragLeave={(e) => TaskdragEndhandler(e)}
+                                    onDragEnd={(e) =>
+                                      TaskdragEndhandler(e, ele)
+                                    }
+                                    onDragOver={(e) => TaskdragOverHandler(e)}
+                                    onDrop={(e) =>
+                                      TaskdropHandler(e, ele, task)
+                                    }
+                                  >
+                                    <TaskData
+                                      key={task.id.toString()}
+                                      data={task}
+                                      date={basketStartDate}
+                                      loadBasket={() =>
+                                        getBasketData(
+                                          selectedOption?.value
+                                            ? selectedOption?.value
+                                            : 0,
+                                          currentTaskStatus
+                                        )
+                                      }
+                                      onShowTaskModal={handleShowTaskModal}
+                                      isReviewer={isReviewer}
+                                    />
+                                  </div>
                                 );
                               })}
                           </div>
@@ -1666,7 +1740,7 @@ export default function TaskComponent({ match }) {
                           id="exampleFormControlInput1"
                           name="sprintName"
                           placeholder="Enter Sprint name"
-                          disabled={sprintModal?.modalHeader == 'View'}
+                          disabled={sprintModal?.modalHeader === 'View'}
                           defaultValue={sprintModal?.modalData?.name}
                           onChange={(e) => sprintInputChangeHandler(e)}
                           maxlength={50}
@@ -1738,7 +1812,8 @@ export default function TaskComponent({ match }) {
                             disabled={sprintModal?.modalHeader === 'View'}
                             onChange={(e) => sprintInputChangeHandler(e)}
                             defaultValue={sprintModal?.modalData?.end_date}
-                            min={ticketStartDate}
+                            min={minEndDate}
+                            // min={new Date(sprintInput.startDate).getDate() + 1}
                             max={expectedSolveDate}
                             onKeyDown={(e) => e.preventDefault()}
                             required

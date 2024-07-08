@@ -5,7 +5,8 @@ export const transformDataForExportHandler = (data, headers, keys) => {
       if (header === 'Sr No.') {
         transformedRow[header] = index + 1;
       } else if (header === 'Status') {
-        transformedRow[header] = Number(row?.[keys[i]]) === 1 ? 'Active' : 'Deactive';
+        transformedRow[header] =
+          Number(row?.[keys[i]]) === 1 ? 'Active' : 'Deactive';
       } else {
         transformedRow[header] = row?.[keys[i]] || '--';
       }
@@ -16,11 +17,12 @@ export const transformDataForExportHandler = (data, headers, keys) => {
 
 export const customSearchHandler = (list, searchValue) => {
   if (!searchValue) return list;
-  const filteredList = list.filter(branch => {
+  const filteredList = list.filter((branch) => {
     const branchValues = Object.values(branch);
-    return branchValues.some(value => {
+    return branchValues.some((value) => {
       return (
-        typeof value === 'string' && value?.toLowerCase()?.includes(searchValue?.toLowerCase())
+        typeof value === 'string' &&
+        value?.toLowerCase()?.includes(searchValue?.toLowerCase())
       );
     });
   });
@@ -28,36 +30,39 @@ export const customSearchHandler = (list, searchValue) => {
   return filteredList;
 };
 
-// export const customSearchHandler = (function () {
-//   let timeoutId;
-//   let filteredList;
-
-//   return function (list, searchValue, delay = 1000) {
-//     clearTimeout(timeoutId);
-
-//     if (!searchValue) return list;
-
-//     timeoutId = setTimeout(() => {
-//       filteredList = list.filter(branch => {
-//         const branchValues = Object.values(branch);
-//         return branchValues.some(value => {
-//           return (
-//             typeof value === 'string' && value?.toLowerCase()?.includes(searchValue?.toLowerCase())
-//           );
-//         });
-//       });
-//     }, delay);
-//     console.log(filteredList);
-
-//     return filteredList || list;
-//   };
-// })();
-
-export const formatNumberWithCurrency = (number, locale = 'en-IN', currency = 'INR') => {
+export const formatNumberWithCurrency = (
+  number,
+  locale = 'en-IN',
+  currency = 'INR'
+) => {
   const formatter = new Intl.NumberFormat(locale, {
     style: 'currency',
     currency: currency,
-    currencyDisplay: 'narrowSymbol',
+    currencyDisplay: 'narrowSymbol'
   });
   return formatter.format(number);
 };
+
+export function customHandlerDropdownData({ data, labelKey, valueKey }) {
+  if (!data?.length) {
+    return [];
+  }
+  const filteredAndMappedData = data
+    .filter((item) => item?.is_active === 1)
+    .map((item) => ({
+      label: item?.[labelKey],
+      value: item?.[valueKey]
+    }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+
+  const result = [
+    { label: 'Select', value: undefined, isDisabled: true },
+    ...filteredAndMappedData
+  ];
+
+  if (labelKey === 'remark_description') {
+    result.push({ label: 'Other', value: 0 });
+  }
+
+  return result;
+}

@@ -1,14 +1,13 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
+import { createAsyncThunk } from '@reduxjs/toolkit';
 
-import TenantService from "../../services/MastersService/TenantService";
+import TenantService from '../../services/MastersService/TenantService';
 
 export const getAllTenant = createAsyncThunk(
-  "getAllTenant",
+  'getAllTenant',
   async (config, thunkapi) => {
     try {
       const service = new TenantService();
       const response = await service.getTenant();
-
 
       return response;
     } catch (error) {
@@ -17,12 +16,12 @@ export const getAllTenant = createAsyncThunk(
   }
 );
 export const posttenantData = createAsyncThunk(
-  "posttenantData",
+  'posttenantData',
   async (config, thunkapi) => {
     try {
       const service = new TenantService();
       const response = await service.postTenant(config);
-      console.log("response", response);
+      console.log('response', response);
 
       return response;
     } catch (error) {
@@ -32,9 +31,8 @@ export const posttenantData = createAsyncThunk(
 );
 
 export const updatetenantData = createAsyncThunk(
-  "updatedRole",
+  'updatedRole',
   async (config, thunkapi) => {
-
     try {
       const service = new TenantService();
       const response = await service.updateTenant(config.id, config.payload);

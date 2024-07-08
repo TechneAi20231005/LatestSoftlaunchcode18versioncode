@@ -4,7 +4,7 @@ function CustomTab({ tabsData, currentTab, setCurrentTab }) {
   return (
     <div className="tab_container">
       <ul>
-        {tabsData?.map(tab => (
+        {tabsData?.map((tab) => (
           <li
             className={tab?.value === currentTab && 'tab_active'}
             onClick={() => setCurrentTab(tab?.value)}

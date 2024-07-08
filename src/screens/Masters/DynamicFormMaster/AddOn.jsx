@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import DynamicFormDropdownMasterService from "../../../services/MastersService/DynamicFormDropdownMasterService";
+import React, { useState, useEffect } from 'react';
+import DynamicFormDropdownMasterService from '../../../services/MastersService/DynamicFormDropdownMasterService';
 
 function AddOn(props) {
   const [selectedDropdown, setSelectedDropdown] = useState();
@@ -8,7 +8,7 @@ function AddOn(props) {
   const loadData = async () => {
     if (
       props &&
-      props.data.inputType == "select" &&
+      props.data.inputType == 'select' &&
       props.data.inputAddOn.inputDataSource
     ) {
       await new DynamicFormDropdownMasterService()
@@ -21,7 +21,7 @@ function AddOn(props) {
               setSelectedDropdownValues(
                 res.data.data.dropdown.map((d) => ({
                   label: d.label,
-                  value: d.value,
+                  value: d.value
                 }))
               );
             }
@@ -39,7 +39,7 @@ function AddOn(props) {
 
     return (
       <>
-        {props.data.inputType === "time" && (
+        {props.data.inputType === 'time' && (
           <div className="d-flex justify-content-between" key={props.key}>
             <div class="form-group">
               <label>Min Time:</label>
@@ -68,7 +68,7 @@ function AddOn(props) {
           </div>
         )}
 
-        {props.data.inputType === "datetime-local" && (
+        {props.data.inputType === 'datetime-local' && (
           <div className="d-flex justify-content-between">
             <div class="form-group">
               <label>Date-time:</label>
@@ -85,7 +85,7 @@ function AddOn(props) {
           </div>
         )}
 
-        {props.data.inputType === "radio" && (
+        {props.data.inputType === 'radio' && (
           <span>
             <select
               className="form-control form-control-sm"
@@ -103,13 +103,13 @@ function AddOn(props) {
                   }
                 })}
             </select>
-            <small style={{ color: "red" }}>
+            <small style={{ color: 'red' }}>
               <b>Select Data Source</b>
             </small>
           </span>
         )}
 
-        {props.data.inputType === "number" && (
+        {props.data.inputType === 'number' && (
           <div className="d-flex justify-content-between">
             <div class="form-group">
               <label>Min Number:</label>
@@ -137,7 +137,7 @@ function AddOn(props) {
           </div>
         )}
 
-        {props.data.inputType === "decimal" && (
+        {props.data.inputType === 'decimal' && (
           <div className="d-flex justify-content-between">
             <div class="form-group">
               <label>Min Number:</label>
@@ -166,7 +166,7 @@ function AddOn(props) {
           </div>
         )}
 
-        {props.data.inputType === "select" && (
+        {props.data.inputType === 'select' && (
           <span>
             <select
               className="form-control form-control-sm"
@@ -190,13 +190,13 @@ function AddOn(props) {
                   }
                 })}
             </select>
-            <small style={{ color: "red" }}>
+            <small style={{ color: 'red' }}>
               <b>Select Data Source</b>
             </small>
           </span>
         )}
 
-        {props.data.inputType === "select-master" && (
+        {props.data.inputType === 'select-master' && (
           <span>
             <select
               className="form-control form-control-sm"
@@ -219,13 +219,13 @@ function AddOn(props) {
               </option>
               <option value="status|id|status">Status Master</option>
             </select>
-            <small style={{ color: "red" }}>
+            <small style={{ color: 'red' }}>
               <b>Select Data Source</b>
             </small>
           </span>
         )}
 
-        {props.data.inputType === "date" && (
+        {props.data.inputType === 'date' && (
           <div className="d-flex justify-content-between">
             <div class="form-group">
               <label>Min Date:</label>

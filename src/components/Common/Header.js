@@ -43,7 +43,6 @@ export default function Header() {
             setNotifications(res.data.data.result);
 
             if (parseInt(length) > 0 && parseInt(length) <= 5) {
-              height = 100;
             }
           }
         }
@@ -72,7 +71,7 @@ export default function Header() {
   const loadData = async (e) => {
     new UserService().getUserById(localStorage.getItem('id')).then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
+        if (res.data.status === 1) {
           setTenantId(res.data.data.tenant_id);
           res.data.data.profile_picture =
             'http://3.108.206.34/TSNewBackend/' + res.data.data.profile_picture;

@@ -15,7 +15,6 @@ import rolemasterSlice from '../../screens/Masters/RoleMaster/RoleMasterSlice';
 
 import ConsolidatedSlice from '../../screens/ConsolidatedView/ConsolidatedSlice';
 import DepartmentMasterSlice from '../../screens/Masters/DepartmentMaster/DepartmentMasterSlice';
-import TaskAndTicketTypeMasterSlice from '../../screens/Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMasterSlice';
 
 import PaymentTemplateMasterSlice from '../../screens/BillChecking/Masters/BillTypeMaster/PaymentTemplateMasterSlice';
 import TestingTypeComponentSlices from '../../screens/Masters/TestingTypeMaster/TestingTypeComponentSlices';
@@ -62,6 +61,7 @@ import functionMasterSlice from '../slices/testCases/functionMaster';
 import downloadFormatSlice from '../slices/testCases/downloadFormatFile';
 import testCaseReviewSlice from '../slices/testCases/testCaseReview';
 import testBankSlice from '../slices/testCases/testBank';
+import sidebarSlice from '../slices/Sidebar';
 export const store = configureStore({
   reducer: {
     login: loginReducer,
@@ -77,7 +77,7 @@ export const store = configureStore({
     planner: PlannerSlice,
     rolemaster: rolemasterSlice,
     department: DepartmentMasterSlice,
-    taskandticket: TaskAndTicketTypeMasterSlice,
+
     paymentmaster: PaymentTemplateMasterSlice,
     testingData: TestingTypeComponentSlices,
     moduleMaster: ModuleSlice,
@@ -121,7 +121,9 @@ export const store = configureStore({
     functionMaster: functionMasterSlice,
     downloadFormat: downloadFormatSlice,
     testCaseReview: testCaseReviewSlice,
-    testBank: testBankSlice
+    testBank: testBankSlice,
+    //SideBar
+    sidebar: sidebarSlice
   },
 
   middleware: (getDefaultMiddleware) =>

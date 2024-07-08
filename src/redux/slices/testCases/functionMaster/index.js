@@ -1,28 +1,35 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 import {
   addFunctionMasterThunk,
   editFunctionMasterThunk,
-  getFunctionMasterListThunk,
-} from "../../../services/testCases/functionMaster";
+  getFunctionMasterListThunk
+} from '../../../services/testCases/functionMaster';
 
 const initialState = {
   functionMasterList: [],
   filterFunctionMasterList: [],
+  editFunctionMaster: [],
   isLoading: {
     getFunctionMasterList: false,
     addFunctionMaster: false,
     editFunctionMaster: false,
-    filterFunctionMasterList: false,
+    filterFunctionMasterList: false
   },
-  errorMsg: { getFunctionMasterList: "", filterFunctionMasterList: "" },
-  successMsg: { getFunctionMasterList: "", filterFunctionMasterList: "" },
+  errorMsg: {
+    getFunctionMasterList: '',
+    filterFunctionMasterList: '',
+    editFunctionMaster: ''
+  },
+  successMsg: {
+    getFunctionMasterList: '',
+    filterFunctionMasterList: '',
+    editFunctionMaster: ''
+  }
 };
 const functionMasterSlice = createSlice({
-  name: "Function master",
+  name: 'Function master',
   initialState,
-  reducers: {
-    // ==> normal reducer functions go here
-  },
+  reducers: {},
   extraReducers(builder) {
     builder
       .addCase(getFunctionMasterListThunk.pending, (state, action) => {
@@ -67,7 +74,7 @@ const functionMasterSlice = createSlice({
         state.isLoading.editFunctionMaster = false;
         state.errorMsg.editFunctionMaster = action.error.message;
       });
-  },
+  }
 });
 
 export default functionMasterSlice.reducer;
