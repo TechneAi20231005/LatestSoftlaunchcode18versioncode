@@ -93,6 +93,7 @@ function TestCaseReviewComponent() {
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const [errorMessage, setErrorMessage] = useState('');
   const [isFilterApplied, setIsFilterApplied] = useState(false);
+  const [selectedValue, setSelectedValue] = useState('');
 
   const {
     filterType,
@@ -284,7 +285,7 @@ function TestCaseReviewComponent() {
         ? {
             column: filterColumnId,
             column_name: filterColumn,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             searchText: getFilteredValues(),
             sort: sortOrder
           }
@@ -292,7 +293,7 @@ function TestCaseReviewComponent() {
             column: filterColumnId,
             column_name: filterColumn,
             searchText: type === 'text' ? filterText : betweenValues,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             sort: sortOrder
           };
 
@@ -864,7 +865,7 @@ function TestCaseReviewComponent() {
         ? {
             column: filterColumnId,
             column_name: filterColumn,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             searchText: getFilteredValues(),
             sort: sortOrder
           }
@@ -872,7 +873,7 @@ function TestCaseReviewComponent() {
             column: filterColumnId,
             column_name: filterColumn,
             searchText: type === 'text' ? filterText : betweenValues,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             sort: sortOrder
           };
 
@@ -955,6 +956,8 @@ function TestCaseReviewComponent() {
           handleSearchChange={handleSearchChange}
           handleClearAllFilter={handleClearAllFilter}
           errorMessage={errorMessage}
+          setSelectedValue={setSelectedValue}
+          selectedValue={selectedValue}
         />
       )}
     </>

@@ -96,6 +96,7 @@ function ReviewedTestDraftComponent() {
   const navigate = useNavigate();
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const [isFilterApplied, setIsFilterApplied] = useState(false);
+  const [selectedValue, setSelectedValue] = useState('');
 
   const {
     filterType,
@@ -376,7 +377,7 @@ function ReviewedTestDraftComponent() {
         ? {
             column: filterColumnId,
             column_name: filterColumn,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             searchText: getFilteredValues(),
             sort: sortOrder
           }
@@ -384,7 +385,7 @@ function ReviewedTestDraftComponent() {
             column: filterColumnId,
             column_name: filterColumn,
             searchText: type === 'text' ? filterText : betweenValues,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             sort: sortOrder
           };
 
@@ -1290,7 +1291,7 @@ function ReviewedTestDraftComponent() {
         ? {
             column: filterColumnId,
             column_name: filterColumn,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             searchText: getFilteredValues(),
             sort: sortOrder
           }
@@ -1298,7 +1299,7 @@ function ReviewedTestDraftComponent() {
             column: filterColumnId,
             column_name: filterColumn,
             searchText: type === 'text' ? filterText : betweenValues,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             sort: sortOrder
           };
 
@@ -1526,6 +1527,8 @@ function ReviewedTestDraftComponent() {
           handleSearchChange={handleSearchChange}
           handleClearAllFilter={handleClearAllFilter}
           errorMessage={errorMessage}
+          setSelectedValue={setSelectedValue}
+          selectedValue={selectedValue}
         />
       )}
     </div>

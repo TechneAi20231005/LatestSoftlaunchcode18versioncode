@@ -124,6 +124,7 @@ function TestCaseReviewDetails() {
   const [comments, setComments] = useState({});
   const [remarks, setRemarks] = useState({});
   const [isFilterApplied, setIsFilterApplied] = useState(false);
+  const [selectedValue, setSelectedValue] = useState('');
 
   const {
     filterType,
@@ -1322,7 +1323,7 @@ function TestCaseReviewDetails() {
         ? {
             column: filterColumnId,
             column_name: filterColumn,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             searchText: getFilteredValues(),
             sort: sortOrder
           }
@@ -1330,7 +1331,7 @@ function TestCaseReviewDetails() {
             column: filterColumnId,
             column_name: filterColumn,
             searchText: type === 'text' ? filterText : betweenValues,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             sort: sortOrder
           };
 
@@ -1441,7 +1442,7 @@ function TestCaseReviewDetails() {
         ? {
             column: filterColumnId,
             column_name: filterColumn,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             searchText: getFilteredValues(),
             sort: sortOrder
           }
@@ -1449,7 +1450,7 @@ function TestCaseReviewDetails() {
             column: filterColumnId,
             column_name: filterColumn,
             searchText: type === 'text' ? filterText : betweenValues,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             sort: sortOrder
           };
 
@@ -1558,7 +1559,7 @@ function TestCaseReviewDetails() {
         </div>
       </div>
 
-      <div className=" d-flex  justify-content-end">
+      <div className=" d-flex col-12 justify-content-end mt-2">
         <button
           type="submit"
           onClick={() => handleSubmit('RESEND')}
@@ -1622,6 +1623,8 @@ function TestCaseReviewDetails() {
           handleSearchChange={handleSearchChange}
           handleClearAllFilter={handleClearAllFilter}
           errorMessage={errorMessage}
+          setSelectedValue={setSelectedValue}
+          selectedValue={selectedValue}
         />
       )}
     </div>

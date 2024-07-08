@@ -253,30 +253,36 @@ export default function TestDraftComponent({}) {
               >
                 Import Test Draft File
               </button>
-              <ExportToExcel
-                className="btn btn-danger"
-                apiData={
-                  currentTab === 'test_summary'
-                    ? allDraftTestListData
-                    : allReviewDraftTestListData
-                }
-                columns={
-                  currentTab === 'test_summary'
-                    ? exportColumns
-                    : exportReviewedColumns
-                }
-                fileName={
-                  currentTab === 'test_summary'
-                    ? 'Test Summary Records'
-                    : 'Review Test Draft Records'
-                }
-                disabled={
-                  currentTab === 'review_test_draft' ||
-                  allDraftTestListData?.length <= 0
-                    ? true
-                    : false
-                }
-              />
+
+              {currentTab === 'test_summary' && (
+                <ExportToExcel
+                  className="btn btn-danger"
+                  apiData={allDraftTestListData}
+                  columns={exportColumns}
+                  fileName={'Test Summary Records'}
+                  disabled={
+                    currentTab === 'test_summary' ||
+                    allDraftTestListData?.length <= 0
+                      ? true
+                      : false
+                  }
+                />
+              )}
+
+              {currentTab === 'review_test_draft' && (
+                <ExportToExcel
+                  className="btn btn-danger"
+                  apiData={allReviewDraftTestListData}
+                  columns={exportReviewedColumns}
+                  fileName={'Review Test Draft Records'}
+                  disabled={
+                    currentTab === 'review_test_draft' ||
+                    allReviewDraftTestListData?.length <= 0
+                      ? true
+                      : false
+                  }
+                />
+              )}
             </div>
           );
         }}

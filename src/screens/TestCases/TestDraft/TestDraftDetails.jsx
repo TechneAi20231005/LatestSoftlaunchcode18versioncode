@@ -366,6 +366,7 @@ function TestDraftDetails(props) {
     //   payload: null
     // });
   };
+  const [selectedValue, setSelectedValue] = useState('');
 
   const handleApplyFilter = async () => {
     props?.setClearData(false);
@@ -374,7 +375,7 @@ function TestDraftDetails(props) {
         ? {
             column: filterColumnId,
             column_name: filterColumn,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             searchText: getFilteredValues(),
             sort: sortOrder
           }
@@ -382,10 +383,9 @@ function TestDraftDetails(props) {
             column: filterColumnId,
             column_name: filterColumn,
             searchText: type === 'text' ? filterText : betweenValues,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             sort: sortOrder
           };
-
     const updatedFilters = [...filters, newFilter];
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
     props.setIsFilterApplied((prev) => ({
@@ -1405,7 +1405,7 @@ function TestDraftDetails(props) {
         ? {
             column: filterColumnId,
             column_name: filterColumn,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             searchText: getFilteredValues(),
             sort: sortOrder
           }
@@ -1413,7 +1413,7 @@ function TestDraftDetails(props) {
             column: filterColumnId,
             column_name: filterColumn,
             searchText: type === 'text' ? filterText : betweenValues,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             sort: sortOrder
           };
 
@@ -1587,6 +1587,8 @@ function TestDraftDetails(props) {
           localDispatch={localDispatch}
           handleClearAllFilter={handleClearAllFilter}
           errorMessage={errorMessage}
+          setSelectedValue={setSelectedValue}
+          selectedValue={selectedValue}
         />
       )}
     </>
