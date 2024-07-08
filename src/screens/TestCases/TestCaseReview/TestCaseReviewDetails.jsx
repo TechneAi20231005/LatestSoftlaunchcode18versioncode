@@ -123,6 +123,7 @@ function TestCaseReviewDetails() {
   const [commonRemark, setCommonRemark] = useState('');
   const [comments, setComments] = useState({});
   const [remarks, setRemarks] = useState({});
+  const [isFilterApplied, setIsFilterApplied] = useState(false);
 
   const {
     filterType,
@@ -146,7 +147,7 @@ function TestCaseReviewDetails() {
 
   const generateOptions = (options) => {
     return [
-      <option key="default" value="">
+      <option value="" disabled>
         Select Reviewer comment
       </option>,
       ...options.map((option) => (
@@ -191,7 +192,7 @@ function TestCaseReviewDetails() {
       ?.map((row) => ({
         tc_id: row.tc_id,
 
-        comment_id: comments[row.id] || row.comment_id,
+        comment_id: comments[row.id] || row.comment_id || commonComment,
         other_remark: remarks[row.id] || row.other_remark
       }));
 
@@ -203,7 +204,7 @@ function TestCaseReviewDetails() {
       }
     });
 
-    if (newCommentIdErrors?.length > 0) {
+    if (newCommentIdErrors?.length > 0 && !commonComment) {
       setCommentIdError(newCommentIdErrors);
     } else {
       setCommentIdError('');
@@ -220,7 +221,7 @@ function TestCaseReviewDetails() {
           planID,
           formData,
           onSuccessHandler: () => {
-            setCommonComment('');
+            // setCommonComment('');
             setCommonRemark('');
             dispatch(
               getByTestPlanIDListThunk({
@@ -314,7 +315,9 @@ function TestCaseReviewDetails() {
             onClick={(e, row) =>
               handleFilterClick(e, 'module_name', 'Module', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['module_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -358,7 +361,9 @@ function TestCaseReviewDetails() {
             onClick={(e, row) =>
               handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['sub_module_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -401,7 +406,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'function_name', 'Function', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['function_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -442,7 +449,9 @@ function TestCaseReviewDetails() {
           <span>Field</span>
           <i
             onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['field'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -485,7 +494,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'type_name', 'Testing Type', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['type_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -528,7 +539,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'group_name', 'Testing Group', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['group_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -569,7 +582,9 @@ function TestCaseReviewDetails() {
           <span>Test Id</span>
           <i
             onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'number')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['tc_id'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -605,7 +620,9 @@ function TestCaseReviewDetails() {
           <span>Severity</span>
           <i
             onClick={(e) => handleFilterClick(e, 'id', 'Severity', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['Severity'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -648,7 +665,9 @@ function TestCaseReviewDetails() {
                 'text'
               )
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['test_description'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -687,7 +706,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['expected_result'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -727,7 +748,9 @@ function TestCaseReviewDetails() {
           <span>Steps</span>
           <i
             onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['steps'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -768,7 +791,9 @@ function TestCaseReviewDetails() {
           <span>Status</span>
           <i
             onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['status'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -818,7 +843,7 @@ function TestCaseReviewDetails() {
             // value={comments[row.id] || row.comment_id || ''}
             value={
               selectedRows && selectedRows.includes(row.tc_id)
-                ? comments[row.id] || row.comment_id
+                ? comments[row.id] || commonComment
                 : commonComment
             }
             id="comment_id"
@@ -855,11 +880,11 @@ function TestCaseReviewDetails() {
           placeholder="Enter Remark"
           aria-label="default input example"
           maxLength={100}
-          value={
-            selectedRows && selectedRows.includes(row.id)
-              ? remarks[row.id] || row.other_remark
-              : commonRemark
-          }
+          // value={
+          //   selectedRows && selectedRows.includes(row.id)
+          //     ? remarks[row.id] || row.other_remark
+          //     : commonRemark
+          // }
           onChange={(e) =>
             handleRowChange(row.id, 'other_remark', e.target.value)
           }
@@ -874,7 +899,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'project_name', 'Project', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['project_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -917,7 +944,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'created_at', 'created_at', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['created_at'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -960,7 +989,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'created_by', 'created_by', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['created_by'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1003,7 +1034,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'updated_at', 'updated_at', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['updated_at'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1046,7 +1079,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'updated_by', 'updated_by', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['updated_by'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1096,7 +1131,11 @@ function TestCaseReviewDetails() {
     expected_result: 'expected_result',
     status: 'status',
     project_name: 'project_id',
-    test_description: 'test_description'
+    test_description: 'test_description',
+    created_at: 'created_at',
+    created_by: 'created_by',
+    updated_at: 'updated_at',
+    updated_by: 'updated_by'
   };
 
   const exportColumns = [
@@ -1136,7 +1175,11 @@ function TestCaseReviewDetails() {
       steps: 'steps',
       expected_result: 'expected_results',
       status: 'status',
-      project_name: 'project_names'
+      project_name: 'project_names',
+      created_at: 'created_at',
+      created_by: 'created_by',
+      updated_at: 'updated_at',
+      updated_by: 'updated_by'
     };
     const filteredData = filterTestPlanData[filterKeyMap[column]];
     const columnId = moduleMapping[column];
@@ -1247,8 +1290,11 @@ function TestCaseReviewDetails() {
         newValues[0] !== '' &&
         newValues[1] !== ''
       ) {
-        if (newValues[0] !== undefined && newValues[1] !== undefined) {
-          if (newValues[0] > newValues[1]) {
+        const value1 = parseFloat(newValues[0]);
+        const value2 = parseFloat(newValues[1]);
+
+        if (!isNaN(value1) && !isNaN(value2)) {
+          if (value1 > value2) {
             setErrorMessage(
               'The first value should not be greater than the second value.'
             );
@@ -1290,6 +1336,10 @@ function TestCaseReviewDetails() {
 
     const updatedFilters = [...filters, newFilter];
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumnId]: true
+    }));
 
     try {
       dispatch(
@@ -1307,6 +1357,10 @@ function TestCaseReviewDetails() {
   };
 
   const handleClearAllFilter = async () => {
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumn]: false
+    }));
     const updatedFilters = filters?.filter(
       (filter) => filter.column !== filterColumnId
     );
@@ -1340,6 +1394,10 @@ function TestCaseReviewDetails() {
 
     const updatedFilters = [...filters, newFilter];
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumn]: true
+    }));
 
     try {
       dispatch(
@@ -1359,6 +1417,7 @@ function TestCaseReviewDetails() {
   const [clearData, setClearData] = useState(false);
 
   const handleButtonClick = () => {
+    setIsFilterApplied(false);
     setClearData(true);
     dispatch(
       getByTestPlanIDListThunk({
@@ -1470,14 +1529,19 @@ function TestCaseReviewDetails() {
 
       <div className="row mt-4">
         <div className="col-md-3">
-          <label className="form-label font-weight-bold">Comment Type :</label>
+          <label className="form-label font-weight-bold">
+            Reviewer Comment :
+          </label>
 
           <select
             className="form-select"
             value={commonComment}
             id="common_comment_id"
             name="common_comment_id"
-            onChange={(e) => setCommonComment(e.target.value)}
+            onChange={(e) => {
+              setCommonComment(e.target.value);
+              setCommentIdError('');
+            }}
           >
             {generateOptions(getFilterReviewCommentMasterList)}
           </select>

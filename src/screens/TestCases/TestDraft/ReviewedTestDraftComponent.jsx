@@ -95,6 +95,8 @@ function ReviewedTestDraftComponent() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [state, localDispatch] = useReducer(localReducer, initialState);
+  const [isFilterApplied, setIsFilterApplied] = useState(false);
+
   const {
     filterType,
     columnName,
@@ -343,8 +345,11 @@ function ReviewedTestDraftComponent() {
         newValues[0] !== '' &&
         newValues[1] !== ''
       ) {
-        if (newValues[0] !== undefined && newValues[1] !== undefined) {
-          if (newValues[0] > newValues[1]) {
+        const value1 = parseFloat(newValues[0]);
+        const value2 = parseFloat(newValues[1]);
+
+        if (!isNaN(value1) && !isNaN(value2)) {
+          if (value1 > value2) {
             setErrorMessage(
               'The first value should not be greater than the second value.'
             );
@@ -385,7 +390,10 @@ function ReviewedTestDraftComponent() {
 
     const updatedFilters = [...filters, newFilter];
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
-
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumnId]: true
+    }));
     try {
       dispatch(
         getByTestPlanIDReviewedListThunk({
@@ -410,6 +418,10 @@ function ReviewedTestDraftComponent() {
   };
 
   const handleClearAllFilter = async () => {
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumn]: false
+    }));
     const updatedFilters = filters?.filter(
       (filter) => filter.column !== filterColumnId
     );
@@ -447,6 +459,10 @@ function ReviewedTestDraftComponent() {
 
     const updatedFilters = [...filters, newFilter];
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumn]: true
+    }));
 
     try {
       dispatch(
@@ -519,7 +535,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e, row) =>
               handleFilterClick(e, 'module_name', 'Module', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['module_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -563,7 +581,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e, row) =>
               handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['sub_module_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -606,7 +626,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'function_name', 'Function', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['function_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -647,7 +669,9 @@ function ReviewedTestDraftComponent() {
           <span>Field</span>
           <i
             onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['field'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -690,7 +714,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'type_name', 'Testing Type', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['type_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -733,7 +759,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'group_name', 'Testing Group', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['group_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -776,7 +804,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'tc_id', 'Testing Id', 'number')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['tc_id'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -814,7 +844,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'severity', 'Severity', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['severity'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -857,7 +889,9 @@ function ReviewedTestDraftComponent() {
                 'text'
               )
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['test_description'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -896,7 +930,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['expected_result'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -936,7 +972,9 @@ function ReviewedTestDraftComponent() {
           <span>Steps</span>
           <i
             onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['steps'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -977,7 +1015,9 @@ function ReviewedTestDraftComponent() {
           <span>Status</span>
           <i
             onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['status'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1058,7 +1098,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'project_name', 'Project', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['project_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1101,7 +1143,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'created_at', 'created_at', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['created_at'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1144,7 +1188,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'created_by', 'created_by', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['module_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1273,6 +1319,8 @@ function ReviewedTestDraftComponent() {
   const [clearData, setClearData] = useState(false);
 
   const handleButtonClick = () => {
+    setIsFilterApplied(false);
+
     setClearData(true);
     dispatch(
       getByTestPlanIDReviewedListThunk({

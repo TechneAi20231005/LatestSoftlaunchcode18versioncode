@@ -140,9 +140,12 @@ export default function TestDraftComponent({}) {
     { title: 'Created At', field: 'created_at' },
     { title: 'Updated At', field: 'updated_at' }
   ];
+  const [isFilterApplied, setIsFilterApplied] = useState(false);
+
   const handleButtonClick = () => {
     setClearData(true);
 
+    setIsFilterApplied(false);
     currentTab === 'test_summary'
       ? dispatch(
           getDraftTestCaseList({
@@ -287,13 +290,20 @@ export default function TestDraftComponent({}) {
         />
       </div>
       <RenderIf render={currentTab === 'test_summary'}>
-        <TestDraftDetails clearData={clearData} setClearData={setClearData} />
+        <TestDraftDetails
+          clearData={clearData}
+          setClearData={setClearData}
+          setIsFilterApplied={setIsFilterApplied}
+          isFilterApplied={isFilterApplied}
+        />
       </RenderIf>
       <RenderIf render={currentTab === 'review_test_draft'}>
         {currentTab === 'review_test_draft' && (
           <ReviewedTestDraftDetails
             clearData={clearData}
             setClearData={setClearData}
+            setIsFilterApplied={setIsFilterApplied}
+            isFilterApplied={isFilterApplied}
           />
         )}
       </RenderIf>

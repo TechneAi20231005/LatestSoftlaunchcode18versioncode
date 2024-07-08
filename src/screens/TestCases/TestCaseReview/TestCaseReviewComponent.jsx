@@ -92,6 +92,7 @@ function TestCaseReviewComponent() {
 
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const [errorMessage, setErrorMessage] = useState('');
+  const [isFilterApplied, setIsFilterApplied] = useState(false);
 
   const {
     filterType,
@@ -122,7 +123,9 @@ function TestCaseReviewComponent() {
     total_rejected_testcases: 'total_rejected_testcases',
     total_approved_testcases: 'total_approved_testcases',
     created_at: 'created_at',
-    updated_at: 'updated_at'
+    created_by: 'created_by',
+    updated_at: 'updated_at',
+    updated_by: 'updated_by'
   };
 
   const handleFilterClick = (event, column, name, type, id) => {
@@ -137,7 +140,9 @@ function TestCaseReviewComponent() {
       total_rejected_testcases: 'total_rejected_testcases',
       total_approved_testcases: 'total_approved_testcases',
       created_at: 'created_at',
-      updated_at: 'updated_at'
+      created_by: 'created_by',
+      updated_at: 'updated_at',
+      updated_by: 'updated_by'
     };
     const filteredData = filterTestCaseReviewList[filterKeyMap[column]];
     const columnId = moduleMapping[column];
@@ -247,8 +252,11 @@ function TestCaseReviewComponent() {
         newValues[0] !== '' &&
         newValues[1] !== ''
       ) {
-        if (newValues[0] !== undefined && newValues[1] !== undefined) {
-          if (newValues[0] > newValues[1]) {
+        const value1 = parseFloat(newValues[0]);
+        const value2 = parseFloat(newValues[1]);
+
+        if (!isNaN(value1) && !isNaN(value2)) {
+          if (value1 > value2) {
             setErrorMessage(
               'The first value should not be greater than the second value.'
             );
@@ -290,6 +298,10 @@ function TestCaseReviewComponent() {
 
     const updatedFilters = [...filters, newFilter];
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumnId]: true
+    }));
 
     try {
       dispatch(
@@ -306,6 +318,10 @@ function TestCaseReviewComponent() {
   };
 
   const handleClearAllFilter = async () => {
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumn]: false
+    }));
     const updatedFilters = filters?.filter(
       (filter) => filter.column !== filterColumnId
     );
@@ -339,6 +355,10 @@ function TestCaseReviewComponent() {
 
     const updatedFilters = [...filters, newFilter];
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumn]: true
+    }));
 
     try {
       dispatch(
@@ -370,7 +390,9 @@ function TestCaseReviewComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'test_plan_id', 'test_plan_id', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['test_plan_id'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -414,7 +436,9 @@ function TestCaseReviewComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'tester_name', 'Tester Name', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['tester_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -456,7 +480,9 @@ function TestCaseReviewComponent() {
                 'number'
               )
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['total_testcases'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -498,7 +524,11 @@ function TestCaseReviewComponent() {
                 'number'
               )
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['total_reviewed_testcases']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -542,7 +572,11 @@ function TestCaseReviewComponent() {
                 'number'
               )
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['total_rejected_testcases']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -586,7 +620,11 @@ function TestCaseReviewComponent() {
                 'number'
               )
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['total_approved_testcases']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -625,7 +663,9 @@ function TestCaseReviewComponent() {
             onClick={(e, row) =>
               handleFilterClick(e, 'created_at', 'created_at', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['created_at'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -668,7 +708,9 @@ function TestCaseReviewComponent() {
             onClick={(e, row) =>
               handleFilterClick(e, 'created_by', 'created_by', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['created_by'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -711,7 +753,9 @@ function TestCaseReviewComponent() {
             onClick={(e, row) =>
               handleFilterClick(e, 'updated_at', 'updated_at', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['updated_at'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -754,7 +798,9 @@ function TestCaseReviewComponent() {
             onClick={(e, row) =>
               handleFilterClick(e, 'updated_by', 'updated_by', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['updated_by'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -793,6 +839,8 @@ function TestCaseReviewComponent() {
   const [clearData, setClearData] = useState(false);
 
   const handleButtonClick = () => {
+    setIsFilterApplied(false);
+
     setClearData(true);
 
     dispatch(

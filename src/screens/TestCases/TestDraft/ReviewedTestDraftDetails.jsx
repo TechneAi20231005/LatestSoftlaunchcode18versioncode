@@ -114,7 +114,9 @@ function ReviewedTestDraftDetails(props) {
     total_rejected_testcases: 'total_rejected_testcases',
     total_approved_testcases: 'total_approved_testcases',
     created_at: 'created_at',
-    updated_at: 'updated_at'
+    created_by: 'created_by',
+    updated_at: 'updated_at',
+    updated_by: 'updated_by'
   };
   const handleFilterClick = (event, column, name, type, id) => {
     if (clearAllFilter === true) {
@@ -128,7 +130,9 @@ function ReviewedTestDraftDetails(props) {
       total_rejected_testcases: 'total_rejected_testcases',
       total_approved_testcases: 'total_approved_testcases',
       created_at: 'created_at',
-      updated_at: 'updated_at'
+      created_by: 'created_by',
+      updated_at: 'updated_at',
+      updated_by: 'updated_by'
     };
     const filteredData = filterReviewedDraftTestList[filterKeyMap[column]];
     const columnId = moduleMapping[column];
@@ -227,8 +231,11 @@ function ReviewedTestDraftDetails(props) {
         newValues[0] !== '' &&
         newValues[1] !== ''
       ) {
-        if (newValues[0] !== undefined && newValues[1] !== undefined) {
-          if (newValues[0] > newValues[1]) {
+        const value1 = parseFloat(newValues[0]);
+        const value2 = parseFloat(newValues[1]);
+
+        if (!isNaN(value1) && !isNaN(value2)) {
+          if (value1 > value2) {
             setErrorMessage(
               'The first value should not be greater than the second value.'
             );
@@ -270,6 +277,10 @@ function ReviewedTestDraftDetails(props) {
 
     const updatedFilters = [...filters, newFilter];
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+    props.setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumnId]: true
+    }));
 
     try {
       dispatch(
@@ -286,6 +297,11 @@ function ReviewedTestDraftDetails(props) {
   };
 
   const handleClearAllFilter = async () => {
+    props.setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumn]: false
+    }));
+
     const updatedFilters = filters?.filter(
       (filter) => filter.column !== filterColumnId
     );
@@ -330,7 +346,10 @@ function ReviewedTestDraftDetails(props) {
 
     const updatedFilters = [...filters, newFilter];
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
-
+    props.setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumn]: true
+    }));
     try {
       dispatch(
         getAllReviewTestDraftList({
@@ -361,7 +380,11 @@ function ReviewedTestDraftDetails(props) {
             onClick={(e) =>
               handleFilterClick(e, 'test_plan_id', 'test_plan_id', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['test_plan_id']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -405,7 +428,11 @@ function ReviewedTestDraftDetails(props) {
             onClick={(e) =>
               handleFilterClick(e, 'reviewer_name', 'Reviewer Name', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['reviewer_name']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -447,7 +474,11 @@ function ReviewedTestDraftDetails(props) {
                 'number'
               )
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['total_testcases']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -489,7 +520,11 @@ function ReviewedTestDraftDetails(props) {
                 'number'
               )
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['total_reviewed_testcases']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -533,7 +568,11 @@ function ReviewedTestDraftDetails(props) {
                 'number'
               )
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['total_rejected_testcases']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -577,7 +616,11 @@ function ReviewedTestDraftDetails(props) {
                 'number'
               )
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['total_approved_testcases']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -616,7 +659,11 @@ function ReviewedTestDraftDetails(props) {
             onClick={(e, row) =>
               handleFilterClick(e, 'created_at', 'created_at', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['created_at']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -633,13 +680,17 @@ function ReviewedTestDraftDetails(props) {
             onClick={(e, row) =>
               handleFilterClick(e, 'created_by', 'created_by', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['created_by']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
       selector: (row) => row.created_by,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -676,7 +727,11 @@ function ReviewedTestDraftDetails(props) {
             onClick={(e, row) =>
               handleFilterClick(e, 'updated_at', 'updated_at', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['updated_at']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -693,7 +748,11 @@ function ReviewedTestDraftDetails(props) {
             onClick={(e, row) =>
               handleFilterClick(e, 'updated_by', 'updated_by', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['updated_by']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),

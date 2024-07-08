@@ -107,11 +107,14 @@ const CustomFilterModal = ({
     };
   }, []);
 
-  const handleShow = () => setShowModal(true);
+  const [selectedValue, setSelectedValue] = useState('');
+  const handleShow = (value) => {
+    setSelectedValue(value);
+    setShowModal(true);
+  };
   const handleCloseModal = () => setShowModal(false);
 
   if (!show) return null;
-
   return (
     <div
       ref={containerRef}
@@ -164,7 +167,9 @@ const CustomFilterModal = ({
                       <p
                         key={option.value}
                         className="mb-2 cp "
-                        onClick={() => handleShow(option.value)}
+                        onClick={() => {
+                          handleShow(option.value);
+                        }}
                       >
                         {option.label}
                       </p>
@@ -204,14 +209,18 @@ const CustomFilterModal = ({
                         <select
                           className="form-select"
                           aria-label="Default select example"
+                          value={selectedValue}
                           onChange={(e) => {
+                            setSelectedValue(e.target.value);
                             localDispatch({
                               type: 'SET_FILTER_TYPE',
                               payload: e.target.value
                             });
                           }}
                         >
-                          <option defaultValue>Open this select menu</option>
+                          <option value="" disabled>
+                            Open this select menu
+                          </option>
                           {type === 'number'
                             ? numberFilterData.map((option, index) => (
                                 <option key={index} value={option.value}>
@@ -303,12 +312,6 @@ const CustomFilterModal = ({
               placeholder="Search Here"
               className="form-control pe-5"
               value={searchTerm}
-              // onChange={(e) => {
-              //   localDispatch({
-              //     type: 'SET_SEARCH_TERM',
-              //     payload: e.target.value
-              //   });
-              // }}
               onChange={handleSearchChange}
             />
             <i className="icofont-ui-search position-absolute top-50 end-0 translate-middle-y me-3 cp"></i>
