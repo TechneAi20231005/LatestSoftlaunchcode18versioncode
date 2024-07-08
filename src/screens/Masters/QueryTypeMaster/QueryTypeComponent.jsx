@@ -721,6 +721,7 @@ function QueryTypeComponent() {
           const res = await new QueryTypeService().postQueryType(form);
           if (res.status === 200) {
             // setShowLoaderModal(false);
+            setIsSubmitting(false);
             if (res.data.status === 1) {
               // setShowLoaderModal(false);
               setModal({ showModal: false, modalData: '', modalHeader: '' });
@@ -750,6 +751,7 @@ function QueryTypeComponent() {
           const res = await new QueryTypeService().updateQueryType(id, form);
           if (res.status === 200) {
             // setShowLoaderModal(false);
+            setIsSubmitting(false);
             if (res.data.status === 1) {
               setModal({ showModal: false, modalData: '', modalHeader: '' });
               setNotify({ type: 'success', message: res.data.message });
