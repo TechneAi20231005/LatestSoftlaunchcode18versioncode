@@ -10,8 +10,6 @@ import GroupActivityModal from './GroupActivityModal';
 import TaskRegularizationModal from './TaskRegularizationModal';
 import {
   postTimerData,
-
-
   getRegularizationTimeData
 } from '../../../../services/TicketService/TaskService';
 import * as time from '../../../../components/Utilities/Functions';
@@ -573,13 +571,11 @@ export default function TaskData(props) {
                     RegularizaLoadData();
                   }}
                 >
-
-
                   {data &&
                     data.taskOwners.map((d) => {
-
-
-                      if (d.id === localStorage.getItem('id')) {
+                      if (
+                        parseInt(d.id) === parseInt(localStorage.getItem('id'))
+                      ) {
                         return (
                           <button
                             className="btn btn-sm text-white w-100"
