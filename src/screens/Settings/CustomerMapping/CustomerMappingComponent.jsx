@@ -234,6 +234,7 @@ export default function CustomerMappingComponent() {
         }}
       />
       <SearchBoxHeader
+        showInput={true}
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}

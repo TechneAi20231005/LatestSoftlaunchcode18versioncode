@@ -254,6 +254,7 @@ function UserComponent() {
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
+        showInput={true}
         handleReset={handleReset}
         placeholder="Search by user name...."
         exportFileName="User Master Record"

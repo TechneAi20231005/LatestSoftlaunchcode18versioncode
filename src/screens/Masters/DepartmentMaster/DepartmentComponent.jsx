@@ -222,6 +222,7 @@ function DepartmentComponent() {
       />
 
       <SearchBoxHeader
+        showInput={true}
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}

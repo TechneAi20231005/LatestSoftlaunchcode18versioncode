@@ -2212,6 +2212,7 @@ export default function MyTicketComponent() {
             );
           }
         }
+        setIsLoading(false);
       });
     } else if (k === 'created_by_me') {
       const forms = {
@@ -2221,13 +2222,13 @@ export default function MyTicketComponent() {
       };
       await new MyTicketService().getUserTicketsTest(forms).then((res) => {
         if (res.status === 200) {
-          setIsLoading(false);
           setCreatedByMeData(res.data.data);
 
           setCreatedByMe(
             res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
           );
         }
+        setIsLoading(false);
       });
     } else if (k === 'departmenyourTaskt') {
       const forms = {
@@ -2246,6 +2247,7 @@ export default function MyTicketComponent() {
             );
           }
         }
+        setIsLoading(false);
       });
     } else if (k === 'your_task') {
       const forms = {
@@ -2260,12 +2262,12 @@ export default function MyTicketComponent() {
             setYourTaskData(res.data.data);
 
             setYourTask();
-            setIsLoading(false);
 
             setYourTask(res.data.data.data);
             // res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
           }
         }
+        setIsLoading(false);
       });
     } else if (k === 'unpassed_columns') {
       const forms = {
@@ -2274,16 +2276,22 @@ export default function MyTicketComponent() {
         page: 1
       };
 
-      await new MyTicketService().getUserTicketsTest(forms).then((res) => {
-        if (res.status === 200) {
-          setIsLoading(false);
-          if (res?.data?.status === 1) {
-            setUnpassedData(res?.data?.data);
+      await new MyTicketService()
+        .getUserTicketsTest(forms)
+        .then((res) => {
+          if (res.status === 200) {
+            setIsLoading(false);
+            if (res?.data?.status === 1) {
+              setUnpassedData(res?.data?.data);
 
-            setUnpassedTickets(res?.data?.data?.data);
+              setUnpassedTickets(res?.data?.data?.data);
+            }
+            setIsLoading(false);
           }
-        }
-      });
+        })
+        .catch(() => {
+          setIsLoading(false);
+        });
     }
   };
 
@@ -2309,22 +2317,27 @@ export default function MyTicketComponent() {
       };
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setAssignedToMe(
-            res?.data?.data?.data.filter((d) => d.passed_status !== 'REJECT')
-          );
-          setIsLoading(false);
-          if (type === 'PLUS' && res.data.data.data.length > 0) {
-            setAssignedToMeData({
-              ...assignedToMeData,
-              current_page: assignedToMeData.current_page + 1
-            });
+    await new MyTicketService()
+      .getUserTicketsTest(form)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setAssignedToMe(
+              res?.data?.data?.data.filter((d) => d.passed_status !== 'REJECT')
+            );
+            setIsLoading(false);
+            if (type === 'PLUS' && res.data.data.data.length > 0) {
+              setAssignedToMeData({
+                ...assignedToMeData,
+                current_page: assignedToMeData.current_page + 1
+              });
+            }
           }
         }
-      }
-    });
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
   };
 
   const handleCreatedByMeRowChanged = async (e, type) => {
@@ -2349,24 +2362,30 @@ export default function MyTicketComponent() {
       };
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setCreatedByMe(
-            res?.data?.data?.data.filter((d) => d.passed_status !== 'REJECT')
-          );
+    await new MyTicketService()
+      .getUserTicketsTest(form)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setCreatedByMe(
+              res?.data?.data?.data.filter((d) => d.passed_status !== 'REJECT')
+            );
 
-          setIsLoading(false);
+            setIsLoading(false);
 
-          if (type === 'PLUS' && res.data.data.data.length > 0) {
-            setCreatedByMeData({
-              ...createdByMeData,
-              current_page: createdByMeData.current_page + 1
-            });
+            if (type === 'PLUS' && res.data.data.data.length > 0) {
+              setCreatedByMeData({
+                ...createdByMeData,
+                current_page: createdByMeData.current_page + 1
+              });
+            }
+            setIsLoading(false);
           }
         }
-      }
-    });
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
   };
 
   const handleDepartmentWiseRowChanged = async (e, type) => {
@@ -2391,24 +2410,29 @@ export default function MyTicketComponent() {
       };
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setDepartmentwiseTicket(
-            res.data.data.data.filter((d) => d.passed_status !== 'REJECT')
-          );
-          setIsLoading(false);
+    await new MyTicketService()
+      .getUserTicketsTest(form)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setDepartmentwiseTicket(
+              res.data.data.data.filter((d) => d.passed_status !== 'REJECT')
+            );
+            setIsLoading(false);
 
-          if (type === 'PLUS' && res.data.data.data.length > 0) {
-            setDepartmentWiseData({
-              ...departmentWiseData,
-              current_page: departmentWiseData.current_page + 1
-            });
+            if (type === 'PLUS' && res.data.data.data.length > 0) {
+              setDepartmentWiseData({
+                ...departmentWiseData,
+                current_page: departmentWiseData.current_page + 1
+              });
+            }
+            setIsLoading(false);
           }
-          setIsLoading(false);
         }
-      }
-    });
+      })
+      .catch(() => {
+        setIsLoading(false);
+      });
   };
 
   const handleYourTaskRowChanged = async (e, type) => {
@@ -2433,22 +2457,29 @@ export default function MyTicketComponent() {
       };
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setYourTask(
-            res.data.data.data.filter((d) => d.passed_status !== 'REJECT')
-          );
-          setIsLoading(false);
-          if (type === 'PLUS' && res.data.data.data.length > 0) {
-            setYourTaskData({
-              ...yourTaskData,
-              current_page: yourTaskData.current_page + 1
-            });
+    await new MyTicketService()
+      .getUserTicketsTest(form)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setYourTask(
+              res.data.data.data.filter((d) => d.passed_status !== 'REJECT')
+            );
+            setIsLoading(false);
+            if (type === 'PLUS' && res.data.data.data.length > 0) {
+              setYourTaskData({
+                ...yourTaskData,
+                current_page: yourTaskData.current_page + 1
+              });
+            }
+            setIsLoading(false);
           }
         }
-      }
-    });
+      })
+      .catch((res) => {
+        setNotify({ type: 'danger', message: res.data.message });
+        setIsLoading(false);
+      });
   };
 
   const handleUnpassedRowChanged = async (e, type) => {
@@ -2475,18 +2506,20 @@ export default function MyTicketComponent() {
       return;
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
-      if (res.status === 200) {
-        if (res?.data?.status === 1) {
-          setUnpassedTickets(res.data.data.data);
-          setIsLoading(false);
-          setUnpassedData({
-            ...unpassedData,
-            current_page: res.data.data.current_page
-          });
+    await new MyTicketService()
+      .getUserTicketsTest(form)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+            setUnpassedTickets(res.data.data.data);
+            setIsLoading(false);
+          }
         }
-      }
-    });
+      })
+      .catch((res) => {
+        setNotify({ type: 'danger', message: res.data.message });
+        setIsLoading(false);
+      });
   };
 
   const customStyles = {

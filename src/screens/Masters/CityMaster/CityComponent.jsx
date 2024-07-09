@@ -316,6 +316,7 @@ function CityComponent() {
       />
 
       <SearchBoxHeader
+        showInput={true}
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
@@ -324,7 +325,7 @@ function CityComponent() {
         exportData={exportCityData}
         showExportButton={true}
       />
-      <div className="mt-2">
+      <div className=" card mt-2">
         {cityData && (
           <DataTable
             columns={columns}

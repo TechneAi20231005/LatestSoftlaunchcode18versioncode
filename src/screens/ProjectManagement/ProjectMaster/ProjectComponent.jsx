@@ -332,7 +332,6 @@ function ProjectComponent() {
           for (const key in data) {
             exportData.push({
               SrNo: count++,
-
               'Project Name': data[key].project_name,
               projectReviewer: data[key].projectReviewer,
               is_active: data[key].is_active === 1 ? 'Active' : 'Deactive',
@@ -408,6 +407,7 @@ function ProjectComponent() {
       />
 
       <SearchBoxHeader
+        showInput={true}
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}

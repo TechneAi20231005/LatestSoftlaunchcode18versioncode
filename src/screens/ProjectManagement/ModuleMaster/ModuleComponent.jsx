@@ -244,6 +244,7 @@ function ModuleComponent() {
         }}
       />
       <SearchBoxHeader
+        showInput={true}
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
@@ -253,7 +254,7 @@ function ModuleComponent() {
         showExportButton={true}
       />
 
-      <div className="mt-2">
+      <div className="card mt-2">
         <div className="col-sm-12">
           {isLoading && <TableLoadingSkelton />}
           {!isLoading && data && (

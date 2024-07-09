@@ -11,6 +11,9 @@ import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
 
 import { getRoles } from '../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
+import TableLoadingSkelton from '../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../components/Common/SearchBoxHeader ';
+// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 
 export default function ResourcePlanningReportComponent() {
   const dispatch = useDispatch();
@@ -18,6 +21,9 @@ export default function ResourcePlanningReportComponent() {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 38)
   );
   const [userData, setUserData] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [searchPerformed, setSearchPerformed] = useState(false);
+
   const [data, setData] = useState(null);
   const [exportData, setExportData] = useState(null);
 
@@ -114,7 +120,6 @@ export default function ResourcePlanningReportComponent() {
     const settomonth = setdateformat[1];
     const settodate = setdateformat[2];
     const settodateformat = settoyear + '' + settomonth + '' + settodate;
-
     setTodateformat(settodateformat);
   };
 
@@ -126,12 +131,14 @@ export default function ResourcePlanningReportComponent() {
     const setfromdate = setfromformat[2];
     const setfromformatdate =
       setfromyear + '' + setfrommonth + '' + setfromdate;
-
     setFromdateformat(setfromformatdate);
+  };
+  const handleReset = () => {
+    window.location.reload(false);
   };
 
   const handleForm = async (e) => {
-    setShowLoaderModal(true);
+    setIsLoading(true);
     e.preventDefault();
     const formData = new FormData(e.target);
     const tempData = [];
@@ -144,7 +151,8 @@ export default function ResourcePlanningReportComponent() {
         .variantsReport(formData)
         .then((res) => {
           if (res.status === 200) {
-            setShowLoaderModal(false);
+            setIsLoading(false);
+            setSearchPerformed(true);
             if (res.data.status === 1) {
               let sr = 1;
               const data = res.data.data;
@@ -168,6 +176,7 @@ export default function ResourcePlanningReportComponent() {
                 }
                 setData(null);
                 setData(tempData);
+
                 let count = 1;
                 for (const key in data) {
                   exportTempData.push({
@@ -205,6 +214,7 @@ export default function ResourcePlanningReportComponent() {
           }
         })
         .catch((error) => {
+          setIsLoading(false);
           const { response } = error;
           const { request, ...errorObject } = response;
           new ErrorLogService().sendErrorLog(
@@ -223,8 +233,6 @@ export default function ResourcePlanningReportComponent() {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-      // alert("Rushi")
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -232,65 +240,81 @@ export default function ResourcePlanningReportComponent() {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Variance Report" />
+      <div>
+        <div className="card mt-">
+          <div className="card-body p-3">
+            <form onSubmit={handleForm}>
+              <div className="row">
+                <div className="col-md-3">
+                  <label htmlFor="" className="">
+                    <b>Select User :</b>
+                  </label>
 
-      <div className="card mt-2" style={{ zIndex: 10 }}>
-        <div className="card-body">
-          <form onSubmit={handleForm}>
-            <div className="row">
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>Select User :</b>
-                </label>
-                {userData && (
-                  <Select
-                    isMulti
-                    isSearchable={true}
-                    name="user_id[]"
-                    className="basic-multi-select"
-                    classNamePrefix="select"
-                    options={userData && userData}
+                  {userData && (
+                    <Select
+                      isMulti
+                      isSearchable={true}
+                      name="user_id[]"
+                      className="basic-multi-select"
+                      classNamePrefix="select"
+                      options={userData && userData}
+                    />
+                  )}
+                </div>
+
+                <div className="col-md-3">
+                  <label htmlFor="" className="">
+                    <b>
+                      From Date : <Astrick color="red" size="13px" />
+                    </b>
+                  </label>
+                  <input
+                    type="date"
+                    className="form-control form-control-sm"
+                    onChange={handleFromDate}
+                    name="from_date"
+                    required
                   />
-                )}
-              </div>
+                </div>
 
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>
-                    From Date : <Astrick color="red" size="13px" />
-                  </b>
-                </label>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  onChange={handleFromDate}
-                  name="from_date"
-                  required
+                <div className="col-md-3">
+                  <label htmlFor="" className="">
+                    <b>
+                      To Date : <Astrick color="red" size="13px" />
+                    </b>
+                  </label>
+                  <input
+                    type="date"
+                    className="form-control form-control-sm"
+                    onChange={handleToDate}
+                    name="to_date"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="row_gap_3">
+                <SearchBoxHeader
+                  showInput={false}
+                  title="Variance Report"
+                  // showtitle={true}
+                  handleReset={handleReset}
+                  submitButtonType="submit"
+                  resetButtonType="button"
+                  placeholder="Search by city name...."
+                  exportFileName="City Master Record"
+                  exportData={exportData}
+                  showExportButton={true}
                 />
               </div>
 
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>
-                    To Date : <Astrick color="red" size="13px" />
-                  </b>
-                </label>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  onChange={handleToDate}
-                  name="to_date"
-                  required
-                />
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-md-2">
+              {/* <div className="row mt-4">
+              <div className="col-md-6">
                 <button
                   className="btn btn-sm btn-warning text-white"
                   type="submit"
                   style={{ marginTop: '20px', fontWeight: '600' }}
                 >
-                  <i className="icofont-search-1 "></i> Search
+                  <i className="icofont-search-1 " /> Search
                 </button>
                 <button
                   className="btn btn-sm btn-info text-white"
@@ -298,7 +322,7 @@ export default function ResourcePlanningReportComponent() {
                   onClick={() => window.location.reload(false)}
                   style={{ marginTop: '20px', fontWeight: '600' }}
                 >
-                  <i className="icofont-refresh text-white"></i> Reset
+                  <i className="icofont-refresh text-white" /> Reset
                 </button>
               </div>
               {data && data.length > 0 && (
@@ -315,46 +339,63 @@ export default function ResourcePlanningReportComponent() {
                     apiData={exportData && exportData}
                     fileName="Variance Report"
                   />
-                </div>
-              )}
-            </div>
-          </form>
-        </div>
-      </div>
-
-      <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {data && (
-                <DataTable
-                  columns={columns}
-                  data={data}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                  // expandableRows
-                  // expandableRowsComponent={ExpandedComponent}
-                />
-              )}
-            </div>
+                )}
+              </div>
+            </div> */}
+            </form>
           </div>
         </div>
       </div>
 
-      <Modal show={showLoaderModal} centered>
-        <Modal.Body className="text-center">
-          <Spinner animation="grow" variant="primary" />
-          <Spinner animation="grow" variant="secondary" />
-          <Spinner animation="grow" variant="success" />
-          <Spinner animation="grow" variant="danger" />
-          <Spinner animation="grow" variant="warning" />
-          <Spinner animation="grow" variant="info" />
-          <Spinner animation="grow" variant="dark" />
-        </Modal.Body>
-      </Modal>
+      {/* <div className="card mt-2">
+        <div className="card-body">
+          <div className="row clearfix g-3">
+            <div className="col-sm-12"> */}
+      {/* {isLoading ? (
+        <TableLoadingSkelton />
+      ) : data && data.length > 0 ? (
+        <div className="card mt-3">
+          <DataTable
+            columns={columns}
+            data={data}
+            defaultSortField="title"
+            pagination
+            selectableRows={false}
+            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+            highlightOnHover={true}
+          />
+        </div>
+      ) : (
+        searchPerformed &&
+        !isLoading && <div className="text-center">No data found</div>
+      )} */}
+
+      {isLoading ? (
+        <TableLoadingSkelton />
+      ) : data && data.length > 0 ? (
+        <div className="card mt-3">
+          <DataTable
+            columns={columns}
+            data={data}
+            defaultSortField="title"
+            pagination
+            selectableRows={false}
+            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+            highlightOnHover={true}
+          />
+        </div>
+      ) : (
+        searchPerformed &&
+        !isLoading && (
+          <div className=" card card-body mt-2">
+            <p className="text-center">No data found</p>
+          </div>
+        )
+      )}
     </div>
+    //       </div>
+    //     </div>
+    //   </div>
+    // </div>
   );
 }

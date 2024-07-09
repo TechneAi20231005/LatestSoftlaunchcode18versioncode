@@ -8,19 +8,31 @@ const SearchBoxHeader = ({
   handleReset,
   exportData,
   exportFileName,
+  showInput,
+  showtitle,
   placeholder,
+  title,
+  submitButtonType,
+  resetButtonType,
   showExportButton
 }) => {
   return (
     <Row className="row_gap_3">
       <Col xs={12} md={7} xxl={8}>
-        <input
-          type="search"
-          className="form-control"
-          placeholder={placeholder}
-          onChange={(e) => setSearchTerm(e?.target?.value)}
-        />
+        {showInput && showInput && (
+          <input
+            type="search"
+            className="form-control"
+            placeholder={placeholder}
+            onChange={(e) => setSearchTerm(e?.target?.value)}
+          />
+        )}
+
+        {showtitle && showtitle && (
+          <h3 className="fw-bold mb-0 text_primary">{title}</h3>
+        )}
       </Col>
+
       <Col
         xs={12}
         md={5}

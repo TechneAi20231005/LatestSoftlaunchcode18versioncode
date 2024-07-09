@@ -497,6 +497,7 @@ const AuthorityMapping = () => {
       />
       {/* SEARCH FILTER */}
       <SearchBoxHeader
+        showInput={true}
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
