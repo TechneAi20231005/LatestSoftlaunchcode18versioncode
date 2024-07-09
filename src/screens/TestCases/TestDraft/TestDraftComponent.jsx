@@ -51,6 +51,7 @@ export default function TestDraftComponent({}) {
     modalHeader: ''
   });
 
+  const [clearData, setClearData] = useState(false);
   const handleResetLocationState = () => {
     setState(null);
     sessionStorage.removeItem('locationState');
@@ -70,6 +71,7 @@ export default function TestDraftComponent({}) {
 
   const handleBulkModal = (data) => {
     setBulkModal(data);
+    setDisable(false);
   };
 
   const [disable, setDisable] = useState(false);
@@ -115,7 +117,7 @@ export default function TestDraftComponent({}) {
     { title: 'Field', field: 'field' },
     { title: 'Testing Type', field: 'type_name' },
     { title: 'Testing Group', field: 'group_name' },
-    { title: 'Test ID', field: 'id' },
+    { title: 'Test ID', field: 'tc_id' },
     { title: 'Test Description', field: 'test_description' },
 
     { title: 'Steps', field: 'steps' },
@@ -138,19 +140,22 @@ export default function TestDraftComponent({}) {
     { title: 'Created At', field: 'created_at' },
     { title: 'Updated At', field: 'updated_at' }
   ];
-
   const handleButtonClick = () => {
+    setClearData(true);
+
     currentTab === 'test_summary'
       ? dispatch(
           getDraftTestCaseList({
             limit: paginationData.rowPerPage,
-            page: paginationData.currentPage
+            page: paginationData.currentPage,
+            filter_testcase_data: []
           })
         )
       : dispatch(
           getAllReviewTestDraftList({
             limit: paginationData.rowPerPage,
-            page: paginationData.currentPage
+            page: paginationData.currentPage,
+            filter_testcase_data: []
           })
         );
   };
@@ -282,10 +287,15 @@ export default function TestDraftComponent({}) {
         />
       </div>
       <RenderIf render={currentTab === 'test_summary'}>
-        <TestDraftDetails />
+        <TestDraftDetails clearData={clearData} setClearData={setClearData} />
       </RenderIf>
       <RenderIf render={currentTab === 'review_test_draft'}>
-        {currentTab === 'review_test_draft' && <ReviewedTestDraftDetails />}
+        {currentTab === 'review_test_draft' && (
+          <ReviewedTestDraftDetails
+            clearData={clearData}
+            setClearData={setClearData}
+          />
+        )}
       </RenderIf>
 
       {downloadmodal.showModal === true && (

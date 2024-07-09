@@ -368,10 +368,7 @@ function TestCaseHistoryComponent() {
       name: (
         <div>
           <span>Test Id</span>
-          <i
-          // onClick={(e) => handleFilterClick(e, 'id', 'Testing Id', 'number')}
-          // className="icofont-filter ms-2"
-          />
+          <i />
         </div>
       ),
       selector: (row) => row.id,
@@ -386,13 +383,7 @@ function TestCaseHistoryComponent() {
           {row.id && (
             <OverlayTrigger overlay={<Tooltip>{row.id} </Tooltip>}>
               <div>
-                <span className="ms-1">
-                  {row.id}
-                  {/* {' '}
-                  {row.id && row.id.length < 20
-                    ? row.id
-                    : row.id.substring(0, 50) + '....'} */}
-                </span>
+                <span className="ms-1">{row.id}</span>
               </div>
             </OverlayTrigger>
           )}
@@ -719,6 +710,61 @@ function TestCaseHistoryComponent() {
                   {row.project_name && row.project_name.length < 20
                     ? row.project_name
                     : row.project_name.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+      conditionalCellStyles: [
+        {
+          when: (row) => row.changes && row.changes.includes('project_name'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ],
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
+      )
+    },
+
+    {
+      name: (
+        <div>
+          <span>Operation</span>
+          <i
+          // onClick={(e) =>
+          //   handleFilterClick(e, 'project_name', 'Project', 'text')
+          // }
+          // className="icofont-filter ms-2"
+          />
+        </div>
+      ),
+      selector: (row) => row.operation,
+      width: '7rem',
+      sortable: false,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.operation && (
+            <OverlayTrigger overlay={<Tooltip>{row.operation} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.operation && row.operation.length < 20
+                    ? row.operation
+                    : row.operation.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
