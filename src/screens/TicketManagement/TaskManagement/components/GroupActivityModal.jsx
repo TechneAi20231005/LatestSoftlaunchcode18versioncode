@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Modal } from 'react-bootstrap';
 
 import { postTimerDataGroupActivity } from '../../../../services/TicketService/TaskService';
 
 import Avatar from 'react-avatar';
+import { toast } from 'react-toastify';
 
 const GroupActivityModal = (props) => {
   const handleSelectAll = (e) => {
-    // var data=taskOwners;
     setTaskOwners((current) =>
       current.map((d, i) => {
         return { ...d, is_present: e.target.checked === true ? 1 : 0 };
@@ -26,7 +26,7 @@ const GroupActivityModal = (props) => {
 
   const [taskOwners, setTaskOwners] = useState();
 
-  const loadData = () => {
+  const loadData = useCallback(() => {
     const tempData = [];
     props.data.taskOwners.map((d, i) => {
       let a = { ...d, is_present: d.is_started === 'YES' ? 1 : 0 };
@@ -34,31 +34,19 @@ const GroupActivityModal = (props) => {
       tempData.push(a);
     });
     setTaskOwners(tempData);
-  };
+  }, [props.data.taskOwners]);
   const isPresentRef = useRef();
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    var flag = 0;
-    // var a = taskOwners.map((d,i)=>{
-    //     if(d.is_present === 1){
-    //         flag = 1
-    //     }
-    // })
-    if (flag === 0) {
-      alert('Please Select atleast one User');
-      return false;
-    }
-    // for(var i=0; i=ids.length;i++){
-    //     alert(ids[i]);
-    // }
 
-    // for (let [key, value] of formData.entries()) {
-    //     console.log(`${key}: ${value}`);
-    //   }
-    //   console.log(formData.toString())
-    // var selectForm = formData.getAll(formData)
-    // console.log(selectForm)
+    const isAnyUserNotSelected = taskOwners.some(
+      (owner) => owner.is_present === 1
+    );
+    if (!isAnyUserNotSelected) {
+      toast.error('Please select at least one user.');
+    }
+
     await new postTimerDataGroupActivity(formData).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
@@ -74,7 +62,7 @@ const GroupActivityModal = (props) => {
     if (props.data.time_status) {
       setTimerState(props.data.time_status);
     }
-  }, []);
+  }, [loadData, props.data.time_status]);
 
   return (
     <div>
