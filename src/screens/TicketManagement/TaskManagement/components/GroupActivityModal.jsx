@@ -1,13 +1,13 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Modal } from 'react-bootstrap';
 
 import { postTimerDataGroupActivity } from '../../../../services/TicketService/TaskService';
 
 import Avatar from 'react-avatar';
+import { toast } from 'react-toastify';
 
 const GroupActivityModal = (props) => {
   const handleSelectAll = (e) => {
-    // var data=taskOwners;
     setTaskOwners((current) =>
       current.map((d, i) => {
         return { ...d, is_present: e.target.checked === true ? 1 : 0 };
@@ -26,7 +26,7 @@ const GroupActivityModal = (props) => {
 
   const [taskOwners, setTaskOwners] = useState();
 
-  const loadData = () => {
+  const loadData = useCallback(() => {
     const tempData = [];
     props.data.taskOwners.map((d, i) => {
       let a = { ...d, is_present: d.is_started === 'YES' ? 1 : 0 };
@@ -34,10 +34,9 @@ const GroupActivityModal = (props) => {
       tempData.push(a);
     });
     setTaskOwners(tempData);
-  };
+  }, [props.data.taskOwners]);
   const isPresentRef = useRef();
   const handleForm = async (e) => {
-    console.log(e);
     e.preventDefault();
     const formData = new FormData(e.target);
 
@@ -45,9 +44,9 @@ const GroupActivityModal = (props) => {
       (owner) => owner.is_present === 1
     );
     if (!isAnyUserNotSelected) {
-      alert('Please select at least one user.');
+      toast.error('Please select at least one user.');
     }
-    console.log(isAnyUserNotSelected);
+
     await new postTimerDataGroupActivity(formData).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
@@ -63,7 +62,7 @@ const GroupActivityModal = (props) => {
     if (props.data.time_status) {
       setTimerState(props.data.time_status);
     }
-  }, []);
+  }, [loadData, props.data.time_status]);
 
   return (
     <div>

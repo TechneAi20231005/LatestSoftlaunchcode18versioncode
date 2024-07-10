@@ -482,7 +482,10 @@ export default function TaskData(props) {
                     >
                       {data &&
                         data.taskOwners.map((d) => {
-                          if (d.id === localStorage.getItem('id')) {
+                          if (
+                            parseInt(d.id) ===
+                            parseInt(localStorage.getItem('id'))
+                          ) {
                             return (
                               <button
                                 className="btn btn-sm text-white w-100"
