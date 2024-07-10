@@ -482,7 +482,10 @@ export default function TaskData(props) {
                     >
                       {data &&
                         data.taskOwners.map((d) => {
-                          if (d.id === localStorage.getItem('id')) {
+                          if (
+                            parseInt(d.id) ===
+                            parseInt(localStorage.getItem('id'))
+                          ) {
                             return (
                               <button
                                 className="btn btn-sm text-white w-100"
@@ -560,7 +563,7 @@ export default function TaskData(props) {
 
               <li onClick={handleSubtaskModal}>
                 <button className="btn btn-sm btn-info text-white w-100">
-                  <i className="icofont-listing-number"></i> Subtaskhhh
+                  <i className="icofont-listing-number"></i> Subtask
                 </button>
               </li>
 
@@ -572,7 +575,7 @@ export default function TaskData(props) {
                   }}
                 >
                   {data &&
-                    data?.taskOwners?.map((d) => {
+                    data.taskOwners.map((d) => {
                       if (
                         parseInt(d.id) === parseInt(localStorage.getItem('id'))
                       ) {
