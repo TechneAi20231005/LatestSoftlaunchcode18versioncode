@@ -371,7 +371,7 @@ function TestCaseHistoryComponent() {
           <i />
         </div>
       ),
-      selector: (row) => row.id,
+      selector: (row) => row.tc_id,
       width: '10rem',
       sortable: true,
       cell: (row) => (
@@ -380,10 +380,10 @@ function TestCaseHistoryComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.id && (
-            <OverlayTrigger overlay={<Tooltip>{row.id} </Tooltip>}>
+          {row.tc_id && (
+            <OverlayTrigger overlay={<Tooltip>{row.tc_id} </Tooltip>}>
               <div>
-                <span className="ms-1">{row.id}</span>
+                <span className="ms-1">{row.tc_id}</span>
               </div>
             </OverlayTrigger>
           )}

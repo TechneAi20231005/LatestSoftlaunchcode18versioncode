@@ -10,8 +10,6 @@ import GroupActivityModal from './GroupActivityModal';
 import TaskRegularizationModal from './TaskRegularizationModal';
 import {
   postTimerData,
-
-
   getRegularizationTimeData
 } from '../../../../services/TicketService/TaskService';
 import * as time from '../../../../components/Utilities/Functions';
@@ -562,7 +560,7 @@ export default function TaskData(props) {
 
               <li onClick={handleSubtaskModal}>
                 <button className="btn btn-sm btn-info text-white w-100">
-                  <i className="icofont-listing-number"></i> Subtask
+                  <i className="icofont-listing-number"></i> Subtaskhhh
                 </button>
               </li>
 
@@ -573,13 +571,11 @@ export default function TaskData(props) {
                     RegularizaLoadData();
                   }}
                 >
-
-
                   {data &&
-                    data.taskOwners.map((d) => {
-
-
-                      if (d.id === localStorage.getItem('id')) {
+                    data?.taskOwners?.map((d) => {
+                      if (
+                        parseInt(d.id) === parseInt(localStorage.getItem('id'))
+                      ) {
                         return (
                           <button
                             className="btn btn-sm text-white w-100"

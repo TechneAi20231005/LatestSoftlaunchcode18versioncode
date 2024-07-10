@@ -78,6 +78,10 @@ const CustomFilterModal = ({
       label: 'Is Greater Than'
     },
     {
+      value: 'is less than',
+      label: 'Is less Than'
+    },
+    {
       value: 'is between',
       label: 'Between'
     },
@@ -212,7 +216,8 @@ const CustomFilterModal = ({
           </button>
           <button
             onClick={handleClearAllFilter}
-            className="btn btn-sm btn-outline-dark mt-3"
+            className="btn btn-sm btn-outline-primary mt-3"
+            title="Clear All"
           >
             Clear All
           </button>
@@ -270,6 +275,7 @@ const CustomFilterModal = ({
           onHide={handleClose}
           aria-labelledby="contained-modal-title-vcenter"
           centered
+          backdrop="true"
         >
           <Modal.Header closeButton>
             <Modal.Title className="fs-5 text-primary">

@@ -148,7 +148,7 @@ function TestCaseReviewDetails() {
 
   const generateOptions = (options) => {
     return [
-      <option value="" disabled>
+      <option key={options.value} value="" disabled>
         Select Reviewer comment
       </option>,
       ...options.map((option) => (
@@ -1173,6 +1173,8 @@ function TestCaseReviewDetails() {
       tc_id: 'ids',
       severity: 'severities',
       group_name: 'group_names',
+      test_description: 'test_descriptions',
+
       steps: 'steps',
       expected_result: 'expected_results',
       status: 'status',

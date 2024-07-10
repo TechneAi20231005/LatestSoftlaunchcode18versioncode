@@ -119,6 +119,7 @@ export default function TestDraftComponent({}) {
     { title: 'Testing Group', field: 'group_name' },
     { title: 'Test ID', field: 'tc_id' },
     { title: 'Test Description', field: 'test_description' },
+    { title: 'Severity', field: 'severity' },
 
     { title: 'Steps', field: 'steps' },
     { title: 'Expected Result', field: 'expected_result' },
@@ -253,19 +254,13 @@ export default function TestDraftComponent({}) {
               >
                 Import Test Draft File
               </button>
-
               {currentTab === 'test_summary' && (
                 <ExportToExcel
                   className="btn btn-danger"
                   apiData={allDraftTestListData}
                   columns={exportColumns}
                   fileName={'Test Summary Records'}
-                  disabled={
-                    currentTab === 'test_summary' ||
-                    allDraftTestListData?.length <= 0
-                      ? true
-                      : false
-                  }
+                  disabled={allDraftTestListData?.length <= 0 ? true : false}
                 />
               )}
 
@@ -276,10 +271,7 @@ export default function TestDraftComponent({}) {
                   columns={exportReviewedColumns}
                   fileName={'Review Test Draft Records'}
                   disabled={
-                    currentTab === 'review_test_draft' ||
-                    allReviewDraftTestListData?.length <= 0
-                      ? true
-                      : false
+                    allReviewDraftTestListData?.length <= 0 ? true : false
                   }
                 />
               )}

@@ -483,7 +483,7 @@ function TestDraftDetails(props) {
               })
             }
           />
-          <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.id}`}>
+          <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.tc_id}`}>
             <i class="icofont-history cp btn btn-outline-secondary fw-bold  " />
           </Link>
         </div>

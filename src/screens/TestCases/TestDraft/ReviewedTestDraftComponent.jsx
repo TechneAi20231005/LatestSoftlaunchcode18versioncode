@@ -1234,6 +1234,8 @@ function ReviewedTestDraftComponent() {
     { title: 'Field', field: 'field' },
     { title: 'Testing Type', field: 'type_name' },
     { title: 'Testing Group', field: 'group_name' },
+    { title: 'Test ID', field: 'tc_id' },
+    { title: 'Test Description', field: 'test_description' },
     { title: 'Steps', field: 'steps' },
     { title: 'Severity', field: 'severity' },
     { title: 'Expected Result', field: 'expected_result' },
