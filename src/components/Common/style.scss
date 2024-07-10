@@ -1,3 +1,32 @@
+// // nav
+.header {
+  nav {
+    @media only screen and (min-width: 1280px) {
+      .container-xxl {
+        justify-content: end;
+      }
+    }
+    .notifications {
+      .notification_count {
+        background: #ff1843;
+        border-radius: 50%;
+        position: absolute;
+        right: 0;
+        bottom: 20px;
+        font-weight: bold;
+        font-size: 14px;
+        padding: 5% 12%;
+        color: white;
+      }
+      .card {
+        width: 640px;
+        ul {
+          height: 200px;
+        }
+      }
+    }
+  }
+}
 .page_header_container {
   .back_icon_btn {
     margin-top: 5px;

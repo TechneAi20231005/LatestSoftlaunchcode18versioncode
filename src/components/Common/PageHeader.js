@@ -9,7 +9,7 @@ class PageHeader extends React.Component {
     return (
       <div
         className="row align-items-center page_header_container"
-        style={{ marginTop: '-40px' }}
+        // style={{ marginTop: '-40px' }}
       >
         <div className="border-0">
           <div className="card-header no-bg bg-transparent d-md-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
