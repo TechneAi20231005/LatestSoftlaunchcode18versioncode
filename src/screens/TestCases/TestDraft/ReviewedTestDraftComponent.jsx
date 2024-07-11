@@ -389,7 +389,24 @@ function ReviewedTestDraftComponent() {
             sort: sortOrder
           };
 
-    const updatedFilters = [...filters, newFilter];
+    // const updatedFilters = [...filters, newFilter];
+    const getLatestConditions = (data) => {
+      const latestConditions = {};
+
+      // Traverse the list to keep the most recent condition for each column
+      data.forEach((condition) => {
+        const column = condition.column;
+        latestConditions[column] = condition;
+      });
+
+      // Convert the dictionary back to a list
+      const latestConditionsList = Object.values(latestConditions);
+
+      return latestConditionsList;
+    };
+    const updatedFiltersData = [...filters, newFilter];
+
+    const updatedFilters = getLatestConditions(updatedFiltersData);
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
     setIsFilterApplied((prev) => ({
       ...prev,
@@ -1305,7 +1322,24 @@ function ReviewedTestDraftComponent() {
             sort: sortOrder
           };
 
-    const updatedFilters = [...filters, newFilter];
+    // const updatedFilters = [...filters, newFilter];
+    const getLatestConditions = (data) => {
+      const latestConditions = {};
+
+      // Traverse the list to keep the most recent condition for each column
+      data.forEach((condition) => {
+        const column = condition.column;
+        latestConditions[column] = condition;
+      });
+
+      // Convert the dictionary back to a list
+      const latestConditionsList = Object.values(latestConditions);
+
+      return latestConditionsList;
+    };
+    const updatedFiltersData = [...filters, newFilter];
+
+    const updatedFilters = getLatestConditions(updatedFiltersData);
     dispatch(
       getByTestPlanIDReviewedListThunk({
         id: id,
@@ -1335,7 +1369,60 @@ function ReviewedTestDraftComponent() {
   };
   useEffect(() => {
     if (sortOrder && sortOrder != null) {
-      handleApplyFilter(sortOrder);
+      // handleApplyFilter(sortOrder);
+      const newFilter =
+        filterType === 'is not between' || filterType === 'is between'
+          ? {
+              column: filterColumnId,
+              column_name: filterColumn,
+              filter: filterType ? filterType : selectedValue,
+              searchText: getFilteredValues(),
+              sort: sortOrder
+            }
+          : {
+              column: filterColumnId,
+              column_name: filterColumn,
+              searchText: type === 'text' ? filterText : betweenValues,
+              filter: filterType ? filterType : selectedValue,
+              sort: sortOrder
+            };
+
+      // const updatedFilters = [...filters, newFilter];
+      const getLatestConditions = (data) => {
+        const latestConditions = {};
+
+        // Traverse the list to keep the most recent condition for each column
+        data.forEach((condition) => {
+          const column = condition.column;
+          latestConditions[column] = condition;
+        });
+
+        // Convert the dictionary back to a list
+        const latestConditionsList = Object.values(latestConditions);
+
+        return latestConditionsList;
+      };
+      const updatedFiltersData = [...filters, newFilter];
+
+      const updatedFilters = getLatestConditions(updatedFiltersData);
+      localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+      setIsFilterApplied((prev) => ({
+        ...prev,
+        [filterColumnId]: true
+      }));
+      try {
+        dispatch(
+          getByTestPlanIDReviewedListThunk({
+            id: id,
+            limit: paginationData.rowPerPage,
+            page: paginationData.currentPage,
+            filter_testcase_data: updatedFilters
+          })
+        );
+        localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
+        localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
+        localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+      } catch (error) {}
     }
   }, [sortOrder]);
 
