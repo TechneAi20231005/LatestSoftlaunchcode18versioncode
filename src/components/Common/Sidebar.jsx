@@ -1,9 +1,9 @@
-import React, { useState, useEffect, memo } from 'react';
+import React, { useState, useEffect, memo, useRef, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
+// // static import
 import { _base } from '../../settings/constants';
-
 import {
   getEmployeeListThunk,
   getMenuListThunk
@@ -11,102 +11,90 @@ import {
 
 const Sidebar = ({ activekey }) => {
   // // initial state
-
-  const dispatch = useDispatch();
   const user_id = localStorage.getItem('id');
   const role_id = localStorage.getItem('role_id');
+  const sidebarRef = useRef();
+  const dispatch = useDispatch();
+
   //Redux State
   const { sidebarMenuList } = useSelector((state) => state?.sidebar);
 
+  // // local state
   const [isSidebarMini, setIsSidebarMini] = useState(false);
   const [darkLightMode, setDarkLightMode] = useState('light');
   const [updateRtl, setUpdateRtl] = useState(false);
 
-  const openChildren = (id) => {
-    let otherTabs = document.getElementsByClassName('has-children');
-    if (otherTabs) {
-      for (var i = 0; i < otherTabs.length; i++) {
-        if (otherTabs[i].id !== id) {
-          otherTabs[i].className = otherTabs[i].className.replace(' show', '');
-          if (otherTabs[i].parentElement.children.length > 1) {
-            otherTabs[i].parentElement.children[0].setAttribute(
-              'aria-expanded',
-              'false'
-            );
-          }
-        }
+  // // handler
+  const openChildren = useCallback((id) => {
+    const otherTabs = document.querySelectorAll('.has-children');
+    otherTabs.forEach((tab) => {
+      if (tab.id !== id) {
+        tab.classList.remove('show');
+        tab
+          .querySelector('[aria-expanded]')
+          ?.setAttribute('aria-expanded', 'false');
       }
-    }
-    let menutab = document.getElementById(id);
-    if (menutab) {
-      if (menutab.classList.contains('show')) {
-        menutab.classList.remove('show');
-        if (menutab.parentElement.children.length > 1) {
-          menutab.parentElement.children[0].setAttribute(
-            'aria-expanded',
-            'false'
-          );
-        }
-      } else {
-        menutab.classList.add('show');
-        if (menutab.parentElement.children.length > 1) {
-          menutab.parentElement.children[0].setAttribute(
-            'aria-expanded',
-            'true'
-          );
-        }
-      }
-    }
-  };
+    });
 
-  const openChildren1 = (id) => {
-    var otherTabs = document.getElementsByClassName('has-children');
-    if (otherTabs) {
-      for (var i = 0; i < otherTabs.length; i++) {
-        otherTabs[i].className = otherTabs[i].className.replace(' show', '');
-      }
+    const menuTab = document.getElementById(id);
+    if (menuTab) {
+      const isOpen = menuTab.classList.toggle('show');
+      menuTab
+        .querySelector('[aria-expanded]')
+        ?.setAttribute('aria-expanded', isOpen);
     }
-    var menutab = document.getElementById(id);
-    if (menutab) {
-      menutab.classList.add('show');
-      if (menutab.parentElement.children.length > 1) {
-        menutab.parentElement.children[0].setAttribute('aria-expanded', 'true');
-      }
-    }
-  };
+  }, []);
 
   const onChangeDarkMode = () => {
-    if (document.children[0].getAttribute('data-theme') === 'light') {
-      document.children[0].setAttribute('data-theme', 'dark');
-      setDarkLightMode('dark');
-    } else {
-      document.children[0].setAttribute('data-theme', 'light');
-      setDarkLightMode('light');
-    }
+    const newMode = darkLightMode === 'light' ? 'dark' : 'light';
+    document.documentElement?.setAttribute('data-theme', newMode);
+    setDarkLightMode(newMode);
   };
 
   const onChangeRTLMode = () => {
-    if (document.body.classList.contains('rtl_mode')) {
-      document.body.classList.remove('rtl_mode');
-    } else {
-      document.body.classList.add('rtl_mode');
-    }
-    setUpdateRtl(!updateRtl);
+    document.body.classList.toggle('rtl_mode');
+    setUpdateRtl((prev) => !prev);
   };
+
   const toggleSidebarMini = () => {
-    setIsSidebarMini(!isSidebarMini);
+    setIsSidebarMini((prev) => !prev);
   };
+
+  const handleToggleSidebar = () => {
+    const sideBar = sidebarRef.current;
+    if (sideBar) {
+      sideBar.classList.remove('open');
+    }
+  };
+
+  const handleClickOutside = useCallback(
+    (event) => {
+      const sideBar = sidebarRef.current;
+      if (sideBar && !sideBar.contains(event.target)) {
+        sideBar.classList.remove('open');
+      }
+    },
+    [sidebarRef]
+  );
+
+  // // life cycle
+  // // backdrop handler
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [handleClickOutside]);
 
   useEffect(() => {
     dispatch(getEmployeeListThunk({ user_id: user_id }));
-
     dispatch(getMenuListThunk({ role_id: role_id }));
-
-    document.children[0].setAttribute('data-theme', 'light');
-  }, [dispatch, user_id, role_id]);
+    document.children[0]?.setAttribute('data-theme', 'light');
+  }, [user_id, role_id]);
 
   return (
     <div
+      ref={sidebarRef}
       id="mainSideMenu"
       className={`sidebar px-4 py-4 py-md-5 me-0 ${
         isSidebarMini ? 'sidebar-mini' : ''
@@ -132,86 +120,52 @@ const Sidebar = ({ activekey }) => {
           </span>
           <span className="logo-text">My-Task</span>
         </a>
+
         <ul className="menu-list flex-grow-1 mt-3">
           {sidebarMenuList?.map((item, index) => {
-            if (item.isToggled) {
-              return (
-                <li key={'shsdg' + index}>
-                  <Link className={`m-link `} href="#!">
-                    <i className={item.iconClass}></i>
-                    <span>{item.name}hii</span>
-                  </Link>
-                </li>
-              );
-            }
+            const hasChildren = item.children.length > 0;
+            // const isActive = item.children.some(
+            //   (data) => `/${data.routerLink[0]}` === activekey
+            // );
 
-            if (item.children.length === 0) {
-              return (
-                <li key={'dsfshsdg' + index} className=" collapsed">
-                  <Link
-                    to={`/${_base + '/' + item.routerLink[0]}`}
-                    className={`m-link`}
-                  >
-                    <i className={item.iconClass}></i>
-                    <span>{item.name}</span>
-                    <span className="arrow icofont-dotted-down ms-auto text-end fs-5"></span>
-                  </Link>
-                </li>
-              );
-            }
             return (
-              <li key={'shsdg' + index} className=" collapsed ">
+              <li key={`menu-item-${index}`} className={`collapsed `}>
                 <a
-                  className={`m-link ${
-                    item.children.filter(
-                      (d) => '/' + d.routerLink[0] === activekey
-                    ).length > 0
-                      ? 'active'
-                      : ''
-                  }`}
-                  href="#!"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    openChildren('menu-Pages' + index);
-                  }}
+                  className={`m-link`}
+                  href={hasChildren ? '#!' : `/${_base}/${item.routerLink[0]}`}
+                  onClick={
+                    hasChildren
+                      ? (e) => {
+                          e.preventDefault();
+                          openChildren(`menu-Pages-${index}`);
+                        }
+                      : handleToggleSidebar
+                  }
                 >
-                  <i className={item.iconClass}></i>
-                  <span style={{ fontSize: '1rem' }}>{item.name}</span>
-                  <span className="arrow icofont-dotted-down ms-auto text-end fs-5"></span>
+                  <i className={item.iconClass} />
+                  <span>{item.name}</span>
+                  {hasChildren && (
+                    <span className="arrow icofont-dotted-down ms-auto text-end fs-5"></span>
+                  )}
                 </a>
-                {item.children?.length > 0 ? (
+                {hasChildren && (
                   <ul
                     className="sub-menu collapse has-children"
-                    id={'menu-Pages' + index}
+                    id={`menu-Pages-${index}`}
                   >
-                    {item.children?.map((data, ind) => {
-                      if (item.children.length > 0) {
-                        if (activekey === '/' + data.routerLink[0]) {
-                          setTimeout(() => {
-                            openChildren1('menu-Pages' + index);
-                          }, 500);
-                        }
-                      }
-                      return (
-                        <li key={'jfdgj' + ind}>
-                          <Link
-                            className={
-                              activekey === '/' + data.routerLink[0]
-                                ? 'ms-link active'
-                                : 'ms-link'
-                            }
-                            to={`/${_base + '/' + data.routerLink[0]}`}
-                          >
-                            {' '}
-                            <span style={{ fontSize: '0.8rem' }}>
-                              <i className={data.iconClass}></i> {data.name}
-                            </span>
-                          </Link>
-                        </li>
-                      );
-                    })}
+                    {item.children.map((data, ind) => (
+                      <li key={`submenu-item-${ind}`}>
+                        <Link
+                          className={`ms-link`}
+                          to={`/${_base}/${data.routerLink[0]}`}
+                          onClick={handleToggleSidebar}
+                        >
+                          <i className={data.iconClass} /> {data.name}
+                        </Link>
+                      </li>
+                    ))}
                   </ul>
-                ) : null}
+                )}
               </li>
             );
           })}
@@ -223,11 +177,9 @@ const Sidebar = ({ activekey }) => {
               <input
                 className="form-check-input"
                 type="checkbox"
-                checked={darkLightMode === 'dark' ? true : false}
+                checked={darkLightMode === 'dark'}
                 id="theme-switch"
-                onChange={() => {
-                  onChangeDarkMode();
-                }}
+                onChange={onChangeDarkMode}
               />
               <label className="form-check-label" htmlFor="theme-switch">
                 Enable Dark Mode!
@@ -241,9 +193,7 @@ const Sidebar = ({ activekey }) => {
                 type="checkbox"
                 checked={document.body.classList.contains('rtl_mode')}
                 id="theme-rtl"
-                onChange={() => {
-                  onChangeRTLMode();
-                }}
+                onChange={onChangeRTLMode}
               />
               <label className="form-check-label" htmlFor="theme-rtl">
                 Enable RTL Mode!
@@ -254,13 +204,9 @@ const Sidebar = ({ activekey }) => {
         <button
           type="button"
           className="btn btn-link sidebar-mini-btn text-light"
-          onClick={() => {
-            toggleSidebarMini();
-          }}
+          onClick={toggleSidebarMini}
         >
-          <span className="ms-2">
-            <i className="icofont-bubble-right"></i>
-          </span>
+          <i className="icofont-bubble-right" />
         </button>
       </div>
     </div>
