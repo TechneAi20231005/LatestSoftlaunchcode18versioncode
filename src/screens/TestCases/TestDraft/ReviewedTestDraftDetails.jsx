@@ -221,7 +221,12 @@ function ReviewedTestDraftDetails(props) {
   };
 
   const handleBetweenValueChange = (index, value) => {
-    if (filterType !== 'is not between' && filterType !== 'is between') {
+    if (
+      filterType !== 'is not between' &&
+      filterType !== 'is between' &&
+      selectedValue !== 'is between' &&
+      selectedValue !== 'is not between'
+    ) {
       localDispatch({ type: 'SET_BETWEEN_VALUES', payload: Number(value) });
     } else {
       const newValues = [...betweenValues];
@@ -250,7 +255,12 @@ function ReviewedTestDraftDetails(props) {
   };
 
   const getFilteredValues = () => {
-    if (filterType === 'is not between' || filterType === 'is between') {
+    if (
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
+    ) {
       return betweenValues.map((value) => Number(value));
     }
 
@@ -260,7 +270,10 @@ function ReviewedTestDraftDetails(props) {
   const handleApplyFilter = async () => {
     props?.setClearData(false);
     const newFilter =
-      filterType === 'is not between' || filterType === 'is between'
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
         ? {
             column: filterColumnId,
             column_name: filterColumn,
@@ -826,7 +839,10 @@ function ReviewedTestDraftDetails(props) {
   useEffect(() => {
     if (sortOrder && sortOrder != null) {
       const newFilter =
-        filterType === 'is not between' || filterType === 'is between'
+        filterType === 'is not between' ||
+        filterType === 'is between' ||
+        selectedValue === 'is between' ||
+        selectedValue === 'is not between'
           ? {
               column: filterColumnId,
               column_name: filterColumn,
@@ -884,7 +900,10 @@ function ReviewedTestDraftDetails(props) {
 
   useEffect(() => {
     const newFilter =
-      filterType === 'is not between' || filterType === 'is between'
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
         ? {
             column: filterColumnId,
             column_name: filterColumn,

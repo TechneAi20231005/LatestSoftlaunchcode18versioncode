@@ -276,7 +276,7 @@ function TestCaseReviewDetails() {
             }
           />
 
-          <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.tc_id}`}>
+          <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.id}`}>
             <i class="icofont-history cp   btn btn-outline-secondary fw-bold" />
           </Link>
         </div>
@@ -842,11 +842,12 @@ function TestCaseReviewDetails() {
             aria-label="Default select example"
             // value={row.comment_id || ''}
             // value={comments[row.id] || row.comment_id || ''}
-            value={
-              selectedRows && selectedRows.includes(row.tc_id)
-                ? comments[row.id] || commonComment
-                : commonComment
-            }
+            // value={
+            //   selectedRows && selectedRows.includes(row.tc_id)
+            //     ? comments[row.id] || commonComment
+            //     : commonComment
+            // }
+            value={comments[row.id] || row.comment_id || commonComment || ''}
             id="comment_id"
             name="comment_id"
             onChange={(e) =>
@@ -1139,6 +1140,39 @@ function TestCaseReviewDetails() {
     updated_by: 'updated_by'
   };
 
+  const transformDataForExport = (data, comments, commonComment) => {
+    return data.map((row) => ({
+      module_name: row.module_name,
+      sub_module_name: row.sub_module_name,
+      function_name: row.function_name,
+      field: row.field,
+      type_name: row.type_name,
+      group_name: row.group_name,
+      tc_id: row.tc_id,
+      test_description: row.test_description,
+      steps: row.steps,
+      severity: row.severity,
+      expected_result: row.expected_result,
+      rev: row.rev,
+      reviewer_comment:
+        comments[row.id] || row.comment_id || commonComment || '',
+      remark: remarks[row.id] || row.other_remark || commonRemark,
+
+      project_name: row.project_name,
+      created_at: row.created_at,
+      created_by: row.created_by,
+      updated_at: row.updated_at,
+      updated_by: row.updated_by
+    }));
+  };
+
+  // Example usage
+  const transformedData = transformDataForExport(
+    exportTestCaseReviewData,
+    comments,
+    commonComment
+  );
+
   const exportColumns = [
     { title: 'Module', field: 'module_name' },
     { title: 'Submodule', field: 'sub_module_name' },
@@ -1151,7 +1185,9 @@ function TestCaseReviewDetails() {
     { title: 'Steps', field: 'steps' },
     { title: 'Severity', field: 'severity' },
     { title: 'Expected Result', field: 'expected_result' },
-    { title: 'Status', field: 'status' },
+    { title: 'Status', field: 'rev' },
+    { title: 'Reviewer Comment', field: 'reviewer_comment' },
+    { title: 'Remark', field: 'remark' },
     { title: 'Project', field: 'project_name' },
     { title: 'Created At', field: 'created_at' },
     { title: 'Created By', field: 'created_by' },
@@ -1282,7 +1318,12 @@ function TestCaseReviewDetails() {
   };
 
   const handleBetweenValueChange = (index, value) => {
-    if (filterType !== 'is not between' && filterType !== 'is between') {
+    if (
+      filterType !== 'is not between' &&
+      filterType !== 'is between' &&
+      selectedValue !== 'is between' &&
+      selectedValue !== 'is not between'
+    ) {
       localDispatch({ type: 'SET_BETWEEN_VALUES', payload: Number(value) });
     } else {
       const newValues = [...betweenValues];
@@ -1311,7 +1352,12 @@ function TestCaseReviewDetails() {
   };
 
   const getFilteredValues = () => {
-    if (filterType === 'is not between' || filterType === 'is between') {
+    if (
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
+    ) {
       return betweenValues.map((value) => Number(value));
     }
 
@@ -1321,7 +1367,10 @@ function TestCaseReviewDetails() {
   const handleApplyFilter = async () => {
     setClearData(false);
     const newFilter =
-      filterType === 'is not between' || filterType === 'is between'
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
         ? {
             column: filterColumnId,
             column_name: filterColumn,
@@ -1470,7 +1519,10 @@ function TestCaseReviewDetails() {
     if (sortOrder && sortOrder != null) {
       // handleApplyFilter(sortOrder);
       const newFilter =
-        filterType === 'is not between' || filterType === 'is between'
+        filterType === 'is not between' ||
+        filterType === 'is between' ||
+        selectedValue === 'is between' ||
+        selectedValue === 'is not between'
           ? {
               column: filterColumnId,
               column_name: filterColumn,
@@ -1528,7 +1580,10 @@ function TestCaseReviewDetails() {
 
   useEffect(() => {
     const newFilter =
-      filterType === 'is not between' || filterType === 'is between'
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
         ? {
             column: filterColumnId,
             column_name: filterColumn,
@@ -1586,7 +1641,7 @@ function TestCaseReviewDetails() {
               <ExportToExcel
                 className="btn btn-sm btn-danger "
                 fileName="Test Case Review List"
-                apiData={exportTestCaseReviewData}
+                apiData={transformedData}
                 columns={exportColumns}
               />
             </div>

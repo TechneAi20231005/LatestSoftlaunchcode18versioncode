@@ -345,7 +345,9 @@ const CustomFilterModal = ({
                 </div>
               )}
               {(filterType === 'is between' ||
-                filterType === 'is not between') && (
+                filterType === 'is not between' ||
+                selectedValue === 'is between' ||
+                selectedValue === 'is not between') && (
                 <>
                   <div className="col">
                     <input

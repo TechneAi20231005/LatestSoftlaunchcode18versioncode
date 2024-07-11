@@ -335,7 +335,12 @@ function ReviewedTestDraftComponent() {
   };
 
   const handleBetweenValueChange = (index, value) => {
-    if (filterType !== 'is not between' && filterType !== 'is between') {
+    if (
+      filterType !== 'is not between' &&
+      filterType !== 'is between' &&
+      selectedValue !== 'is between' &&
+      selectedValue !== 'is not between'
+    ) {
       localDispatch({ type: 'SET_BETWEEN_VALUES', payload: Number(value) });
     } else {
       const newValues = [...betweenValues];
@@ -363,7 +368,12 @@ function ReviewedTestDraftComponent() {
     }
   };
   const getFilteredValues = () => {
-    if (filterType === 'is not between' || filterType === 'is between') {
+    if (
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
+    ) {
       return betweenValues.map((value) => Number(value));
     }
 
@@ -373,7 +383,10 @@ function ReviewedTestDraftComponent() {
   const handleApplyFilter = async () => {
     setClearData(false);
     const newFilter =
-      filterType === 'is not between' || filterType === 'is between'
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
         ? {
             column: filterColumnId,
             column_name: filterColumn,
@@ -1306,7 +1319,10 @@ function ReviewedTestDraftComponent() {
   useEffect(() => {
     dispatch(getReviewCommentMasterListThunk());
     const newFilter =
-      filterType === 'is not between' || filterType === 'is between'
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
         ? {
             column: filterColumnId,
             column_name: filterColumn,
@@ -1371,7 +1387,10 @@ function ReviewedTestDraftComponent() {
     if (sortOrder && sortOrder != null) {
       // handleApplyFilter(sortOrder);
       const newFilter =
-        filterType === 'is not between' || filterType === 'is between'
+        filterType === 'is not between' ||
+        filterType === 'is between' ||
+        selectedValue === 'is between' ||
+        selectedValue === 'is not between'
           ? {
               column: filterColumnId,
               column_name: filterColumn,

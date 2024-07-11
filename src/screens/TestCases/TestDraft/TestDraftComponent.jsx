@@ -150,8 +150,8 @@ export default function TestDraftComponent({}) {
     currentTab === 'test_summary'
       ? dispatch(
           getDraftTestCaseList({
-            limit: paginationData.rowPerPage,
-            page: paginationData.currentPage,
+            limit: 10,
+            page: 1,
             filter_testcase_data: []
           })
         )
