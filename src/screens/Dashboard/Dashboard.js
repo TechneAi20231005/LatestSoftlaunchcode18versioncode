@@ -661,8 +661,8 @@ export default function HrDashboard(props) {
           </>
         </div>
       </div>
-      <div className="row">
-        <div className="col-md-12 col-lg-3 col-xl-3 col-xxl-3">
+      <div className="row row_gap_3">
+        <div className="col-md-6 col-lg-3">
           <div className="card bg-danger text-white">
             <div className="card-body">
               <div className="d-flex align-items-center">
@@ -689,7 +689,7 @@ export default function HrDashboard(props) {
           </div>
         </div>
 
-        <div className="col-md-12 col-lg-3 col-xl-3 col-xxl-3">
+        <div className="col-md-6 col-lg-3">
           <div className="card bg-warning text-white">
             <div className="card-body">
               <div className="d-flex align-items-center">
@@ -716,7 +716,7 @@ export default function HrDashboard(props) {
           </div>
         </div>
 
-        <div className="col-md-12 col-lg-3 col-xl-3 col-xxl-3">
+        <div className="col-md-6 col-lg-3">
           <div className="card bg-success text-white">
             <div className="card-body">
               <div className="d-flex align-items-center">
@@ -743,7 +743,7 @@ export default function HrDashboard(props) {
           </div>
         </div>
 
-        <div className="col-md-12 col-lg-3 col-xl-3 col-xxl-3">
+        <div className="col-md-6 col-lg-3">
           <div className="card bg-info text-white">
             <div className="card-body">
               <div className="d-flex align-items-center">
