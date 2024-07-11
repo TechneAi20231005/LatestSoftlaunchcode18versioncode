@@ -711,7 +711,7 @@ const GraphWeekWise = () => {
               Year
             </label>
           </div>
-          <div className="col-2 ms-3 text-start">
+          <div className="col-2 select-box ms-3 text-start">
             <Select
               // className=""
               // name="sprint_data"
