@@ -1140,34 +1140,72 @@ function TestCaseReviewDetails() {
     updated_by: 'updated_by'
   };
 
-  const transformDataForExport = (data, comments, commonComment) => {
-    return data.map((row) => ({
-      module_name: row.module_name,
-      sub_module_name: row.sub_module_name,
-      function_name: row.function_name,
-      field: row.field,
-      type_name: row.type_name,
-      group_name: row.group_name,
-      tc_id: row.tc_id,
-      test_description: row.test_description,
-      steps: row.steps,
-      severity: row.severity,
-      expected_result: row.expected_result,
-      rev: row.rev,
-      reviewer_comment:
-        comments[row.id] || row.comment_id || commonComment || '',
-      remark: remarks[row.id] || row.other_remark || commonRemark,
+  const transformDataForExport = (rowData, data, comments, commonComment) => {
+    console.log('data 111', rowData);
+    console.log('comments', comments);
+    console.log('commonComment', commonComment);
+    console.log(
+      'getFilterReviewCommentMasterList',
+      getFilterReviewCommentMasterList
+    );
+    if (comments) {
+      const obj = comments;
+      let objKey;
+      let val;
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          objKey = key;
+          val = obj[key];
+        }
+      }
 
-      project_name: row.project_name,
-      created_at: row.created_at,
-      created_by: row.created_by,
-      updated_at: row.updated_at,
-      updated_by: row.updated_by
+      const filteredCommnet = getFilterReviewCommentMasterList.filter(
+        (comment) => comment.value == val
+      );
+
+      for (let i = 0; i < rowData.length; i++) {
+        if (rowData[i].id == objKey) {
+          rowData[i].reviewer_comment = filteredCommnet[0].label;
+          console.log('inside loops', rowData[i].reviewer_comment);
+        }
+      }
+    }
+    console.log('jdjdjd', rowData);
+    // const updateReviewerComment = rowData.map((rowData) => {
+    //   if (rowData.id === key) {
+    //     rowData.reviewer_comment = filteredCommnet[0].value;
+    //   }
+    // });
+
+    return rowData.map((rowData) => ({
+      module_name: rowData.module_name,
+      sub_module_name: rowData.sub_module_name,
+      function_name: rowData.function_name,
+      field: rowData.field,
+      type_name: rowData.type_name,
+      group_name: rowData.group_name,
+      tc_id: rowData.tc_id,
+      test_description: rowData.test_description,
+      steps: rowData.steps,
+      severity: rowData.severity,
+      expected_result: rowData.expected_result,
+      rev: rowData.rev,
+      // reviewer_comment:
+      //   comments[row.id] || row.comment_id || commonComment || '',
+      reviewer_comment: rowData.reviewer_comment,
+      remark: remarks[rowData.id] || rowData.other_remark || commonRemark,
+
+      project_name: rowData.project_name,
+      created_at: rowData.created_at,
+      created_by: rowData.created_by,
+      updated_at: rowData.updated_at,
+      updated_by: rowData.updated_by
     }));
   };
 
   // Example usage
   const transformedData = transformDataForExport(
+    rowData,
     exportTestCaseReviewData,
     comments,
     commonComment
@@ -1505,11 +1543,17 @@ function TestCaseReviewDetails() {
   const handleButtonClick = () => {
     setIsFilterApplied(false);
     setClearData(true);
+    console.log('paginationData.rowPerPage', paginationData.rowPerPage);
+    console.log('paginationData.currentPage', paginationData.currentPage);
+    setPaginationData((prev) => ({
+      ...prev,
+      currentPage: 1
+    }));
     dispatch(
       getByTestPlanIDListThunk({
         id: id,
         limit: paginationData.rowPerPage,
-        page: paginationData.currentPage,
+        page: 1,
         filter_testcase_data: []
       })
     );
