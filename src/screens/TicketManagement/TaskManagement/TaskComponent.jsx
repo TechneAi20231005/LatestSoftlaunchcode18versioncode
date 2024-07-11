@@ -38,6 +38,7 @@ import { Astrick } from '../../../components/Utilities/Style';
 import SprintService from '../../../services/TicketService/SprintService';
 import DataTable from 'react-data-table-component';
 import CardLoadingSkeleton from '../../../components/custom/loader/CardLoadingSkeleton';
+import ManageTaskSkeleton from '../../../components/custom/loader/ManageTaskSkeleton';
 
 export default function TaskComponent() {
   const [notify, setNotify] = useState(null);
@@ -1495,7 +1496,7 @@ export default function TaskComponent() {
             </CardBody>
           </Card>
           {isLoading === true ? (
-            <CardLoadingSkeleton />
+            <ManageTaskSkeleton />
           ) : (
             <>
               <div className="row  flex-row flex-nowrap g-3 py-xxl-4 overflow-auto">
