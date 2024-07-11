@@ -42,6 +42,8 @@ export default function MyTicketComponent() {
   const [departmentData, setDepartmentData] = useState(null);
 
   const [searchResult, setSearchResult] = useState();
+  const [searchResultData, setSearchResultData] = useState();
+
   const [searchResultExport, setSearchResultExport] = useState();
 
   const [unpassedTickets, setUnpassedTickets] = useState(null);
@@ -1930,6 +1932,7 @@ export default function MyTicketComponent() {
                 setSearchResult(null);
 
                 setSearchResult(res.data.data);
+                setSearchResultData(res.data.data);
                 setIsLoading(false);
 
                 const temp = res.data.data;
@@ -2287,6 +2290,50 @@ export default function MyTicketComponent() {
     }
   };
 
+  const handleSearchRowChanged = async (e, type) => {
+    console.log('type', type);
+    console.log('searchResultData', searchResult);
+
+    e.preventDefault();
+    var form;
+    if (type === 'LIMIT') {
+      const limit = parseInt(e.target.value);
+      form = {
+        limit: limit,
+        typeOf: 'SEARCH_RESULT',
+        page: 1 // Resetting to the first page when limit changes
+      };
+    } else if (type === 'MINUS') {
+      form = {
+        typeOf: 'SEARCH_RESULT',
+        page: searchResultData.current_page - 1
+      };
+    } else if (type === 'PLUS') {
+      form = {
+        typeOf: 'SEARCH_RESULT',
+        page: searchResultData.current_page + 1
+      };
+    }
+
+    await new ReportService().getTicketReport(form).then((res) => {
+      console.log('res==>', res);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          setSearchResult(
+            res?.data?.data?.data.filter((d) => d.passed_status !== 'REJECT')
+          );
+          setIsLoading(false);
+          if (type === 'PLUS' && res.data.data.data.length > 0) {
+            console.log('searchResultData==', searchResultData);
+            setSearchResultData({
+              ...searchResultData,
+              current_page: searchResultData.current_page + 1
+            });
+          }
+        }
+      }
+    });
+  };
   const handleAssignedToMeRowChanged = async (e, type) => {
     e.preventDefault();
     var form;
@@ -2863,6 +2910,7 @@ export default function MyTicketComponent() {
                           <ExportToExcel
                             className="btn btn-sm btn-danger mt-3"
                             apiData={searchResultExport}
+                            typeOf="SearchResult"
                             fileName={`Export Filter Result ${formattedDate} ${formattedTimeString}`}
                           />
                         )}
@@ -2886,6 +2934,41 @@ export default function MyTicketComponent() {
                             <p>No data found</p>
                           </div>
                         )}
+                        <div className="back-to-top pull-right mt-2 mx-2">
+                          <label className="mx-2">rows per page</label>
+                          <select
+                            onChange={(e) => {
+                              handleSearchRowChanged(e, 'LIMIT');
+                            }}
+                            className="mx-2"
+                          >
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                          </select>
+                          {searchResultData && (
+                            <small>
+                              {searchResultData.from}-{searchResultData.to} of{' '}
+                              {searchResultData.total}
+                            </small>
+                          )}
+                          <button
+                            onClick={(e) => {
+                              handleSearchRowChanged(e, 'MINUS');
+                            }}
+                            className="mx-2"
+                          >
+                            <i className="icofont-arrow-left"></i>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              handleSearchRowChanged(e, 'PLUS');
+                            }}
+                          >
+                            <i className="icofont-arrow-right"></i>
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </Tab>
