@@ -140,12 +140,12 @@ function TestDraftDetails(props) {
     modalHeader: ''
   });
 
-  const [paginationData, setPaginationData] = useReducer(
-    (prevState, nextState) => {
-      return { ...prevState, ...nextState };
-    },
-    { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
-  );
+  // const [paginationData, setPaginationData] = useReducer(
+  //   (prevState, nextState) => {
+  //     return { ...prevState, ...nextState };
+  //   },
+  //   { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
+  // );
   const [disable, setDisable] = useState(false);
   const [reviewerError, setReviewerError] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -427,8 +427,8 @@ function TestDraftDetails(props) {
     try {
       dispatch(
         getDraftTestCaseList({
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: props?.paginationData.rowPerPage,
+          page: props?.paginationData.currentPage,
           filter_testcase_data: updatedFilters
         })
       );
@@ -477,8 +477,8 @@ function TestDraftDetails(props) {
     try {
       dispatch(
         getDraftTestCaseList({
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: props?.paginationData.rowPerPage,
+          page: props?.paginationData.currentPage,
           filter_testcase_data: updatedFilters
         })
       );
@@ -504,8 +504,8 @@ function TestDraftDetails(props) {
     try {
       dispatch(
         getDraftTestCaseList({
-          limit: paginationData?.rowPerPage,
-          page: paginationData?.currentPage,
+          limit: props?.paginationData?.rowPerPage,
+          page: props?.paginationData?.currentPage,
           filter_testcase_data: updatedFilters
         })
       );
@@ -1435,8 +1435,8 @@ function TestDraftDetails(props) {
 
           dispatch(
             getDraftTestCaseList({
-              limit: paginationData.rowPerPage,
-              page: paginationData.currentPage
+              limit: props?.paginationData.rowPerPage,
+              page: props?.paginationData.currentPage
             })
           );
         },
@@ -1495,8 +1495,8 @@ function TestDraftDetails(props) {
       try {
         dispatch(
           getDraftTestCaseList({
-            limit: paginationData.rowPerPage,
-            page: paginationData.currentPage,
+            limit: props?.paginationData.rowPerPage,
+            page: props?.paginationData.currentPage,
             filter_testcase_data: updatedFilters
           })
         );
@@ -1530,8 +1530,8 @@ function TestDraftDetails(props) {
     const updatedFilters = [...filters, newFilter];
     dispatch(
       getDraftTestCaseList({
-        limit: paginationData?.rowPerPage,
-        page: paginationData?.currentPage,
+        limit: props?.paginationData?.rowPerPage,
+        page: props?.paginationData?.currentPage,
         filter_testcase_data:
           updatedFilters?.length === 1 &&
           updatedFilters[0]?.column === filterColumnId
@@ -1539,7 +1539,7 @@ function TestDraftDetails(props) {
             : updatedFilters
       })
     );
-  }, [paginationData.rowPerPage, paginationData.currentPage]);
+  }, [props?.paginationData.rowPerPage, props?.paginationData.currentPage]);
 
   return (
     <>
@@ -1553,13 +1553,15 @@ function TestDraftDetails(props) {
           pagination
           paginationServer
           paginationTotalRows={allDraftListData?.data?.total}
-          paginationDefaultPage={paginationData?.currentPage}
-          onChangePage={(page) => setPaginationData({ currentPage: page })}
+          paginationDefaultPage={props?.paginationData?.currentPage}
+          onChangePage={(page) =>
+            props?.setPaginationData({ currentPage: page })
+          }
           onChangeRowsPerPage={(newPageSize) => {
-            setPaginationData({ rowPerPage: newPageSize });
-            setPaginationData({ currentPage: 1 });
+            props?.setPaginationData({ rowPerPage: newPageSize });
+            props?.setPaginationData({ currentPage: 1 });
           }}
-          paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
+          // paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
@@ -1665,7 +1667,7 @@ function TestDraftDetails(props) {
           type={addEditTestCasesModal?.type}
           currentTestCasesData={addEditTestCasesModal?.data}
           close={(prev) => setAddEditTestCasesModal({ ...prev, open: false })}
-          paginationData={paginationData}
+          paginationData={props?.paginationData}
           id={addEditTestCasesModal?.id}
           payloadType={'DRAFT'}
         />
@@ -1687,7 +1689,7 @@ function TestDraftDetails(props) {
           searchTerm={searchTerm}
           handleSearchChange={handleSearchChange}
           filterType={filterType}
-          paginationData={paginationData}
+          paginationData={props?.paginationData}
           handleAscendingClick={handleAscendingClick}
           handleDescendingClick={handleDescendingClick}
           handleBetweenValueChange={handleBetweenValueChange}

@@ -78,12 +78,12 @@ function ReviewedTestDraftDetails(props) {
 
   const { allReviewDraftTestListData, isLoading, filterReviewedDraftTestList } =
     useSelector((state) => state?.downloadFormat);
-  const [paginationData, setPaginationData] = useReducer(
-    (prevState, nextState) => {
-      return { ...prevState, ...nextState };
-    },
-    { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
-  );
+  // const [paginationData, setPaginationData] = useReducer(
+  //   (prevState, nextState) => {
+  //     return { ...prevState, ...nextState };
+  //   },
+  //   { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
+  // );
 
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const [errorMessage, setErrorMessage] = useState('');
@@ -316,8 +316,8 @@ function ReviewedTestDraftDetails(props) {
     try {
       dispatch(
         getAllReviewTestDraftList({
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: props?.paginationData.rowPerPage,
+          page: props?.paginationData.currentPage,
           filter_testcase_data: updatedFilters
         })
       );
@@ -342,8 +342,8 @@ function ReviewedTestDraftDetails(props) {
     try {
       dispatch(
         getAllReviewTestDraftList({
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: props?.paginationData.rowPerPage,
+          page: props?.paginationData.currentPage,
           filter_testcase_data: updatedFilters
         })
       );
@@ -401,8 +401,8 @@ function ReviewedTestDraftDetails(props) {
     try {
       dispatch(
         getAllReviewTestDraftList({
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: props?.paginationData.rowPerPage,
+          page: props?.paginationData.currentPage,
           filter_testcase_data: updatedFilters
         })
       );
@@ -885,8 +885,8 @@ function ReviewedTestDraftDetails(props) {
       try {
         dispatch(
           getAllReviewTestDraftList({
-            limit: paginationData.rowPerPage,
-            page: paginationData.currentPage,
+            limit: props?.paginationData.rowPerPage,
+            page: props?.paginationData.currentPage,
             filter_testcase_data: updatedFilters
           })
         );
@@ -939,8 +939,8 @@ function ReviewedTestDraftDetails(props) {
     const updatedFilters = getLatestConditions(updatedFiltersData);
     dispatch(
       getAllReviewTestDraftList({
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage,
+        limit: props?.paginationData.rowPerPage,
+        page: props?.paginationData.currentPage,
         filter_testcase_data:
           updatedFilters?.length === 1 &&
           updatedFilters[0]?.column === filterColumnId
@@ -948,7 +948,7 @@ function ReviewedTestDraftDetails(props) {
             : updatedFilters
       })
     );
-  }, [paginationData.rowPerPage, paginationData.currentPage]);
+  }, [props?.paginationData.rowPerPage, props?.paginationData.currentPage]);
   return (
     <>
       <Container fluid className="employee_joining_details_container">
@@ -960,11 +960,13 @@ function ReviewedTestDraftDetails(props) {
             pagination
             paginationServer
             paginationTotalRows={allReviewDraftTestListData?.total}
-            paginationDefaultPage={paginationData?.currentPage}
-            onChangePage={(page) => setPaginationData({ currentPage: page })}
+            paginationDefaultPage={props?.paginationData?.currentPage}
+            onChangePage={(page) =>
+              props?.setPaginationData({ currentPage: page })
+            }
             onChangeRowsPerPage={(newPageSize) => {
-              setPaginationData({ rowPerPage: newPageSize });
-              setPaginationData({ currentPage: 1 });
+              props?.setPaginationData({ rowPerPage: newPageSize });
+              props?.setPaginationData({ currentPage: 1 });
             }}
             paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
             selectableRows={false}
@@ -988,7 +990,7 @@ function ReviewedTestDraftDetails(props) {
               filterData={filteredResults}
               searchTerm={searchTerm}
               filterType={filterType}
-              paginationData={paginationData}
+              paginationData={props?.paginationData}
               handleAscendingClick={handleAscendingClick}
               handleDescendingClick={handleDescendingClick}
               handleBetweenValueChange={handleBetweenValueChange}

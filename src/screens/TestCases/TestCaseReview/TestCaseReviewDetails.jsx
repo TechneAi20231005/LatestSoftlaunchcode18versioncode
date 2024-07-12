@@ -1505,6 +1505,10 @@ function TestCaseReviewDetails() {
   const handleButtonClick = () => {
     setIsFilterApplied(false);
     setClearData(true);
+    setPaginationData({
+      rowPerPage: 10,
+      currentPage: 1
+    });
     dispatch(
       getByTestPlanIDListThunk({
         id: id,

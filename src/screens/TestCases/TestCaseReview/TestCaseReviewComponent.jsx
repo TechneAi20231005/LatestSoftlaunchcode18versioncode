@@ -890,6 +890,10 @@ function TestCaseReviewComponent() {
     setIsFilterApplied(false);
 
     setClearData(true);
+    setPaginationData({
+      rowPerPage: 10,
+      currentPage: 1
+    });
 
     dispatch(
       getTestCaseReviewListThunk({

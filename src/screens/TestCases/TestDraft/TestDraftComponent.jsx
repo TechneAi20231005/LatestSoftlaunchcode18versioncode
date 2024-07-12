@@ -39,6 +39,7 @@ export default function TestDraftComponent({}) {
     },
     { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
   );
+
   const [downloadmodal, setDownloadModal] = useState({
     showModal: false,
     modalData: '',
@@ -147,6 +148,11 @@ export default function TestDraftComponent({}) {
     setClearData(true);
 
     setIsFilterApplied(false);
+
+    setPaginationData({
+      rowPerPage: 10,
+      currentPage: 1
+    });
     currentTab === 'test_summary'
       ? dispatch(
           getDraftTestCaseList({
@@ -293,6 +299,8 @@ export default function TestDraftComponent({}) {
           setClearData={setClearData}
           setIsFilterApplied={setIsFilterApplied}
           isFilterApplied={isFilterApplied}
+          setPaginationData={setPaginationData}
+          paginationData={paginationData}
         />
       </RenderIf>
       <RenderIf render={currentTab === 'review_test_draft'}>
@@ -302,6 +310,8 @@ export default function TestDraftComponent({}) {
             setClearData={setClearData}
             setIsFilterApplied={setIsFilterApplied}
             isFilterApplied={isFilterApplied}
+            setPaginationData={setPaginationData}
+            paginationData={paginationData}
           />
         )}
       </RenderIf>
