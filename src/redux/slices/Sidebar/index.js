@@ -33,8 +33,8 @@ const sidebarSlice = createSlice({
       })
       .addCase(getEmployeeListThunk.fulfilled, (state, action) => {
         state.isLoading.getEmployeeList = false;
-        state.employeeList = action.payload.data;
-        state.successMsg.getEmployeeList = action.payload.msg;
+        state.employeeList = action?.payload?.data;
+        state.successMsg.getEmployeeList = action?.payload?.msg;
       })
       .addCase(getEmployeeListThunk.rejected, (state, action) => {
         state.isLoading.getEmployeeList = false;
@@ -48,8 +48,8 @@ const sidebarSlice = createSlice({
       .addCase(getMenuListThunk.fulfilled, (state, action) => {
         state.isLoading.getMenuList = false;
         state.sidebarMenuList = action?.payload?.data?.menu;
-
-        state.successMsg.getMenuList = action.payload.msg;
+        // console.log('msg', action.payload.msg);
+        state.successMsg.getMenuList = action?.payload?.msg;
       })
       .addCase(getMenuListThunk.rejected, (state, action) => {
         state.isLoading.getMenuList = false;
