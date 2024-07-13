@@ -125,7 +125,7 @@ function TestCaseReviewDetails() {
   const [remarks, setRemarks] = useState({});
   const [isFilterApplied, setIsFilterApplied] = useState(false);
   const [selectedValue, setSelectedValue] = useState('');
-
+  const [checkCommonComment, setCheckCommonComment] = useState([]);
   const {
     filterType,
     columnName,
@@ -1141,7 +1141,11 @@ function TestCaseReviewDetails() {
   };
 
   const transformDataForExport = (rowData, data, comments, commonComment) => {
-    if (comments) {
+    console.log('rowData', rowData);
+    console.log('comments', comments);
+    console.log('commonComment', commonComment);
+
+    if (comments || commonComment) {
       const obj = comments;
       let objKey;
       let val;
@@ -1153,15 +1157,34 @@ function TestCaseReviewDetails() {
       }
 
       const filteredCommnet = getFilterReviewCommentMasterList.filter(
-        (comment) => comment.value == val
+        (comment) => {
+          if (Object.keys(obj).length > 0) {
+            console.log('comment true');
+            checkCommonComment.push(comment.value);
+            return comment.value == val;
+          } else {
+            console.log('comment false');
+            return comment.value == commonComment;
+          }
+        }
       );
 
+      // const filteredCommonCommnet = getFilterReviewCommentMasterList.filter(
+      //   (comment) =>
+      // );
+      //
+      console.log('filteredCommonCommnet', filteredCommnet);
+      return;
       for (let i = 0; i < rowData.length; i++) {
         if (rowData[i].id == objKey) {
           rowData[i].reviewer_comment = filteredCommnet[0].label;
         }
+        //  else {
+        //   rowData[i].reviewer_comment = filteredCommonCommnet[0]?.label;
+        // }
       }
     }
+
     // const updateReviewerComment = rowData.map((rowData) => {
     //   if (rowData.id === key) {
     //     rowData.reviewer_comment = filteredCommnet[0].value;
