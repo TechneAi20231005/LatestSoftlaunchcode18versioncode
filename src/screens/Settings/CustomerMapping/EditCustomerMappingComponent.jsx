@@ -78,6 +78,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const [ratioTotal, setRatioTotal] = useState(0);
 
+  
+
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 32)
   );
@@ -332,8 +334,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         : e?.value
         ? e?.value
         : e?.target?.value;
-    console.log('value', value);
-    console.log('approach', data.approach);
+
     if (nameField === 'approach' && value !== data.approach) {
       setRatiowiseData([]);
       setDepartmentDropdown(null);
@@ -344,7 +345,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         newPrev['user_policy'] = null;
         newPrev['user_policy_label'] = null;
 
-        console.log('newPrev', newPrev);
         return newPrev;
       });
       handleGetDepartmentUsers(e);
@@ -429,6 +429,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     e.preventDefault();
     const value = parseInt(e?.target?.value) || 0;
 
+
     if (value > 100) {
       e.target.value = 0;
       ratiowiseData[index] = 0;
@@ -436,7 +437,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     } else {
       ratiowiseData[index] = value;
       const sum = ratiowiseData?.reduce((result, number) => result + number, 0);
-      console.log(sum);
+
+
+
       if (sum > 100) {
         e.target.value = 0;
         ratiowiseData[index] = 0;
@@ -446,6 +449,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
           user_id: userDropdown[idx]?.value || null,
           ratio: ratio
         }));
+
+
         setUserData(newData);
         setRatioTotal(sum);
       }
@@ -569,6 +574,16 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     }
   }, [checkRole]);
 
+  useEffect(() => {
+    // Initialize ratiowiseData with default ratios from data.user_policy if available
+    const initialData = userDropdown?.map((ele, i) => {
+      const userPolicy = data.user_policy?.find((policy) =>
+        policy.startsWith(`${ele.value}:`)
+      );
+      return userPolicy ? parseInt(userPolicy.split(':')[1]) : 0;
+    });
+    setRatiowiseData(initialData);
+  }, [userDropdown, data.user_policy]);
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Edit Customer Mapping" />

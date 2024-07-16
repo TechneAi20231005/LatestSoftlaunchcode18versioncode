@@ -43,7 +43,8 @@ export default function MyTicketComponent() {
 
   const [searchResult, setSearchResult] = useState();
   const [searchResultData, setSearchResultData] = useState();
-  console.log('searchResultData', searchResultData);
+
+  
   const [searchResultExport, setSearchResultExport] = useState();
 
   const [unpassedTickets, setUnpassedTickets] = useState(null);
@@ -218,9 +219,8 @@ export default function MyTicketComponent() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {console.log('createsby', data.created_by)}
-              {console.log(data.assign_to_user_id)}
-              {console.log('local', localStorage.getItem('id'))}
+
+
               {data.created_by === localStorage.getItem('id') ||
                 data.assign_to_user_id === localStorage.getItem('id') ||
                 (data.status_name !== 'Solved' &&
@@ -1893,7 +1893,8 @@ export default function MyTicketComponent() {
   };
 
   const handleForm = useCallback(async (e) => {
-    console.log('key', e);
+
+
     try {
       if (e) {
         e.preventDefault();
@@ -1931,7 +1932,8 @@ export default function MyTicketComponent() {
             if (res.status === 200) {
               if (res.data.status === 1) {
                 setSearchResult(null);
-                console.log(res.data.data != null);
+
+
                 setSearchResult(res.data.data.data);
                 setSearchResultData(res.data.data);
                 setKey('Search_Result');
@@ -2198,7 +2200,8 @@ export default function MyTicketComponent() {
   };
 
   const handleAssignedToMeTab = async (k, e) => {
-    console.log(k, e);
+
+
     setIsLoading(true);
     e.preventDefault();
     var form;
@@ -2604,7 +2607,8 @@ export default function MyTicketComponent() {
   }, [checkRole]);
 
   const [ticketId, setTicketId] = useState();
-  console.log('ticketId', ticketId);
+
+
 
   return (
     <div className="container-xxl">
