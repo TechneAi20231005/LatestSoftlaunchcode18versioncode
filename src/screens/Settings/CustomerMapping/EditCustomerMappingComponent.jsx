@@ -83,7 +83,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   );
 
   const [data, setData] = useState({
-    approach: null,
+    approach: [],
     confirmation_required: null,
     created_at: null,
     created_by: null,
@@ -323,7 +323,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
-    // setUserDropdown(null);
     if (type === 'Select2' && nameField === 'customer_type_id') {
       setSelectedCustomer(e?.length);
     }
@@ -333,6 +332,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         : e?.value
         ? e?.value
         : e?.target?.value;
+    console.log('value', value);
+    console.log('approach', data.approach);
     if (nameField === 'approach' && value !== data.approach) {
       setRatiowiseData([]);
       setDepartmentDropdown(null);
@@ -342,6 +343,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         newPrev['department_id'] = null;
         newPrev['user_policy'] = null;
         newPrev['user_policy_label'] = null;
+
+        console.log('newPrev', newPrev);
         return newPrev;
       });
       handleGetDepartmentUsers(e);
@@ -433,6 +436,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     } else {
       ratiowiseData[index] = value;
       const sum = ratiowiseData?.reduce((result, number) => result + number, 0);
+      console.log(sum);
       if (sum > 100) {
         e.target.value = 0;
         ratiowiseData[index] = 0;
@@ -479,6 +483,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     const priorityID = priorityDetail?.current?.value;
     const confirmationId = confirmationRequired;
     const approachId = approachDetail?.current?.value;
+
     const departmentId = departmentDropdownRef?.current?.props?.value[0]?.value
       ? departmentDropdownRef?.current?.props?.value[0]?.value
       : departmentDropdownRef?.current?.props?.value?.value;
@@ -557,7 +562,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   useEffect(() => {
     loadData();
-  }, [loadData]);
+  }, []);
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_update === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;

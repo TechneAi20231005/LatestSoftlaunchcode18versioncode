@@ -43,7 +43,7 @@ export default function MyTicketComponent() {
 
   const [searchResult, setSearchResult] = useState();
   const [searchResultData, setSearchResultData] = useState();
-
+  console.log('searchResultData', searchResultData);
   const [searchResultExport, setSearchResultExport] = useState();
 
   const [unpassedTickets, setUnpassedTickets] = useState(null);
@@ -1893,6 +1893,7 @@ export default function MyTicketComponent() {
   };
 
   const handleForm = useCallback(async (e) => {
+    console.log('key', e);
     try {
       if (e) {
         e.preventDefault();
@@ -1930,9 +1931,10 @@ export default function MyTicketComponent() {
             if (res.status === 200) {
               if (res.data.status === 1) {
                 setSearchResult(null);
-
-                setSearchResult(res.data.data);
+                console.log(res.data.data != null);
+                setSearchResult(res.data.data.data);
                 setSearchResultData(res.data.data);
+                setKey('Search_Result');
                 setIsLoading(false);
 
                 const temp = res.data.data;
@@ -2091,7 +2093,7 @@ export default function MyTicketComponent() {
           if (res?.status === 200) {
             if (res?.data?.status === 1) {
               setSearchResult(null);
-              setSearchResult(res.data.data);
+              setSearchResult(res.data.data.data);
               setIsLoading(false);
               const temp = res.data.data;
               var counter = 1;
@@ -2196,6 +2198,7 @@ export default function MyTicketComponent() {
   };
 
   const handleAssignedToMeTab = async (k, e) => {
+    console.log(k, e);
     setIsLoading(true);
     e.preventDefault();
     var form;
@@ -2287,53 +2290,27 @@ export default function MyTicketComponent() {
           }
         }
       });
-    }
-  };
-
-  const handleSearchRowChanged = async (e, type) => {
-    console.log('type', type);
-    console.log('searchResultData', searchResult);
-
-    e.preventDefault();
-    var form;
-    if (type === 'LIMIT') {
-      const limit = parseInt(e.target.value);
-      form = {
-        limit: limit,
-        typeOf: 'SEARCH_RESULT',
-        page: 1 // Resetting to the first page when limit changes
+    } else if (k === 'Search_Result') {
+      const forms = {
+        limit: 10,
+        typeOf: 'SearchResult',
+        page: 1,
+        ticket_id: ticketId
       };
-    } else if (type === 'MINUS') {
-      form = {
-        typeOf: 'SEARCH_RESULT',
-        page: searchResultData.current_page - 1
-      };
-    } else if (type === 'PLUS') {
-      form = {
-        typeOf: 'SEARCH_RESULT',
-        page: searchResultData.current_page + 1
-      };
-    }
 
-    await new ReportService().getTicketReport(form).then((res) => {
-      console.log('res==>', res);
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setSearchResult(
-            res?.data?.data?.data.filter((d) => d.passed_status !== 'REJECT')
-          );
+      await new ReportService().getTicketReport(forms).then((res) => {
+        if (res.status === 200) {
           setIsLoading(false);
-          if (type === 'PLUS' && res.data.data.data.length > 0) {
-            console.log('searchResultData==', searchResultData);
-            setSearchResultData({
-              ...searchResultData,
-              current_page: searchResultData.current_page + 1
-            });
+          if (res?.data?.status === 1) {
+            setSearchResult(res?.data?.data);
+
+            setSearchResult(res?.data?.data?.data);
           }
         }
-      }
-    });
+      });
+    }
   };
+
   const handleAssignedToMeRowChanged = async (e, type) => {
     e.preventDefault();
     var form;
@@ -2367,6 +2344,51 @@ export default function MyTicketComponent() {
             setAssignedToMeData({
               ...assignedToMeData,
               current_page: assignedToMeData.current_page + 1
+            });
+          }
+        }
+      }
+    });
+  };
+
+  const handleSearchChanged = async (e, type) => {
+    e.preventDefault();
+    var form;
+    if (type === 'LIMIT') {
+      const limit = parseInt(e.target.value);
+      form = {
+        limit: limit,
+        typeOf: 'SearchResult',
+        page: 1,
+        ticket_id: ticketId
+
+        // Resetting to the first page when limit changes
+      };
+    } else if (type === 'MINUS') {
+      form = {
+        typeOf: 'SearchResult',
+        page: searchResultData?.current_page - 1,
+        ticket_id: ticketId
+      };
+    } else if (type === 'PLUS') {
+      form = {
+        typeOf: 'SearchResult',
+        page: searchResultData?.current_page + 1,
+        ticket_id: ticketId
+      };
+    }
+
+    await new ReportService().getTicketReport(form).then((res) => {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          setSearchResult(
+            res?.data?.data?.data.filter((d) => d.passed_status !== 'REJECT')
+          );
+          setIsLoading(false);
+          if (type === 'PLUS' && res.data.data.data.length > 0) {
+            setSearchResultData({
+              ...searchResultData,
+              current_page: searchResultData.current_page + 1
             });
           }
         }
@@ -2581,6 +2603,9 @@ export default function MyTicketComponent() {
     }
   }, [checkRole]);
 
+  const [ticketId, setTicketId] = useState();
+  console.log('ticketId', ticketId);
+
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="My Tickets" />
@@ -2600,6 +2625,9 @@ export default function MyTicketComponent() {
                   className="form-control form-control-sm"
                   id="ticket_idd"
                   name="ticket_id"
+                  onChange={(e) => {
+                    setTicketId(e.target.value);
+                  }}
                   onKeyPress={(e) => {
                     Validation.CharactersNumbersOnlyWithComma(e);
                   }}
@@ -2934,41 +2962,41 @@ export default function MyTicketComponent() {
                             <p>No data found</p>
                           </div>
                         )}
-                        <div className="back-to-top pull-right mt-2 mx-2">
-                          <label className="mx-2">rows per page</label>
-                          <select
-                            onChange={(e) => {
-                              handleSearchRowChanged(e, 'LIMIT');
-                            }}
-                            className="mx-2"
-                          >
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="40">40</option>
-                          </select>
-                          {searchResultData && (
-                            <small>
-                              {searchResultData.from}-{searchResultData.to} of{' '}
-                              {searchResultData.total}
-                            </small>
-                          )}
-                          <button
-                            onClick={(e) => {
-                              handleSearchRowChanged(e, 'MINUS');
-                            }}
-                            className="mx-2"
-                          >
-                            <i className="icofont-arrow-left"></i>
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              handleSearchRowChanged(e, 'PLUS');
-                            }}
-                          >
-                            <i className="icofont-arrow-right"></i>
-                          </button>
-                        </div>
+                      </div>
+                      <div className="back-to-top pull-right mt-2 mx-2 d-flex justify-content-end">
+                        <label className="mx-2">rows per page</label>
+                        <select
+                          onChange={(e) => {
+                            handleSearchChanged(e, 'LIMIT');
+                          }}
+                          className="mx-2"
+                        >
+                          <option value="10">10</option>
+                          <option value="20">20</option>
+                          <option value="30">30</option>
+                          <option value="40">40</option>
+                        </select>
+                        {searchResultData && (
+                          <small>
+                            {searchResultData.from}-{searchResultData.to} of{' '}
+                            {searchResultData.total}
+                          </small>
+                        )}
+                        <button
+                          onClick={(e) => {
+                            handleSearchChanged(e, 'MINUS');
+                          }}
+                          className="mx-2"
+                        >
+                          <i className="icofont-arrow-left"></i>
+                        </button>
+                        <button
+                          onClick={(e) => {
+                            handleSearchChanged(e, 'PLUS');
+                          }}
+                        >
+                          <i className="icofont-arrow-right"></i>
+                        </button>
                       </div>
                     </div>
                   </Tab>
