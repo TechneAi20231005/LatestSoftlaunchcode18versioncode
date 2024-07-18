@@ -1,7 +1,7 @@
-import React from 'react'
-import * as FileSaver from 'file-saver'
-import * as XLSX from 'xlsx'
-import MyTicketService from '../../../services/TicketService/MyTicketService'
+import React, { useState } from 'react';
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
+import MyTicketService from '../../../services/TicketService/MyTicketService';
 
 export const ExportAllTicketsToExcel = ({
   apiData,
@@ -11,38 +11,38 @@ export const ExportAllTicketsToExcel = ({
   typeOf
 }) => {
   const fileType =
-    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
-  const fileExtension = '.xlsx'
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+  const fileExtension = '.xlsx';
 
+  const [loading, setLoading] = useState(false);
   const exportToCSV = async (e, fileName, typeOf) => {
-    e.preventDefault()
-    var type
-    var tempExport = []
+    e.preventDefault();
+    setLoading(true); // Set loading to true when export starts
+    var type;
+    var tempExport = [];
 
     if (typeOf == 'AssignToMe') {
-      type = 'AssignToMe'
+      type = 'AssignToMe';
     }
     if (typeOf == 'CreatedByMe') {
-      type = 'CreatedByMe'
+      type = 'CreatedByMe';
     }
     if (typeOf == 'DepartmentWise') {
-      type = 'DepartmentWise'
+      type = 'DepartmentWise';
     }
     if (typeOf == 'YourTask') {
-      type = 'YourTask'
+      type = 'YourTask';
     }
     if (typeOf == 'UnPassed') {
-      type = 'UnPassed'
+      type = 'UnPassed';
     }
-
 
     const form = {
       typeOf: type,
       filter: 'export'
-    }
+    };
 
-    await new MyTicketService().getUserTicketsTest(form).then(res => {
-
+    await new MyTicketService().getUserTicketsTest(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           let dataToDownload = res.data.data;
@@ -78,7 +78,6 @@ export const ExportAllTicketsToExcel = ({
               sub_module_name: dataToDownload[key].sub_module_name
             });
           }
-
         }
       }
     });
@@ -90,15 +89,23 @@ export const ExportAllTicketsToExcel = ({
 
     FileSaver.saveAs(data, fileName + fileExtension);
 
-  }
+    setLoading(false);
+  };
 
   return (
     <button
       className={` ${className} text-white`}
-      onClick={e => exportToCSV(e, fileName, typeOf)}
+      onClick={(e) => exportToCSV(e, fileName, typeOf)}
+      disabled={loading}
     >
-      <i className='icofont-download'></i>{' '}
-      {buttonTitle ? buttonTitle : 'Export-ALL'}
+      {loading ? (
+        <span className="loader"></span>
+      ) : (
+        <>
+          <i className="icofont-download"></i>
+          {buttonTitle ? buttonTitle : 'Export-ALL'}
+        </>
+      )}
     </button>
-  )
-}
+  );
+};
