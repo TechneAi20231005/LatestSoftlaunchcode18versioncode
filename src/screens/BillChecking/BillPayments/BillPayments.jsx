@@ -1,26 +1,34 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Alert from '../../../components/Common/Alert';
 import PageHeader from '../../../components/Common/PageHeader';
 import Select from 'react-select';
 import BillTransactionService from '../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService';
-
-import { Modal } from 'react-bootstrap';
-import { userSessionData } from '../../../settings/constants';
+import { Link } from 'react-router-dom';
+import { Modal, Dropdown, Col, Collapse, Button, Fade } from 'react-bootstrap';
+import { _base, userSessionData } from '../../../settings/constants';
 import BillPaymentServices from '../../../services/Bill Checking/BillPaymentsServices/BillPaymentsServices';
 import DataTable from 'react-data-table-component';
 import { ExportBillPaymentFile } from '../../../components/Utilities/Table/ExportBillPaymentFile';
 import { Table } from 'react-bootstrap';
 
+
+import axios from 'axios';
+import { _attachmentUrl } from '../../../settings/constants';
 import { Astrick } from '../../../components/Utilities/Style';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 const BillPayments = () => {
   const dispatch = useDispatch();
   const [filteredData, setFilteredData] = useState();
+  const [open, setOpen] = useState(false);
+
   const [exportFilteredData, setExportFilteredData] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [notify, setNotify] = useState();
+  const roleId = sessionStorage.getItem('role_id');
 
   const [billTypeDropdown, setBillTypeDropdown] = useState(null);
 
@@ -152,7 +160,18 @@ const BillPayments = () => {
     setTillDate(e.target.value);
   };
 
-  const loadData = useCallback(async () => {
+  const handleDownloadPayment = async (e) => {
+    e.preventDefault();
+    const form = new FormData(e.target);
+    await new BillPaymentServices().downloadTxtFile(form).then((res) => {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+        }
+      }
+    });
+  };
+
+  const loadData = async () => {
     await new BillTransactionService()
       ._getBillTypeDataDropdown()
       .then((res) => {
@@ -174,31 +193,36 @@ const BillPayments = () => {
         }
       }
     });
-  }, [dispatch]);
+  };
 
   const myForm = useRef();
   const handleForm = async (e) => {
+    setIsLoading(true);
+
     e.preventDefault();
     const form = new FormData(e.target);
     const tempData = [];
     const FilterData = [];
     form.append('requestFor', myForm.current.buttonId);
 
-    if (form.get('requestFor') === 'downloadButton') {
+    if (form.get('requestFor') == 'downloadButton') {
       await new BillPaymentServices().downloadTxtFile(form).then((res) => {
         if (res.status === 200) {
-          if (res?.data?.status === 1) {
+          setIsLoading(false);
+          if (res.data.status == 1) {
+            var a = res.data.fileName;
+            URL = 'http://3.108.206.34/' + res.data.data;
             alert(res.data.data);
-            window
-              .open('http://3.108.206.34/' + res.data.data, '_blank')
-              .focus();
+            window.open(URL, '_blank').focus();
           }
         }
       });
     } else {
       await new BillPaymentServices().getBillPayments(form).then((res) => {
         if (res.status === 200) {
-          if (res?.data?.status === 1) {
+          if (res.data.status === 1) {
+            setIsLoading(false);
+
             let counter = 1;
             const temp = res.data.data;
             if (temp.length > 0) {
@@ -223,6 +247,7 @@ const BillPayments = () => {
 
                   GST: temp[key].gst_amount,
                   'Net Payment': temp[key].net_payment,
+                  'IFSC Code': temp[key].ifsc_code,
 
                   'Amount to be paid': temp[key].amount_to_be_paid,
 
@@ -268,8 +293,8 @@ const BillPayments = () => {
     setNotify(null);
     const formData = new FormData(e.target);
     await new BillPaymentServices().autoUpdatePayment(formData).then((res) => {
-      if (res?.status === 200) {
-        if (res?.data?.status === 1) {
+      if (res.status === 200) {
+        if (res.data.status == 1) {
           setNotify({ type: 'success', message: res.data.message });
           setModal({ showModal: false, modalData: '', modalHeader: '' });
           loadData();
@@ -290,140 +315,171 @@ const BillPayments = () => {
     <>
       <div className="container-xxl" style={{ width: '100%' }}>
         {notify && <Alert alertData={notify} />}
-
-        <PageHeader
-          headerTitle="Bill Payment"
-          renderRight={() => {
-            return (
-              <div className="d-flex flex-row-reverse">
-                {authorities && authorities.Bill_Payment === true && (
-                  <button
-                    type="button"
-                    style={{
-                      display:
-                        authorities && authorities.Bill_Payment === false
-                          ? 'none'
-                          : 'block'
-                    }}
-                    className="btn btn-primary btn-set-task w-sm-100"
-                    onClick={(e) => {
-                      handleModal({
-                        showModal: true,
-                        modalData: '',
-                        modalHeader: 'Upload Bank File'
-                      });
-                    }}
-                  >
-                    <i className="icofont-upload-alt me-2 fs-6"></i>Auto Update
-                    Payment
-                  </button>
-                )}
-
-                {filteredData && (
-                  <ExportBillPaymentFile
-                    className="btn btn-sm btn-danger"
-                    apiData={exportFilteredData}
-                    fileName="Bill Payemnt Report"
-                  />
-                )}
-              </div>
-            );
-          }}
-        />
-        <div className="card-mt-2" style={{ width: '100%' }}>
-          <div className="card card-body">
-            <form method="POST" onSubmit={(e) => handleForm(e)} ref={myForm}>
-              <div className="row ">
-                <div className="col-md-3">
-                  <label className=" col-form-label">
-                    <b>Bill Type : </b>
-                  </label>
-                  {billTypeDropdown && (
-                    <Select
-                      type="text"
-                      className="form-control form-control"
-                      options={billTypeDropdown}
-                      isMulti
-                      id="bill_type"
-                      name="bill_type[]"
-                      placeholder="Bill Type"
-                    />
-                  )}
-                </div>
-
-                <div className="col-md-3 mt-2" style={{ marginLeft: '20px' }}>
-                  <label className=" col-form-label">
-                    <b>
-                      Till Date :<Astrick color="red" />
-                    </b>
-                  </label>
-                  <input
-                    type="date"
-                    className="form-control form-control-sm"
-                    id="date"
-                    name="date"
-                    max={formattedDate}
-                    onChange={(e) => handleTillDate(e)}
-                  />
-                </div>
-
-                <div className="btn btn-group d-flex col-md-4 mt-3">
-                  <div className="col-md-5 ">
+        <div className="d-flex justify-content-between align-items-center">
+          <PageHeader
+            headerTitle="Bill Payment"
+            renderRight={() => {
+              return (
+                <div className="d-flex flex-row-reverse">
+                  {authorities && authorities.Bill_Payment === true && (
                     <button
-                      type="submit"
-                      name="buttonType"
-                      defaultValue="filterButton"
-                      id="filterButton"
-                      onClick={(e) => (myForm.current.buttonId = e.target.id)}
-                      style={{ marginTop: '15px', marginLeft: '60px' }}
-                      className="btn btn-danger text-white"
+                      type="button"
+                      style={{
+                        display:
+                          authorities && authorities.Bill_Payment === false
+                            ? 'none'
+                            : 'block'
+                      }}
+                      className="btn btn-primary btn-set-task w-sm-100"
+                      onClick={(e) => {
+                        handleModal({
+                          showModal: true,
+                          modalData: '',
+                          modalHeader: 'Upload Bank File'
+                        });
+                      }}
                     >
-                      <i className="icofont-filter" /> Filter
+                      <i className="icofont-upload-alt  fs-6"></i>Auto Update
+                      Payment
                     </button>
-                  </div>
-                  {filteredData &&
-                    authorities &&
-                    authorities.Bill_Payment === true && (
-                      <div className="col-md-5 mt-3 ">
-                        <button
-                          className="btn  btn-info text-white"
-                          name="buttonType"
-                          defaultValue="downloadButton"
-                          id="downloadButton"
-                          type="submit"
-                          onClick={(e) =>
-                            (myForm.current.buttonId = e.target.id)
-                          }
-                        >
-                          Download Txt Files <i className="icofont-download" />
-                        </button>
-                      </div>
-                    )}
+                  )}
+
+                  {/* {filteredData && (
+                    <ExportBillPaymentFile
+                      className="btn btn-sm btn-danger"
+                      apiData={exportFilteredData}
+                      fileName="Bill Payemnt Report"
+                    />
+                  )} */}
                 </div>
-              </div>
-            </form>
-          </div>
+              );
+            }}
+          />
+
+          <button
+            onClick={() => setOpen(!open)}
+            aria-controls="example-collapse-text"
+            className="btn btn-warning text-white"
+            aria-expanded={open}
+          >
+            <i className="icofont-filter" /> Filter
+          </button>
         </div>
-      </div>
-      <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {filteredData && filteredData.length > 0 ? (
-                <DataTable
-                  columns={columns}
-                  data={filteredData}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                />
-              ) : (
-                <b style={{ marginLeft: '700px' }}> No Data Found </b>
-              )}
+
+        <Collapse in={open}>
+          <div id="example-collapse-text">
+            <div className="card">
+              <div className="card card-body">
+                <form
+                  method="POST"
+                  onSubmit={(e) => handleForm(e)}
+                  ref={myForm}
+                >
+                  <div className="row align-items-center justify-content-between">
+                    <div className="col-md-6 d-flex gap-4">
+                      <div className="col-md-6">
+                        <label className=" col-form-label">
+                          <b>Bill Type : </b>
+                        </label>
+                        {billTypeDropdown && (
+                          <Select
+                            type="text"
+                            options={billTypeDropdown}
+                            isMulti
+                            id="bill_type"
+                            name="bill_type[]"
+                            placeholder="Bill Type"
+                          />
+                        )}
+                      </div>
+                      <div className="col-md-6">
+                        <label className=" col-form-label">
+                          <b>
+                            Till Date :<Astrick color="red" />
+                          </b>
+                        </label>
+                        <input
+                          type="date"
+                          className="form-control"
+                          id="date"
+                          name="date"
+                          max={formattedDate}
+                          onChange={(e) => handleTillDate(e)}
+                        />
+                      </div>
+                    </div>
+                    <div className="col-md-6 text-end">
+                      <div className="btn btn-group">
+                        {filteredData &&
+                          authorities &&
+                          authorities.Bill_Payment === true && (
+                            <div className=" mt-3 ">
+                              <button
+                                className="btn  btn-info text-white"
+                                name="buttonType"
+                                defaultValue="downloadButton"
+                                id="downloadButton"
+                                type="submit"
+                                onClick={(e) =>
+                                  (myForm.current.buttonId = e.target.id)
+                                }
+                              >
+                                Download Txt Files{' '}
+                                <i className="icofont-download" />
+                              </button>
+                            </div>
+                          )}
+                      </div>
+
+                      {/* <div className="col-md-2"> */}
+                      <button
+                        type="submit"
+                        name="buttonType"
+                        defaultValue="filterButton"
+                        id="filterButton"
+                        onClick={(e) => (myForm.current.buttonId = e.target.id)}
+                        className="btn btn-primary text-white"
+                      >
+                        Search
+                      </button>
+
+                      {filteredData && (
+                        <ExportBillPaymentFile
+                          className="btn btn-sm btn-danger"
+                          apiData={exportFilteredData}
+                          fileName="Bill Payemnt Report"
+                        />
+                      )}
+
+                      {/* </div> */}
+                    </div>
+                  </div>
+                </form>
+              </div>
             </div>
           </div>
+        </Collapse>
+
+        <div className="col-sm-12">
+          {filteredData && filteredData.length > 0 ? (
+            <div className="card mt-2">
+              <DataTable
+                columns={columns}
+                progressComponent={<TableLoadingSkelton />}
+                progressPending={isLoading}
+                data={filteredData}
+                defaultSortField="title"
+                pagination
+                selectableRows={false}
+                className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                highlightOnHover={true}
+              />
+            </div>
+          ) : (
+            <div className="card card-body mt-2">
+              <p className="text-center">No Data Found</p>
+            </div>
+          )}
         </div>
       </div>
       <Modal

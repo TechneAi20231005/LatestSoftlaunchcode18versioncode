@@ -1,44 +1,45 @@
 import React, { useEffect, useState } from 'react';
-
-import { _base, userSessionData } from '../../settings/constants';
-import UserService from '../../services/MastersService/UserService';
-import Dropdown from 'react-bootstrap/Dropdown';
-
 import { Link } from 'react-router-dom';
+import Dropdown from 'react-bootstrap/Dropdown';
+import Select from 'react-select';
+
+// // staic import
+import { _base, userSessionData } from '../../settings/constants';
+import Alert from './Alert';
+import UserService from '../../services/MastersService/UserService';
 import {
   getNotification,
   markedReadNotification,
   getAllmarkAllAsReadNotification
 } from '../../services/NotificationService/NotificationService';
 import TenantService from '../../services/MastersService/TenantService';
-import Select from 'react-select';
-import Alert from './Alert';
 import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
+import DemoProfileImg from '../../assets/images/profile_av.png';
+import './style.scss';
 
 export default function Header() {
+  // // initial state
+  const userId = userSessionData.userId;
+
+  // // local state
   const [tenantId, setTenantId] = useState();
   const [tenantDropdown, setTenantDropdown] = useState();
   const [showDropdown, setShowDropdown] = useState();
-
   const [notify, setNotify] = useState(null);
-
   const [notifications, setNotifications] = useState([]);
-  const notificationHeight = 200;
-  const refreshInterval = 5000 || 0;
   const [show, setShow] = useState(false);
+  const [data, setData] = useState(null);
 
-  const userId = userSessionData.userId;
-  const showApprovedOnly = false;
-
+  // // all handler
   const loadNotifcation = () => {
     getNotification().then((res) => {
       if (res.status === 200) {
-        setNotifications(null);
+        setNotifications([]);
 
         if (res.data.data !== null) {
           if (res?.data?.data?.result) {
             var length = res.data.data.result.length;
-
+            var height = 0;
             setNotifications(res.data.data.result);
 
             if (parseInt(length) > 0 && parseInt(length) <= 5) {
@@ -57,7 +58,7 @@ export default function Header() {
 
   function handleLogout() {
     localStorage.clear();
-    sessionStorage.clear();
+    localStorage.clear();
     window.location.href = `${process.env.PUBLIC_URL}/`;
   }
 
@@ -67,9 +68,6 @@ export default function Header() {
     });
   };
 
-  const showNotificationIcon = true;
-
-  const [data, setData] = useState(null);
   const loadData = async (e) => {
     new UserService().getUserById(localStorage.getItem('id')).then((res) => {
       if (res.status === 200) {
@@ -83,14 +81,14 @@ export default function Header() {
     });
     new TenantService().getTenant().then((res) => {
       if (res.status === 200 && res.data.status === 1) {
-        const temp = res.data.data.filter((d) => d.is_active === 1);
+        const temp = res.data.data.filter((d) => d.is_active == 1);
         setTenantDropdown(
           temp.map((d) => ({ value: d.id, label: d.company_name }))
         );
       }
     });
     await new ManageMenuService()
-      .getRole(sessionStorage.getItem('role_id'))
+      .getRole(localStorage.getItem('role_id'))
       .then((res) => {
         if (res.status === 200 && res.data.status === 1) {
           const temp = res.data.data.filter((d) => d.menu_id === 33);
@@ -118,313 +116,22 @@ export default function Header() {
     });
   };
 
+  // // life cycle
   useEffect(() => {
     loadData();
-  }, [showApprovedOnly]);
-
-  useEffect(() => {
-    if (refreshInterval && refreshInterval > 0) {
-      const interval = setInterval(loadNotifcation(), refreshInterval);
-      return () => clearInterval(interval);
-    }
-  }, [refreshInterval]);
+    const interval = setInterval(loadNotifcation(), 5000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="header">
-      <nav className="navbar py-4">
+      <nav className="navbar pt-4">
         <div className="container-xxl">
-          <div className="h-right d-flex align-items-center mr-5 mr-lg-0 order-1">
-            {notify && <Alert alertData={notify} />}
+          {notify && <Alert alertData={notify} />}
 
-            <Dropdown
-              className="notifications"
-              style={{ zIndex: -100 }}
-              onClick={() => {
-                loadNotifcation();
-              }}
-            >
-              {showNotificationIcon && (
-                <Dropdown.Toggle
-                  as="a"
-                  className="nav-link dropdown-toggle pulse"
-                  style={{ zIndex: -200 }}
-                >
-                  <i
-                    className="icofont-alarm fs-4"
-                    style={{ zIndex: -100, color: '#484c7f' }}
-                  >
-                    <span
-                      className="notification-count"
-                      style={{
-                        backgroundColor: '#ff1843',
-                        borderRadius: '50%',
-                        position: 'absolute',
-                        bottom: '1.8rem',
-                        right: '1rem',
-                        fontWeight: 'bold',
-                        fontSize: '20px',
-                        padding: '0.3rem',
-                        color: 'white'
-                      }}
-                    >
-                      {notifications && notifications.length}
-                    </span>
-                  </i>
-                  <span className="pulse-ring" style={{ zIndex: -100 }}></span>
-                </Dropdown.Toggle>
-              )}
-
-              <Dropdown.Menu className="rounded-lg shadow border-0 dropdown-animation dropdown-menu-sm-end p-0 m-0">
-                <div className="card border-0" style={{ width: '40rem' }}>
-                  <div className="card-header border-0 p-3">
-                    <h5 className="mb-0 font-weight-light d-flex justify-content-between">
-                      <span>
-                        Notifications :{' '}
-                        {showApprovedOnly === true ? (
-                          <span>Approved Only By Me</span>
-                        ) : (
-                          <span>View All Notifications</span>
-                        )}
-                      </span>
-                      {notifications && (
-                        <span className="badge text-white">
-                          {notifications.length}
-                        </span>
-                      )}
-                      {!notifications && (
-                        <span className="badge text-white">0</span>
-                      )}
-                    </h5>
-                  </div>
-                  <div className="tab-content card-body">
-                    <div className="tab-pane fade show active">
-                      <ul
-                        className="list-unstyled list mb-0"
-                        style={{ height: `${notificationHeight}px` }}
-                      >
-                        {notifications &&
-                          notifications.length > 0 &&
-                          notifications.map((ele, index) => {
-                            const date = ele.created_at.split(' ')[0];
-                            const time = ele.created_at.split(' ')[1];
-
-                            return (
-                              <li
-                                className="py-2 mb-1 border-bottom"
-                                key={index}
-                              >
-                                <div
-                                  className="flex-fill ms-2"
-                                  style={{ cursor: 'pointer' }}
-                                >
-                                  {ele.url && (
-                                    <Link to={`/${_base}/${ele.url}`}>
-                                      <p
-                                        className="d-flex justify-content-between mb-0"
-                                        onClick={(e) =>
-                                          handleReadNotification(e, ele.id)
-                                        }
-                                      >
-                                        <span className="font-weight-bold">
-                                          <span className="fw-bold badge bg-primary p-2">
-                                            {' '}
-                                            {`Date : ${date}`}
-                                          </span>
-                                          <span
-                                            className="fw-bold badge bg-danger p-2"
-                                            style={{ marginLeft: '10px' }}
-                                          >
-                                            {' '}
-                                            {`Time : ${time}`}
-                                          </span>
-                                          <br />
-                                          {ele.message}
-                                        </span>
-                                      </p>
-                                    </Link>
-                                  )}
-
-                                  {!ele.url && (
-                                    <p
-                                      className="d-flex justify-content-between mb-0"
-                                      onClick={(e) =>
-                                        handleReadNotification(e, ele.id)
-                                      }
-                                    >
-                                      <span className="font-weight-bold">
-                                        {ele.message}
-                                        {date}
-                                      </span>
-                                    </p>
-                                  )}
-                                </div>
-                              </li>
-                            );
-                          })}
-                      </ul>
-                    </div>
-                    {/* )} */}
-                  </div>
-
-                  <div
-                    className="row m-0"
-                    style={{
-                      border: '2px solid #ccc',
-                      justifyContent: 'space-between',
-                      width: '100%',
-                      height: '100%'
-                    }}
-                  >
-                    <div
-                      className={`col-4 card-footer text-center border-top-0 ${
-                        !showApprovedOnly ? 'bg-info' : 'white'
-                      }`}
-                      style={{ width: '50%', height: '50px' }}
-                    >
-                      <div className="btn-group h-100">
-                        <Link
-                          to={`/${_base}/Notification`}
-                          className={`card-footer text-center border-top-0 ${
-                            !showApprovedOnly ? 'bg-info' : ''
-                          }`}
-                        >
-                          View All Notifications
-                        </Link>
-                      </div>
-                    </div>
-
-                    <div
-                      className={`col-4 card-footer text-center border-top-0 ${
-                        showApprovedOnly ? 'bg-info' : 'white'
-                      }`}
-                      style={{ width: '50%', height: '50px' }}
-                    >
-                      <div className="btn-group h-100">
-                        <button
-                          className="btn btn-light"
-                          onClick={(e) => {
-                            handleMarkAllNotification(e);
-                          }}
-                        >
-                          Mark All As Read
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </Dropdown.Menu>
-            </Dropdown>
-
-            <Dropdown
-              className="rounded-lg border-0 dropdown-animation dropdown user-profile ml-2 ml-sm-3 d-flex align-items-center"
-              style={{ zIndex: 200 }}
-            >
-              <div className="u-info me-2">
-                <p className="mb-0 text-end line-height-sm ">
-                  <span className="font-weight-bold">
-                    {sessionStorage.getItem('first_name')}{' '}
-                    {sessionStorage.getItem('last_name')}
-                  </span>
-                </p>
-              </div>
-              <Dropdown.Toggle
-                as="a"
-                className="nav-link dropdown-toggle pulse p-0"
-                style={{ zIndex: 300 }}
-              >
-                <img
-                  className="avatar lg rounded-circle img-thumbnail"
-                  src={data && data.profile_picture}
-                  alt="profile"
-                />
-              </Dropdown.Toggle>
-              <Dropdown.Menu
-                className="rounded-lg shadow border-0 dropdown-animation dropdown-menu-end"
-                style={{ zIndex: 500, marginTop: '55px' }}
-              >
-                <div className="card border-0 w280" style={{ zIndex: 5 }}>
-                  <div className="p-2" style={{ zIndex: 700 }}>
-                    {tenantDropdown && tenantId && showDropdown === true && (
-                      <Select
-                        placeholder={
-                          <span className="fw-bold ">Switch Tenant...</span>
-                        }
-                        name="tenant_id"
-                        options={tenantDropdown}
-                        onChange={handleTenantLogin}
-                        defaultValue={tenantDropdown.filter(
-                          (d) => d.value === tenantId
-                        )}
-                      />
-                    )}
-                  </div>
-                  <div className="card-body pb-0" style={{ zIndex: 500 }}>
-                    <div className="d-flex py-1" style={{ zIndex: 500 }}>
-                      <img
-                        className="avatar rounded-circle"
-                        src={data && data.profile_picture}
-                        alt="profile"
-                      />
-                      <div className="flex-fill ms-3" style={{ zIndex: 100 }}>
-                        <p className="mb-0">
-                          <span
-                            className="font-weight-bold"
-                            style={{
-                              fontSize: '18px',
-                              zIndex: '100 !important',
-                              position: 'relative',
-                              color: 'red'
-                            }}
-                          >
-                            {sessionStorage.getItem('first_name')}{' '}
-                            {sessionStorage.getItem('last_name')}
-                          </span>
-                        </p>
-                        <small className="">
-                          {sessionStorage.getItem('email_id')}
-                        </small>
-
-                        <p className="mb-0">
-                          <Link
-                            to={`/${_base}/Profile`}
-                            data-toggle="dropdown"
-                            onClick={() => {
-                              setShow(!show);
-                            }}
-                            className="mb-0"
-                            style={{ cursor: 'default' }}
-                          >
-                            <span className="font-weight-bold">
-                              Your Profile
-                            </span>
-                          </Link>
-                        </p>
-                      </div>
-                    </div>
-
-                    <div>
-                      <hr className="dropdown-divider border-dark" />
-                    </div>
-                  </div>
-                  <div className="list-group m-1">
-                    <button
-                      type="button"
-                      className="list-group-item list-group-item-action border-0"
-                      onClick={handleLogout}
-                    >
-                      <i className="icofont-sign-out fs-5 me-3"></i>{' '}
-                      <span style={{ fontSize: '18px', fontWeight: '600' }}>
-                        Sign Out
-                      </span>
-                    </button>
-                  </div>
-                </div>
-              </Dropdown.Menu>
-            </Dropdown>
-          </div>
-
+          {/* hamburger menu */}
           <button
-            className="navbar-toggler p-0 border-0 menu-toggle order-3"
+            className="navbar-toggler p-0 border-0 menu-toggle"
             onClick={() => {
               var side = document.getElementById('mainSideMenu');
               if (side) {
@@ -436,10 +143,182 @@ export default function Header() {
               }
             }}
           >
-            <span className="fa fa-bars"></span>
+            <i className="fa fa-bars" />
           </button>
 
-          <div className="order-0 col-lg-4 col-md-4 col-sm-12 col-12 mb-3 mb-md-0 "></div>
+          <div className="d-flex gap-2 align-items-center">
+            {/* notification and modal */}
+            <Dropdown
+              className="notifications"
+              onClick={() => {
+                loadNotifcation();
+              }}
+            >
+              <Dropdown.Toggle
+                as="a"
+                className="nav-link dropdown-toggle pulse "
+              >
+                <i className="icofont-alarm fs-4 text-primary">
+                  <span className="notification_count">
+                    {notifications?.length}
+                  </span>
+                </i>
+                <span className="pulse-ring"></span>
+              </Dropdown.Toggle>
+
+              <Dropdown.Menu className="rounded-lg shadow border-0 dropdown-animation p-0">
+                <div className="card border-0">
+                  <div className="card-header border-0 p-3">
+                    <h5 className="d-flex justify-content-between mb-0 ">
+                      <span>Notifications : 'View All Notifications</span>
+                      <span className="badge text-white">
+                        {notifications?.length || 0}
+                      </span>
+                    </h5>
+                  </div>
+                  <div className="card-body">
+                    <ul className="list-unstyled list mb-0">
+                      {notifications?.map((ele, index) => {
+                        const date = ele.created_at.split(' ')[0];
+                        const time = ele.created_at.split(' ')[1];
+
+                        return (
+                          <li className="py-2 border-bottom" key={index}>
+                            {ele.url ? (
+                              <Link
+                                to={`/${_base}/${ele.url}`}
+                                onClick={(e) =>
+                                  handleReadNotification(e, ele.id)
+                                }
+                                className="fw-bold"
+                              >
+                                <span className="badge bg-primary p-2">
+                                  Date : {date}
+                                </span>
+                                <span className="badge bg-danger p-2 ms-2">
+                                  Time : {time}
+                                </span>
+                                <br />
+                                {ele.message}
+                              </Link>
+                            ) : (
+                              <p
+                                className="fw-bold mb-0"
+                                onClick={(e) =>
+                                  handleReadNotification(e, ele.id)
+                                }
+                              >
+                                {ele.message}
+                                {date}
+                              </p>
+                            )}
+                          </li>
+                        );
+                      })}
+                    </ul>
+                  </div>
+
+                  <div className="row m-0">
+                    <Link
+                      to={`/${_base}/Notification`}
+                      className={`col-6 card-footer text-center border-top-0 text-light bg-info`}
+                    >
+                      View All Notifications
+                    </Link>
+                    <button
+                      className="btn btn-light col-6 ms-0"
+                      onClick={(e) => {
+                        handleMarkAllNotification(e);
+                      }}
+                    >
+                      Mark All As Read
+                    </button>
+                  </div>
+                </div>
+              </Dropdown.Menu>
+            </Dropdown>
+
+            {/* profile and modal */}
+            <Dropdown
+              className="dropdown-animation dropdown d-flex align-items-center"
+              style={{ zIndex: 200 }}
+            >
+              <p className="mb-0 text-end line-height-sm fw-bolder me-2 d-none d-sm-block">
+                {`${localStorage.getItem('first_name')} ${localStorage.getItem(
+                  'last_name'
+                )}`}
+              </p>
+              <Dropdown.Toggle
+                as="a"
+                className="nav-link dropdown-toggle pulse p-0"
+              >
+                <img
+                  className="avatar lg rounded-circle img-thumbnail"
+                  src={data?.profile_picture || DemoProfileImg}
+                  alt="profile"
+                />
+              </Dropdown.Toggle>
+              <Dropdown.Menu className="shadow border-0 dropdown-animation mt-5">
+                <div className="card border-0 w280">
+                  <div className="card-body pb-0">
+                    {tenantDropdown && tenantId && showDropdown === true && (
+                      <Select
+                        placeholder={
+                          <span className="fw-bold ">Switch Tenant...</span>
+                        }
+                        name="tenant_id"
+                        options={tenantDropdown}
+                        onChange={handleTenantLogin}
+                        defaultValue={tenantDropdown.filter(
+                          (d) => d.value == tenantId
+                        )}
+                        className="mb-2"
+                      />
+                    )}
+                    <div className="d-flex gap-2">
+                      <img
+                        className="avatar rounded-circle"
+                        src={data?.profile_picture}
+                        alt="profile"
+                      />
+                      <div className="flex-fill">
+                        <p className="mb-0 fs-5 text-danger fw-bolder">
+                          {`${localStorage.getItem(
+                            'first_name'
+                          )} ${localStorage.getItem('last_name')}`}
+                        </p>
+                        <small className="">
+                          {localStorage.getItem('email_id')}
+                        </small>
+
+                        <Link
+                          to={`/${_base}/Profile`}
+                          data-toggle="dropdown"
+                          onClick={() => {
+                            setShow(!show);
+                          }}
+                          className="d-block fw-bolder"
+                        >
+                          Your Profile
+                        </Link>
+                      </div>
+                    </div>
+                    <hr className="dropdown-divider border-dark" />
+                  </div>
+                  <div className="list-group m-1">
+                    <button
+                      type="button"
+                      className="list-group-item list-group-item-action border-0"
+                      onClick={handleLogout}
+                    >
+                      <i className="icofont-sign-out fs-5 me-3" />
+                      <b className="fs-6">Sign Out</b>
+                    </button>
+                  </div>
+                </div>
+              </Dropdown.Menu>
+            </Dropdown>
+          </div>
         </div>
       </nav>
     </div>

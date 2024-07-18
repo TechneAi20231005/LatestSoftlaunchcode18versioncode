@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
@@ -72,8 +72,9 @@ function localReducer(state, action) {
   }
 }
 
-function ReviewedTestDraftDetails() {
+function ReviewedTestDraftDetails(props) {
   const dispatch = useDispatch();
+  const clearAllFilter = props.clearData;
 
   const { allReviewDraftTestListData, isLoading, filterReviewedDraftTestList } =
     useSelector((state) => state?.downloadFormat);
@@ -85,6 +86,7 @@ function ReviewedTestDraftDetails() {
   );
 
   const [state, localDispatch] = useReducer(localReducer, initialState);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const {
     filterType,
@@ -115,6 +117,9 @@ function ReviewedTestDraftDetails() {
     updated_at: 'updated_at'
   };
   const handleFilterClick = (event, column, name, type, id) => {
+    if (clearAllFilter === true) {
+      localDispatch({ type: 'SET_FILTERS', payload: [] });
+    }
     const filterKeyMap = {
       test_plan_id: 'test_plan_ids',
       reviewer_name: 'reviewer_names',
@@ -216,6 +221,22 @@ function ReviewedTestDraftDetails() {
     } else {
       const newValues = [...betweenValues];
       newValues[index] = value;
+      if (
+        newValues[0] !== undefined &&
+        newValues[1] !== undefined &&
+        newValues[0] !== '' &&
+        newValues[1] !== ''
+      ) {
+        if (newValues[0] !== undefined && newValues[1] !== undefined) {
+          if (newValues[0] > newValues[1]) {
+            setErrorMessage(
+              'The first value should not be greater than the second value.'
+            );
+          } else {
+            setErrorMessage('');
+          }
+        }
+      }
       localDispatch({ type: 'SET_BETWEEN_VALUES', payload: newValues });
     }
   };
@@ -229,6 +250,7 @@ function ReviewedTestDraftDetails() {
   };
 
   const handleApplyFilter = async () => {
+    props?.setClearData(false);
     const newFilter =
       filterType === 'is not between' || filterType === 'is between'
         ? {
@@ -263,7 +285,41 @@ function ReviewedTestDraftDetails() {
     } catch (error) {}
   };
 
+  const handleClearAllFilter = async () => {
+    const updatedFilters = filters?.filter(
+      (filter) => filter.column !== filterColumnId
+    );
+
+    localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+
+    try {
+      dispatch(
+        getAllReviewTestDraftList({
+          limit: paginationData.rowPerPage,
+          page: paginationData.currentPage,
+          filter_testcase_data: updatedFilters
+        })
+      );
+      localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
+      localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
+      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+    } catch (error) {}
+  };
+
+  const handleSearchChange = (e) => {
+    const term = e.target.value;
+    localDispatch({
+      type: 'SET_SEARCH_TERM',
+      payload: term
+    });
+  };
+
+  const filteredResults = filterValues?.filter((item) =>
+    item?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+  );
+
   const handleApplyButton = async () => {
+    props?.setClearData(false);
     const newFilter = {
       column: filterColumnId,
       column_name: filterColumn,
@@ -572,6 +628,49 @@ function ReviewedTestDraftDetails() {
     {
       name: (
         <div>
+          <span>Created By</span>
+          <i
+            onClick={(e, row) =>
+              handleFilterClick(e, 'created_by', 'created_by', 'text')
+            }
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
+      selector: (row) => row.created_by,
+      width: '10rem',
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row?.created_by && (
+            <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row?.created_by && row?.created_by?.length < 20
+                    ? row?.created_by
+                    : row?.created_by?.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
+      )
+    },
+
+    {
+      name: (
+        <div>
           <span>Updated At</span>
           <i
             onClick={(e, row) =>
@@ -584,6 +683,49 @@ function ReviewedTestDraftDetails() {
       selector: (row) => row.updated_at,
       sortable: false,
       width: '10rem'
+    },
+
+    {
+      name: (
+        <div>
+          <span>Updated By</span>
+          <i
+            onClick={(e, row) =>
+              handleFilterClick(e, 'updated_by', 'updated_by', 'text')
+            }
+            className="icofont-filter ms-2"
+          />
+        </div>
+      ),
+      selector: (row) => row.updated_by,
+      width: '10rem',
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row?.updated_by && (
+            <OverlayTrigger overlay={<Tooltip>{row.updated_by} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row?.updated_by && row?.updated_by?.length < 20
+                    ? row?.updated_by
+                    : row?.updated_by?.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
+      )
     }
   ];
 
@@ -594,10 +736,33 @@ function ReviewedTestDraftDetails() {
   }, [sortOrder]);
 
   useEffect(() => {
+    const newFilter =
+      filterType === 'is not between' || filterType === 'is between'
+        ? {
+            column: filterColumnId,
+            column_name: filterColumn,
+            filter: filterType,
+            searchText: getFilteredValues(),
+            sort: sortOrder
+          }
+        : {
+            column: filterColumnId,
+            column_name: filterColumn,
+            searchText: type === 'text' ? filterText : betweenValues,
+            filter: filterType,
+            sort: sortOrder
+          };
+
+    const updatedFilters = [...filters, newFilter];
     dispatch(
       getAllReviewTestDraftList({
         limit: paginationData.rowPerPage,
-        page: paginationData.currentPage
+        page: paginationData.currentPage,
+        filter_testcase_data:
+          updatedFilters?.length === 1 &&
+          updatedFilters[0]?.column === filterColumnId
+            ? []
+            : updatedFilters
       })
     );
   }, [paginationData.rowPerPage, paginationData.currentPage]);
@@ -618,9 +783,7 @@ function ReviewedTestDraftDetails() {
               setPaginationData({ rowPerPage: newPageSize });
               setPaginationData({ currentPage: 1 });
             }}
-            paginationRowsPerPageOptions={[
-              50, 100, 150, 200, 300, 500, 700, 1000
-            ]}
+            paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
             selectableRows={false}
             className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
             highlightOnHover={true}
@@ -639,7 +802,7 @@ function ReviewedTestDraftDetails() {
               handleCheckboxChange={handleFilterCheckboxChange}
               selectedFilters={selectedFilters}
               handleSelectAll={handleSelectAll}
-              filterData={filterValues}
+              filterData={filteredResults}
               searchTerm={searchTerm}
               filterType={filterType}
               paginationData={paginationData}
@@ -650,6 +813,9 @@ function ReviewedTestDraftDetails() {
               type={type}
               handleApplyButton={handleApplyButton}
               localDispatch={localDispatch}
+              handleSearchChange={handleSearchChange}
+              handleClearAllFilter={handleClearAllFilter}
+              errorMessage={errorMessage}
             />
           )}
         </div>

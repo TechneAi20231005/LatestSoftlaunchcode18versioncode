@@ -24,12 +24,18 @@ import { paymentTemplate } from './BillTypeMaster/PaymentTemplateMasterAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function PaymentTemplateMaster() {
   const dispatch = useDispatch();
   const paymentdata = useSelector(
     (PaymentTemplateMasterSlice) =>
       PaymentTemplateMasterSlice.paymentmaster.paymentTemplate
+  );
+
+  const isLoading = useSelector(
+    (PaymentTemplateMasterSlice) =>
+      PaymentTemplateMasterSlice.paymentmaster.isLoading
   );
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 46)
@@ -521,6 +527,8 @@ function PaymentTemplateMaster() {
                   columns={columns}
                   data={filteredData}
                   defaultSortFieldId="id"
+                  progressComponent={<TableLoadingSkelton />}
+                  progressPending={isLoading}
                   pagination
                   selectableRows={false}
                   defaultSortAsc={false}
