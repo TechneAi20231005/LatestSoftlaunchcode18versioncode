@@ -99,7 +99,7 @@ export const ExportAllTicketsToExcel = ({
       disabled={loading}
     >
       {loading ? (
-        <span className="loader"></span>
+        <span className="loader-export"></span>
       ) : (
         <>
           <i className="icofont-download"></i>
