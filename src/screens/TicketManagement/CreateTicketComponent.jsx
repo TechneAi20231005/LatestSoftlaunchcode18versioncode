@@ -599,10 +599,10 @@ export default function CreateTicketComponent() {
         queryTypeRef?.current.clearValue();
       }
 
-      const res = await new QueryTypeService().getQueryTypeMapped(e.value);
+      const res = await new QueryTypeService().getQueryTypeMapped(e?.value);
 
       if (res.data.status === 1) {
-        const activeData = res.data.data
+        const activeData = res?.data?.data
           .filter((d) => d.is_active === 1)
           .map((d) => ({ value: d.id, label: d.query_type_name }));
         setQueryGroupTypeData(activeData);
@@ -1281,21 +1281,24 @@ export default function CreateTicketComponent() {
                           className="form-control form-control-sm"
                         >
                           <option> {data?.inputDefaultValue}</option>
-                          {data?.inputAddOn?.inputRadio &&
-                            data?.inputAddOn?.inputRadio.map((option) => {
-                              return (
-                                <option
-                                  selected={
-                                    parseInt(
-                                      data && data?.inputAddOn?.inputDataSource
-                                    ) === option.value
-                                  }
-                                  value={option.value}
-                                >
-                                  {option.label}
-                                </option>
-                              );
-                            })}
+
+                          {Array.isArray(data?.inputAddOn?.inputRadio) ? (
+                            data?.inputAddOn?.inputRadio.map((option) => (
+                              <option
+                                key={option.value}
+                                selected={
+                                  parseInt(
+                                    data?.inputAddOn?.inputDataSource
+                                  ) === option.value
+                                }
+                                value={option.value}
+                              >
+                                {option.label}
+                              </option>
+                            ))
+                          ) : (
+                            <option disabled>No options available</option>
+                          )}
                         </select>
                       )}
 

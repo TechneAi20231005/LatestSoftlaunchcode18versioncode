@@ -95,6 +95,9 @@ function ReviewedTestDraftComponent() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [state, localDispatch] = useReducer(localReducer, initialState);
+  const [isFilterApplied, setIsFilterApplied] = useState(false);
+  const [selectedValue, setSelectedValue] = useState('');
+
   const {
     filterType,
     columnName,
@@ -332,7 +335,12 @@ function ReviewedTestDraftComponent() {
   };
 
   const handleBetweenValueChange = (index, value) => {
-    if (filterType !== 'is not between' && filterType !== 'is between') {
+    if (
+      filterType !== 'is not between' &&
+      filterType !== 'is between' &&
+      selectedValue !== 'is between' &&
+      selectedValue !== 'is not between'
+    ) {
       localDispatch({ type: 'SET_BETWEEN_VALUES', payload: Number(value) });
     } else {
       const newValues = [...betweenValues];
@@ -343,8 +351,11 @@ function ReviewedTestDraftComponent() {
         newValues[0] !== '' &&
         newValues[1] !== ''
       ) {
-        if (newValues[0] !== undefined && newValues[1] !== undefined) {
-          if (newValues[0] > newValues[1]) {
+        const value1 = parseFloat(newValues[0]);
+        const value2 = parseFloat(newValues[1]);
+
+        if (!isNaN(value1) && !isNaN(value2)) {
+          if (value1 > value2) {
             setErrorMessage(
               'The first value should not be greater than the second value.'
             );
@@ -357,7 +368,12 @@ function ReviewedTestDraftComponent() {
     }
   };
   const getFilteredValues = () => {
-    if (filterType === 'is not between' || filterType === 'is between') {
+    if (
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
+    ) {
       return betweenValues.map((value) => Number(value));
     }
 
@@ -367,11 +383,14 @@ function ReviewedTestDraftComponent() {
   const handleApplyFilter = async () => {
     setClearData(false);
     const newFilter =
-      filterType === 'is not between' || filterType === 'is between'
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
         ? {
             column: filterColumnId,
             column_name: filterColumn,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             searchText: getFilteredValues(),
             sort: sortOrder
           }
@@ -379,13 +398,33 @@ function ReviewedTestDraftComponent() {
             column: filterColumnId,
             column_name: filterColumn,
             searchText: type === 'text' ? filterText : betweenValues,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             sort: sortOrder
           };
 
-    const updatedFilters = [...filters, newFilter];
-    localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+    // const updatedFilters = [...filters, newFilter];
+    const getLatestConditions = (data) => {
+      const latestConditions = {};
 
+      // Traverse the list to keep the most recent condition for each column
+      data.forEach((condition) => {
+        const column = condition.column;
+        latestConditions[column] = condition;
+      });
+
+      // Convert the dictionary back to a list
+      const latestConditionsList = Object.values(latestConditions);
+
+      return latestConditionsList;
+    };
+    const updatedFiltersData = [...filters, newFilter];
+
+    const updatedFilters = getLatestConditions(updatedFiltersData);
+    localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumnId]: true
+    }));
     try {
       dispatch(
         getByTestPlanIDReviewedListThunk({
@@ -410,6 +449,10 @@ function ReviewedTestDraftComponent() {
   };
 
   const handleClearAllFilter = async () => {
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumn]: false
+    }));
     const updatedFilters = filters?.filter(
       (filter) => filter.column !== filterColumnId
     );
@@ -447,6 +490,10 @@ function ReviewedTestDraftComponent() {
 
     const updatedFilters = [...filters, newFilter];
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumn]: true
+    }));
 
     try {
       dispatch(
@@ -519,7 +566,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e, row) =>
               handleFilterClick(e, 'module_name', 'Module', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['module_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -563,7 +612,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e, row) =>
               handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['sub_module_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -606,7 +657,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'function_name', 'Function', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['function_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -647,7 +700,9 @@ function ReviewedTestDraftComponent() {
           <span>Field</span>
           <i
             onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['field'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -690,7 +745,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'type_name', 'Testing Type', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['type_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -733,7 +790,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'group_name', 'Testing Group', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['group_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -776,7 +835,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'tc_id', 'Testing Id', 'number')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['tc_id'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -814,7 +875,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'severity', 'Severity', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['severity'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -857,7 +920,9 @@ function ReviewedTestDraftComponent() {
                 'text'
               )
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['test_description'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -896,7 +961,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['expected_result'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -936,7 +1003,9 @@ function ReviewedTestDraftComponent() {
           <span>Steps</span>
           <i
             onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['steps'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -977,7 +1046,9 @@ function ReviewedTestDraftComponent() {
           <span>Status</span>
           <i
             onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['status'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1058,7 +1129,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'project_name', 'Project', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['project_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1101,7 +1174,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'created_at', 'created_at', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['created_at'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1144,7 +1219,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'created_by', 'created_by', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['module_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1187,6 +1264,8 @@ function ReviewedTestDraftComponent() {
     { title: 'Field', field: 'field' },
     { title: 'Testing Type', field: 'type_name' },
     { title: 'Testing Group', field: 'group_name' },
+    { title: 'Test ID', field: 'tc_id' },
+    { title: 'Test Description', field: 'test_description' },
     { title: 'Steps', field: 'steps' },
     { title: 'Severity', field: 'severity' },
     { title: 'Expected Result', field: 'expected_result' },
@@ -1240,11 +1319,14 @@ function ReviewedTestDraftComponent() {
   useEffect(() => {
     dispatch(getReviewCommentMasterListThunk());
     const newFilter =
-      filterType === 'is not between' || filterType === 'is between'
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
         ? {
             column: filterColumnId,
             column_name: filterColumn,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             searchText: getFilteredValues(),
             sort: sortOrder
           }
@@ -1252,11 +1334,28 @@ function ReviewedTestDraftComponent() {
             column: filterColumnId,
             column_name: filterColumn,
             searchText: type === 'text' ? filterText : betweenValues,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             sort: sortOrder
           };
 
-    const updatedFilters = [...filters, newFilter];
+    // const updatedFilters = [...filters, newFilter];
+    const getLatestConditions = (data) => {
+      const latestConditions = {};
+
+      // Traverse the list to keep the most recent condition for each column
+      data.forEach((condition) => {
+        const column = condition.column;
+        latestConditions[column] = condition;
+      });
+
+      // Convert the dictionary back to a list
+      const latestConditionsList = Object.values(latestConditions);
+
+      return latestConditionsList;
+    };
+    const updatedFiltersData = [...filters, newFilter];
+
+    const updatedFilters = getLatestConditions(updatedFiltersData);
     dispatch(
       getByTestPlanIDReviewedListThunk({
         id: id,
@@ -1273,7 +1372,13 @@ function ReviewedTestDraftComponent() {
   const [clearData, setClearData] = useState(false);
 
   const handleButtonClick = () => {
+    setIsFilterApplied(false);
+
     setClearData(true);
+    setPaginationData({
+      rowPerPage: 10,
+      currentPage: 1
+    });
     dispatch(
       getByTestPlanIDReviewedListThunk({
         id: id,
@@ -1284,7 +1389,63 @@ function ReviewedTestDraftComponent() {
   };
   useEffect(() => {
     if (sortOrder && sortOrder != null) {
-      handleApplyFilter(sortOrder);
+      // handleApplyFilter(sortOrder);
+      const newFilter =
+        filterType === 'is not between' ||
+        filterType === 'is between' ||
+        selectedValue === 'is between' ||
+        selectedValue === 'is not between'
+          ? {
+              column: filterColumnId,
+              column_name: filterColumn,
+              filter: filterType ? filterType : selectedValue,
+              searchText: getFilteredValues(),
+              sort: sortOrder
+            }
+          : {
+              column: filterColumnId,
+              column_name: filterColumn,
+              searchText: type === 'text' ? filterText : betweenValues,
+              filter: filterType ? filterType : selectedValue,
+              sort: sortOrder
+            };
+
+      // const updatedFilters = [...filters, newFilter];
+      const getLatestConditions = (data) => {
+        const latestConditions = {};
+
+        // Traverse the list to keep the most recent condition for each column
+        data.forEach((condition) => {
+          const column = condition.column;
+          latestConditions[column] = condition;
+        });
+
+        // Convert the dictionary back to a list
+        const latestConditionsList = Object.values(latestConditions);
+
+        return latestConditionsList;
+      };
+      const updatedFiltersData = [...filters, newFilter];
+
+      const updatedFilters = getLatestConditions(updatedFiltersData);
+      localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+      setIsFilterApplied((prev) => ({
+        ...prev,
+        [filterColumnId]: true
+      }));
+      try {
+        dispatch(
+          getByTestPlanIDReviewedListThunk({
+            id: id,
+            limit: paginationData.rowPerPage,
+            page: paginationData.currentPage,
+            filter_testcase_data: updatedFilters
+          })
+        );
+        localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
+        localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
+        localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+      } catch (error) {}
     }
   }, [sortOrder]);
 
@@ -1478,6 +1639,8 @@ function ReviewedTestDraftComponent() {
           handleSearchChange={handleSearchChange}
           handleClearAllFilter={handleClearAllFilter}
           errorMessage={errorMessage}
+          setSelectedValue={setSelectedValue}
+          selectedValue={selectedValue}
         />
       )}
     </div>
