@@ -39,6 +39,7 @@ export default function TestDraftComponent({}) {
     },
     { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
   );
+
   const [downloadmodal, setDownloadModal] = useState({
     showModal: false,
     modalData: '',
@@ -119,6 +120,7 @@ export default function TestDraftComponent({}) {
     { title: 'Testing Group', field: 'group_name' },
     { title: 'Test ID', field: 'tc_id' },
     { title: 'Test Description', field: 'test_description' },
+    { title: 'Severity', field: 'severity' },
 
     { title: 'Steps', field: 'steps' },
     { title: 'Expected Result', field: 'expected_result' },
@@ -140,14 +142,22 @@ export default function TestDraftComponent({}) {
     { title: 'Created At', field: 'created_at' },
     { title: 'Updated At', field: 'updated_at' }
   ];
+  const [isFilterApplied, setIsFilterApplied] = useState(false);
+
   const handleButtonClick = () => {
     setClearData(true);
 
+    setIsFilterApplied(false);
+
+    setPaginationData({
+      rowPerPage: 10,
+      currentPage: 1
+    });
     currentTab === 'test_summary'
       ? dispatch(
           getDraftTestCaseList({
-            limit: paginationData.rowPerPage,
-            page: paginationData.currentPage,
+            limit: 10,
+            page: 1,
             filter_testcase_data: []
           })
         )
@@ -250,30 +260,27 @@ export default function TestDraftComponent({}) {
               >
                 Import Test Draft File
               </button>
-              <ExportToExcel
-                className="btn btn-danger"
-                apiData={
-                  currentTab === 'test_summary'
-                    ? allDraftTestListData
-                    : allReviewDraftTestListData
-                }
-                columns={
-                  currentTab === 'test_summary'
-                    ? exportColumns
-                    : exportReviewedColumns
-                }
-                fileName={
-                  currentTab === 'test_summary'
-                    ? 'Test Summary Records'
-                    : 'Review Test Draft Records'
-                }
-                disabled={
-                  currentTab === 'review_test_draft' ||
-                  allDraftTestListData?.length <= 0
-                    ? true
-                    : false
-                }
-              />
+              {currentTab === 'test_summary' && (
+                <ExportToExcel
+                  className="btn btn-danger"
+                  apiData={allDraftTestListData}
+                  columns={exportColumns}
+                  fileName={'Test Summary Records'}
+                  disabled={allDraftTestListData?.length <= 0 ? true : false}
+                />
+              )}
+
+              {currentTab === 'review_test_draft' && (
+                <ExportToExcel
+                  className="btn btn-danger"
+                  apiData={allReviewDraftTestListData}
+                  columns={exportReviewedColumns}
+                  fileName={'Review Test Draft Records'}
+                  disabled={
+                    allReviewDraftTestListData?.length <= 0 ? true : false
+                  }
+                />
+              )}
             </div>
           );
         }}
@@ -287,13 +294,24 @@ export default function TestDraftComponent({}) {
         />
       </div>
       <RenderIf render={currentTab === 'test_summary'}>
-        <TestDraftDetails clearData={clearData} setClearData={setClearData} />
+        <TestDraftDetails
+          clearData={clearData}
+          setClearData={setClearData}
+          setIsFilterApplied={setIsFilterApplied}
+          isFilterApplied={isFilterApplied}
+          setPaginationData={setPaginationData}
+          paginationData={paginationData}
+        />
       </RenderIf>
       <RenderIf render={currentTab === 'review_test_draft'}>
         {currentTab === 'review_test_draft' && (
           <ReviewedTestDraftDetails
             clearData={clearData}
             setClearData={setClearData}
+            setIsFilterApplied={setIsFilterApplied}
+            isFilterApplied={isFilterApplied}
+            setPaginationData={setPaginationData}
+            paginationData={paginationData}
           />
         )}
       </RenderIf>

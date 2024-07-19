@@ -288,8 +288,8 @@ function EditTestCaseModal({
 
                 <Col md={4} lg={4}>
                   <Field
-                    options={filterTestingGroupMasterList}
-                    component={CustomReactSelect}
+                    data={filterTestingGroupMasterList}
+                    component={CustomDropdown}
                     name="group_id"
                     label="Testing Group"
                   />

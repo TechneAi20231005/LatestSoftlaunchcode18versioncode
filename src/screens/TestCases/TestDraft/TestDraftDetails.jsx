@@ -140,12 +140,12 @@ function TestDraftDetails(props) {
     modalHeader: ''
   });
 
-  const [paginationData, setPaginationData] = useReducer(
-    (prevState, nextState) => {
-      return { ...prevState, ...nextState };
-    },
-    { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
-  );
+  // const [paginationData, setPaginationData] = useReducer(
+  //   (prevState, nextState) => {
+  //     return { ...prevState, ...nextState };
+  //   },
+  //   { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
+  // );
   const [disable, setDisable] = useState(false);
   const [reviewerError, setReviewerError] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -199,6 +199,7 @@ function TestDraftDetails(props) {
       }
     });
   };
+
   const handleFilterClick = (event, column, name, type, id) => {
     if (clearAllFilter === true) {
       localDispatch({ type: 'SET_FILTERS', payload: [] });
@@ -322,7 +323,12 @@ function TestDraftDetails(props) {
     }
   };
   const handleBetweenValueChange = (index, value) => {
-    if (filterType !== 'is not between' && filterType !== 'is between') {
+    if (
+      filterType !== 'is not between' &&
+      filterType !== 'is between' &&
+      selectedValue !== 'is between' &&
+      selectedValue !== 'is not between'
+    ) {
       localDispatch({ type: 'SET_BETWEEN_VALUES', payload: Number(value) });
     } else {
       const newValues = [...betweenValues];
@@ -333,8 +339,11 @@ function TestDraftDetails(props) {
         newValues[0] !== '' &&
         newValues[1] !== ''
       ) {
-        if (newValues[0] !== undefined && newValues[1] !== undefined) {
-          if (newValues[0] > newValues[1]) {
+        const value1 = parseFloat(newValues[0]);
+        const value2 = parseFloat(newValues[1]);
+
+        if (!isNaN(value1) && !isNaN(value2)) {
+          if (value1 > value2) {
             setErrorMessage(
               'The first value should not be greater than the second value.'
             );
@@ -348,8 +357,13 @@ function TestDraftDetails(props) {
   };
 
   const getFilteredValues = () => {
-    if (filterType === 'is not between' || filterType === 'is between') {
-      return betweenValues.map((value) => Number(value));
+    if (
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
+    ) {
+      return betweenValues?.map((value) => Number(value));
     }
 
     return filterText;
@@ -362,15 +376,19 @@ function TestDraftDetails(props) {
     //   payload: null
     // });
   };
+  const [selectedValue, setSelectedValue] = useState('');
 
   const handleApplyFilter = async () => {
     props?.setClearData(false);
     const newFilter =
-      filterType === 'is not between' || filterType === 'is between'
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
         ? {
             column: filterColumnId,
             column_name: filterColumn,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             searchText: getFilteredValues(),
             sort: sortOrder
           }
@@ -378,18 +396,39 @@ function TestDraftDetails(props) {
             column: filterColumnId,
             column_name: filterColumn,
             searchText: type === 'text' ? filterText : betweenValues,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             sort: sortOrder
           };
 
-    const updatedFilters = [...filters, newFilter];
-    localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+    const getLatestConditions = (data) => {
+      const latestConditions = {};
 
+      // Traverse the list to keep the most recent condition for each column
+      data.forEach((condition) => {
+        const column = condition.column;
+        latestConditions[column] = condition;
+      });
+
+      // Convert the dictionary back to a list
+      const latestConditionsList = Object.values(latestConditions);
+
+      return latestConditionsList;
+    };
+    const updatedFiltersData = [...filters, newFilter];
+
+    const updatedFilters = getLatestConditions(updatedFiltersData);
+
+    // const updatedFilters = [...filters, newFilter];
+    localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+    props.setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumnId]: true
+    }));
     try {
       dispatch(
         getDraftTestCaseList({
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: props?.paginationData.rowPerPage,
+          page: props?.paginationData.currentPage,
           filter_testcase_data: updatedFilters
         })
       );
@@ -409,14 +448,37 @@ function TestDraftDetails(props) {
       sort: sortOrder
     };
 
-    const updatedFilters = [...filters, newFilter];
+    // const updatedFilters = [...filters, newFilter];
+
+    const getLatestConditions = (data) => {
+      const latestConditions = {};
+
+      // Traverse the list to keep the most recent condition for each column
+      data.forEach((condition) => {
+        const column = condition.column;
+        latestConditions[column] = condition;
+      });
+
+      // Convert the dictionary back to a list
+      const latestConditionsList = Object.values(latestConditions);
+
+      return latestConditionsList;
+    };
+    const updatedFiltersData = [...filters, newFilter];
+
+    const updatedFilters = getLatestConditions(updatedFiltersData);
+
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
 
+    props.setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumn]: true
+    }));
     try {
       dispatch(
         getDraftTestCaseList({
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: props?.paginationData.rowPerPage,
+          page: props?.paginationData.currentPage,
           filter_testcase_data: updatedFilters
         })
       );
@@ -428,6 +490,11 @@ function TestDraftDetails(props) {
   };
 
   const handleClearAllFilter = async () => {
+    props.setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumn]: false
+    }));
+
     const updatedFilters = filters?.filter(
       (filter) => filter.column !== filterColumnId
     );
@@ -437,8 +504,8 @@ function TestDraftDetails(props) {
     try {
       dispatch(
         getDraftTestCaseList({
-          limit: paginationData?.rowPerPage,
-          page: paginationData?.currentPage,
+          limit: props?.paginationData?.rowPerPage,
+          page: props?.paginationData?.currentPage,
           filter_testcase_data: updatedFilters
         })
       );
@@ -508,7 +575,11 @@ function TestDraftDetails(props) {
             onClick={(e, row) =>
               handleFilterClick(e, 'module_name', 'Module', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['module_name']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -552,7 +623,11 @@ function TestDraftDetails(props) {
             onClick={(e, row) =>
               handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['sub_module_name']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -595,7 +670,9 @@ function TestDraftDetails(props) {
             onClick={(e) =>
               handleFilterClick(e, 'platform', 'Platform', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['platform'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -638,7 +715,11 @@ function TestDraftDetails(props) {
             onClick={(e) =>
               handleFilterClick(e, 'function_name', 'Function', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['function_name']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -679,7 +760,9 @@ function TestDraftDetails(props) {
           <span>Field</span>
           <i
             onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['field'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -722,7 +805,9 @@ function TestDraftDetails(props) {
             onClick={(e) =>
               handleFilterClick(e, 'type_name', 'Testing Type', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['type_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -765,7 +850,11 @@ function TestDraftDetails(props) {
             onClick={(e) =>
               handleFilterClick(e, 'group_name', 'Testing Group', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['group_name']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -806,7 +895,9 @@ function TestDraftDetails(props) {
           <span>Test Id</span>
           <i
             onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'number')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['tc_id'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -849,7 +940,11 @@ function TestDraftDetails(props) {
                 'text'
               )
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['test_description']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -893,7 +988,9 @@ function TestDraftDetails(props) {
             onClick={(e) =>
               handleFilterClick(e, 'severity', 'Severity', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['severity'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -928,7 +1025,9 @@ function TestDraftDetails(props) {
           <span>Steps</span>
           <i
             onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['steps'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -971,7 +1070,11 @@ function TestDraftDetails(props) {
             onClick={(e) =>
               handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['expected_result']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1012,7 +1115,9 @@ function TestDraftDetails(props) {
           <span>Status</span>
           <i
             onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['status'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1055,7 +1160,11 @@ function TestDraftDetails(props) {
             onClick={(e) =>
               handleFilterClick(e, 'project_name', 'Project', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['project_name']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1098,7 +1207,11 @@ function TestDraftDetails(props) {
             onClick={(e, row) =>
               handleFilterClick(e, 'created_at', 'created_at', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['created_at']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1141,7 +1254,11 @@ function TestDraftDetails(props) {
             onClick={(e, row) =>
               handleFilterClick(e, 'created_by', 'created_by', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['created_by']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1184,7 +1301,11 @@ function TestDraftDetails(props) {
             onClick={(e, row) =>
               handleFilterClick(e, 'updated_at', 'updated_at', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['updated_at']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1227,7 +1348,11 @@ function TestDraftDetails(props) {
             onClick={(e, row) =>
               handleFilterClick(e, 'updated_by', 'updated_by', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['updated_by']
+                ? 'text-success'
+                : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1310,8 +1435,8 @@ function TestDraftDetails(props) {
 
           dispatch(
             getDraftTestCaseList({
-              limit: paginationData.rowPerPage,
-              page: paginationData.currentPage
+              limit: props?.paginationData.rowPerPage,
+              page: props?.paginationData.currentPage
             })
           );
         },
@@ -1322,16 +1447,75 @@ function TestDraftDetails(props) {
 
   useEffect(() => {
     if (sortOrder && sortOrder != null) {
-      handleApplyFilter(sortOrder);
+      // handleApplyFilter(sortOrder);
+      const newFilter =
+        filterType === 'is not between' ||
+        filterType === 'is between' ||
+        selectedValue === 'is between' ||
+        selectedValue === 'is not between'
+          ? {
+              column: filterColumnId,
+              column_name: filterColumn,
+              filter: filterType ? filterType : selectedValue,
+              searchText: getFilteredValues(),
+              sort: sortOrder
+            }
+          : {
+              column: filterColumnId,
+              column_name: filterColumn,
+              searchText: type === 'text' ? filterText : betweenValues,
+              filter: filterType ? filterType : selectedValue,
+              sort: sortOrder
+            };
+
+      const getLatestConditions = (data) => {
+        const latestConditions = {};
+
+        // Traverse the list to keep the most recent condition for each column
+        data.forEach((condition) => {
+          const column = condition.column;
+          latestConditions[column] = condition;
+        });
+
+        // Convert the dictionary back to a list
+        const latestConditionsList = Object.values(latestConditions);
+
+        return latestConditionsList;
+      };
+      const updatedFiltersData = [...filters, newFilter];
+
+      const updatedFilters = getLatestConditions(updatedFiltersData);
+
+      // const updatedFilters = [...filters, newFilter];
+      localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+      props.setIsFilterApplied((prev) => ({
+        ...prev,
+        [filterColumnId]: true
+      }));
+      try {
+        dispatch(
+          getDraftTestCaseList({
+            limit: props?.paginationData.rowPerPage,
+            page: props?.paginationData.currentPage,
+            filter_testcase_data: updatedFilters
+          })
+        );
+        localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
+        localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
+        localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+      } catch (error) {}
     }
   }, [sortOrder]);
   useEffect(() => {
     const newFilter =
-      filterType === 'is not between' || filterType === 'is between'
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
         ? {
             column: filterColumnId,
             column_name: filterColumn,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             searchText: getFilteredValues(),
             sort: sortOrder
           }
@@ -1339,15 +1523,15 @@ function TestDraftDetails(props) {
             column: filterColumnId,
             column_name: filterColumn,
             searchText: type === 'text' ? filterText : betweenValues,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             sort: sortOrder
           };
 
     const updatedFilters = [...filters, newFilter];
     dispatch(
       getDraftTestCaseList({
-        limit: paginationData?.rowPerPage,
-        page: paginationData?.currentPage,
+        limit: props?.paginationData?.rowPerPage,
+        page: props?.paginationData?.currentPage,
         filter_testcase_data:
           updatedFilters?.length === 1 &&
           updatedFilters[0]?.column === filterColumnId
@@ -1355,7 +1539,7 @@ function TestDraftDetails(props) {
             : updatedFilters
       })
     );
-  }, [paginationData.rowPerPage, paginationData.currentPage]);
+  }, [props?.paginationData.rowPerPage, props?.paginationData.currentPage]);
 
   return (
     <>
@@ -1369,13 +1553,15 @@ function TestDraftDetails(props) {
           pagination
           paginationServer
           paginationTotalRows={allDraftListData?.data?.total}
-          paginationDefaultPage={paginationData?.currentPage}
-          onChangePage={(page) => setPaginationData({ currentPage: page })}
+          paginationDefaultPage={props?.paginationData?.currentPage}
+          onChangePage={(page) =>
+            props?.setPaginationData({ currentPage: page })
+          }
           onChangeRowsPerPage={(newPageSize) => {
-            setPaginationData({ rowPerPage: newPageSize });
-            setPaginationData({ currentPage: 1 });
+            props?.setPaginationData({ rowPerPage: newPageSize });
+            props?.setPaginationData({ currentPage: 1 });
           }}
-          paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
+          // paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
@@ -1481,7 +1667,7 @@ function TestDraftDetails(props) {
           type={addEditTestCasesModal?.type}
           currentTestCasesData={addEditTestCasesModal?.data}
           close={(prev) => setAddEditTestCasesModal({ ...prev, open: false })}
-          paginationData={paginationData}
+          paginationData={props?.paginationData}
           id={addEditTestCasesModal?.id}
           payloadType={'DRAFT'}
         />
@@ -1503,7 +1689,7 @@ function TestDraftDetails(props) {
           searchTerm={searchTerm}
           handleSearchChange={handleSearchChange}
           filterType={filterType}
-          paginationData={paginationData}
+          paginationData={props?.paginationData}
           handleAscendingClick={handleAscendingClick}
           handleDescendingClick={handleDescendingClick}
           handleBetweenValueChange={handleBetweenValueChange}
@@ -1513,6 +1699,8 @@ function TestDraftDetails(props) {
           localDispatch={localDispatch}
           handleClearAllFilter={handleClearAllFilter}
           errorMessage={errorMessage}
+          setSelectedValue={setSelectedValue}
+          selectedValue={selectedValue}
         />
       )}
     </>
