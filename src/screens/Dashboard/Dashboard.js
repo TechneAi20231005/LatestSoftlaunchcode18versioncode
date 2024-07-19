@@ -43,7 +43,7 @@ export default function HrDashboard(props) {
   const [ticketID, setTicketID] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [notificationId, setNotificationId] = useState();
-  const [showApprovedOnly, setShowApprovedOnly] = useState(false);
+  const [showApprovedOnly, setShowApprovedOnly] = useState(true);
   const [approveRequestModal, setApproveRequestModal] = useState({
     show: false,
     data: null

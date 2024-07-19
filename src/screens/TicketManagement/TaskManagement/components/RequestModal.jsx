@@ -73,50 +73,12 @@ const RequestModal = (props) => {
     ]);
   };
 
-  // This function is called when the checkbox for regularization time increase is clicked.
-  // const handleIncreaseChange = (index) => {
-  //   // Create a copy of the 'rows' array to avoid directly modifying the state.
-  //   const updatedRows = [...rows];
-
-  //   // Set the 'increaseChecked' property of the row at the specified index to true.
-  //   updatedRows[index].increaseChecked = true;
-
-  //   // Set the 'decreaseChecked' property of the same row to false.
-
-  //   updatedRows[index].decreaseChecked = false;
-
-  //   // Update the state with the modified array of rows.
-  //   setRows(updatedRows);
-  // };
-
-  // const handleActualChange = (index) => {
-  //   const updatedRows = [...rows];
-  //   updatedRows[index].actual_time = timeDifference;
-  //   setRows(updatedRows);
-  // };
-
-  // This function is called when the checkbox for regularization time decrease is clicked.
-  // const handleDecreaseChange = (index) => {
-  //   // Create a copy of the 'rows' array to avoid directly modifying the state.
-  //   const updatedRows = [...rows];
-
-  //   // Set the 'decreaseChecked' property of the row at the specified index to true.
-  //   updatedRows[index].decreaseChecked = true;
-
-  //   // Set the 'increaseChecked' property of the same row to false.
-  //   updatedRows[index].increaseChecked = false;
-
-  //   // Update the state with the modified array of rows.
-  //   setRows(updatedRows);
-  // };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setNotify(null);
 
     const data = new FormData(e.target);
     data?.append('scheduled_time', props.data.task_hours);
-    // data.append('actual_total_time',"00:30");
     dispatch(postTimeRegularizationData(data)).then((res) => {
       if (res?.payload?.data?.status === 1) {
         setNotify({ type: 'success', message: res?.payload?.data?.message });
@@ -162,7 +124,6 @@ const RequestModal = (props) => {
       }
     );
   };
-
   useEffect(() => {
     // Code to update the actual_time value automatically
     const updatedRows = rows.map((row) => ({
@@ -186,7 +147,8 @@ const RequestModal = (props) => {
       to_date: '',
       from_time: '',
       to_time: '',
-      actual_time: ''
+      actual_time: '',
+      remark: ''
     }
     // Add more rows as needed
   ]);
@@ -224,6 +186,11 @@ const RequestModal = (props) => {
   const handleActualTimeChange = (index, fromTime, toTime) => {
     const fromDate = rows[index].from_date;
     const toDate = rows[index].to_date;
+
+    if (toTime?.length > 0 && toTime < fromTime) {
+      alert('To time cannot be earlier than from time.');
+      return;
+    }
     const actualTime = calculateTimeDifference(
       fromDate,
       toDate,
@@ -369,6 +336,14 @@ const RequestModal = (props) => {
     updatedData[index].remark = value; // Update the remark field of the corresponding row
     setRegularizeTimeData(updatedData); // Update the state with the modified array
   };
+
+  const handleRemarkChangee = (event, index) => {
+    const { value } = event.target;
+    const newRows = [...rows];
+    newRows[index].remark = value;
+    setRows(newRows);
+  };
+
   return (
     <div>
       <Modal
@@ -531,6 +506,14 @@ const RequestModal = (props) => {
                               const updatedData = [...regularizeTimeData];
                               updatedData[index].to_time = value;
                               // Calculate actual time
+
+                              const fromTime = updatedData[index].from_time;
+                              if (fromTime && value < fromTime) {
+                                alert(
+                                  'To time cannot be earlier than from time.'
+                                );
+                                return;
+                              }
                               const actualTime = calculateActualTime(
                                 updatedData[index].from_date,
                                 updatedData[index].to_date,
@@ -818,8 +801,12 @@ const RequestModal = (props) => {
                                   type="text"
                                   className="form-control form-control-sm"
                                   name={`remark[${index}]`}
-                                  defaultValue={row && row.remark}
+                                  value={row && row.remark}
                                   required
+                                  onChange={(event) =>
+                                    handleRemarkChangee(event, index)
+                                  }
+                                  // Assuming you have a function to handle remark changes
                                 />
                               </td>
 
@@ -837,7 +824,7 @@ const RequestModal = (props) => {
                                 {index + 1 > 1 && (
                                   <button
                                     className="mr10 mr-1 btn btn-danger"
-                                    onClick={() => handleRemoveClick()}
+                                    onClick={() => handleRemoveClick(index)}
                                   >
                                     <i className="icofont-ui-delete"></i>
                                   </button>
@@ -859,6 +846,11 @@ const RequestModal = (props) => {
               type="submit"
               className="btn btn-sm btn-primary"
               style={{ backgroundColor: '#484C7F' }}
+              disabled={
+                regularizeTimeData?.length > 0 &&
+                regularizeTimeData?.filter((d) => d?.status === 'PENDING')
+                  ?.length > 0
+              }
             >
               Submit
             </button>
