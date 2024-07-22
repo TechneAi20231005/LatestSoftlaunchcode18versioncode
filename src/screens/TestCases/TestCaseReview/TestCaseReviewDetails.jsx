@@ -123,6 +123,8 @@ function TestCaseReviewDetails() {
   const [commonRemark, setCommonRemark] = useState('');
   const [comments, setComments] = useState({});
   const [remarks, setRemarks] = useState({});
+  const [isFilterApplied, setIsFilterApplied] = useState(false);
+  const [selectedValue, setSelectedValue] = useState('');
 
   const {
     filterType,
@@ -146,7 +148,7 @@ function TestCaseReviewDetails() {
 
   const generateOptions = (options) => {
     return [
-      <option key="default" value="">
+      <option key={options.value} value="" disabled>
         Select Reviewer comment
       </option>,
       ...options.map((option) => (
@@ -191,7 +193,7 @@ function TestCaseReviewDetails() {
       ?.map((row) => ({
         tc_id: row.tc_id,
 
-        comment_id: comments[row.id] || row.comment_id,
+        comment_id: comments[row.id] || row.comment_id || commonComment,
         other_remark: remarks[row.id] || row.other_remark
       }));
 
@@ -203,7 +205,7 @@ function TestCaseReviewDetails() {
       }
     });
 
-    if (newCommentIdErrors?.length > 0) {
+    if (newCommentIdErrors?.length > 0 && !commonComment) {
       setCommentIdError(newCommentIdErrors);
     } else {
       setCommentIdError('');
@@ -220,7 +222,7 @@ function TestCaseReviewDetails() {
           planID,
           formData,
           onSuccessHandler: () => {
-            setCommonComment('');
+            // setCommonComment('');
             setCommonRemark('');
             dispatch(
               getByTestPlanIDListThunk({
@@ -274,7 +276,7 @@ function TestCaseReviewDetails() {
             }
           />
 
-          <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.tc_id}`}>
+          <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.id}`}>
             <i class="icofont-history cp   btn btn-outline-secondary fw-bold" />
           </Link>
         </div>
@@ -314,7 +316,9 @@ function TestCaseReviewDetails() {
             onClick={(e, row) =>
               handleFilterClick(e, 'module_name', 'Module', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['module_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -358,7 +362,9 @@ function TestCaseReviewDetails() {
             onClick={(e, row) =>
               handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['sub_module_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -401,7 +407,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'function_name', 'Function', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['function_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -442,7 +450,9 @@ function TestCaseReviewDetails() {
           <span>Field</span>
           <i
             onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['field'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -485,7 +495,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'type_name', 'Testing Type', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['type_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -528,7 +540,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'group_name', 'Testing Group', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['group_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -569,7 +583,9 @@ function TestCaseReviewDetails() {
           <span>Test Id</span>
           <i
             onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'number')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['tc_id'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -605,7 +621,9 @@ function TestCaseReviewDetails() {
           <span>Severity</span>
           <i
             onClick={(e) => handleFilterClick(e, 'id', 'Severity', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['Severity'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -648,7 +666,9 @@ function TestCaseReviewDetails() {
                 'text'
               )
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['test_description'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -687,7 +707,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['expected_result'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -727,7 +749,9 @@ function TestCaseReviewDetails() {
           <span>Steps</span>
           <i
             onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['steps'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -768,7 +792,9 @@ function TestCaseReviewDetails() {
           <span>Status</span>
           <i
             onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['status'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -816,11 +842,12 @@ function TestCaseReviewDetails() {
             aria-label="Default select example"
             // value={row.comment_id || ''}
             // value={comments[row.id] || row.comment_id || ''}
-            value={
-              selectedRows && selectedRows.includes(row.tc_id)
-                ? comments[row.id] || row.comment_id
-                : commonComment
-            }
+            // value={
+            //   selectedRows && selectedRows.includes(row.tc_id)
+            //     ? comments[row.id] || commonComment
+            //     : commonComment
+            // }
+            value={comments[row.id] || row.comment_id || commonComment || ''}
             id="comment_id"
             name="comment_id"
             onChange={(e) =>
@@ -855,11 +882,11 @@ function TestCaseReviewDetails() {
           placeholder="Enter Remark"
           aria-label="default input example"
           maxLength={100}
-          value={
-            selectedRows && selectedRows.includes(row.id)
-              ? remarks[row.id] || row.other_remark
-              : commonRemark
-          }
+          // value={
+          //   selectedRows && selectedRows.includes(row.id)
+          //     ? remarks[row.id] || row.other_remark
+          //     : commonRemark
+          // }
           onChange={(e) =>
             handleRowChange(row.id, 'other_remark', e.target.value)
           }
@@ -874,7 +901,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'project_name', 'Project', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['project_name'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -917,7 +946,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'created_at', 'created_at', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['created_at'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -960,7 +991,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'created_by', 'created_by', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['created_by'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1003,7 +1036,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'updated_at', 'updated_at', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['updated_at'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1046,7 +1081,9 @@ function TestCaseReviewDetails() {
             onClick={(e) =>
               handleFilterClick(e, 'updated_by', 'updated_by', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['updated_by'] ? 'text-success' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1096,8 +1133,74 @@ function TestCaseReviewDetails() {
     expected_result: 'expected_result',
     status: 'status',
     project_name: 'project_id',
-    test_description: 'test_description'
+    test_description: 'test_description',
+    created_at: 'created_at',
+    created_by: 'created_by',
+    updated_at: 'updated_at',
+    updated_by: 'updated_by'
   };
+
+  const transformDataForExport = (rowData, data, comments, commonComment) => {
+    if (comments) {
+      const obj = comments;
+      let objKey;
+      let val;
+      for (const key in obj) {
+        if (obj.hasOwnProperty(key)) {
+          objKey = key;
+          val = obj[key];
+        }
+      }
+
+      const filteredCommnet = getFilterReviewCommentMasterList.filter(
+        (comment) => comment.value == val
+      );
+
+      for (let i = 0; i < rowData.length; i++) {
+        if (rowData[i].id == objKey) {
+          rowData[i].reviewer_comment = filteredCommnet[0].label;
+        }
+      }
+    }
+    // const updateReviewerComment = rowData.map((rowData) => {
+    //   if (rowData.id === key) {
+    //     rowData.reviewer_comment = filteredCommnet[0].value;
+    //   }
+    // });
+
+    return rowData.map((rowData) => ({
+      module_name: rowData.module_name,
+      sub_module_name: rowData.sub_module_name,
+      function_name: rowData.function_name,
+      field: rowData.field,
+      type_name: rowData.type_name,
+      group_name: rowData.group_name,
+      tc_id: rowData.tc_id,
+      test_description: rowData.test_description,
+      steps: rowData.steps,
+      severity: rowData.severity,
+      expected_result: rowData.expected_result,
+      rev: rowData.rev,
+      // reviewer_comment:
+      //   comments[row.id] || row.comment_id || commonComment || '',
+      reviewer_comment: rowData.reviewer_comment,
+      remark: remarks[rowData.id] || rowData.other_remark || commonRemark,
+
+      project_name: rowData.project_name,
+      created_at: rowData.created_at,
+      created_by: rowData.created_by,
+      updated_at: rowData.updated_at,
+      updated_by: rowData.updated_by
+    }));
+  };
+
+  // Example usage
+  const transformedData = transformDataForExport(
+    rowData,
+    exportTestCaseReviewData,
+    comments,
+    commonComment
+  );
 
   const exportColumns = [
     { title: 'Module', field: 'module_name' },
@@ -1111,7 +1214,9 @@ function TestCaseReviewDetails() {
     { title: 'Steps', field: 'steps' },
     { title: 'Severity', field: 'severity' },
     { title: 'Expected Result', field: 'expected_result' },
-    { title: 'Status', field: 'status' },
+    { title: 'Status', field: 'rev' },
+    { title: 'Reviewer Comment', field: 'reviewer_comment' },
+    { title: 'Remark', field: 'remark' },
     { title: 'Project', field: 'project_name' },
     { title: 'Created At', field: 'created_at' },
     { title: 'Created By', field: 'created_by' },
@@ -1133,10 +1238,16 @@ function TestCaseReviewDetails() {
       tc_id: 'ids',
       severity: 'severities',
       group_name: 'group_names',
+      test_description: 'test_descriptions',
+
       steps: 'steps',
       expected_result: 'expected_results',
       status: 'status',
-      project_name: 'project_names'
+      project_name: 'project_names',
+      created_at: 'created_at',
+      created_by: 'created_by',
+      updated_at: 'updated_at',
+      updated_by: 'updated_by'
     };
     const filteredData = filterTestPlanData[filterKeyMap[column]];
     const columnId = moduleMapping[column];
@@ -1236,7 +1347,12 @@ function TestCaseReviewDetails() {
   };
 
   const handleBetweenValueChange = (index, value) => {
-    if (filterType !== 'is not between' && filterType !== 'is between') {
+    if (
+      filterType !== 'is not between' &&
+      filterType !== 'is between' &&
+      selectedValue !== 'is between' &&
+      selectedValue !== 'is not between'
+    ) {
       localDispatch({ type: 'SET_BETWEEN_VALUES', payload: Number(value) });
     } else {
       const newValues = [...betweenValues];
@@ -1247,8 +1363,11 @@ function TestCaseReviewDetails() {
         newValues[0] !== '' &&
         newValues[1] !== ''
       ) {
-        if (newValues[0] !== undefined && newValues[1] !== undefined) {
-          if (newValues[0] > newValues[1]) {
+        const value1 = parseFloat(newValues[0]);
+        const value2 = parseFloat(newValues[1]);
+
+        if (!isNaN(value1) && !isNaN(value2)) {
+          if (value1 > value2) {
             setErrorMessage(
               'The first value should not be greater than the second value.'
             );
@@ -1262,7 +1381,12 @@ function TestCaseReviewDetails() {
   };
 
   const getFilteredValues = () => {
-    if (filterType === 'is not between' || filterType === 'is between') {
+    if (
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
+    ) {
       return betweenValues.map((value) => Number(value));
     }
 
@@ -1272,11 +1396,14 @@ function TestCaseReviewDetails() {
   const handleApplyFilter = async () => {
     setClearData(false);
     const newFilter =
-      filterType === 'is not between' || filterType === 'is between'
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
         ? {
             column: filterColumnId,
             column_name: filterColumn,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             searchText: getFilteredValues(),
             sort: sortOrder
           }
@@ -1284,12 +1411,33 @@ function TestCaseReviewDetails() {
             column: filterColumnId,
             column_name: filterColumn,
             searchText: type === 'text' ? filterText : betweenValues,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             sort: sortOrder
           };
 
-    const updatedFilters = [...filters, newFilter];
+    // const updatedFilters = [...filters, newFilter];
+    const getLatestConditions = (data) => {
+      const latestConditions = {};
+
+      // Traverse the list to keep the most recent condition for each column
+      data.forEach((condition) => {
+        const column = condition.column;
+        latestConditions[column] = condition;
+      });
+
+      // Convert the dictionary back to a list
+      const latestConditionsList = Object.values(latestConditions);
+
+      return latestConditionsList;
+    };
+    const updatedFiltersData = [...filters, newFilter];
+
+    const updatedFilters = getLatestConditions(updatedFiltersData);
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumnId]: true
+    }));
 
     try {
       dispatch(
@@ -1307,6 +1455,10 @@ function TestCaseReviewDetails() {
   };
 
   const handleClearAllFilter = async () => {
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumn]: false
+    }));
     const updatedFilters = filters?.filter(
       (filter) => filter.column !== filterColumnId
     );
@@ -1338,8 +1490,29 @@ function TestCaseReviewDetails() {
       sort: sortOrder
     };
 
-    const updatedFilters = [...filters, newFilter];
+    // const updatedFilters = [...filters, newFilter];
+    const getLatestConditions = (data) => {
+      const latestConditions = {};
+
+      // Traverse the list to keep the most recent condition for each column
+      data.forEach((condition) => {
+        const column = condition.column;
+        latestConditions[column] = condition;
+      });
+
+      // Convert the dictionary back to a list
+      const latestConditionsList = Object.values(latestConditions);
+
+      return latestConditionsList;
+    };
+    const updatedFiltersData = [...filters, newFilter];
+
+    const updatedFilters = getLatestConditions(updatedFiltersData);
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumn]: true
+    }));
 
     try {
       dispatch(
@@ -1359,12 +1532,17 @@ function TestCaseReviewDetails() {
   const [clearData, setClearData] = useState(false);
 
   const handleButtonClick = () => {
+    setIsFilterApplied(false);
     setClearData(true);
+    setPaginationData({
+      rowPerPage: 10,
+      currentPage: 1
+    });
     dispatch(
       getByTestPlanIDListThunk({
         id: id,
         limit: paginationData.rowPerPage,
-        page: paginationData.currentPage,
+        page: 1,
         filter_testcase_data: []
       })
     );
@@ -1372,17 +1550,77 @@ function TestCaseReviewDetails() {
 
   useEffect(() => {
     if (sortOrder && sortOrder != null) {
-      handleApplyFilter(sortOrder);
+      // handleApplyFilter(sortOrder);
+      const newFilter =
+        filterType === 'is not between' ||
+        filterType === 'is between' ||
+        selectedValue === 'is between' ||
+        selectedValue === 'is not between'
+          ? {
+              column: filterColumnId,
+              column_name: filterColumn,
+              filter: filterType ? filterType : selectedValue,
+              searchText: getFilteredValues(),
+              sort: sortOrder
+            }
+          : {
+              column: filterColumnId,
+              column_name: filterColumn,
+              searchText: type === 'text' ? filterText : betweenValues,
+              filter: filterType ? filterType : selectedValue,
+              sort: sortOrder
+            };
+
+      // const updatedFilters = [...filters, newFilter];
+      const getLatestConditions = (data) => {
+        const latestConditions = {};
+
+        // Traverse the list to keep the most recent condition for each column
+        data.forEach((condition) => {
+          const column = condition.column;
+          latestConditions[column] = condition;
+        });
+
+        // Convert the dictionary back to a list
+        const latestConditionsList = Object.values(latestConditions);
+
+        return latestConditionsList;
+      };
+      const updatedFiltersData = [...filters, newFilter];
+
+      const updatedFilters = getLatestConditions(updatedFiltersData);
+      localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+      setIsFilterApplied((prev) => ({
+        ...prev,
+        [filterColumnId]: true
+      }));
+
+      try {
+        dispatch(
+          getByTestPlanIDListThunk({
+            id: id,
+            limit: paginationData.rowPerPage,
+            page: paginationData.currentPage,
+            filter_testcase_data: updatedFilters
+          })
+        );
+        localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
+        localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
+        localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+      } catch (error) {}
     }
   }, [sortOrder]);
 
   useEffect(() => {
     const newFilter =
-      filterType === 'is not between' || filterType === 'is between'
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
         ? {
             column: filterColumnId,
             column_name: filterColumn,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             searchText: getFilteredValues(),
             sort: sortOrder
           }
@@ -1390,7 +1628,7 @@ function TestCaseReviewDetails() {
             column: filterColumnId,
             column_name: filterColumn,
             searchText: type === 'text' ? filterText : betweenValues,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             sort: sortOrder
           };
 
@@ -1436,7 +1674,7 @@ function TestCaseReviewDetails() {
               <ExportToExcel
                 className="btn btn-sm btn-danger "
                 fileName="Test Case Review List"
-                apiData={exportTestCaseReviewData}
+                apiData={transformedData}
                 columns={exportColumns}
               />
             </div>
@@ -1470,14 +1708,19 @@ function TestCaseReviewDetails() {
 
       <div className="row mt-4">
         <div className="col-md-3">
-          <label className="form-label font-weight-bold">Comment Type :</label>
+          <label className="form-label font-weight-bold">
+            Reviewer Comment :
+          </label>
 
           <select
             className="form-select"
             value={commonComment}
             id="common_comment_id"
             name="common_comment_id"
-            onChange={(e) => setCommonComment(e.target.value)}
+            onChange={(e) => {
+              setCommonComment(e.target.value);
+              setCommentIdError('');
+            }}
           >
             {generateOptions(getFilterReviewCommentMasterList)}
           </select>
@@ -1494,7 +1737,7 @@ function TestCaseReviewDetails() {
         </div>
       </div>
 
-      <div className=" d-flex  justify-content-end">
+      <div className=" d-flex col-12 justify-content-end mt-2">
         <button
           type="submit"
           onClick={() => handleSubmit('RESEND')}
@@ -1558,6 +1801,8 @@ function TestCaseReviewDetails() {
           handleSearchChange={handleSearchChange}
           handleClearAllFilter={handleClearAllFilter}
           errorMessage={errorMessage}
+          setSelectedValue={setSelectedValue}
+          selectedValue={selectedValue}
         />
       )}
     </div>

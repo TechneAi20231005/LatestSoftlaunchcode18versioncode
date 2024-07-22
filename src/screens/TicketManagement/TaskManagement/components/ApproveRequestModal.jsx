@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 
 import Alert from '../../../../components/Common/Alert';
@@ -10,37 +10,46 @@ import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadi
 
 const ApproveRequestModal = (props) => {
   const [notify, setNotify] = useState(null);
-  const [data, setData] = useState([]);
-
-
+  const [rquestData, setData] = useState(props?.data);
 
   const ticketId = props.ticketId;
   const NotificatinID = props.notificationId;
 
-  const rquestData = props?.data;
   const ticketIdName = props?.data && props.data[0]?.ticket_id_name;
-  const loadData =useCallback( () => {
-
-
+  const loadData = () => {
     new getRegularizationTime(ticketId)
 
       .then((res) => {
         if (res.status === 200) {
-
-
-
           if (res.data.data) {
-
-
+            // Process the data
+            // const temp = res.data.data.map((d) => ({
+            //   id: d.id,
+            //   created_by_name: d.created_by_name,
+            //   from_date: d.from_date,
+            //   to_date: d.to_date,
+            //   from_time: d.from_time,
+            //   to_time: d.to_time,
+            //   remark: d.remark,
+            //   is_checked: 0,
+            //   regularization_time_status: d.regularization_time_status,
+            //   task_name: d.task_name,
+            //   ticket_id_name: d.ticket_id_name,
+            //   actual_time: d.actual_time,
+            //   task_hours: d.task_hours,
+            //   scheduled_time: d.scheduled_time,
+            //   status: d.status_remark
+            // }));
+            // Assuming setDataa is a function to set the state
+            // setDataa(temp);
           } else {
           }
         }
       })
       .catch((error) => {
-
-
+        // Handle errors, e.g., show an error message to the user
       });
-  },[ticketId]);
+  };
 
   const [selectAll, setSelectAll] = useState(false);
 
@@ -53,7 +62,6 @@ const ApproveRequestModal = (props) => {
       ...d,
       is_checked: newSelectAll ? 1 : 0
     }));
-
     // Update the state with the new array
     setData(newData);
 
@@ -71,13 +79,15 @@ const ApproveRequestModal = (props) => {
     newData[i].is_checked = e.target.checked ? 1 : 0;
     // Update the state with the new array
     setData(newData);
+    // Update the selectAll state if needed
   };
 
   const handleForm = (type, notification_id) => {
     setNotify(null);
+    const checkedItems = rquestData.filter((d) => d.is_checked === 1);
     const formData = {
       type: type,
-      payload: data,
+      payload: checkedItems,
       notification_id: NotificatinID
     };
     const check = formData.payload.filter((d) => {
@@ -133,8 +143,14 @@ const ApproveRequestModal = (props) => {
   };
 
   useEffect(() => {
+    if (props.data) {
+      setData(props.data);
+    }
+  }, [props.data]);
+
+  useEffect(() => {
     loadData();
-  }, [loadData]);
+  }, [props?.data]);
 
   return (
     <Modal

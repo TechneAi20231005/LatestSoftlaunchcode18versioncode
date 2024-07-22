@@ -412,7 +412,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
           }
 
           setUserDropdown(defaultValue.filter((option) => option.value !== ''));
-
           if (dropdown.length === 0) {
             setUserDropdown([]);
           }
@@ -901,7 +900,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
                   {data.approach !== 'SELF' &&
                     data.approach !== 'AU' &&
+
                     userDropdown?.length > 0 && (
+
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
                           <b>
@@ -911,6 +912,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         {data &&
                           userDropdown &&
                           userDropdown?.length > 0 &&
+
                           data.approach !== 'RW' &&
                           data.approach && (
                             <div className="col-sm-4">
