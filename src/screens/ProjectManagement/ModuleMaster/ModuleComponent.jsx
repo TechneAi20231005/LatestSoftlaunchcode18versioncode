@@ -192,7 +192,7 @@ function ModuleComponent() {
       if (res.status === 200) {
         if (res.data.status === 1) {
           const getRoleId = sessionStorage.getItem('role_id');
-          setCheckRole(res.data.data.filter((d) => d.role_id === getRoleId));
+          setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
         }
       }
     });
@@ -206,7 +206,7 @@ function ModuleComponent() {
   }, [loadData, location]);
 
   useEffect(() => {
-    if (checkRole && checkRole[20]?.can_read === 0) {
+    if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -229,7 +229,7 @@ function ModuleComponent() {
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[20]?.can_create === 1 ? (
+              {checkRole && checkRole[0]?.can_create === 1 ? (
                 <Link
                   to={`/${_base}/Module/Create`}
                   className="btn btn-dark btn-set-task w-sm-100"
