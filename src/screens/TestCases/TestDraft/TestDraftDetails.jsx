@@ -437,7 +437,8 @@ function TestDraftDetails(props) {
       localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
     } catch (error) {}
   };
-
+  {
+  }
   const handleApplyButton = async () => {
     props?.setClearData(false);
     const newFilter = {
@@ -518,30 +519,62 @@ function TestDraftDetails(props) {
   const columns = [
     {
       name: 'Action',
-      selector: (row) => (
-        <div className="d-flex align-items-center">
-          <i
-            disabled={row.status !== 'DRAFT'}
-            className={`icofont-edit text-primary btn btn-outline-secondary cp  ${
-              row.status !== 'DRAFT' ? 'disabled-icon' : ''
-            }`}
-            onClick={() =>
-              setAddEditTestCasesModal({
-                type: 'EDIT',
-                data: row,
-                open: true,
-                id: row.tc_id
-              })
-            }
-          />
-          <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.id}`}>
-            <i class="icofont-history cp btn btn-outline-secondary fw-bold  " />
-          </Link>
-        </div>
-      ),
+      selector: (row) => {
+        if (!row || row.tc_id === null || row.status === null) return null;
+        return (
+          <div className="d-flex align-items-center">
+            <i
+              disabled={row.status !== 'DRAFT'}
+              className={`icofont-edit text-primary btn btn-outline-secondary cp  ${
+                row.status !== 'DRAFT' ? 'disabled-icon' : ''
+              }`}
+              onClick={() =>
+                setAddEditTestCasesModal({
+                  type: 'EDIT',
+                  data: row,
+                  open: true,
+                  id: row.tc_id
+                })
+              }
+            />
+            <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.id}`}>
+              <i class="icofont-history cp btn btn-outline-secondary fw-bold  " />
+            </Link>
+          </div>
+        );
+      },
       sortable: false,
       width: '150px'
     },
+    // {
+    //   name: (
+    //     <div onClick={handleSelectAllNamesChange}>
+    //       <input
+    //         type="checkbox"
+    //         checked={selectAllNames}
+    //         onChange={handleSelectAllNamesChange}
+    //       />
+    //     </div>
+    //   ),
+    //   selector: 'selectAll',
+    //   width: '5rem',
+    //   center: true,
+    //   cell: (row) => {
+    //     if (!row || row.tc_id === null || row.status === null) return null;
+    //     return
+    //     (
+
+    //     <div>
+    //       <input
+    //         type="checkbox"
+    //         checked={selectedRows.includes(row.tc_id)}
+    //         onChange={() => handleCheckboxChange(row)}
+    //         disabled={row.status !== 'DRAFT'}
+    //       />
+    //     </div>
+    //   )}
+    // },
+
     {
       name: (
         <div onClick={handleSelectAllNamesChange}>
@@ -555,16 +588,19 @@ function TestDraftDetails(props) {
       selector: 'selectAll',
       width: '5rem',
       center: true,
-      cell: (row) => (
-        <div>
-          <input
-            type="checkbox"
-            checked={selectedRows.includes(row.tc_id)}
-            onChange={() => handleCheckboxChange(row)}
-            disabled={row.status !== 'DRAFT'}
-          />
-        </div>
-      )
+      cell: (row) => {
+        if (!row || row.tc_id === null || row.status === null) return null;
+        return (
+          <div>
+            <input
+              type="checkbox"
+              checked={selectedRows.includes(row.tc_id)}
+              onChange={() => handleCheckboxChange(row)}
+              disabled={row.status !== 'DRAFT'}
+            />
+          </div>
+        );
+      }
     },
 
     {
@@ -1540,6 +1576,33 @@ function TestDraftDetails(props) {
       })
     );
   }, [props?.paginationData.rowPerPage, props?.paginationData.currentPage]);
+
+  useEffect(() => {
+    if (filterValues && searchTerm?.length === 0) {
+      localDispatch({ type: 'SET_FILTER_VALUES', payload: filterValues });
+
+      localDispatch({
+        type: 'SET_SELECTED_FILTER',
+        payload: filterValues.map((item) => item.name)
+      });
+
+      localDispatch({
+        type: 'SET_SELECTED_FILTER_IDS',
+        payload: filterValues.map((item) => item.id)
+      });
+    }
+  }, [filterValues, localDispatch]);
+
+  useEffect(() => {
+    // Whenever searchTerm or filterData changes, update the selected filter IDs
+    // if (searchTerm?.length === 0) {
+    const filteredData = filteredResults?.filter((item) =>
+      item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    const filteredIds = filteredData?.map((item) => item.id);
+    localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: filteredIds });
+    // }
+  }, [searchTerm, localDispatch]);
 
   return (
     <>

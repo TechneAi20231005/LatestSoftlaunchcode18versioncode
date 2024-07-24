@@ -1023,6 +1023,7 @@ function TestCaseReviewComponent() {
         <DataTable
           columns={columns}
           data={testCaseReviewList}
+          persistTableHead={true}
           defaultSortField="role_id"
           pagination
           paginationServer
