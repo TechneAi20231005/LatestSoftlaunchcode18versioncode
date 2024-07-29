@@ -189,19 +189,19 @@ function TestCaseReviewDetails() {
   const [commentIdError, setCommentIdError] = useState('');
   const handleSubmit = async (status) => {
     const updatedRows = exportTestCaseReviewData
-      ?.filter((row) => selectedRows?.includes(row.tc_id))
+      ?.filter((row) => selectedRows?.includes(row?.tc_id))
       ?.map((row) => ({
-        tc_id: row.tc_id,
+        tc_id: row?.tc_id,
 
-        comment_id: comments[row.id] || row.comment_id || commonComment,
-        other_remark: remarks[row.id] || row.other_remark
+        comment_id: comments[row?.id] || row?.comment_id || commonComment,
+        other_remark: remarks[row?.id] || row?.other_remark
       }));
 
     const newCommentIdErrors = [];
 
     updatedRows?.forEach((row) => {
       if (!row?.comment_id) {
-        newCommentIdErrors[row.tc_id] = 'Reviewer comment is required';
+        newCommentIdErrors[row?.tc_id] = 'Reviewer comment is required';
       }
     });
 
@@ -1139,68 +1139,6 @@ function TestCaseReviewDetails() {
     updated_at: 'updated_at',
     updated_by: 'updated_by'
   };
-
-  // const transformDataForExport = (rowData, data, comments, commonComment) => {
-  //   if (comments) {
-  //     const obj = comments;
-  //     let objKey;
-  //     let val;
-  //     for (const key in obj) {
-  //       if (obj.hasOwnProperty(key)) {
-  //         objKey = key;
-  //         val = obj[key];
-  //       }
-  //     }
-
-  //     const filteredCommnet = getFilterReviewCommentMasterList.filter(
-  //       (comment) => comment.value == val
-  //     );
-
-  //     for (let i = 0; i < rowData.length; i++) {
-  //       if (rowData[i].id == objKey) {
-  //         rowData[i].reviewer_comment = filteredCommnet[0].label;
-  //       }
-  //     }
-  //   }
-  //   // const updateReviewerComment = rowData.map((rowData) => {
-  //   //   if (rowData.id === key) {
-  //   //     rowData.reviewer_comment = filteredCommnet[0].value;
-  //   //   }
-  //   // });
-
-  //   return rowData.map((rowData) => ({
-  //     module_name: rowData.module_name,
-  //     sub_module_name: rowData.sub_module_name,
-  //     function_name: rowData.function_name,
-  //     field: rowData.field,
-  //     type_name: rowData.type_name,
-  //     group_name: rowData.group_name,
-  //     tc_id: rowData.tc_id,
-  //     test_description: rowData.test_description,
-  //     steps: rowData.steps,
-  //     severity: rowData.severity,
-  //     expected_result: rowData.expected_result,
-  //     rev: rowData.rev,
-  //     // reviewer_comment:
-  //     //   comments[row.id] || row.comment_id || commonComment || '',
-  //     reviewer_comment: rowData.reviewer_comment,
-  //     remark: remarks[rowData.id] || rowData.other_remark || commonRemark,
-
-  //     project_name: rowData.project_name,
-  //     created_at: rowData.created_at,
-  //     created_by: rowData.created_by,
-  //     updated_at: rowData.updated_at,
-  //     updated_by: rowData.updated_by
-  //   }));
-  // };
-
-  // // Example usage
-  // const transformedData = transformDataForExport(
-  //   rowData,
-  //   exportTestCaseReviewData,
-  //   comments,
-  //   commonComment
-  // );
 
   const exportColumns = [
     { title: 'Module', field: 'module_name' },
