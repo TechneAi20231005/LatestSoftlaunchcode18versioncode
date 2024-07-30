@@ -654,7 +654,7 @@ function ReviewedTestDraftDetails(props) {
     {
       name: (
         <div>
-          <span>Approved Testcse</span>
+          <span>Approved Testcase</span>
           <i
             onClick={(e) =>
               handleFilterClick(
