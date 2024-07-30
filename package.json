@@ -1,7 +1,7 @@
 {
   "name": "connectus3.0",
-  "homepage": "http://3.108.206.34/2_Testing/TechTicket/",
 
+  "homepage": "http://3.108.206.34/2_Testing/TechTicket/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {

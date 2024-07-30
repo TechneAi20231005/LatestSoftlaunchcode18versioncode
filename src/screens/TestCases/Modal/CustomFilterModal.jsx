@@ -118,6 +118,12 @@ const CustomFilterModal = ({
     setShowModal(true);
   };
   const handleCloseModal = () => setShowModal(false);
+  const handleKeyDown = (event) => {
+    if (event.key === 'Enter') {
+      // Call the API with the searchTerm
+      handleApplyButton();
+    }
+  };
 
   if (!show) return null;
   return (
@@ -159,7 +165,6 @@ const CustomFilterModal = ({
             </p>
 
             <hr className="my-1" />
-
             <div>
               <div className="position-relative">
                 <input
@@ -169,6 +174,7 @@ const CustomFilterModal = ({
                   className="form-control pe-5"
                   value={searchTerm}
                   onChange={handleSearchChange}
+                  onKeyDown={handleKeyDown}
                 />
                 <i className="icofont-ui-search position-absolute top-50 end-0 translate-middle-y me-3 cp"></i>
               </div>
@@ -186,7 +192,6 @@ const CustomFilterModal = ({
               All
             </label>
           </div>
-
           {filterData?.map((value) => (
             <div key={value?.id} className="filter-item p-1">
               <input
@@ -292,7 +297,6 @@ const CustomFilterModal = ({
                   value={selectedValue}
                   onChange={(e) => {
                     setSelectedValue(e.target.value);
-                    console.log('e.target.value', selectedValue);
                     localDispatch({
                       type: 'SET_FILTER_TYPE',
                       payload: e.target.value

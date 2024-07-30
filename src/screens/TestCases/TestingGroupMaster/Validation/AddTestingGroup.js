@@ -7,6 +7,7 @@ import {
 export const addTestingGroupValidation = Yup.object().shape({
   group_name: Yup.string()
     .required('Testing group is required')
+    .min(2)
     .max(50, 'Testing group must be at most 50 characters')
     .matches(UNDERSCORE_SPACE_SLASH_REGEX, 'Testing group must be alphabets'),
   remark: Yup.string()
