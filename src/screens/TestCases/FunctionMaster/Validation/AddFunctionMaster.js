@@ -6,6 +6,7 @@ import {
 export const addFunctionMasterValidation = Yup.object().shape({
   function_name: Yup.string()
     .required('Function title is required ')
+    .min(2)
     .max(50, 'Function  title must be at most 50 characters')
     .matches(UNDERSCORE_SPACE_SLASH_REGEX, 'Function title must be alphabets'),
   remark: Yup.string()
