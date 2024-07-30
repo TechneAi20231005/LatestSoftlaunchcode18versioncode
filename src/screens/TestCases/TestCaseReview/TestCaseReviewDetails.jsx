@@ -194,6 +194,7 @@ function TestCaseReviewDetails() {
   const [commentIdError, setCommentIdError] = useState('');
   const [changedRows, setChangedRows] = useState({});
   const handleSubmit = async (status) => {
+
     // const updatedRows = exportTestCaseReviewData
     //   ?.filter((row) => selectedRows?.includes(row.tc_id))
     //   ?.map((row) => ({
@@ -229,6 +230,7 @@ function TestCaseReviewDetails() {
           other_remark: changedRows[id]?.other_remark || row?.other_remark
         };
       });
+
 
       const combinedRows = [...updatedRows, ...changedRowsArray].reduce(
         (acc, current) => {
@@ -1197,6 +1199,7 @@ function TestCaseReviewDetails() {
     updated_by: 'updated_by'
   };
 
+
   // const transformDataForExport = (rowData, data, comments, commonComment) => {
   //   if (comments) {
   //     const obj = comments;
@@ -1258,6 +1261,7 @@ function TestCaseReviewDetails() {
   //   comments,
   //   commonComment
   // );
+
 
   const exportColumns = [
     { title: 'Module', field: 'module_name' },
