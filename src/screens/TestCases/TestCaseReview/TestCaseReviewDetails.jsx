@@ -169,6 +169,11 @@ function TestCaseReviewDetails() {
     setRowData((prevData) =>
       prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row))
     );
+
+    setChangedRows((prevChangedRows) => ({
+      ...prevChangedRows,
+      [id]: { ...prevChangedRows[id], [field]: value }
+    }));
   };
 
   const handleCheckboxChange = (row) => {
@@ -187,21 +192,67 @@ function TestCaseReviewDetails() {
   };
 
   const [commentIdError, setCommentIdError] = useState('');
+  const [changedRows, setChangedRows] = useState({});
   const handleSubmit = async (status) => {
-    const updatedRows = exportTestCaseReviewData
-      ?.filter((row) => selectedRows?.includes(row.tc_id))
-      ?.map((row) => ({
-        tc_id: row.tc_id,
+    // const updatedRows = exportTestCaseReviewData
+    //   ?.filter((row) => selectedRows?.includes(row.tc_id))
+    //   ?.map((row) => ({
+    //     tc_id: row.tc_id,
 
-        comment_id: comments[row.id] || row.comment_id || commonComment,
-        other_remark: remarks[row.id] || row.other_remark
-      }));
+    //     comment_id: comments[row.id] || row.comment_id || commonComment,
+    //     other_remark: remarks[row.id] || row.other_remark
+    //   }));
 
+    const getUpdatedRows = () => {
+      let updatedRows = [];
+
+      if (selectedRows?.length > 0) {
+        updatedRows = exportTestCaseReviewData
+          ?.filter((row) => selectedRows?.includes(row.tc_id))
+          ?.map((row) => ({
+            id: row?.id,
+            tc_id: row?.tc_id,
+            comment_id: comments[row?.id] || row?.comment_id || commonComment,
+            other_remark: remarks[row?.id] || row?.other_remark
+          }));
+      }
+
+      const changedRowsArray = Object?.keys(changedRows)?.map((id) => {
+        const row = exportTestCaseReviewData?.find(
+          (row) => row?.id === parseInt(id)
+        );
+        return {
+          id: row?.id,
+          tc_id: row?.tc_id,
+          comment_id:
+            changedRows[id]?.comment_id || row?.comment_id || commonComment,
+          other_remark: changedRows[id]?.other_remark || row?.other_remark
+        };
+      });
+
+      const combinedRows = [...updatedRows, ...changedRowsArray].reduce(
+        (acc, current) => {
+          const x = acc?.find((item) => item?.id === current?.id);
+          if (!x) {
+            return acc.concat([current]);
+          } else {
+            return acc?.map((item) =>
+              item?.id === current?.id ? { ...item, ...current } : item
+            );
+          }
+        },
+        []
+      );
+
+      return combinedRows;
+    };
+
+    const updatedRows = getUpdatedRows();
     const newCommentIdErrors = [];
 
     updatedRows?.forEach((row) => {
       if (!row?.comment_id) {
-        newCommentIdErrors[row.tc_id] = 'Reviewer comment is required';
+        newCommentIdErrors[row?.tc_id] = 'Reviewer comment is required';
       }
     });
 

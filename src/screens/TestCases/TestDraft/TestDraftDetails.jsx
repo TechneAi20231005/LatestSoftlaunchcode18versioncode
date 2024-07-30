@@ -533,7 +533,7 @@ function TestDraftDetails(props) {
                   type: 'EDIT',
                   data: row,
                   open: true,
-                  id: row.tc_id
+                  id: row.id
                 })
               }
             />

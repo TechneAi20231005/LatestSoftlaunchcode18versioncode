@@ -107,7 +107,7 @@ function EditTestCaseModal({
     setDisable(true);
     dispatch(
       editTestCaseThunk({
-        currentId: currentTestCasesData?.tc_id,
+        currentId: currentTestCasesData?.id,
         formData: formData,
         onSuccessHandler: () => {
           close();
