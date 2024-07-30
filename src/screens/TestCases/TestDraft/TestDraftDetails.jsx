@@ -178,7 +178,7 @@ function TestDraftDetails(props) {
     if (newSelectAllNames) {
       const draftRowIds = allDraftTestListData
         .filter((row) => row.status === 'DRAFT')
-        .map((row) => row.tc_id);
+        .map((row) => row.id);
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
     } else {
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
@@ -189,12 +189,12 @@ function TestDraftDetails(props) {
     localDispatch({
       type: 'SET_SELECTED_ROWS',
       payload: (prevSelectedRows) => {
-        if (prevSelectedRows.includes(row.tc_id)) {
+        if (prevSelectedRows.includes(row.id)) {
           return prevSelectedRows.filter(
-            (selectedRow) => selectedRow !== row.tc_id
+            (selectedRow) => selectedRow !== row.id
           );
         } else {
-          return [...prevSelectedRows, row.tc_id];
+          return [...prevSelectedRows, row.id];
         }
       }
     });
@@ -594,7 +594,7 @@ function TestDraftDetails(props) {
           <div>
             <input
               type="checkbox"
-              checked={selectedRows.includes(row.tc_id)}
+              checked={selectedRows.includes(row.id)}
               onChange={() => handleCheckboxChange(row)}
               disabled={row.status !== 'DRAFT'}
             />
@@ -1428,7 +1428,6 @@ function TestDraftDetails(props) {
     setSendToReviewerModal(currentData);
     dispatch(getEmployeeData());
   };
-
   const handleSubmit = () => {
     if (!reviewerId) {
       setReviewerError('Reviewer Id is Required');
