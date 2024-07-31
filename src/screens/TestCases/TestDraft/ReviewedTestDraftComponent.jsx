@@ -170,12 +170,12 @@ function ReviewedTestDraftComponent() {
     localDispatch({
       type: 'SET_SELECTED_ROWS',
       payload: (prevSelectedRows) => {
-        if (prevSelectedRows.includes(row.tc_id)) {
+        if (prevSelectedRows.includes(row.id)) {
           return prevSelectedRows.filter(
-            (selectedRow) => selectedRow !== row.tc_id
+            (selectedRow) => selectedRow !== row.id
           );
         } else {
-          return [...prevSelectedRows, row.tc_id];
+          return [...prevSelectedRows, row.id];
         }
       }
     });
@@ -279,9 +279,7 @@ function ReviewedTestDraftComponent() {
     localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: newSelectAllNames });
 
     if (newSelectAllNames) {
-      const draftRowIds = allReviewDraftTestListDataByID.map(
-        (row) => row.tc_id
-      );
+      const draftRowIds = allReviewDraftTestListDataByID.map((row) => row.id);
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
     } else {
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
@@ -551,7 +549,7 @@ function ReviewedTestDraftComponent() {
         <div>
           <input
             type="checkbox"
-            checked={selectedRows?.includes(row.tc_id)}
+            checked={selectedRows?.includes(row.id)}
             onChange={() => handleCheckboxChange(row)}
           />
         </div>
