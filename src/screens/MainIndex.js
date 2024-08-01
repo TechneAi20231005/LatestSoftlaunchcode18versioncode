@@ -176,6 +176,7 @@ import FunctionMasterComponent from './TestCases/FunctionMaster/FunctionMasterCo
 import TestCaseHistoryComponent from './TestCases/TestDraft/TestCaseHistoryComponent';
 import TestDraftComponent from './TestCases/TestDraft/TestDraftComponent';
 import TestBankComponent from './TestCases/TestBank/TestBankComponent';
+import ManageTaskSkeleton from '../components/custom/loader/ManageTaskSkeleton';
 
 class MainIndex extends React.Component {
   render() {
@@ -728,6 +729,11 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/SpecialDayMaster`}
               element={<SpecialDayMasterComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/manageskeleton`}
+              element={<ManageTaskSkeleton />}
             />
             <Route
               exact
