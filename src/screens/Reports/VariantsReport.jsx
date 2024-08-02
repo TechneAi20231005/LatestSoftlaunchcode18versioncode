@@ -8,6 +8,7 @@ import ReportService from '../../services/ReportService/ReportService';
 import PageHeader from '../../components/Common/PageHeader';
 import Select from 'react-select';
 import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { getRoles } from '../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
@@ -35,12 +36,63 @@ export default function ResourcePlanningReportComponent() {
       sortable: true,
       width: '175px'
     },
+
     {
       name: 'Task Name',
+      width: '10%',
       selector: (row) => row.task_name,
       sortable: true,
-      width: '175px'
+
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.task_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.task_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.task_name && row.task_name.length < 10
+                    ? row.task_name
+                    : row.task_name.substring(0, 10) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
+
+    {
+      name: 'Task Type Name',
+      width: '10%',
+      selector: (row) => row.type_name,
+      sortable: true,
+
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.type_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.type_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.type_name && row.type_name.length < 10
+                    ? row.type_name
+                    : row.type_name.substring(0, 10) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
+    },
+
     {
       name: 'Start Date',
       selector: (row) => row.task_start_Date,
@@ -63,15 +115,65 @@ export default function ResourcePlanningReportComponent() {
       sortable: true
     },
     { name: 'Status', selector: (row) => row.task_status, sortable: true },
+
     {
       name: 'Actual Status',
+      width: '7%',
       selector: (row) => row.task_actual_status,
-      sortable: true
+      sortable: true,
+
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.task_actual_status && (
+            <OverlayTrigger
+              overlay={<Tooltip>{row.task_actual_status} </Tooltip>}
+            >
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.task_actual_status && row.task_actual_status.length < 10
+                    ? row.task_actual_status
+                    : row.task_actual_status.substring(0, 10) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
+
     {
       name: 'Completed At',
+      width: '10%',
       selector: (row) => row.task_completed_at,
-      sortable: true
+      sortable: true,
+
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.task_completed_at && (
+            <OverlayTrigger
+              overlay={<Tooltip>{row.task_completed_at} </Tooltip>}
+            >
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.task_completed_at && row.task_completed_at.length < 10
+                    ? row.task_completed_at
+                    : row.task_completed_at.substring(0, 10) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     }
   ];
 
@@ -155,6 +257,7 @@ export default function ResourcePlanningReportComponent() {
                     ticket_id: data[key].ticket_id,
                     task_owner: data[key].task_owner,
                     task_name: data[key].task_name,
+                    type_name: data[key].type_name,
                     task_start_Date: data[key].task_start_Date,
                     task_scheduled_Hours: data[key].task_scheduled_Hours,
                     task_actual_worked: data[key].task_actual_worked,
@@ -175,6 +278,7 @@ export default function ResourcePlanningReportComponent() {
                     ticket_id: data[key].ticket_id,
                     task_owner: data[key].task_owner,
                     task_name: data[key].task_name,
+                    type_name: data[key].type_name,
                     task_start_Date: data[key].task_start_Date,
                     task_scheduled_Hours: data[key].task_scheduled_Hours,
                     task_actual_worked: data[key].task_actual_worked,
