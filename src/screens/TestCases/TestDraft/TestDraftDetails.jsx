@@ -1428,7 +1428,6 @@ function TestDraftDetails(props) {
     setSendToReviewerModal(currentData);
     dispatch(getEmployeeData());
   };
-
   const handleSubmit = () => {
     if (!reviewerId) {
       setReviewerError('Reviewer Id is Required');

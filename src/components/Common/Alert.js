@@ -10,7 +10,7 @@ function Alert({ alertData }) {
         // Show the toast notification
         toast(alertData.message, {
           type: alertData.type,
-          autoClose: 3000, // Adjust as needed
+          autoClose: 10000, // Adjust as needed
           hideProgressBar: true, // Adjust as needed
           position: 'top-right', // Adjust as needed
 
