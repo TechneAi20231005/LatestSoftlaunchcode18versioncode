@@ -10,7 +10,7 @@ export const getPendingOrderListThunk = createAsyncThunk(
       const response = await customAxios.get(
         `poRequisition/getPoReqOpenQtyData?item=${itemName}&category=${categoryName}${
           weightRange ? `&karagir_wt_range=${weightRange}` : ''
-        }${sizeRange ? `&size_range=${sizeRange}` : ''}`,
+        }${sizeRange ? `&size_range=${sizeRange}` : ''}`
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
@@ -23,14 +23,17 @@ export const getPendingOrderListThunk = createAsyncThunk(
       errorHandler(error?.response);
       return Promise.reject(error?.response?.data?.message);
     }
-  },
+  }
 );
 
 export const createPendingOrderThunk = createAsyncThunk(
   'po/createPendingOrder',
   async ({ formData, onSuccessHandler }) => {
     try {
-      const response = await customAxios.post(`poRequisition/submitData`, formData);
+      const response = await customAxios.post(
+        `poRequisition/submitData`,
+        formData
+      );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();
@@ -44,7 +47,26 @@ export const createPendingOrderThunk = createAsyncThunk(
       errorHandler(error?.response);
       return Promise.reject(error?.response?.data?.message);
     }
-  },
+  }
+);
+
+export const getPendingOrderErrorFileThunk = createAsyncThunk(
+  'po/pendingOrderErrorFileThunk',
+  async () => {
+    try {
+      const response = await customAxios.get(`/pendingOrderErrorFileThunk`);
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          return { data: response?.data?.data, msg: response?.data?.message };
+        } else {
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
 );
 
 export const poBulkUploadFileExportBeCheckThunk = createAsyncThunk(
@@ -65,5 +87,28 @@ export const poBulkUploadFileExportBeCheckThunk = createAsyncThunk(
       errorHandler(error?.response);
       return Promise.reject(error?.response?.data?.message);
     }
-  },
+  }
+);
+
+export const getPendingOrderErrorFileCheckThunk = createAsyncThunk(
+  'po/getPendingOrderErrorFileCheck',
+  async ({ onSuccessHandler }) => {
+    try {
+      const response = await customAxios.post(
+        `poRequisition/checkOrderErrorFileCheck`
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          toast.success(response?.data?.message);
+          onSuccessHandler();
+          return response?.data?.message;
+        } else {
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
 );

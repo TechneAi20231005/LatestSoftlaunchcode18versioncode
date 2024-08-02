@@ -1,5 +1,5 @@
-import React, { useEffect } from 'react';
-import { Col, Container, Row, Stack } from 'react-bootstrap';
+import React, { useEffect, useState } from 'react';
+import { Col, Collapse, Container, Row, Stack } from 'react-bootstrap';
 import { Field, Form, Formik } from 'formik';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,12 +9,17 @@ import {
   CustomInput,
   CustomReactSelect
 } from '../../../components/custom/inputs/CustomInputs';
-import { generatePoFilterValidation } from '../validation/generatePoFilter';
+import {
+  generatePoErrorFileValidation,
+  generatePoFilterValidation
+} from '../validation/generatePoFilter';
 import { getVenderListThunk } from '../../../redux/services/po/common';
 import { resetUserAddedOrderList } from '../../../redux/slices/po/generatePo';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 import { getRequisitionHistoryThunk } from '../../../redux/services/po/history';
-import { poBulkUploadFileExportBeCheckThunk } from '../../../redux/services/po/generatePo';
+
+// // // it use in feature
+// import { poBulkUploadFileExportBeCheckThunk } from '../../../redux/services/po/generatePo';
 import './style.scss';
 
 function GeneratePo() {
@@ -27,11 +32,14 @@ function GeneratePo() {
     venderList,
     isLoading: { getVenderList }
   } = useSelector((state) => state?.poCommon);
-  const {
-    requisitionHistoryList,
-    isLoading: { getRequisitionHistoryList }
-  } = useSelector((state) => state?.requisitionHistory);
+  // // // it use in feature
+  // const {
+  //   requisitionHistoryList,
+  //   isLoading: { getRequisitionHistoryList }
+  // } = useSelector((state) => state?.requisitionHistory);
 
+  // // local state
+  const [openPoErrorFileForm, setOpenPoErrorFileForm] = useState(false);
   // // dropdown data
   const venderData = [
     { label: 'Select', value: '', isDisabled: true },
@@ -60,17 +68,18 @@ function GeneratePo() {
     }));
   };
 
-  const handelBeExportCheck = () => {
-    dispatch(
-      poBulkUploadFileExportBeCheckThunk({
-        onSuccessHandler: () => {
-          dispatch(
-            getRequisitionHistoryThunk({ filterData: { type: 'export' } })
-          );
-        }
-      })
-    );
-  };
+  // // // it use in feature
+  // const handelBeExportCheck = () => {
+  //   dispatch(
+  //     poBulkUploadFileExportBeCheckThunk({
+  //       onSuccessHandler: () => {
+  //         dispatch(
+  //           getRequisitionHistoryThunk({ filterData: { type: 'export' } })
+  //         );
+  //       }
+  //     })
+  //   );
+  // };
 
   // // life cycle
   useEffect(() => {
@@ -82,7 +91,8 @@ function GeneratePo() {
     <Container fluid className="generate_po_container">
       <h3 className="fw-bold text_primary "> Generate PO</h3>
       <Stack gap={3}>
-        <ExportToExcel
+        {/* it use in feature */}
+        {/* <ExportToExcel
           className="btn btn-dark ms-0"
           buttonTitle="PO Bulk Upload File"
           apiData={transformDataForExport(requisitionHistoryList?.data)}
@@ -91,7 +101,71 @@ function GeneratePo() {
             !requisitionHistoryList?.data?.length || getRequisitionHistoryList
           }
           onClickHandler={handelBeExportCheck}
-        />
+        /> */}
+        <button
+          className="btn btn-dark ms-0"
+          onClick={() => setOpenPoErrorFileForm(!openPoErrorFileForm)}
+          type="button"
+        >
+          Generate PO Error File
+        </button>
+        <Collapse in={openPoErrorFileForm}>
+          <div>
+            <Formik
+              initialValues={{ vender_name: '', unix_code: '' }}
+              enableReinitialize
+              validationSchema={generatePoErrorFileValidation}
+              onSubmit={(values) => {
+                console.log(values, 'error file check');
+              }}
+            >
+              {({ resetForm, dirty, values }) => (
+                <Form>
+                  <Row className="row_gap_3">
+                    <Col sm={6}>
+                      <Field
+                        component={CustomReactSelect}
+                        options={venderData}
+                        name="vender_name"
+                        label="Vendor Name :"
+                        placeholder={getVenderList ? 'Loading...' : 'Select'}
+                        requiredField
+                        isSearchable
+                      />
+                    </Col>
+                    <Col sm={6}>
+                      <Field
+                        component={CustomReactSelect}
+                        options={venderData}
+                        name="unix_code"
+                        label="Error File Date :"
+                        placeholder={getVenderList ? 'Loading...' : 'Select'}
+                        requiredField
+                        isSearchable
+                        disabled={!values?.vender_name}
+                      />
+                    </Col>
+                  </Row>
+
+                  <div className="d-flex justify-content-md-end mt-3 btn_container">
+                    <button className="btn btn-dark px-4" type="submit">
+                      Proceed
+                    </button>
+                    <button
+                      className="btn btn-info text-white px-4"
+                      type="button"
+                      onClick={resetForm}
+                      disabled={!dirty}
+                    >
+                      <i className="icofont-refresh text-white" /> Reset
+                    </button>
+                  </div>
+                </Form>
+              )}
+            </Formik>
+          </div>
+        </Collapse>
+
         <Formik
           initialValues={{ vender_name: '', delivery_date: '' }}
           enableReinitialize
