@@ -955,6 +955,7 @@ function ReviewedTestDraftDetails(props) {
         <div>
           <DataTable
             columns={columns}
+            persistTableHead={true}
             data={allReviewDraftTestListData}
             defaultSortField="role_id"
             pagination

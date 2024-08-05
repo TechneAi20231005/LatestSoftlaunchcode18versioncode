@@ -43,7 +43,7 @@ export default function HrDashboard(props) {
   const [ticketID, setTicketID] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [notificationId, setNotificationId] = useState();
-  const [showApprovedOnly, setShowApprovedOnly] = useState(false);
+  const [showApprovedOnly, setShowApprovedOnly] = useState(true);
   const [approveRequestModal, setApproveRequestModal] = useState({
     show: false,
     data: null
@@ -92,16 +92,16 @@ export default function HrDashboard(props) {
     const id = sessionStorage.getItem('id');
     const res = await getData(id);
     if (res.status === 200) {
-      setCount(res.data.data.count);
-      setDailyTask(res.data.data.dailyTask);
-      setPreviousTask(res.data.data.previousTask);
-      setUpcomingTask(res.data.data.upcomingTask);
+      setCount(res?.data?.data?.count);
+      setDailyTask(res?.data?.data?.dailyTask);
+      setPreviousTask(res?.data?.data?.previousTask);
+      setUpcomingTask(res?.data?.data?.upcomingTask);
       setChartData((prevChartData) => ({
         ...prevChartData,
         series: [
-          res.data.data.count.pendingTask || 0,
-          res.data.data.count.workingTask,
-          res.data.data.count.completedTask
+          res?.data?.data?.count?.pendingTask || 0,
+          res?.data?.data?.count?.workingTask,
+          res?.data?.data?.count?.completedTask
         ]
       }));
     }

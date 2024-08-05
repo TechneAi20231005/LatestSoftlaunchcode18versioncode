@@ -169,6 +169,11 @@ function TestCaseReviewDetails() {
     setRowData((prevData) =>
       prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row))
     );
+
+    setChangedRows((prevChangedRows) => ({
+      ...prevChangedRows,
+      [id]: { ...prevChangedRows[id], [field]: value }
+    }));
   };
 
   const handleCheckboxChange = (row) => {
@@ -187,21 +192,67 @@ function TestCaseReviewDetails() {
   };
 
   const [commentIdError, setCommentIdError] = useState('');
+  const [changedRows, setChangedRows] = useState({});
   const handleSubmit = async (status) => {
-    const updatedRows = exportTestCaseReviewData
-      ?.filter((row) => selectedRows?.includes(row.tc_id))
-      ?.map((row) => ({
-        tc_id: row.tc_id,
+    // const updatedRows = exportTestCaseReviewData
+    //   ?.filter((row) => selectedRows?.includes(row.tc_id))
+    //   ?.map((row) => ({
+    //     tc_id: row.tc_id,
 
-        comment_id: comments[row.id] || row.comment_id || commonComment,
-        other_remark: remarks[row.id] || row.other_remark
-      }));
+    //     comment_id: comments[row.id] || row.comment_id || commonComment,
+    //     other_remark: remarks[row.id] || row.other_remark
+    //   }));
 
+    const getUpdatedRows = () => {
+      let updatedRows = [];
+
+      if (selectedRows?.length > 0) {
+        updatedRows = exportTestCaseReviewData
+          ?.filter((row) => selectedRows?.includes(row.tc_id))
+          ?.map((row) => ({
+            id: row?.id,
+            tc_id: row?.tc_id,
+            comment_id: comments[row?.id] || row?.comment_id || commonComment,
+            other_remark: remarks[row?.id] || row?.other_remark
+          }));
+      }
+
+      const changedRowsArray = Object?.keys(changedRows)?.map((id) => {
+        const row = exportTestCaseReviewData?.find(
+          (row) => row?.id === parseInt(id)
+        );
+        return {
+          id: row?.id,
+          tc_id: row?.tc_id,
+          comment_id:
+            changedRows[id]?.comment_id || row?.comment_id || commonComment,
+          other_remark: changedRows[id]?.other_remark || row?.other_remark
+        };
+      });
+
+      const combinedRows = [...updatedRows, ...changedRowsArray].reduce(
+        (acc, current) => {
+          const x = acc?.find((item) => item?.id === current?.id);
+          if (!x) {
+            return acc.concat([current]);
+          } else {
+            return acc?.map((item) =>
+              item?.id === current?.id ? { ...item, ...current } : item
+            );
+          }
+        },
+        []
+      );
+
+      return combinedRows;
+    };
+
+    const updatedRows = getUpdatedRows();
     const newCommentIdErrors = [];
 
     updatedRows?.forEach((row) => {
       if (!row?.comment_id) {
-        newCommentIdErrors[row.tc_id] = 'Reviewer comment is required';
+        newCommentIdErrors[row?.tc_id] = 'Reviewer comment is required';
       }
     });
 
@@ -1140,90 +1191,67 @@ function TestCaseReviewDetails() {
     updated_by: 'updated_by'
   };
 
-  const transformDataForExport = (rowData, data, comments, commonComment) => {
-    console.log('rowData', rowData);
-    console.log('comments', comments);
-    console.log('commonComment', commonComment);
+  // const transformDataForExport = (rowData, data, comments, commonComment) => {
+  //   if (comments) {
+  //     const obj = comments;
+  //     let objKey;
+  //     let val;
+  //     for (const key in obj) {
+  //       if (obj.hasOwnProperty(key)) {
+  //         objKey = key;
+  //         val = obj[key];
+  //       }
+  //     }
 
-    if (comments || commonComment) {
-      const obj = comments;
-      let objKey;
-      let val;
-      for (const key in obj) {
-        if (obj.hasOwnProperty(key)) {
-          objKey = key;
-          val = obj[key];
-        }
-      }
+  //     const filteredCommnet = getFilterReviewCommentMasterList.filter(
+  //       (comment) => comment.value == val
+  //     );
 
-      const filteredCommnet = getFilterReviewCommentMasterList.filter(
-        (comment) => {
-          if (Object.keys(obj).length > 0) {
-            console.log('comment true');
-            checkCommonComment.push(comment.value);
-            return comment.value == val;
-          } else {
-            console.log('comment false');
-            return comment.value == commonComment;
-          }
-        }
-      );
+  //     for (let i = 0; i < rowData?.length; i++) {
+  //       if (rowData[i].id == objKey) {
+  //         rowData[i].reviewer_comment = filteredCommnet[0].label;
+  //       }
+  //     }
+  //   }
+  //   // const updateReviewerComment = rowData.map((rowData) => {
+  //   //   if (rowData.id === key) {
+  //   //     rowData.reviewer_comment = filteredCommnet[0].value;
+  //   //   }
+  //   // });
 
-      // const filteredCommonCommnet = getFilterReviewCommentMasterList.filter(
-      //   (comment) =>
-      // );
-      //
-      console.log('filteredCommonCommnet', filteredCommnet);
-      return;
-      for (let i = 0; i < rowData.length; i++) {
-        if (rowData[i].id == objKey) {
-          rowData[i].reviewer_comment = filteredCommnet[0].label;
-        }
-        //  else {
-        //   rowData[i].reviewer_comment = filteredCommonCommnet[0]?.label;
-        // }
-      }
-    }
+  //   return rowData?.map((rowData) => ({
+  //     module_name: rowData.module_name,
+  //     sub_module_name: rowData.sub_module_name,
+  //     function_name: rowData.function_name,
+  //     field: rowData.field,
+  //     type_name: rowData.type_name,
+  //     group_name: rowData.group_name,
+  //     tc_id: rowData.tc_id,
+  //     test_description: rowData.test_description,
+  //     steps: rowData.steps,
+  //     severity: rowData.severity,
+  //     expected_result: rowData.expected_result,
+  //     rev: rowData.rev,
+  //     // reviewer_comment:
+  //     //   comments[row.id] || row.comment_id || commonComment || '',
+  //     reviewer_comment: rowData.reviewer_comment,
+  //     remark: remarks[rowData.id] || rowData.other_remark || commonRemark,
 
-    // const updateReviewerComment = rowData.map((rowData) => {
-    //   if (rowData.id === key) {
-    //     rowData.reviewer_comment = filteredCommnet[0].value;
-    //   }
-    // });
-
-    return rowData.map((rowData) => ({
-      module_name: rowData.module_name,
-      sub_module_name: rowData.sub_module_name,
-      function_name: rowData.function_name,
-      field: rowData.field,
-      type_name: rowData.type_name,
-      group_name: rowData.group_name,
-      tc_id: rowData.tc_id,
-      test_description: rowData.test_description,
-      steps: rowData.steps,
-      severity: rowData.severity,
-      expected_result: rowData.expected_result,
-      rev: rowData.rev,
-      // reviewer_comment:
-      //   comments[row.id] || row.comment_id || commonComment || '',
-      reviewer_comment: rowData.reviewer_comment,
-      remark: remarks[rowData.id] || rowData.other_remark || commonRemark,
-
-      project_name: rowData.project_name,
-      created_at: rowData.created_at,
-      created_by: rowData.created_by,
-      updated_at: rowData.updated_at,
-      updated_by: rowData.updated_by
-    }));
-  };
+  //     project_name: rowData.project_name,
+  //     created_at: rowData.created_at,
+  //     created_by: rowData.created_by,
+  //     updated_at: rowData.updated_at,
+  //     updated_by: rowData.updated_by
+  //   }));
+  // };
 
   // Example usage
-  const transformedData = transformDataForExport(
-    rowData,
-    exportTestCaseReviewData,
-    comments,
-    commonComment
-  );
+  // const transformedData = transformDataForExport(
+  //   rowData,
+  //   exportTestCaseReviewData,
+  //   comments,
+  //   commonComment
+  // );
 
   const exportColumns = [
     { title: 'Module', field: 'module_name' },
@@ -1697,7 +1725,7 @@ function TestCaseReviewDetails() {
               <ExportToExcel
                 className="btn btn-sm btn-danger "
                 fileName="Test Case Review List"
-                apiData={transformedData}
+                apiData={rowData}
                 columns={exportColumns}
               />
             </div>
@@ -1710,6 +1738,7 @@ function TestCaseReviewDetails() {
         <DataTable
           columns={columns}
           data={rowData}
+          persistTableHead={true}
           defaultSortField="role_id"
           pagination
           paginationServer

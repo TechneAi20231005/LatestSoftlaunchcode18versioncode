@@ -1495,6 +1495,7 @@ function ReviewedTestDraftComponent() {
         <DataTable
           columns={columns}
           data={allReviewDraftTestListDataByID}
+          persistTableHead={true}
           defaultSortField="role_id"
           pagination
           selectableRows={false}

@@ -10,26 +10,17 @@ import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadi
 
 const ApproveRequestModal = (props) => {
   const [notify, setNotify] = useState(null);
-  const [data, setData] = useState([]);
-  // const [dataa, setDataa] = useState([]);
-
-  // const [showLoaderModal, setShowLoaderModal] = useState(false);
-  // const [isLoading, setIsLoading] = useState(false);
+  const [rquestData, setData] = useState(props?.data);
 
   const ticketId = props.ticketId;
   const NotificatinID = props.notificationId;
 
-  const rquestData = props?.data;
   const ticketIdName = props?.data && props.data[0]?.ticket_id_name;
   const loadData = () => {
-    // setShowLoaderModal(true);
-    // Assuming getRegularizationTime is a function that returns a Promise
     new getRegularizationTime(ticketId)
 
       .then((res) => {
         if (res.status === 200) {
-          // setShowLoaderModal(false);
-
           if (res.data.data) {
             // Process the data
             // const temp = res.data.data.map((d) => ({
@@ -49,7 +40,6 @@ const ApproveRequestModal = (props) => {
             //   scheduled_time: d.scheduled_time,
             //   status: d.status_remark
             // }));
-
             // Assuming setDataa is a function to set the state
             // setDataa(temp);
           } else {
@@ -72,7 +62,6 @@ const ApproveRequestModal = (props) => {
       ...d,
       is_checked: newSelectAll ? 1 : 0
     }));
-
     // Update the state with the new array
     setData(newData);
 
@@ -90,13 +79,15 @@ const ApproveRequestModal = (props) => {
     newData[i].is_checked = e.target.checked ? 1 : 0;
     // Update the state with the new array
     setData(newData);
+    // Update the selectAll state if needed
   };
 
   const handleForm = (type, notification_id) => {
     setNotify(null);
+    const checkedItems = rquestData.filter((d) => d.is_checked === 1);
     const formData = {
       type: type,
-      payload: data,
+      payload: checkedItems,
       notification_id: NotificatinID
     };
     const check = formData.payload.filter((d) => {
@@ -152,8 +143,14 @@ const ApproveRequestModal = (props) => {
   };
 
   useEffect(() => {
+    if (props.data) {
+      setData(props.data);
+    }
+  }, [props.data]);
+
+  useEffect(() => {
     loadData();
-  }, []);
+  }, [props?.data]);
 
   return (
     <Modal
