@@ -19,7 +19,9 @@
     }
   ],
 
+
   "start_url": "http://3.108.206.34/3_SoftLaunch/TechTicket/",
+
 
   "display": "standalone",
   "theme_color": "#000000",

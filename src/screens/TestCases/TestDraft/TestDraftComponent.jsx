@@ -28,6 +28,8 @@ export default function TestDraftComponent({}) {
     filterData,
     filterReviewedDraftTestList
   } = useSelector((state) => state?.downloadFormat);
+
+  console.log('allReviewDraftTestListData', allReviewDraftTestListData);
   const [currentTab, setCurrentTab] = useState(
     location.state ?? 'test_summary'
   );
@@ -136,11 +138,15 @@ export default function TestDraftComponent({}) {
     { title: 'Test Plan ID', field: 'test_plan_id' },
     { title: 'Reviewer Name', field: 'reviewer_name' },
     { title: 'Total Testcase', field: 'total_testcases' },
-    { title: 'Reviewed Testcase', field: 'reviewed_testcases' },
-    { title: 'Rejected Testcase', field: 'total_rejected' },
-    { title: 'Approved Testcse', field: 'total_approved' },
+    { title: 'Reviewed Testcase', field: 'total_reviewed_testcases' },
+    { title: 'Rejected Testcase', field: 'total_rejected_testcases' },
+    { title: 'Approved Testcse', field: 'total_approved_testcases' },
+
     { title: 'Created At', field: 'created_at' },
-    { title: 'Updated At', field: 'updated_at' }
+    { title: 'Created By', field: 'created_by' },
+
+    { title: 'Updated At', field: 'updated_at' },
+    { title: 'Updated By', field: 'updated_by' }
   ];
   const [isFilterApplied, setIsFilterApplied] = useState(false);
 

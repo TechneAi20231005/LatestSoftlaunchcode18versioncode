@@ -7,6 +7,7 @@ import {
 export const addTestingType = Yup.object().shape({
   type_name: Yup.string()
     .required('Testing type is required')
+    .min(2)
     .max(50, 'Testing type  title must be at most 50 characters')
     .matches(
       UNDERSCORE_SPACE_SLASH_REGEX,

@@ -194,6 +194,7 @@ function TestCaseReviewDetails() {
   const [commentIdError, setCommentIdError] = useState('');
   const [changedRows, setChangedRows] = useState({});
   const handleSubmit = async (status) => {
+
     // const updatedRows = exportTestCaseReviewData
     //   ?.filter((row) => selectedRows?.includes(row.tc_id))
     //   ?.map((row) => ({
@@ -229,6 +230,7 @@ function TestCaseReviewDetails() {
           other_remark: changedRows[id]?.other_remark || row?.other_remark
         };
       });
+
 
       const combinedRows = [...updatedRows, ...changedRowsArray].reduce(
         (acc, current) => {
@@ -388,7 +390,7 @@ function TestCaseReviewDetails() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.module_name && row.module_name.length < 20
+                  {row.module_name && row.module_name?.length < 20
                     ? row.module_name
                     : row.module_name.substring(0, 50) + '....'}
                 </span>
@@ -433,7 +435,7 @@ function TestCaseReviewDetails() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.sub_module_name && row.sub_module_name.length < 20
+                  {row.sub_module_name && row.sub_module_name?.length < 20
                     ? row.sub_module_name
                     : row.sub_module_name.substring(0, 50) + '....'}
                 </span>
@@ -478,7 +480,7 @@ function TestCaseReviewDetails() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.function_name && row.function_name.length < 20
+                  {row.function_name && row.function_name?.length < 20
                     ? row.function_name
                     : row.function_name.substring(0, 50) + '....'}
                 </span>
@@ -521,7 +523,7 @@ function TestCaseReviewDetails() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.field && row.field.length < 20
+                  {row.field && row.field?.length < 20
                     ? row.field
                     : row.field.substring(0, 50) + '....'}
                 </span>
@@ -566,7 +568,7 @@ function TestCaseReviewDetails() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.type_name && row.type_name.length < 20
+                  {row.type_name && row.type_name?.length < 20
                     ? row.type_name
                     : row.type_name.substring(0, 50) + '....'}
                 </span>
@@ -611,7 +613,7 @@ function TestCaseReviewDetails() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.group_name && row.group_name.length < 20
+                  {row.group_name && row.group_name?.length < 20
                     ? row.group_name
                     : row.group_name.substring(0, 50) + '....'}
                 </span>
@@ -737,7 +739,55 @@ function TestCaseReviewDetails() {
               overlay={<Tooltip>{row.test_description} </Tooltip>}
             >
               <div>
-                <span className="ms-1">{row.test_description}</span>
+                <span className="ms-1">
+                  {' '}
+                  {row.test_description && row.test_description?.length < 20
+                    ? row.test_description
+                    : row.test_description.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
+      )
+    },
+
+    {
+      name: (
+        <div>
+          <span>Steps</span>
+          <i
+            onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['steps'] ? 'text-success' : 'text-dark'
+            }`}
+          />
+        </div>
+      ),
+      selector: (row) => row.steps,
+      width: '10rem',
+      sortable: false,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.steps && (
+            <OverlayTrigger overlay={<Tooltip>{row.steps} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.steps && row.type_name?.length < 20
+                    ? row.steps
+                    : row.steps.substring(0, 50) + '....'}
+                </span>
               </div>
             </OverlayTrigger>
           )}
@@ -778,51 +828,9 @@ function TestCaseReviewDetails() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.expected_result && row.expected_result.length < 20
+                  {row.expected_result && row.expected_result?.length < 20
                     ? row.expected_result
                     : row.expected_result.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
-    },
-    {
-      name: (
-        <div>
-          <span>Steps</span>
-          <i
-            onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['steps'] ? 'text-success' : 'text-dark'
-            }`}
-          />
-        </div>
-      ),
-      selector: (row) => row.steps,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.steps && (
-            <OverlayTrigger overlay={<Tooltip>{row.steps} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.steps && row.type_name.length < 20
-                    ? row.steps
-                    : row.steps.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -863,7 +871,7 @@ function TestCaseReviewDetails() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.status && row.status.length < 20
+                  {row.status && row.status?.length < 20
                     ? row.status
                     : row.status.substring(0, 50) + '....'}
                 </span>
@@ -972,7 +980,7 @@ function TestCaseReviewDetails() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.project_name && row.project_name.length < 20
+                  {row.project_name && row.project_name?.length < 20
                     ? row.project_name
                     : row.project_name.substring(0, 50) + '....'}
                 </span>
@@ -1017,7 +1025,7 @@ function TestCaseReviewDetails() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.created_at && row.created_at.length < 20
+                  {row.created_at && row.created_at?.length < 20
                     ? row.created_at
                     : row.created_at.substring(0, 50) + '....'}
                 </span>
@@ -1062,7 +1070,7 @@ function TestCaseReviewDetails() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.created_by && row.created_by.length < 20
+                  {row.created_by && row.created_by?.length < 20
                     ? row.created_by
                     : row.created_by.substring(0, 50) + '....'}
                 </span>
@@ -1107,7 +1115,7 @@ function TestCaseReviewDetails() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.updated_at && row.updated_at.length < 20
+                  {row.updated_at && row.updated_at?.length < 20
                     ? row.updated_at
                     : row.updated_at.substring(0, 50) + '....'}
                 </span>
@@ -1147,14 +1155,14 @@ function TestCaseReviewDetails() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.updated_by && (
-            <OverlayTrigger overlay={<Tooltip>{row.updated_by} </Tooltip>}>
+          {row?.updated_by && (
+            <OverlayTrigger overlay={<Tooltip>{row?.updated_by} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.updated_by && row.updated_by.length < 20
-                    ? row.updated_by
-                    : row.updated_by.substring(0, 50) + '....'}
+                  {row.updated_by && row?.updated_by?.length < 20
+                    ? row?.updated_by
+                    : row?.updated_by.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -1190,6 +1198,7 @@ function TestCaseReviewDetails() {
     updated_at: 'updated_at',
     updated_by: 'updated_by'
   };
+
 
   // const transformDataForExport = (rowData, data, comments, commonComment) => {
   //   if (comments) {
@@ -1253,6 +1262,7 @@ function TestCaseReviewDetails() {
   //   commonComment
   // );
 
+
   const exportColumns = [
     { title: 'Module', field: 'module_name' },
     { title: 'Submodule', field: 'sub_module_name' },
@@ -1265,7 +1275,7 @@ function TestCaseReviewDetails() {
     { title: 'Steps', field: 'steps' },
     { title: 'Severity', field: 'severity' },
     { title: 'Expected Result', field: 'expected_result' },
-    { title: 'Status', field: 'rev' },
+    { title: 'Status', field: 'status' },
     { title: 'Reviewer Comment', field: 'reviewer_comment' },
     { title: 'Remark', field: 'remark' },
     { title: 'Project', field: 'project_name' },
