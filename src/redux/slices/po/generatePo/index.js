@@ -3,7 +3,7 @@ import { createPendingOrderThunk, getPendingOrderListThunk } from '../../../serv
 
 const initialState = {
   pendingOrderList: [],
-  userAddedPoDataList: JSON.parse(sessionStorage.getItem('poDataList')) || [],
+  userAddedPoDataList: JSON.parse(localStorage.getItem('poDataList')) || [],
   isLoading: {
     getPendingOrderList: false,
     createPendingOrder: false,
@@ -43,7 +43,7 @@ const generatePoSlice = createSlice({
       });
 
       // Update local storage
-      sessionStorage.setItem('poDataList', JSON.stringify(state.userAddedPoDataList));
+      localStorage.setItem('poDataList', JSON.stringify(state.userAddedPoDataList));
     },
 
     editUserPendingOrderRequest(state, action) {
@@ -53,7 +53,7 @@ const generatePoSlice = createSlice({
         state.userAddedPoDataList[index].order_qty = order_qty;
 
         // Update local storage
-        sessionStorage.setItem('poDataList', JSON.stringify(state.userAddedPoDataList));
+        localStorage.setItem('poDataList', JSON.stringify(state.userAddedPoDataList));
       }
     },
 
@@ -62,12 +62,12 @@ const generatePoSlice = createSlice({
       state.userAddedPoDataList = state.userAddedPoDataList.filter(item => item.id !== current_id);
 
       // Update local storage
-      sessionStorage.setItem('poDataList', JSON.stringify(state.userAddedPoDataList));
+      localStorage.setItem('poDataList', JSON.stringify(state.userAddedPoDataList));
     },
 
     resetUserAddedOrderList(state, action) {
       state.userAddedPoDataList = [];
-      sessionStorage.removeItem('poDataList');
+      localStorage.removeItem('poDataList');
     },
 
     resetPendingOrderListData(state, action) {
@@ -100,7 +100,7 @@ const generatePoSlice = createSlice({
         state.successMsg.createPendingOrder = action.payload.msg;
 
         // Clear local storage
-        sessionStorage.removeItem('poDataList');
+        localStorage.removeItem('poDataList');
       })
       .addCase(createPendingOrderThunk.rejected, (state, action) => {
         state.isLoading.createPendingOrder = false;

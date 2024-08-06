@@ -28,7 +28,7 @@ const BillPayments = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const [notify, setNotify] = useState();
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   const [billTypeDropdown, setBillTypeDropdown] = useState(null);
   const [data, setData] = useState();

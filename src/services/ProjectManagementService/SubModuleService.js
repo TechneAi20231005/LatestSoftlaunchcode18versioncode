@@ -95,7 +95,7 @@ export default class SubModuleService {
 
   getSubModuleDocuments(projectId, moduleId, type, subModuleId) {
     const token = localStorage.getItem('jwt_token')
-    const userId = sessionStorage.getItem('id')
+    const userId = localStorage.getItem('id')
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
