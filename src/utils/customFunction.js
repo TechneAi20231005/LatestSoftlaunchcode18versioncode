@@ -82,5 +82,5 @@ export const exportToExcelCustomHandler = ({
     type: 'application/octet-stream'
   });
 
-  saveAs(dataBlob, fileName);
+  saveAs(dataBlob, `${fileName}.xlsx`);
 };
