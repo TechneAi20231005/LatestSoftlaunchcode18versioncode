@@ -1,27 +1,33 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
   createPendingOrderThunk,
-  getPendingOrderErrorFileThunk,
-  getPendingOrderListThunk
+  getPendingOrderListThunk,
+  getUnixCodeAgainstVendorForErrorFileThunk,
+  getPendingOrderErrorFileThunk
 } from '../../../services/po/generatePo';
 
 const initialState = {
   pendingOrderList: [],
   userAddedPoDataList: JSON.parse(sessionStorage.getItem('poDataList')) || [],
+  unixCodeListAgainstVendor: [],
   pendingOrderErrorFileData: [],
+  pendingOrderErrorFileOnTheSportDownloadData: [],
   isLoading: {
     getPendingOrderList: false,
     createPendingOrder: false,
+    getUnixCodeAgainstVendor: false,
     getPendingOrderErrorFileData: false
   },
   errorMsg: {
     getPendingOrderList: '',
     createPendingOrder: '',
+    getUnixCodeAgainstVendor: '',
     getPendingOrderErrorFileData: ''
   },
   successMsg: {
     getPendingOrderList: '',
     createPendingOrder: '',
+    getUnixCodeAgainstVendor: '',
     getPendingOrderErrorFileData: ''
   }
 };
@@ -122,6 +128,8 @@ const generatePoSlice = createSlice({
       .addCase(createPendingOrderThunk.fulfilled, (state, action) => {
         state.isLoading.createPendingOrder = false;
         state.successMsg.createPendingOrder = action.payload;
+        state.pendingOrderErrorFileOnTheSportDownloadData =
+          action?.payload?.data;
 
         // Clear local storage
         sessionStorage.removeItem('poDataList');
@@ -131,7 +139,31 @@ const generatePoSlice = createSlice({
         state.errorMsg.createPendingOrder = action.error.message;
       })
 
-      // // get pending order error data slices
+      // // get unix code against vender name for error file data
+      .addCase(
+        getUnixCodeAgainstVendorForErrorFileThunk.pending,
+        (state, action) => {
+          state.isLoading.getUnixCodeAgainstVendor = true;
+        }
+      )
+      .addCase(
+        getUnixCodeAgainstVendorForErrorFileThunk.fulfilled,
+        (state, action) => {
+          state.isLoading.getUnixCodeAgainstVendor = false;
+          state.unixCodeListAgainstVendor = action.payload.data;
+          state.successMsg.getUnixCodeAgainstVendor = action.payload.msg;
+        }
+      )
+      .addCase(
+        getUnixCodeAgainstVendorForErrorFileThunk.rejected,
+        (state, action) => {
+          state.isLoading.getUnixCodeAgainstVendor = false;
+          state.unixCodeListAgainstVendor = [];
+          state.errorMsg.getUnixCodeAgainstVendor = action.error.message;
+        }
+      )
+
+      // // get pending order error file data slices
       .addCase(getPendingOrderErrorFileThunk.pending, (state, action) => {
         state.isLoading.getPendingOrderErrorFileData = true;
       })
