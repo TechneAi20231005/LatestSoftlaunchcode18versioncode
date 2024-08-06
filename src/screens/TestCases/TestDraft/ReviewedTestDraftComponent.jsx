@@ -170,12 +170,12 @@ function ReviewedTestDraftComponent() {
     localDispatch({
       type: 'SET_SELECTED_ROWS',
       payload: (prevSelectedRows) => {
-        if (prevSelectedRows.includes(row.tc_id)) {
+        if (prevSelectedRows.includes(row.id)) {
           return prevSelectedRows.filter(
-            (selectedRow) => selectedRow !== row.tc_id
+            (selectedRow) => selectedRow !== row.id
           );
         } else {
-          return [...prevSelectedRows, row.tc_id];
+          return [...prevSelectedRows, row.id];
         }
       }
     });
@@ -279,9 +279,7 @@ function ReviewedTestDraftComponent() {
     localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: newSelectAllNames });
 
     if (newSelectAllNames) {
-      const draftRowIds = allReviewDraftTestListDataByID.map(
-        (row) => row.tc_id
-      );
+      const draftRowIds = allReviewDraftTestListDataByID.map((row) => row.id);
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
     } else {
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
@@ -551,7 +549,7 @@ function ReviewedTestDraftComponent() {
         <div>
           <input
             type="checkbox"
-            checked={selectedRows?.includes(row.tc_id)}
+            checked={selectedRows?.includes(row.id)}
             onChange={() => handleCheckboxChange(row)}
           />
         </div>
@@ -587,7 +585,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.module_name && row.module_name.length < 20
+                  {row.module_name && row.module_name?.length < 20
                     ? row.module_name
                     : row.module_name.substring(0, 50) + '....'}
                 </span>
@@ -632,7 +630,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.sub_module_name && row.sub_module_name.length < 20
+                  {row.sub_module_name && row.sub_module_name?.length < 20
                     ? row.sub_module_name
                     : row.sub_module_name.substring(0, 50) + '....'}
                 </span>
@@ -677,7 +675,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.function_name && row.function_name.length < 20
+                  {row.function_name && row.function_name?.length < 20
                     ? row.function_name
                     : row.function_name.substring(0, 50) + '....'}
                 </span>
@@ -720,7 +718,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.field && row.field.length < 20
+                  {row.field && row.field?.length < 20
                     ? row.field
                     : row.field.substring(0, 50) + '....'}
                 </span>
@@ -765,7 +763,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.type_name && row.type_name.length < 20
+                  {row.type_name && row.type_name?.length < 20
                     ? row.type_name
                     : row.type_name.substring(0, 50) + '....'}
                 </span>
@@ -810,7 +808,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.group_name && row.group_name.length < 20
+                  {row.group_name && row.group_name?.length < 20
                     ? row.group_name
                     : row.group_name.substring(0, 50) + '....'}
                 </span>
@@ -940,50 +938,11 @@ function ReviewedTestDraftComponent() {
               overlay={<Tooltip>{row.test_description} </Tooltip>}
             >
               <div>
-                <span className="ms-1">{row.test_description}</span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
-    },
-    {
-      name: (
-        <div>
-          <span>Expected Result</span>
-          <i
-            onClick={(e) =>
-              handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
-            }
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['expected_result'] ? 'text-success' : 'text-dark'
-            }`}
-          />
-        </div>
-      ),
-      selector: (row) => row.expected_result,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.expected_result && (
-            <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
-              <div>
                 <span className="ms-1">
                   {' '}
-                  {row.expected_result && row.expected_result.length < 20
-                    ? row.expected_result
-                    : row.expected_result.substring(0, 50) + '....'}
+                  {row.test_description && row.test_description?.length < 20
+                    ? row.test_description
+                    : row.test_description.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -1023,9 +982,54 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.steps && row.type_name.length < 20
+                  {row.steps && row.type_name?.length < 20
                     ? row.steps
                     : row.steps.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
+      )
+    },
+
+    {
+      name: (
+        <div>
+          <span>Expected Result</span>
+          <i
+            onClick={(e) =>
+              handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
+            }
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['expected_result'] ? 'text-success' : 'text-dark'
+            }`}
+          />
+        </div>
+      ),
+      selector: (row) => row.expected_result,
+      width: '10rem',
+      sortable: false,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.expected_result && (
+            <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.expected_result && row.expected_result?.length < 20
+                    ? row.expected_result
+                    : row.expected_result.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -1066,7 +1070,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.status && row.status.length < 20
+                  {row.status && row.status?.length < 20
                     ? row.status
                     : row.status.substring(0, 50) + '....'}
                 </span>
@@ -1149,7 +1153,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.project_name && row.project_name.length < 20
+                  {row.project_name && row.project_name?.length < 20
                     ? row.project_name
                     : row.project_name.substring(0, 50) + '....'}
                 </span>
@@ -1194,7 +1198,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.created_at && row.created_at.length < 20
+                  {row.created_at && row.created_at?.length < 20
                     ? row.created_at
                     : row.created_at.substring(0, 50) + '....'}
                 </span>
@@ -1239,7 +1243,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.created_by && row.created_by.length < 20
+                  {row.created_by && row.created_by?.length < 20
                     ? row.created_by
                     : row.created_by.substring(0, 50) + '....'}
                 </span>
@@ -1495,6 +1499,7 @@ function ReviewedTestDraftComponent() {
         <DataTable
           columns={columns}
           data={allReviewDraftTestListDataByID}
+          persistTableHead={true}
           defaultSortField="role_id"
           pagination
           selectableRows={false}

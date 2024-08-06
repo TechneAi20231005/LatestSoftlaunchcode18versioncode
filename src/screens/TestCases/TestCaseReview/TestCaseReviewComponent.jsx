@@ -658,7 +658,7 @@ function TestCaseReviewComponent() {
     {
       name: (
         <div>
-          <span>Approved Testcse</span>
+          <span>Approved Testcase</span>
           <i
             onClick={(e) =>
               handleFilterClick(
@@ -1023,6 +1023,7 @@ function TestCaseReviewComponent() {
         <DataTable
           columns={columns}
           data={testCaseReviewList}
+          persistTableHead={true}
           defaultSortField="role_id"
           pagination
           paginationServer

@@ -654,7 +654,7 @@ function ReviewedTestDraftDetails(props) {
     {
       name: (
         <div>
-          <span>Approved Testcse</span>
+          <span>Approved Testcase</span>
           <i
             onClick={(e) =>
               handleFilterClick(
@@ -955,6 +955,7 @@ function ReviewedTestDraftDetails(props) {
         <div>
           <DataTable
             columns={columns}
+            persistTableHead={true}
             data={allReviewDraftTestListData}
             defaultSortField="role_id"
             pagination
