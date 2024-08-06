@@ -12,7 +12,7 @@ import { _base } from '../settings/constants';
 class AuthIndex extends React.Component {
   render() {
     const shouldRedirectToMain =
-      sessionStorage.length > 0 || localStorage.length > 0;
+      localStorage.length > 0 || localStorage.length > 0;
     console.log('shouldRedirectToMain', shouldRedirectToMain);
     return (
       <>

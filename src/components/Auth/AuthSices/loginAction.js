@@ -12,10 +12,10 @@ export const postLoginUser = createAsyncThunk(
         const token = res?.data?.token;
 
         Object.keys(data).forEach((key) => {
-          sessionStorage.setItem(key, data[key]);
+          localStorage.setItem(key, data[key]);
           localStorage.setItem(key, data[key]);
         });
-        sessionStorage.setItem('jwt_token', token);
+        localStorage.setItem('jwt_token', token);
         localStorage.setItem('jwt_token', token);
 
         return res.data;

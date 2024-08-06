@@ -228,9 +228,9 @@ const TestCases = ({ match }) => {
     setSendtoModal(data); // Set the 'send to Modal' data to the provided data
   };
 
-  // Object to store session-related data retrieved from sessionStorage
+  // Object to store session-related data retrieved from localStorage
   const useSessionData = {
-    userId: sessionStorage.getItem('id'), // Get the 'id' value from sessionStorage and store it in userId
+    userId: localStorage.getItem('id'), // Get the 'id' value from localStorage and store it in userId
   };
 
   // Function to handle showing the general 'modal' for edit forms with specified data
@@ -2259,7 +2259,7 @@ const TestCases = ({ match }) => {
                             {/* <div className="col-sm-8">
                               <label className="col-form-label"><b>Developer:</b></label>
                               {dev &&
-                              <Select 
+                              <Select
                               className="form-control"
                               name="developer_id"
                               id="developer_id"

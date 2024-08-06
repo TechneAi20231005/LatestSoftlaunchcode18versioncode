@@ -17,7 +17,7 @@ export default function ProjectwiseModule() {
   const params = useParams();
   const { projectId, moduleId } = params;
 
-  
+
   const location = useLocation();
   const [data, setData] = useState(null);
   const [isProjectOwner, setIsProjectOwner] = useState(null);
@@ -55,7 +55,7 @@ export default function ProjectwiseModule() {
   const moduleRef = useRef(null);
 
   const loadData = async () => {
-    const userId = sessionStorage.getItem("id");
+    const userId = localStorage.getItem("id");
 
     await new ConsolidatedService()
       .getProjectsModules(projectId, moduleId)
@@ -154,7 +154,7 @@ export default function ProjectwiseModule() {
           }
         });
     } catch (error) {
-   
+
     }
   };
 

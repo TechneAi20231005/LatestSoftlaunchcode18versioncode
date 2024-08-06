@@ -118,7 +118,7 @@ function EditUserComponent({ match }) {
   // const [confirmPasswordError, setConfirmPasswordError] = useState(false);
   const confirmPasswordError = false;
 
-  // const roleId = sessionStorage.getItem('role_id');
+  // const roleId = localStorage.getItem('role_id');
 
   const confirmedPasswordRef = useRef(0);
   const userForm = useRef();

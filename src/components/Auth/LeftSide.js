@@ -11,13 +11,13 @@ class LeftSide extends React.Component {
       fontWeight: 'bold'
     };
 
-    if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
-      for (var a in sessionStorage) {
-        localStorage.setItem(a, sessionStorage[a]);
+    if (Object.keys(localStorage).length < Object.keys(localStorage).length) {
+      for (var a in localStorage) {
+        localStorage.setItem(a, localStorage[a]);
       }
     } else {
       for (var b in localStorage) {
-        sessionStorage.setItem(b, localStorage[b]);
+        localStorage.setItem(b, localStorage[b]);
       }
     }
     return (

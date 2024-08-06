@@ -245,7 +245,7 @@ export const getRoles = createAsyncThunk(
   'getRoles',
   async (config, thunkapi) => {
     try {
-      const roleId = sessionStorage.getItem('role_id');
+      const roleId = localStorage.getItem('role_id');
       const service = new ManageMenuService();
       const response = await service.getRole(roleId);
 
@@ -260,7 +260,7 @@ export const getAllRoles = createAsyncThunk(
   'getAllRoles',
   async (config, thunkapi) => {
     try {
-      const roleId = sessionStorage.getItem('role_id');
+      const roleId = localStorage.getItem('role_id');
       const service = new RoleService();
       const response = await service.getRole(roleId);
 

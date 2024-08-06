@@ -311,7 +311,7 @@ const ViewBillTypeComponent = ({ match }) => {
 
     // Proceed with the API request
     formData.append("approverData", JSON.stringify(approverData));
-    formData.append("user_id", sessionStorage.getItem("id"));
+    formData.append("user_id", localStorage.getItem("id"));
     formData.append("bill_type", e.target.bill_type.value);
 
     try {
@@ -392,7 +392,7 @@ const ViewBillTypeComponent = ({ match }) => {
               <input
                 type="hidden"
                 id="user_id"
-                value={sessionStorage.getItem("id")}
+                value={localStorage.getItem("id")}
               />
 
               <div className="col-sm-4 ">

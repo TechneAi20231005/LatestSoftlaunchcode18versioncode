@@ -96,7 +96,7 @@ function PaymentDetails({ location, match }) {
   const [stateDropdown, setStateDropdown] = useState();
   const [cityDropdown, setCityDropdown] = useState();
   const fileInputRef = useRef(null);
-  const userId = sessionStorage.getItem('id');
+  const userId = localStorage.getItem('id');
   const [exportData, setExportData] = useState();
 
   const loadData = async () => {

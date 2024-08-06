@@ -19,7 +19,7 @@ function RoastedComponent() {
   const [notify, setNotify] = useState(null);
   const [paymentType, setPaymentType] = useState("Weekly");
 
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = localStorage.getItem("role_id");
   const [checkRole, setCheckRole] = useState(null);
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);

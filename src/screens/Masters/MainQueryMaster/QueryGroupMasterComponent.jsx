@@ -28,7 +28,7 @@ function QueryGroupMasterComponent() {
     modalHeader: ''
   });
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
   const [checkRole, setCheckRole] = useState(null);
 
   const [exportData, setExportData] = useState(null);
@@ -186,7 +186,7 @@ function QueryGroupMasterComponent() {
         setShowLoaderModal(false);
 
         if (res.data.status === 1) {
-          const getRoleId = sessionStorage.getItem('role_id');
+          const getRoleId = localStorage.getItem('role_id');
           setCheckRole(res.data.data.filter((d) => d.role_id === getRoleId));
         }
       }
