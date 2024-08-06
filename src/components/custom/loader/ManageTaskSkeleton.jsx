@@ -54,7 +54,10 @@ const ManageTaskSkeleton = () => {
                   ></span>
                 </div>
                 <div className="dropdown">
-                  <span className="skeleton-manage skeleton-button dropdown-toggle">
+                  <span
+                    className="skeleton-manage skeleton-button dropdown-toggle "
+                    style={{ color: 'gray' }}
+                  >
                     <i
                       className="icofont-navigation-menu"
                       style={{ color: 'gray' }}
