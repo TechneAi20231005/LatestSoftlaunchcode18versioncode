@@ -221,20 +221,6 @@ function GeneratePo() {
                     </Row>
 
                     <div className="d-flex justify-content-md-end mt-3 btn_container">
-                      {/* <ExportToExcel
-                        className="btn btn-dark px-4"
-                        buttonTitle="Download"
-                        fileName="PO Error File Records"
-                        btnType="submit"
-                        disabled={
-                          getPendingOrderErrorFileData || !isValid || !dirty
-                        }
-                        isLoading={getPendingOrderErrorFileData}
-                        apiData={transformPoErrorDataForExport(
-                          pendingOrderErrorFileData || []
-                        )}
-                        onApiClick={exportPoErrorFileHandler}
-                      /> */}
                       <button
                         className="btn btn-dark px-4"
                         type="submit"
