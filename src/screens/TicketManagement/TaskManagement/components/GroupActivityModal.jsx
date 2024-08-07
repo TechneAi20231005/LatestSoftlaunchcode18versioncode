@@ -27,14 +27,12 @@ const GroupActivityModal = (props) => {
   const [taskOwners, setTaskOwners] = useState();
 
   const loadData = useCallback(() => {
-    const tempData = [];
-    props.data.taskOwners.map((d, i) => {
-      let a = { ...d, is_present: d.is_started === 'YES' ? 1 : 0 };
-
-      tempData.push(a);
+    const tempData = props.data.taskOwners.map((d, i) => {
+      return { ...d, is_present: d.is_started === 'YES' ? 1 : 0 };
     });
     setTaskOwners(tempData);
   }, [props.data.taskOwners]);
+
   const isPresentRef = useRef();
   const handleForm = async (e) => {
     e.preventDefault();
@@ -140,7 +138,7 @@ const GroupActivityModal = (props) => {
                             ref={isPresentRef}
                             id={`${'is_present_' + i}`}
                             className="form-check-input"
-                            defaultChecked={d.is_present == 1}
+                            defaultChecked={d.is_present === 1}
                             onChange={(e) => handleCheckBox(e, i)}
                             disabled={
                               timerState === 'STOP' && d.is_present === 1

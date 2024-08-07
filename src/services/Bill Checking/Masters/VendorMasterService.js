@@ -128,31 +128,10 @@ export default class VendorMasterService {
     };
     return axios.get(_getCity, config);
   }
-  getActiveCountry() {
-    const token = localStorage.getItem('jwt_token');
 
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      }
-    };
-    return axios.get(_getCountry, config);
-  }
 
-  getActiveState() {
-    const token = localStorage.getItem('jwt_token');
 
-    const config = {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
-      }
-    };
-    return axios.get(_getState, config);
-  }
+  
 
   getActiveCountry() {
     const token = localStorage.getItem('jwt_token');
