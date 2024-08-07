@@ -194,14 +194,15 @@ export default function HrDashboard(props) {
   const handleHistoryModal = () => {
     setIsLoading(null);
     setIsLoading(true);
-    new getRegularizationTimeHistory()
+    const type = 'limit';
+    new getRegularizationTimeHistory({ type: type })
 
       .then((res) => {
         // Process the data
         if (res.status === 200) {
           setIsLoading(false);
 
-          if (res.data.data) {
+          if (res?.data?.data?.length) {
             const temp = res.data.data
               ?.filter((d) => d?.status_remark !== 'PENDING')
               ?.map((d) => ({
@@ -219,6 +220,7 @@ export default function HrDashboard(props) {
                 actual_time: d.actual_time,
                 task_hours: d.task_hours,
                 scheduled_time: d.scheduled_time,
+                approved_by_name: d.approved_by_name,
                 status: d.status_remark
               }));
 
@@ -326,7 +328,7 @@ export default function HrDashboard(props) {
                     >
                       Regularization
                     </button>
-                    {approvedNotifications?.length > 0 && (
+                    {approvedNotifications?.length > 0 ? (
                       <div
                         className="notification-circle"
                         style={{
@@ -347,6 +349,29 @@ export default function HrDashboard(props) {
                         }}
                       >
                         {approvedNotifications.length}
+                      </div>
+                    ) : (
+                      <div
+                        className="notification-circle"
+                        style={{
+                          position: 'absolute',
+                          top: '-10px',
+                          right: '-10px',
+                          // padding: '3px',
+                          backgroundColor: 'rgb(255, 24, 67)',
+                          borderRadius: '50%',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          color: 'white',
+                          textAlign: 'center',
+                          // fontSize: '0.8rem',
+                          fontWeight: 'bold',
+                          color: 'red',
+                          minWidth: '20px', // Minimum width to prevent squishing
+                          height: 'auto' // Let the height adjust automatically}}
+                        }}
+                      >
+                        .
                       </div>
                     )}
                   </div>
@@ -656,6 +681,8 @@ export default function HrDashboard(props) {
                 hide={handleCloseHistoryModal}
                 data={historyData}
                 isLoading={isLoading}
+                setHistoryData={setHistoryData}
+                setHistoryModal={setHistoryModal}
               />
             )}
           </>

@@ -183,9 +183,30 @@ const RequestModal = (props) => {
     return '';
   };
 
+  const now = new Date();
+  const currentHours = now.getHours();
+  const currentMinutes = now.getMinutes();
+
+  // Format hours and minutes to always have two digits
+  const formattedHours = currentHours.toString().padStart(2, '0');
+  const formattedMinutes = currentMinutes.toString().padStart(2, '0');
+
+  // Combine formatted hours and minutes
+  const currentTimeFormatted = `${formattedHours}:${formattedMinutes}`;
+
   const handleActualTimeChange = (index, fromTime, toTime) => {
     const fromDate = rows[index].from_date;
     const toDate = rows[index].to_date;
+
+    if (fromTime > currentTimeFormatted) {
+      alert('From time cannot be a future time.');
+      return;
+    }
+
+    if (toTime > currentTimeFormatted) {
+      alert('To time cannot be a future time.');
+      return;
+    }
 
     if (toTime?.length > 0 && toTime < fromTime) {
       alert('To time cannot be earlier than from time.');
@@ -485,7 +506,15 @@ const RequestModal = (props) => {
 
                             const handleFromTimeChange = (index, value) => {
                               const updatedData = [...regularizeTimeData];
+
                               updatedData[index].from_time = value;
+                              if (
+                                updatedData[index].from_time >
+                                currentTimeFormatted
+                              ) {
+                                alert('From time cannot be a future time.');
+                                return;
+                              }
                               // Calculate actual time
                               const actualTime = calculateActualTime(
                                 updatedData[index].from_date,
@@ -505,6 +534,13 @@ const RequestModal = (props) => {
                             const handleToTimeChange = (index, value) => {
                               const updatedData = [...regularizeTimeData];
                               updatedData[index].to_time = value;
+                              if (
+                                updatedData[index].to_time >
+                                currentTimeFormatted
+                              ) {
+                                alert('To time cannot be a future time.');
+                                return;
+                              }
                               // Calculate actual time
 
                               const fromTime = updatedData[index].from_time;
