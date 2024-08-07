@@ -21,6 +21,10 @@ const GraphWeekWise = () => {
   // const [weekRange, setWeekRange] = useState([]);
   const [selectedDropDown, setSelectedDropdown] = useState(null);
   // const allBasketNames = ['Amit', 'Sprint basket', 'Priyans'];
+  const [ticketDetails, setTicketDetails] = useState({
+    ticket_id: '',
+    description: ''
+  });
   const [chartData, setChartData] = useState({
     series: [
       {
@@ -69,7 +73,14 @@ const GraphWeekWise = () => {
         type: 'solid',
         opacity: 0.8
       },
-      colors: ['#C3F5FF', '#FF8888', '#FFC075', '#DB0101', '#9EFFB9'],
+      colors: [
+        '#C3F5FF',
+        '#FFECB3',
+        '#9EFFB9',
+        '#FF8888',
+        '#FFC581',
+        '#484C7F'
+      ],
       annotations: {
         xaxis: [
           {
@@ -96,7 +107,7 @@ const GraphWeekWise = () => {
                 top: 0,
                 bottom: 2
               },
-              text: 'Sprint Start Date'
+              text: ''
             }
           },
           {
@@ -125,7 +136,7 @@ const GraphWeekWise = () => {
                 top: 0,
                 bottom: 0
               },
-              text: 'Sprint End Date'
+              text: ''
             }
           }
         ]
@@ -242,24 +253,27 @@ const GraphWeekWise = () => {
 
       const { first_sprint_date, last_sprint_date } = res?.data?.data;
       const { data } = res?.data;
+      setTicketDetails(res?.data?.ticket_details);
+
       const allBasketNames = data?.basket_data;
       const transformedData = {
         series: [
           {
             name: 'TODO',
-            data: allBasketNames.map((basketName) => {
-              const task = data?.TO_DO?.find(
+            data: allBasketNames.flatMap((basketName) => {
+              const task = data?.TO_DO?.filter(
                 (task) => task.basket_name === basketName
               );
-              return task
-                ? {
+
+              return task?.length > 0
+                ? task.map((task) => ({
                     x: basketName,
                     y: addSmallIncrementIfNeeded(
                       task.task_start_Date,
                       task.task_end_date
                     ),
                     taskDetail: task
-                  }
+                  }))
                 : {
                     x: basketName,
                     y: [0, 0],
@@ -274,20 +288,20 @@ const GraphWeekWise = () => {
           },
 
           {
-            name: 'Delay',
-            data: allBasketNames.map((basketName) => {
-              const task = data?.DELAY?.find(
+            name: 'IN PROGRESS',
+            data: allBasketNames.flatMap((basketName) => {
+              const task = data?.IN_PROGRESS?.filter(
                 (task) => task.basket_name === basketName
               );
-              return task
-                ? {
+              return task?.length > 0
+                ? task.map((task) => ({
                     x: basketName,
                     y: addSmallIncrementIfNeeded(
                       task.task_start_Date,
                       task.task_end_date
                     ),
                     taskDetail: task
-                  }
+                  }))
                 : {
                     x: basketName,
                     y: [0, 0],
@@ -301,20 +315,20 @@ const GraphWeekWise = () => {
             })
           },
           {
-            name: 'Highly Delay',
-            data: allBasketNames.map((basketName) => {
-              const task = data?.HIGHLY_DELAY?.find(
+            name: 'IN TIME',
+            data: allBasketNames.flatMap((basketName) => {
+              const task = data?.IN_TIME?.filter(
                 (task) => task.basket_name === basketName
               );
-              return task
-                ? {
+              return task?.length > 0
+                ? task.map((task) => ({
                     x: basketName,
                     y: addSmallIncrementIfNeeded(
                       task.task_start_Date,
                       task.task_end_date
                     ),
                     taskDetail: task
-                  }
+                  }))
                 : {
                     x: basketName,
                     y: [0, 0],
@@ -328,20 +342,20 @@ const GraphWeekWise = () => {
             })
           },
           {
-            name: 'Completed',
-            data: allBasketNames.map((basketName) => {
-              const task = data?.COMPLETED?.find(
+            name: 'DELAY',
+            data: allBasketNames.flatMap((basketName) => {
+              const task = data?.DELAY?.filter(
                 (task) => task.basket_name === basketName
               );
-              return task
-                ? {
+              return task?.length > 0
+                ? task.map((task) => ({
                     x: basketName,
                     y: addSmallIncrementIfNeeded(
                       task.task_start_Date,
                       task.task_end_date
                     ),
                     taskDetail: task
-                  }
+                  }))
                 : {
                     x: basketName,
                     y: [0, 0],
@@ -355,20 +369,47 @@ const GraphWeekWise = () => {
             })
           },
           {
-            name: 'In Progress',
-            data: allBasketNames.map((basketName) => {
-              const task = data?.IN_PROGRESS?.find(
+            name: 'SLIGHTLY DELAY',
+            data: allBasketNames.flatMap((basketName) => {
+              const task = data?.SLIGHTLY_DELAY?.filter(
                 (task) => task.basket_name === basketName
               );
-              return task
-                ? {
+              return task?.length > 0
+                ? task.map((task) => ({
                     x: basketName,
                     y: addSmallIncrementIfNeeded(
                       task.task_start_Date,
                       task.task_end_date
                     ),
                     taskDetail: task
-                  }
+                  }))
+                : {
+                    x: basketName,
+                    y: [0, 0],
+                    taskDetail: {
+                      basket_name: basketName,
+                      task_start_Date: '',
+                      task_end_date: '',
+                      status: 'No Data'
+                    }
+                  };
+            })
+          },
+          {
+            name: 'HIGHLY DELAY',
+            data: allBasketNames.flatMap((basketName) => {
+              const task = data?.HIGHLY_DELAY?.filter(
+                (task) => task.basket_name === basketName
+              );
+              return task?.length > 0
+                ? task.map((task) => ({
+                    x: basketName,
+                    y: addSmallIncrementIfNeeded(
+                      task.task_start_Date,
+                      task.task_end_date
+                    ),
+                    taskDetail: task
+                  }))
                 : {
                     x: basketName,
                     y: [0, 0],
@@ -384,11 +425,57 @@ const GraphWeekWise = () => {
         ]
       };
 
+      const labelStyle = {
+        style: {
+          color: '#FFFFFF',
+          height: 450,
+          background: '#484C7F',
+          fontSize: '12px',
+          fontWeight: 400,
+          opacity: 0.6
+        }
+      };
+
+      const xaxisAnnotations = [];
+
+      data.sprint_data.forEach((sprint, index) => {
+        xaxisAnnotations.push({
+          x: new Date(sprint.start_date).getTime(),
+          label: {
+            text: `Sprint Name :${sprint.name} - Sprint start date : ${sprint.start_date} `,
+            ...labelStyle
+          }
+        });
+
+        xaxisAnnotations.push({
+          x: new Date(sprint.end_date).getTime(),
+          label: {
+            text: `Sprint Name :${sprint.name}   -   Sprint end date : ${sprint.end_date} `,
+            ...labelStyle
+          }
+        });
+      });
+
+      const barHeight = 30;
+      const chartHeight = barHeight * allBasketNames.length;
       setChartData((prevChartData) => ({
         ...prevChartData,
         series: transformedData.series,
         options: {
           ...prevChartData.options,
+          chart: {
+            ...prevChartData.options.chart,
+            height: chartHeight,
+            events: {
+              dataPointSelection: () => {
+                let prevTab = localStorage.getItem('PreviosTab');
+                localStorage.removeItem('PreviosTab');
+                if (prevTab) {
+                  window.location.href = prevTab;
+                }
+              }
+            }
+          },
           xaxis: {
             ...prevChartData.options.xaxis,
             min: new Date(firstDate || weeksplitDate[1]).getTime(),
@@ -396,24 +483,29 @@ const GraphWeekWise = () => {
           },
           annotations: {
             ...prevChartData.options.annotations,
+            // xaxis: [
+            //   ...prevChartData.options.annotations.xaxis,
+            //   {
+            //     ...prevChartData.options.annotations.xaxis[0],
+            //     x: new Date(last_sprint_date).getTime(),
+            //     label: {
+            //       ...prevChartData.options.annotations.xaxis[0].label,
+            //       text: 'Sprint Start Date'
+            //     }
+            //   }
+            //   // {
+            //   //   ...prevChartData.options.annotations.xaxis[1],
+            //   //   x: new Date(last_sprint_date).getTime(),
+            //   //   label: {
+            //   //     ...prevChartData.options.annotations.xaxis[1].label,
+            //   //     text: 'Sprint End Date'
+            //   //   }
+            //   // }
+            // ],
+
             xaxis: [
               ...prevChartData.options.annotations.xaxis,
-              {
-                ...prevChartData.options.annotations.xaxis[0],
-                x: new Date(first_sprint_date).getTime(),
-                label: {
-                  ...prevChartData.options.annotations.xaxis[0].label,
-                  text: 'Sprint Start Date'
-                }
-              },
-              {
-                ...prevChartData.options.annotations.xaxis[1],
-                x: new Date(last_sprint_date).getTime(),
-                label: {
-                  ...prevChartData.options.annotations.xaxis[1].label,
-                  text: 'Sprint End Date'
-                }
-              }
+              ...xaxisAnnotations
             ]
           },
 
@@ -427,8 +519,8 @@ const GraphWeekWise = () => {
               const taskDetail =
                 w.globals.initialSeries[seriesIndex].data[dataPointIndex]
                   .taskDetail;
+
               const taskOwners = taskDetail?.taskOwners.join('');
-              console.log('taskDetail', taskDetail);
               return `
               <div>
                <span className="mb-0"><strong>Sprint Name:</strong> ${
@@ -507,7 +599,7 @@ const GraphWeekWise = () => {
       await getGraphData(false, lastDayOfMonth, firstDayOfMonth);
     } else if (value === 'year') {
       const year = new Date(splitRange[0]).getFullYear();
-      // setDropDownData([...{ value: 1, label: year }]);
+      setDropDownData([{ value: 1, label: year }]);
       const firstDayOfYear = new Date(year, 0, 1);
       const lastDayOfYear = new Date(year, 11, 31);
       await getGraphData(false, lastDayOfYear, firstDayOfYear);
@@ -568,7 +660,12 @@ const GraphWeekWise = () => {
     <div className="container-xxl ">
       {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Manage Task" paddingStart="3" />
-      <TicketCollapse ticket={'TT-19994'} open={open} toggleOpen={toggleOpen} />
+      <TicketCollapse
+        ticket={ticketDetails.ticket_id}
+        details={ticketDetails.description}
+        open={open}
+        toggleOpen={toggleOpen}
+      />
 
       <div className="range-bar-chart-container card mt-3">
         <div className="col-12 text-end p-2 d-md-flex align-items-center my-3 justify-content-end d-none">
@@ -614,7 +711,7 @@ const GraphWeekWise = () => {
               Year
             </label>
           </div>
-          <div className="col-2 ms-3 text-start">
+          <div className="col-2 select-box ms-3 text-start">
             <Select
               // className=""
               // name="sprint_data"
@@ -633,7 +730,8 @@ const GraphWeekWise = () => {
           options={chartData.options}
           series={chartData.series}
           type="rangeBar"
-          height={500}
+
+          // height={500}
         />
       </div>
     </div>

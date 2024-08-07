@@ -8,8 +8,12 @@ const TaskSkeleton = () => {
       style={{ backgroundColor: '#f0f0f0' }}
     >
       <div className="col-6 d-flex align-items-center gap-3">
-        <h5 className="col-3 mb-0 fw-bold skeleton-task skeleton-text rounded-pill"></h5>
-        <h5 className="col-3 mb-0 fw-bold skeleton-task skeleton-text rounded-pill"></h5>
+        <h5 className="col-3 mb-0 fw-bold skeleton-task skeleton-text rounded-pill">
+          
+        </h5>
+        <h5 className="col-3 mb-0 fw-bold skeleton-task skeleton-text rounded-pill">
+
+        </h5>
         <div className="col-6">
           <p className="mb-0 fw-bold skeleton-task skeleton-text rounded-pill"></p>
           {/* <span className="me-3 w-25 skeleton-task skeleton-text"></span>
@@ -22,7 +26,9 @@ const TaskSkeleton = () => {
             <div key={i} className="skeleton-task skeleton-circle"></div>
           ))}
         </div>
-        <h5 className="col-3 mb-0 skeleton-task skeleton-text rounded-pill"></h5>
+        <h5 className="col-3 mb-0 skeleton-task skeleton-text rounded-pill">
+
+        </h5>
       </div>
     </div>
   );

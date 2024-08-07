@@ -1,37 +1,33 @@
-
-
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import ModuleService from "../../../services/ProjectManagementService/ModuleService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import ErrorLogService from "../../../services/ErrorLogService";
-import Alert from "../../../components/Common/Alert";
-import PageHeader from "../../../components/Common/PageHeader";
-import { ProjectDropdown } from "../ProjectMaster/ProjectComponent";
-import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
-import { _base } from "../../../settings/constants";
+import React, { useCallback, useEffect, useState } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import ModuleService from '../../../services/ProjectManagementService/ModuleService';
+import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+import ErrorLogService from '../../../services/ErrorLogService';
+import Alert from '../../../components/Common/Alert';
+import PageHeader from '../../../components/Common/PageHeader';
+import { ProjectDropdown } from '../ProjectMaster/ProjectComponent';
+import { Astrick } from '../../../components/Utilities/Style';
+import * as Validation from '../../../components/Utilities/Validation';
+import { _base } from '../../../settings/constants';
 
 export default function EditModuleComponent({ match }) {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
-  
+
   const { id } = useParams();
   const moduleId = id;
 
   const [data, setData] = useState(null);
 
-  const roleId = sessionStorage.getItem("role_id");
+  const roleId = localStorage.getItem('role_id');
   const [checkRole, setCheckRole] = useState(null);
 
-  const loadData = async () => {
-    const data = [];
-
+  const loadData = useCallback(async () => {
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
-          const getRoleId = sessionStorage.getItem("role_id");
-          setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
+        if (res.data.status === 1) {
+          const getRoleId = sessionStorage.getItem('role_id');
+          setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
         }
       }
     });
@@ -46,9 +42,9 @@ export default function EditModuleComponent({ match }) {
           }
         } else {
           new ErrorLogService().sendErrorLog(
-            "Module",
-            "Get_Module",
-            "INSERT",
+            'Module',
+            'Get_Module',
+            'INSERT',
             res.message
           );
         }
@@ -57,13 +53,13 @@ export default function EditModuleComponent({ match }) {
         const { response } = error;
         const { request, ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
-          "Module",
-          "Get_Module",
-          "INSERT",
+          'Module',
+          'Get_Module',
+          'INSERT',
           errorObject.data.message
         );
       });
-  };
+  }, [moduleId, roleId]);
 
   const handleForm = async (e) => {
     e.preventDefault();
@@ -75,20 +71,23 @@ export default function EditModuleComponent({ match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            history({
-              pathname: `/${_base}/Module`,
-          
-            },{ state: { alert: { type: "success", message: res.data.message } }}
+            history(
+              {
+                pathname: `/${_base}/Module`
+              },
+              {
+                state: { alert: { type: 'success', message: res.data.message } }
+              }
             );
           } else {
-            setNotify({ type: "danger", message: res.data.message });
+            setNotify({ type: 'danger', message: res.data.message });
           }
         } else {
-          setNotify({ type: "danger", message: res.message });
+          setNotify({ type: 'danger', message: res.message });
           new ErrorLogService().sendErrorLog(
-            "Module",
-            "Edit_Module",
-            "INSERT",
+            'Module',
+            'Edit_Module',
+            'INSERT',
             res.message
           );
         }
@@ -96,11 +95,11 @@ export default function EditModuleComponent({ match }) {
       .catch((error) => {
         const { response } = error;
         const { request, ...errorObject } = response;
-        setNotify({ type: "danger", message: errorObject.data.message });
+        setNotify({ type: 'danger', message: errorObject.data.message });
         new ErrorLogService().sendErrorLog(
-          "Module",
-          "Edit_Module",
-          "INSERT",
+          'Module',
+          'Edit_Module',
+          'INSERT',
           errorObject.data.message
         );
       });
@@ -108,10 +107,10 @@ export default function EditModuleComponent({ match }) {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
-    if (checkRole && checkRole[20].can_update === 0) {
+    if (checkRole && checkRole[0]?.can_update === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -218,7 +217,7 @@ export default function EditModuleComponent({ match }) {
                               id="is_active_1"
                               value="1"
                               defaultChecked={
-                                data && data.is_active == 1 ? true : false
+                                data && data.is_active === 1 ? true : false
                               }
                             />
                             <label
@@ -238,7 +237,7 @@ export default function EditModuleComponent({ match }) {
                               id="is_active_0"
                               value="0"
                               defaultChecked={
-                                data && data.is_active == 0 ? true : false
+                                data && data.is_active === 0 ? true : false
                               }
                             />
                             <label
@@ -252,17 +251,17 @@ export default function EditModuleComponent({ match }) {
                       </div>
                     </div>
                   </div>
-                </div>{" "}
+                </div>{' '}
                 {/* CARD BODY */}
               </div>
               {/* CARD */}
-              <div className="mt-3" style={{ textAlign: "right" }}>
-                {checkRole && checkRole[20].can_update === 1 ? (
+              <div className="mt-3" style={{ textAlign: 'right' }}>
+                {checkRole && checkRole[0].can_update === 1 ? (
                   <button type="submit" className="btn btn-sm btn-primary">
                     Update
                   </button>
                 ) : (
-                  ""
+                  ''
                 )}
                 <Link
                   to={`/${_base}/Module`}
@@ -278,10 +277,3 @@ export default function EditModuleComponent({ match }) {
     </div>
   );
 }
-
-
-
-
-
-
-

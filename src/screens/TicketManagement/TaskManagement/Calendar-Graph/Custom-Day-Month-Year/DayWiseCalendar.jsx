@@ -1,16 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import Avatar from 'react-avatar';
 import './custom-style.css';
-import { Link, useNavigate, useParams } from 'react-router-dom';
-import { _base } from '../../../../../settings/constants';
-import SprintService from '../../../../../services/TicketService/SprintService';
+
 import TaskSkeleton from './Skeleton/TaskSkeleton';
 
 const DayWiseCalendar = (props) => {
-  const navigate = useNavigate();
-
-  const params = useParams();
-  const { date, id: ticketId } = params;
   const { data: dayWiseData, bgColor, isLoading } = props;
   // const [isLoading, setIsLoading] = useState(true);
   const [tooltipContent, setTooltipContent] = useState('');
@@ -36,7 +30,6 @@ const DayWiseCalendar = (props) => {
     }\nStatus:${task_status}\nActual Status:${task_actual_status}\nTask Owners:${users}`;
     setTooltipContent(tooltipText);
 
-    const tooltip = document.getElementById('custom-tooltip');
     const xPos = event.clientX + 5;
     const yPos = event.clientY - 5;
     setTooltipPosition({ x: xPos, y: yPos });
@@ -102,10 +95,6 @@ const DayWiseCalendar = (props) => {
     }
   }
 
-  // useEffect(() => {
-  //   filterTaskAsPerAsSprint();
-  // }, [dayWiseData, presentDate]);
-
   return (
     <>
       {isLoading &&
@@ -116,7 +105,7 @@ const DayWiseCalendar = (props) => {
         ))}
       {dayWiseData && dayWiseData.length > 0 && !isLoading ? (
         dayWiseData.map((data) => {
-          let actualStatus = data?.task_status;
+          let actualStatus = data?.task_actual_status;
           let filteredBgColor = bgColor?.filter(
             (bgcolor) => bgcolor?.statusName === actualStatus
           );
@@ -166,8 +155,8 @@ const DayWiseCalendar = (props) => {
         })
       ) : (
         <div
-          className="text-center mt-4 p-2 text-white rounded-1"
-          style={{ backgroundColor: '#484C7F' }}
+          className="text-center mt-4 p-2 text-white rounded-1 bg-primary"
+          // style={{ backgroundColor: '#484C7F' }}
         >
           No Tasks For Current Date
         </div>

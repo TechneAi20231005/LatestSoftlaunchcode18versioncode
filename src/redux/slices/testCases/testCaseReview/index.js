@@ -3,29 +3,42 @@ import { createSlice } from '@reduxjs/toolkit';
 import {
   approveRejectByReviewerMasterThunk,
   getByTestPlanIDListThunk,
+  getExportByTestPlanIDListThunk,
   getTestCaseReviewListThunk
 } from '../../../services/testCases/testCaseReview';
 
 const initialState = {
   testCaseReviewList: [],
   testPlanIdData: [],
+  filterTestPlanData: [],
   approveRejectData: [],
   allTestPlanIDData: [],
+  filterTestCaseReviewList: [],
+  exportTestCaseReviewData: [],
   isLoading: {
     testCaseReviewList: false,
-    testPlanIdData: false
+    testPlanIdData: false,
+    filterTestPlanData: false,
+    filterTestCaseReviewList: false,
+    exportTestCaseReviewData: false
   },
   errorMsg: {
     testCaseReviewList: '',
     testPlanIdData: '',
     approveRejectData: '',
-    allTestPlanIDData: ''
+    allTestPlanIDData: '',
+    filterTestPlanData: '',
+    filterTestCaseReviewList: '',
+    exportTestCaseReviewData: ''
   },
   successMsg: {
     testCaseReviewList: '',
     testPlanIdData: '',
     approveRejectData: '',
-    allTestPlanIDData: ''
+    allTestPlanIDData: '',
+    filterTestPlanData: '',
+    filterTestCaseReviewList: '',
+    exportTestCaseReviewData: ''
   }
 };
 const testCaseReviewSlice = createSlice({
@@ -41,7 +54,8 @@ const testCaseReviewSlice = createSlice({
       })
       .addCase(getTestCaseReviewListThunk.fulfilled, (state, action) => {
         state.isLoading.testCaseReviewList = false;
-        state.testCaseReviewList = action?.payload?.data;
+        state.testCaseReviewList = action?.payload?.data?.data?.data;
+        state.filterTestCaseReviewList = action?.payload?.data?.filter_data;
         state.successMsg.testCaseReviewList = action?.payload?.message;
       })
       .addCase(getTestCaseReviewListThunk.rejected, (state, action) => {
@@ -55,7 +69,8 @@ const testCaseReviewSlice = createSlice({
       })
       .addCase(getByTestPlanIDListThunk.fulfilled, (state, action) => {
         state.isLoading.testPlanIdData = false;
-        state.testPlanIdData = action?.payload?.data?.data;
+        state.testPlanIdData = action?.payload?.data?.data?.data;
+        state.filterTestPlanData = action?.payload?.data?.filter_data;
         state.allTestPlanIDData = action?.payload?.data;
 
         state.successMsg.testPlanIdData = action?.payload?.message;
@@ -64,6 +79,22 @@ const testCaseReviewSlice = createSlice({
         state.isLoading.testPlanIdData = false;
         state.testPlanIdData = [];
         state.errorMsg.testPlanIdData = action?.error?.message;
+      })
+
+      // // export test case review
+
+      .addCase(getExportByTestPlanIDListThunk.pending, (state, action) => {
+        state.isLoading.exportTestCaseReviewData = true;
+      })
+      .addCase(getExportByTestPlanIDListThunk.fulfilled, (state, action) => {
+        state.isLoading.exportTestCaseReviewData = false;
+        state.exportTestCaseReviewData = action?.payload?.data?.data;
+        state.successMsg.exportTestCaseReviewData = action?.payload?.message;
+      })
+      .addCase(getExportByTestPlanIDListThunk.rejected, (state, action) => {
+        state.isLoading.exportTestCaseReviewData = false;
+        state.exportTestCaseReviewData = [];
+        state.errorMsg.exportTestCaseReviewData = action?.error?.message;
       })
 
       ////approve reject by reviewer

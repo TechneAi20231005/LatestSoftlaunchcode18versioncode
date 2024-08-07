@@ -6,7 +6,10 @@ export default function errorHandler(response = '') {
     response !== undefined &&
     response.status !== undefined
   ) {
-    if (response.status === 200 && response.data.status === 0) {
+    if (
+      response.status === 200 &&
+      (response.data.status === 0 || response.data.status === 3)
+    ) {
       toast.error(response.data.message, { toastId: response.data.message });
     }
     if (response.status === 500) {

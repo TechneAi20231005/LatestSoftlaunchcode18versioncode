@@ -9,7 +9,6 @@ import {
   CustomReactSelect,
   CustomInput
 } from '../../../../../../../../../components/custom/inputs/CustomInputs';
-import { getRemarkMasterListThunk } from '../../../../../../../../../redux/services/hrms/employeeJoining/remarkMaster';
 import { interViewProcessValidation } from './validation/interviewProcessValidation';
 import { RenderIf } from '../../../../../../../../../utils';
 import InterviewScheduleRescheduleModal from './InterviewScheduleRescheduleModal';
@@ -19,6 +18,7 @@ import {
   getInterviewProcessDataThunk,
   updateInterviewProcessThunk
 } from '../../../../../../../../../redux/services/hrms/employeeJoining/interviewProcess';
+import useDropdownData from '../../../../../../../../../hooks/useDropdownData';
 import './style.scss';
 
 function InterviewProcessDetails() {
@@ -29,9 +29,6 @@ function InterviewProcessDetails() {
   const currentInterviewStepData = useCurrentInterviewStep();
 
   // // redux state
-  const { remarkMasterList, isLoading: remarkMasterListLoading } = useSelector(
-    (state) => state?.remarkMaster
-  );
   const { isLoading } = useSelector((state) => state?.interViewProcess);
 
   // // local state
@@ -42,14 +39,9 @@ function InterviewProcessDetails() {
   const [clickFor, setClickFor] = useState('');
 
   // // dropdown data
-  const remarkType = [
-    { label: 'Select', value: '', isDisabled: true },
-    ...(remarkMasterList
-      ?.filter((item) => item?.is_active === 1)
-      ?.map((item) => ({ label: item?.remark_description, value: item?.id })) ||
-      []),
-    { label: 'Other', value: 0 }
-  ];
+  const { remarkDropdown, remarkDropdownLoading } = useDropdownData({
+    render: true
+  });
 
   // // function
   const handelProceedReject = ({ formData, resetFunc }) => {
@@ -77,12 +69,6 @@ function InterviewProcessDetails() {
       })
     );
   };
-
-  useEffect(() => {
-    if (!remarkMasterList?.length) {
-      dispatch(getRemarkMasterListThunk());
-    }
-  }, []);
 
   useEffect(() => {
     if (currentInterviewStepData?.application_status_id === 2) {
@@ -135,13 +121,11 @@ function InterviewProcessDetails() {
                 <Col sm={12}>
                   <Field
                     component={CustomReactSelect}
-                    options={remarkType}
+                    options={remarkDropdown}
                     name="remark_id"
                     label="Remark Title"
                     placeholder={
-                      remarkMasterListLoading?.getRemarkMasterList
-                        ? 'Loading...'
-                        : 'Select'
+                      remarkDropdownLoading ? 'Loading...' : 'Select'
                     }
                     requiredField
                   />

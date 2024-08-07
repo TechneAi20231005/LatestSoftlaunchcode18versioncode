@@ -3,18 +3,18 @@
   z-index: 1050;
   background-color: white;
   border: 1px solid #ccc;
-  padding: 14px;
+  padding: 5px;
   border-radius: 5px;
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1), 0 0 20px 0 rgba(0, 0, 0, 0.1),
     0 0 30px 0 rgba(0, 0, 0, 0.1);
   width: auto;
   max-width: 230px;
   min-width: 200px;
-  max-height: 90%;
-  overflow: auto;
+  height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 
-/* Media queries for responsiveness */
 @media (max-width: 600px) {
   .custom-container {
     position: fixed;
@@ -37,15 +37,9 @@
   margin: 0px;
 }
 
-.text-custom {
-  color: #484c7f;
-}
 .Sort {
   font-size: 15px;
   color: gray;
-}
-.pointer {
-  cursor: pointer;
 }
 
 .filter-text {
@@ -59,7 +53,7 @@
   align-items: center;
 }
 .icon-spacing {
-  margin-left: auto; /* Pushes the icon to the far right */
+  margin-left: auto;
 }
 .search-container {
   position: relative;
@@ -77,11 +71,11 @@
 .filter-item {
   display: flex;
   align-items: center;
-  margin-bottom: 10px; /* Adjust as needed for spacing */
+  margin-bottom: 10px;
 }
 
 .check-box-size {
-  font-size: 25px; /* Adjust the size as needed */
+  font-size: 25px;
 }
 
 .mx-3 {
@@ -90,7 +84,7 @@
 }
 
 .fs-6 {
-  font-size: 1rem; /* Adjust the size as needed */
+  font-size: 1rem;
 }
 
 .mb-0 {
@@ -108,10 +102,9 @@
   box-shadow: 0 0 10px 0 rgba(0, 0, 0, 0.1), 0 0 20px 0 rgba(0, 0, 0, 0.1),
     0 0 30px 0 rgba(0, 0, 0, 0.1);
   border-radius: 3px;
-  z-index: 1051; /* Higher than the modal */
+  z-index: 1051;
 }
 
-/* Custom class to override Bootstrap modal-footer */
 .custom-container .modal-footer {
   display: flex;
   flex-wrap: wrap;
@@ -119,27 +112,26 @@
   align-items: center;
   justify-content: flex-end;
   padding: 0.75rem;
-  border-top: none !important; /* Remove the border */
-  border-bottom-right-radius: 0; /* Remove border-radius */
-  border-bottom-left-radius: 0; /* Remove border-radius */
+  border-top: none !important;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
 }
 
-/* Override Bootstrap's styles using !important */
 .custom-modal .modal-content {
-  background-color: white !important; /* Or your custom background color */
+  background-color: white !important;
 }
 .button-container {
   display: flex;
   justify-content: space-between;
-  margin-top: 20px; /* Optional: Adjust the margin as needed */
+  margin-top: 20px;
 }
 
 .btn-small {
-  padding: 4px 8px; /* Decrease padding */
-  font-size: 0.875rem; /* Decrease font size */
-  height: auto; /* Ensure height adjusts to content */
+  padding: 4px 8px;
+  font-size: 0.875rem;
+  height: auto;
 }
 
 .mt-3 {
-  margin-top: 0; /* Reset margin-top for button within the container */
+  margin-top: 0;
 }

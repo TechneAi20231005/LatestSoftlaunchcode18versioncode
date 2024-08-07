@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
@@ -8,11 +8,9 @@ import ProjectService from '../../../services/ProjectManagementService/ProjectSe
 import PageHeader from '../../../components/Common/PageHeader';
 import Alert from '../../../components/Common/Alert';
 
-import { Spinner } from 'react-bootstrap';
-import { Modal } from 'react-bootstrap';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
@@ -36,16 +34,16 @@ function ProjectComponent() {
   const [exportData, setExportData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  // const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(data, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [data, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -127,7 +125,7 @@ function ProjectComponent() {
 
     {
       name: 'Description',
-      width: '10%',
+      width: '170px',
       selector: (row) => row.description,
       sortable: true,
       cell: (row) => (
@@ -141,9 +139,9 @@ function ProjectComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.description && row.description.length < 10
+                  {row.description && row.description.length < 20
                     ? row.description
-                    : row.description.substring(0, 10) + '....'}
+                    : row.description.substring(0, 20) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -158,10 +156,10 @@ function ProjectComponent() {
       sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary">Active</span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger">Deactive</span>
           )}
         </div>
@@ -191,7 +189,7 @@ function ProjectComponent() {
     },
     {
       name: 'created at',
-      width: '10%',
+      width: '200px',
       selector: (row) => row.created_at,
       sortable: true,
       cell: (row) => (
@@ -205,9 +203,9 @@ function ProjectComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.created_at && row.created_at.length < 10
+                  {row.created_at && row.created_at.length < 20
                     ? row.created_at
-                    : row.created_at.substring(0, 10) + '....'}
+                    : row.created_at.substring(0, 20) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -231,9 +229,9 @@ function ProjectComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.created_by && row.created_by.length < 10
+                  {row.created_by && row.created_by.length < 20
                     ? row.created_by
-                    : row.created_by.substring(0, 10) + '....'}
+                    : row.created_by.substring(0, 20) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -296,22 +294,23 @@ function ProjectComponent() {
     }
   ];
 
-  const loadData = async () => {
-    setShowLoaderModal(null);
-    setShowLoaderModal(true);
+  const loadData = useCallback(async () => {
+    // setShowLoaderModal(null);
+    // setShowLoaderModal(true);
     setIsLoading(true);
     const data = [];
     await new ProjectService()
       .getProject()
       .then((res) => {
         if (res.status === 200) {
-          setShowLoaderModal(false);
+          // setShowLoaderModal(false);
 
-          let counter = 1;
+          let counter = 0;
+          console.log(counter++);
           const temp = res.data.data;
           for (const key in temp) {
             data.push({
-              SrNo: counter++,
+              counter: counter++,
               id: temp[key].id,
               project_name: temp[key].project_name,
               projectReviewer: temp[key].projectReviewer,
@@ -336,7 +335,7 @@ function ProjectComponent() {
 
               'Project Name': data[key].project_name,
               projectReviewer: data[key].projectReviewer,
-              is_active: data[key].is_active == 1 ? 'Active' : 'Deactive',
+              is_active: data[key].is_active === 1 ? 'Active' : 'Deactive',
               description: data[key].description,
               remark: data[key].remark,
               created_at: data[key].created_at,
@@ -360,14 +359,14 @@ function ProjectComponent() {
       });
 
     dispatch(getRoles());
-  };
+  }, [dispatch]);
 
   useEffect(() => {
     loadData();
     if (location && location.state) {
       setNotify(location.state.alert);
     }
-  }, []);
+  }, [loadData, location]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -382,7 +381,7 @@ function ProjectComponent() {
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -449,9 +448,9 @@ function ProjectDropdown(props) {
     new ProjectService().getProject().then((res) => {
       if (res.status === 200) {
         let counter = 1;
-        var data = res.data.data.filter((d) => d.is_active == 1);
+        var data = res.data.data.filter((d) => d.is_active === 1);
 
-        data.filter((d) => d.is_active == 1);
+        data.filter((d) => d.is_active === 1);
         for (const key in data) {
           tempData.push({
             counter: counter++,
@@ -475,14 +474,14 @@ function ProjectDropdown(props) {
           onChange={props.getChangeValue}
           required={props.required ? true : false}
         >
-          {props.defaultValue == 0 && (
+          {props.defaultValue === 0 && (
             <option value="" selected>
               Select Project
             </option>
           )}
-          {props.defaultValue != 0 && <option value="">Select Project</option>}
+          {props.defaultValue !== 0 && <option value="">Select Project</option>}
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.project_name}

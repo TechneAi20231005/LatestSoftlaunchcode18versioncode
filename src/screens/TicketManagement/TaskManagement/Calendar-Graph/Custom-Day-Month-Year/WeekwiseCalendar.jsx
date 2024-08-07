@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import './custom-style.css';
 import CalendarSkeleton from './Skeleton/CalendarSkeleton';
 const WeekwiseCalendar = (props) => {
-  const { daysOfWeek, data, bgColor, isLoading } = props;
+  const {  data, bgColor, isLoading } = props;
   const [tooltipContent, setTooltipContent] = useState('');
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
 
@@ -80,7 +80,7 @@ const WeekwiseCalendar = (props) => {
                   </div>
                 </div>
                 {taskDataArray.map((task, idx) => {
-                  let actualStatus = task?.task_status;
+                  let actualStatus = task?.task_actual_status;
                   let filteredBgColor = bgColor?.filter(
                     (bgcolor) => bgcolor?.statusName === actualStatus
                   );

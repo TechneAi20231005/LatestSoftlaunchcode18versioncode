@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
@@ -10,7 +10,6 @@ import * as Validation from '../../../components/Utilities/Validation';
 import Alert from '../../../components/Common/Alert';
 import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
@@ -53,17 +52,17 @@ function RoleComponent({ location }) {
   );
 
   //Local state
-  const [notify, setNotify] = useState();
+  // const [notify, setNotify] = useState();
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(RoleMasterData, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [RoleMasterData, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -79,7 +78,7 @@ function RoleComponent({ location }) {
       width: '15%',
       cell: (row) => (
         <div className="btn-group-sm" role="group">
-          {checkRole && checkRole[0]?.can_update == 1 ? (
+          {checkRole && checkRole[0]?.can_update === 1 ? (
             <button
               type="button"
               className="btn btn-outline-secondary"
@@ -100,7 +99,7 @@ function RoleComponent({ location }) {
           ) : (
             ''
           )}
-          {checkRole && checkRole[0]?.can_create == 1 ? (
+          {checkRole && checkRole[0]?.can_create === 1 ? (
             <Link
               to={`/${_base}/MenuManage/` + row.id}
               className="btn btn-primary"
@@ -119,10 +118,16 @@ function RoleComponent({ location }) {
       )
     },
 
-    { name: 'Sr', selector: (row) => row.counter, sortable: true },
+    {
+      name: 'Sr',
+      width: '150px',
+      selector: (row) => row.counter,
+      sortable: true
+    },
     {
       name: 'Role',
       id: 'role_id',
+      width: '170px',
       sortable: true,
       selector: (row) => {},
       cell: (row) => (
@@ -131,8 +136,8 @@ function RoleComponent({ location }) {
             <div>
               {/* <span className="ms-1"> {row.role}</span> */}
               <span>
-                {row.role.length > 12
-                  ? row.role.substring(0, 12) + '...'
+                {row.role.length > 20
+                  ? row.role.substring(0, 20) + '...'
                   : row.role}
               </span>
             </div>
@@ -148,12 +153,12 @@ function RoleComponent({ location }) {
       width: '150px',
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -189,7 +194,7 @@ function RoleComponent({ location }) {
 
   const handleForm = (id) => async (e) => {
     e.preventDefault();
-    setNotify(null);
+    // setNotify(null);
     const form = new FormData(e.target);
 
     if (!id) {
@@ -212,11 +217,11 @@ function RoleComponent({ location }) {
   useEffect(() => {
     const storedAlert = localStorage.getItem('alert');
     if (storedAlert) {
-      setNotify(storedAlert);
+      // setNotify(storedAlert);
 
       localStorage.removeItem('alert');
     } else if (location && location.state && location.state.alert) {
-      setNotify(location.state.alert);
+      // setNotify(location.state.alert);
       localStorage.setItem('alert', location.state.alert);
     }
   }, [location]);
@@ -227,7 +232,7 @@ function RoleComponent({ location }) {
     if (!RoleMasterData.length) {
       dispatch(getRoles());
     }
-  }, []);
+  }, [dispatch, RoleMasterData.length]);
 
   useEffect(() => {
     setFilteredData(RoleMasterData);
@@ -235,7 +240,7 @@ function RoleComponent({ location }) {
 
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -507,14 +512,14 @@ function RoleDropdown(props) {
           required={props.required ? true : false}
           value={props.defaultValue}
         >
-          {props.defaultValue == 0 && (
+          {props.defaultValue === 0 && (
             <option value={0} selected>
               Select Role
             </option>
           )}
-          {props.defaultValue != 0 && <option value={0}>Select Role</option>}
+          {props.defaultValue !== 0 && <option value={0}>Select Role</option>}
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.role}
