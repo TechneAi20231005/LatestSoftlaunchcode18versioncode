@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Col, Container, Row, Stack } from 'react-bootstrap';
+import { Col, Collapse, Container, Row, Stack } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
@@ -282,7 +282,7 @@ function PendingOrder() {
                 </button>
               </div>
 
-              <RenderIf render={toggleFilter}>
+              <Collapse in={toggleFilter}>
                 <Row className="align-items-end row_gap_3">
                   <Col md={5}>
                     <Field
@@ -328,7 +328,7 @@ function PendingOrder() {
                     </button>
                   </Col>
                 </Row>
-              </RenderIf>
+              </Collapse>
 
               <RenderIf render={filterFormValue?.selectedItemsCategory}>
                 <DataTable
