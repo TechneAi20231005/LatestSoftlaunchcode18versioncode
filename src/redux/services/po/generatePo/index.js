@@ -101,7 +101,7 @@ export const getUnixCodeAgainstVendorForErrorFileThunk = createAsyncThunk(
 
 export const getPendingOrderErrorFileThunk = createAsyncThunk(
   'po/pendingOrderErrorFile',
-  async ({ unixCode }) => {
+  async ({ unixCode, onSuccessHandler }) => {
     try {
       const response = await customAxios.get(
         `/poRequisition/getPoErrorData/${unixCode}`
@@ -109,6 +109,7 @@ export const getPendingOrderErrorFileThunk = createAsyncThunk(
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };
+          onSuccessHandler();
         } else {
           errorHandler(response);
         }
