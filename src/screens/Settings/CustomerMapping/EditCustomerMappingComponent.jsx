@@ -78,8 +78,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const [ratioTotal, setRatioTotal] = useState(0);
 
-  
-
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 32)
   );
@@ -428,7 +426,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     e.preventDefault();
     const value = parseInt(e?.target?.value) || 0;
 
-
     if (value > 100) {
       e.target.value = 0;
       ratiowiseData[index] = 0;
@@ -436,8 +433,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     } else {
       ratiowiseData[index] = value;
       const sum = ratiowiseData?.reduce((result, number) => result + number, 0);
-
-
 
       if (sum > 100) {
         e.target.value = 0;
@@ -448,7 +443,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
           user_id: userDropdown[idx]?.value || null,
           ratio: ratio
         }));
-
 
         setUserData(newData);
         setRatioTotal(sum);
@@ -574,15 +568,21 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   }, [checkRole]);
 
   useEffect(() => {
-    // Initialize ratiowiseData with default ratios from data.user_policy if available
+    const userPolicyArray = Array.isArray(data.user_policy)
+      ? data.user_policy
+      : [];
+
     const initialData = userDropdown?.map((ele, i) => {
-      const userPolicy = data.user_policy?.find((policy) =>
-        policy.startsWith(`${ele.value}:`)
+      const userPolicy = userPolicyArray.find(
+        (policy) =>
+          typeof policy === 'string' && policy.startsWith(`${ele.value}:`)
       );
       return userPolicy ? parseInt(userPolicy.split(':')[1]) : 0;
     });
+
     setRatiowiseData(initialData);
   }, [userDropdown, data.user_policy]);
+
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Edit Customer Mapping" />
@@ -900,9 +900,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
                   {data.approach !== 'SELF' &&
                     data.approach !== 'AU' &&
-
                     userDropdown?.length > 0 && (
-
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
                           <b>
@@ -912,7 +910,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         {data &&
                           userDropdown &&
                           userDropdown?.length > 0 &&
-
                           data.approach !== 'RW' &&
                           data.approach && (
                             <div className="col-sm-4">
