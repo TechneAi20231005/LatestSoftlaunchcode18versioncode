@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Col, Container, Spinner } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useNavigate } from 'react-router-dom';
@@ -16,6 +16,7 @@ import {
 import { createPendingOrderThunk } from '../../../../../redux/services/po/generatePo';
 import { _base } from '../../../../../settings/constants';
 import { NumbersOnly } from '../../../../../components/Utilities/Validation';
+import { exportToExcelCustomHandler } from '../../../../../utils/customFunction';
 import './style.scss';
 
 function PoPreview() {
@@ -24,9 +25,11 @@ function PoPreview() {
   const dispatch = useDispatch();
 
   // // redux state
-  const { userAddedPoDataList, isLoading } = useSelector(
-    (state) => state?.generatePo
-  );
+  const {
+    userAddedPoDataList,
+    isLoading,
+    pendingOrderErrorFileOnTheSportDownloadData
+  } = useSelector((state) => state?.generatePo);
 
   // // local state
   const [orderQty, setOrderQty] = useState({
@@ -136,6 +139,9 @@ function PoPreview() {
         formData: { payload: userAddedPoDataList },
         onSuccessHandler: () => {
           navigate(`/${_base}/GeneratePO`);
+        },
+        onErrorHandler: () => {
+          navigate(`/${_base}/GeneratePO`);
         }
       })
     );
@@ -172,9 +178,41 @@ function PoPreview() {
     setOpenDeleteOrderConfirmationModal({ open: false });
   };
 
+  const exportErrorFileOnPoSubmit = useCallback(() => {
+    const errorFileData = pendingOrderErrorFileOnTheSportDownloadData?.map(
+      (errorData) => ({
+        'Delivery Date': errorData?.delivery_date ?? '--',
+        'Order Date': errorData?.order_date ?? '--',
+        'Karagir 1': errorData?.karagir ?? '--',
+        Item: errorData?.item ?? '--',
+        Category: errorData?.category ?? '--',
+        'Exact Wt': errorData?.exact_wt ?? '--',
+        'Weight Range': errorData?.weight_range ?? '--',
+        'Size Range': errorData?.size_range ?? '--',
+        'Purity Range': errorData?.purity_range ?? '--',
+        'New Order': errorData?.new_qty ?? '--',
+        'Karagir Wt Range': errorData?.karagir_wt_range ?? '--',
+        'Knockoff Wt Range': errorData?.knockoff_wt_range ?? '--',
+        'Karagir Size Range': errorData?.karagir_size_range ?? '--',
+        Remark: errorData?.Error ?? '--'
+      })
+    );
+    return exportToExcelCustomHandler({
+      data: errorFileData,
+      fileName: 'PO Error File Records'
+    });
+  }, [pendingOrderErrorFileOnTheSportDownloadData]);
+
   useEffect(() => {
     setOrderQtyInputValue(orderQty?.currentValue);
   }, [orderQty?.currentValue]);
+
+  useEffect(() => {
+    if (pendingOrderErrorFileOnTheSportDownloadData?.length) {
+      exportErrorFileOnPoSubmit();
+    }
+  }, [pendingOrderErrorFileOnTheSportDownloadData]);
+
   return (
     <>
       <Container fluid className="pending_order_preview_container">
