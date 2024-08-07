@@ -9,7 +9,6 @@ import { ProjectDropdown } from '../ProjectMaster/ProjectComponent';
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
 
-
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -19,13 +18,8 @@ export default function CreateModuleComponent({ match }) {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 21)
   );
 
-
-
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
-
-
-
 
   const handleForm = async (e) => {
     e.preventDefault();
@@ -77,12 +71,9 @@ export default function CreateModuleComponent({ match }) {
         }
       });
   };
-
-  const loadData = useCallback( async () => {
-
-
+  useEffect(() => {
     dispatch(getRoles());
-  },[dispatch]);
+  }, []);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
@@ -90,8 +81,7 @@ export default function CreateModuleComponent({ match }) {
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-    loadData();
-  }, [checkRole, loadData]);
+  }, []);
 
   return (
     <div className="container-xxl">
