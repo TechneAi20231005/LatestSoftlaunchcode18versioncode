@@ -97,6 +97,7 @@ const generatePoSlice = createSlice({
 
     resetUserAddedOrderList(state, action) {
       state.userAddedPoDataList = [];
+      state.pendingOrderErrorFileOnTheSportDownloadData = [];
       sessionStorage.removeItem('poDataList');
     },
 
