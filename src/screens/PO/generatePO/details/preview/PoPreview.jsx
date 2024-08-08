@@ -183,7 +183,7 @@ function PoPreview() {
       (errorData) => ({
         'Delivery Date': errorData?.delivery_date ?? '--',
         'Order Date': errorData?.order_date ?? '--',
-        'Karagir 1': errorData?.karagir ?? '--',
+        'Karagir 1': errorData?.karagir_1 ?? '--',
         Item: errorData?.item ?? '--',
         Category: errorData?.category ?? '--',
         'Exact Wt': errorData?.exact_wt ?? '--',
@@ -197,6 +197,7 @@ function PoPreview() {
         Remark: errorData?.Error ?? '--'
       })
     );
+    handelCancelPo();
     return exportToExcelCustomHandler({
       data: errorFileData,
       fileName: 'PO Error File Records'
