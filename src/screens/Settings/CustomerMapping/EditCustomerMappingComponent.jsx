@@ -602,6 +602,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                       <b>Select Customer Type :</b>
                     </label>
                     <div className="col-sm-4">
+                      {console.log('data', data.customer_type_id)}
                       {customerTypeDropdown && data && (
                         <Select
                           id="customer_type_id[]"
@@ -612,7 +613,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                           defaultValue={
                             data &&
                             customerTypeDropdown.filter((d) =>
-                              data.customer_type_id.includes(d.value)
+                              data?.customer_type_id?.includes(d.value)
                             )
                           }
                           onChange={(e) =>
