@@ -1547,7 +1547,7 @@ export default function MyTicketComponent() {
       sortable: true
     },
     {
-      name: 'Descriptiondddd',
+      name: 'Description',
       width: '170px',
       selector: (row) => {},
       sortable: false,
