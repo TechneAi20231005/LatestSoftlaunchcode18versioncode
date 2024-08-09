@@ -260,7 +260,7 @@ export default function TaskModal(props) {
   // const [tasktypeDropdown, setTasktypeDropdown] = useState();
   const [parentTaskName, setParentTaskName] = useState(null);
 
-  const loadData = useCallback( async () => {
+  const loadData = useCallback(async () => {
     setSelectedFile([]);
     const tempUserData = [];
     const tempDefaultUserData = [];
@@ -360,7 +360,7 @@ export default function TaskModal(props) {
         setTaskData(res?.data?.data);
       }
     });
-  },[props.data, props?.taskDropdown]);
+  }, [props.data, props?.taskDropdown]);
 
   // const loadAttachment = async () => {
   //   setNotify(null);
@@ -432,7 +432,7 @@ export default function TaskModal(props) {
   const transformedOptions = transformData(taskData);
 
   const uploadAttachmentHandler = (e, type, id = null) => {
-    let file ;
+    let file;
     if (type === 'UPLOAD') {
       const selectedFilesCount = selectedFile?.length;
       const maxTotalSizeMB = 10; // Maximum total size in MB
@@ -478,16 +478,14 @@ export default function TaskModal(props) {
         fileInputRef.current.value = '';
       }
     } else if (type === 'DELETE') {
-      let filteredFileArray = selectedFile.filter(
-        (index) => id !== index
-      );
+      let filteredFileArray = selectedFile.filter((index) => id !== index);
       setSelectedFile(filteredFileArray);
     } else if (type === 'CUSTOMER') {
-       file = selectedFile;
+      file = selectedFile;
       file[id].show_to_customer = file[id].show_to_customer ? 0 : 1;
       setSelectedFile(file);
     } else if (type === 'PROJECT_OWNER') {
-       file = selectedFile;
+      file = selectedFile;
       file[id].show_to_project_owner = file[id].show_to_project_owner ? 0 : 1;
       setSelectedFile(file);
     } else {
@@ -1163,7 +1161,9 @@ export default function TaskModal(props) {
                       userData &&
                       userData
                         .map((d) => ({ value: d.value, label: d.label }))
-                        .filter((d) => d.value === localStorage.getItem('id'))
+                        .filter(
+                          (d) => d.value === Number(localStorage.getItem('id'))
+                        )
                     }
                     isClearable
                     // isDisabled={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
