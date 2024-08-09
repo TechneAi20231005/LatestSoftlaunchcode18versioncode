@@ -261,18 +261,17 @@ function BillCheckingTransaction() {
               </li>
 
               {(row &&
-                ((row.level === parseInt(row.total_level) &&
-                  row.is_assign_to === 1) ||
-                  row.is_editable_for_creator === 1 ||
-                  (row.is_rejected === 1 &&
-                    row.is_editable_for_creator === 1) ||
+                ((row.level == parseInt(row.total_level) &&
+                  row.is_assign_to == 1) ||
+                  row.is_editable_for_creator == 1 ||
+                  (row.is_rejected == 1 && row.is_editable_for_creator == 1) ||
                   (authorities &&
-                    authorities.All_Update_Bill === true &&
+                    authorities.All_Update_Bill == true &&
                     row.is_assign_to !== 1) ||
                   (row.level !== parseInt(row.total_level) &&
-                    row.is_approver === 1)) &&
-                row.is_active === 1) ||
-                (row['Is cancelled'] === 0 && (
+                    row.is_approver == 1)) &&
+                row.is_active == 1) ||
+                (row['Is cancelled'] == 0 && (
                   <li>
                     <Link
                       to={`/${_base}/BillCheckingHistory/` + row.id}
@@ -284,8 +283,8 @@ function BillCheckingTransaction() {
                   </li>
                 ))}
 
-              {((row.is_assign_to === 1 && row.level === row.total_level) ||
-                row.is_active === 0) && (
+              {((row.is_assign_to == 1 && row.level == row.total_level) ||
+                row.is_active == 0) && (
                 <li>
                   <Link
                     to={`/${_base}/PaymentHistory/` + row.id}
@@ -297,7 +296,7 @@ function BillCheckingTransaction() {
                 </li>
               )}
 
-              {row.is_assign_to === 1 && row.level === row.total_level && (
+              {row.is_assign_to == 1 && row.level == row.total_level && (
                 <>
                   <li>
                     <Link
@@ -321,8 +320,8 @@ function BillCheckingTransaction() {
                 </>
               )}
               {authorities &&
-                authorities.Is_Cancle_Bill === true &&
-                row.is_active === 1 && (
+                authorities.Is_Cancle_Bill == true &&
+                row.is_active == 1 && (
                   <li>
                     <button
                       className="btn btn-sm btn-danger text-white"
