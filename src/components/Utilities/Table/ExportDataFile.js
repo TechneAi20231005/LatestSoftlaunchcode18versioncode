@@ -13,7 +13,8 @@ export const ExportData = (data, columns) => {
     };
 
     columns?.forEach((column) => {
-      transformedRow[column.title] = row[column.field] || column.defaultValue || '--';
+      transformedRow[column.title] =
+        row[column.field] || column.defaultValue || '--';
     });
 
     return transformedRow;
@@ -76,7 +77,8 @@ export const ExportToExcel = ({
         <Spinner animation="border" size="sm" />
       ) : (
         <>
-          <i className="icofont-download" /> {buttonTitle ? buttonTitle : 'Export'}
+          <i className="icofont-download" />{' '}
+          {buttonTitle ? buttonTitle : 'Export'}
         </>
       )}
     </button>

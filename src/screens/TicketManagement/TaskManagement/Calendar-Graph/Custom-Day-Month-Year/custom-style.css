@@ -63,3 +63,6 @@
   height: 85%;
   /* background-color: #484c7f; */
 }
+.select-box {
+  z-index: 1000;
+}

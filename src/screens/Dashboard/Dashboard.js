@@ -43,7 +43,7 @@ export default function HrDashboard(props) {
   const [ticketID, setTicketID] = useState();
   const [isLoading, setIsLoading] = useState(false);
   const [notificationId, setNotificationId] = useState();
-  const [showApprovedOnly, setShowApprovedOnly] = useState(false);
+  const [showApprovedOnly, setShowApprovedOnly] = useState(true);
   const [approveRequestModal, setApproveRequestModal] = useState({
     show: false,
     data: null
@@ -92,16 +92,16 @@ export default function HrDashboard(props) {
     const id = sessionStorage.getItem('id');
     const res = await getData(id);
     if (res.status === 200) {
-      setCount(res.data.data.count);
-      setDailyTask(res.data.data.dailyTask);
-      setPreviousTask(res.data.data.previousTask);
-      setUpcomingTask(res.data.data.upcomingTask);
+      setCount(res?.data?.data?.count);
+      setDailyTask(res?.data?.data?.dailyTask);
+      setPreviousTask(res?.data?.data?.previousTask);
+      setUpcomingTask(res?.data?.data?.upcomingTask);
       setChartData((prevChartData) => ({
         ...prevChartData,
         series: [
-          res.data.data.count.pendingTask || 0,
-          res.data.data.count.workingTask,
-          res.data.data.count.completedTask
+          res?.data?.data?.count?.pendingTask || 0,
+          res?.data?.data?.count?.workingTask,
+          res?.data?.data?.count?.completedTask
         ]
       }));
     }
@@ -194,14 +194,15 @@ export default function HrDashboard(props) {
   const handleHistoryModal = () => {
     setIsLoading(null);
     setIsLoading(true);
-    new getRegularizationTimeHistory()
+    const type = 'limit';
+    new getRegularizationTimeHistory({ type: type })
 
       .then((res) => {
         // Process the data
         if (res.status === 200) {
           setIsLoading(false);
 
-          if (res.data.data) {
+          if (res?.data?.data?.length) {
             const temp = res.data.data
               ?.filter((d) => d?.status_remark !== 'PENDING')
               ?.map((d) => ({
@@ -219,6 +220,7 @@ export default function HrDashboard(props) {
                 actual_time: d.actual_time,
                 task_hours: d.task_hours,
                 scheduled_time: d.scheduled_time,
+                approved_by_name: d.approved_by_name,
                 status: d.status_remark
               }));
 
@@ -326,7 +328,7 @@ export default function HrDashboard(props) {
                     >
                       Regularization
                     </button>
-                    {approvedNotifications?.length > 0 && (
+                    {approvedNotifications?.length > 0 ? (
                       <div
                         className="notification-circle"
                         style={{
@@ -347,6 +349,29 @@ export default function HrDashboard(props) {
                         }}
                       >
                         {approvedNotifications.length}
+                      </div>
+                    ) : (
+                      <div
+                        className="notification-circle"
+                        style={{
+                          position: 'absolute',
+                          top: '-10px',
+                          right: '-10px',
+                          // padding: '3px',
+                          backgroundColor: 'rgb(255, 24, 67)',
+                          borderRadius: '50%',
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          color: 'white',
+                          textAlign: 'center',
+                          // fontSize: '0.8rem',
+                          fontWeight: 'bold',
+                          color: 'red',
+                          minWidth: '20px', // Minimum width to prevent squishing
+                          height: 'auto' // Let the height adjust automatically}}
+                        }}
+                      >
+                        .
                       </div>
                     )}
                   </div>
@@ -656,13 +681,15 @@ export default function HrDashboard(props) {
                 hide={handleCloseHistoryModal}
                 data={historyData}
                 isLoading={isLoading}
+                setHistoryData={setHistoryData}
+                setHistoryModal={setHistoryModal}
               />
             )}
           </>
         </div>
       </div>
-      <div className="row">
-        <div className="col-md-12 col-lg-3 col-xl-3 col-xxl-3">
+      <div className="row row_gap_3">
+        <div className="col-md-6 col-lg-3">
           <div className="card bg-danger text-white">
             <div className="card-body">
               <div className="d-flex align-items-center">
@@ -689,7 +716,7 @@ export default function HrDashboard(props) {
           </div>
         </div>
 
-        <div className="col-md-12 col-lg-3 col-xl-3 col-xxl-3">
+        <div className="col-md-6 col-lg-3">
           <div className="card bg-warning text-white">
             <div className="card-body">
               <div className="d-flex align-items-center">
@@ -716,7 +743,7 @@ export default function HrDashboard(props) {
           </div>
         </div>
 
-        <div className="col-md-12 col-lg-3 col-xl-3 col-xxl-3">
+        <div className="col-md-6 col-lg-3">
           <div className="card bg-success text-white">
             <div className="card-body">
               <div className="d-flex align-items-center">
@@ -743,7 +770,7 @@ export default function HrDashboard(props) {
           </div>
         </div>
 
-        <div className="col-md-12 col-lg-3 col-xl-3 col-xxl-3">
+        <div className="col-md-6 col-lg-3">
           <div className="card bg-info text-white">
             <div className="card-body">
               <div className="d-flex align-items-center">

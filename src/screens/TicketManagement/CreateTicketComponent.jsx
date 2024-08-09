@@ -405,18 +405,18 @@ export default function CreateTicketComponent() {
         );
         setQueryGroupTypeData(null);
       } else {
-        var dynamicForm = data[0].dynamic_form;
+        var dynamicForm = data[0]?.dynamic_form;
 
         const filteredArray = dynamicForm.filter(
           (formInstance) =>
-            formInstance.inputType === 'select' &&
-            formInstance.inputAddOn.inputDataSource
+            formInstance?.inputType === 'select' &&
+            formInstance?.inputAddOn?.inputDataSource
         );
 
         await Promise.all(
-          filteredArray.map((d) =>
+          filteredArray?.map((d) =>
             new DynamicFormDropdownMasterService().getDropdownById(
-              d.inputAddOn.inputDataSource
+              d?.inputAddOn?.inputDataSource
             )
           )
         )
@@ -599,10 +599,10 @@ export default function CreateTicketComponent() {
         queryTypeRef?.current.clearValue();
       }
 
-      const res = await new QueryTypeService().getQueryTypeMapped(e.value);
+      const res = await new QueryTypeService().getQueryTypeMapped(e?.value);
 
       if (res.data.status === 1) {
-        const activeData = res.data.data
+        const activeData = res?.data?.data
           .filter((d) => d.is_active === 1)
           .map((d) => ({ value: d.id, label: d.query_type_name }));
         setQueryGroupTypeData(activeData);
@@ -1189,15 +1189,16 @@ export default function CreateTicketComponent() {
                         />
                       )}
 
-                      {data.inputType === 'radio' && data.inputAddOn.inputRadio
-                        ? data.inputAddOn.inputRadio.map((d) => {
+                      {data.inputType === 'radio' &&
+                      data?.inputAddOn?.inputRadio
+                        ? data?.inputAddOn?.inputRadio?.map((d) => {
                             return (
                               <div>
                                 <input
                                   value={d.value}
                                   onChange={handleRadioChange}
                                   defaultChecked={selectedValue === d.value}
-                                  name={data.inputName}
+                                  name={data?.inputName}
                                   className="mx-2"
                                   type="radio"
                                 />
@@ -1207,9 +1208,9 @@ export default function CreateTicketComponent() {
                           })
                         : ''}
 
-                      {data.inputType === 'checkbox' &&
-                      data.inputAddOn.inputRadio
-                        ? data.inputAddOn.inputRadio.map((d) => {
+                      {data?.inputType === 'checkbox' &&
+                      data?.inputAddOn?.inputRadio
+                        ? data?.inputAddOn?.inputRadio.map((d) => {
                             return (
                               <div>
                                 <input
@@ -1219,7 +1220,7 @@ export default function CreateTicketComponent() {
                                     selectedCheckBoxValue === d.value
                                   }
                                   required={
-                                    data.inputMandatory &&
+                                    data?.inputMandatory &&
                                     selectedCheckBoxValue === d.value
                                   }
                                   name={data.inputName}
@@ -1232,20 +1233,20 @@ export default function CreateTicketComponent() {
                           })
                         : ''}
 
-                      {data.inputType === 'number' && (
+                      {data?.inputType === 'number' && (
                         <input
-                          type={data.inputType}
+                          type={data?.inputType}
                           id={
-                            data.inputName
-                              ? data.inputName.replace(/ /g, '_').toLowerCase()
+                            data?.inputName
+                              ? data?.inputName.replace(/ /g, '_').toLowerCase()
                               : ''
                           }
                           name={data.inputName}
                           defaultValue={data.inputDefaultValue}
                           required={data.inputMandatory === true ? true : false}
                           onChange={dynamicChangeHandle}
-                          min={data.inputAddOn.inputRangeMin}
-                          max={data.inputAddOn.inputRangeMax}
+                          min={data?.inputAddOn?.inputRangeMin}
+                          max={data?.inputAddOn?.inputRangeMax}
                           className="form-control form-control-sm"
                         />
                       )}
@@ -1257,42 +1258,47 @@ export default function CreateTicketComponent() {
                               ? data.inputName.replace(/ /g, '_').toLowerCase()
                               : ''
                           }
-                          defaultValue={data.inputDefaultValue}
-                          required={data.inputMandatory === true ? true : false}
-                          name={data.inputName}
+                          defaultValue={data?.inputDefaultValue}
+                          required={
+                            data?.inputMandatory === true ? true : false
+                          }
+                          name={data?.inputName}
                           onChange={dynamicChangeHandle}
-                          minLength={parseInt(data.inputAddOn.inputRangeMin)}
-                          maxLength={parseInt(data.inputAddOn.inputRangeMax)}
+                          minLength={parseInt(data?.inputAddOn?.inputRangeMin)}
+                          maxLength={parseInt(data?.inputAddOn?.inputRangeMax)}
                           className="form-control form-control-sm"
                         />
                       )}
 
-                      {data.inputType === 'select' && (
+                      {data?.inputType === 'select' && (
                         <select
                           id={
-                            data.inputName
-                              ? data.inputName.replace(/ /g, '_').toLowerCase()
+                            data?.inputName
+                              ? data?.inputName.replace(/ /g, '_').toLowerCase()
                               : ''
                           }
                           name={data.inputName}
                           className="form-control form-control-sm"
                         >
-                          <option> {data.inputDefaultValue}</option>
-                          {data.inputAddOn.inputRadio &&
-                            data.inputAddOn.inputRadio.map((option) => {
-                              return (
-                                <option
-                                  selected={
-                                    parseInt(
-                                      data && data?.inputAddOn?.inputDataSource
-                                    ) === option.value
-                                  }
-                                  value={option.value}
-                                >
-                                  {option.label}
-                                </option>
-                              );
-                            })}
+                          <option> {data?.inputDefaultValue}</option>
+
+                          {Array.isArray(data?.inputAddOn?.inputRadio) ? (
+                            data?.inputAddOn?.inputRadio.map((option) => (
+                              <option
+                                key={option.value}
+                                selected={
+                                  parseInt(
+                                    data?.inputAddOn?.inputDataSource
+                                  ) === option.value
+                                }
+                                value={option.value}
+                              >
+                                {option.label}
+                              </option>
+                            ))
+                          ) : (
+                            <option disabled>No options available</option>
+                          )}
                         </select>
                       )}
 
@@ -1303,13 +1309,13 @@ export default function CreateTicketComponent() {
                               ? data.inputName.replace(/ /g, '_').toLowerCase()
                               : ''
                           }
-                          defaultValue={data.inputAddOn.inputDataSource}
+                          defaultValue={data?.inputAddOn?.inputDataSource}
                           name={data.inputName}
                           className="form-control form-control-sm"
                         >
-                          <option> {data.inputName}</option>
-                          {data.inputAddOn.inputDataSourceData &&
-                            data.inputAddOn.inputDataSourceData.map(
+                          <option> {data?.inputName}</option>
+                          {data?.inputAddOn?.inputDataSourceData &&
+                            data?.inputAddOn?.inputDataSourceData.map(
                               (option) => {
                                 return (
                                   <option

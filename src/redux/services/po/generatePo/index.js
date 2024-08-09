@@ -8,9 +8,11 @@ export const getPendingOrderListThunk = createAsyncThunk(
   async ({ categoryName, itemName, weightRange, sizeRange }) => {
     try {
       const response = await customAxios.get(
-        `poRequisition/getPoReqOpenQtyData?item=${itemName}&category=${categoryName}${
-          weightRange ? `&karagir_wt_range=${weightRange}` : ''
-        }${sizeRange ? `&size_range=${sizeRange}` : ''}`,
+        `poRequisition/getPoReqOpenQtyData?item=${itemName}&category=${encodeURIComponent(
+          categoryName
+        )}${weightRange ? `&karagir_wt_range=${weightRange}` : ''}${
+          sizeRange ? `&size_range=${sizeRange}` : ''
+        }`
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
@@ -23,19 +25,29 @@ export const getPendingOrderListThunk = createAsyncThunk(
       errorHandler(error?.response);
       return Promise.reject(error?.response?.data?.message);
     }
-  },
+  }
 );
 
 export const createPendingOrderThunk = createAsyncThunk(
   'po/createPendingOrder',
-  async ({ formData, onSuccessHandler }) => {
+  async ({ formData, onSuccessHandler, onErrorHandler }) => {
     try {
-      const response = await customAxios.post(`poRequisition/submitData`, formData);
+      const response = await customAxios.post(
+        `poRequisition/submitData`,
+        formData
+      );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           onSuccessHandler();
           toast.success(response?.data?.message);
           return response?.data?.message;
+        } else if (response?.data?.status === 3) {
+          errorHandler(response);
+          if (response?.data?.data?.length) {
+            return response.data;
+          } else {
+            onErrorHandler();
+          }
         } else {
           errorHandler(response);
         }
@@ -44,7 +56,7 @@ export const createPendingOrderThunk = createAsyncThunk(
       errorHandler(error?.response);
       return Promise.reject(error?.response?.data?.message);
     }
-  },
+  }
 );
 
 export const poBulkUploadFileExportBeCheckThunk = createAsyncThunk(
@@ -65,5 +77,48 @@ export const poBulkUploadFileExportBeCheckThunk = createAsyncThunk(
       errorHandler(error?.response);
       return Promise.reject(error?.response?.data?.message);
     }
-  },
+  }
+);
+
+export const getUnixCodeAgainstVendorForErrorFileThunk = createAsyncThunk(
+  'po/unixCodeAgainstVendorForErrorFile',
+  async ({ venderName }) => {
+    try {
+      const response = await customAxios.get(
+        `/poRequisition/getPOUploadDateTime/${venderName}`
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          return { data: response?.data?.data, msg: response?.data?.message };
+        } else {
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
+);
+
+export const getPendingOrderErrorFileThunk = createAsyncThunk(
+  'po/pendingOrderErrorFile',
+  async ({ unixCode, onSuccessHandler }) => {
+    try {
+      const response = await customAxios.get(
+        `/poRequisition/getPoErrorData/${unixCode}`
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          return { data: response?.data?.data, msg: response?.data?.message };
+          onSuccessHandler();
+        } else {
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
 );

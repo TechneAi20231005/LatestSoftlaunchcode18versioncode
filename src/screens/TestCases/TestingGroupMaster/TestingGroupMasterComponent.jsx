@@ -122,8 +122,21 @@ function TestingGroupMasterComponent() {
     }
   ];
 
+  const transformDataForExport = (data) => {
+    return data.map((row) => ({
+      ...row,
+      status: row.is_active == 1 ? 'Active' : 'Deactive'
+    }));
+  };
+
+  const transformedData = transformDataForExport(
+    filteredTestingGroupMasterList
+  );
+
   const exportColumns = [
     { title: 'Testing Group Title', field: 'group_name' },
+    { title: 'Status', field: 'status' },
+
     { title: 'Created At', field: 'created_at' },
     { title: 'Created By', field: 'created_by' },
     { title: 'Updated At', field: 'updated_at' },
@@ -198,7 +211,7 @@ function TestingGroupMasterComponent() {
           </button>
           <ExportToExcel
             className="btn btn-danger"
-            apiData={filteredTestingGroupMasterList}
+            apiData={transformedData}
             columns={exportColumns}
             fileName="Testing Group Master Records"
             disabled={!filteredTestingGroupMasterList?.length}
