@@ -16,9 +16,6 @@ const RequestModal = (props) => {
 
   const basketStartDate = props.date;
 
-  // const [date, setDate] = useState("");
-
-  // const [timeDifference, setTimeDifference] = useState('');
   const timeDifference = '';
   const dispatch = useDispatch();
 
@@ -28,24 +25,14 @@ const RequestModal = (props) => {
   const day = String(currentDate.getDate()).padStart(2, '0');
   const formattedDate = `${year}-${month}-${day}`;
 
-  // const handleFromDate = (e) => {
-  //   setDate(e.target.value);
-  // };
-
-  // const [timeData, setTimeData] = useState({});
   var ticket_id = props.data.ticket_id;
   var ticket_basket_id = props.data.ticket_basket_id;
-  // var task_owner_id = localStorage.getItem('id');
   var ticket_task_id = props.data.id;
-
-  // const [firstCheckboxChecked, setFirstCheckboxChecked] = useState(false);
-  // const [secondCheckboxChecked, setSecondCheckboxChecked] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
 
   const handleFirstCheckboxChange = (e) => {
     if (e) {
-      // setFirstCheckboxChecked(e.target.checked);
       if (e.target.checked) {
         handleSecondCheckboxChange({ target: { checked: false } });
       }
@@ -54,7 +41,6 @@ const RequestModal = (props) => {
 
   const handleSecondCheckboxChange = (e) => {
     if (e) {
-      // setSecondCheckboxChecked(e.target.checked);
       if (e.target.checked) {
         handleFirstCheckboxChange({ target: { checked: false } });
       }
@@ -90,22 +76,15 @@ const RequestModal = (props) => {
         setNotify({ type: 'danger', message: res?.payload?.data?.message });
       }
     });
-    // handleClose();
   };
 
-  // handle click event of the Remove button
   const handleRemoveClick = (index) => {
     const list = [...rows];
     list.splice(index, 1);
     setRows(list);
   };
 
-  // handle click event of the Add button
-  // const [remark, setRemark] = useState();
   const remark = null;
-  // const handleAddClick = (e) => {
-  //   setRemark(e.target.value);
-  // };
 
   const [regularizeTimeData, setRegularizeTimeData] = useState([]);
 
@@ -117,7 +96,6 @@ const RequestModal = (props) => {
         if (res.status === 200) {
           setIsLoading(false);
           if (res.data.data) {
-            // setData(null);
             setRegularizeTimeData(res.data.data);
           }
         }
@@ -125,7 +103,6 @@ const RequestModal = (props) => {
     );
   };
   useEffect(() => {
-    // Code to update the actual_time value automatically
     const updatedRows = rows.map((row) => ({
       ...row,
       actual_time: timeDifference
@@ -133,9 +110,7 @@ const RequestModal = (props) => {
     setRows(updatedRows);
   }, [timeDifference]);
 
-  useEffect(() => {
-    // setNotify(null);
-  }, []);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     loadData();
@@ -198,12 +173,15 @@ const RequestModal = (props) => {
     const fromDate = rows[index].from_date;
     const toDate = rows[index].to_date;
 
-    if (fromTime > currentTimeFormatted) {
+    // Get the current date formatted similarly to fromDate and toDate
+    const currentDate = new Date().toISOString().split('T')[0]; // Assuming the format is 'YYYY-MM-DD'
+
+    if (fromDate === currentDate && fromTime > currentTimeFormatted) {
       alert('From time cannot be a future time.');
       return;
     }
 
-    if (toTime > currentTimeFormatted) {
+    if (toDate === currentDate && toTime > currentTimeFormatted) {
       alert('To time cannot be a future time.');
       return;
     }
@@ -212,6 +190,7 @@ const RequestModal = (props) => {
       alert('To time cannot be earlier than from time.');
       return;
     }
+
     const actualTime = calculateTimeDifference(
       fromDate,
       toDate,
@@ -250,7 +229,6 @@ const RequestModal = (props) => {
   };
 
   const [fromDate, setFromDate] = useState(''); // State for from_date
-  // const [toDate, setToDate] = useState('');
 
   const handleDateChange = (index, dateType, value, fromTime, toTime) => {
     if (dateType === 'from_date') {
@@ -259,10 +237,6 @@ const RequestModal = (props) => {
         [index]: value
       }));
     } else if (dateType === 'to_date') {
-      // setToDate((prevToDates) => ({
-      //   ...prevToDates,
-      //   [index]: value
-      // }));
     }
 
     setRows((prev) => {
@@ -292,15 +266,6 @@ const RequestModal = (props) => {
       return updatedRows;
     });
   };
-
-  // const handleInputChange = (e, index) => {
-  //   const { name, value } = e.target;
-  //   setRows((prev) =>
-  //     prev.map((data, rowIndex) =>
-  //       rowIndex === index ? { ...data, [name]: value } : data
-  //     )
-  //   );
-  // };
 
   function calculateActualTime(fromDate, toDate, fromTime, toTime) {
     // Combine date and time into a single string
@@ -465,15 +430,10 @@ const RequestModal = (props) => {
                                   [index]: value
                                 }));
                               } else if (dateType === 'to_date') {
-                                // setToDate((prevToDates) => ({
-                                //   ...prevToDates,
-                                //   [index]: value
-                                // }));
                               }
 
                               const updatedData = [...regularizeTimeData];
                               updatedData[index].from_date = value;
-                              // Calculate actual time
                               const actualTime = calculateActualTime(
                                 updatedData[index].from_date,
                                 updatedData[index].to_date,
@@ -506,15 +466,22 @@ const RequestModal = (props) => {
 
                             const handleFromTimeChange = (index, value) => {
                               const updatedData = [...regularizeTimeData];
+                              const fromDate = updatedData[index].from_date;
+
+                              const currentDate = new Date()
+                                .toISOString()
+                                .split('T')[0]; // Assuming the format is 'YYYY-MM-DD'
 
                               updatedData[index].from_time = value;
+
                               if (
-                                updatedData[index].from_time >
-                                currentTimeFormatted
+                                fromDate === currentDate &&
+                                value > currentTimeFormatted
                               ) {
                                 alert('From time cannot be a future time.');
                                 return;
                               }
+
                               // Calculate actual time
                               const actualTime = calculateActualTime(
                                 updatedData[index].from_date,
@@ -522,10 +489,6 @@ const RequestModal = (props) => {
                                 updatedData[index].from_time,
                                 updatedData[index].to_time
                               );
-                              // const [hours, minutes] = actualTime
-                              //   .split(':')
-                              //   .map(Number);
-                              // const actualTimeValue = hours * 60 + minutes;
 
                               updatedData[index].actual_time = actualTime;
                               setRegularizeTimeData(updatedData);
@@ -533,15 +496,21 @@ const RequestModal = (props) => {
 
                             const handleToTimeChange = (index, value) => {
                               const updatedData = [...regularizeTimeData];
+                              const toDate = updatedData[index].to_date;
+
+                              const currentDate = new Date()
+                                .toISOString()
+                                .split('T')[0]; // Assuming the format is 'YYYY-MM-DD'
+
                               updatedData[index].to_time = value;
+
                               if (
-                                updatedData[index].to_time >
-                                currentTimeFormatted
+                                toDate === currentDate &&
+                                value > currentTimeFormatted
                               ) {
                                 alert('To time cannot be a future time.');
                                 return;
                               }
-                              // Calculate actual time
 
                               const fromTime = updatedData[index].from_time;
                               if (fromTime && value < fromTime) {
@@ -550,13 +519,14 @@ const RequestModal = (props) => {
                                 );
                                 return;
                               }
+
                               const actualTime = calculateActualTime(
                                 updatedData[index].from_date,
                                 updatedData[index].to_date,
                                 updatedData[index].from_time,
                                 updatedData[index].to_time
                               );
-                              // Check if actual time exceeds a certain limit (e.g., 12 hours)
+
                               const [hours, minutes] = actualTime
                                 .split(':')
                                 .map(Number);
@@ -565,8 +535,6 @@ const RequestModal = (props) => {
                                 alert(
                                   'Actual time is greater than 12:00 hours.'
                                 );
-                                // Optionally, you might want to revert the changes made
-                                // or handle this situation according to your app's logic
                                 return;
                               }
 
@@ -592,7 +560,6 @@ const RequestModal = (props) => {
                                     className={`form-control form-control-sm ${
                                       row.is_active === 0 ? 'strikethrough' : ''
                                     }`}
-                                    // className="form-control form-control-sm"
                                     name={`from_date[${index}]`}
                                     min={basketStartDate}
                                     max={formattedDate}
@@ -688,14 +655,9 @@ const RequestModal = (props) => {
                                     value={row.remark}
                                     onChange={(e) =>
                                       handleRemarkChange(e, index)
-                                    } // Assuming you have a function to handle remark changes
+                                    }
                                     required
                                     disabled={row.is_regularized === 'YES'}
-                                    // disabled={
-                                    //   (row.status === "REJECTED" ||
-                                    //     row.status === "APPROVED") &&
-                                    //   !row.isAddingNewRow
-                                    // }
                                   />
                                 </td>
                                 <td>
@@ -842,7 +804,6 @@ const RequestModal = (props) => {
                                   onChange={(event) =>
                                     handleRemarkChangee(event, index)
                                   }
-                                  // Assuming you have a function to handle remark changes
                                 />
                               </td>
 

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Col, Row, Spinner } from 'react-bootstrap';
+import { Col, Collapse, Row, Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { Field, Form, Formik } from 'formik';
 import { useLocation } from 'react-router-dom';
@@ -130,7 +130,7 @@ function InterviewProcessDetails() {
                     requiredField
                   />
                 </Col>
-                <RenderIf render={parseInt(values?.remark_id) === 0}>
+                <Collapse in={parseInt(values?.remark_id) === 0}>
                   <Col sm={12}>
                     <Field
                       component={CustomInput}
@@ -141,7 +141,7 @@ function InterviewProcessDetails() {
                       requiredField
                     />
                   </Col>
-                </RenderIf>
+                </Collapse>
               </Row>
 
               <div className="d-flex justify-content-sm-end gap-2 mt-3 btn_container">

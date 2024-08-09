@@ -1,6 +1,6 @@
 import React, { memo, useEffect, useState } from 'react';
 import { Field, Form, Formik } from 'formik';
-import { Col, Row, Stack, Spinner } from 'react-bootstrap';
+import { Col, Row, Stack, Spinner, Collapse } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
 
@@ -433,7 +433,7 @@ function JobOfferOnBoarding() {
                           }
                         />
                       </Col>
-                      <RenderIf render={parseInt(values?.remark_id) === 0}>
+                      <Collapse in={parseInt(values?.remark_id) === 0}>
                         <Col sm={12}>
                           <Field
                             component={CustomInput}
@@ -444,7 +444,7 @@ function JobOfferOnBoarding() {
                             requiredField
                           />
                         </Col>
-                      </RenderIf>
+                      </Collapse>
                     </Row>
                   </div>
                   <RenderIf render={currentInterviewStep?.status === 0}>
