@@ -1205,7 +1205,8 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Description',
-      width: '150px',
+      width: '270px',
+
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -3223,8 +3224,9 @@ export default function MyTicketComponent() {
                             typeOf="YouTask"
                           />
                         )}
-                        {isLoading && <TableLoadingSkelton />}
-                        {!isLoading && yourTask && (
+                        {isLoading ? (
+                          <TableLoadingSkelton />
+                        ) : yourTask && yourTask.length > 0 ? (
                           <DataTable
                             columns={yourTaskColumns}
                             data={yourTask}
@@ -3235,7 +3237,12 @@ export default function MyTicketComponent() {
                             selectableRows={false}
                             highlightOnHover={true}
                           />
+                        ) : (
+                          <div className="text-center">
+                            <p>No data found</p>
+                          </div>
                         )}
+
                         <div className="back-to-top pull-right mt-2 mx-2">
                           <label className="mx-2">rows per page</label>
                           <select
