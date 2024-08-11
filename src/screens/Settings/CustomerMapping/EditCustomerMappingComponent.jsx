@@ -568,16 +568,12 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   }, [checkRole]);
 
   useEffect(() => {
-    console.log('data', data.user_policy);
-
     const initialData = userDropdown?.map((ele) => {
       const userPolicy = Array.isArray(data?.user_policy)
         ? data.user_policy.find((policy) =>
             policy?.user_name?.startsWith(`${ele.value}:`)
           )
         : null;
-
-      console.log('userPolicy', userPolicy);
 
       return userPolicy ? parseInt(userPolicy.user_name.split(':')[1]) : 0;
     });
