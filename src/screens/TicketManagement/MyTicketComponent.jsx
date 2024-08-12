@@ -828,7 +828,8 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-            // href="/"
+
+     
             onClick={(e) => {
               handleModal({ showModal: true, modalData: row, modalHeader: '' });
             }}
@@ -952,7 +953,8 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-            // href="/"
+
+
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1074,7 +1076,8 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-            // href="/"
+
+
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1216,7 +1219,8 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-            // href="/"
+
+
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1401,7 +1405,8 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-            // href="/"
+
+
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1559,7 +1564,8 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-            // href="/"
+
+
             onClick={(e) => {
               handleModal({
                 showModal: true,
