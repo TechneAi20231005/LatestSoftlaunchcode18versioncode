@@ -281,7 +281,7 @@ function PaymentTemplateMaster() {
     {
       name: 'Remark',
       selector: (row) => row.remark,
-      width: '150px',
+      width: '270px',
       sortable: true,
 
       cell: (row) => (
@@ -294,9 +294,9 @@ function PaymentTemplateMaster() {
             <OverlayTrigger overlay={<Tooltip>{row.remark} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {row.remark && row.remark.length < 20
+                  {row.remark && row.remark.length < 120
                     ? row.remark
-                    : row.remark.substring(0, 12) + '....'}
+                    : row.remark.substring(0, 120) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -755,7 +755,7 @@ function PaymentTemplateMaster() {
               <div className="row g-3 mb-3">
                 <div className="col-sm-12">
                   <label className="form-label font-weight-bold">
-                    Remark :
+                    Remarks :
                   </label>
                   <textarea
                     type="text"
@@ -764,7 +764,7 @@ function PaymentTemplateMaster() {
                     name="remark"
                     defaultValue={modal.modalData ? modal.modalData.remark : ''}
                     rows="4"
-                    maxLength={10000}
+                    maxLength={1000}
                   />
                 </div>
 
