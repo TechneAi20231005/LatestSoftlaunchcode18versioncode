@@ -92,19 +92,15 @@ function BillCheckingTransaction() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
 
-  //search function
   const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(data, searchTerm);
     setFilteredData(filteredList);
   }, [data, searchTerm]);
 
-  // Function to handle reset button click
   const handleReset = () => {
     setSearchTerm('');
     setFilteredData(data);
   };
-
-  //columns
 
   const selectInputRef = useRef();
   const selectVendorRef = useRef();
@@ -128,8 +124,29 @@ function BillCheckingTransaction() {
 
   const [isOriginalBillReceived, setIsOriginalBillReceived] = useState(false);
 
+  const [datee, setDatee] = useState();
+
+  const [receivedate, setReceive] = useState();
+
+  const [fromBillAmount, setFromBillAmount] = useState('');
+  const [toBillAmount, setToBillAmount] = useState('');
+  const [toBillAmountErr, setToBillAmountErr] = useState('');
+
+  const [fromHoldlAmount, setFromHoldAmount] = useState('');
+  const [toHoldAmount, setToHoldAmount] = useState('');
+  const [toHoldAmountErr, setToHoldAmountErr] = useState('');
+  const [isToReceiveRequired, setIsToReceiveRequired] = useState(false);
+
+  const [toRecive, setToReceive] = useState('');
+  const [isToPaymentRequired, setIsPaymentRequired] = useState(false);
+
+  const [toPaymentDate, setToPaymentDate] = useState('');
+
+  const [fromBillDate, setFromBillDate] = useState('');
+  const [toBillDate, setToBillDate] = useState('');
+  const [isToBillDateRequired, setIsToBillDateRequired] = useState(false);
+
   const handleCheckboxChange = () => {
-    // Toggle the state of isOriginalBillReceived
     setIsOriginalBillReceived(!isOriginalBillReceived);
   };
 
@@ -213,8 +230,6 @@ function BillCheckingTransaction() {
     setIsOriginalBillReceived(false);
     loadData();
   };
-
-  // const [userDropdown, setUserDropdown] = useState();
 
   const currentDate = new Date();
   const year = currentDate.getFullYear();
@@ -779,7 +794,6 @@ function BillCheckingTransaction() {
   ];
 
   const handleCancelBill = async (e, id) => {
-    // Display a confirmation dialog
     var response = window.confirm('Are you sure you want to Cancel this Bill?');
 
     if (response) {
@@ -795,9 +809,7 @@ function BillCheckingTransaction() {
             }
           }
         });
-      } catch (error) {
-        // Handle any potential errors during cancellation
-      }
+      } catch (error) {}
     }
   };
 
@@ -921,27 +933,6 @@ function BillCheckingTransaction() {
       }
     });
 
-    // const inputRequired = 'id,employee_id,first_name,last_name,middle_name';
-
-    // await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-    //   if (res.status === 200) {
-    //     setIsLoading(false);
-
-    //     if (res.data.status === 1) {
-    //       setIsLoading(false);
-
-    //       const temp = res.data.data;
-
-    //       setUserDropdown(
-    //         temp.map((d) => ({
-    //           value: d.id,
-    //           label: d.first_name + ' ' + d.last_name
-    //         }))
-    //       );
-    //     }
-    //   }
-    // });
-
     dispatch(getUpdatedAuthoritiesData());
     dispatch(billTypeDataDropDowm());
 
@@ -961,86 +952,11 @@ function BillCheckingTransaction() {
 
     await new CityService().getCity().then((res) => {
       if (res.status === 200) {
-        // setCity(res.data.data);
-        // setCityDropdown(
-        //   res.data.data.map((d) => ({
-        //     value: d.id,
-        //     label: d.city
-        //   }))
-        // );
       }
     });
 
     dispatch(getRoles());
   };
-
-  // const handleFilter = async (e) => {
-
-  //   setNotify(null);
-  //   e?.preventDefault();
-  //   const formData = new FormData(e.target);
-
-  //   await new BillCheckingTransactionService()
-  //     .filterBillCheckingData(formData)
-  //     .then((res) => {
-  //       if (res.data.status === 1) {
-  //         const tempData = [];
-  //         let counter = 1;
-  //         const temp = res.data.data;
-
-  //         for (const key in temp) {
-  //           tempData.push({
-  //             'Sr No': counter++,
-  //             id: temp[key].id,
-
-  //             'Bill ID': temp[key].bc_id,
-  //             'Vendor Name': temp[key].vendor_id_name,
-  //             'Payment Date': temp[key].payment_date,
-  //             'Bill No': temp[key].vendor_bill_no,
-  //             'Actual Payment Date': temp[key].payment_date,
-  //             'Bill Amount': temp[key].bill_amount,
-  //             'Net Amount': temp[key].net_payment,
-
-  //             'Bill Status': temp[key].payment_status,
-  //             'Net Payment': temp[key].net_payment,
-  //             bill_type_name: temp[key].bill_type_name,
-  //             'Assign From': temp[key].created_by,
-  //             'Assign To': temp[key].assign_to_name,
-  //             'Levels of approval': temp[key].level + 1,
-  //             approvedBy: temp[key].approvedBy,
-  //             'Pending From': temp[key].level_approver,
-
-  //             'Taxable Amount': temp[key].taxable_amount,
-  //             'Debit Advance': temp[key].debit_advance,
-
-  //             'Is Original Bill':
-  //               temp[key].is_original_bill_needed === 1 ? 'Yes' : 'No',
-
-  //             'Bill date': temp[key].bill_date,
-  //             'Recieved Date': temp[key].received_date,
-  //             'Hold Amount': temp[key].hold_amount,
-  //             'Paid Amount': temp[key].actual_paid,
-  //             'Is cancelled': temp[key].is_active,
-  //             is_active: temp[key].is_active,
-  //             'Is TCS applicable':
-  //               temp[key].is_tcs_applicable === 1 ? 'Yes' : 'No',
-  //             created_at: temp[key].created_at,
-  //             created_by: temp[key].created_by,
-
-  //             updated_at: temp[key].updated_at,
-  //             updated_by: temp[key].updated_by
-  //           });
-  //         }
-  //         setData(null);
-
-  //         setExportData(null);
-  //         setExportData(tempData);
-  //         setData(tempData);
-  //       } else {
-  //         setNotify({ type: 'danger', message: res.data.message });
-  //       }
-  //     });
-  // };
 
   const handleFilter = async (formData) => {
     setNotify(null);
@@ -1107,18 +1023,6 @@ function BillCheckingTransaction() {
       });
   };
 
-  const [datee, setDatee] = useState();
-
-  const [receivedate, setReceive] = useState();
-
-  const [fromBillAmount, setFromBillAmount] = useState('');
-  const [toBillAmount, setToBillAmount] = useState('');
-  const [toBillAmountErr, setToBillAmountErr] = useState('');
-
-  const [fromHoldlAmount, setFromHoldAmount] = useState('');
-  const [toHoldAmount, setToHoldAmount] = useState('');
-  const [toHoldAmountErr, setToHoldAmountErr] = useState('');
-
   const addEditFunctionInitialValue = {
     id: '',
     vendor_bill_no: '',
@@ -1136,93 +1040,6 @@ function BillCheckingTransaction() {
     to_bill_amount: '',
     from_hold_amount: '',
     to_hold_amount: ''
-  };
-
-  const handleToBillAmount = (e) => {
-    const value = e.target.value;
-    setToBillAmount(value);
-
-    // Check if toBillAmount is less than fromBillAmount
-    if (parseFloat(value) < parseFloat(fromBillAmount)) {
-      setToBillAmountErr(
-        'To bill amount should be greater than from bill amount'
-      );
-    } else {
-      setToBillAmountErr('');
-    }
-  };
-
-  const handleFromBillAmount = (e) => {
-    const value = e.target.value;
-    setFromBillAmount(value);
-
-    // Check if fromBillAmount is greater than toBillAmount
-    if (parseFloat(value) > parseFloat(toBillAmount)) {
-      setToBillAmountErr(
-        'To bill amount should be greater than from bill amount'
-      );
-    } else {
-      setToBillAmountErr('');
-    }
-  };
-
-  const handleToHoldAmount = (e) => {
-    const value = e.target.value;
-    setToHoldAmount(value);
-
-    // Check if toBillAmount is less than fromBillAmount
-    if (parseFloat(value) < parseFloat(fromHoldlAmount)) {
-      setToHoldAmountErr(
-        'To hold amount should be greater than from hold amount'
-      );
-    } else {
-      setToHoldAmountErr('');
-    }
-  };
-
-  const handleFromHoldAmount = (e) => {
-    const value = e.target.value;
-    setFromHoldAmount(value);
-
-    // Check if fromBillAmount is greater than toBillAmount
-    if (parseFloat(value) > parseFloat(toHoldAmount)) {
-      setToHoldAmountErr(
-        'To hold amount should be greater than from hold amount'
-      );
-    } else {
-      setToHoldAmountErr('');
-    }
-  };
-  const [isToReceiveRequired, setIsToReceiveRequired] = useState(false);
-
-  const [toRecive, setToReceive] = useState('');
-  const [isToPaymentRequired, setIsPaymentRequired] = useState(false);
-
-  const [toPaymentDate, setToPaymentDate] = useState('');
-
-  const handleFromDate = (e) => {
-    setDatee(e.target.value);
-    setIsPaymentRequired(!!e.target.value);
-    setToPaymentDate('');
-  };
-  const handleReceiveDate = (e) => {
-    setReceive(e.target.value);
-
-    setIsToReceiveRequired(!!e.target.value);
-    // Optionally, you can also reset the "To Bill Date" when the "From Bill Date" changes
-    setToReceive('');
-  };
-
-  const [fromBillDate, setFromBillDate] = useState('');
-  const [toBillDate, setToBillDate] = useState('');
-  const [isToBillDateRequired, setIsToBillDateRequired] = useState(false);
-
-  const handleBillDate = (e) => {
-    const selectedDate = e.target.value;
-    setFromBillDate(selectedDate);
-    setIsToBillDateRequired(!!selectedDate);
-    // Optionally, you can also reset the "To Bill Date" when the "From Bill Date" changes
-    setToBillDate('');
   };
 
   const [showFilterFields, setShowFilterFields] = useState(false);
@@ -1250,67 +1067,14 @@ function BillCheckingTransaction() {
     handleSearch();
   }, [handleSearch, searchTerm]);
 
-  // const onSubmit = (values) => {
-  //   console.log('values', values);
-
-  //   // Determine the fields to include based on the current tab
-  //   let filteredValues = {};
-
-  //   if (currentTab === 'filter_by_bill') {
-  //     filteredValues = {
-  //       id: values.id,
-  //       vendor_bill_no: values.vendor_bill_no,
-  //       vendor_name: values.vendor_name,
-  //       bill_status: values.bill_status,
-  //       bill_type: values.bill_type,
-  //       assign_to: values.assign_to
-  //     };
-  //   } else if (currentTab === 'filter_by_date') {
-  //     filteredValues = {
-  //       from_bill_date: values.from_bill_date,
-  //       to_bill_date: values.to_bill_date,
-  //       from_received_date: values.from_received_date,
-  //       to_received_date: values.to_received_date,
-  //       from_payment_date: values.from_payment_date,
-  //       to_payment_date: values.to_payment_date
-  //     };
-  //   } else if (currentTab === 'filter_by_amount') {
-  //     filteredValues = {
-  //       from_bill_amount: values.from_bill_amount,
-  //       to_bill_amount: values.to_bill_amount,
-  //       from_hold_amount: values.from_hold_amount,
-  //       to_hold_amount: values.to_hold_amount,
-  //       is_original_bill_needed: values.is_original_bill_needed
-  //     };
-  //   }
-
-  //   // const formData = new FormData(values);
-  //   // handleFilter(formData);
-
-  //   const nonEmptyValues = Object.fromEntries(
-  //     Object.entries(filteredValues).filter(
-  //       ([_, value]) => value !== undefined && value !== ''
-  //     )
-  //   );
-
-  //   // Convert non-empty filtered values to FormData
-  //   const formData = new FormData();
-  //   Object.entries(nonEmptyValues).forEach(([key, value]) => {
-  //     formData.append(key, value);
-  //   });
-
-  //   handleFilter(formData);
-  // };
-
   const onSubmit = (values) => {
-    // Ensure all fields are passed to the API, even if only one is filled
     const filteredValues = {
       id: values.id || '',
       vendor_bill_no: values.vendor_bill_no || '',
       vendor_name: values.vendor_name.length > 0 ? values.vendor_name : [''],
       bill_status:
-        Array.isArray(values.bill_status) && values.bill_status.length > 0
-          ? values.bill_status
+        Array?.isArray(values?.bill_status) && values?.bill_status.length > 0
+          ? values?.bill_status
           : [''],
       bill_type: values.bill_type.length > 0 ? values.bill_type : [''],
       assign_to: values.assign_to.length > 0 ? values.assign_to : [''],
@@ -1327,17 +1091,15 @@ function BillCheckingTransaction() {
       is_original_bill_needed: values.is_original_bill_needed || false
     };
 
-    // Convert filtered values to FormData
     const formData = new FormData();
-    Object.entries(filteredValues).forEach(([key, value]) => {
-      if (Array.isArray(value)) {
-        value.forEach((val) => formData.append(`${key}[]`, val));
+    Object?.entries(filteredValues)?.forEach(([key, value]) => {
+      if (Array?.isArray(value)) {
+        value?.forEach((val) => formData?.append(`${key}[]`, val));
       } else {
-        formData.append(key, value);
+        formData?.append(key, value);
       }
     });
 
-    // Call the API
     handleFilter(formData);
   };
 
@@ -1389,966 +1151,286 @@ function BillCheckingTransaction() {
       <Formik
         initialValues={addEditFunctionInitialValue}
         validationSchema={billCheckingTransactionValidation}
-        // onSubmit={(values) => {
-        //   console.log('values', values);
-        //   handleFilter({ formData: values });
-        // }}
-        // onSubmit={(values) => {
-        //   console.log('values', values);
-        //   const formData = new FormData();
-        //   Object.entries(values).forEach(([key, value]) => {
-        //     formData.append(key, value);
-        //   });
-        //   handleFilter(formData);
-        // }}
         onSubmit={onSubmit}
       >
         {({ dirty, setFieldValue, handleChange, values }) => (
           <Form>
-            {/* SEARCH FILTER */}
-            <Collapse in={showFilterFields}>
-              {/* <form method="post" onSubmit={handleFilter} className="mt-2"> */}
-              <>
-                {/* <CustomTab
-                  tabsData={tabsLabel}
-                  currentTab={currentTab}
-                  setCurrentTab={setCurrentTab}
-                />
-                <Collapse in={currentTab === 'filter_by_bill'}>
-                  <div className="row mb-3 row_gap_3">
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>Bill ID:</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="id"
-                        id="id"
-                        ref={selectInputRef}
-                        placeholder="Enter Bill Id"
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>Vendor Bill No:</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="vendor_bill_no"
-                        id="vendor_bill_no"
-                        ref={selectVendorRef}
-                        placeholder="Enter Vendor Bill No"
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>Vendor Name:</label>
-                      {vendorDropdown && (
-                        <Select
-                          id="vendor_name"
-                          name="vendor_name[]"
-                          isMulti
-                          options={vendorDropdown}
-                          ref={selectVendorNameRef}
-                          placeholder="Vendor Name"
-                        />
-                      )}
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>Bill Status:</label>
-                      {statusDropdown && (
-                        <Select
-                          id="bill_status"
-                          name="bill_status[]"
-                          isMulti
-                          options={statusDropdown}
-                          placeholder="Bill Status"
-                          ref={selectBillStatusRef}
-                        />
-                      )}
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>Bill Type:</label>
-                      {billTypeDropdown && (
-                        <Select
-                          options={billTypeDropdown}
-                          id="bill_type"
-                          isMulti
-                          name="bill_type[]"
-                          placeholder="Bill Type"
-                          ref={selectBillTypeRef}
-                        />
-                      )}
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2 ">
-                      <label>Assigned To:</label>
-                      {userDropdown && (
-                        <Select
-                          options={userDropdown}
-                          id="assign_to"
-                          name="assign_to[]"
-                          isMulti
-                          placeholder="Assign To"
-                          ref={selectAssignToRef}
-                        />
-                      )}
-                    </div>
-                  </div>
-                </Collapse>
-                <Collapse in={currentTab === 'filter_by_date'}>
-                  <div className="row  row_gap_3">
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>From Bill Date:</label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        name="from_bill_date"
-                        id="from_bill_date"
-                        onChange={(e) => handleBillDate(e)}
-                        max={formattedDate}
-                        ref={selectFromBillRef}
-                        value={fromBillDate}
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>To Bill Date:</label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        name="to_bill_date"
-                        id="to_bill_date"
-                        min={fromBillDate}
-                        required={isToBillDateRequired}
-                        max={formattedDate}
-                        ref={selectToBillRef}
-                        value={toBillDate}
-                        onChange={(e) => setToBillDate(e.target.value)}
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>From Received Date:</label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        name="from_received_date"
-                        id="from_received_date"
-                        ref={selectFromReceivedRef}
-                        value={receivedate}
-                        onChange={(e) => handleReceiveDate(e)}
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>To Received Date:</label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        name="to_received_date"
-                        id="to_received_date"
-                        min={receivedate}
-                        ref={selectToReceivedRef}
-                        value={toRecive}
-                        required={isToReceiveRequired}
-                        onChange={(e) => setToReceive(e.target.value)}
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>From Payment Date:</label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        name="from_payment_date"
-                        id="from_payment_date"
-                        value={datee}
-                        onChange={(e) => handleFromDate(e)}
-                        ref={selectFromPaymentRef}
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>To Payment Date:</label>
-                      <input
-                        type="date"
-                        className="form-control"
-                        name="to_payment_date"
-                        id="to_payment_date"
-                        min={datee}
-                        ref={selectToPaymentRef}
-                        required={isToPaymentRequired}
-                        value={toPaymentDate}
-                        onChange={(e) => setToPaymentDate(e.target.value)}
-                      />
-                    </div>
-                    <h6 className="mt-1 text-danger">
-                      Note:- If you are selecting any from date selection, then
-                      to date is Mandatory
-                    </h6>
-                  </div>
-                </Collapse>
-                <Collapse in={currentTab === 'filter_by_amount'}>
-                  <div className="row mb-3 row_gap_3">
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>From Bill Amount:</label>
-                      <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        id="from_bill_amount"
-                        name="from_bill_amount"
-                        placeholder="From Bill Amount"
-                        maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
-                        onChange={(e) => handleFromBillAmount(e)}
-                        ref={selectFromBillAmountRef}
-                        onKeyPress={(e) => {
-                          const allowedKeys = [
-                            '0',
-                            '1',
-                            '2',
-                            '3',
-                            '4',
-                            '5',
-                            '6',
-                            '7',
-                            '8',
-                            '9',
-                            '.',
-                            'Backspace'
-                          ];
-                          const inputValue = e.key;
-
-                          if (!allowedKeys.includes(inputValue)) {
-                            e.preventDefault();
-                          }
-
-                          const currentInput = e.target.value;
-                          const decimalIndex = currentInput.indexOf('.');
-
-                          if (
-                            decimalIndex !== -1 &&
-                            currentInput.length - decimalIndex > 2
-                          ) {
-                            e.preventDefault();
-                          }
-
-                          if (
-                            currentInput.length >= 10 &&
-                            inputValue !== '.' &&
-                            decimalIndex === -1
-                          ) {
-                            e.preventDefault();
-                          }
-                        }}
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>To Bill Amount:</label>
-
-                      <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        id="to_bill_amount"
-                        name="to_bill_amount"
-                        placeholder="To Bill Amount"
-                        maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
-                        onChange={(e) => handleToBillAmount(e)}
-                        ref={selectToBillAmountRef}
-                        onKeyPress={(e) => {
-                          const allowedKeys = [
-                            '0',
-                            '1',
-                            '2',
-                            '3',
-                            '4',
-                            '5',
-                            '6',
-                            '7',
-                            '8',
-                            '9',
-                            '.',
-                            'Backspace'
-                          ];
-                          const inputValue = e.key;
-
-                          if (!allowedKeys.includes(inputValue)) {
-                            e.preventDefault();
-                          }
-
-                          const currentInput = e.target.value;
-                          const decimalIndex = currentInput.indexOf('.');
-
-                          if (
-                            decimalIndex !== -1 &&
-                            currentInput.length - decimalIndex > 2
-                          ) {
-                            e.preventDefault();
-                          }
-
-                          if (
-                            currentInput.length >= 10 &&
-                            inputValue !== '.' &&
-                            decimalIndex === -1
-                          ) {
-                            e.preventDefault();
-                          }
-                        }}
-                      />
-
-                      <small
-                        style={{
-                          color: 'red'
-                        }}
-                      >
-                        {toBillAmountErr}
-                      </small>
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>From Hold Amount:</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="from_hold_amount"
-                        id="from_hold_amount"
-                        placeholder="From Hold Amount"
-                        ref={selectFromHoldAmountRef}
-                        onKeyPress={(e) => {
-                          const allowedKeys = [
-                            '0',
-                            '1',
-                            '2',
-                            '3',
-                            '4',
-                            '5',
-                            '6',
-                            '7',
-                            '8',
-                            '9',
-                            '.',
-                            'Backspace'
-                          ];
-                          const inputValue = e.key;
-
-                          if (!allowedKeys.includes(inputValue)) {
-                            e.preventDefault();
-                          }
-
-                          const currentInput = e.target.value;
-                          const decimalIndex = currentInput.indexOf('.');
-
-                          if (
-                            decimalIndex !== -1 &&
-                            currentInput.length - decimalIndex > 2
-                          ) {
-                            e.preventDefault();
-                          }
-
-                          if (
-                            currentInput.length >= 10 &&
-                            inputValue !== '.' &&
-                            decimalIndex === -1
-                          ) {
-                            e.preventDefault();
-                          }
-                        }}
-                        onChange={(e) => handleFromHoldAmount(e)}
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>To Hold Amount:</label>
-                      <input
-                        type="text"
-                        className="form-control"
-                        name="to_hold_amount"
-                        id="to_hold_amount"
-                        ref={selectToHoldAmountRef}
-                        placeholder="To Hold Amount"
-                        onKeyPress={(e) => {
-                          const allowedKeys = [
-                            '0',
-                            '1',
-                            '2',
-                            '3',
-                            '4',
-                            '5',
-                            '6',
-                            '7',
-                            '8',
-                            '9',
-                            '.',
-                            'Backspace'
-                          ];
-                          const inputValue = e.key;
-
-                          if (!allowedKeys.includes(inputValue)) {
-                            e.preventDefault();
-                          }
-
-                          const currentInput = e.target.value;
-                          const decimalIndex = currentInput.indexOf('.');
-
-                          if (
-                            decimalIndex !== -1 &&
-                            currentInput.length - decimalIndex > 2
-                          ) {
-                            e.preventDefault();
-                          }
-
-                          if (
-                            currentInput.length >= 10 &&
-                            inputValue !== '.' &&
-                            decimalIndex === -1
-                          ) {
-                            e.preventDefault();
-                          }
-                        }}
-                        onChange={(e) => handleToHoldAmount(e)}
-                      />
-                      <small
-                        style={{
-                          color: 'red'
-                        }}
-                      >
-                        {toHoldAmountErr}
-                      </small>
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-4">
-                      <label className="cp">
-                        <input
-                          type="checkbox"
-                          className="sm-1 mx-2"
-                          id="is_original_bill_needed"
-                          name="is_original_bill_needed"
-                          onChange={handleCheckboxChange}
-                          checked={isOriginalBillReceived}
-                          ref={selectIsOriginalBillRef}
-                        />
-                        Is Original bill Received:
-                      </label>
-                    </div>
-                  </div>
-                </Collapse> */}
-                <CustomTab
-                  tabsData={tabsLabel}
-                  currentTab={currentTab}
-                  setCurrentTab={setCurrentTab}
-                />
-                <Collapse in={currentTab === 'filter_by_bill'}>
-                  <div className="row mb-3 row_gap_3">
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>Bill ID:</label>
-                      <Field
-                        component={CustomInput}
-                        className="form-control"
-                        name="id"
-                        placeholder="Enter Bill Id"
-                        innerRef={selectInputRef}
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>Vendor Bill No:</label>
-                      <Field
-                        // type="text"
-                        component={CustomInput}
-                        className="form-control"
-                        name="vendor_bill_no"
-                        placeholder="Enter Vendor Bill No"
-                        innerRef={selectVendorRef}
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>Vendor Name:</label>
-                      {vendorDropdown && (
+            {showFilterFields === true && (
+              <Collapse in={showFilterFields}>
+                <>
+                  <CustomTab
+                    tabsData={tabsLabel}
+                    currentTab={currentTab}
+                    setCurrentTab={setCurrentTab}
+                  />
+                  <Collapse in={currentTab === 'filter_by_bill'}>
+                    <div className="row mb-3 row_gap_3">
+                      <div className="col-sm-6 col-md-4 col-lg-2">
+                        <label>Bill ID:</label>
                         <Field
-                          name="vendor_name"
-                          // as={Select}
-                          component={CustomReactSelect}
-                          isMulti
-                          options={vendorDropdown}
-                          placeholder="Vendor Name"
-                          innerRef={selectVendorNameRef}
+                          component={CustomInput}
+                          className="form-control"
+                          name="id"
+                          placeholder="Enter Bill Id"
+                          innerRef={selectInputRef}
                         />
-                      )}
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>Bill Status:</label>
-                      {statusDropdown && (
+                      </div>
+                      <div className="col-sm-6 col-md-4 col-lg-2">
+                        <label>Vendor Bill No:</label>
                         <Field
-                          name="bill_status"
-                          // as={Select}
-                          component={CustomReactSelect}
-                          isMulti
-                          options={statusDropdown}
-                          placeholder="Bill Status"
-                          innerRef={selectBillStatusRef}
+                          component={CustomInput}
+                          className="form-control"
+                          name="vendor_bill_no"
+                          placeholder="Enter Vendor Bill No"
+                          innerRef={selectVendorRef}
                         />
-                      )}
+                      </div>
+                      <div className="col-sm-6 col-md-4 col-lg-2">
+                        <label>Vendor Name:</label>
+                        {vendorDropdown && (
+                          <Field
+                            name="vendor_name"
+                            component={CustomReactSelect}
+                            isMulti
+                            options={vendorDropdown}
+                            placeholder="Vendor Name"
+                            innerRef={selectVendorNameRef}
+                          />
+                        )}
+                      </div>
+                      <div className="col-sm-6 col-md-4 col-lg-2">
+                        <label>Bill Status:</label>
+                        {statusDropdown && (
+                          <Field
+                            name="bill_status"
+                            component={CustomReactSelect}
+                            isMulti
+                            options={statusDropdown}
+                            placeholder="Bill Status"
+                            innerRef={selectBillStatusRef}
+                          />
+                        )}
+                      </div>
+                      <div className="col-sm-6 col-md-4 col-lg-2">
+                        <label>Bill Type:</label>
+                        {billTypeDropdown && (
+                          <Field
+                            name="bill_type"
+                            component={CustomReactSelect}
+                            isMulti
+                            options={billTypeDropdown}
+                            placeholder="Bill Type"
+                            innerRef={selectBillTypeRef}
+                          />
+                        )}
+                      </div>
+                      <div className="col-sm-6 col-md-4 col-lg-2 ">
+                        <label>Assigned To:</label>
+                        {userDropdown && (
+                          <Field
+                            id="assign_to"
+                            name="assign_to"
+                            component={CustomReactSelect}
+                            isMulti
+                            options={userDropdown}
+                            placeholder="Assign To"
+                            innerRef={selectAssignToRef}
+                          />
+                        )}
+                      </div>
                     </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>Bill Type:</label>
-                      {billTypeDropdown && (
+                  </Collapse>
+
+                  <Collapse in={currentTab === 'filter_by_date'}>
+                    <div className="row  row_gap_3">
+                      <div className="col-sm-6 col-md-4 col-lg-2">
+                        <label>From Bill Date:</label>
                         <Field
-                          name="bill_type"
-                          // as={Select}
-                          component={CustomReactSelect}
-                          isMulti
-                          options={billTypeDropdown}
-                          placeholder="Bill Type"
-                          innerRef={selectBillTypeRef}
+                          type="date"
+                          component={CustomInput}
+                          className="form-control"
+                          name="from_bill_date"
+                          onChange={(e) => {
+                            handleChange(e);
+                          }}
                         />
-                      )}
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2 ">
-                      <label>Assigned To:</label>
-                      {userDropdown && (
+                      </div>
+                      <div className="col-sm-6 col-md-4 col-lg-2">
+                        <label>To Bill Date:</label>
                         <Field
-                          id="assign_to"
-                          name="assign_to"
-                          // as={Select}
-                          component={CustomReactSelect}
-                          isMulti
-                          options={userDropdown}
-                          placeholder="Assign To"
-                          innerRef={selectAssignToRef}
+                          type="date"
+                          component={CustomInput}
+                          className="form-control"
+                          name="to_bill_date"
+                          min={values.from_bill_date}
+                          onChange={handleChange}
                         />
-                      )}
+                      </div>
+                      <div className="col-sm-6 col-md-4 col-lg-2">
+                        <label>From Received Date:</label>
+
+                        <Field
+                          type="date"
+                          component={CustomInput}
+                          className="form-control"
+                          name="from_received_date"
+                          onChange={(e) => {
+                            handleChange(e);
+                            setFieldValue('to_received_date', '');
+                          }}
+                        />
+                      </div>
+                      <div className="col-sm-6 col-md-4 col-lg-2">
+                        <label>To Received Date:</label>
+
+                        <Field
+                          type="date"
+                          component={CustomInput}
+                          className="form-control"
+                          name="to_received_date"
+                          min={values.from_received_date}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <div className="col-sm-6 col-md-4 col-lg-2">
+                        <label>From Payment Date:</label>
+                        <Field
+                          type="date"
+                          component={CustomInput}
+                          className="form-control"
+                          name="from_payment_date"
+                          onChange={(e) => {
+                            handleChange(e);
+                            setFieldValue('to_payment_date', '');
+                          }}
+                        />{' '}
+                      </div>
+                      <div className="col-sm-6 col-md-4 col-lg-2">
+                        <label>To Payment Date:</label>
+
+                        <Field
+                          type="date"
+                          component={CustomInput}
+                          className="form-control"
+                          name="to_payment_date"
+                          min={values.from_payment_date}
+                          onChange={handleChange}
+                        />
+                      </div>
+                      <h6 className="mt-1 text-danger">
+                        Note:- If you are selecting any from date selection,
+                        then to date is Mandatory
+                      </h6>
                     </div>
+                  </Collapse>
+
+                  <Collapse in={currentTab === 'filter_by_amount'}>
+                    <div className="row mb-3 row_gap_3">
+                      <div className="col-sm-6 col-md-4 col-lg-2">
+                        <label>From Bill Amount:</label>
+                        <Field
+                          type="text"
+                          component={CustomInput}
+                          className="form-control form-control-sm"
+                          name="from_bill_amount"
+                          placeholder="From Bill Amount"
+                          maxLength={13}
+                          onChange={(e) => {
+                            handleChange(e);
+                            setFieldValue('to_bill_amount', '');
+                          }}
+                        />
+                      </div>
+                      <div className="col-sm-6 col-md-4 col-lg-2">
+                        <label>To Bill Amount:</label>
+                        <Field
+                          type="text"
+                          className="form-control form-control-sm"
+                          component={CustomInput}
+                          name="to_bill_amount"
+                          placeholder="To Bill Amount"
+                          maxLength={13}
+                          min={values.from_bill_amount}
+                          onChange={handleChange}
+                        />
+                        <small
+                          style={{
+                            color: 'red'
+                          }}
+                        >
+                          {toBillAmountErr}
+                        </small>
+                      </div>
+                      <div className="col-sm-6 col-md-4 col-lg-2">
+                        <label>From Hold Amount:</label>
+                        <Field
+                          type="text"
+                          component={CustomInput}
+                          className="form-control"
+                          name="from_hold_amount"
+                          placeholder="From Hold Amount"
+                          onChange={(e) => {
+                            handleChange(e);
+                            setFieldValue('to_hold_amount', '');
+                          }}
+                        />
+                      </div>
+                      <div className="col-sm-6 col-md-4 col-lg-2">
+                        <label>To Hold Amount:</label>
+                        <Field
+                          type="text"
+                          component={CustomInput}
+                          className="form-control"
+                          name="to_hold_amount"
+                          placeholder="To Hold Amount"
+                          min={values.from_bill_amount}
+                          onChange={handleChange}
+                        />
+                        <small
+                          style={{
+                            color: 'red'
+                          }}
+                        >
+                          {toHoldAmountErr}
+                        </small>
+                      </div>
+                      <div className="col-sm-6 col-md-4 col-lg-4">
+                        <label className="cp">
+                          <Field
+                            type="checkbox"
+                            className="sm-1 mx-2"
+                            name="is_original_bill_needed"
+                            onChange={handleCheckboxChange}
+                            checked={isOriginalBillReceived}
+                            innerRef={selectIsOriginalBillRef}
+                          />
+                          Is Original bill Received:
+                        </label>
+                      </div>
+                    </div>
+                  </Collapse>
+                  <div className="d-flex justify-content-end align-items-end">
+                    <button
+                      className="btn btn-warning text-white"
+                      type="submit"
+                    >
+                      <i className="icofont-search-1 "></i> Search
+                    </button>
+                    <button
+                      className="btn btn-info text-white"
+                      type="button"
+                      onClick={handleClearData}
+                    >
+                      <i className="icofont-refresh text-white"></i> Reset
+                    </button>
                   </div>
-                </Collapse>
-
-                <Collapse in={currentTab === 'filter_by_date'}>
-                  <div className="row  row_gap_3">
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>From Bill Date:</label>
-                      <Field
-                        type="date"
-                        component={CustomInput}
-                        className="form-control"
-                        name="from_bill_date"
-                        onChange={(e) => {
-                          handleChange(e);
-                          setFieldValue('to_bill_date', ''); // Reset to_payment_date when from_payment_date changes
-                        }}
-                        // onChange={(e) => handleBillDate(e)}
-                        // max={formattedDate}
-                        // innerRef={selectFromBillRef}
-                        // value={fromBillDate}
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>To Bill Date:</label>
-                      <Field
-                        type="date"
-                        component={CustomInput}
-                        className="form-control"
-                        name="to_bill_date"
-                        min={values.from_bill_date}
-                        onChange={handleChange}
-                        // min={fromBillDate}
-                        // required={isToBillDateRequired}
-                        // max={formattedDate}
-                        // innerRef={selectToBillRef}
-                        // value={toBillDate}
-                        // onChange={(e) => setToBillDate(e.target.value)}
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>From Received Date:</label>
-                      {/* <Field
-                        type="date"
-                        component={CustomInput}
-                        className="form-control"
-                        name="from_received_date"
-                        innerRef={selectFromReceivedRef}
-                        value={receivedate}
-                        onChange={(e) => handleReceiveDate(e)}
-                      /> */}
-                      <Field
-                        type="date"
-                        component={CustomInput}
-                        className="form-control"
-                        name="from_received_date"
-                        // innerRef={selectFromReceivedRef}
-                        // value={receivedate}
-                        onChange={(e) => {
-                          handleChange(e);
-                          setFieldValue('to_received_date', ''); // Reset to_payment_date when from_payment_date changes
-                        }}
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>To Received Date:</label>
-                      {/* <Field
-                        type="date"
-                        component={CustomInput}
-                        className="form-control"
-                        name="to_received_date"
-                        min={receivedate}
-                        innerRef={selectToReceivedRef}
-                        value={toRecive}
-                        required={isToReceiveRequired}
-                        onChange={(e) => setToReceive(e.target.value)}
-                      /> */}
-                      <Field
-                        type="date"
-                        component={CustomInput}
-                        className="form-control"
-                        name="to_received_date"
-                        min={values.from_received_date}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>From Payment Date:</label>
-                      {/* <Field
-                        type="date"
-                        component={CustomInput}
-                        className="form-control"
-                        name="from_payment_date"
-                        // value={datee}
-                        // onChange={(e) => handleFromDate(e)}
-                        // innerRef={selectFromPaymentRef}
-                      /> */}
-                      <Field
-                        type="date"
-                        component={CustomInput}
-                        className="form-control"
-                        name="from_payment_date"
-                        onChange={(e) => {
-                          handleChange(e);
-                          setFieldValue('to_payment_date', ''); // Reset to_payment_date when from_payment_date changes
-                        }}
-                      />{' '}
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>To Payment Date:</label>
-                      {/* <Field
-                        type="date"
-                        component={CustomInput}
-                        className="form-control"
-                        name="to_payment_date"
-                        min={datee}
-                        // innerRef={selectToPaymentRef}
-                        // required={isToPaymentRequired}
-                        // value={toPaymentDate}
-                        // onChange={(e) => setToPaymentDate(e.target.value)}
-                      /> */}
-                      <Field
-                        type="date"
-                        component={CustomInput}
-                        className="form-control"
-                        name="to_payment_date"
-                        min={values.from_payment_date}
-                        onChange={handleChange}
-                      />
-                    </div>
-                    <h6 className="mt-1 text-danger">
-                      Note:- If you are selecting any from date selection, then
-                      to date is Mandatory
-                    </h6>
-                  </div>
-                </Collapse>
-
-                <Collapse in={currentTab === 'filter_by_amount'}>
-                  <div className="row mb-3 row_gap_3">
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>From Bill Amount:</label>
-                      <Field
-                        type="text"
-                        component={CustomInput}
-                        className="form-control form-control-sm"
-                        name="from_bill_amount"
-                        placeholder="From Bill Amount"
-                        maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
-                        onChange={(e) => {
-                          handleChange(e);
-                          setFieldValue('to_bill_amount', ''); // Reset to_payment_date when from_payment_date changes
-                        }}
-                        // onChange={(e) => handleFromBillAmount(e)}
-                        // innerRef={selectFromBillAmountRef}
-                        // onKeyPress={(e) => {
-                        //   const allowedKeys = [
-                        //     '0',
-                        //     '1',
-                        //     '2',
-                        //     '3',
-                        //     '4',
-                        //     '5',
-                        //     '6',
-                        //     '7',
-                        //     '8',
-                        //     '9',
-                        //     '.',
-                        //     'Backspace'
-                        //   ];
-                        //   const inputValue = e.key;
-
-                        //   if (!allowedKeys.includes(inputValue)) {
-                        //     e.preventDefault();
-                        //   }
-
-                        //   const currentInput = e.target.value;
-                        //   const decimalIndex = currentInput.indexOf('.');
-
-                        //   if (
-                        //     decimalIndex !== -1 &&
-                        //     currentInput.length - decimalIndex > 2
-                        //   ) {
-                        //     e.preventDefault();
-                        //   }
-
-                        //   if (
-                        //     currentInput.length >= 10 &&
-                        //     inputValue !== '.' &&
-                        //     decimalIndex === -1
-                        //   ) {
-                        //     e.preventDefault();
-                        //   }
-                        // }}
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>To Bill Amount:</label>
-                      <Field
-                        type="text"
-                        className="form-control form-control-sm"
-                        component={CustomInput}
-                        name="to_bill_amount"
-                        placeholder="To Bill Amount"
-                        maxLength={13} // 10 digits + 1 decimal point + 2 decimal places
-                        // onChange={(e) => handleToBillAmount(e)}
-                        min={values.from_bill_amount}
-                        onChange={handleChange}
-                        // innerRef={selectToBillAmountRef}
-                        // onKeyPress={(e) => {
-                        //   const allowedKeys = [
-                        //     '0',
-                        //     '1',
-                        //     '2',
-                        //     '3',
-                        //     '4',
-                        //     '5',
-                        //     '6',
-                        //     '7',
-                        //     '8',
-                        //     '9',
-                        //     '.',
-                        //     'Backspace'
-                        //   ];
-                        //   const inputValue = e.key;
-
-                        //   if (!allowedKeys.includes(inputValue)) {
-                        //     e.preventDefault();
-                        //   }
-
-                        //   const currentInput = e.target.value;
-                        //   const decimalIndex = currentInput.indexOf('.');
-
-                        //   if (
-                        //     decimalIndex !== -1 &&
-                        //     currentInput.length - decimalIndex > 2
-                        //   ) {
-                        //     e.preventDefault();
-                        //   }
-
-                        //   if (
-                        //     currentInput.length >= 10 &&
-                        //     inputValue !== '.' &&
-                        //     decimalIndex === -1
-                        //   ) {
-                        //     e.preventDefault();
-                        //   }
-                        // }}
-                      />
-                      <small
-                        style={{
-                          color: 'red'
-                        }}
-                      >
-                        {toBillAmountErr}
-                      </small>
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>From Hold Amount:</label>
-                      <Field
-                        type="text"
-                        component={CustomInput}
-                        className="form-control"
-                        name="from_hold_amount"
-                        placeholder="From Hold Amount"
-                        onChange={(e) => {
-                          handleChange(e);
-                          setFieldValue('to_hold_amount', ''); // Reset to_payment_date when from_payment_date changes
-                        }}
-                        // innerRef={selectFromHoldAmountRef}
-                        // onKeyPress={(e) => {
-                        //   const allowedKeys = [
-                        //     '0',
-                        //     '1',
-                        //     '2',
-                        //     '3',
-                        //     '4',
-                        //     '5',
-                        //     '6',
-                        //     '7',
-                        //     '8',
-                        //     '9',
-                        //     '.',
-                        //     'Backspace'
-                        //   ];
-                        //   const inputValue = e.key;
-
-                        //   if (!allowedKeys.includes(inputValue)) {
-                        //     e.preventDefault();
-                        //   }
-
-                        //   const currentInput = e.target.value;
-                        //   const decimalIndex = currentInput.indexOf('.');
-
-                        //   if (
-                        //     decimalIndex !== -1 &&
-                        //     currentInput.length - decimalIndex > 2
-                        //   ) {
-                        //     e.preventDefault();
-                        //   }
-
-                        //   if (
-                        //     currentInput.length >= 10 &&
-                        //     inputValue !== '.' &&
-                        //     decimalIndex === -1
-                        //   ) {
-                        //     e.preventDefault();
-                        //   }
-                        // }}
-                        // onChange={(e) => handleFromHoldAmount(e)}
-                      />
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-2">
-                      <label>To Hold Amount:</label>
-                      <Field
-                        type="text"
-                        component={CustomInput}
-                        className="form-control"
-                        name="to_hold_amount"
-                        placeholder="To Hold Amount"
-                        min={values.from_bill_amount}
-                        onChange={handleChange}
-                        // innerRef={selectToHoldAmountRef}
-                        // onKeyPress={(e) => {
-                        //   const allowedKeys = [
-                        //     '0',
-                        //     '1',
-                        //     '2',
-                        //     '3',
-                        //     '4',
-                        //     '5',
-                        //     '6',
-                        //     '7',
-                        //     '8',
-                        //     '9',
-                        //     '.',
-                        //     'Backspace'
-                        //   ];
-                        //   const inputValue = e.key;
-
-                        //   if (!allowedKeys.includes(inputValue)) {
-                        //     e.preventDefault();
-                        //   }
-
-                        //   const currentInput = e.target.value;
-                        //   const decimalIndex = currentInput.indexOf('.');
-
-                        //   if (
-                        //     decimalIndex !== -1 &&
-                        //     currentInput.length - decimalIndex > 2
-                        //   ) {
-                        //     e.preventDefault();
-                        //   }
-
-                        //   if (
-                        //     currentInput.length >= 10 &&
-                        //     inputValue !== '.' &&
-                        //     decimalIndex === -1
-                        //   ) {
-                        //     e.preventDefault();
-                        //   }
-                        // }}
-                        // onChange={(e) => handleToHoldAmount(e)}
-                      />
-                      <small
-                        style={{
-                          color: 'red'
-                        }}
-                      >
-                        {toHoldAmountErr}
-                      </small>
-                    </div>
-                    <div className="col-sm-6 col-md-4 col-lg-4">
-                      <label className="cp">
-                        <Field
-                          type="checkbox"
-                          className="sm-1 mx-2"
-                          name="is_original_bill_needed"
-                          onChange={handleCheckboxChange}
-                          checked={isOriginalBillReceived}
-                          innerRef={selectIsOriginalBillRef}
-                        />
-                        Is Original bill Received:
-                      </label>
-                    </div>
-                  </div>
-                </Collapse>
-                <div className="d-flex justify-content-end align-items-end">
-                  <button className="btn btn-warning text-white" type="submit">
-                    <i className="icofont-search-1 "></i> Search
-                  </button>
-                  <button
-                    className="btn btn-info text-white"
-                    type="button"
-                    onClick={handleClearData}
-                  >
-                    <i className="icofont-refresh text-white"></i> Reset
-                  </button>
-                </div>
-              </>
-              {/* </form> */}
-            </Collapse>
+                </>
+              </Collapse>
+            )}
           </Form>
         )}
       </Formik>
 
-      {/* Search Filter  */}
-
-      {/* <div className="container-xxl mt-2">
-        <div className="card card-body">
-          <div className="row">
-            <div className="col-md-10">
-              <input
-                type="text"
-                id="search"
-                className="form-control"
-                placeholder="Search By Bill ID...."
-                onClick={(e) => handleSearch(e)}
-                // onKeyDown={handleKeyDown}
-                ref={searchRef}
-              />
-            </div>
-            <div className="col-md-2">
-              <button
-                className="btn btn-sm btn-warning text-white"
-                type="button"
-                onClick={handleSearch}
-                style={{ marginTop: '0px', fontWeight: '600' }}
-              >
-                <i className="icofont-search-1 "></i> Search
-              </button>
-              <button
-                className="btn btn-sm btn-info text-white"
-                type="button"
-                // onClick={handleClearSearchData}
-                onClick={() => window.location.reload(false)}
-                style={{ marginTop: '0px', fontWeight: '600' }}
-              >
-                <i className="icofont-refresh text-white"></i> Reset
-              </button>
-            </div>
-          </div>
-        </div>
-      </div> */}
-
-      {/* DATA TABLE */}
       {AllBillCheckingData && (
         <DataTable
           columns={columns}
@@ -2365,7 +1447,6 @@ function BillCheckingTransaction() {
         />
       )}
     </div>
-    // </div>
   );
 }
 
