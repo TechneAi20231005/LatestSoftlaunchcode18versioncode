@@ -1119,7 +1119,7 @@ export default function TaskComponent() {
                                 {attachment.name}
                                 <div className="d-flex justify-content-center p-0 mt-1">
                                   <a
-                                    href="/"
+                                    // href="/"
                                     // href={`${_attachmentUrl}/${attachment.path}`}
                                     target="_blank"
                                     className="btn btn-primary btn-sm p-1"
