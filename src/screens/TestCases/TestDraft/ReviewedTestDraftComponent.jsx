@@ -1093,18 +1093,40 @@ function ReviewedTestDraftComponent() {
       sortable: true,
 
       width: '250px',
-      cell: (row) => (
-        <select
-          className="form-select"
-          aria-label="Default select example"
-          value={row.comment_id || ''}
-          id="comment_id"
-          name="comment_id"
-          disabled
-        >
-          {generateOptions(getFilterReviewCommentMasterList)}
-        </select>
-      )
+      // cell: (row) => (
+      //     <select
+      //       className="form-select"
+      //       aria-label="Default select example"
+      //       value={row.comment_id || ''}
+      //       id="comment_id"
+      //       name="comment_id"
+      //       disabled
+      //     >
+      //       {generateOptions(getFilterReviewCommentMasterList)}
+      //     </select>
+      // )
+      cell: (row) => {
+        // Get the selected option text to display in the tooltip
+        const selectedOptionText =
+          getFilterReviewCommentMasterList?.find(
+            (option) => option?.value === row?.comment_id
+          )?.label || 'No comment selected';
+
+        return (
+          <OverlayTrigger overlay={<Tooltip>{selectedOptionText}</Tooltip>}>
+            <select
+              className="form-select"
+              aria-label="Default select example"
+              value={row.comment_id || ''}
+              id="comment_id"
+              name="comment_id"
+              disabled
+            >
+              {generateOptions(getFilterReviewCommentMasterList)}
+            </select>
+          </OverlayTrigger>
+        );
+      }
     },
     {
       name: 'Remark',
@@ -1112,16 +1134,18 @@ function ReviewedTestDraftComponent() {
       sortable: true,
       width: '300px',
       cell: (row) => (
-        <input
-          className="form-control"
-          type="text"
-          id="other_remark"
-          name="other_remark"
-          placeholder="Enter Remark"
-          aria-label="default input example"
-          defaultValue={row.other_remark}
-          disabled
-        />
+        <OverlayTrigger overlay={<Tooltip>{row.other_remark}</Tooltip>}>
+          <input
+            className="form-control"
+            type="text"
+            id="other_remark"
+            name="other_remark"
+            placeholder="Enter Remark"
+            aria-label="default input example"
+            defaultValue={row.other_remark}
+            disabled
+          />
+        </OverlayTrigger>
       )
     },
 
