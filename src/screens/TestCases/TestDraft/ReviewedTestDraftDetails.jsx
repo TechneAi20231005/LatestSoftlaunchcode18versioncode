@@ -318,7 +318,8 @@ function ReviewedTestDraftDetails(props) {
         getAllReviewTestDraftList({
           limit: props?.paginationData.rowPerPage,
           page: props?.paginationData.currentPage,
-          filter_testcase_data: updatedFilters
+          filter_testcase_data: updatedFilters,
+          type: 'tester'
         })
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -344,7 +345,8 @@ function ReviewedTestDraftDetails(props) {
         getAllReviewTestDraftList({
           limit: props?.paginationData.rowPerPage,
           page: props?.paginationData.currentPage,
-          filter_testcase_data: updatedFilters
+          filter_testcase_data: updatedFilters,
+          type: 'tester'
         })
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -403,7 +405,8 @@ function ReviewedTestDraftDetails(props) {
         getAllReviewTestDraftList({
           limit: props?.paginationData.rowPerPage,
           page: props?.paginationData.currentPage,
-          filter_testcase_data: updatedFilters
+          filter_testcase_data: updatedFilters,
+          type: 'tester'
         })
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -887,7 +890,8 @@ function ReviewedTestDraftDetails(props) {
           getAllReviewTestDraftList({
             limit: props?.paginationData.rowPerPage,
             page: props?.paginationData.currentPage,
-            filter_testcase_data: updatedFilters
+            filter_testcase_data: updatedFilters,
+            type: 'tester'
           })
         );
         localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -945,7 +949,8 @@ function ReviewedTestDraftDetails(props) {
           updatedFilters?.length === 1 &&
           updatedFilters[0]?.column === filterColumnId
             ? []
-            : updatedFilters
+            : updatedFilters,
+        type: 'tester'
       })
     );
   }, [props?.paginationData.rowPerPage, props?.paginationData.currentPage]);
