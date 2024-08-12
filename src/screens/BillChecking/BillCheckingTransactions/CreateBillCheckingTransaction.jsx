@@ -195,7 +195,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   const handleAssignToPerson = async (e) => {
     try {
       const res = await new DropdownService().getMappedEmp(e.value);
-      console.log(res);
+
       if (res?.status === 200) {
         if (res.data.status === 1) {
           setAssignTo(res.data.message);
@@ -224,13 +224,15 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const endFinancialYear = new Date(currentDate.getFullYear(), 2, 31); // Month is zero-based (2 for March)
 
-  const startFinancialYear = new Date(currentDate.getFullYear() - 1, 3, 1);
+  const startFinancialYear = new Date(currentDate.getFullYear(), 3, 1);
 
   const startYear = startFinancialYear.getFullYear();
   const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
   const startDay = String(startFinancialYear.getDate()).padStart(2, '0');
 
   const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
+
+  
 
   const handleReset = () => {};
   const handleFilter = async (e) => {
@@ -1545,7 +1547,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
                   <div className=" col-md-3 ">
                     <label className=" col-form-label">
-                      <b>Internal Audit Remark: </b>
+                      <b>Audit Remark: </b>
                     </label>
                     {authority && (
                       <textarea
