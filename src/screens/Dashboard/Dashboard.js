@@ -704,13 +704,12 @@ export default function HrDashboard(props) {
                     {count && <h5 className="mb-0 ">{count.pendingTask}</h5>}
                   </div>
                 </div>
-                <a
-                  href="/"
+                <div
                   title="view-members"
                   className="btn btn-link text-decoration-none  rounded-1"
                 >
                   <i className="icofont-hand-drawn-right fs-2 text-white"></i>
-                </a>
+                </div>
               </div>
             </div>
           </div>
@@ -731,13 +730,12 @@ export default function HrDashboard(props) {
                     {count && <h5 className="mb-0 ">{count.workingTask}</h5>}
                   </div>
                 </div>
-                <a
-                  href="/"
+                <div
                   title="view-members"
                   className="btn btn-link text-decoration-none  rounded-1"
                 >
                   <i className="icofont-hand-drawn-right fs-2 text-white"></i>
-                </a>
+                </div>
               </div>
             </div>
           </div>
@@ -758,13 +756,12 @@ export default function HrDashboard(props) {
                     {count && <h5 className="mb-0 ">{count.completedTask}</h5>}
                   </div>
                 </div>
-                <a
-                  href="/"
+                <div
                   title="view-members"
                   className="btn btn-link text-decoration-none  rounded-1"
                 >
                   <i className="icofont-hand-drawn-right fs-2 text-white"></i>
-                </a>
+                </div>
               </div>
             </div>
           </div>
@@ -785,13 +782,12 @@ export default function HrDashboard(props) {
                     {count && <h5 className="mb-0 ">{count.totalTask}</h5>}
                   </div>
                 </div>
-                <a
-                  href="/"
+                <div
                   title="view-members"
                   className="btn btn-link text-decoration-none  rounded-1"
                 >
                   <i className="icofont-hand-drawn-right fs-2 text-white"></i>
-                </a>
+                </div>
               </div>
             </div>
           </div>
