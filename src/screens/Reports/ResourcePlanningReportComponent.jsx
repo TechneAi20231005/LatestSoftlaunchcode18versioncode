@@ -282,7 +282,6 @@ export default function ResourcePlanningReportComponent() {
                   className="basic-multi-select"
                   classNamePrefix="select"
                   options={userData}
-                  required
                   style={{ zIndex: '100' }}
                 />
               </div>
