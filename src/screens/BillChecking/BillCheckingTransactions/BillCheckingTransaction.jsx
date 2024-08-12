@@ -212,7 +212,7 @@ function BillCheckingTransaction() {
             <Dropdown.Toggle
               as="button"
               variant=""
-              id={`${'dropdown-basic_' + data.id}`}
+              id={`${'dropdown-basic_' + data?.id}`}
               className="btn btn-primary text-white"
             >
               <i className="icofont-listine-dots"></i>
@@ -229,8 +229,7 @@ function BillCheckingTransaction() {
                   <li>
                     <Link
                       to={`/${_base}/EditBillCheckingTransaction/` + row.id}
-                      className="btn btn-sm btn-primary text-white"
-                      style={{ width: '100%', zIndex: 100 }}
+                      className="btn btn-sm btn-primary text-white w-100"
                     >
                       <i className="icofont-edit"></i> Edit
                     </Link>
@@ -239,9 +238,8 @@ function BillCheckingTransaction() {
 
               <li>
                 <Link
-                  to={`/${_base}/ViewBillTransaction/` + row.id}
-                  className="btn btn-sm btn-info text-white"
-                  style={{ width: '100%', zIndex: 100 }}
+                  to={`/${_base}/ViewBillTransaction/` + row?.id}
+                  className="btn btn-sm btn-info text-white w-100"
                 >
                   <i className="icofont-eye"></i> View
                 </Link>
@@ -258,8 +256,7 @@ function BillCheckingTransaction() {
                   <li>
                     <Link
                       to={`/${_base}/BillCheckingHistory/` + row.id}
-                      className="btn btn-sm btn-danger text-white"
-                      style={{ width: '100%', zIndex: 100 }}
+                      className="btn btn-sm btn-danger text-white w-100"
                     >
                       <i className="icofont-history"></i> History
                     </Link>
@@ -271,8 +268,7 @@ function BillCheckingTransaction() {
                   <li>
                     <Link
                       to={`/${_base}/PaymentHistory/` + row.id}
-                      className="btn btn-sm btn-warning text-white"
-                      style={{ width: '100%', zIndex: 100 }}
+                      className="btn btn-sm btn-warning text-white w-100"
                     >
                       <i className="icofont-tasks"></i> Payment History
                     </Link>
@@ -281,8 +277,7 @@ function BillCheckingTransaction() {
                   <li>
                     <Link
                       to={`/${_base}/PaymentDetails/` + row.id}
-                      className="btn btn-sm btn-primary text-white"
-                      style={{ width: '100%', zIndex: 100 }}
+                      className="btn btn-sm btn-primary text-white w-100"
                     >
                       <i className="icofont-price"></i> Payment Details
                     </Link>
@@ -291,8 +286,7 @@ function BillCheckingTransaction() {
                   <li>
                     <Link
                       to={`/${_base}/AssignedPerson/` + row.id}
-                      className="btn btn-sm btn-secondary text-white"
-                      style={{ width: '100%', zIndex: 100 }}
+                      className="btn btn-sm btn-secondary text-white w-100"
                     >
                       <i className="icofont-user-suited"></i> Assigned Person{' '}
                     </Link>
@@ -1643,7 +1637,7 @@ function BillCheckingTransaction() {
 
       <div className="mt-2">
         <SearchBoxHeader
-        searchTerm={searchTerm} 
+          searchTerm={searchTerm}
           setSearchTerm={setSearchTerm}
           handleSearch={handleSearch}
           handleReset={handleReset}
