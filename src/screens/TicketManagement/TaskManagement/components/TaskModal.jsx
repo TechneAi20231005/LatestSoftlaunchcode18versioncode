@@ -1158,7 +1158,9 @@ export default function TaskModal(props) {
                       userData &&
                       userData
                         .map((d) => ({ value: d.value, label: d.label }))
-                        .filter((d) => d.value === localStorage.getItem('id'))
+                        .filter(
+                          (d) => d.value === Number(localStorage.getItem('id'))
+                        )
                     }
                     isClearable
                     // isDisabled={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}

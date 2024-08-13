@@ -159,16 +159,16 @@ export default function TaskComponent() {
 
       const tasksDataa = [];
       const sprintId = sprint_id ? sprint_id : 0;
-      toast.clearWaitingQueue();
-      const toastId = toast.loading('Fetching Latest Api Data... (0 sec)');
+      // toast.clearWaitingQueue();
+      // const toastId = toast.loading('Fetching Latest Api Data... (0 sec)');
 
-      let counter = 0;
-      const interval = setInterval(() => {
-        counter += 1;
-        toast.update(toastId, {
-          render: `Fetching Latest Api Data... (${counter} sec)`
-        });
-      }, 1000);
+      // let counter = 0;
+      // const interval = setInterval(() => {
+      //   counter += 1;
+      //   toast.update(toastId, {
+      //     render: `Fetching Latest Api Data... (${counter} sec)`
+      //   });
+      // }, 1000);
       // setIsLoading(true);
       try {
         await new BasketService()
@@ -233,22 +233,22 @@ export default function TaskComponent() {
             }
           });
       } catch (error) {
-        toast.update(toastId, {
-          render: 'Error fetching data!',
-          type: toast.TYPE.ERROR,
-          isLoading: false,
-          autoClose: 3000
-        });
+        // toast.update(toastId, {
+        //   render: 'Error fetching data!',
+        //   type: toast.TYPE.ERROR,
+        //   isLoading: false,
+        //   autoClose: 3000
+        // });
       } finally {
-        clearInterval(interval);
-        if (toastId) {
-          toast.update(toastId, {
-            render: 'Data fetched successfully!',
-            type: toast.TYPE.SUCCESS,
-            isLoading: false,
-            autoClose: 3000
-          });
-        }
+        // clearInterval(interval);
+        // if (toastId) {
+        //   toast.update(toastId, {
+        //     render: 'Data fetched successfully!',
+        //     type: toast.TYPE.SUCCESS,
+        //     isLoading: false,
+        //     autoClose: 3000
+        //   });
+        // }
       }
     },
     [ticketId]
@@ -1120,7 +1120,7 @@ export default function TaskComponent() {
                                 {attachment.name}
                                 <div className="d-flex justify-content-center p-0 mt-1">
                                   <a
-                                    href="/"
+                                    // href="/"
                                     // href={`${_attachmentUrl}/${attachment.path}`}
                                     target="_blank"
                                     className="btn btn-primary btn-sm p-1"
@@ -1242,7 +1242,7 @@ export default function TaskComponent() {
                 </span>
               </div>
               <div className="fs-5">
-                <svg
+                {/* <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="28"
                   height="28"
@@ -1255,9 +1255,9 @@ export default function TaskComponent() {
                     d="M19.6 7.6H18V6.8C18 6.58783 17.9157 6.38434 17.7657 6.23431C17.6157 6.08429 17.4122 6 17.2 6C16.9878 6 16.7843 6.08429 16.6343 6.23431C16.4843 6.38434 16.4 6.58783 16.4 6.8V7.6H11.6V6.8C11.6 6.58783 11.5157 6.38434 11.3657 6.23431C11.2157 6.08429 11.0122 6 10.8 6C10.5878 6 10.3843 6.08429 10.2343 6.23431C10.0843 6.38434 10 6.58783 10 6.8V7.6H8.4C7.76348 7.6 7.15303 7.85286 6.70294 8.30294C6.25286 8.75303 6 9.36348 6 10V19.6C6 20.2365 6.25286 20.847 6.70294 21.2971C7.15303 21.7471 7.76348 22 8.4 22H19.6C20.2365 22 20.847 21.7471 21.2971 21.2971C21.7471 20.847 22 20.2365 22 19.6V10C22 9.36348 21.7471 8.75303 21.2971 8.30294C20.847 7.85286 20.2365 7.6 19.6 7.6ZM20.4 19.6C20.4 19.8122 20.3157 20.0157 20.1657 20.1657C20.0157 20.3157 19.8122 20.4 19.6 20.4H8.4C8.18783 20.4 7.98434 20.3157 7.83431 20.1657C7.68429 20.0157 7.6 19.8122 7.6 19.6V14H20.4V19.6ZM20.4 12.4H7.6V10C7.6 9.78783 7.68429 9.58434 7.83431 9.43431C7.98434 9.28429 8.18783 9.2 8.4 9.2H10V10C10 10.2122 10.0843 10.4157 10.2343 10.5657C10.3843 10.7157 10.5878 10.8 10.8 10.8C11.0122 10.8 11.2157 10.7157 11.3657 10.5657C11.5157 10.4157 11.6 10.2122 11.6 10V9.2H16.4V10C16.4 10.2122 16.4843 10.4157 16.6343 10.5657C16.7843 10.7157 16.9878 10.8 17.2 10.8C17.4122 10.8 17.6157 10.7157 17.7657 10.5657C17.9157 10.4157 18 10.2122 18 10V9.2H19.6C19.8122 9.2 20.0157 9.28429 20.1657 9.43431C20.3157 9.58434 20.4 9.78783 20.4 10V12.4Z"
                     fill="white"
                   />
-                </svg>
+                </svg> */}
 
-                <span>
+                {/* <span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="34"
@@ -1273,7 +1273,7 @@ export default function TaskComponent() {
                       fill="#484C7F"
                     />
                   </svg>
-                </span>
+                </span> */}
 
                 <button
                   className="border-0 p-0 ms-1"

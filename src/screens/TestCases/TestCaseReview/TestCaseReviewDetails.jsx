@@ -176,25 +176,52 @@ function TestCaseReviewDetails() {
     }));
   };
 
+  const totalRows = rowData?.length;
+  // const handleCheckboxChange = (row) => {
+  //   localDispatch({
+  //     type: 'SET_SELECTED_ROWS',
+  //     payload: (prevSelectedRows) => {
+  //       if (prevSelectedRows.includes(row.tc_id)) {
+  //         return prevSelectedRows.filter(
+  //           (selectedRow) => selectedRow !== row.tc_id
+  //         );
+  //       } else {
+  //         return [...prevSelectedRows, row.tc_id];
+  //       }
+  //     }
+  //   });
+  // };
+
   const handleCheckboxChange = (row) => {
     localDispatch({
       type: 'SET_SELECTED_ROWS',
       payload: (prevSelectedRows) => {
+        let updatedSelectedRows;
+
         if (prevSelectedRows.includes(row.tc_id)) {
-          return prevSelectedRows.filter(
-            (selectedRow) => selectedRow !== row.tc_id
+          updatedSelectedRows = prevSelectedRows?.filter(
+            (selectedRow) => selectedRow !== row?.tc_id
           );
         } else {
-          return [...prevSelectedRows, row.tc_id];
+          updatedSelectedRows = [...prevSelectedRows, row.tc_id];
         }
+
+        // Check if all rows are selected
+        if (updatedSelectedRows?.length === totalRows) {
+          localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: true });
+        } else {
+          localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: false });
+        }
+
+        return updatedSelectedRows;
       }
     });
   };
 
   const [commentIdError, setCommentIdError] = useState('');
   const [changedRows, setChangedRows] = useState({});
-  const handleSubmit = async (status) => {
 
+  const handleSubmit = async (status) => {
     // const updatedRows = exportTestCaseReviewData
     //   ?.filter((row) => selectedRows?.includes(row.tc_id))
     //   ?.map((row) => ({
@@ -203,7 +230,12 @@ function TestCaseReviewDetails() {
     //     comment_id: comments[row.id] || row.comment_id || commonComment,
     //     other_remark: remarks[row.id] || row.other_remark
     //   }));
-
+    if (status === 'RESEND' && selectAllNames !== true) {
+      alert(
+        'Please select all test cases to send for modification, partial selection is not allowed.'
+      );
+      return false; // Exit the function or prevent further execution
+    }
     const getUpdatedRows = () => {
       let updatedRows = [];
 
@@ -230,7 +262,6 @@ function TestCaseReviewDetails() {
           other_remark: changedRows[id]?.other_remark || row?.other_remark
         };
       });
-
 
       const combinedRows = [...updatedRows, ...changedRowsArray].reduce(
         (acc, current) => {
@@ -918,9 +949,11 @@ function TestCaseReviewDetails() {
 
           {commentIdError[row.tc_id] &&
             selectedRows &&
-            selectedRows.includes(row.tc_id) && (
+            selectedRows?.includes(row?.tc_id) && (
               <div className="col">
-                <span className="text-danger">{commentIdError[row.tc_id]}</span>
+                <span className="text-danger">
+                  {commentIdError[row?.tc_id]}
+                </span>
               </div>
             )}
         </div>
@@ -1199,7 +1232,6 @@ function TestCaseReviewDetails() {
     updated_by: 'updated_by'
   };
 
-
   // const transformDataForExport = (rowData, data, comments, commonComment) => {
   //   if (comments) {
   //     const obj = comments;
@@ -1261,7 +1293,6 @@ function TestCaseReviewDetails() {
   //   comments,
   //   commonComment
   // );
-
 
   const exportColumns = [
     { title: 'Module', field: 'module_name' },

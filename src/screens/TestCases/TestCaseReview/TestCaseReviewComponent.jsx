@@ -339,7 +339,8 @@ function TestCaseReviewComponent() {
         getTestCaseReviewListThunk({
           limit: paginationData.rowPerPage,
           page: paginationData.currentPage,
-          filter_testcase_data: updatedFilters
+          filter_testcase_data: updatedFilters,
+          type: 'reviewer'
         })
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -364,7 +365,8 @@ function TestCaseReviewComponent() {
         getTestCaseReviewListThunk({
           limit: paginationData.rowPerPage,
           page: paginationData.currentPage,
-          filter_testcase_data: updatedFilters
+          filter_testcase_data: updatedFilters,
+          type: 'reviewer'
         })
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -413,7 +415,8 @@ function TestCaseReviewComponent() {
         getTestCaseReviewListThunk({
           limit: paginationData.rowPerPage,
           page: paginationData.currentPage,
-          filter_testcase_data: updatedFilters
+          filter_testcase_data: updatedFilters,
+          type: 'reviewer'
         })
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -897,9 +900,10 @@ function TestCaseReviewComponent() {
 
     dispatch(
       getTestCaseReviewListThunk({
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage,
-        filter_testcase_data: []
+        limit: paginationData?.rowPerPage,
+        page: paginationData?.currentPage,
+        filter_testcase_data: [],
+        type: 'reviewer'
       })
     );
   };
@@ -956,7 +960,8 @@ function TestCaseReviewComponent() {
           getTestCaseReviewListThunk({
             limit: paginationData.rowPerPage,
             page: paginationData.currentPage,
-            filter_testcase_data: updatedFilters
+            filter_testcase_data: updatedFilters,
+            type: 'reviewer'
           })
         );
         localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -996,7 +1001,8 @@ function TestCaseReviewComponent() {
           updatedFilters?.length === 1 &&
           updatedFilters[0]?.column === filterColumnId
             ? []
-            : updatedFilters
+            : updatedFilters,
+        type: 'reviewer'
       })
     );
   }, []);

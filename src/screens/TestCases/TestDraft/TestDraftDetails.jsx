@@ -1672,20 +1672,22 @@ function TestDraftDetails(props) {
               Reviewer : <Astrick color="red" size="13px" />
             </b>
           </label>
-          <Select
-            type="text"
-            className="form-control form-control-sm"
-            id="reviewer_id"
-            name="reviewer_id"
-            options={testerData}
-            required
-            onChange={(e) => {
-              const selectedId = e?.value;
-              localDispatch({ type: 'SET_REVIEWER_ID', payload: selectedId });
-              setReviewerError('');
-            }}
-            placeholder="select..."
-          />
+          {testerData?.length > 0 && (
+            <Select
+              type="text"
+              className="form-control form-control-sm"
+              id="reviewer_id"
+              name="reviewer_id"
+              options={testerData}
+              required
+              onChange={(e) => {
+                const selectedId = e?.value;
+                localDispatch({ type: 'SET_REVIEWER_ID', payload: selectedId });
+                setReviewerError('');
+              }}
+              placeholder="select..."
+            />
+          )}
           {reviewerError && (
             <p
               style={{

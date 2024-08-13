@@ -237,7 +237,7 @@ export function getRegularizationTime(ticketId) {
   );
 }
 
-export function getRegularizationTimeHistory() {
+export function getRegularizationTimeHistory({ type }) {
   const token = localStorage.getItem('jwt_token');
 
   const config = {
@@ -248,7 +248,12 @@ export function getRegularizationTimeHistory() {
     }
   };
   return axios.get(
-    _URL + '/getRegularizationTime/' + userSessionData.userId,
+    // _URL + `/getRegularizationTime/${userSessionData.userId}?type=${type}`,
+    _URL +
+      `/getRegularizationTime/${userSessionData.userId}${
+        type ? `?type=${type}` : ''
+      }`,
+
     config
   );
 }
