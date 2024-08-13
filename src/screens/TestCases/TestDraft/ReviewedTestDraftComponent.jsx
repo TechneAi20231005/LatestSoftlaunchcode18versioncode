@@ -598,7 +598,7 @@ function ReviewedTestDraftComponent() {
               handleFilterClick(e, 'module_name', 'Module', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['module_name'] ? 'text-success' : 'text-dark'
+              isFilterApplied['module_name'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -644,7 +644,7 @@ function ReviewedTestDraftComponent() {
               handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['sub_module_name'] ? 'text-success' : 'text-dark'
+              isFilterApplied['sub_module_name'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -689,7 +689,7 @@ function ReviewedTestDraftComponent() {
               handleFilterClick(e, 'function_name', 'Function', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['function_name'] ? 'text-success' : 'text-dark'
+              isFilterApplied['function_name'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -732,7 +732,7 @@ function ReviewedTestDraftComponent() {
           <i
             onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
             className={`icofont-filter ms-2 ${
-              isFilterApplied['field'] ? 'text-success' : 'text-dark'
+              isFilterApplied['field'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -777,7 +777,7 @@ function ReviewedTestDraftComponent() {
               handleFilterClick(e, 'type_name', 'Testing Type', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['type_name'] ? 'text-success' : 'text-dark'
+              isFilterApplied['type_name'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -822,7 +822,7 @@ function ReviewedTestDraftComponent() {
               handleFilterClick(e, 'group_name', 'Testing Group', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['group_name'] ? 'text-success' : 'text-dark'
+              isFilterApplied['group_name'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -867,7 +867,7 @@ function ReviewedTestDraftComponent() {
               handleFilterClick(e, 'tc_id', 'Testing Id', 'number')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['tc_id'] ? 'text-success' : 'text-dark'
+              isFilterApplied['tc_id'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -907,7 +907,7 @@ function ReviewedTestDraftComponent() {
               handleFilterClick(e, 'severity', 'Severity', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['severity'] ? 'text-success' : 'text-dark'
+              isFilterApplied['severity'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -952,7 +952,7 @@ function ReviewedTestDraftComponent() {
               )
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['test_description'] ? 'text-success' : 'text-dark'
+              isFilterApplied['test_description'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -996,7 +996,7 @@ function ReviewedTestDraftComponent() {
           <i
             onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
             className={`icofont-filter ms-2 ${
-              isFilterApplied['steps'] ? 'text-success' : 'text-dark'
+              isFilterApplied['steps'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -1041,7 +1041,7 @@ function ReviewedTestDraftComponent() {
               handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['expected_result'] ? 'text-success' : 'text-dark'
+              isFilterApplied['expected_result'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -1084,7 +1084,7 @@ function ReviewedTestDraftComponent() {
           <i
             onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
             className={`icofont-filter ms-2 ${
-              isFilterApplied['status'] ? 'text-success' : 'text-dark'
+              isFilterApplied['status'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -1191,7 +1191,7 @@ function ReviewedTestDraftComponent() {
               handleFilterClick(e, 'project_name', 'Project', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['project_name'] ? 'text-success' : 'text-dark'
+              isFilterApplied['project_name'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -1236,7 +1236,7 @@ function ReviewedTestDraftComponent() {
               handleFilterClick(e, 'created_at', 'created_at', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['created_at'] ? 'text-success' : 'text-dark'
+              isFilterApplied['created_at'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -1281,7 +1281,7 @@ function ReviewedTestDraftComponent() {
               handleFilterClick(e, 'created_by', 'created_by', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['module_name'] ? 'text-success' : 'text-dark'
+              isFilterApplied['created_by'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>

@@ -175,7 +175,7 @@ function ReviewCommentMasterComponent() {
             name="interview_search"
             value={searchValue}
             onChange={(e) => setSearchValue(e?.target?.value)}
-            placeholder="Enter reviewer comment..."
+            placeholder="Search reviewer comment here..."
             className="form-control"
           />
         </Col>
