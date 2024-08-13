@@ -464,7 +464,7 @@ function TestCaseReviewDetails() {
           {row.sub_module_name && (
             <OverlayTrigger overlay={<Tooltip>{row.sub_module_name} </Tooltip>}>
               <div>
-                <span className="ms-1">
+                <span className="ms-1 d-block">
                   {' '}
                   {row.sub_module_name && row.sub_module_name?.length < 20
                     ? row.sub_module_name
@@ -813,7 +813,7 @@ function TestCaseReviewDetails() {
           {row.steps && (
             <OverlayTrigger overlay={<Tooltip>{row.steps} </Tooltip>}>
               <div>
-                <span className="ms-1">
+                <span className="ms-1 d-block">
                   {' '}
                   {row.steps && row.type_name?.length < 20
                     ? row.steps
@@ -857,7 +857,7 @@ function TestCaseReviewDetails() {
           {row.expected_result && (
             <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
               <div>
-                <span className="ms-1">
+                <span className="ms-1 d-block">
                   {' '}
                   {row.expected_result && row.expected_result?.length < 20
                     ? row.expected_result
@@ -974,11 +974,12 @@ function TestCaseReviewDetails() {
           placeholder="Enter Remark"
           aria-label="default input example"
           maxLength={100}
-          // value={
-          //   selectedRows && selectedRows.includes(row.id)
-          //     ? remarks[row.id] || row.other_remark
-          //     : commonRemark
-          // }
+          defaultValue={
+            // selectedRows && selectedRows.includes(row.tc_id)
+            //   ? remarks[row.other_remark] || row.other_remark
+            //   : commonRemark
+            row.other_remark
+          }
           onChange={(e) =>
             handleRowChange(row.id, 'other_remark', e.target.value)
           }

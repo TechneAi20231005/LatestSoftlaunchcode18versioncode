@@ -7,6 +7,7 @@ import {
   getAllReviewTestDraftList,
   getByTestPlanIDReviewedListThunk,
   getDraftTestCaseList,
+  getExportAllReviewTestDraftList,
   getModuleMasterThunk,
   getProjectModuleMasterThunk,
   getSubModuleMasterThunk,
@@ -22,6 +23,7 @@ const initialState = {
   getDraftTestListData: [],
   allDraftTestListData: [],
   allReviewDraftTestListData: [],
+  exportAllReviewDraftTestListData: [],
   allReviewDraftTestListDataByID: [],
   allReviewDraftTestListData: [],
   allReviewDraftTestListDataTotal: [],
@@ -56,7 +58,8 @@ const initialState = {
     getSubModuleList: false,
     editTestCase: false,
     sendTestCasesReviewer: false,
-    testDraftHistory: false
+    testDraftHistory: false,
+    exportAllReviewDraftTestListData: false
   },
   errorMsg: {
     getProjectModuleList: '',
@@ -67,7 +70,8 @@ const initialState = {
     allDraftTestListData: '',
     allReviewDraftTestListData: '',
     allReviewDraftTestListDataByID: '',
-    filterReviewedDraftTestList: ''
+    filterReviewedDraftTestList: '',
+    exportAllReviewDraftTestListData: ''
   },
   successMsg: {
     getProjectModuleList: '',
@@ -79,7 +83,8 @@ const initialState = {
     allReviewDraftTestListData: '',
     allReviewDraftTestListDataByID: '',
     testDraftHistory: false,
-    filterReviewedDraftTestList: ''
+    filterReviewedDraftTestList: '',
+    exportAllReviewDraftTestListData: ''
   }
 };
 const downloadFormatSlice = createSlice({
@@ -255,6 +260,22 @@ const downloadFormatSlice = createSlice({
       .addCase(getAllReviewTestDraftList.rejected, (state, action) => {
         state.isLoading.allReviewDraftTestListData = false;
         state.errorMsg.allReviewDraftTestListData = action?.error?.message;
+      })
+
+      // export reviewed data
+
+      .addCase(getExportAllReviewTestDraftList.pending, (state, action) => {
+        state.isLoading.exportAllReviewDraftTestListData = true;
+      })
+      .addCase(getExportAllReviewTestDraftList.fulfilled, (state, action) => {
+        state.isLoading.exportAllReviewDraftTestListData = false;
+        state.successMsg.exportAllReviewDraftTestListData = action?.payload;
+        state.exportAllReviewDraftTestListData = action?.payload?.data?.data;
+      })
+      .addCase(getExportAllReviewTestDraftList.rejected, (state, action) => {
+        state.isLoading.exportAllReviewDraftTestListData = false;
+        state.errorMsg.exportAllReviewDraftTestListData =
+          action?.error?.message;
       })
 
       //// get by id reviewed list
