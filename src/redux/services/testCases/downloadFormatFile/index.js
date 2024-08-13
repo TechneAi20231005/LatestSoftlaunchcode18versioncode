@@ -67,7 +67,6 @@ export const downloadFormatFileThunk = createAsyncThunk(
       let endpoint = `draftFile/getTestdraftBulkFormat?project_id=${project_id}&module_id=${module_id}`;
 
       // Append submodule_id parameters if they are provided
-      console.log('submodule_id', submodule_id.length);
       if (submodule_id && submodule_id.length >= 0) {
         const submoduleQueryParam = submodule_id
           .map((id) => `submodule_id[]=${id}`)
@@ -76,7 +75,6 @@ export const downloadFormatFileThunk = createAsyncThunk(
       }
 
       const response = await customAxios.get(endpoint);
-      console.log('rrr', response);
       if (response?.status === 200 || response?.status === 201) {
         window.open(`${_apiUrl}${endpoint}`, '_parent').focus();
         toast.success('File Downloaded Successfully');
@@ -230,7 +228,7 @@ export const editTestCaseThunk = createAsyncThunk(
 
 export const getAllReviewTestDraftList = createAsyncThunk(
   'reviewDraftList/getAllReviewTestDraftList',
-  async ({ limit, page, filter_testcase_data }) => {
+  async ({ limit, page, filter_testcase_data, type }) => {
     try {
       const response = await customAxios.get(
         `testCases/getCount/getTestDraft`,
@@ -238,7 +236,8 @@ export const getAllReviewTestDraftList = createAsyncThunk(
           params: {
             limit: limit,
             page: page,
-            filter_testcase_data: JSON.stringify(filter_testcase_data)
+            filter_testcase_data: JSON.stringify(filter_testcase_data),
+            type: type
           }
         }
       );
