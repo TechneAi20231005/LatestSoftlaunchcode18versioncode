@@ -520,11 +520,11 @@ const GraphWeekWise = () => {
                 w.globals.initialSeries[seriesIndex].data[dataPointIndex]
                   .taskDetail;
 
-              const taskOwners = taskDetail?.taskOwners.join('');
+              const taskOwners = taskDetail?.taskOwners.join(' , ');
               return `
               <div>
                <span className="mb-0"><strong>Sprint Name:</strong> ${
-                 taskDetail.sprint_name || 'null recieved in response'
+                 taskDetail.sprint_name || '--'
                }</span></br>
                   <span className="mb-0"><strong>Task Name:</strong> ${
                     taskDetail.task_name
@@ -539,20 +539,19 @@ const GraphWeekWise = () => {
                 taskDetail.task_end_date
               ).toLocaleDateString()}</span></br>
               <span className="mb-0"><strong>Total Scheduled Hours:</strong> ${
-                taskDetail.task_scheduled_Hours || 'null recieved in response'
+                taskDetail.task_scheduled_Hours || '--'
               }</span></br>
                  <span className="mb-0"><strong>Scheduled Hours:</strong> ${
-                   taskDetail.actual_task_scheduled_Hours ||
-                   'null recieved in response'
+                   taskDetail.actual_task_scheduled_Hours || '--'
                  }</span></br>
                  <span className="mb-0"><strong>Actual Worked:</strong> ${
-                   taskDetail.task_actual_worked || 'null recieved in response'
+                   taskDetail.task_actual_worked || '--'
                  }</span></br>
               <span className="mb-0"><strong>Status:</strong> ${
-                taskDetail.task_status || 'null recieved in response'
+                taskDetail.task_status || '--'
               }</span></br>
               <span className="mb-0"><strong>Actual Status:</strong> ${
-                taskDetail.task_actual_status || 'null recieved in response'
+                taskDetail.task_actual_status || '--'
               }</span></br>
                  <span className="mb-0"><strong>Task Owners:</strong> ${taskOwners}</span></br>
               </div>

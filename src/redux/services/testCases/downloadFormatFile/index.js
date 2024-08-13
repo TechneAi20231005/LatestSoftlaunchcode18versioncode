@@ -254,6 +254,27 @@ export const getAllReviewTestDraftList = createAsyncThunk(
     }
   }
 );
+// // reviewed export data
+export const getExportAllReviewTestDraftList = createAsyncThunk(
+  'reviewDraftListExport/getExportAllReviewTestDraftList',
+  async ({ id, type }) => {
+    try {
+      const response = await customAxios.get(
+        `testCases/getDraftTestCases/getTestCases/${id}?type=${type}`
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          return { data: response?.data, msg: response?.data?.message };
+        } else {
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
+);
 
 export const getByTestPlanIDReviewedListThunk = createAsyncThunk(
   'testPlanID/getByTestPlanIDListThunk',
