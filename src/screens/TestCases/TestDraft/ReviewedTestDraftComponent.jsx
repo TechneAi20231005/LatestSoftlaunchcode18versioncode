@@ -13,6 +13,7 @@ import DownloadFormatFileModal from './DownloadFormatFileModal';
 import {
   getByTestPlanIDReviewedListThunk,
   getDraftTestCaseList,
+  getExportAllReviewTestDraftList,
   sendTestCaseReviewerThunk
 } from '../../../redux/services/testCases/downloadFormatFile';
 import { getEmployeeData } from '../../Dashboard/DashboardAction';
@@ -123,9 +124,13 @@ function ReviewedTestDraftComponent() {
     allReviewDraftTestListDataByID,
     allReviewDraftTestListData,
     allReviewDraftTestListDataTotal,
-    filterReviewList
+    filterReviewList,
+    exportAllReviewDraftTestListData
   } = useSelector((state) => state?.downloadFormat);
-
+  console.log(
+    'exportallReviewDraftTestListData',
+    exportAllReviewDraftTestListData
+  );
   const [paginationData, setPaginationData] = useReducer(
     (prevState, nextState) => {
       return { ...prevState, ...nextState };
@@ -139,6 +144,7 @@ function ReviewedTestDraftComponent() {
   const testerData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.getAllTesterDataList
   );
+
   const [downloadmodal, setDownloadModal] = useState({
     showModal: false,
     modalData: '',
@@ -166,17 +172,44 @@ function ReviewedTestDraftComponent() {
     dispatch(getEmployeeData());
   };
 
+  // const handleCheckboxChange = (row) => {
+  //   localDispatch({
+  //     type: 'SET_SELECTED_ROWS',
+  //     payload: (prevSelectedRows) => {
+  //       if (prevSelectedRows.includes(row.id)) {
+  //         return prevSelectedRows.filter(
+  //           (selectedRow) => selectedRow !== row.id
+  //         );
+  //       } else {
+  //         return [...prevSelectedRows, row.id];
+  //       }
+  //     }
+  //   });
+  // };
+  const totalRows = exportAllReviewDraftTestListData?.length;
+
   const handleCheckboxChange = (row) => {
     localDispatch({
       type: 'SET_SELECTED_ROWS',
       payload: (prevSelectedRows) => {
+        let updatedSelectedRows;
+
         if (prevSelectedRows.includes(row.id)) {
-          return prevSelectedRows.filter(
-            (selectedRow) => selectedRow !== row.id
+          updatedSelectedRows = prevSelectedRows?.filter(
+            (selectedRow) => selectedRow !== row?.id
           );
         } else {
-          return [...prevSelectedRows, row.id];
+          updatedSelectedRows = [...prevSelectedRows, row.id];
         }
+
+        // Check if all rows are selected
+        if (updatedSelectedRows?.length === totalRows) {
+          localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: true });
+        } else {
+          localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: false });
+        }
+
+        return updatedSelectedRows;
       }
     });
   };
@@ -279,7 +312,7 @@ function ReviewedTestDraftComponent() {
     localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: newSelectAllNames });
 
     if (newSelectAllNames) {
-      const draftRowIds = allReviewDraftTestListDataByID.map((row) => row.id);
+      const draftRowIds = exportAllReviewDraftTestListData.map((row) => row.id);
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
     } else {
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
@@ -628,7 +661,7 @@ function ReviewedTestDraftComponent() {
           {row.sub_module_name && (
             <OverlayTrigger overlay={<Tooltip>{row.sub_module_name} </Tooltip>}>
               <div>
-                <span className="ms-1">
+                <span className="ms-1 d-block">
                   {' '}
                   {row.sub_module_name && row.sub_module_name?.length < 20
                     ? row.sub_module_name
@@ -980,7 +1013,7 @@ function ReviewedTestDraftComponent() {
           {row.steps && (
             <OverlayTrigger overlay={<Tooltip>{row.steps} </Tooltip>}>
               <div>
-                <span className="ms-1">
+                <span className="ms-1 d-block">
                   {' '}
                   {row.steps && row.type_name?.length < 20
                     ? row.steps
@@ -1025,7 +1058,7 @@ function ReviewedTestDraftComponent() {
           {row.expected_result && (
             <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
               <div>
-                <span className="ms-1">
+                <span className="ms-1 d-block">
                   {' '}
                   {row.expected_result && row.expected_result?.length < 20
                     ? row.expected_result
@@ -1477,6 +1510,15 @@ function ReviewedTestDraftComponent() {
     }
   }, [sortOrder]);
 
+  useEffect(() => {
+    dispatch(
+      getExportAllReviewTestDraftList({
+        id: id,
+        type: 'ALL'
+      })
+    );
+  }, []);
+
   return (
     <div className="container-xxl">
       <PageHeader
@@ -1553,6 +1595,17 @@ function ReviewedTestDraftComponent() {
 
         <button
           onClick={() => {
+            // handleSendToReviewerModal({
+            //   showModal: true,
+            //   modalData: '',
+            //   modalHeader: 'Send To Reviewer Modal'
+            // });
+            if (selectAllNames !== true) {
+              alert(
+                'Please select all test cases to send for review, partial selection is not allowed.'
+              );
+              return; // Exit the function or prevent further execution
+            }
             handleSendToReviewerModal({
               showModal: true,
               modalData: '',

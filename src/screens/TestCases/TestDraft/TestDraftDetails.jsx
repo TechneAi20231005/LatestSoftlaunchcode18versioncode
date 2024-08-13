@@ -651,10 +651,57 @@ function TestDraftDetails(props) {
       )
     },
 
+    // {
+    //   name: (
+    //     <div>
+    //       <span>Submodule</span>
+    //       <i
+    //         onClick={(e, row) =>
+    //           handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
+    //         }
+    //         className={`icofont-filter ms-2 ${
+    //           props?.isFilterApplied['sub_module_name']
+    //             ? 'text-success'
+    //             : 'text-dark'
+    //         }`}
+    //       />
+    //     </div>
+    //   ),
+    //   selector: (row) => row.sub_module_name,
+    //   width: '10rem',
+    //   sortable: false,
+    //   cell: (row) => (
+    //     <div
+    //       className="btn-group"
+    //       role="group"
+    //       aria-label="Basic outlined example"
+    //     >
+    //       {row.sub_module_name && (
+    //         <OverlayTrigger overlay={<Tooltip>{row.sub_module_name} </Tooltip>}>
+    //           <div>
+    //             <span className="ms-1">
+    //               {' '}
+    //               {row.sub_module_name && row.sub_module_name.length < 20
+    //                 ? row.sub_module_name
+    //                 : row.sub_module_name.substring(0, 50) + '....'}
+    //             </span>
+    //           </div>
+    //         </OverlayTrigger>
+    //       )}
+    //     </div>
+    //   ),
+    //   header: (column, sortDirection) => (
+    //     <div className="d-flex align-items-center">
+    //       <span>{column.name}</span>
+    //       <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+    //     </div>
+    //   )
+    // },
+
     {
       name: (
         <div>
-          <span>Submodule Name</span>
+          <span>Submodule</span>
           <i
             onClick={(e, row) =>
               handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
@@ -677,13 +724,18 @@ function TestDraftDetails(props) {
           aria-label="Basic outlined example"
         >
           {row.sub_module_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.sub_module_name} </Tooltip>}>
+            <OverlayTrigger overlay={<Tooltip>{row.sub_module_name}</Tooltip>}>
               <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.sub_module_name && row.sub_module_name.length < 20
-                    ? row.sub_module_name
-                    : row.sub_module_name.substring(0, 50) + '....'}
+                <span className="ms-1 d-block">
+                  {row.sub_module_name.length < 20 ? (
+                    row.sub_module_name
+                  ) : (
+                    <>
+                      <span>{row.sub_module_name.substring(0, 50)}</span>
+                      <br />
+                      <span>....</span>
+                    </>
+                  )}
                 </span>
               </div>
             </OverlayTrigger>
@@ -966,6 +1018,46 @@ function TestDraftDetails(props) {
     {
       name: (
         <div>
+          <span>Severity</span>
+          <i
+            onClick={(e) =>
+              handleFilterClick(e, 'severity', 'Severity', 'text')
+            }
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['severity'] ? 'text-success' : 'text-dark'
+            }`}
+          />
+        </div>
+      ),
+      selector: (row) => row.severity,
+      width: '10rem',
+      sortable: false,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.severity && (
+            <OverlayTrigger overlay={<Tooltip>{row.severity} </Tooltip>}>
+              <div>
+                <span className="ms-1">{row.severity}</span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
+      )
+    },
+
+    {
+      name: (
+        <div>
           <span>Test Description</span>
           <i
             onClick={(e) =>
@@ -1019,45 +1111,6 @@ function TestDraftDetails(props) {
     {
       name: (
         <div>
-          <span>Severity</span>
-          <i
-            onClick={(e) =>
-              handleFilterClick(e, 'severity', 'Severity', 'text')
-            }
-            className={`icofont-filter ms-2 ${
-              props?.isFilterApplied['severity'] ? 'text-success' : 'text-dark'
-            }`}
-          />
-        </div>
-      ),
-      selector: (row) => row.severity,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.severity && (
-            <OverlayTrigger overlay={<Tooltip>{row.severity} </Tooltip>}>
-              <div>
-                <span className="ms-1">{row.severity}</span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
-    },
-    {
-      name: (
-        <div>
           <span>Steps</span>
           <i
             onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
@@ -1079,7 +1132,7 @@ function TestDraftDetails(props) {
           {row?.steps && (
             <OverlayTrigger overlay={<Tooltip>{row.steps} </Tooltip>}>
               <div>
-                <span className="ms-1">
+                <span className="ms-1 d-block">
                   {' '}
                   {row?.steps && row.type_name?.length < 20
                     ? row?.steps
@@ -1126,7 +1179,7 @@ function TestDraftDetails(props) {
           {row?.expected_result && (
             <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
               <div>
-                <span className="ms-1">
+                <span className="ms-1 d-block">
                   {' '}
                   {row?.expected_result && row?.expected_result?.length < 20
                     ? row?.expected_result
@@ -1541,6 +1594,7 @@ function TestDraftDetails(props) {
       } catch (error) {}
     }
   }, [sortOrder]);
+
   useEffect(() => {
     const newFilter =
       filterType === 'is not between' ||
