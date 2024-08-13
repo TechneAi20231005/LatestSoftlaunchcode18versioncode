@@ -101,7 +101,7 @@ const Sidebar = ({ activekey }) => {
       }`}
     >
       <div className="d-flex flex-column h-100">
-        <a href="hr-dashboard" className="mb-0 brand-icon">
+        <a href="dashboard" className="mb-0 brand-icon">
           <span className="logo-icon">
             <svg
               width="35"
