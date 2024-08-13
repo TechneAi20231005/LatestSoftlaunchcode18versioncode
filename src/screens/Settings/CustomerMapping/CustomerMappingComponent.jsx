@@ -83,7 +83,7 @@ export default function CustomerMappingComponent() {
       name: 'Sr.No',
       selector: (row) => row.Sro,
       sortable: true,
-      width: '60px'
+      width: '100px'
     },
     // { name: 'Query', selector: row => row.query_type_name, sortable: true,width: "175px" },
 
@@ -91,7 +91,7 @@ export default function CustomerMappingComponent() {
       name: 'Query',
       selector: (row) => row['Query'],
       sortable: true,
-      with: '200px',
+      width: '150px',
       cell: (row) => (
         <div
           className="btn-group"
@@ -103,9 +103,9 @@ export default function CustomerMappingComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.query_type_name && row.query_type_name.length < 10
+                  {row.query_type_name && row.query_type_name.length < 15
                     ? row.query_type_name
-                    : row.query_type_name.substring(0, 10) + '....'}
+                    : row.query_type_name.substring(0, 15) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
