@@ -55,7 +55,7 @@ const ManageTaskSkeleton = () => {
                 </div>
                 <div className="dropdown">
                   <span
-                    className="skeleton-manage skeleton-button dropdown-toggle "
+                    className="skeleton-manage skeleton-button dropdown-toggle custom-dropdown-toggle"
                     style={{ color: 'gray' }}
                   >
                     <i
