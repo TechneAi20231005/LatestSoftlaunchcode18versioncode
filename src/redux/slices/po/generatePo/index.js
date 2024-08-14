@@ -60,7 +60,7 @@ const generatePoSlice = createSlice({
       });
 
       // Update local storage
-      localStorage.setItem(
+      sessionStorage.setItem(
         'poDataList',
         JSON.stringify(state.userAddedPoDataList)
       );
@@ -75,7 +75,7 @@ const generatePoSlice = createSlice({
         state.userAddedPoDataList[index].order_qty = order_qty;
 
         // Update local storage
-        localStorage.setItem(
+        sessionStorage.setItem(
           'poDataList',
           JSON.stringify(state.userAddedPoDataList)
         );
@@ -89,7 +89,7 @@ const generatePoSlice = createSlice({
       );
 
       // Update local storage
-      localStorage.setItem(
+      sessionStorage.setItem(
         'poDataList',
         JSON.stringify(state.userAddedPoDataList)
       );
@@ -97,8 +97,8 @@ const generatePoSlice = createSlice({
 
     resetUserAddedOrderList(state, action) {
       state.userAddedPoDataList = [];
-      localStorage.removeItem('poDataList');
       state.pendingOrderErrorFileOnTheSportDownloadData = [];
+      sessionStorage.removeItem('poDataList');
     },
 
     resetPendingOrderListData(state, action) {
@@ -133,7 +133,7 @@ const generatePoSlice = createSlice({
           action?.payload?.data;
 
         // Clear local storage
-        localStorage.removeItem('poDataList');
+        sessionStorage.removeItem('poDataList');
       })
       .addCase(createPendingOrderThunk.rejected, (state, action) => {
         state.isLoading.createPendingOrder = false;

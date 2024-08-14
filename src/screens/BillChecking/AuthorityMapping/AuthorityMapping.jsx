@@ -323,7 +323,7 @@ const AuthorityMapping = () => {
   };
 
   const mainJson = {
-    updated_by: localStorage.getItem('id'),
+    updated_by: sessionStorage.getItem('id'),
     updated_at: new Date(),
     setting_id: modal?.modalData?.id,
 

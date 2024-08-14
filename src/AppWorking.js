@@ -10,7 +10,7 @@ const App = () => {
   const [token, setToken] = useState(null);
 
   function checkAuth() {
-    var check = localStorage.getItem('token');
+    var check = sessionStorage.getItem('token');
     if (check) {
       setToken(check);
     } else {
