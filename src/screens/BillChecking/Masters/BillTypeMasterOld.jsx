@@ -129,7 +129,7 @@
 //   const [requiredOptions, setRequiredOptions] = useState([]); // State for dropdown options of required users
 
 
-//   const roleId = localStorage.getItem("role_id");
+//   const roleId = sessionStorage.getItem("role_id");
 //   const [checkRole, setCheckRole] = useState(null);
 
 //   const [key, setKey] = useState("");
@@ -238,7 +238,7 @@
 //         </div>
 //       ),
 //     },
-
+  
 //     { name: "Bill Type", selector: (row) => row.bill_type, sortable: true },
 //     {
 //       name: "Status",
@@ -395,7 +395,7 @@
 //     await new ManageMenuService().getRole(roleId).then((res) => {
 //       if (res.status === 200) {
 //         if (res.data.status == 1) {
-//           const getRoleId = localStorage.getItem("role_id");
+//           const getRoleId = sessionStorage.getItem("role_id");
 //           setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
 //         }
 //       }
@@ -429,7 +429,7 @@
 //   var requiredNumbersElement4 = document.getElementById("required_numbers4");
 //   var requiredNumbersElement5 = document.getElementById("required_numbers5");
 //   var requiredNumbersElement6 = document.getElementById("required_numbers6");
-
+    
 
 
 //   if(key >= 1){
@@ -691,7 +691,7 @@
 //     }
 //   };
 
-
+ 
 
 //   const [formSubmitted, setFormSubmitted] = useState(false);
 
@@ -724,8 +724,8 @@
 //       setSelectedUsers6(()=> null)
 //     }
 
-//     // empty filed of required numbers on change of required users dropdown
-
+//     // empty filed of required numbers on change of required users dropdown 
+    
 //     if(index == 0 && fieldName !== "employee_id" && fieldName !== "required_numbers"  ){
 //       document.getElementById("required_numbers1").value =""
 //     }
@@ -782,7 +782,7 @@
 //     });
 //   };
 
-
+  
 
 //   const handleTabChange = (selectedKey) => {
 
@@ -811,7 +811,7 @@
 //         return level;
 //       });
 //       return { data: updatedData };
-
+    
 //     });
 //   };
 //   const setLevel = (e) => {
@@ -903,7 +903,7 @@
 //   };
 //   const [selectedRequiredUserData, setSelectedRequiredUserData] = useState();
 //   const handleSelectedRequired = (selectedOptions, index) => {
-
+    
 //     selectRequiredUserRefs.current[index].current.clearValue(); // Clear only the changed "required users" dropdown
 
 //     setApproverEditData((prevApproverData) => {
@@ -934,13 +934,13 @@
 //   useEffect(() => {
 //     loadData();
 //   }, [approverEditData]);
-
+ 
 
 
 
 //   useEffect(()=>{
-//     if(checkRole && checkRole[47].can_read === 0){
-//       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+//     if(checkRole && checkRole[47].can_read === 0){  
+//       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;  
 //     }
 //   },[checkRole])
 
@@ -1210,7 +1210,7 @@
 //                                             />
 //                                           )}
 //                                         </div>
-
+                                     
 //                                         <div className="col-sm-3">
 //                                           <label className="form-label font-weight-bold">
 //                                             Required Members :
@@ -2491,9 +2491,9 @@
 //                     {editableData && (
 //                       <td
 //                         className="text-center"
-
+                        
 //                       >
-//                       <Select
+//                       <Select 
 //                       className="col-sm"
 //                       isDisabled
 //                       isMulti

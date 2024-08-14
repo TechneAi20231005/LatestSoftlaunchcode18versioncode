@@ -33,7 +33,7 @@ import ProjectService from "../../../../services/ProjectManagementService/Projec
 const TestSuiteComponent = ({ match, location }) => {
   // const ticketId = match.params.id;
   const {id}=useParams()
-
+  
   const ticketId = id
 
 
@@ -152,7 +152,7 @@ const TestSuiteComponent = ({ match, location }) => {
   };
 
   const useSessionData = {
-    userId: localStorage.getItem("id"),
+    userId: sessionStorage.getItem("id"),
   };
 
   const [testSuiteDropdown, setTestSuiteDropdown] = useState();
@@ -161,9 +161,9 @@ const TestSuiteComponent = ({ match, location }) => {
   // Load All Data and Render
   const loadData = async () => {
     const data = [];
+   
 
-
-
+    
 
     await new TestCasesService().getAllTestSuites().then((res)=>{
         if(res.status === 200){
@@ -215,7 +215,7 @@ const TestSuiteComponent = ({ match, location }) => {
       }
   })
 
-
+   
 
       await new DesignationService().getdesignatedDropdown().then((res) => {
         if (res.status === 200) {
@@ -522,9 +522,9 @@ const handleModuleChange = (module_id) => {
                   name="tester_id"
                   options={tester}
                 />
-                }
+                }     
                 </div>
-
+           
             <div className="col-sm-4">
                   <label>
                     <b>Tecket Id:</b>
@@ -539,7 +539,7 @@ const handleModuleChange = (module_id) => {
 
                   />
                   }
-
+               
                 </div>
               <div className="col-sm-4">
                 <label>
@@ -552,8 +552,8 @@ const handleModuleChange = (module_id) => {
                   name="basket_id"
                   options={basketDropdown}
                 />
-                }
-                </div>
+                }     
+                </div>  
                 <div className="col-sm-4 mt-2">
                 <label>
                   <b>Task Name:</b>
@@ -564,7 +564,7 @@ const handleModuleChange = (module_id) => {
                   id="task_id"
                   name="task_id"
                 />
-                </div>
+                </div>   
                 <div className="col-sm-4 mt-2">
                 <label>
                   <b>Start Date:</b>
@@ -575,7 +575,7 @@ const handleModuleChange = (module_id) => {
                   id="start_date"
                   name="start_date"
                 />
-                </div>
+                </div>  
                 <div className="col-sm-4 mt-2">
                 <label>
                   <b>End Date:</b>
@@ -586,7 +586,7 @@ const handleModuleChange = (module_id) => {
                   id="end_date"
                   name="end_date"
                 />
-                </div>
+                </div>   
                 <div className="col-sm-4 mt-2">
                 <label>
                   <b>Task Hours:</b>
@@ -596,7 +596,7 @@ const handleModuleChange = (module_id) => {
                   className="form-control form-control-sm"
                   id="task_hours"
                   name="task_hours"
-
+                  
                 />
                 </div>
                 <Modal.Footer>
@@ -683,7 +683,7 @@ const handleModuleChange = (module_id) => {
                     options={ticketIdDropdown}
                   />
                   }
-
+               
                 </div>
 
                 <div className="col-sm-4">
@@ -727,10 +727,10 @@ const handleModuleChange = (module_id) => {
                     className="form-control form-control-sm mt-2"
                     id="testsuit_id"
                     name="testsuit_id"
-                   options={testSuiteDropdown}
+                   options={testSuiteDropdown} 
                   />
                     }
-
+          
                 </div> */}
                 <div className="col-sm-4">
                   <label>
@@ -833,9 +833,9 @@ const handleModuleChange = (module_id) => {
                     >
                       Assign To <i className="icofont-sign-in" />
                     </button>
-                       }
+                       } 
                   </div>
-
+                    
 
                 </div>
                 <div></div>

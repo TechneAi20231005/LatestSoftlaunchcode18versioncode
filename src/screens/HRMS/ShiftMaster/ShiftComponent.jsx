@@ -15,7 +15,7 @@ function ShiftComponent({ location }) {
   const [data, setData] = useState(null);
   const [notify, setNotify] = useState(null);
 
-  const roleId = localStorage.getItem("role_id");
+  const roleId = sessionStorage.getItem("role_id");
   const [checkRole, setCheckRole] = useState(null);
   const [paymentType, setPaymentType] = useState("Weekly");
 
