@@ -613,7 +613,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['module_name']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -661,7 +661,7 @@ function TestDraftDetails(props) {
     //         }
     //         className={`icofont-filter ms-2 ${
     //           props?.isFilterApplied['sub_module_name']
-    //             ? 'text-success'
+    //             ? 'text-warning'
     //             : 'text-dark'
     //         }`}
     //       />
@@ -708,7 +708,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['sub_module_name']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -759,7 +759,7 @@ function TestDraftDetails(props) {
               handleFilterClick(e, 'platform', 'Platform', 'text')
             }
             className={`icofont-filter ms-2 ${
-              props?.isFilterApplied['platform'] ? 'text-success' : 'text-dark'
+              props?.isFilterApplied['platform'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -805,7 +805,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['function_name']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -849,7 +849,7 @@ function TestDraftDetails(props) {
           <i
             onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
             className={`icofont-filter ms-2 ${
-              props?.isFilterApplied['field'] ? 'text-success' : 'text-dark'
+              props?.isFilterApplied['field'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -894,7 +894,7 @@ function TestDraftDetails(props) {
               handleFilterClick(e, 'type_name', 'Testing Type', 'text')
             }
             className={`icofont-filter ms-2 ${
-              props?.isFilterApplied['type_name'] ? 'text-success' : 'text-dark'
+              props?.isFilterApplied['type_name'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -940,7 +940,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['group_name']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -984,7 +984,7 @@ function TestDraftDetails(props) {
           <i
             onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'number')}
             className={`icofont-filter ms-2 ${
-              props?.isFilterApplied['tc_id'] ? 'text-success' : 'text-dark'
+              props?.isFilterApplied['tc_id'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -1024,7 +1024,7 @@ function TestDraftDetails(props) {
               handleFilterClick(e, 'severity', 'Severity', 'text')
             }
             className={`icofont-filter ms-2 ${
-              props?.isFilterApplied['severity'] ? 'text-success' : 'text-dark'
+              props?.isFilterApplied['severity'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -1070,7 +1070,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['test_description']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -1115,7 +1115,7 @@ function TestDraftDetails(props) {
           <i
             onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
             className={`icofont-filter ms-2 ${
-              props?.isFilterApplied['steps'] ? 'text-success' : 'text-dark'
+              props?.isFilterApplied['steps'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -1161,7 +1161,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['expected_result']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -1205,7 +1205,7 @@ function TestDraftDetails(props) {
           <i
             onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
             className={`icofont-filter ms-2 ${
-              props?.isFilterApplied['status'] ? 'text-success' : 'text-dark'
+              props?.isFilterApplied['status'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -1251,7 +1251,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['project_name']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -1298,7 +1298,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['created_at']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -1345,7 +1345,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['created_by']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -1392,7 +1392,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['updated_at']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -1439,7 +1439,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['updated_by']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
