@@ -83,13 +83,13 @@ export default function HrDashboard(props) {
       // Token has expired, log out the user
       localStorage.removeItem('jwt_token');
       localStorage.removeItem('jwt_token_expiration');
-      sessionStorage.clear();
+      localStorage.clear();
       history(`${process.env.PUBLIC_URL}/`);
     }
   };
 
   const get = useCallback(async () => {
-    const id = sessionStorage.getItem('id');
+    const id = localStorage.getItem('id');
     const res = await getData(id);
     if (res.status === 200) {
       setCount(res?.data?.data?.count);
@@ -351,28 +351,30 @@ export default function HrDashboard(props) {
                         {approvedNotifications.length}
                       </div>
                     ) : (
-                      <div
-                        className="notification-circle"
-                        style={{
-                          position: 'absolute',
-                          top: '-10px',
-                          right: '-10px',
-                          // padding: '3px',
-                          backgroundColor: 'rgb(255, 24, 67)',
-                          borderRadius: '50%',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          color: 'white',
-                          textAlign: 'center',
-                          // fontSize: '0.8rem',
-                          fontWeight: 'bold',
-                          color: 'red',
-                          minWidth: '20px', // Minimum width to prevent squishing
-                          height: 'auto' // Let the height adjust automatically}}
-                        }}
-                      >
-                        .
-                      </div>
+                      allRegularizationRequest?.length > 0 && (
+                        <div
+                          className="notification-circle"
+                          style={{
+                            position: 'absolute',
+                            top: '-10px',
+                            right: '-10px',
+                            // padding: '3px',
+                            backgroundColor: 'rgb(255, 24, 67)',
+                            borderRadius: '50%',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            color: 'white',
+                            textAlign: 'center',
+                            // fontSize: '0.8rem',
+                            fontWeight: 'bold',
+                            color: 'red',
+                            minWidth: '20px', // Minimum width to prevent squishing
+                            height: 'auto' // Let the height adjust automatically}}
+                          }}
+                        >
+                          .
+                        </div>
+                      )
                     )}
                   </div>
                 </div>

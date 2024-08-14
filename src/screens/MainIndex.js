@@ -177,15 +177,17 @@ import TestCaseHistoryComponent from './TestCases/TestDraft/TestCaseHistoryCompo
 import TestDraftComponent from './TestCases/TestDraft/TestDraftComponent';
 import TestBankComponent from './TestCases/TestBank/TestBankComponent';
 
+
+
 class MainIndex extends React.Component {
   render() {
-    if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
-      for (var a in sessionStorage) {
-        localStorage.setItem(a, sessionStorage[a]);
+    if (Object.keys(localStorage).length < Object.keys(localStorage).length) {
+      for (var a in localStorage) {
+        localStorage.setItem(a, localStorage[a]);
       }
     } else {
       for (var b in localStorage) {
-        sessionStorage.setItem(a, localStorage[b]);
+        localStorage.setItem(a, localStorage[b]);
       }
     }
     return (
@@ -729,6 +731,8 @@ class MainIndex extends React.Component {
               path={`/${_base}/SpecialDayMaster`}
               element={<SpecialDayMasterComponent />}
             />
+
+
             <Route
               exact
               path={`/${_base}/rotationalShiftMaster`}

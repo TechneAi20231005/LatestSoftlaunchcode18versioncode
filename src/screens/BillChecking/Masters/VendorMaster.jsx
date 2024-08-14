@@ -43,7 +43,7 @@ function VendorMaster({ match }) {
     useState([]);
   const [vendorId, setVendorId] = useState(null);
   const [attachment, setAttachment] = useState();
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
   const [checkRole, setCheckRole] = useState(null);
   const [uppercase, SetUpperCase] = useState();
   const [Panuppercase, SetPanUpeeerCase] = useState();
@@ -636,7 +636,7 @@ function VendorMaster({ match }) {
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       const getRoleId = localStorage.getItem("role_id");
     //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
     //     }
     //   }
@@ -2567,6 +2567,10 @@ function VendorMaster({ match }) {
                       defaultValue={
                         modal.modalData ? modal.modalData.msme_no : ''
                       }
+                      onInput={(event) => {
+                        const input = event.target;
+                        input.value = input.value.toUpperCase();
+                      }}
                       onKeyPress={(e) => {
                         if (!/^([A-Za-z0-9]{1})$/.test(e.key)) {
                           e.preventDefault();

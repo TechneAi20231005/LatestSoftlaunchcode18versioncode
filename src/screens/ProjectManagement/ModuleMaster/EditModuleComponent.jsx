@@ -26,7 +26,7 @@ export default function EditModuleComponent({ match }) {
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const getRoleId = sessionStorage.getItem('role_id');
+          const getRoleId = localStorage.getItem('role_id');
           setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
         }
       }

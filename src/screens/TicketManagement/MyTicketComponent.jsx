@@ -298,8 +298,8 @@ export default function MyTicketComponent() {
       } else {
         return (
           <div className="d-flex justify-content-between">
-            {data.created_by === sessionStorage.getItem('id') ||
-              (data.assign_to_user_id === sessionStorage.getItem('id') &&
+            {data.created_by === localStorage.getItem('id') ||
+              (data.assign_to_user_id === localStorage.getItem('id') &&
                 data.status_name !== 'Solved' && (
                   <Link
                     to={`/${_base}/Ticket/Edit/` + data.id}
@@ -818,7 +818,7 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Description',
-      width: '120px',
+      width: '130px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -828,8 +828,6 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-
-     
             onClick={(e) => {
               handleModal({ showModal: true, modalData: row, modalHeader: '' });
             }}
@@ -839,9 +837,9 @@ export default function MyTicketComponent() {
                 <div>
                   <span>
                     {' '}
-                    {row.description && row.description.length < 120
+                    {row.description && row.description.length < 20
                       ? row.description
-                      : row.description.substring(0, 123) + '....'}
+                      : row.description.substring(0, 20) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
@@ -953,8 +951,6 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-
-
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -968,9 +964,9 @@ export default function MyTicketComponent() {
                 <div>
                   <span className="ms-1">
                     {' '}
-                    {row.description && row.description.length < 123
+                    {row.description && row.description.length < 20
                       ? row.description
-                      : row.description.substring(0, 123) + '....'}
+                      : row.description.substring(0, 20) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
@@ -1076,8 +1072,6 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-
-
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1091,9 +1085,9 @@ export default function MyTicketComponent() {
                 <div>
                   <span className="ms-1">
                     {' '}
-                    {row.description && row.description.length < 123
+                    {row.description && row.description.length < 20
                       ? row.description
-                      : row.description.substring(0, 123) + '....'}
+                      : row.description.substring(0, 20) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
@@ -1208,7 +1202,7 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Description',
-      width: '270px',
+      width: '150px',
 
       selector: (row) => {},
       sortable: false,
@@ -1219,8 +1213,6 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-
-
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1234,9 +1226,9 @@ export default function MyTicketComponent() {
                 <div>
                   <span className="ms-1">
                     {' '}
-                    {row.description && row.description.length < 123
+                    {row.description && row.description.length < 20
                       ? row.description
-                      : row.description.substring(0, 123) + '....'}
+                      : row.description.substring(0, 20) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
@@ -1405,8 +1397,6 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-
-
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1420,9 +1410,9 @@ export default function MyTicketComponent() {
                 <div>
                   <span className="ms-1">
                     {' '}
-                    {row.description && row.description.length < 123
+                    {row.description && row.description.length < 20
                       ? row.description
-                      : row.description.substring(0, 123) + '....'}
+                      : row.description.substring(0, 20) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
@@ -1554,7 +1544,7 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Description',
-      width: '170px',
+      width: '150px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -1564,8 +1554,6 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-
-
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1579,9 +1567,9 @@ export default function MyTicketComponent() {
                 <div>
                   <span className="ms-1">
                     {' '}
-                    {row.description && row.description.length < 123
+                    {row.description && row.description.length < 20
                       ? row.description
-                      : row.description.substring(0, 123) + '....'}
+                      : row.description.substring(0, 20) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>

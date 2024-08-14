@@ -81,7 +81,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   const [authorities, SetAuthorities] = useState();
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
   // const [checkRole, setCheckRole] = useState(null);
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id == 41)
@@ -301,7 +301,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
     //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
+    //       const getRoleId = localStorage.getItem("role_id");
     //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
     //     }
     //   }
