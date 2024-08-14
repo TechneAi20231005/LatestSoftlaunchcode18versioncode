@@ -48,7 +48,7 @@ const TestBankComponent = ({ match, props,  }) => {
   const [projectData, setProjectData] = useState();
   const [projectDropdown, setProjectDropdown] = useState();
 
-
+  
 
   const [moduleData, setModuleData] = useState();
   const [moduleDropdown, setModuleDropdown] = useState();
@@ -64,7 +64,7 @@ const TestBankComponent = ({ match, props,  }) => {
   const [colors, setColors] = useState("green");
   const [priority, setPriority] = useState("white");
 
-  const [taskDropdown, setTaskDropdown] = useState();
+  const [taskDropdown, setTaskDropdown] = useState(); 
    const [testingTypeDropdown, setTestingTypeDropdown] = useState();
 
   const handleSendtoModal = (data) => {
@@ -88,7 +88,7 @@ const TestBankComponent = ({ match, props,  }) => {
   });
 
 
-
+  
   const [selectedRowsData, setSelectedRowsData] = useState([]);
   const handleSendtoTestSuiteModal = (suiteData) => {
     setsendtoTestSuiteModal(suiteData);
@@ -320,13 +320,13 @@ const TestBankComponent = ({ match, props,  }) => {
   };
 
   const useSessionData = {
-    userId: localStorage.getItem("id"),
+    userId: sessionStorage.getItem("id"),
   };
 
   const [testSuiteDropdown, setTestSuiteDropdown] = useState();
   const [tester, setTester] = useState();
 
-
+  
   const [ticketIdDropdown, setticketIdDropdown] = useState();
   // Load All Data and Render
   const loadData = async () => {
@@ -346,7 +346,7 @@ const TestBankComponent = ({ match, props,  }) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const temp = res.data.data.filter(d=> d.is_active == 1)
-
+          
           const  tempo = temp.map((d) => ({
             value: d.id,
             label: d.testing_type,
@@ -388,7 +388,7 @@ const TestBankComponent = ({ match, props,  }) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const temp = res.data.data
-
+          
           setProjectData(temp);
           setProjectDropdown(
             temp.map((d) => ({ value: d.id, label: d.project_name }))
@@ -414,7 +414,7 @@ const TestBankComponent = ({ match, props,  }) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
           const temp = res.data.data
-
+          
           setSubModuleData(temp);
           setSubModuleDropdown(
             temp.map((d) => ({
@@ -426,7 +426,7 @@ const TestBankComponent = ({ match, props,  }) => {
       }
     });
 
-
+   
   };
 
   const moduleIdRef = useRef()
@@ -449,7 +449,7 @@ const TestBankComponent = ({ match, props,  }) => {
             if (subModuleIdRef.current) {
                 subModuleIdRef.current.clearValue();
             }
-            break;
+            break; 
         default:
             break;
     }
@@ -461,7 +461,7 @@ const handleProjectChange = async(e) => {
     clearValue('module_id')
     clearValue('submodule_id')
     setModuleDropdown(moduleData.filter(d => d.project_id == e.value).map(d => ({ value: d.id, label: d.module_name })));
-
+  
 }
 
 const handleModuleChange = (e) => {
@@ -662,8 +662,8 @@ const handleModuleChange = (e) => {
           if (res.data.status == 1) {
             let counter = 1;
             const temp = res.data.data;
-
-
+         
+            
             for (const key in temp) {
               tempData.push({
                 counter: counter++,
@@ -808,7 +808,7 @@ const handleModuleChange = (e) => {
       alert('Please enter task hours')
       flag=0
     }
-
+    
     if(flag ===1){
     await new TestCasesService().getAssignTestCasesToTester(form).then((res)=>{
       if(res.status === 200){
@@ -878,7 +878,7 @@ const handleModuleChange = (e) => {
     <div>
       <PageHeader headerTitle="Test Plan" />
       {notify && <Alert alertData={notify} />}
-
+    
       {/* modal for send to test suite */}
       <Modal
         size="md"
@@ -934,7 +934,7 @@ const handleModuleChange = (e) => {
                           showModal: true,
                           modalData: "",
                           modalHeader: "Create Test Suite",
-
+                          
                         });
                       }}
                     />
@@ -1022,7 +1022,7 @@ const handleModuleChange = (e) => {
 
       {/* Modal For Create Test Suite */}
       <Modal
-
+      
         size="md"
         centered
         show={createNewTestSuiteModal.showModal}
@@ -1113,7 +1113,7 @@ const handleModuleChange = (e) => {
       >
         <form method="post" onSubmit ={sendTestcasesToTesterForExecution}>
           <Modal.Header closeButton>
-            <Modal.Title className="fw-bold">Assign Task
+            <Modal.Title className="fw-bold">Assign Task 
                </Modal.Title>
           </Modal.Header>
           <Modal.Body>
@@ -1130,9 +1130,9 @@ const handleModuleChange = (e) => {
                   ref={testerIdRef}
                   options={tester}
                 />
-                }
+                }     
                 </div>
-
+           
             <div className="col-sm-4">
                   <label>
                     <b>Ticket Id <Astrick color="red" />:</b>
@@ -1149,7 +1149,7 @@ const handleModuleChange = (e) => {
 
                   />
                   }
-
+               
                 </div>
               <div className="col-sm-4">
                 <label>
@@ -1163,8 +1163,8 @@ const handleModuleChange = (e) => {
                   ref={basketIdRef}
                   options={basketDropdown}
                 />
-                }
-                </div>
+                }     
+                </div>  
                 <div className="col-sm-4 mt-2">
                 <label>
                   <b>Task Name <Astrick color="red" />:</b>
@@ -1176,7 +1176,7 @@ const handleModuleChange = (e) => {
                   required
                   name="task_id"
                 />
-                </div>
+                </div>   
                 <div className="col-sm-4 mt-2">
                 <label>
                   <b>Start Date <Astrick color="red" />:</b>
@@ -1189,7 +1189,7 @@ const handleModuleChange = (e) => {
                   onChange={handleDate}
                   required
                 />
-                </div>
+                </div>  
                 <div className="col-sm-4 mt-2">
                 <label>
                   <b>End Date <Astrick color="red" />:</b>
@@ -1202,7 +1202,7 @@ const handleModuleChange = (e) => {
                   min={date}
                   required
                 />
-                </div>
+                </div>   
                 <div className="col-sm-4 mt-2">
                 <label>
                   <b>Task Hours <Astrick color="red" />:</b>
@@ -1215,7 +1215,7 @@ const handleModuleChange = (e) => {
                   onKeyPress={e=>{Validation.NumbersOnly(e)}}
                   name="task_hours"
                   required
-
+                  
                 />
                 </div>
                 <Modal.Footer>
@@ -1297,7 +1297,7 @@ const handleModuleChange = (e) => {
                     className="form-control form-control-sm"
                     id="submodule_id"
                     name="submodule_id"
-
+                    
                     ref={subModuleIdRef}
                     options={subModuleDropdown}
                     onChange={handleModuleChange}
@@ -1318,7 +1318,7 @@ const handleModuleChange = (e) => {
                     options={ticketIdDropdown}
                   />
                   }
-
+               
                 </div>
 
                 <div className="col-sm-4">
@@ -1362,10 +1362,10 @@ const handleModuleChange = (e) => {
                     id="testsuit_id"
                     name="testsuit_id"
                     ref= {testSuiteRef}
-                   options={testSuiteDropdown}
+                   options={testSuiteDropdown} 
                   />
                     }
-
+          
                 </div>
                 <div className="col-sm-4">
                   <label>
@@ -1444,7 +1444,7 @@ const handleModuleChange = (e) => {
                   >
                     <i className="icofont-refresh text-white"></i> Reset
                   </button>
-                  <button
+                  <button 
                     className="btn btn-sm btn-warning text-white"
                     type="submit"
                     style={{ marginTop: "20px", fontWeight: "600" }}
@@ -1465,7 +1465,7 @@ const handleModuleChange = (e) => {
               <div className="col-sm-12">
               { data && selectedRowsData && selectedRowsData.length <= 0 &&
                     <span style={{color:"red", fontWeight:"bold", fontStyle:"italic"}}>Note: Please select atleast one test case before sending to test suite or assign to tester</span> }
-
+               
                 <div className="d-flex flex-row-reverse">
                   {data && data.length >=0 &&
                   <ExportToExcel
@@ -1475,12 +1475,12 @@ const handleModuleChange = (e) => {
                   />
                   }
 
-
-
+           
+           
                   <div>
-                    {data &&
+                    {data && 
                     <>
-
+                  
                     <button
                       className="btn  btn-warning"
                       type="button"
@@ -1511,7 +1511,7 @@ const handleModuleChange = (e) => {
                     >
                       Assign To <i className="icofont-sign-in" />
                     </button>
-                       }
+                       } 
                   </div>
                 </div>
                 <div></div>
@@ -1559,3 +1559,4 @@ const handleModuleChange = (e) => {
 };
 
 export default TestBankComponent;
+

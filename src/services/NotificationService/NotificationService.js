@@ -2,14 +2,14 @@ import axios from 'axios';
 import { notificationUrl } from '../../settings/constants';
 
 const _getNotification =
-  notificationUrl + '/getNotification/' + localStorage.getItem('id');
+  notificationUrl + '/getNotification/' + sessionStorage.getItem('id');
 
 const _markedReadNotification = notificationUrl + '/markedReadNotification/';
 const _markedReadRegularizationNotification =
   notificationUrl + '/markAllAsReadNotification/';
 
 const _getAllNotification =
-  notificationUrl + '/getAllNotification/' + localStorage.getItem('id');
+  notificationUrl + '/getAllNotification/' + sessionStorage.getItem('id');
 
 const _markAllReadAsNotification =
   notificationUrl + '/markAllAsReadNotification/';
