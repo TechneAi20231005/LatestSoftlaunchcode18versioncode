@@ -43,7 +43,7 @@ export function postTask(payload) {
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'multipart/form-data'
     }
   };
 
@@ -60,7 +60,7 @@ export function updateTask(id, payload) {
     headers: {
       Authorization: `Bearer ${token}`,
       Accept: 'application/json',
-      'Content-Type': 'application/json'
+      'Content-Type': 'multipart/form-data'
     }
   };
   return axios.post(_URL + '/' + id, payload, config);

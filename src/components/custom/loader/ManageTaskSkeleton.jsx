@@ -1,4 +1,3 @@
-// ManageTaskSkeleton.js
 import React from 'react';
 import './ManageTaskSkeleton.css';
 
@@ -6,7 +5,7 @@ const ManageTaskSkeleton = () => {
   return (
     <div className="row">
       {[...Array(9)].map((_, index) => (
-        <div className="col-md-4">
+        <div className="col-md-4" key={index}>
           <div className="card-body">
             <div
               className="dd-handle mt-2"
@@ -26,6 +25,8 @@ const ManageTaskSkeleton = () => {
                   <span className="skeleton-manage skeleton-button"></span>
                 </div>
               </div>
+              <span className="skeleton-manage skeleton-task"></span>
+
               <div className="d-flex align-items-center justify-content-between mt-1 skeleton-lesson-name">
                 <div className="lesson_name">
                   <span
@@ -36,6 +37,7 @@ const ManageTaskSkeleton = () => {
               </div>
               <div className="d-flex justify-content-start skeleton-manage-task-owners">
                 <span className="skeleton-manage skeleton-avatar"></span>
+                <span className="skeleton-manage skeleton-avatar"></span>
               </div>
               <div className="d-flex justify-content-between mt-1">
                 <div>
@@ -43,7 +45,7 @@ const ManageTaskSkeleton = () => {
                 </div>
                 <div className="d-flex flex-column text-center skeleton-total-worked">
                   <span
-                    className="skeleton-manage "
+                    className="skeleton-manage mx-2"
                     style={{ width: '60px', height: '20px' }}
                   ></span>
                   <span
@@ -51,8 +53,21 @@ const ManageTaskSkeleton = () => {
                     style={{ width: '80px', height: '16px' }}
                   ></span>
                 </div>
-                <div>
-                  <span className="skeleton-manage skeleton-button"></span>
+                <div className="dropdown">
+                  <span
+                    className="skeleton-manage skeleton-button dropdown-toggle custom-dropdown-toggle"
+                    style={{ color: 'gray' }}
+                  >
+                    <i
+                      className="icofont-navigation-menu"
+                      style={{ color: '#ccc' }}
+                    ></i>
+                  </span>
+                  <div className="dropdown-menu" style={{ color: 'gray' }}>
+                    <span className="skeleton-manage skeleton-dropdown-item"></span>
+                    <span className="skeleton-manage skeleton-dropdown-item"></span>
+                    <span className="skeleton-manage skeleton-dropdown-item"></span>
+                  </div>
                 </div>
               </div>
             </div>
