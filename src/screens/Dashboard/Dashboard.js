@@ -351,28 +351,30 @@ export default function HrDashboard(props) {
                         {approvedNotifications.length}
                       </div>
                     ) : (
-                      <div
-                        className="notification-circle"
-                        style={{
-                          position: 'absolute',
-                          top: '-10px',
-                          right: '-10px',
-                          // padding: '3px',
-                          backgroundColor: 'rgb(255, 24, 67)',
-                          borderRadius: '50%',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          color: 'white',
-                          textAlign: 'center',
-                          // fontSize: '0.8rem',
-                          fontWeight: 'bold',
-                          color: 'red',
-                          minWidth: '20px', // Minimum width to prevent squishing
-                          height: 'auto' // Let the height adjust automatically}}
-                        }}
-                      >
-                        .
-                      </div>
+                      allRegularizationRequest?.length > 0 && (
+                        <div
+                          className="notification-circle"
+                          style={{
+                            position: 'absolute',
+                            top: '-10px',
+                            right: '-10px',
+                            // padding: '3px',
+                            backgroundColor: 'rgb(255, 24, 67)',
+                            borderRadius: '50%',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            color: 'white',
+                            textAlign: 'center',
+                            // fontSize: '0.8rem',
+                            fontWeight: 'bold',
+                            color: 'red',
+                            minWidth: '20px', // Minimum width to prevent squishing
+                            height: 'auto' // Let the height adjust automatically}}
+                          }}
+                        >
+                          .
+                        </div>
+                      )
                     )}
                   </div>
                 </div>
@@ -704,13 +706,12 @@ export default function HrDashboard(props) {
                     {count && <h5 className="mb-0 ">{count.pendingTask}</h5>}
                   </div>
                 </div>
-                <a
-                  href="/"
+                <div
                   title="view-members"
                   className="btn btn-link text-decoration-none  rounded-1"
                 >
                   <i className="icofont-hand-drawn-right fs-2 text-white"></i>
-                </a>
+                </div>
               </div>
             </div>
           </div>
@@ -731,13 +732,12 @@ export default function HrDashboard(props) {
                     {count && <h5 className="mb-0 ">{count.workingTask}</h5>}
                   </div>
                 </div>
-                <a
-                  href="/"
+                <div
                   title="view-members"
                   className="btn btn-link text-decoration-none  rounded-1"
                 >
                   <i className="icofont-hand-drawn-right fs-2 text-white"></i>
-                </a>
+                </div>
               </div>
             </div>
           </div>
@@ -758,13 +758,12 @@ export default function HrDashboard(props) {
                     {count && <h5 className="mb-0 ">{count.completedTask}</h5>}
                   </div>
                 </div>
-                <a
-                  href="/"
+                <div
                   title="view-members"
                   className="btn btn-link text-decoration-none  rounded-1"
                 >
                   <i className="icofont-hand-drawn-right fs-2 text-white"></i>
-                </a>
+                </div>
               </div>
             </div>
           </div>
@@ -785,13 +784,12 @@ export default function HrDashboard(props) {
                     {count && <h5 className="mb-0 ">{count.totalTask}</h5>}
                   </div>
                 </div>
-                <a
-                  href="/"
+                <div
                   title="view-members"
                   className="btn btn-link text-decoration-none  rounded-1"
                 >
                   <i className="icofont-hand-drawn-right fs-2 text-white"></i>
-                </a>
+                </div>
               </div>
             </div>
           </div>

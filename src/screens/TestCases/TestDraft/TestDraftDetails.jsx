@@ -613,7 +613,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['module_name']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -651,17 +651,64 @@ function TestDraftDetails(props) {
       )
     },
 
+    // {
+    //   name: (
+    //     <div>
+    //       <span>Submodule</span>
+    //       <i
+    //         onClick={(e, row) =>
+    //           handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
+    //         }
+    //         className={`icofont-filter ms-2 ${
+    //           props?.isFilterApplied['sub_module_name']
+    //             ? 'text-warning'
+    //             : 'text-dark'
+    //         }`}
+    //       />
+    //     </div>
+    //   ),
+    //   selector: (row) => row.sub_module_name,
+    //   width: '10rem',
+    //   sortable: false,
+    //   cell: (row) => (
+    //     <div
+    //       className="btn-group"
+    //       role="group"
+    //       aria-label="Basic outlined example"
+    //     >
+    //       {row.sub_module_name && (
+    //         <OverlayTrigger overlay={<Tooltip>{row.sub_module_name} </Tooltip>}>
+    //           <div>
+    //             <span className="ms-1">
+    //               {' '}
+    //               {row.sub_module_name && row.sub_module_name.length < 20
+    //                 ? row.sub_module_name
+    //                 : row.sub_module_name.substring(0, 50) + '....'}
+    //             </span>
+    //           </div>
+    //         </OverlayTrigger>
+    //       )}
+    //     </div>
+    //   ),
+    //   header: (column, sortDirection) => (
+    //     <div className="d-flex align-items-center">
+    //       <span>{column.name}</span>
+    //       <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+    //     </div>
+    //   )
+    // },
+
     {
       name: (
         <div>
-          <span>Submodule Name</span>
+          <span>Submodule</span>
           <i
             onClick={(e, row) =>
               handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['sub_module_name']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -677,13 +724,18 @@ function TestDraftDetails(props) {
           aria-label="Basic outlined example"
         >
           {row.sub_module_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.sub_module_name} </Tooltip>}>
+            <OverlayTrigger overlay={<Tooltip>{row.sub_module_name}</Tooltip>}>
               <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.sub_module_name && row.sub_module_name.length < 20
-                    ? row.sub_module_name
-                    : row.sub_module_name.substring(0, 50) + '....'}
+                <span className="ms-1 d-block">
+                  {row.sub_module_name.length < 20 ? (
+                    row.sub_module_name
+                  ) : (
+                    <>
+                      <span>{row.sub_module_name.substring(0, 50)}</span>
+                      <br />
+                      <span>....</span>
+                    </>
+                  )}
                 </span>
               </div>
             </OverlayTrigger>
@@ -707,7 +759,7 @@ function TestDraftDetails(props) {
               handleFilterClick(e, 'platform', 'Platform', 'text')
             }
             className={`icofont-filter ms-2 ${
-              props?.isFilterApplied['platform'] ? 'text-success' : 'text-dark'
+              props?.isFilterApplied['platform'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -753,7 +805,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['function_name']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -797,7 +849,7 @@ function TestDraftDetails(props) {
           <i
             onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
             className={`icofont-filter ms-2 ${
-              props?.isFilterApplied['field'] ? 'text-success' : 'text-dark'
+              props?.isFilterApplied['field'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -842,7 +894,7 @@ function TestDraftDetails(props) {
               handleFilterClick(e, 'type_name', 'Testing Type', 'text')
             }
             className={`icofont-filter ms-2 ${
-              props?.isFilterApplied['type_name'] ? 'text-success' : 'text-dark'
+              props?.isFilterApplied['type_name'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -888,7 +940,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['group_name']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -932,7 +984,7 @@ function TestDraftDetails(props) {
           <i
             onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'number')}
             className={`icofont-filter ms-2 ${
-              props?.isFilterApplied['tc_id'] ? 'text-success' : 'text-dark'
+              props?.isFilterApplied['tc_id'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -966,6 +1018,46 @@ function TestDraftDetails(props) {
     {
       name: (
         <div>
+          <span>Severity</span>
+          <i
+            onClick={(e) =>
+              handleFilterClick(e, 'severity', 'Severity', 'text')
+            }
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['severity'] ? 'text-warning' : 'text-dark'
+            }`}
+          />
+        </div>
+      ),
+      selector: (row) => row.severity,
+      width: '10rem',
+      sortable: false,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.severity && (
+            <OverlayTrigger overlay={<Tooltip>{row.severity} </Tooltip>}>
+              <div>
+                <span className="ms-1">{row.severity}</span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
+      )
+    },
+
+    {
+      name: (
+        <div>
           <span>Test Description</span>
           <i
             onClick={(e) =>
@@ -978,7 +1070,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['test_description']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -1019,50 +1111,11 @@ function TestDraftDetails(props) {
     {
       name: (
         <div>
-          <span>Severity</span>
-          <i
-            onClick={(e) =>
-              handleFilterClick(e, 'severity', 'Severity', 'text')
-            }
-            className={`icofont-filter ms-2 ${
-              props?.isFilterApplied['severity'] ? 'text-success' : 'text-dark'
-            }`}
-          />
-        </div>
-      ),
-      selector: (row) => row.severity,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.severity && (
-            <OverlayTrigger overlay={<Tooltip>{row.severity} </Tooltip>}>
-              <div>
-                <span className="ms-1">{row.severity}</span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
-    },
-    {
-      name: (
-        <div>
           <span>Steps</span>
           <i
             onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
             className={`icofont-filter ms-2 ${
-              props?.isFilterApplied['steps'] ? 'text-success' : 'text-dark'
+              props?.isFilterApplied['steps'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -1079,7 +1132,7 @@ function TestDraftDetails(props) {
           {row?.steps && (
             <OverlayTrigger overlay={<Tooltip>{row.steps} </Tooltip>}>
               <div>
-                <span className="ms-1">
+                <span className="ms-1 d-block">
                   {' '}
                   {row?.steps && row.type_name?.length < 20
                     ? row?.steps
@@ -1108,7 +1161,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['expected_result']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -1126,7 +1179,7 @@ function TestDraftDetails(props) {
           {row?.expected_result && (
             <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
               <div>
-                <span className="ms-1">
+                <span className="ms-1 d-block">
                   {' '}
                   {row?.expected_result && row?.expected_result?.length < 20
                     ? row?.expected_result
@@ -1152,7 +1205,7 @@ function TestDraftDetails(props) {
           <i
             onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
             className={`icofont-filter ms-2 ${
-              props?.isFilterApplied['status'] ? 'text-success' : 'text-dark'
+              props?.isFilterApplied['status'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -1198,7 +1251,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['project_name']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -1245,7 +1298,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['created_at']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -1292,7 +1345,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['created_by']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -1339,7 +1392,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['updated_at']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -1386,7 +1439,7 @@ function TestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['updated_by']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -1541,6 +1594,7 @@ function TestDraftDetails(props) {
       } catch (error) {}
     }
   }, [sortOrder]);
+
   useEffect(() => {
     const newFilter =
       filterType === 'is not between' ||
@@ -1672,20 +1726,22 @@ function TestDraftDetails(props) {
               Reviewer : <Astrick color="red" size="13px" />
             </b>
           </label>
-          <Select
-            type="text"
-            className="form-control form-control-sm"
-            id="reviewer_id"
-            name="reviewer_id"
-            options={testerData}
-            required
-            onChange={(e) => {
-              const selectedId = e?.value;
-              localDispatch({ type: 'SET_REVIEWER_ID', payload: selectedId });
-              setReviewerError('');
-            }}
-            placeholder="select..."
-          />
+          {testerData?.length > 0 && (
+            <Select
+              type="text"
+              className="form-control form-control-sm"
+              id="reviewer_id"
+              name="reviewer_id"
+              options={testerData}
+              required
+              onChange={(e) => {
+                const selectedId = e?.value;
+                localDispatch({ type: 'SET_REVIEWER_ID', payload: selectedId });
+                setReviewerError('');
+              }}
+              placeholder="select..."
+            />
+          )}
           {reviewerError && (
             <p
               style={{

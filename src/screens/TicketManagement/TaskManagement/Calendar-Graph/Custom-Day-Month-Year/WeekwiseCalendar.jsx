@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './custom-style.css';
 import CalendarSkeleton from './Skeleton/CalendarSkeleton';
 const WeekwiseCalendar = (props) => {
-  const {  data, bgColor, isLoading } = props;
+  const { data, bgColor, isLoading } = props;
   const [tooltipContent, setTooltipContent] = useState('');
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
+  const tooltipRef = useRef(null);
 
   const getFormattedDate = (dates) => {
     const date = new Date(dates);
@@ -40,7 +41,25 @@ const WeekwiseCalendar = (props) => {
     setTooltipContent(tooltipText);
     const xPos = event.clientX + 5;
     const yPos = event.clientY - 5;
+
+    const tooltipElement = document.getElementById('tooltip');
+    const tooltipRect = tooltipElement?.getBoundingClientRect();
+
+    if (tooltipRect) {
+      if (xPos + tooltipRect.width > window.innerWidth) {
+        xPos = window.innerWidth - tooltipRect.width - 5;
+      }
+      if (yPos + tooltipRect.height > window.innerHeight) {
+        yPos = window.innerHeight - tooltipRect.height - 5;
+      }
+      if (yPos < 0) {
+        yPos = 5;
+      }
+    }
+
     setTooltipPosition({ x: xPos, y: yPos });
+
+    // setTooltipPosition({ x: xPos, y: yPos });
   };
 
   const handleMouseLeave = () => {

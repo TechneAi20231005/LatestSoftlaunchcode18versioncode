@@ -281,7 +281,7 @@ function PaymentTemplateMaster() {
     {
       name: 'Remark',
       selector: (row) => row.remark,
-      width: '150px',
+      width: '270px',
       sortable: true,
 
       cell: (row) => (
@@ -294,9 +294,9 @@ function PaymentTemplateMaster() {
             <OverlayTrigger overlay={<Tooltip>{row.remark} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {row.remark && row.remark.length < 20
+                  {row.remark && row.remark.length < 120
                     ? row.remark
-                    : row.remark.substring(0, 12) + '....'}
+                    : row.remark.substring(0, 120) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -401,28 +401,42 @@ function PaymentTemplateMaster() {
       await new PaymentTemplateService()
         .createPaymentTemplate(form)
         .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setNotify({ type: 'success', message: res.data.message });
-              setModal({ showModal: false, modalData: '', modalHeader: '' });
-              dispatch(paymentTemplate());
-            } else {
-              setNotify({ type: 'danger', message: res.data.message });
-            }
+
+          
+          if (res.status === 200 && res.data.status === 1) {
+
+
+            setNotify({ type: 'success', message: res.data.message });
+            dispatch(paymentTemplate());
+            setModal({ showModal: false, modalData: '', modalHeader: '' });
+
           } else {
             setNotify({ type: 'danger', message: res.data.message });
-            new ErrorLogService().sendErrorLog(
-              'Payment_template',
-              'Create_Payment_template',
-              'INSERT',
-              res.message
-            );
           }
+          // if (res.status === 200 && res.data.status === 1) {
+          //   console.log('res', res);
+          //   if (res.data.status === 1) {
+          //     setNotify({ type: 'success', message: res.data.message });
+          //     setModal({ showModal: false, modalData: '', modalHeader: '' });
+          //     dispatch(paymentTemplate());
+          //   } else {
+          //     setNotify({ type: 'danger', message: res.data.message });
+          //   }
+          // } else {
+          //   setNotify({ type: 'danger', message: res.data.message });
+          //   new ErrorLogService().sendErrorLog(
+          //     'Payment_template',
+          //     'Create_Payment_template',
+          //     'INSERT',
+          //     res.message
+          //   );
+          // }
         })
         .catch((error) => {
+          setNotify({ type: 'danger', message: 'Request Error !!!' });
           const { response } = error;
           const { request, ...errorObject } = response;
-          setNotify({ type: 'danger', message: 'Request Error !!!' });
+
           new ErrorLogService().sendErrorLog(
             'Payment_template',
             'Create_Payment_template',
@@ -755,7 +769,7 @@ function PaymentTemplateMaster() {
               <div className="row g-3 mb-3">
                 <div className="col-sm-12">
                   <label className="form-label font-weight-bold">
-                    Remark :
+                    Remarks :
                   </label>
                   <textarea
                     type="text"
@@ -764,7 +778,7 @@ function PaymentTemplateMaster() {
                     name="remark"
                     defaultValue={modal.modalData ? modal.modalData.remark : ''}
                     rows="4"
-                    maxLength={10000}
+                    maxLength={1000}
                   />
                 </div>
 

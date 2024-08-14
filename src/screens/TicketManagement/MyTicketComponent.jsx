@@ -818,7 +818,7 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Description',
-      width: '120px',
+      width: '130px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -828,7 +828,6 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-            // href="/"
             onClick={(e) => {
               handleModal({ showModal: true, modalData: row, modalHeader: '' });
             }}
@@ -838,9 +837,9 @@ export default function MyTicketComponent() {
                 <div>
                   <span>
                     {' '}
-                    {row.description && row.description.length < 120
+                    {row.description && row.description.length < 20
                       ? row.description
-                      : row.description.substring(0, 123) + '....'}
+                      : row.description.substring(0, 20) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
@@ -952,7 +951,6 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-            // href="/"
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -966,9 +964,9 @@ export default function MyTicketComponent() {
                 <div>
                   <span className="ms-1">
                     {' '}
-                    {row.description && row.description.length < 123
+                    {row.description && row.description.length < 20
                       ? row.description
-                      : row.description.substring(0, 123) + '....'}
+                      : row.description.substring(0, 20) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
@@ -1074,7 +1072,6 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-            // href="/"
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1088,9 +1085,9 @@ export default function MyTicketComponent() {
                 <div>
                   <span className="ms-1">
                     {' '}
-                    {row.description && row.description.length < 123
+                    {row.description && row.description.length < 20
                       ? row.description
-                      : row.description.substring(0, 123) + '....'}
+                      : row.description.substring(0, 20) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
@@ -1206,6 +1203,7 @@ export default function MyTicketComponent() {
     {
       name: 'Description',
       width: '150px',
+
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -1215,7 +1213,6 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-            // href="/"
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1229,9 +1226,9 @@ export default function MyTicketComponent() {
                 <div>
                   <span className="ms-1">
                     {' '}
-                    {row.description && row.description.length < 123
+                    {row.description && row.description.length < 20
                       ? row.description
-                      : row.description.substring(0, 123) + '....'}
+                      : row.description.substring(0, 20) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
@@ -1400,7 +1397,6 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-            // href="/"
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1414,9 +1410,9 @@ export default function MyTicketComponent() {
                 <div>
                   <span className="ms-1">
                     {' '}
-                    {row.description && row.description.length < 123
+                    {row.description && row.description.length < 20
                       ? row.description
-                      : row.description.substring(0, 123) + '....'}
+                      : row.description.substring(0, 20) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
@@ -1548,7 +1544,7 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Description',
-      width: '170px',
+      width: '150px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -1558,7 +1554,6 @@ export default function MyTicketComponent() {
           aria-label="Basic outlined example"
         >
           <div
-            // href="/"
             onClick={(e) => {
               handleModal({
                 showModal: true,
@@ -1572,9 +1567,9 @@ export default function MyTicketComponent() {
                 <div>
                   <span className="ms-1">
                     {' '}
-                    {row.description && row.description.length < 123
+                    {row.description && row.description.length < 20
                       ? row.description
-                      : row.description.substring(0, 123) + '....'}
+                      : row.description.substring(0, 20) + '....'}
                   </span>
                 </div>
               </OverlayTrigger>
@@ -3223,8 +3218,9 @@ export default function MyTicketComponent() {
                             typeOf="YouTask"
                           />
                         )}
-                        {isLoading && <TableLoadingSkelton />}
-                        {!isLoading && yourTask && (
+                        {isLoading ? (
+                          <TableLoadingSkelton />
+                        ) : yourTask && yourTask.length > 0 ? (
                           <DataTable
                             columns={yourTaskColumns}
                             data={yourTask}
@@ -3235,7 +3231,12 @@ export default function MyTicketComponent() {
                             selectableRows={false}
                             highlightOnHover={true}
                           />
+                        ) : (
+                          <div className="text-center">
+                            <p>No data found</p>
+                          </div>
                         )}
+
                         <div className="back-to-top pull-right mt-2 mx-2">
                           <label className="mx-2">rows per page</label>
                           <select
