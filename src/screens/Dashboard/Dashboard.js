@@ -83,13 +83,13 @@ export default function HrDashboard(props) {
       // Token has expired, log out the user
       localStorage.removeItem('jwt_token');
       localStorage.removeItem('jwt_token_expiration');
-      sessionStorage.clear();
+      localStorage.clear();
       history(`${process.env.PUBLIC_URL}/`);
     }
   };
 
   const get = useCallback(async () => {
-    const id = sessionStorage.getItem('id');
+    const id = localStorage.getItem('id');
     const res = await getData(id);
     if (res.status === 200) {
       setCount(res?.data?.data?.count);
