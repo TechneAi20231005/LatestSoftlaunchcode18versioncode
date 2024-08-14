@@ -512,7 +512,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
     form.status = statusID;
 
-    form.tenant_id = localStorage.getItem('tenant_id');
+    form.tenant_id = sessionStorage.getItem('tenant_id');
     form.updated_by = userSessionData.userId;
     form.updated_at = getDateTime();
 

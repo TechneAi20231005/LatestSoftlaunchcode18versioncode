@@ -336,7 +336,7 @@ const GetAllTestCases = () => {
   // })
 
   const useSessionData = {
-    userId: localStorage.getItem('id')
+    userId: sessionStorage.getItem('id')
   };
 
   const [iterationCount, setIterationCount] = useState();

@@ -27,7 +27,7 @@ export default function ViewTicketComponent({ match }) {
   const [data, setData] = useState(null);
   // const [attachment, setAttachment] = useState(null);
 
-  // const roleId = localStorage.getItem('role_id');
+  // const roleId = sessionStorage.getItem('role_id');
 
   // const [chart, setChart] = useState(null);
 

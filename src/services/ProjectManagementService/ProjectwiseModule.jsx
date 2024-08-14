@@ -59,7 +59,7 @@ export default function ProjectwiseModule({ match }) {
 
 
   const loadData = async () => {
-    const userId = localStorage.getItem("id");
+    const userId = sessionStorage.getItem("id");
 
     await new ConsolidatedService()
       .getProjectsModules(projectId, moduleId)
@@ -76,7 +76,7 @@ export default function ProjectwiseModule({ match }) {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const temp = res.data.data;
-          // const a = res.data.data.filter((d) => d.module_id);
+          // const a = res.data.data.filter((d) => d.module_id);  
           setModuleDropdown(
             temp
               .filter((d) => d.id == moduleId)
@@ -137,7 +137,7 @@ export default function ProjectwiseModule({ match }) {
         }
       })
     } catch (error) {
-
+   
     }
 
   };

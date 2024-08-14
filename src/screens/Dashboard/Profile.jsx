@@ -189,9 +189,9 @@ function Profile() {
         if (res.status === 200) {
           if (res.data.status == 1) {
             localStorage.clear();
-            localStorage.clear();
-            localStorage.setItem("message_type", "success");
-            localStorage.setItem(
+            sessionStorage.clear();
+            sessionStorage.setItem("message_type", "success");
+            sessionStorage.setItem(
               "message",
               "Password updated !!! Please login to confirm"
             );

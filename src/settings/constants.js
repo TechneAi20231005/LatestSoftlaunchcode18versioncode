@@ -23,48 +23,48 @@ export const rpURL = _apiUrl + 'reset/resetPassword';
 export const attachmentUrl = _apiUrl + 'attachment';
 
 export const userSessionData = {
-  tenantId: localStorage.getItem('tenant_id'),
-  userId: localStorage.getItem('id'),
-  account_for: localStorage.getItem('account_for'),
-  customer_id: localStorage.getItem('customer_id'),
-  department_id: localStorage.getItem('department_id'),
-  Allow_Paid_Entry_Change: localStorage.getItem('Allow_Paid_Entry_Change'),
-  Paid_Entry_Change: localStorage.getItem('Paid_Entry_Change'),
-  Auto_Update_Payment: localStorage.getItem('Auto_Update_Payment'),
-  Download_Payment: localStorage.getItem('Download_Payment'),
-  Update_Bill: localStorage.getItem('Update_Bill'),
-  Received_Date: localStorage.getItem('Received_Date'),
-  Internal_Audit: localStorage.getItem('Internal_Audit'),
-  External_Audit: localStorage.getItem('External_Audit'),
-  Original_Bill_Needed: localStorage.getItem('Original_Bill_Needed'),
-  TCS_Applicable: localStorage.getItem('TCS_Applicable'),
-  Update_ACME_Account_Name: localStorage.getItem('Update_ACME_Account_Name'),
-  Bank_Details: localStorage.getItem('Bank_Details'),
-  Payment_Date: localStorage.getItem('Payment_Date'),
-  Amount_To_Be_Paid: localStorage.getItem('Amount_To_Be_Paid'),
-  Bill_Payment: localStorage.getItem('Bill_Payment'),
-  Edit_In_Bill: localStorage.getItem('Edit_In_Bill'),
-  Edit_Vendor_Master_Bank_Details: localStorage.getItem(
+  tenantId: sessionStorage.getItem('tenant_id'),
+  userId: sessionStorage.getItem('id'),
+  account_for: sessionStorage.getItem('account_for'),
+  customer_id: sessionStorage.getItem('customer_id'),
+  department_id: sessionStorage.getItem('department_id'),
+  Allow_Paid_Entry_Change: sessionStorage.getItem('Allow_Paid_Entry_Change'),
+  Paid_Entry_Change: sessionStorage.getItem('Paid_Entry_Change'),
+  Auto_Update_Payment: sessionStorage.getItem('Auto_Update_Payment'),
+  Download_Payment: sessionStorage.getItem('Download_Payment'),
+  Update_Bill: sessionStorage.getItem('Update_Bill'),
+  Received_Date: sessionStorage.getItem('Received_Date'),
+  Internal_Audit: sessionStorage.getItem('Internal_Audit'),
+  External_Audit: sessionStorage.getItem('External_Audit'),
+  Original_Bill_Needed: sessionStorage.getItem('Original_Bill_Needed'),
+  TCS_Applicable: sessionStorage.getItem('TCS_Applicable'),
+  Update_ACME_Account_Name: sessionStorage.getItem('Update_ACME_Account_Name'),
+  Bank_Details: sessionStorage.getItem('Bank_Details'),
+  Payment_Date: sessionStorage.getItem('Payment_Date'),
+  Amount_To_Be_Paid: sessionStorage.getItem('Amount_To_Be_Paid'),
+  Bill_Payment: sessionStorage.getItem('Bill_Payment'),
+  Edit_In_Bill: sessionStorage.getItem('Edit_In_Bill'),
+  Edit_Vendor_Master_Bank_Details: sessionStorage.getItem(
     'Edit_Vendor_Master_Bank_Details'
   ),
-  Past_Financial_Year_Bill_Date: localStorage.getItem(
+  Past_Financial_Year_Bill_Date: sessionStorage.getItem(
     'Past_Financial_Year_Bill_Date'
   ),
-  Prepone_Payment_Date: localStorage.getItem('Prepone_Payment_Date'),
-  Update_ERP_Account_Name: localStorage.getItem('Update_ERP_Account_Name'),
-  Allow_Edit_Authorized_By_Management: localStorage.getItem(
+  Prepone_Payment_Date: sessionStorage.getItem('Prepone_Payment_Date'),
+  Update_ERP_Account_Name: sessionStorage.getItem('Update_ERP_Account_Name'),
+  Allow_Edit_Authorized_By_Management: sessionStorage.getItem(
     'Allow_Edit_Authorized_By_Management'
   ),
-  Allow_Edit_Authorized_By_HOD: localStorage.getItem(
+  Allow_Edit_Authorized_By_HOD: sessionStorage.getItem(
     'Allow_Edit_Authorized_By_HOD'
   ),
-  Update_Payment_Details: localStorage.getItem('Update_Payment_Details'),
-  All_Update_Bill: localStorage.getItem('All_Update_Bill'),
+  Update_Payment_Details: sessionStorage.getItem('Update_Payment_Details'),
+  All_Update_Bill: sessionStorage.getItem('All_Update_Bill'),
   time: getDateTime()
 };
 
 export const menuUrl =
-  _apiUrl + 'getMenuByRoleId/' + localStorage.getItem('role_id');
+  _apiUrl + 'getMenuByRoleId/' + sessionStorage.getItem('role_id');
 
 export const masterURL = {
   user: _apiUrl + 'employeeMaster',

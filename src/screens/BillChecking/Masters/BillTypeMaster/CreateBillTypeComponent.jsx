@@ -499,7 +499,7 @@ const CreateBillTypeComponent = () => {
       return;
     } else {
       formData.append('approverData', JSON.stringify(approverData));
-      formData.append('user_id', localStorage.getItem('id'));
+      formData.append('user_id', sessionStorage.getItem('id'));
       formData.append('bill_type', e.target.bill_type.value);
       try {
         const res = await new BillTypeMasterService().createBillType(formData);
@@ -549,7 +549,7 @@ const CreateBillTypeComponent = () => {
               <input
                 type="hidden"
                 id="user_id"
-                value={localStorage.getItem('id')}
+                value={sessionStorage.getItem('id')}
               />
               <div className="col-sm-4 ">
                 <label className="form-label font-weight-bold">
@@ -751,6 +751,8 @@ const CreateBillTypeComponent = () => {
                         </td>
 
                         <td>
+
+                       
                           <input
                             type="number"
                             disabled={
@@ -762,6 +764,7 @@ const CreateBillTypeComponent = () => {
                             max={
                               approverData.data[index].level[rowIndex]
                                 .required_users?.length || 0
+
                             }
                             onKeyPress={(e) => {
                               Validation.RequiredNumbersOnly(e);
