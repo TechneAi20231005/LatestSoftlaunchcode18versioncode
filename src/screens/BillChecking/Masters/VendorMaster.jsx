@@ -2567,6 +2567,10 @@ function VendorMaster({ match }) {
                       defaultValue={
                         modal.modalData ? modal.modalData.msme_no : ''
                       }
+                      onInput={(event) => {
+                        const input = event.target;
+                        input.value = input.value.toUpperCase();
+                      }}
                       onKeyPress={(e) => {
                         if (!/^([A-Za-z0-9]{1})$/.test(e.key)) {
                           e.preventDefault();

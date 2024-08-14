@@ -339,7 +339,8 @@ function TestCaseReviewComponent() {
         getTestCaseReviewListThunk({
           limit: paginationData.rowPerPage,
           page: paginationData.currentPage,
-          filter_testcase_data: updatedFilters
+          filter_testcase_data: updatedFilters,
+          type: 'reviewer'
         })
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -364,7 +365,8 @@ function TestCaseReviewComponent() {
         getTestCaseReviewListThunk({
           limit: paginationData.rowPerPage,
           page: paginationData.currentPage,
-          filter_testcase_data: updatedFilters
+          filter_testcase_data: updatedFilters,
+          type: 'reviewer'
         })
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -413,7 +415,8 @@ function TestCaseReviewComponent() {
         getTestCaseReviewListThunk({
           limit: paginationData.rowPerPage,
           page: paginationData.currentPage,
-          filter_testcase_data: updatedFilters
+          filter_testcase_data: updatedFilters,
+          type: 'reviewer'
         })
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -439,7 +442,7 @@ function TestCaseReviewComponent() {
               handleFilterClick(e, 'test_plan_id', 'test_plan_id', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['test_plan_id'] ? 'text-success' : 'text-dark'
+              isFilterApplied['test_plan_id'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -485,7 +488,7 @@ function TestCaseReviewComponent() {
               handleFilterClick(e, 'tester_name', 'Tester Name', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['tester_name'] ? 'text-success' : 'text-dark'
+              isFilterApplied['tester_name'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -529,7 +532,7 @@ function TestCaseReviewComponent() {
               )
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['total_testcases'] ? 'text-success' : 'text-dark'
+              isFilterApplied['total_testcases'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -574,7 +577,7 @@ function TestCaseReviewComponent() {
             }
             className={`icofont-filter ms-2 ${
               isFilterApplied['total_reviewed_testcases']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -622,7 +625,7 @@ function TestCaseReviewComponent() {
             }
             className={`icofont-filter ms-2 ${
               isFilterApplied['total_rejected_testcases']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -670,7 +673,7 @@ function TestCaseReviewComponent() {
             }
             className={`icofont-filter ms-2 ${
               isFilterApplied['total_approved_testcases']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -712,7 +715,7 @@ function TestCaseReviewComponent() {
               handleFilterClick(e, 'created_at', 'created_at', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['created_at'] ? 'text-success' : 'text-dark'
+              isFilterApplied['created_at'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -757,7 +760,7 @@ function TestCaseReviewComponent() {
               handleFilterClick(e, 'created_by', 'created_by', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['created_by'] ? 'text-success' : 'text-dark'
+              isFilterApplied['created_by'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -802,7 +805,7 @@ function TestCaseReviewComponent() {
               handleFilterClick(e, 'updated_at', 'updated_at', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['updated_at'] ? 'text-success' : 'text-dark'
+              isFilterApplied['updated_at'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -847,7 +850,7 @@ function TestCaseReviewComponent() {
               handleFilterClick(e, 'updated_by', 'updated_by', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['updated_by'] ? 'text-success' : 'text-dark'
+              isFilterApplied['updated_by'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -897,9 +900,10 @@ function TestCaseReviewComponent() {
 
     dispatch(
       getTestCaseReviewListThunk({
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage,
-        filter_testcase_data: []
+        limit: paginationData?.rowPerPage,
+        page: paginationData?.currentPage,
+        filter_testcase_data: [],
+        type: 'reviewer'
       })
     );
   };
@@ -956,7 +960,8 @@ function TestCaseReviewComponent() {
           getTestCaseReviewListThunk({
             limit: paginationData.rowPerPage,
             page: paginationData.currentPage,
-            filter_testcase_data: updatedFilters
+            filter_testcase_data: updatedFilters,
+            type: 'reviewer'
           })
         );
         localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -996,7 +1001,8 @@ function TestCaseReviewComponent() {
           updatedFilters?.length === 1 &&
           updatedFilters[0]?.column === filterColumnId
             ? []
-            : updatedFilters
+            : updatedFilters,
+        type: 'reviewer'
       })
     );
   }, []);

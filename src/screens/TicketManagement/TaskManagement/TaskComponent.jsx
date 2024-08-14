@@ -38,6 +38,7 @@ import { Astrick } from '../../../components/Utilities/Style';
 import SprintService from '../../../services/TicketService/SprintService';
 import DataTable from 'react-data-table-component';
 import CardLoadingSkeleton from '../../../components/custom/loader/CardLoadingSkeleton';
+import ManageTaskSkeleton from '../../../components/custom/loader/ManageTaskSkeleton';
 
 export default function TaskComponent() {
   const [notify, setNotify] = useState(null);
@@ -158,16 +159,16 @@ export default function TaskComponent() {
 
       const tasksDataa = [];
       const sprintId = sprint_id ? sprint_id : 0;
-      toast.clearWaitingQueue();
-      const toastId = toast.loading('Fetching Latest Api Data... (0 sec)');
+      // toast.clearWaitingQueue();
+      // const toastId = toast.loading('Fetching Latest Api Data... (0 sec)');
 
-      let counter = 0;
-      const interval = setInterval(() => {
-        counter += 1;
-        toast.update(toastId, {
-          render: `Fetching Latest Api Data... (${counter} sec)`
-        });
-      }, 1000);
+      // let counter = 0;
+      // const interval = setInterval(() => {
+      //   counter += 1;
+      //   toast.update(toastId, {
+      //     render: `Fetching Latest Api Data... (${counter} sec)`
+      //   });
+      // }, 1000);
       // setIsLoading(true);
       try {
         await new BasketService()
@@ -232,22 +233,22 @@ export default function TaskComponent() {
             }
           });
       } catch (error) {
-        toast.update(toastId, {
-          render: 'Error fetching data!',
-          type: toast.TYPE.ERROR,
-          isLoading: false,
-          autoClose: 3000
-        });
+        // toast.update(toastId, {
+        //   render: 'Error fetching data!',
+        //   type: toast.TYPE.ERROR,
+        //   isLoading: false,
+        //   autoClose: 3000
+        // });
       } finally {
-        clearInterval(interval);
-        if (toastId) {
-          toast.update(toastId, {
-            render: 'Data fetched successfully!',
-            type: toast.TYPE.SUCCESS,
-            isLoading: false,
-            autoClose: 3000
-          });
-        }
+        // clearInterval(interval);
+        // if (toastId) {
+        //   toast.update(toastId, {
+        //     render: 'Data fetched successfully!',
+        //     type: toast.TYPE.SUCCESS,
+        //     isLoading: false,
+        //     autoClose: 3000
+        //   });
+        // }
       }
     },
     [ticketId]
@@ -1119,7 +1120,7 @@ export default function TaskComponent() {
                                 {attachment.name}
                                 <div className="d-flex justify-content-center p-0 mt-1">
                                   <a
-                                    href="/"
+                                    // href="/"
                                     // href={`${_attachmentUrl}/${attachment.path}`}
                                     target="_blank"
                                     className="btn btn-primary btn-sm p-1"
@@ -1285,19 +1286,19 @@ export default function TaskComponent() {
                     viewBox="0 0 28 28"
                     fill="none"
                     role="button"
-                    onClick={() => {
-                      setSprintInput({
-                        sprintName: sprintCardData[0]?.name,
-                        sprintDescription: sprintCardData[0]?.description,
-                        startDate: sprintCardData[0]?.start_date,
-                        endDate: sprintCardData[0]?.end_date
-                      });
-                      setSprintModal({
-                        showModal: true,
-                        modalData: sprintCardData[0],
-                        modalHeader: 'Update'
-                      });
-                    }}
+                    // onClick={() => {
+                    //   setSprintInput({
+                    //     sprintName: sprintCardData[0]?.name,
+                    //     sprintDescription: sprintCardData[0]?.description,
+                    //     startDate: sprintCardData[0]?.start_date,
+                    //     endDate: sprintCardData[0]?.end_date
+                    //   });
+                    //   setSprintModal({
+                    //     showModal: true,
+                    //     modalData: sprintCardData[0],
+                    //     modalHeader: 'Update'
+                    //   });
+                    // }}
                   >
                     <g clip-path="url(#clip0_399_8555)">
                       <rect width="28" height="28" rx="8" fill="#484C7F" />
@@ -1495,7 +1496,7 @@ export default function TaskComponent() {
             </CardBody>
           </Card>
           {isLoading === true ? (
-            <CardLoadingSkeleton />
+            <ManageTaskSkeleton />
           ) : (
             <>
               <div className="row  flex-row flex-nowrap g-3 py-xxl-4 overflow-auto">

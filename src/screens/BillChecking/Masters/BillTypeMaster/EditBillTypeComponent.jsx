@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Container, Row, Col, Button, Table, Form } from "react-bootstrap";
-import PageHeader from "../../../../components/Common/PageHeader";
-import Select from "react-select";
-import { Astrick } from "../../../../components/Utilities/Style";
-import UserService from "../../../../services/MastersService/UserService";
-import * as Validation from "../../../../components/Utilities/Validation";
-import BillTypeMasterService from "../../../../services/Bill Checking/Masters/BillTypeMasterService";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import Alert from "../../../../components/Common/Alert";
-import { _base } from "../../../../settings/constants";
-import "./styles.css"; // Import your CSS file
+import React, { useEffect, useState, useRef } from 'react';
+import { Container, Row, Col, Button, Table, Form } from 'react-bootstrap';
+import PageHeader from '../../../../components/Common/PageHeader';
+import Select from 'react-select';
+import { Astrick } from '../../../../components/Utilities/Style';
+import UserService from '../../../../services/MastersService/UserService';
+import * as Validation from '../../../../components/Utilities/Validation';
+import BillTypeMasterService from '../../../../services/Bill Checking/Masters/BillTypeMasterService';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import Alert from '../../../../components/Common/Alert';
+import { _base } from '../../../../settings/constants';
+import './styles.css'; // Import your CSS file
 
 const EditBillTypeComponent = ({ match }) => {
   const history = useNavigate();
@@ -26,11 +26,11 @@ const EditBillTypeComponent = ({ match }) => {
             bill_approval_level: 1,
             employee_id: null,
             required_users: null,
-            required_numbers: null,
-          },
-        ],
-      },
-    ],
+            required_numbers: null
+          }
+        ]
+      }
+    ]
   });
   const [billTypeData, setBilltypeData] = useState();
   const [notify, setNotify] = useState();
@@ -52,7 +52,7 @@ const EditBillTypeComponent = ({ match }) => {
       firstAmount = 0.0;
     }
     if (firstAmount === null || firstAmount === 0) {
-      alert("Please enter an amount first.");
+      alert('Please enter an amount first.');
       return;
     }
 
@@ -94,9 +94,9 @@ const EditBillTypeComponent = ({ match }) => {
           bill_approval_level: 1,
           employee_id: null,
           required_users: null,
-          required_numbers: null,
-        },
-      ],
+          required_numbers: null
+        }
+      ]
     };
 
     // Insert the new section in between the current and the next section
@@ -122,7 +122,7 @@ const EditBillTypeComponent = ({ match }) => {
     // Use map to update each object's assignToUser property
     const updatedData = newData.map((d) => ({
       ...d,
-      assignToUser: selectedOptions.map((option) => option.value),
+      assignToUser: selectedOptions.map((option) => option.value)
     }));
 
     // Set the updated array as the new state
@@ -139,7 +139,7 @@ const EditBillTypeComponent = ({ match }) => {
       bill_approval_level: newData[sectionIndex].level.length + 1,
       employee_id: null,
       required_users: null,
-      required_numbers: null,
+      required_numbers: null
     });
 
     // Push an empty array for the new row in selectedUsersArray
@@ -165,7 +165,7 @@ const EditBillTypeComponent = ({ match }) => {
 
   // Function To Remove Slab
   const handleRemoveSection = (indexToRemove) => {
-    setAmountErr("");
+    setAmountErr('');
 
     const newData = [...approverData.data];
 
@@ -196,7 +196,7 @@ const EditBillTypeComponent = ({ match }) => {
   };
   //Created By Rushikesh harkare 12/10/2023
 
-  const [amountErr, setAmountErr] = useState("");
+  const [amountErr, setAmountErr] = useState('');
 
   //Function for on Changing amount update in state
   const handleAmountChange = (index, value) => {
@@ -226,7 +226,7 @@ const EditBillTypeComponent = ({ match }) => {
         } should be greater than the previous tab.`
       );
     } else {
-      setAmountErr("");
+      setAmountErr('');
     }
   };
 
@@ -318,7 +318,7 @@ const EditBillTypeComponent = ({ match }) => {
   // onLoad function to collect data from API's
   const loadData = async () => {
     const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
+      'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -326,19 +326,19 @@ const EditBillTypeComponent = ({ match }) => {
           setUserData(
             a.map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name + " " + "(" + d.id + ")",
+              label: d.first_name + ' ' + d.last_name + ' ' + '(' + d.id + ')'
             }))
           );
           setAssignedUserData(
             a.map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name + " " + "(" + d.id + ")",
+              label: d.first_name + ' ' + d.last_name + ' ' + '(' + d.id + ')'
             }))
           );
           setRequiredUserData(
             a.map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name + " " + "(" + d.id + ")",
+              label: d.first_name + ' ' + d.last_name + ' ' + '(' + d.id + ')'
             }))
           );
         }
@@ -373,7 +373,7 @@ const EditBillTypeComponent = ({ match }) => {
       inputRefs.current[sectionIndex] &&
       inputRefs.current[sectionIndex][rowIndex]
     ) {
-      inputRefs.current[sectionIndex][rowIndex].value = "";
+      inputRefs.current[sectionIndex][rowIndex].value = '';
     }
 
     // Set the updated arrays as the new state
@@ -403,7 +403,7 @@ const EditBillTypeComponent = ({ match }) => {
 
         if (duplicateEmployeeIds) {
           alert(
-            "Same user cannot be selected in multiple rows within the same slab."
+            'Same user cannot be selected in multiple rows within the same slab.'
           );
           const inputElement = select1Refs.current[sectionIndex][rowIndex];
           if (inputElement) {
@@ -431,7 +431,7 @@ const EditBillTypeComponent = ({ match }) => {
     // Update the selected values in the second dropdown
     updatedData[sectionIndex].level[rowIndex].required_users = [
       ...prevSelectedValues2.filter((value) => !removedValues.includes(value)),
-      ...addedValues,
+      ...addedValues
     ];
 
     setApproverData({ data: updatedData });
@@ -466,7 +466,7 @@ const EditBillTypeComponent = ({ match }) => {
       inputRefs.current[sectionIndex] &&
       inputRefs.current[sectionIndex][rowIndex]
     ) {
-      inputRefs.current[sectionIndex][rowIndex].value = "";
+      inputRefs.current[sectionIndex][rowIndex].value = '';
     }
   };
   //Created By Rushikesh harkare 12/10/2023
@@ -509,7 +509,7 @@ const EditBillTypeComponent = ({ match }) => {
   //Created By Rushikesh harkare 12/10/2023
 
   const [inputState, setInputState] = useState({
-    remarkErr: "",
+    remarkErr: ''
   });
 
   const [remarkError, setRemarkError] = useState(null);
@@ -517,19 +517,19 @@ const EditBillTypeComponent = ({ match }) => {
 
   const handleRemark = (e) => {
     const remarkValue = e.target.value;
-    if (remarkValue === "") {
-      setRemarkError("Invalid Remark");
+    if (remarkValue === '') {
+      setRemarkError('Invalid Remark');
     } else {
-      setRemarkError("");
+      setRemarkError('');
     }
   };
 
   const handlbillType = (e) => {
     const billTypeValue = e.target.value;
-    if (billTypeValue === "") {
-      setBillTypeErr("Invalid Bill type");
+    if (billTypeValue === '') {
+      setBillTypeErr('Invalid Bill type');
     } else {
-      setBillTypeErr("");
+      setBillTypeErr('');
     }
   };
 
@@ -552,32 +552,32 @@ const EditBillTypeComponent = ({ match }) => {
     });
 
     if (inputState.remarkErr) {
-      alert("Please Fill Remark Field");
+      alert('Please Fill Remark Field');
       return;
     }
 
     // Check if assign_employee_id[] is empty
-    const assignEmployeeId = formData.getAll("assign_employee_id[]");
-    if (assignEmployeeId == "") {
-      alert("Please select Assigned User");
+    const assignEmployeeId = formData.getAll('assign_employee_id[]');
+    if (assignEmployeeId == '') {
+      alert('Please select Assigned User');
       return;
     }
 
     // Check if any of the fields are empty or null
     if (isEmpty) {
-      alert("Please fill in all required fields");
+      alert('Please fill in all required fields');
       return;
     }
 
     if (amountErr) {
-      alert("Please fix the error before submitting the form.");
+      alert('Please fix the error before submitting the form.');
       return;
     }
 
     // Proceed with the API request
-    formData.append("approverData", JSON.stringify(approverData));
-    formData.append("user_id", localStorage.getItem("id"));
-    formData.append("bill_type", e.target.bill_type.value);
+    formData.append('approverData', JSON.stringify(approverData));
+    formData.append('user_id', localStorage.getItem('id'));
+    formData.append('bill_type', e.target.bill_type.value);
 
     try {
       const res = await new BillTypeMasterService().updateBillType(
@@ -590,12 +590,12 @@ const EditBillTypeComponent = ({ match }) => {
           history(
             {
               pathname: `/${_base}/billTypeMaster`,
-              message: "once",
+              message: 'once'
             },
-            { state: { alert: { type: "success", message: res.data.message } } }
+            { state: { alert: { type: 'success', message: res.data.message } } }
           );
         } else {
-          setNotify({ type: "danger", message: res.data.message });
+          setNotify({ type: 'danger', message: res.data.message });
         }
       }
     } catch (error) {
@@ -621,14 +621,14 @@ const EditBillTypeComponent = ({ match }) => {
 
     const transformedData = Object.keys(approverData).map((key) => {
       const item = approverData[key];
-      const amount = item.amount || "00.00";
+      const amount = item.amount || '00.00';
       const slab = item.slab || 1;
 
       const level = item.level.map((levelItem, index) => ({
         bill_approval_level: levelItem.bil_approval_level,
         employee_id: levelItem.employee_ids,
         required_users: levelItem.is_required_users,
-        required_numbers: levelItem.required_numbers || null,
+        required_numbers: levelItem.required_numbers || null
       }));
 
       return { amount, slab, level };
@@ -659,7 +659,7 @@ const EditBillTypeComponent = ({ match }) => {
               <input
                 type="hidden"
                 id="user_id"
-                value={localStorage.getItem("id")}
+                value={localStorage.getItem('id')}
               />
 
               <div className="col-sm-4 ">
@@ -677,7 +677,7 @@ const EditBillTypeComponent = ({ match }) => {
                 />
                 <small
                   style={{
-                    color: "red",
+                    color: 'red'
                   }}
                 >
                   {billTypeErr}
@@ -728,7 +728,7 @@ const EditBillTypeComponent = ({ match }) => {
                 {inputState && (
                   <small
                     style={{
-                      color: "red",
+                      color: 'red'
                     }}
                   >
                     {remarkError}
@@ -794,20 +794,20 @@ const EditBillTypeComponent = ({ match }) => {
                     <Col className="mt-2">
                       <strong>
                         {index === approverData.data.length - 1
-                          ? "Above Amount:"
-                          : "Upto Amount:"}
+                          ? 'Above Amount:'
+                          : 'Upto Amount:'}
                       </strong>
 
                       <input
                         className="form-control-sm"
                         style={
                           index > 0 && index === approverData.data.length - 1
-                            ? { backgroundColor: "#D1D1D9" }
+                            ? { backgroundColor: '#D1D1D9' }
                             : null
                         }
                         type="number" // Change type to text
                         key={index}
-                        value={item.amount ? item.amount : ""}
+                        value={item.amount ? item.amount : ''}
                         onKeyPress={(e) => {
                           if (
                             !/^[0-9]*(\.[0-9]{0,2})?$/.test(
@@ -856,7 +856,7 @@ const EditBillTypeComponent = ({ match }) => {
                     </Col>
 
                     {index > 0 && index === approverData.data.length - 2 && (
-                      <small style={{ color: "red", display: "block" }}>
+                      <small style={{ color: 'red', display: 'block' }}>
                         {amountErr}
                       </small>
                     )}
@@ -870,7 +870,7 @@ const EditBillTypeComponent = ({ match }) => {
                           Assinged Approvers <Astrick color="red" size="13px" />
                         </th>
                         <th>
-                          Required Approvers <Astrick color="red" size="13px" />{" "}
+                          Required Approvers <Astrick color="red" size="13px" />{' '}
                         </th>
                         <th>
                           Required Members <Astrick color="red" size="13px" />
@@ -948,7 +948,7 @@ const EditBillTypeComponent = ({ match }) => {
                                 min={1}
                                 max={
                                   approverData.data[index].level[rowIndex]
-                                    .required_users?.length || ""
+                                    .required_users?.length || ''
                                 }
                                 onKeyPress={(e) => {
                                   Validation.RequiredNumbersOnly(e);
@@ -964,7 +964,7 @@ const EditBillTypeComponent = ({ match }) => {
                                   let inputValue = e.target.value;
 
                                   // Use a regex to remove any negative sign
-                                  inputValue = inputValue.replace(/-/g, "");
+                                  inputValue = inputValue.replace(/-/g, '');
 
                                   // Parse the input value as a number
                                   const newValue = parseFloat(inputValue);

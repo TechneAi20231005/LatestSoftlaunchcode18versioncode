@@ -513,7 +513,7 @@ export default function TaskData(props) {
               <i className="icofont-navigation-menu"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-3">
-              {moduleSetting && moduleSetting['Planner'] === 1 && (
+              {moduleSetting && Number(moduleSetting['Planner']) === 1 && (
                 <li
                   onClick={(e) =>
                     handleShowPlannerModal(

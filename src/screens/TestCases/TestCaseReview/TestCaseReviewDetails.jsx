@@ -176,25 +176,52 @@ function TestCaseReviewDetails() {
     }));
   };
 
+  const totalRows = rowData?.length;
+  // const handleCheckboxChange = (row) => {
+  //   localDispatch({
+  //     type: 'SET_SELECTED_ROWS',
+  //     payload: (prevSelectedRows) => {
+  //       if (prevSelectedRows.includes(row.tc_id)) {
+  //         return prevSelectedRows.filter(
+  //           (selectedRow) => selectedRow !== row.tc_id
+  //         );
+  //       } else {
+  //         return [...prevSelectedRows, row.tc_id];
+  //       }
+  //     }
+  //   });
+  // };
+
   const handleCheckboxChange = (row) => {
     localDispatch({
       type: 'SET_SELECTED_ROWS',
       payload: (prevSelectedRows) => {
+        let updatedSelectedRows;
+
         if (prevSelectedRows.includes(row.tc_id)) {
-          return prevSelectedRows.filter(
-            (selectedRow) => selectedRow !== row.tc_id
+          updatedSelectedRows = prevSelectedRows?.filter(
+            (selectedRow) => selectedRow !== row?.tc_id
           );
         } else {
-          return [...prevSelectedRows, row.tc_id];
+          updatedSelectedRows = [...prevSelectedRows, row.tc_id];
         }
+
+        // Check if all rows are selected
+        if (updatedSelectedRows?.length === totalRows) {
+          localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: true });
+        } else {
+          localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: false });
+        }
+
+        return updatedSelectedRows;
       }
     });
   };
 
   const [commentIdError, setCommentIdError] = useState('');
   const [changedRows, setChangedRows] = useState({});
-  const handleSubmit = async (status) => {
 
+  const handleSubmit = async (status) => {
     // const updatedRows = exportTestCaseReviewData
     //   ?.filter((row) => selectedRows?.includes(row.tc_id))
     //   ?.map((row) => ({
@@ -203,7 +230,12 @@ function TestCaseReviewDetails() {
     //     comment_id: comments[row.id] || row.comment_id || commonComment,
     //     other_remark: remarks[row.id] || row.other_remark
     //   }));
-
+    if (status === 'RESEND' && selectAllNames !== true) {
+      alert(
+        'Please select all test cases to send for modification, partial selection is not allowed.'
+      );
+      return false; // Exit the function or prevent further execution
+    }
     const getUpdatedRows = () => {
       let updatedRows = [];
 
@@ -230,7 +262,6 @@ function TestCaseReviewDetails() {
           other_remark: changedRows[id]?.other_remark || row?.other_remark
         };
       });
-
 
       const combinedRows = [...updatedRows, ...changedRowsArray].reduce(
         (acc, current) => {
@@ -370,7 +401,7 @@ function TestCaseReviewDetails() {
               handleFilterClick(e, 'module_name', 'Module', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['module_name'] ? 'text-success' : 'text-dark'
+              isFilterApplied['module_name'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -416,7 +447,7 @@ function TestCaseReviewDetails() {
               handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['sub_module_name'] ? 'text-success' : 'text-dark'
+              isFilterApplied['sub_module_name'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -433,7 +464,7 @@ function TestCaseReviewDetails() {
           {row.sub_module_name && (
             <OverlayTrigger overlay={<Tooltip>{row.sub_module_name} </Tooltip>}>
               <div>
-                <span className="ms-1">
+                <span className="ms-1 d-block">
                   {' '}
                   {row.sub_module_name && row.sub_module_name?.length < 20
                     ? row.sub_module_name
@@ -461,7 +492,7 @@ function TestCaseReviewDetails() {
               handleFilterClick(e, 'function_name', 'Function', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['function_name'] ? 'text-success' : 'text-dark'
+              isFilterApplied['function_name'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -504,7 +535,7 @@ function TestCaseReviewDetails() {
           <i
             onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
             className={`icofont-filter ms-2 ${
-              isFilterApplied['field'] ? 'text-success' : 'text-dark'
+              isFilterApplied['field'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -549,7 +580,7 @@ function TestCaseReviewDetails() {
               handleFilterClick(e, 'type_name', 'Testing Type', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['type_name'] ? 'text-success' : 'text-dark'
+              isFilterApplied['type_name'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -594,7 +625,7 @@ function TestCaseReviewDetails() {
               handleFilterClick(e, 'group_name', 'Testing Group', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['group_name'] ? 'text-success' : 'text-dark'
+              isFilterApplied['group_name'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -637,7 +668,7 @@ function TestCaseReviewDetails() {
           <i
             onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'number')}
             className={`icofont-filter ms-2 ${
-              isFilterApplied['tc_id'] ? 'text-success' : 'text-dark'
+              isFilterApplied['tc_id'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -673,9 +704,11 @@ function TestCaseReviewDetails() {
         <div>
           <span>Severity</span>
           <i
-            onClick={(e) => handleFilterClick(e, 'id', 'Severity', 'text')}
+            onClick={(e) =>
+              handleFilterClick(e, 'severity', 'Severity', 'text')
+            }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['Severity'] ? 'text-success' : 'text-dark'
+              isFilterApplied['severity'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -720,7 +753,7 @@ function TestCaseReviewDetails() {
               )
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['test_description'] ? 'text-success' : 'text-dark'
+              isFilterApplied['test_description'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -765,7 +798,7 @@ function TestCaseReviewDetails() {
           <i
             onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
             className={`icofont-filter ms-2 ${
-              isFilterApplied['steps'] ? 'text-success' : 'text-dark'
+              isFilterApplied['steps'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -782,7 +815,7 @@ function TestCaseReviewDetails() {
           {row.steps && (
             <OverlayTrigger overlay={<Tooltip>{row.steps} </Tooltip>}>
               <div>
-                <span className="ms-1">
+                <span className="ms-1 d-block">
                   {' '}
                   {row.steps && row.type_name?.length < 20
                     ? row.steps
@@ -809,7 +842,7 @@ function TestCaseReviewDetails() {
               handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['expected_result'] ? 'text-success' : 'text-dark'
+              isFilterApplied['expected_result'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -826,7 +859,7 @@ function TestCaseReviewDetails() {
           {row.expected_result && (
             <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
               <div>
-                <span className="ms-1">
+                <span className="ms-1 d-block">
                   {' '}
                   {row.expected_result && row.expected_result?.length < 20
                     ? row.expected_result
@@ -852,7 +885,7 @@ function TestCaseReviewDetails() {
           <i
             onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
             className={`icofont-filter ms-2 ${
-              isFilterApplied['status'] ? 'text-success' : 'text-dark'
+              isFilterApplied['status'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -918,9 +951,11 @@ function TestCaseReviewDetails() {
 
           {commentIdError[row.tc_id] &&
             selectedRows &&
-            selectedRows.includes(row.tc_id) && (
+            selectedRows?.includes(row?.tc_id) && (
               <div className="col">
-                <span className="text-danger">{commentIdError[row.tc_id]}</span>
+                <span className="text-danger">
+                  {commentIdError[row?.tc_id]}
+                </span>
               </div>
             )}
         </div>
@@ -941,11 +976,12 @@ function TestCaseReviewDetails() {
           placeholder="Enter Remark"
           aria-label="default input example"
           maxLength={100}
-          // value={
-          //   selectedRows && selectedRows.includes(row.id)
-          //     ? remarks[row.id] || row.other_remark
-          //     : commonRemark
-          // }
+          defaultValue={
+            // selectedRows && selectedRows.includes(row.tc_id)
+            //   ? remarks[row.other_remark] || row.other_remark
+            //   : commonRemark
+            row.other_remark
+          }
           onChange={(e) =>
             handleRowChange(row.id, 'other_remark', e.target.value)
           }
@@ -961,7 +997,7 @@ function TestCaseReviewDetails() {
               handleFilterClick(e, 'project_name', 'Project', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['project_name'] ? 'text-success' : 'text-dark'
+              isFilterApplied['project_name'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -1006,7 +1042,7 @@ function TestCaseReviewDetails() {
               handleFilterClick(e, 'created_at', 'created_at', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['created_at'] ? 'text-success' : 'text-dark'
+              isFilterApplied['created_at'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -1051,7 +1087,7 @@ function TestCaseReviewDetails() {
               handleFilterClick(e, 'created_by', 'created_by', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['created_by'] ? 'text-success' : 'text-dark'
+              isFilterApplied['created_by'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -1096,7 +1132,7 @@ function TestCaseReviewDetails() {
               handleFilterClick(e, 'updated_at', 'updated_at', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['updated_at'] ? 'text-success' : 'text-dark'
+              isFilterApplied['updated_at'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -1141,7 +1177,7 @@ function TestCaseReviewDetails() {
               handleFilterClick(e, 'updated_by', 'updated_by', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['updated_by'] ? 'text-success' : 'text-dark'
+              isFilterApplied['updated_by'] ? 'text-warning' : 'text-dark'
             }`}
           />
         </div>
@@ -1198,7 +1234,6 @@ function TestCaseReviewDetails() {
     updated_at: 'updated_at',
     updated_by: 'updated_by'
   };
-
 
   // const transformDataForExport = (rowData, data, comments, commonComment) => {
   //   if (comments) {
@@ -1261,7 +1296,6 @@ function TestCaseReviewDetails() {
   //   comments,
   //   commonComment
   // );
-
 
   const exportColumns = [
     { title: 'Module', field: 'module_name' },

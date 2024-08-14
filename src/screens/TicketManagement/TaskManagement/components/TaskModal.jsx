@@ -30,6 +30,7 @@ export default function TaskModal(props) {
   const [defaultUserData, setDefaultUserData] = useState();
   const attachment = [];
   const [selectedFile, setSelectedFile] = useState([]);
+
   const fileInputRef = useRef(null);
   // const [loading, setLoading] = useState(false);
   // const [startDate, setStartDate] = useState(null);
@@ -260,7 +261,7 @@ export default function TaskModal(props) {
   // const [tasktypeDropdown, setTasktypeDropdown] = useState();
   const [parentTaskName, setParentTaskName] = useState(null);
 
-  const loadData = useCallback( async () => {
+  const loadData = useCallback(async () => {
     setSelectedFile([]);
     const tempUserData = [];
     const tempDefaultUserData = [];
@@ -360,7 +361,7 @@ export default function TaskModal(props) {
         setTaskData(res?.data?.data);
       }
     });
-  },[props.data, props?.taskDropdown]);
+  }, [props.data, props?.taskDropdown]);
 
   // const loadAttachment = async () => {
   //   setNotify(null);
@@ -432,7 +433,7 @@ export default function TaskModal(props) {
   const transformedOptions = transformData(taskData);
 
   const uploadAttachmentHandler = (e, type, id = null) => {
-    let file ;
+    let file;
     if (type === 'UPLOAD') {
       const selectedFilesCount = selectedFile?.length;
       const maxTotalSizeMB = 10; // Maximum total size in MB
@@ -478,27 +479,21 @@ export default function TaskModal(props) {
         fileInputRef.current.value = '';
       }
     } else if (type === 'DELETE') {
-      let filteredFileArray = selectedFile.filter(
-        (index) => id !== index
-      );
+      let filteredFileArray = selectedFile.filter((index) => id !== index);
       setSelectedFile(filteredFileArray);
     } else if (type === 'CUSTOMER') {
-       file = selectedFile;
+      file = selectedFile;
       file[id].show_to_customer = file[id].show_to_customer ? 0 : 1;
       setSelectedFile(file);
     } else if (type === 'PROJECT_OWNER') {
-       file = selectedFile;
+      file = selectedFile;
       file[id].show_to_project_owner = file[id].show_to_project_owner ? 0 : 1;
       setSelectedFile(file);
     } else {
       alert('Invalid Option');
     }
   };
-  // const handleDeleteAttachment = (e, id) => {
-  //   deleteAttachment(id).then((res) => {
-  //     loadAttachment();
-  //   });
-  // };
+  const handleDeleteAttachment = (e, id) => {};
 
   const assignUserRef = useRef();
   const handleForm = async (e) => {
@@ -1163,7 +1158,9 @@ export default function TaskModal(props) {
                       userData &&
                       userData
                         .map((d) => ({ value: d.value, label: d.label }))
-                        .filter((d) => d.value === localStorage.getItem('id'))
+                        .filter(
+                          (d) => d.value === Number(localStorage.getItem('id'))
+                        )
                     }
                     isClearable
                     // isDisabled={(props.data.status ==="COMPLETED") || (props.ownership !== "TICKET" || props.ownership !== "PROJECT") ? true :false}
@@ -1279,12 +1276,13 @@ export default function TaskModal(props) {
                 </tbody>
               </Table>
             )}
+
             <div
               className="d-flex justify-content-start mt-2"
               style={{ overflowX: 'auto' }}
             >
-              {attachment &&
-                attachment.map((attach, index) => {
+              {props?.data?.attachment &&
+                props?.data?.attachment.map((attach, index) => {
                   return (
                     <div
                       className="justify-content-start"
@@ -1300,11 +1298,11 @@ export default function TaskModal(props) {
                       >
                         <div className="card-header">
                           <p style={{ fontSize: '12px' }}>
-                            <b>{attach.name}</b>
+                            <b>{attach.fileName}</b>
                           </p>
                           <div className="d-flex justify-content-end p-0">
                             <a
-                              href={`${_attachmentUrl + '/' + attach.path}`}
+                              href={`${_attachmentUrl + '/' + attach.filePath}`}
                               target="_blank"
                               className="btn btn-warning btn-sm p-0 px-1"
                               rel="noreferrer"
@@ -1318,7 +1316,7 @@ export default function TaskModal(props) {
                               className="btn btn-danger text-white btn-sm p-0 px-1"
                               type="button"
                               onClick={(e) => {
-                                // handleDeleteAttachment(e, attach.id);
+                                handleDeleteAttachment(e, attach.id);
                               }}
                             >
                               <i

@@ -1,15 +1,15 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Container, Row, Col, Button, Table, Form } from "react-bootstrap";
-import PageHeader from "../../../../components/Common/PageHeader";
-import Select from "react-select";
-import { Astrick } from "../../../../components/Utilities/Style";
-import UserService from "../../../../services/MastersService/UserService";
-import * as Validation from "../../../../components/Utilities/Validation";
-import BillTypeMasterService from "../../../../services/Bill Checking/Masters/BillTypeMasterService";
-import { Link, useNavigate } from "react-router-dom";
-import Alert from "../../../../components/Common/Alert";
-import { _base } from "../../../../settings/constants";
-import "./styles.css"; // Import your CSS file
+import React, { useEffect, useState, useRef } from 'react';
+import { Container, Row, Col, Button, Table, Form } from 'react-bootstrap';
+import PageHeader from '../../../../components/Common/PageHeader';
+import Select from 'react-select';
+import { Astrick } from '../../../../components/Utilities/Style';
+import UserService from '../../../../services/MastersService/UserService';
+import * as Validation from '../../../../components/Utilities/Validation';
+import BillTypeMasterService from '../../../../services/Bill Checking/Masters/BillTypeMasterService';
+import { Link, useNavigate } from 'react-router-dom';
+import Alert from '../../../../components/Common/Alert';
+import { _base } from '../../../../settings/constants';
+import './styles.css'; // Import your CSS file
 
 const CreateBillTypeComponent = () => {
   const history = useNavigate();
@@ -23,11 +23,11 @@ const CreateBillTypeComponent = () => {
             bill_approval_level: 1,
             employee_id: null,
             required_users: null,
-            required_numbers: null,
-          },
-        ],
-      },
-    ],
+            required_numbers: null
+          }
+        ]
+      }
+    ]
   });
   const [notify, setNotify] = useState();
   const selectAddRequiredUserRefs = useRef([]);
@@ -61,7 +61,7 @@ const CreateBillTypeComponent = () => {
 
     // On the first click, if the amount is 0 or null, show an alert
     if (firstAmount === null || firstAmount === 0) {
-      alert("Please enter an amount first.");
+      alert('Please enter an amount first.');
       return;
     }
 
@@ -97,9 +97,9 @@ const CreateBillTypeComponent = () => {
           bill_approval_level: 1,
           employee_id: null,
           required_users: null,
-          required_numbers: null,
-        },
-      ],
+          required_numbers: null
+        }
+      ]
     };
 
     // Insert the new section in between the current and the next section
@@ -130,7 +130,7 @@ const CreateBillTypeComponent = () => {
       bill_approval_level: newData[sectionIndex].level.length + 1,
       employee_id: null,
       required_users: null,
-      required_numbers: null,
+      required_numbers: null
     });
 
     // Push an empty array for the new row in selectedUsersArray
@@ -152,7 +152,7 @@ const CreateBillTypeComponent = () => {
   };
 
   const handleRemoveSection = (indexToRemove) => {
-    setAmountErr("");
+    setAmountErr('');
     const newData = [...approverData.data];
 
     // Remove the section at the specified index
@@ -181,7 +181,7 @@ const CreateBillTypeComponent = () => {
     setApproverData({ data: newData });
   };
 
-  const [amountErr, setAmountErr] = useState("");
+  const [amountErr, setAmountErr] = useState('');
   const handleAmountChange = (index, value) => {
     const newData = [...approverData.data];
     var amountValue = parseFloat(value);
@@ -209,7 +209,7 @@ const CreateBillTypeComponent = () => {
         } should be greater than the previous tab.`
       );
     } else {
-      setAmountErr("");
+      setAmountErr('');
     }
   };
 
@@ -301,7 +301,7 @@ const CreateBillTypeComponent = () => {
 
   const loadData = async () => {
     const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
+      'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
@@ -309,19 +309,19 @@ const CreateBillTypeComponent = () => {
           setUserData(
             a.map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name + " " + "(" + d.id + ")",
+              label: d.first_name + ' ' + d.last_name + ' ' + '(' + d.id + ')'
             }))
           );
           setAssignedUserData(
             a.map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name + " " + "(" + d.id + ")",
+              label: d.first_name + ' ' + d.last_name + ' ' + '(' + d.id + ')'
             }))
           );
           setRequiredUserData(
             a.map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name + " " + "(" + d.id + ")",
+              label: d.first_name + ' ' + d.last_name + ' ' + '(' + d.id + ')'
             }))
           );
         }
@@ -344,7 +344,7 @@ const CreateBillTypeComponent = () => {
       inputRefs.current[sectionIndex] &&
       inputRefs.current[sectionIndex][rowIndex]
     ) {
-      inputRefs.current[sectionIndex][rowIndex].value = "";
+      inputRefs.current[sectionIndex][rowIndex].value = '';
     }
 
     // Set the updated arrays as the new state
@@ -360,7 +360,7 @@ const CreateBillTypeComponent = () => {
 
       // Loop through previous rows within the same slab
       for (let i = 0; i < updatedData[sectionIndex].level.length; i++) {
-        if (i === rowIndex) {
+        if (i == rowIndex) {
           // Skip the current row
           continue;
         }
@@ -374,7 +374,7 @@ const CreateBillTypeComponent = () => {
 
         if (duplicateEmployeeIds) {
           alert(
-            "Same user cannot be selected in multiple rows within the same slab."
+            'Same user cannot be selected in multiple rows within the same slab.'
           );
           const inputElement = select1Refs.current[sectionIndex][rowIndex];
           if (inputElement) {
@@ -402,7 +402,7 @@ const CreateBillTypeComponent = () => {
     // Update the selected values in the second dropdown
     updatedData[sectionIndex].level[rowIndex].required_users = [
       ...prevSelectedValues2.filter((value) => !removedValues.includes(value)),
-      ...addedValues,
+      ...addedValues
     ];
     // Clear the required_numbers field
     setApproverData({ data: updatedData });
@@ -434,7 +434,7 @@ const CreateBillTypeComponent = () => {
       inputRefs.current[sectionIndex] &&
       inputRefs.current[sectionIndex][rowIndex]
     ) {
-      inputRefs.current[sectionIndex][rowIndex].value = "";
+      inputRefs.current[sectionIndex][rowIndex].value = '';
     }
   };
 
@@ -478,7 +478,7 @@ const CreateBillTypeComponent = () => {
     }
 
     if (amountErr) {
-      alert("Please fix the error before submitting the form.");
+      alert('Please fix the error before submitting the form.');
       return;
     }
     // Check if any field is empty
@@ -495,12 +495,12 @@ const CreateBillTypeComponent = () => {
     });
     if (isEmpty) {
       // Show an alert or error message
-      alert("Please fill in all fields");
+      alert('Please fill in all fields');
       return;
     } else {
-      formData.append("approverData", JSON.stringify(approverData));
-      formData.append("user_id", localStorage.getItem("id"));
-      formData.append("bill_type", e.target.bill_type.value);
+      formData.append('approverData', JSON.stringify(approverData));
+      formData.append('user_id', localStorage.getItem('id'));
+      formData.append('bill_type', e.target.bill_type.value);
       try {
         const res = await new BillTypeMasterService().createBillType(formData);
 
@@ -508,16 +508,16 @@ const CreateBillTypeComponent = () => {
           if (res.data.status === 1) {
             history(
               {
-                pathname: `/${_base}/billTypeMaster`,
+                pathname: `/${_base}/billTypeMaster`
               },
               {
                 state: {
-                  alert: { type: "success", message: res.data.message },
-                },
+                  alert: { type: 'success', message: res.data.message }
+                }
               }
             );
           } else {
-            setNotify({ type: "danger", message: res.data.message });
+            setNotify({ type: 'danger', message: res.data.message });
           }
         }
       } catch (error) {
@@ -549,7 +549,7 @@ const CreateBillTypeComponent = () => {
               <input
                 type="hidden"
                 id="user_id"
-                value={localStorage.getItem("id")}
+                value={localStorage.getItem('id')}
               />
               <div className="col-sm-4 ">
                 <label className="form-label font-weight-bold">
@@ -601,8 +601,8 @@ const CreateBillTypeComponent = () => {
                   <Col className="mt-2">
                     <strong>
                       {index === approverData.data.length - 1
-                        ? "Above Amount:"
-                        : "Upto Amount:"}
+                        ? 'Above Amount:'
+                        : 'Upto Amount:'}
                     </strong>
                     <Astrick color="red" size="13px" />
 
@@ -610,7 +610,7 @@ const CreateBillTypeComponent = () => {
                       className="form-control-sm"
                       style={
                         index > 0 && index === approverData.data.length - 1
-                          ? { backgroundColor: "#D1D1D9" }
+                          ? { backgroundColor: '#D1D1D9' }
                           : null
                       }
                       type="number"
@@ -624,7 +624,7 @@ const CreateBillTypeComponent = () => {
                           .map((i) => i.amount + 1)
                       }
                       maxLength="10"
-                      value={item.amount ? item.amount : ""}
+                      value={item.amount ? item.amount : ''}
                       onKeyPress={(e) => {
                         if (
                           !/^[0-9]*(\.[0-9]{0,2})?$/.test(
@@ -668,7 +668,7 @@ const CreateBillTypeComponent = () => {
                     ) : null}
                   </Col>
                   {index > 0 && index === approverData.data.length - 2 && (
-                    <small style={{ color: "red", display: "block" }}>
+                    <small style={{ color: 'red', display: 'block' }}>
                       {amountErr}
                     </small>
                   )}
@@ -678,9 +678,15 @@ const CreateBillTypeComponent = () => {
                   <thead>
                     <tr>
                       <th>Sr</th>
-                      <th>Assinged Approvers</th>
-                      <th>Required Approvers </th>
-                      <th>Required Members</th>
+                      <th>
+                        Assinged Approvers <Astrick color="red" size="13px" />
+                      </th>
+                      <th>
+                        Required Approvers <Astrick color="red" size="13px" />{' '}
+                      </th>
+                      <th>
+                        Required Members <Astrick color="red" size="13px" />
+                      </th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -755,7 +761,7 @@ const CreateBillTypeComponent = () => {
                             }
                             max={
                               approverData.data[index].level[rowIndex]
-                                .required_users?.length || ""
+                                .required_users?.length || 0
                             }
                             onKeyPress={(e) => {
                               Validation.RequiredNumbersOnly(e);
@@ -771,16 +777,17 @@ const CreateBillTypeComponent = () => {
                               let inputValue = e.target.value;
 
                               // Use a regex to remove any negative sign
-                              inputValue = inputValue.replace(/-/g, "");
+                              inputValue = inputValue.replace(/-/g, '');
 
                               const newValue = parseFloat(inputValue);
+
                               const maxLength =
                                 approverData.data[index].level[rowIndex]
                                   .required_users?.length || 0;
 
                               if (isNaN(newValue) || newValue < 0) {
                                 // Clear the input value if it's not a valid number or negative
-                                e.target.value = "";
+                                e.target.value = '';
                               } else if (newValue > maxLength) {
                                 // Set the value to the maximum length if it exceeds it
                                 e.target.value = maxLength.toString();

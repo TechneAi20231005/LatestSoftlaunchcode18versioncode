@@ -19,6 +19,7 @@ import {
   getSubModuleMasterThunk,
   importTestDraftThunk
 } from '../../../redux/services/testCases/downloadFormatFile';
+import { getEmployeeData } from '../../Dashboard/DashboardAction';
 export default function TestDraftComponent({}) {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -180,6 +181,7 @@ export default function TestDraftComponent({}) {
         type: 'ALL'
       })
     );
+    dispatch(getEmployeeData());
   }, []);
 
   useEffect(() => {

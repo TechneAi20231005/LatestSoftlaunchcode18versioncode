@@ -318,7 +318,8 @@ function ReviewedTestDraftDetails(props) {
         getAllReviewTestDraftList({
           limit: props?.paginationData.rowPerPage,
           page: props?.paginationData.currentPage,
-          filter_testcase_data: updatedFilters
+          filter_testcase_data: updatedFilters,
+          type: 'tester'
         })
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -344,7 +345,8 @@ function ReviewedTestDraftDetails(props) {
         getAllReviewTestDraftList({
           limit: props?.paginationData.rowPerPage,
           page: props?.paginationData.currentPage,
-          filter_testcase_data: updatedFilters
+          filter_testcase_data: updatedFilters,
+          type: 'tester'
         })
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -403,7 +405,8 @@ function ReviewedTestDraftDetails(props) {
         getAllReviewTestDraftList({
           limit: props?.paginationData.rowPerPage,
           page: props?.paginationData.currentPage,
-          filter_testcase_data: updatedFilters
+          filter_testcase_data: updatedFilters,
+          type: 'tester'
         })
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -430,7 +433,7 @@ function ReviewedTestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['test_plan_id']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -478,7 +481,7 @@ function ReviewedTestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['reviewer_name']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -524,7 +527,7 @@ function ReviewedTestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['total_testcases']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -570,7 +573,7 @@ function ReviewedTestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['total_reviewed_testcases']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -618,7 +621,7 @@ function ReviewedTestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['total_rejected_testcases']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -666,7 +669,7 @@ function ReviewedTestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['total_approved_testcases']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -709,7 +712,7 @@ function ReviewedTestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['created_at']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -730,7 +733,7 @@ function ReviewedTestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['created_by']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -777,7 +780,7 @@ function ReviewedTestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['updated_at']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -798,7 +801,7 @@ function ReviewedTestDraftDetails(props) {
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['updated_by']
-                ? 'text-success'
+                ? 'text-warning'
                 : 'text-dark'
             }`}
           />
@@ -887,7 +890,8 @@ function ReviewedTestDraftDetails(props) {
           getAllReviewTestDraftList({
             limit: props?.paginationData.rowPerPage,
             page: props?.paginationData.currentPage,
-            filter_testcase_data: updatedFilters
+            filter_testcase_data: updatedFilters,
+            type: 'tester'
           })
         );
         localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -945,7 +949,8 @@ function ReviewedTestDraftDetails(props) {
           updatedFilters?.length === 1 &&
           updatedFilters[0]?.column === filterColumnId
             ? []
-            : updatedFilters
+            : updatedFilters,
+        type: 'tester'
       })
     );
   }, [props?.paginationData.rowPerPage, props?.paginationData.currentPage]);

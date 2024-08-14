@@ -185,7 +185,7 @@ function TestingGroupMasterComponent() {
             name="interview_search"
             value={searchValue}
             onChange={(e) => setSearchValue(e?.target?.value)}
-            placeholder="Enter review comment..."
+            placeholder="Search testing group here..."
             className="form-control"
           />
         </Col>
