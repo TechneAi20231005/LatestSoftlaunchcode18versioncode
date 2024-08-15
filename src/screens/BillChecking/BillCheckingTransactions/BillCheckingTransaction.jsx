@@ -57,6 +57,7 @@ function BillCheckingTransaction() {
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.billTypeDataDropDowm
   );
+  console.log('billTypeDropdown', billTypeDropdown);
   const vendorDropdown = useSelector(
     (VendorMasterSlice) =>
       VendorMasterSlice.vendorMaster.vendorMasterDropDownNew
@@ -122,6 +123,7 @@ function BillCheckingTransaction() {
     setIsToBillDateRequired(false);
     setIsToReceiveRequired(false);
     setIsPaymentRequired(false);
+    setData([]);
     if (selectInputRef.current.value != null) {
       selectToBillRef.current.value = '';
       document.getElementById('id').value = '';
@@ -207,6 +209,11 @@ function BillCheckingTransaction() {
       selector: (row) => {},
       sortable: false,
       cell: (row) => {
+        console.log('Row Data:', row);
+        console.log('Payment Status:', row.payment_status);
+        console.log('Is Assign To:', row.is_assign_to);
+        console.log('Level:', row.level);
+        console.log('Total Level:', row.total_level);
         return (
           <Dropdown className="d-inline-flex m-1">
             <Dropdown.Toggle
@@ -984,8 +991,16 @@ function BillCheckingTransaction() {
           setExportData(tempData);
           setData(tempData);
         } else {
+          setFilteredData([]);
           setNotify({ type: 'danger', message: res.data.message });
         }
+      })
+      .catch((error) => {
+        setFilteredData([]);
+        setNotify({
+          type: 'danger',
+          message: `An error occurred: ${error.message}`
+        });
       });
   };
 
@@ -1620,7 +1635,7 @@ function BillCheckingTransaction() {
                     onClick={handleClearData}
                     style={{ marginTop: '20px', fontWeight: '600' }}
                   >
-                    <i className="icofont-refresh text-white"></i> Reset
+                    <i className="icofont-refresh text-white"></i> ResetSS
                   </button>
                 </div>
                 <span className="fw-bold mt-2" style={{ color: 'red' }}>
