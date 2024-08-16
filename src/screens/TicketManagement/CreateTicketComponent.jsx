@@ -67,6 +67,7 @@ export default function CreateTicketComponent() {
   };
 
   const handleSelect = (label, ID) => {
+    console.log('selectedOption', typeof selectedOption, typeof label);
     setSelectedOption(selectedOption === label ? null : label);
     setSelectedOptionId(label);
     setIsMenuOpen(!isMenuOpen);
