@@ -178,7 +178,7 @@ function TestingTypeMasterComponent() {
             name="interview_search"
             value={searchValue}
             onChange={(e) => setSearchValue(e?.target?.value)}
-            placeholder="Enter review comment..."
+            placeholder="Search testing type here..."
             className="form-control"
           />
         </Col>

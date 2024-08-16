@@ -30,6 +30,7 @@ export default function TaskModal(props) {
   const [defaultUserData, setDefaultUserData] = useState();
   const attachment = [];
   const [selectedFile, setSelectedFile] = useState([]);
+
   const fileInputRef = useRef(null);
   // const [loading, setLoading] = useState(false);
   // const [startDate, setStartDate] = useState(null);
@@ -492,11 +493,7 @@ export default function TaskModal(props) {
       alert('Invalid Option');
     }
   };
-  // const handleDeleteAttachment = (e, id) => {
-  //   deleteAttachment(id).then((res) => {
-  //     loadAttachment();
-  //   });
-  // };
+  const handleDeleteAttachment = (e, id) => {};
 
   const assignUserRef = useRef();
   const handleForm = async (e) => {
@@ -1279,12 +1276,13 @@ export default function TaskModal(props) {
                 </tbody>
               </Table>
             )}
+
             <div
               className="d-flex justify-content-start mt-2"
               style={{ overflowX: 'auto' }}
             >
-              {attachment &&
-                attachment.map((attach, index) => {
+              {props?.data?.attachment &&
+                props?.data?.attachment.map((attach, index) => {
                   return (
                     <div
                       className="justify-content-start"
@@ -1300,11 +1298,11 @@ export default function TaskModal(props) {
                       >
                         <div className="card-header">
                           <p style={{ fontSize: '12px' }}>
-                            <b>{attach.name}</b>
+                            <b>{attach.fileName}</b>
                           </p>
                           <div className="d-flex justify-content-end p-0">
                             <a
-                              href={`${_attachmentUrl + '/' + attach.path}`}
+                              href={`${_attachmentUrl + '/' + attach.filePath}`}
                               target="_blank"
                               className="btn btn-warning btn-sm p-0 px-1"
                               rel="noreferrer"
@@ -1318,7 +1316,7 @@ export default function TaskModal(props) {
                               className="btn btn-danger text-white btn-sm p-0 px-1"
                               type="button"
                               onClick={(e) => {
-                                // handleDeleteAttachment(e, attach.id);
+                                handleDeleteAttachment(e, attach.id);
                               }}
                             >
                               <i

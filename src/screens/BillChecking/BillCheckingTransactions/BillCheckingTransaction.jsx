@@ -251,96 +251,70 @@ function BillCheckingTransaction() {
               variant=""
               id={`${'dropdown-basic_' + data?.id}`}
               className="btn btn-primary text-white"
-              style={{
-                padding: '0.25rem 0.5rem',
-                fontSize: '0.875rem',
-                marginRight: '5px'
-              }}
             >
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
-
-            {row &&
-              ((row.level === parseInt(row.total_level) &&
-                row.is_assign_to === 1) ||
-                row.is_editable_for_creator === 1 ||
-                (row.is_rejected === 1 && row.is_editable_for_creator === 1) ||
-                (authorities &&
-                  authorities.All_Update_Bill === true &&
-                  row.is_assign_to !== 1) ||
-                (row.level !== parseInt(row.total_level) &&
-                  row.is_approver == 1)) &&
-              row.is_active === 1 && (
-                // <li>
-                <Link
-                  to={`/${_base}/EditBillCheckingTransaction/` + row.id}
-                  className="btn btn-sm btn-primary text-white"
-                  style={{
-                    padding: '0.25rem 0.5rem',
-                    fontSize: '0.875rem'
-                  }}
-                >
-                  <i className="icofont-edit"></i>
-                  {/* Edit */}
-                </Link>
-                // </li>
-              )}
-
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
+              {row &&
+                ((row.level == parseInt(row.total_level) &&
+                  row.is_assign_to == 1) ||
+                  row.is_editable_for_creator == 1 ||
+                  (row.is_rejected == 1 && row.is_editable_for_creator == 1) ||
+                  (authorities && authorities.All_Update_Bill === true) ||
+                  (row.level != parseInt(row.total_level) &&
+                    row.is_approver == 1)) && (
+                  <li>
+                    <Link
+                      to={`/${_base}/EditBillCheckingTransaction/` + row.id}
+                      className="btn btn-sm btn-primary text-white w-100"
+                    >
+                      <i className="icofont-edit"></i> Edit
+                    </Link>
+                  </li>
+                )}
+
               <li>
                 <Link
-                  to={`/${_base}/ViewBillTransaction/` + row.id}
-                  className="btn btn-sm btn-info text-white"
-                  style={{ width: '100%', zIndex: 100 }}
+                  to={`/${_base}/ViewBillTransaction/` + row?.id}
+                  className="btn btn-sm btn-info text-white w-100"
                 >
                   <i className="icofont-eye"></i> View
                 </Link>
               </li>
 
-              {(row &&
-                ((row.level === parseInt(row.total_level) &&
-                  row.is_assign_to === 1) ||
-                  row.is_editable_for_creator === 1 ||
-                  (row.is_rejected === 1 &&
-                    row.is_editable_for_creator === 1) ||
-                  (authorities &&
-                    authorities.All_Update_Bill === true &&
-                    row.is_assign_to !== 1) ||
-                  (row.level !== parseInt(row.total_level) &&
-                    row.is_approver === 1)) &&
-                row.is_active === 1) ||
-                (row['Is cancelled'] === 0 && (
+              {row &&
+                ((row.level == parseInt(row.total_level) &&
+                  row.is_assign_to == 1) ||
+                  row.is_editable_for_creator == 1 ||
+                  row.is_rejected == 1 ||
+                  (authorities && authorities.All_Update_Bill === true) ||
+                  (row.level != parseInt(row.total_level) &&
+                    row.is_approver == 1)) && (
                   <li>
                     <Link
                       to={`/${_base}/BillCheckingHistory/` + row.id}
-                      className="btn btn-sm btn-danger text-white"
-                      style={{ width: '100%', zIndex: 100 }}
+                      className="btn btn-sm btn-danger text-white w-100"
                     >
                       <i className="icofont-history"></i> History
                     </Link>
                   </li>
-                ))}
+                )}
 
-              {((row.is_assign_to === 1 && row.level === row.total_level) ||
-                row.is_active === 0) && (
-                <li>
-                  <Link
-                    to={`/${_base}/PaymentHistory/` + row.id}
-                    className="btn btn-sm btn-warning text-white"
-                    style={{ width: '100%', zIndex: 100 }}
-                  >
-                    <i className="icofont-tasks"></i> Payment History
-                  </Link>
-                </li>
-              )}
-
-              {row.is_assign_to === 1 && row.level === row.total_level && (
+              {row.is_assign_to == 1 && row.level == row.total_level && (
                 <>
                   <li>
                     <Link
+                      to={`/${_base}/PaymentHistory/` + row.id}
+                      className="btn btn-sm btn-warning text-white w-100"
+                    >
+                      <i className="icofont-tasks"></i> Payment History
+                    </Link>
+                  </li>
+
+                  <li>
+                    <Link
                       to={`/${_base}/PaymentDetails/` + row.id}
-                      className="btn btn-sm btn-primary text-white"
-                      style={{ width: '100%', zIndex: 100 }}
+                      className="btn btn-sm btn-primary text-white w-100"
                     >
                       <i className="icofont-price"></i> Payment Details
                     </Link>
@@ -349,35 +323,31 @@ function BillCheckingTransaction() {
                   <li>
                     <Link
                       to={`/${_base}/AssignedPerson/` + row.id}
-                      className="btn btn-sm btn-secondary text-white"
-                      style={{ width: '100%', zIndex: 100 }}
+                      className="btn btn-sm btn-secondary text-white w-100"
                     >
                       <i className="icofont-user-suited"></i> Assigned Person{' '}
                     </Link>
                   </li>
                 </>
               )}
-              {authorities &&
-                authorities.Is_Cancle_Bill === true &&
-                row.is_active === 1 && (
-                  <li>
-                    <button
-                      className="btn btn-sm btn-danger text-white"
-                      onClick={(e) => {
-                        handleCancelBill(e, row.id);
-                      }}
-                      style={{ width: '100%', zIndex: 100 }}
-                    >
-                      <i class="icofont-ui-close"></i> Cancel{' '}
-                    </button>
-                  </li>
-                )}
+              {authorities && authorities.Is_Cancle_Bill === true && (
+                <li>
+                  <button
+                    className="btn btn-sm btn-danger text-white"
+                    onClick={(e) => {
+                      handleCancelBill(e, row.id);
+                    }}
+                    style={{ width: '100%', zIndex: 100 }}
+                  >
+                    <i class="icofont-ui-close"></i> Cancel{' '}
+                  </button>
+                </li>
+              )}
             </Dropdown.Menu>
           </Dropdown>
         );
       }
     },
-
     { name: 'Sr', selector: (row) => row.counter, sortable: true },
     {
       name: 'Bill Id',

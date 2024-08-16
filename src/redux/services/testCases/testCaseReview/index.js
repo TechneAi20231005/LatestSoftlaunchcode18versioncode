@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 
 export const getTestCaseReviewListThunk = createAsyncThunk(
   'testCaseReview/getTestCaseReviewListThunk',
-  async ({ limit, page, filter_testcase_data }) => {
+  async ({ limit, page, filter_testcase_data, type }) => {
     try {
       const response = await customAxios.get(
         `testCases/getCount/getTestDraft`,
@@ -13,7 +13,8 @@ export const getTestCaseReviewListThunk = createAsyncThunk(
           params: {
             limit: limit,
             page: page,
-            filter_testcase_data: JSON.stringify(filter_testcase_data)
+            filter_testcase_data: JSON.stringify(filter_testcase_data),
+            type: type
           }
         }
       );

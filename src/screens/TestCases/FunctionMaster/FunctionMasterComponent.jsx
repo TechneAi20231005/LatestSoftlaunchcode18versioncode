@@ -176,7 +176,7 @@ function FunctionMasterComponent() {
             name="interview_search"
             value={searchValue}
             onChange={(e) => setSearchValue(e?.target?.value)}
-            placeholder="Enter review comment..."
+            placeholder="Search function here..."
             className="form-control"
           />
         </Col>
