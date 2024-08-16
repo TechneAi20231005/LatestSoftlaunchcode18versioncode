@@ -1444,6 +1444,13 @@ function BillCheckingTransaction() {
           fixedHeaderScrollHeight="900px"
           className="mt-3"
           highlightOnHover={true}
+          customStyles={{
+            head: {
+              style: {
+                zIndex: 0
+              }
+            }
+          }}
         />
       )}
     </div>
