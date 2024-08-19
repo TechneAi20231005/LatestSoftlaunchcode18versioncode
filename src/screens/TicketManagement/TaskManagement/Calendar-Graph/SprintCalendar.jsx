@@ -299,7 +299,7 @@ const SprintCalendar = () => {
   }, [
     selectedOption,
     daywiseData,
-    taskStatus,
+    // taskStatus,
     currentDaywiseDate,
     weekData,
     isLoading
