@@ -221,12 +221,12 @@ const AuthorityMapping = () => {
       )
     },
 
-    {
-      name: 'Submodule Name',
-      selector: (row) => row.sub_module_name,
-      sortable: true,
-      width: '175px'
-    },
+    // {
+    //   name: 'Submodule Name',
+    //   selector: (row) => row.sub_module_name,
+    //   sortable: true,
+    //   width: '175px'
+    // },
 
     {
       name: ' Updated At ',
@@ -579,7 +579,7 @@ const AuthorityMapping = () => {
                   {error && <div style={{ color: 'red' }}>{error}</div>}
                 </div>
 
-                <div className="col-sm-4 ">
+                {/* <div className="col-sm-4 ">
                   <label className="form-label font-weight-bold">
                     Submodule Name :<Astrick color="red" size="13px" />
                   </label>
@@ -621,7 +621,7 @@ const AuthorityMapping = () => {
                       />
                     </>
                   )}
-                </div>
+                </div> */}
               </div>
 
               <table

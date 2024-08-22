@@ -1297,7 +1297,9 @@ function VendorMaster({ match }) {
   const handleEmail = (e) => {
     const email = e.target.value;
     const emailRegex =
-      /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
+      // /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
+      /^([a-zA-Z\d\.-]+)@([a-zA-Z\d-]+)\.([a-zA-Z]{2,8})(\.[a-zA-Z]{2,8})?$/;
+
     if (email === '') {
       setEmailError('');
       setMailError(false);
