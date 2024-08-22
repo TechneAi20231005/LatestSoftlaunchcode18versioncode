@@ -1,92 +1,141 @@
-// 
+//
 
-
-import axios from "axios";
-import { consolidateViewUrl, projectManagementUrl} from "../../settings/constants";
-import {userSessionData} from '../../settings/constants';
+import axios from 'axios';
+import {
+  consolidateViewUrl,
+  projectManagementUrl
+} from '../../settings/constants';
+import { userSessionData } from '../../settings/constants';
 
 // const _URL =reportUrl.consolidatedView
-// const _getConsolidatedView =_URL+"/ConsolidatedView/"+userSessionData.tenantId;    
-const URL = projectManagementUrl.consolidateViewUrl
-export default class ConsolidatedService{
+// const _getConsolidatedView =_URL+"/ConsolidatedView/"+userSessionData.tenantId;
+const URL = projectManagementUrl.consolidateViewUrl;
+export default class ConsolidatedService {
+  getConsolidatedView() {
+    const token = localStorage.getItem('jwt_token');
 
-    getConsolidatedView(){
-        const token = localStorage.getItem("jwt_token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+    return axios.get(
+      consolidateViewUrl.consolidateViewUrl + '/getProjects',
+      config
+    );
+  }
 
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
-        return axios.get(consolidateViewUrl.consolidateViewUrl+"/getProjects",config)    
-    }   
+  getProjectsModules(project_id, module_id) {
+    const token = localStorage.getItem('jwt_token');
 
-    getProjectsModules(project_id,module_id){
-        const token = localStorage.getItem("jwt_token");
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
 
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
-        return axios.get(consolidateViewUrl.consolidateViewUrl+"/getProjectsModules/"+project_id+"/"+module_id,config)    
-    }   
+    // let url = `${consolidateViewUrl.consolidateViewUrl}/getProjectsModules/${project_id}`;
 
-    getTicketData(project_id,type){    
-        const token = localStorage.getItem("jwt_token");
+    // if (module_id) {
+    //   url += `/${module_id}`;
+    // }
 
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
-        return axios.get(consolidateViewUrl.consolidateViewUrl+"/getTicketData/"+project_id+"/"+type,config)
-    } 
-    
-    
-    getModulesTicketData(project_id,module_id,type){    
-        const token = localStorage.getItem("jwt_token");
+    // return axios.get(url, config);
+    return axios.get(
+      consolidateViewUrl.consolidateViewUrl +
+        '/getProjectsModules/' +
+        project_id +
+        '/' +
+        module_id,
+      config
+    );
+  }
 
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
-        return axios.get(consolidateViewUrl.consolidateViewUrl+"/getModulesTicketData/"+project_id+"/"+module_id+"/"+type,config)  
-    }
-    getModulesTaskData(project_id,module_id,type){   
-        const token = localStorage.getItem("jwt_token");
+  getTicketData(project_id, type) {
+    const token = localStorage.getItem('jwt_token');
 
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        }; 
-        return axios.get(consolidateViewUrl.consolidateViewUrl+"/getModulesTaskData/"+project_id+"/"+module_id+"/"+type,config)
-    }
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+    return axios.get(
+      consolidateViewUrl.consolidateViewUrl +
+        '/getTicketData/' +
+        project_id +
+        '/' +
+        type,
+      config
+    );
+  }
 
-    getTaskData(project_id,type){    
-        const token = localStorage.getItem("jwt_token");
+  getModulesTicketData(project_id, module_id, type) {
+    const token = localStorage.getItem('jwt_token');
 
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+    return axios.get(
+      consolidateViewUrl.consolidateViewUrl +
+        '/getModulesTicketData/' +
+        project_id +
+        '/' +
+        module_id +
+        '/' +
+        type,
+      config
+    );
+  }
+  getModulesTaskData(project_id, module_id, type) {
+    const token = localStorage.getItem('jwt_token');
 
-        return axios.get(consolidateViewUrl.consolidateViewUrl+"/getTaskData/"+project_id+"/"+type,config)
-    }
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+    return axios.get(
+      consolidateViewUrl.consolidateViewUrl +
+        '/getModulesTaskData/' +
+        project_id +
+        '/' +
+        module_id +
+        '/' +
+        type,
+      config
+    );
+  }
 
+  getTaskData(project_id, type) {
+    const token = localStorage.getItem('jwt_token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+
+    return axios.get(
+      consolidateViewUrl.consolidateViewUrl +
+        '/getTaskData/' +
+        project_id +
+        '/' +
+        type,
+      config
+    );
+  }
 }
