@@ -37,14 +37,6 @@ export default class ConsolidatedService {
         'Content-Type': 'application/json'
       }
     };
-
-    // let url = `${consolidateViewUrl.consolidateViewUrl}/getProjectsModules/${project_id}`;
-
-    // if (module_id) {
-    //   url += `/${module_id}`;
-    // }
-
-    // return axios.get(url, config);
     return axios.get(
       consolidateViewUrl.consolidateViewUrl +
         '/getProjectsModules/' +

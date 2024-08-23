@@ -10,13 +10,17 @@ const ProjectWiseModuleHistory = ({ match }) => {
   const [data, setData] = useState();
 
   const columns = [
-    { name: 'Sr', selector: (row) => row.counter, sortable: true },
+    {
+      name: 'Sr',
+      width: '80px',
+      selector: (row) => row.counter,
+      sortable: true
+    },
 
     {
       name: 'Document Name',
       selector: (row) => row.document_attachment,
       sortable: true,
-      width: '250px',
       cell: (row) => {
         let file = row.document_attachment;
         let splittedName = file ? file.split('/') : '';
@@ -60,6 +64,83 @@ const ProjectWiseModuleHistory = ({ match }) => {
     },
 
     {
+      name: 'Status',
+      selector: (row) => row.is_active,
+      sortable: true,
+      width: '150px',
+      cell: (row) => (
+        <div>
+          {row.is_active === 1 && (
+            <span className="badge bg-primary" style={{ width: '4rem' }}>
+              Active
+            </span>
+          )}
+          {row.is_active === 0 && (
+            <span className="badge bg-danger" style={{ width: '4rem' }}>
+              Deactive
+            </span>
+          )}
+        </div>
+      ),
+      conditionalCellStyles: [
+        {
+          when: (row) =>
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes('is_active'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      name: ' Host Name',
+      selector: (row) => row.ip_address,
+      sortable: true,
+      conditionalCellStyles: [
+        {
+          when: (row) =>
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes('ip_address'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      name: ' Updated By',
+      selector: (row) => row.updated_by,
+      sortable: true,
+      conditionalCellStyles: [
+        {
+          when: (row) =>
+            row.changes &&
+            row.changes.length > 1 &&
+            row.changes.includes('updated_by'),
+          style: {
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
+    },
+    {
       name: ' Updated At',
       selector: (row) => row.updated_at,
       sortable: true,
@@ -79,16 +160,17 @@ const ProjectWiseModuleHistory = ({ match }) => {
         }
       ]
     },
+
     {
-      name: ' Updated By',
-      selector: (row) => row.updated_by,
+      name: ' Deleted By',
+      selector: (row) => row.deleted_by,
       sortable: true,
       conditionalCellStyles: [
         {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes('updated_by'),
+            row.changes.includes('deleted_by'),
           style: {
             color: 'red',
             fontWeight: 'bold',
@@ -118,26 +200,6 @@ const ProjectWiseModuleHistory = ({ match }) => {
           }
         }
       ]
-    },
-    {
-      name: ' Deleted By',
-      selector: (row) => row.deleted_by,
-      sortable: true,
-      conditionalCellStyles: [
-        {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes('deleted_by'),
-          style: {
-            color: 'red',
-            fontWeight: 'bold',
-            '&:hover': {
-              cursor: 'pointer'
-            }
-          }
-        }
-      ]
     }
   ];
 
@@ -148,12 +210,13 @@ const ProjectWiseModuleHistory = ({ match }) => {
           let counter = 1;
           const tempData = [];
           const temp = res.data.data;
-          console.log('temp', temp);
           for (const key in temp) {
             tempData.push({
               counter: counter++,
               id: temp[key].id,
               document_attachment: temp[key].document_attachment,
+              is_active: temp[key].is_active,
+              ip_address: temp[key].ip_address,
               updated_at: temp[key].updated_at,
               updated_by: temp[key].updated_by,
               deleted_at: temp[key].deleted_at,

@@ -103,12 +103,7 @@ export default class SubModuleService {
         'Content-Type': 'application/json'
       }
     };
-    // let url = `${_getSubModuleDocumentById}/${projectId}/${type}`;
 
-    // if (moduleId && subModuleId) {
-    //   url += `/${moduleId}/${subModuleId}`;
-    // }
-    // return axios.get(url, config);
     return axios.get(
       `${_getSubModuleDocumentById}/${projectId}/${moduleId}/${type}/${subModuleId}`,
       config

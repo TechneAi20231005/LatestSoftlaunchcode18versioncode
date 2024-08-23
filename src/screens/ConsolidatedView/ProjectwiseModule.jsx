@@ -17,7 +17,6 @@ export default function ProjectwiseModule() {
   const params = useParams();
   const { projectId, moduleId } = params;
 
-  console.log('module', moduleId);
   const location = useLocation();
   const [data, setData] = useState(null);
   const [isProjectOwner, setIsProjectOwner] = useState(null);
@@ -57,7 +56,6 @@ export default function ProjectwiseModule() {
 
   const loadData = async () => {
     const userId = sessionStorage.getItem('id');
-    console.log('ModuleID', ModuleID);
     await new ConsolidatedService()
       .getProjectsModules(projectId, ModuleID)
       .then((res) => {
@@ -249,7 +247,6 @@ export default function ProjectwiseModule() {
     const form = new FormData(e.target);
     form.append('submodule_id', subModuleValue ? subModuleValue : '');
     form.append('show_to_all', 1);
-    console.log('form', subModuleValue ? subModuleValue : null);
     await new SubModuleService().postSubModuleDocument(form).then((res) => {
       if (res?.data?.status === 1) {
         setNotify({ type: 'success', message: res?.data?.message });
@@ -447,10 +444,8 @@ export default function ProjectwiseModule() {
               title="History"
             >
               <Link
-                // to={`/${_base}/ConsolidatedView/ProjectwiseModule/${projectId}/${ModuleID}/${row.id}`}
                 to={`/${_base}/ProjectWiseModuleHistory/${row.id}`}
                 ProjectWiseModuleHistory
-                // to={`/${_base}/EditBillCheckingTransaction/` + row.id}
               >
                 <i className="icofont-history btn btn-sm btn-info text-white"></i>
               </Link>
@@ -487,7 +482,6 @@ export default function ProjectwiseModule() {
       cell: (row) => {
         let file = row.document_attachment;
         let splittedName = file.split('/');
-        // setFileName(splittedName[splittedName.length - 1]);
         return <p className="mb-0">{splittedName[splittedName.length - 1]}</p>;
       }
     },
@@ -925,7 +919,6 @@ export default function ProjectwiseModule() {
               >
                 3) Please Select Module or Submodule to Filter The Documents
               </span>
-              {console.log('docList', docList)}
               <DataTable
                 columns={columns}
                 data={docList}
