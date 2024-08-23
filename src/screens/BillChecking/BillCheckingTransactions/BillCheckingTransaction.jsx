@@ -1093,9 +1093,9 @@ function BillCheckingTransaction() {
   useEffect(() => {
     loadData();
 
-    if (location && location.state) {
-      setNotify(location.state.alert);
-    }
+    // if (location && location.state) {
+    //   setNotify(location.state.alert);
+    // }
   }, []);
 
   useEffect(() => {

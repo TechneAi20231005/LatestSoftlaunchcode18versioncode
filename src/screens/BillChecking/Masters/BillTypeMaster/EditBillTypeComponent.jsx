@@ -10,6 +10,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import Alert from '../../../../components/Common/Alert';
 import { _base } from '../../../../settings/constants';
 import './styles.css'; // Import your CSS file
+import { toast } from 'react-toastify';
 
 const EditBillTypeComponent = ({ match }) => {
   const history = useNavigate();
@@ -587,6 +588,9 @@ const EditBillTypeComponent = ({ match }) => {
 
       if (res.status === 200) {
         if (res.data.status === 1) {
+          toast.success(res.data.message, {
+            position: 'top-right'
+          });
           history(
             {
               pathname: `/${_base}/billTypeMaster`,
@@ -595,7 +599,10 @@ const EditBillTypeComponent = ({ match }) => {
             { state: { alert: { type: 'success', message: res.data.message } } }
           );
         } else {
-          setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message, {
+            position: 'top-right'
+          });
+          // setNotify({ type: 'danger', message: res.data.message });
         }
       }
     } catch (error) {

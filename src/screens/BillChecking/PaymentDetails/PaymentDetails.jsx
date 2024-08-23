@@ -22,6 +22,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { PaymentDetailsSilce } from './PaymentDetailsSlice';
 import { getPaymentDetails } from './PaymentDetailsAction';
+import { toast } from 'react-toastify';
 
 function PaymentDetails({ location, match }) {
   const { id } = useParams();
@@ -29,7 +30,8 @@ function PaymentDetails({ location, match }) {
 
   const dispatch = useDispatch();
   const getPaymentDetailsData = useSelector(
-    PaymentDetailsSilce => PaymentDetailsSilce.paymentDetails.paymentDetailsData,
+    (PaymentDetailsSilce) =>
+      PaymentDetailsSilce.paymentDetails.paymentDetailsData
   );
 
   useEffect(() => {
@@ -47,11 +49,11 @@ function PaymentDetails({ location, match }) {
   const [modal, setModal] = useState({
     showModal: false,
     modalData: '',
-    modalHeader: '',
+    modalHeader: ''
   });
   const [deta, setDeta] = useState();
 
-  const handleModal = data => {
+  const handleModal = (data) => {
     setModal(data);
   };
   const statusDropdownRef = useRef();
@@ -60,9 +62,12 @@ function PaymentDetails({ location, match }) {
   function searchInData(data, search) {
     const lowercaseSearch = search.toLowerCase();
 
-    return data.filter(d => {
+    return data.filter((d) => {
       for (const key in d) {
-        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
+        if (
+          typeof d[key] === 'string' &&
+          d[key].toLowerCase().includes(lowercaseSearch)
+        ) {
           return true;
         }
       }
@@ -73,7 +78,7 @@ function PaymentDetails({ location, match }) {
   const [searchTerm, setSearchTerm] = useState('');
 
   const [filteredData, setFilteredData] = useState([]);
-  const handleSearch = value => {};
+  const handleSearch = (value) => {};
 
   let formattedMaxDate;
   const paymentDateStr = modal.modalData.payment_date;
@@ -103,67 +108,71 @@ function PaymentDetails({ location, match }) {
     dispatch(getPaymentDetails(id, userId));
     const data = [];
     const ExportTempData = [];
-    await new PaymentDetailsService().getPaymentDetails(id, userId).then(res => {
-      if (res.status === 200) {
-        let counter = 1;
+    await new PaymentDetailsService()
+      .getPaymentDetails(id, userId)
+      .then((res) => {
+        if (res.status === 200) {
+          let counter = 1;
 
-        const temp = res.data.data;
+          const temp = res.data.data;
 
-        for (const key in temp) {
-          data.push({
-            counter: counter++,
-            id: temp[key].id,
-            amount_to_be_paid: temp[key].amount_to_be_paid,
-            payment_status_name: temp[key].payment_status_name,
-            payment_date: temp[key].payment_date,
-            remark: temp[key].remark,
-            actual_payment_date: temp[key].actual_payment_date,
-            payment_ref_number: temp[key].payment_ref_number,
-            payment_reference_number: temp[key].payment_reference_number,
-            payment_status: temp[key].payment_status,
-            created_at: temp[key].created_at,
-            created_by: temp[key].created_by,
-            updated_by: temp[key].updated_by,
-            bill_date: temp[key].bill_date,
-          });
+          for (const key in temp) {
+            data.push({
+              counter: counter++,
+              id: temp[key].id,
+              amount_to_be_paid: temp[key].amount_to_be_paid,
+              payment_status_name: temp[key].payment_status_name,
+              payment_date: temp[key].payment_date,
+              remark: temp[key].remark,
+              actual_payment_date: temp[key].actual_payment_date,
+              payment_ref_number: temp[key].payment_ref_number,
+              payment_reference_number: temp[key].payment_reference_number,
+              payment_status: temp[key].payment_status,
+              created_at: temp[key].created_at,
+              created_by: temp[key].created_by,
+              updated_by: temp[key].updated_by,
+              bill_date: temp[key].bill_date
+            });
+          }
+          setData(null);
+          setData(data);
+          setDeta(res.data.access);
+
+          for (const key in temp) {
+            ExportTempData.push({
+              sr_no: ExportTempData.length + 1,
+              bill_id: temp[key].bc_id,
+              amount_to_be_paid: temp[key].amount_to_be_paid,
+              payment_status_name: temp[key].payment_status_name,
+              payment_date: temp[key].payment_date,
+              remark: temp[key].remark,
+              actual_payment_date: temp[key].actual_payment_date,
+              payment_reference_number: temp[key].payment_reference_number
+            });
+          }
+          setExportData(ExportTempData);
         }
-        setData(null);
-        setData(data);
-        setDeta(res.data.access);
+      });
 
-        for (const key in temp) {
-          ExportTempData.push({
-            sr_no: ExportTempData.length + 1,
-            bill_id: temp[key].bc_id,
-            amount_to_be_paid: temp[key].amount_to_be_paid,
-            payment_status_name: temp[key].payment_status_name,
-            payment_date: temp[key].payment_date,
-            remark: temp[key].remark,
-            actual_payment_date: temp[key].actual_payment_date,
-            payment_reference_number: temp[key].payment_reference_number,
-          });
+    await new BillCheckingTransactionService()
+      .getUpdatedAuthorities()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status) {
+            const a = res.data.data;
+            SetAuthorities(res.data.data);
+          }
         }
-        setExportData(ExportTempData);
-      }
-    });
+      });
 
-    await new BillCheckingTransactionService().getUpdatedAuthorities().then(res => {
-      if (res.status === 200) {
-        if (res.data.status) {
-          const a = res.data.data;
-          SetAuthorities(res.data.data);
-        }
-      }
-    });
-
-    await new DropdownService().getDropdown().then(res => {
+    await new DropdownService().getDropdown().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           setStatusDropDown(
-            res.data.data.map(d => ({
+            res.data.data.map((d) => ({
               value: d.id,
-              label: d.convention_name,
-            })),
+              label: d.convention_name
+            }))
           );
         }
       }
@@ -173,21 +182,25 @@ function PaymentDetails({ location, match }) {
   const columns = [
     {
       name: 'Action',
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
-      cell: row => (
+      cell: (row) => (
         <span>
           {row.payment_status_name === 'Paid' ? (
             <button
               type="button"
               className="btn btn-sm btn-info "
               data-bs-toggle="modal"
-              disabled={authorities && authorities.Allow_Paid_Entry_Change === false ? true : false}
-              onClick={e => {
+              disabled={
+                authorities && authorities.Allow_Paid_Entry_Change === false
+                  ? true
+                  : false
+              }
+              onClick={(e) => {
                 handleModal({
                   showModal: true,
                   modalData: row,
-                  modalHeader: 'Edit Payment Details',
+                  modalHeader: 'Edit Payment Details'
                 });
               }}
               data-bs-target="#depedit"
@@ -210,11 +223,11 @@ function PaymentDetails({ location, match }) {
                   ? true
                   : false
               }
-              onClick={e => {
+              onClick={(e) => {
                 handleModal({
                   showModal: true,
                   modalData: row,
-                  modalHeader: 'Edit Payment Details',
+                  modalHeader: 'Edit Payment Details'
                 });
               }}
               data-bs-target="#depedit"
@@ -224,36 +237,36 @@ function PaymentDetails({ location, match }) {
             </button>
           )}
         </span>
-      ),
+      )
     },
 
-    { name: 'Sr No', selector: row => row.counter, sortable: true },
+    { name: 'Sr No', selector: (row) => row.counter, sortable: true },
     {
       name: 'Amount To Be Paid',
-      selector: row => row.amount_to_be_paid,
-      sortable: true,
+      selector: (row) => row.amount_to_be_paid,
+      sortable: true
     },
     {
       name: 'Status',
-      selector: row => row.payment_status_name,
-      sortable: true,
+      selector: (row) => row.payment_status_name,
+      sortable: true
     },
     {
       name: 'Payment Date',
-      selector: row => row.payment_date,
-      sortable: true,
+      selector: (row) => row.payment_date,
+      sortable: true
     },
-    { name: 'Remark', selector: row => row.remark, sortable: true },
+    { name: 'Remark', selector: (row) => row.remark, sortable: true },
     {
       name: 'Actual Payment Date.',
-      selector: row => row.actual_payment_date,
-      sortable: true,
+      selector: (row) => row.actual_payment_date,
+      sortable: true
     },
     {
       name: 'Payment Ref No.',
-      selector: row => row.payment_reference_number,
-      sortable: true,
-    },
+      selector: (row) => row.payment_reference_number,
+      sortable: true
+    }
   ];
 
   const [statusDropDown, setStatusDropDown] = useState();
@@ -261,16 +274,16 @@ function PaymentDetails({ location, match }) {
   const [importModal, setImportModal] = useState({
     ishowModal: false,
     imodalData: '',
-    imodalHeader: '',
+    imodalHeader: ''
   });
 
-  const handleImportModal = data => {
+  const handleImportModal = (data) => {
     setImportModal(data);
   };
 
-  const handleForm = async e => {
+  const handleForm = async (e) => {
     e.preventDefault();
-    var a = statusDropdownRef.current.getValue().map(d => d.value);
+    var a = statusDropdownRef.current.getValue().map((d) => d.value);
     const form = new FormData(e.target);
 
     if (!form.has('payment_status')) {
@@ -284,44 +297,57 @@ function PaymentDetails({ location, match }) {
     // if (!id) {
     await new PaymentDetailsService()
       .updatePaymentDetails(form)
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
-            setNotify({ type: 'success', message: res.data.message });
+            // setNotify({ type: 'success', message: res.data.message });
+            toast.success(res.data.message, {
+              position: 'top-right'
+            });
             setModal({ showModal: false, modalData: '', modalHeader: '' });
             loadData();
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            // setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message, {
+              position: 'top-right'
+            });
           }
         } else {
-          setNotify({ type: 'danger', message: res.data.message });
+          // setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message, {
+            position: 'top-right'
+          });
           new ErrorLogService().sendErrorLog(
             'Payment_template',
             'Create_Payment_template',
             'INSERT',
-            res.message,
+            res.message
           );
         }
       })
-      .catch(error => {
+      .catch((error) => {
         const { response } = error;
         const { request, ...errorObject } = response;
-        setNotify({ type: 'danger', message: 'Request Error !!!' });
+        // setNotify({ type: 'danger', message: 'Request Error !!!' });
+        toast.error('Request Error !!!', {
+          position: 'top-right'
+        });
+
         new ErrorLogService().sendErrorLog(
           'Payment_template',
           'Create_Payment_template',
           'INSERT',
-          errorObject.data.message,
+          errorObject.data.message
         );
       });
   };
 
   useEffect(() => {
     loadData();
-    if (location && location.state) {
-      setNotify(location.state.alert);
-    }
-    setNotify(null);
+    // if (location && location.state) {
+    //   setNotify(location.state.alert);
+    // }
+    // setNotify(null);
   }, []);
 
   return (
@@ -337,7 +363,7 @@ function PaymentDetails({ location, match }) {
               className="form-control"
               placeholder="Search...."
               ref={searchRef}
-              onChange={e => setSearchTerm(e.target.value)}
+              onChange={(e) => setSearchTerm(e.target.value)}
             />
           </div>
           <div className="col-md-2">
@@ -374,18 +400,27 @@ function PaymentDetails({ location, match }) {
               {data && (
                 <DataTable
                   columns={columns}
-                  data={getPaymentDetailsData.filter(customer => {
+                  data={getPaymentDetailsData.filter((customer) => {
                     if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string' || typeof customer === 'number') {
+                      if (
+                        typeof customer === 'string' ||
+                        typeof customer === 'number'
+                      ) {
                         // Convert numbers to strings and check if it includes the searchTerm
                         const customerString = customer.toString();
-                        return customerString.includes(searchTerm.toLowerCase());
+                        return customerString.includes(
+                          searchTerm.toLowerCase()
+                        );
                       } else if (typeof customer === 'object') {
                         // If customer is an object, check if any string or number value within the object includes the searchTerm
                         const found = Object.values(customer).some(
-                          value =>
-                            (typeof value === 'string' || typeof value === 'number') &&
-                            value.toString().toLowerCase().includes(searchTerm.toLowerCase()),
+                          (value) =>
+                            (typeof value === 'string' ||
+                              typeof value === 'number') &&
+                            value
+                              .toString()
+                              .toLowerCase()
+                              .includes(searchTerm.toLowerCase())
                         );
                         return found;
                       }
@@ -409,17 +444,19 @@ function PaymentDetails({ location, match }) {
         centered
         show={modal.showModal}
         size="lg"
-        onHide={e => {
+        onHide={(e) => {
           handleModal({
             showModal: false,
             modalData: '',
-            modalHeader: '',
+            modalHeader: ''
           });
         }}
       >
         <form
           method="post"
-          onSubmit={e => handleForm(e, modal.modalData ? modal.modalData.id : '')}
+          onSubmit={(e) =>
+            handleForm(e, modal.modalData ? modal.modalData.id : '')
+          }
         >
           <Modal.Header closeButton>
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
@@ -427,7 +464,12 @@ function PaymentDetails({ location, match }) {
           {deta && (
             <Modal.Body>
               <div className="deadline-form">
-                <input type="hidden" name="id" id="id" defaultValue={modal.modalData.id} />
+                <input
+                  type="hidden"
+                  name="id"
+                  id="id"
+                  defaultValue={modal.modalData.id}
+                />
 
                 <div className="row g-3 mb-3">
                   <div className="col-sm-3 mt-4">
@@ -441,7 +483,7 @@ function PaymentDetails({ location, match }) {
                       id="amount_to_be_paid"
                       name="amount_to_be_paid"
                       maxLength={13}
-                      onKeyPress={e => {
+                      onKeyPress={(e) => {
                         const allowedKeys = [
                           '0',
                           '1',
@@ -454,7 +496,7 @@ function PaymentDetails({ location, match }) {
                           '8',
                           '9',
                           '.',
-                          'Backspace',
+                          'Backspace'
                         ];
                         const inputValue = e.key;
 
@@ -469,7 +511,10 @@ function PaymentDetails({ location, match }) {
                           e.preventDefault(); // Prevent entering more than one decimal point
                         }
 
-                        if (decimalIndex !== -1 && currentInput.length - decimalIndex > 2) {
+                        if (
+                          decimalIndex !== -1 &&
+                          currentInput.length - decimalIndex > 2
+                        ) {
                           e.preventDefault(); // Prevent more than two decimal places
                         }
 
@@ -482,15 +527,19 @@ function PaymentDetails({ location, match }) {
                         }
                       }}
                       readOnly={
-                        (modal.modalData && modal.modalData.payment_status == 15) ||
+                        (modal.modalData &&
+                          modal.modalData.payment_status == 15) ||
                         (authorities &&
                           authorities.Update_Payment_Details === false &&
                           authorities.Payment_Status_Release === true) ||
-                        (authorities && authorities.Prepone_Payment_Date === true)
+                        (authorities &&
+                          authorities.Prepone_Payment_Date === true)
                           ? true
                           : false
                       }
-                      defaultValue={modal.modalData ? modal.modalData.amount_to_be_paid : ''}
+                      defaultValue={
+                        modal.modalData ? modal.modalData.amount_to_be_paid : ''
+                      }
                     />
                   </div>
 
@@ -506,8 +555,11 @@ function PaymentDetails({ location, match }) {
                           name="payment_status"
                           type="hidden"
                           options={
-                            authorities && authorities.Payment_Status_Release === true
-                              ? statusDropDown.filter(option => option.value === 17)
+                            authorities &&
+                            authorities.Payment_Status_Release === true
+                              ? statusDropDown.filter(
+                                  (option) => option.value === 17
+                                )
                               : statusDropDown
                           }
                           ref={statusDropdownRef}
@@ -543,7 +595,9 @@ function PaymentDetails({ location, match }) {
                           required={true}
                           defaultValue={
                             modal.modalData &&
-                            statusDropDown.find(d => d.value == modal.modalData.payment_status)
+                            statusDropDown.find(
+                              (d) => d.value == modal.modalData.payment_status
+                            )
                           }
                         />
                       )}
@@ -555,7 +609,8 @@ function PaymentDetails({ location, match }) {
                       Payment Date : <Astrick color="red" size="13px" />
                     </label>
 
-                    {authorities && authorities.Prepone_Payment_Date === true ? (
+                    {authorities &&
+                    authorities.Prepone_Payment_Date === true ? (
                       <input
                         type="date"
                         className="form-control"
@@ -563,9 +618,14 @@ function PaymentDetails({ location, match }) {
                         name="payment_date"
                         required={true}
                         readOnly={
-                          authorities && authorities.Payment_Status_Release === true ? true : false
+                          authorities &&
+                          authorities.Payment_Status_Release === true
+                            ? true
+                            : false
                         }
-                        defaultValue={modal.modalData ? modal.modalData.payment_date : ''}
+                        defaultValue={
+                          modal.modalData ? modal.modalData.payment_date : ''
+                        }
                         max={formattedMaxDate && formattedMaxDate}
                         min={
                           modal.modalData.payment_status_name === 'Paid'
@@ -580,10 +640,15 @@ function PaymentDetails({ location, match }) {
                         id="payment_date"
                         name="payment_date"
                         readOnly={
-                          authorities && authorities.Payment_Status_Release === true ? true : false
+                          authorities &&
+                          authorities.Payment_Status_Release === true
+                            ? true
+                            : false
                         }
                         required={true}
-                        defaultValue={modal.modalData ? modal.modalData.payment_date : ''}
+                        defaultValue={
+                          modal.modalData ? modal.modalData.payment_date : ''
+                        }
                         min={modal.modalData.payment_date}
                         max={formattedMaxDate && formattedMaxDate}
                       />
@@ -625,7 +690,7 @@ function PaymentDetails({ location, match }) {
                 handleModal({
                   showModal: false,
                   modalData: '',
-                  modalHeader: '',
+                  modalHeader: ''
                 });
               }}
             >
@@ -639,11 +704,11 @@ function PaymentDetails({ location, match }) {
         centered
         show={importModal.ishowModal}
         size="sm"
-        onHide={e => {
+        onHide={(e) => {
           handleImportModal({
             ishowModal: false,
             imodalData: '',
-            imodalHeader: '',
+            imodalHeader: ''
           });
         }}
       >
@@ -658,7 +723,12 @@ function PaymentDetails({ location, match }) {
               <label className="col-form-label">
                 <b>Upload Excel/CSV File :</b>
               </label>
-              <input type="file" name="attachment" id="attachment" className="form-control"></input>
+              <input
+                type="file"
+                name="attachment"
+                id="attachment"
+                className="form-control"
+              ></input>
             </div>
           </Modal.Body>
           <Modal.Footer className="justify-content-center">

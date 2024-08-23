@@ -10,6 +10,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import Alert from '../../../../components/Common/Alert';
 import { _base } from '../../../../settings/constants';
 import './styles.css'; // Import your CSS file
+import { toast } from 'react-toastify';
 
 const CreateBillTypeComponent = () => {
   const history = useNavigate();
@@ -506,18 +507,24 @@ const CreateBillTypeComponent = () => {
 
         if (res.status === 200) {
           if (res.data.status === 1) {
+            toast.success(res.data.message, {
+              position: 'top-right'
+            });
             history(
               {
                 pathname: `/${_base}/billTypeMaster`
-              },
-              {
-                state: {
-                  alert: { type: 'success', message: res.data.message }
-                }
               }
+              // {
+              //   state: {
+              //     alert: { type: 'success', message: res.data.message }
+              //   }
+              // }
             );
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            // setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message, {
+              position: 'top-right'
+            });
           }
         }
       } catch (error) {
@@ -751,8 +758,6 @@ const CreateBillTypeComponent = () => {
                         </td>
 
                         <td>
-
-                       
                           <input
                             type="number"
                             disabled={
@@ -764,7 +769,6 @@ const CreateBillTypeComponent = () => {
                             max={
                               approverData.data[index].level[rowIndex]
                                 .required_users?.length || 0
-
                             }
                             onKeyPress={(e) => {
                               Validation.RequiredNumbersOnly(e);
