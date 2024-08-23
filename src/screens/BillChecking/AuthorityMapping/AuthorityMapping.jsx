@@ -434,7 +434,7 @@ const AuthorityMapping = () => {
       }
 
       dispatch(creteAuthority(mainJson));
-      loadData();
+      // loadData();
 
       function findOverlappingUserDetails(userDetails) {
         const overlappingRanges = [];

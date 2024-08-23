@@ -290,14 +290,12 @@ function BillTypeMaster() {
 
   useEffect(() => {
     // Check if the message has been displayed before
-
-    if (location && location.state) {
-      // Display the message
-      setNotify(location.state.alert);
-
-      // Mark that the message has been displayed
-    }
-  }, [location]);
+    // if (location && location.state) {
+    //   // Display the message
+    //   setNotify(location.state.alert);
+    //   // Mark that the message has been displayed
+    // }
+  }, []);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {

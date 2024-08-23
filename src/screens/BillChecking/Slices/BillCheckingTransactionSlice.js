@@ -16,6 +16,7 @@ import {
   statusDropDownData,
   updateAuthority
 } from './BillCheckingTransactionAction';
+import { toast } from 'react-toastify';
 
 const initialState = {
   status: '',
@@ -34,7 +35,7 @@ const initialState = {
   exportModuleData: [],
   getModuleSettingData: [],
   creteAuthority: [],
-  notify: '',
+  notify: null,
   modal: {
     showModal: false,
     modalData: '',
@@ -54,6 +55,9 @@ export const BillCheckingTransactionSlice = createSlice({
     },
     handleModalClose: (state, action) => {
       state.modal = action.payload;
+    },
+    hideNotification(state) {
+      state.notify = false;
     }
   },
   extraReducers: (builder) => {
@@ -538,11 +542,17 @@ export const BillCheckingTransactionSlice = createSlice({
       state.notify = null;
     });
     builder.addCase(creteAuthority.fulfilled, (state, action) => {
+      state.notify = null;
+
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let creteAuthority = payload.data.data;
-        state.notify = { type: 'success', message: payload.data.message };
+
+        // state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message, {
+          position: 'top-right'
+        });
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
 
         state.status = 'succeded';
@@ -553,6 +563,8 @@ export const BillCheckingTransactionSlice = createSlice({
     });
     builder.addCase(creteAuthority.rejected, (state) => {
       state.status = 'rejected';
+
+      state.notify = null;
     });
 
     //_________________________updateAuthority___________________
@@ -563,9 +575,11 @@ export const BillCheckingTransactionSlice = createSlice({
     });
     builder.addCase(updateAuthority.fulfilled, (state, action) => {
       const { payload } = action;
+      state.notify = null;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let updateAuthority = payload.data.data;
+
         state.notify = { type: 'success', message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
 
@@ -577,10 +591,11 @@ export const BillCheckingTransactionSlice = createSlice({
     });
     builder.addCase(updateAuthority.rejected, (state) => {
       state.status = 'rejected';
+      state.notify = null;
     });
   }
 });
 
-export const { handleModalOpen, handleModalClose } =
+export const { handleModalOpen, handleModalClose, hideNotification } =
   BillCheckingTransactionSlice.actions;
 export default BillCheckingTransactionSlice.reducer;

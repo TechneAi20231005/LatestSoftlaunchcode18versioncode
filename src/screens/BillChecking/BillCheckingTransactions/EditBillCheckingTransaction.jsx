@@ -28,6 +28,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '@testing-library/react';
 import { getAllRoles } from '../../Dashboard/DashboardAction';
+import { toast } from 'react-toastify';
 
 const secretKey = 'rushikesh';
 
@@ -558,6 +559,9 @@ export default function CreateBillCheckingTransaction({ match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
+            toast.success(res.data.message, {
+              position: 'top-right'
+            });
             history(
               {
                 pathname: `/${_base}/BillCheckingTransaction`
@@ -568,13 +572,20 @@ export default function CreateBillCheckingTransaction({ match }) {
                 }
               }
             );
-            setNotify({ type: 'success', message: res.data.message });
+            // setNotify({ type: 'success', message: res.data.message });
+
             loadData();
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            // setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message, {
+              position: 'top-right'
+            });
           }
         } else {
-          setNotify({ type: 'danger', message: res.data.message });
+          // setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message, {
+            position: 'top-right'
+          });
           new ErrorLogService().sendErrorLog(
             'Payment_template',
             'Create_Payment_template',
@@ -586,7 +597,10 @@ export default function CreateBillCheckingTransaction({ match }) {
       .catch((error) => {
         const { response } = error;
         const { request, ...errorObject } = response;
-        setNotify({ type: 'danger', message: 'Request Error !!!' });
+        // setNotify({ type: 'danger', message: 'Request Error !!!' });
+        toast.error('Request Error !!!', {
+          position: 'top-right'
+        });
         new ErrorLogService().sendErrorLog(
           'Payment_template',
           'Create_Payment_template',

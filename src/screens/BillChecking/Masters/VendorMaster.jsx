@@ -32,6 +32,7 @@ import ManageMenuService from '../../../services/MenuManagementService/ManageMen
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { toast } from 'react-toastify';
 
 function VendorMaster({ match }) {
   const [data, setData] = useState([]);
@@ -831,16 +832,25 @@ function VendorMaster({ match }) {
           .then((res) => {
             if (res.status === 200) {
               if (res.data.status === 1) {
-                setNotify({ type: 'success', message: res.data.message });
+                // setNotify({ type: 'success', message: res.data.message });
+                toast.success(res.data.message, {
+                  position: 'top-right'
+                });
                 setModal({ showModal: false, modalData: '', modalHeader: '' });
                 setPanAttachment([]);
                 loadData();
               } else {
-                setError({ type: 'danger', message: res.data.message });
+                // setError({ type: 'danger', message: res.data.message });
+                toast.error(res.data.message, {
+                  position: 'top-right'
+                });
                 setModal({ showModal: true, modalData: '', modalHeader: '' });
               }
             } else {
-              setError({ type: 'danger', message: res.data.message });
+              // setError({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message, {
+                position: 'top-right'
+              });
               setModal({ showModal: true, modalData: '', modalHeader: '' });
 
               new ErrorLogService().sendErrorLog(
@@ -854,7 +864,11 @@ function VendorMaster({ match }) {
           .catch((error) => {
             const { response } = error;
             const { request, ...errorObject } = response;
-            setError({ type: 'danger', message: 'Request Error !!!' });
+            // setError({ type: 'danger', message: 'Request Error !!!' });
+            toast.error('Request Error !!!', {
+              position: 'top-right'
+            });
+
             new ErrorLogService().sendErrorLog(
               'Vendor',
               'Create_Vendor',
@@ -897,14 +911,23 @@ function VendorMaster({ match }) {
           .then((res) => {
             if (res.status === 200) {
               if (res.data.status === 1) {
-                setNotify({ type: 'success', message: res.data.message });
+                // setNotify({ type: 'success', message: res.data.message });
+                toast.success(res.data.message, {
+                  position: 'top-right'
+                });
                 setModal({ showModal: false, modalData: '', modalHeader: '' });
                 loadData();
               } else {
-                setError({ type: 'danger', message: res.data.message });
+                // setError({ type: 'danger', message: res.data.message });
+                toast.error(res.data.message, {
+                  position: 'top-right'
+                });
               }
             } else {
-              setError({ type: 'danger', message: res.data.message });
+              // setError({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message, {
+                position: 'top-right'
+              });
               new ErrorLogService().sendErrorLog(
                 'Vendor',
                 'Create_Vendor',

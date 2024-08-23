@@ -300,7 +300,7 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
             alignItems: 'center',
             padding: '0.4rem',
             backgroundColor:
-              hoveredIndex === option.label
+              hoveredIndex === option?.label
                 ? 'rgba(79, 184, 201, 0.5)'
                 : 'white',
             transition: 'background-color 0.3s'
@@ -310,7 +310,7 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
         >
           <i
             className={
-              openOptions.includes(option.label) && option.options.length > 0
+              openOptions?.includes(option.label) && option.options.length > 0
                 ? 'icofont-rounded-down'
                 : 'icofont-rounded-right'
             }
@@ -399,13 +399,14 @@ function TaskAndTicketTypeMaster(props) {
 
   const [exportData, setExportData] = useState(null);
   // const [isOpen, setIsOpen] = useState(false);
-  const selectedOption = null;
+  // const selectedOption = null;
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [parentTaskName, setParentTaskName] = useState(null);
   const [parentTicketName, setParentTicketName] = useState(null);
+  const [selectedOption, setSelectedOption] = useState(null);
 
   const handleSelect = (label) => {
-    // setSelectedOption(selectedOption === label ? null : label);
+    setSelectedOption(selectedOption === label ? null : label);
     setSelectedOptionId(label);
     closeAllDropdowns();
     setParentTaskName('');
@@ -807,6 +808,7 @@ function TaskAndTicketTypeMaster(props) {
 
   const handleModal = (data) => {
     setModal(data);
+    setSelectedOption(null);
   };
 
   const handleForm = (id) => async (e) => {
@@ -948,6 +950,7 @@ function TaskAndTicketTypeMaster(props) {
                     modalData: '',
                     modalHeader: modalHeader
                   });
+
                   // setSelectedValue(''); // Reset any selected value if needed
                 }}
               >
