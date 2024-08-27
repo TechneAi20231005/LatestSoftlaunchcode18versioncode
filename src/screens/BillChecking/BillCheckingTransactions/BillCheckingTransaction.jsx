@@ -865,7 +865,7 @@ function BillCheckingTransaction() {
         }
         setData(null);
         setData(data);
-        res.data.data.filter((d) => d.id).map((d) => temprory.push(d.id));
+        res?.data?.data?.filter((d) => d.id).map((d) => temprory?.push(d.id));
       }
     });
 
