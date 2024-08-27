@@ -22,6 +22,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { PaymentDetailsSilce } from './PaymentDetailsSlice';
 import { getPaymentDetails } from './PaymentDetailsAction';
+import { toast } from 'react-toastify';
 
 function PaymentDetails({ location, match }) {
   const { id } = useParams();
@@ -299,14 +300,23 @@ function PaymentDetails({ location, match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
-            setNotify({ type: 'success', message: res.data.message });
+            // setNotify({ type: 'success', message: res.data.message });
+            toast.success(res.data.message, {
+              position: 'top-right'
+            });
             setModal({ showModal: false, modalData: '', modalHeader: '' });
             loadData();
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            // setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message, {
+              position: 'top-right'
+            });
           }
         } else {
-          setNotify({ type: 'danger', message: res.data.message });
+          // setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message, {
+            position: 'top-right'
+          });
           new ErrorLogService().sendErrorLog(
             'Payment_template',
             'Create_Payment_template',
@@ -318,7 +328,11 @@ function PaymentDetails({ location, match }) {
       .catch((error) => {
         const { response } = error;
         const { request, ...errorObject } = response;
-        setNotify({ type: 'danger', message: 'Request Error !!!' });
+        // setNotify({ type: 'danger', message: 'Request Error !!!' });
+        toast.error('Request Error !!!', {
+          position: 'top-right'
+        });
+
         new ErrorLogService().sendErrorLog(
           'Payment_template',
           'Create_Payment_template',
@@ -330,10 +344,10 @@ function PaymentDetails({ location, match }) {
 
   useEffect(() => {
     loadData();
-    if (location && location.state) {
-      setNotify(location.state.alert);
-    }
-    setNotify(null);
+    // if (location && location.state) {
+    //   setNotify(location.state.alert);
+    // }
+    // setNotify(null);
   }, []);
 
   return (
@@ -597,7 +611,7 @@ function PaymentDetails({ location, match }) {
                       Payment Date : <Astrick color="red" size="13px" />
                     </label>
 
-                  
+
 
                     {authorities &&
                     authorities.Prepone_Payment_Date === true ? (
