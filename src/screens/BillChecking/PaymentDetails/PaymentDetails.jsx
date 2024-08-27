@@ -596,7 +596,8 @@ function PaymentDetails({ location, match }) {
                     <label className="form-label font-weight-bold">
                       Payment Date : <Astrick color="red" size="13px" />
                     </label>
-                    {console.log('authorities', authorities)}
+
+                  
 
                     {authorities &&
                     authorities.Prepone_Payment_Date === true ? (
