@@ -70,7 +70,6 @@ function CreateUserComponent({ match }) {
     (DesignationSlice) =>
       DesignationSlice.designationMaster.sortedDesignationData
   );
-  console.log('designationDropdown', designationDropdown);
   const sortDesignationDropdown = [...designationDropdown].sort((a, b) => {
     if (a.label < b.label) return -1;
     if (a.label > b.label) return 1;

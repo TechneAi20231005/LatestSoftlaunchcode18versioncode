@@ -23,12 +23,20 @@ export default function ProjectwiseModule() {
   const [idd, setId] = useState(null);
   const [submoduleData, setSubmoduleData] = useState([]);
   const [subModuleDropdown, setSubModuleDropdown] = useState(null);
+  const [projectWiseSubModuleDropdown, setProjectWiseSubModuleDropdown] =
+    useState(null);
+
   const [moduleDropdown, setModuleDropdown] = useState(null);
+  const [projectWiseModuleDropdown, setProjectWiseModuleDropdown] =
+    useState(null);
+
   const [show, setShow] = useState('');
   const [showToALL, setShowToAll] = useState(false);
   const [docList, setDocList] = useState([]);
   const [toggleRadio, setToggleRadio] = useState(true);
   const [subModuleValue, setSubModuleValue] = useState(0);
+  const [moduleValue, setModuleValue] = useState(0);
+
   const [fileName, setFileName] = useState('');
   const [notify, setNotify] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -85,6 +93,12 @@ export default function ProjectwiseModule() {
               .filter((d) => d.id == moduleId)
               .map((d) => ({ value: d.id, label: d.module_name }))
           );
+
+          setProjectWiseModuleDropdown(
+            temp
+              .filter((d) => d.project_id == projectId)
+              .map((d) => ({ value: d.id, label: d.module_name }))
+          );
         }
       }
     });
@@ -101,6 +115,11 @@ export default function ProjectwiseModule() {
           setSubModuleDropdown(
             temp
               .filter((d) => d.module_id == moduleId)
+              .map((d) => ({ value: d.id, label: d.sub_module_name }))
+          );
+          setProjectWiseSubModuleDropdown(
+            temp
+              .filter((d) => d.project_id == projectId)
               .map((d) => ({ value: d.id, label: d.sub_module_name }))
           );
         }
@@ -161,6 +180,10 @@ export default function ProjectwiseModule() {
       return;
     }
     const { value, label } = e;
+    if (type === 'MODULE') {
+      setModuleValue(value);
+    }
+
     if (type === 'SUBMODULE') {
       setSubModuleValue(value);
       // if (moduleRef.current) {
@@ -170,8 +193,10 @@ export default function ProjectwiseModule() {
         (subModule) => subModule.id == value
       );
       setIsSubModuleActive(findSubModuleActivity[0].is_active);
+      const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
+
       await new SubModuleService()
-        .getSubModuleDocuments(projectId, ModuleID, 'ACTIVE', value)
+        .getSubModuleDocuments(projectId, newModuleID, 'ACTIVE', value)
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status == 1) {
@@ -246,6 +271,7 @@ export default function ProjectwiseModule() {
 
     const form = new FormData(e.target);
     form.append('submodule_id', subModuleValue ? subModuleValue : '');
+
     form.append('show_to_all', 1);
     await new SubModuleService().postSubModuleDocument(form).then((res) => {
       if (res?.data?.status === 1) {
@@ -681,23 +707,34 @@ export default function ProjectwiseModule() {
                   {moduleDropdown && (
                     <Select
                       className="w-100"
-                      options={moduleDropdown}
+                      options={
+                        ModuleID?.length > 0
+                          ? moduleDropdown
+                          : projectWiseModuleDropdown
+                      }
+                      // options={projectWiseModuleDropdown}
                       ref={moduleRef}
-                      // onChange={(e) => {
-                      //   changeSubModuleHandle(e, 'MODULE');
-                      // }}
+                      onChange={(e) => {
+                        changeSubModuleHandle(e, 'MODULE');
+                      }}
                       name="submodule_id"
                     />
                   )}
                 </div>
-                {subModuleDropdown && subModuleDropdown.length > 0 && (
+
+                {((subModuleDropdown && subModuleDropdown?.length > 0) ||
+                  projectWiseSubModuleDropdown?.length > 0) && (
                   <div className="d-md-flex mt-2">
                     <label className="form-label col-sm-3 mt-2 me-2 fw-bold">
                       Sub Module:
                     </label>
                     <Select
                       className="w-100"
-                      options={subModuleDropdown}
+                      options={
+                        ModuleID?.length > 0
+                          ? subModuleDropdown
+                          : projectWiseSubModuleDropdown
+                      }
                       ref={submoduleRef}
                       onChange={(e) => {
                         changeSubModuleHandle(e, 'SUBMODULE');
@@ -833,7 +870,7 @@ export default function ProjectwiseModule() {
             </Modal.Header>
             <Modal.Body>
               <input type="hidden" value={projectId} name="project_id" />
-              <input type="hidden" value={moduleId} name="module_id" />
+              <input type="hidden" value={moduleValue} name="module_id" />
               <div className="deadline-form">
                 <div className="row g-3 mb-3 mt-2">
                   <input

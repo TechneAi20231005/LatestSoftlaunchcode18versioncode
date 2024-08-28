@@ -42,6 +42,8 @@ export default function CurrentClientProject(props) {
               </div>
 
               <h6 className="mb-0 fw-bold  fs-6  mb-2">
+                {props.data.project_name}
+
                 <Link
                   to={
                     `/${_base}/ConsolidatedView/ProjectwiseModule/` +
@@ -54,11 +56,9 @@ export default function CurrentClientProject(props) {
                 >
                   <i
                     title="Upload project wise document"
-                    className="icofont-tasks-alt p-2"
-                    style={{ fontSize: '20px' }}
+                    className="icofont-upload-alt p-2 "
                   ></i>
                 </Link>
-                {props.data.project_name}
               </h6>
             </div>
           </div>
