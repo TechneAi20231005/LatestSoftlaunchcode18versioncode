@@ -6,6 +6,7 @@ function Alert({ alertData }) {
   const existingToast = toast.isActive(alertData.message);
   useEffect(() => {
     if (alertData) {
+      console.log('asmita');
       if (!existingToast) {
         // Show the toast notification
         toast(alertData.message, {
