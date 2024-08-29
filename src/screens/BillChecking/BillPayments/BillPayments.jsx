@@ -31,7 +31,7 @@ const BillPayments = () => {
   const roleId = sessionStorage.getItem('role_id');
 
   const [billTypeDropdown, setBillTypeDropdown] = useState(null);
-  const [data, setData] = useState();
+
   const [d, setD] = useState();
 
   const [modal, setModal] = useState({
@@ -63,7 +63,7 @@ const BillPayments = () => {
       .getBillDetailsOfPaymentGrid(userSessionData.userId, payload)
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status === 1) {
+          if (res?.data?.status === 1) {
             setD(res.data.data);
           }
         }
@@ -175,11 +175,10 @@ const BillPayments = () => {
     await new BillTransactionService()
       ._getBillTypeDataDropdown()
       .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status == 1) {
-            setData(res.data.data);
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
             setBillTypeDropdown(
-              res.data.data.map((d) => ({ value: d.id, label: d.bill_type }))
+              res?.data?.data.map((d) => ({ value: d.id, label: d.bill_type }))
             );
           }
         }
@@ -189,9 +188,7 @@ const BillPayments = () => {
 
     await new BillTransactionService().getUpdatedAuthorities().then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
-          const a = res.data.data;
-
+        if (res.data.status === 1) {
           SetAuthorities(res.data.data);
         }
       }
@@ -312,7 +309,7 @@ const BillPayments = () => {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   return (
     <>

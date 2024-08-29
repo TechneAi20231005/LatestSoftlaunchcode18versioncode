@@ -1,6 +1,6 @@
 // // created by Asmita Margaje
 
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 
 import Alert from '../../../../components/Common/Alert';
@@ -88,7 +88,7 @@ const RequestModal = (props) => {
 
   const [regularizeTimeData, setRegularizeTimeData] = useState([]);
 
-  const loadData = () => {
+  const loadData = useCallback(() => {
     setIsLoading(null);
     setIsLoading(true);
     new getRegularizationTimeData(props.data.ticket_id, props.data.id).then(
@@ -101,20 +101,23 @@ const RequestModal = (props) => {
         }
       }
     );
-  };
+  }, [props.data.id, props.data.ticket_id]);
+
   useEffect(() => {
     const updatedRows = rows.map((row) => ({
       ...row,
       actual_time: timeDifference
     }));
     setRows(updatedRows);
-  }, [timeDifference]);
+
+    // eslint-disable-next-line no-use-before-define
+  }, [rows, timeDifference]);
 
   useEffect(() => {}, []);
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   const [rows, setRows] = useState([
     {
@@ -125,7 +128,6 @@ const RequestModal = (props) => {
       actual_time: '',
       remark: ''
     }
-    // Add more rows as needed
   ]);
 
   const calculateTimeDifference = (fromDate, toDate, fromTime, toTime) => {
@@ -462,10 +464,6 @@ const RequestModal = (props) => {
                                 updatedData[index].from_time,
                                 updatedData[index].to_time
                               );
-                              const [hours, minutes] = actualTime
-                                .split(':')
-                                .map(Number);
-                              const actualTimeValue = hours * 60 + minutes;
 
                               updatedData[index].actual_time = actualTime;
                               setRegularizeTimeData(updatedData);
