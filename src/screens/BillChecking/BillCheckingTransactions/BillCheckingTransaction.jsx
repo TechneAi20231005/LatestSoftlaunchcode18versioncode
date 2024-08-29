@@ -57,7 +57,7 @@ function BillCheckingTransaction() {
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.billTypeDataDropDowm
   );
-  console.log('billTypeDropdown', billTypeDropdown);
+
   const vendorDropdown = useSelector(
     (VendorMasterSlice) =>
       VendorMasterSlice.vendorMaster.vendorMasterDropDownNew
@@ -209,11 +209,6 @@ function BillCheckingTransaction() {
       selector: (row) => {},
       sortable: false,
       cell: (row) => {
-        console.log('Row Data:', row);
-        console.log('Payment Status:', row.payment_status);
-        console.log('Is Assign To:', row.is_assign_to);
-        console.log('Level:', row.level);
-        console.log('Total Level:', row.total_level);
         return (
           <Dropdown className="d-inline-flex m-1">
             <Dropdown.Toggle
@@ -252,23 +247,23 @@ function BillCheckingTransaction() {
                 </Link>
               </li>
 
-              {row &&
+              {/* {row &&
                 ((row.level == parseInt(row.total_level) &&
                   row.is_assign_to == 1) ||
                   row.is_editable_for_creator == 1 ||
                   row.is_rejected == 1 ||
                   (authorities && authorities.All_Update_Bill === true) ||
                   (row.level != parseInt(row.total_level) &&
-                    row.is_approver == 1)) && (
-                  <li>
-                    <Link
-                      to={`/${_base}/BillCheckingHistory/` + row.id}
-                      className="btn btn-sm btn-danger text-white w-100"
-                    >
-                      <i className="icofont-history"></i> History
-                    </Link>
-                  </li>
-                )}
+                    row.is_approver == 1)) && ( */}
+              <li>
+                <Link
+                  to={`/${_base}/BillCheckingHistory/` + row.id}
+                  className="btn btn-sm btn-danger text-white w-100"
+                >
+                  <i className="icofont-history"></i> History
+                </Link>
+              </li>
+              {/* )} */}
 
               {row.is_assign_to == 1 && row.level == row.total_level && (
                 <>

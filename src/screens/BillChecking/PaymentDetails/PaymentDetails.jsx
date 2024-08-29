@@ -93,6 +93,11 @@ function PaymentDetails({ location, match }) {
       formattedMaxDate = maxDate.toISOString().split('T')[0];
     }
   }
+  const oneYearAheadDate = new Date(
+    new Date().setFullYear(new Date().getFullYear() + 1)
+  )
+    .toISOString()
+    .split('T')[0]; // Shows the date one year ahead in YYYY-MM-DD format
 
   const [country, setCountry] = useState();
   const [state, setState] = useState();
@@ -160,6 +165,7 @@ function PaymentDetails({ location, match }) {
         if (res.status === 200) {
           if (res.data.status) {
             const a = res.data.data;
+
             SetAuthorities(res.data.data);
           }
         }
@@ -526,6 +532,20 @@ function PaymentDetails({ location, match }) {
                           e.preventDefault(); // Limit total length excluding decimal point to 10 characters
                         }
                       }}
+                      // readOnly={
+                      //   (modal.modalData &&
+                      //     modal.modalData.payment_status == 15) ||
+                      //   (authorities &&
+                      //     authorities.Update_Payment_Details === false &&
+                      //     authorities.Payment_Status_Release === true) ||
+
+                      //   (authorities &&
+                      //     authorities.Prepone_Payment_Date === false &&
+                      //     authorities.Update_Payment_Details === false &&
+                      //     authorities.Payment_Status_Release === false)
+                      //     ? true
+                      //     : false
+                      // }
                       readOnly={
                         (modal.modalData &&
                           modal.modalData.payment_status == 15) ||
@@ -533,7 +553,11 @@ function PaymentDetails({ location, match }) {
                           authorities.Update_Payment_Details === false &&
                           authorities.Payment_Status_Release === true) ||
                         (authorities &&
-                          authorities.Prepone_Payment_Date === true)
+                          authorities.Prepone_Payment_Date === true &&
+                          authorities &&
+                          authorities &&
+                          authorities.Update_Payment_Details === false &&
+                          authorities.Payment_Status_Release === false)
                           ? true
                           : false
                       }
@@ -547,6 +571,7 @@ function PaymentDetails({ location, match }) {
                     <label className="form-label font-weight-bold">
                       Status : <Astrick color="red" size="13px" />
                     </label>
+
                     <>
                       {statusDropDown && statusDropDown && (
                         <Select
@@ -554,14 +579,33 @@ function PaymentDetails({ location, match }) {
                           id="payment_status"
                           name="payment_status"
                           type="hidden"
+                          // options={
+                          //   authorities &&
+                          //   authorities?.Payment_Status_Release === true
+                          //     ? statusDropDown.filter(
+                          //         (option) => option.value == 17
+                          //       )
+                          //     : statusDropDown
+                          // }
+
                           options={
                             authorities &&
-                            authorities.Payment_Status_Release === true
+                            authorities.Payment_Status_Release &&
+                            !authorities.Update_Payment_Details &&
+                            !authorities.Allow_Paid_Entry_Change
                               ? statusDropDown.filter(
                                   (option) => option.value === 17
                                 )
                               : statusDropDown
                           }
+                          // options={
+                          //   authorities &&
+                          //   authorities.Payment_Status_Release === true
+                          //     ? statusDropDown?.filter(
+                          //         (option) => option.value === 17
+                          //       )
+                          //     : statusDropDown
+                          // }
                           ref={statusDropdownRef}
                           isDisabled={
                             (modal.modalData &&
@@ -611,8 +655,6 @@ function PaymentDetails({ location, match }) {
                       Payment Date : <Astrick color="red" size="13px" />
                     </label>
 
-
-
                     {authorities &&
                     authorities.Prepone_Payment_Date === true ? (
                       <input
@@ -621,12 +663,6 @@ function PaymentDetails({ location, match }) {
                         id="payment_date"
                         name="payment_date"
                         required={true}
-                        // readOnly={
-                        //   authorities &&
-                        //   authorities.Payment_Status_Release === true
-                        //     ? false
-                        //     : true
-                        // }
                         readOnly={
                           (authorities && authorities.Prepone_Payment_Date) ||
                           authorities.Payment_Status_Release === true
@@ -640,7 +676,7 @@ function PaymentDetails({ location, match }) {
                         min={
                           modal.modalData.payment_status_name === 'Paid'
                             ? modal.modalData.payment_date
-                            : modal.modalData.bill_date
+                            : new Date().toISOString().split('T')[0]
                         }
                       />
                     ) : (
@@ -651,7 +687,9 @@ function PaymentDetails({ location, match }) {
                         name="payment_date"
                         readOnly={
                           authorities &&
-                          authorities.Payment_Status_Release === true
+                          authorities.Payment_Status_Release === true &&
+                          authorities.Update_Payment_Details != true &&
+                          authorities.Allow_Paid_Entry_Change != true
                             ? true
                             : false
                         }
@@ -659,8 +697,15 @@ function PaymentDetails({ location, match }) {
                         defaultValue={
                           modal.modalData ? modal.modalData.payment_date : ''
                         }
-                        min={modal.modalData.payment_date}
-                        max={formattedMaxDate && formattedMaxDate}
+                        min={
+                          authorities &&
+                          authorities.Allow_Paid_Entry_Change === true &&
+                          modal.modalData &&
+                          modal.modalData.payment_status == 15
+                            ? modal.modalData.payment_date
+                            : new Date().toISOString().split('T')[0]
+                        }
+                        max={oneYearAheadDate}
                       />
                     )}
                   </div>
