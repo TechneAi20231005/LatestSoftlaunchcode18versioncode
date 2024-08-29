@@ -203,26 +203,24 @@ export default function HrDashboard(props) {
           setIsLoading(false);
 
           if (res?.data?.data?.length) {
-            const temp = res.data.data
-              ?.filter((d) => d?.status_remark !== 'PENDING')
-              ?.map((d) => ({
-                id: d.id,
-                created_by_name: d.created_by_name,
-                from_date: d.from_date,
-                to_date: d.to_date,
-                from_time: d.from_time,
-                to_time: d.to_time,
-                remark: d.remark,
-                is_checked: 0,
-                regularization_time_status: d.regularization_time_status,
-                task_name: d.task_name,
-                ticket_id_name: d.ticket_id_name,
-                actual_time: d.actual_time,
-                task_hours: d.task_hours,
-                scheduled_time: d.scheduled_time,
-                approved_by_name: d.approved_by_name,
-                status: d.status_remark
-              }));
+            const temp = res.data.data?.map((d) => ({
+              id: d.id,
+              created_by_name: d.created_by_name,
+              from_date: d.from_date,
+              to_date: d.to_date,
+              from_time: d.from_time,
+              to_time: d.to_time,
+              remark: d.remark,
+              is_checked: 0,
+              regularization_time_status: d.regularization_time_status,
+              task_name: d.task_name,
+              ticket_id_name: d.ticket_id_name,
+              actual_time: d.actual_time,
+              task_hours: d.task_hours,
+              scheduled_time: d.scheduled_time,
+              approved_by_name: d.approved_by_name,
+              status: d.status_remark
+            }));
 
             // Assuming setDataa is a function to set the state
             setHistoryData(temp);
@@ -351,28 +349,30 @@ export default function HrDashboard(props) {
                         {approvedNotifications.length}
                       </div>
                     ) : (
-                      <div
-                        className="notification-circle"
-                        style={{
-                          position: 'absolute',
-                          top: '-10px',
-                          right: '-10px',
-                          // padding: '3px',
-                          backgroundColor: 'rgb(255, 24, 67)',
-                          borderRadius: '50%',
-                          justifyContent: 'center',
-                          alignItems: 'center',
-                          color: 'white',
-                          textAlign: 'center',
-                          // fontSize: '0.8rem',
-                          fontWeight: 'bold',
-                          color: 'red',
-                          minWidth: '20px', // Minimum width to prevent squishing
-                          height: 'auto' // Let the height adjust automatically}}
-                        }}
-                      >
-                        .
-                      </div>
+                      allRegularizationRequest?.length > 0 && (
+                        <div
+                          className="notification-circle"
+                          style={{
+                            position: 'absolute',
+                            top: '-10px',
+                            right: '-10px',
+                            // padding: '3px',
+                            backgroundColor: 'rgb(255, 24, 67)',
+                            borderRadius: '50%',
+                            justifyContent: 'center',
+                            alignItems: 'center',
+                            color: 'white',
+                            textAlign: 'center',
+                            // fontSize: '0.8rem',
+                            fontWeight: 'bold',
+                            color: 'red',
+                            minWidth: '20px', // Minimum width to prevent squishing
+                            height: 'auto' // Let the height adjust automatically}}
+                          }}
+                        >
+                          .
+                        </div>
+                      )
                     )}
                   </div>
                 </div>

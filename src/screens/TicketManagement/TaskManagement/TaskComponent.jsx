@@ -38,6 +38,7 @@ import { Astrick } from '../../../components/Utilities/Style';
 import SprintService from '../../../services/TicketService/SprintService';
 import DataTable from 'react-data-table-component';
 import CardLoadingSkeleton from '../../../components/custom/loader/CardLoadingSkeleton';
+import ManageTaskSkeleton from '../../../components/custom/loader/ManageTaskSkeleton';
 
 export default function TaskComponent() {
   const [notify, setNotify] = useState(null);
@@ -688,80 +689,80 @@ export default function TaskComponent() {
       name: 'Sr no',
       selector: (row) => row.counter,
       sortable: true,
-      width: '5%'
+      width: '80px'
     },
     {
       name: 'Sprint Name',
       selector: (row) => row?.sprint_name,
       sortable: true,
-      width: '10%'
+      width: '250px'
     },
     {
       name: 'Sprint Start Date',
       selector: (row) => row?.sprint_start_date,
       sortable: true,
-      width: '8%'
+      width: '150px'
     },
     {
       name: 'Sprint End Date',
       selector: (row) => row?.sprint_end_date,
       sortable: true,
-      width: '8%'
+      width: '150px'
     },
     {
       name: 'Task Name',
       selector: (row) => row?.task_name,
       sortable: true,
-      width: '15%'
+      width: '200px'
     },
     {
       name: 'Task User',
       selector: (row) => row?.task_owner,
       sortable: true,
-      width: '10%'
+      width: '180px'
     },
     {
       name: 'Task Start Date',
       selector: (row) => row?.task_start_Date,
       sortable: true,
-      width: '8%'
+      width: '150px'
     },
     {
       name: 'Task End Date',
       selector: (row) => row?.task_delivery_scheduled,
       sortable: true,
-      width: '8%'
+      width: '150px'
     },
 
     {
       name: 'Task actual completion date',
       selector: (row) => row?.task_completed_at,
       sortable: true,
-      width: '10%'
+      width: '150px'
     },
     {
       name: 'Task schedule hours',
       selector: (row) => row?.task_scheduled_Hours,
       sortable: true,
-      width: '8%'
+      width: '150px'
     },
     {
       name: 'Task actual hours played',
       selector: (row) => row?.task_actual_worked,
       sortable: true,
-      width: '8%'
+      width: '150px'
     },
     {
       name: 'Task status',
       selector: (row) => row?.task_status,
       sortable: true,
-      width: '10%'
+      width: '150px'
     },
     {
       name: 'Task actual status',
       selector: (row) => row?.task_actual_status,
       sortable: true,
-      width: '10%'
+      width: '150px'
     }
   ];
   let taskDraggedFromId;
@@ -967,7 +968,7 @@ export default function TaskComponent() {
 
               <div className="col-9 col-md-4  d-flex align-items-center justify-content-between">
                 <div className=" col-10">
-                  {sprintDropDown?.length > 0 && (
+                  {sprintDropDown?.length > 0 && !showSprintReport && (
                     <Select
                       className=""
                       name="sprint_data"
@@ -982,69 +983,70 @@ export default function TaskComponent() {
                 </div>
 
                 {/* Hamburger Menu for manage task */}
-                <div className="col-2 text-end">
-                  <Dropdown onClick={handleRegularizationRequest}>
-                    <Dropdown.Toggle
-                      as="button"
-                      variant=""
-                      className="btn btn-outline-primary p-1"
-                    >
-                      <i className="icofont-navigation-menu"></i>
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu
-                      as="ul"
-                      className="border-0 shadow p-2 dropdown-menu-columns"
-                    >
-                      <li>
-                        <ExportToExcel
-                          className="btn btn-sm btn-danger btn-custom  w-100"
-                          buttonTitle="Export All Task Data"
-                          fileName="Task Data"
-                          apiData={tasksData}
-                        />
-                      </li>
-                      <li>
-                        {ownership &&
-                          (ownership === 'TICKET' ||
-                            ownership === 'PROJECT') && (
-                            <button
-                              className="btn btn-sm btn-primary text-white btn-custom w-100"
-                              onClick={(e) => {
-                                handleShowBasketModal(null);
-                              }}
-                            >
-                              Create Basket
-                            </button>
-                          )}
-                      </li>
-                      {/* Add Sprint Button  in hamburger*/}
+                {!showSprintReport && (
+                  <div className="col-2 text-end">
+                    <Dropdown onClick={handleRegularizationRequest}>
+                      <Dropdown.Toggle
+                        as="button"
+                        variant=""
+                        className="btn btn-outline-primary p-1"
+                      >
+                        <i className="icofont-navigation-menu"></i>
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu
+                        as="ul"
+                        className="border-0 shadow p-2 dropdown-menu-columns"
+                      >
+                        <li>
+                          <ExportToExcel
+                            className="btn btn-sm btn-danger btn-custom  w-100"
+                            buttonTitle="Export All Task Data"
+                            fileName="Task Data"
+                            apiData={tasksData}
+                          />
+                        </li>
+                        <li>
+                          {ownership &&
+                            (ownership === 'TICKET' ||
+                              ownership === 'PROJECT') && (
+                              <button
+                                className="btn btn-sm btn-primary text-white btn-custom w-100"
+                                onClick={(e) => {
+                                  handleShowBasketModal(null);
+                                }}
+                              >
+                                Create Basket
+                              </button>
+                            )}
+                        </li>
+                        {/* Add Sprint Button  in hamburger*/}
 
-                      <li>
-                        <button
-                          className="btn btn-sm btn-primary text-white btn-custom w-100"
-                          onClick={(e) => {
-                            handleSprintModal({
-                              showModal: true,
-                              modalData: '',
-                              modalHeader: 'Add'
-                            });
-                          }}
-                          disabled={
-                            ownership !== 'TICKET' && ownership !== 'PROJECT'
-                          }
-                        >
-                          + Sprint
-                        </button>
-                      </li>
-                      <li>
-                        <Link to={`/${_base}/getAllTestCases/` + ticketId}>
-                          <button className="btn btn-sm btn-info text-white btn-custom w-100">
-                            All Test Cases
+                        <li>
+                          <button
+                            className="btn btn-sm btn-primary text-white btn-custom w-100"
+                            onClick={(e) => {
+                              handleSprintModal({
+                                showModal: true,
+                                modalData: '',
+                                modalHeader: 'Add'
+                              });
+                            }}
+                            disabled={
+                              ownership !== 'TICKET' && ownership !== 'PROJECT'
+                            }
+                          >
+                            + Sprint
                           </button>
-                        </Link>
-                      </li>
+                        </li>
+                        <li>
+                          <Link to={`/${_base}/getAllTestCases/` + ticketId}>
+                            <button className="btn btn-sm btn-info text-white btn-custom w-100">
+                              All Test Cases
+                            </button>
+                          </Link>
+                        </li>
 
-                      {/* <li>
+                        {/* <li>
                         {ownership && ownership !== "TASK" && (
                           <button
                             // className="btn btn-sm btn-danger text-white"
@@ -1066,26 +1068,27 @@ export default function TaskComponent() {
                           </button>
                         )}
                       </li> */}
-                      <li>
-                        <button
-                          className="btn btn-sm btn-warning  text-white"
-                          onClick={(e) => {
-                            handleShowApproveTaskRequestModal();
-                            handleTaskRegularizationRequest();
-                          }}
-                        >
-                          Task Regularization Request
-                          {taskRegularizationRequest && (
-                            <span className="badge bg-warning p-2">
-                              {/* {taskRegularizationRequest.length > 0 ? taskRegularizationRequest.length : ""} */}
-                            </span>
-                          )}
-                        </button>
-                        {/* )} */}
-                      </li>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </div>
+                        <li>
+                          <button
+                            className="btn btn-sm btn-warning  text-white"
+                            onClick={(e) => {
+                              handleShowApproveTaskRequestModal();
+                              handleTaskRegularizationRequest();
+                            }}
+                          >
+                            Task Regularization Request
+                            {taskRegularizationRequest && (
+                              <span className="badge bg-warning p-2">
+                                {/* {taskRegularizationRequest.length > 0 ? taskRegularizationRequest.length : ""} */}
+                              </span>
+                            )}
+                          </button>
+                          {/* )} */}
+                        </li>
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1140,7 +1143,7 @@ export default function TaskComponent() {
         </div>
       </div>
       {/* Sprint data view */}
-      {sprintCardData?.length > 0 && (
+      {sprintCardData?.length > 0 && !showSprintReport && (
         <div className=" card mt-2">
           <div className="card-body">
             <div className="d-flex justify-content-around align-items-center p-2">
@@ -1419,6 +1422,12 @@ export default function TaskComponent() {
       </div>
       {showSprintReport ? (
         <div className="text-end">
+          <button
+            className="btn btn-info text-white px-4 py-2"
+            onClick={() => setShowSprintReport(false)}
+          >
+            Back
+          </button>
           <ExportToExcel
             className="my-3 py-2 btn btn-sm btn-danger"
             apiData={exportSprintData}
@@ -1495,7 +1504,7 @@ export default function TaskComponent() {
             </CardBody>
           </Card>
           {isLoading === true ? (
-            <CardLoadingSkeleton />
+            <ManageTaskSkeleton />
           ) : (
             <>
               <div className="row  flex-row flex-nowrap g-3 py-xxl-4 overflow-auto">

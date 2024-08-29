@@ -1,36 +1,35 @@
-import React, { useState, useEffect } from "react";
-import { _base } from "../../settings/constants";
-import { ProgressBar } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import Collapse from "react-bootstrap/Collapse";
-import DataTable from "react-data-table-component";
-import ListGroup from "react-bootstrap/ListGroup";
-import ConsolidatedService from "../../services/ProjectManagementService/ConsolidatedService";
+import React, { useState, useEffect } from 'react';
+import { _base } from '../../settings/constants';
+import { ProgressBar } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import Collapse from 'react-bootstrap/Collapse';
+import DataTable from 'react-data-table-component';
+import ListGroup from 'react-bootstrap/ListGroup';
+import ConsolidatedService from '../../services/ProjectManagementService/ConsolidatedService';
 
 export default function CurrentClientProject(props) {
   const [isOpen, setIsOpen] = useState(false);
 
-  
   const handleOpen = (e) => {
     setIsOpen((prev) => !prev);
   };
   var colors = [
-    "light-info-bg",
-    "bg-lightgreen",
-    "bg-lightyellow",
-    "light-success-bg",
-    "light-orange-bg",
-    "bg-lightblue",
-    "bg-lightgreen",
-    "light-success-bg",
-    "light-orange-bg",
+    'light-info-bg',
+    'bg-lightgreen',
+    'bg-lightyellow',
+    'light-success-bg',
+    'light-orange-bg',
+    'bg-lightblue',
+    'bg-lightgreen',
+    'light-success-bg',
+    'light-orange-bg'
   ];
   return (
     <div className="col-xxl-4 col-xl-4 col-lg-4 col-md-6 col-sm-6 mb-4 mt-3">
-      <div className="card" style={{ borderRadius: "10px", width: "100%" }}>
+      <div className="card" style={{ borderRadius: '10px', width: '100%' }}>
         <div
           className="card-body shadow-lg p-4"
-          style={{ borderRadius: "10px" }}
+          style={{ borderRadius: '10px' }}
         >
           <div className="d-flex align-items-center justify-content-between mt-5 ">
             <div className="lesson_name">
@@ -41,8 +40,25 @@ export default function CurrentClientProject(props) {
               >
                 <i class="icofont-bag-alt"></i>
               </div>
+
               <h6 className="mb-0 fw-bold  fs-6  mb-2">
                 {props.data.project_name}
+
+                <Link
+                  to={
+                    `/${_base}/ConsolidatedView/ProjectwiseModule/` +
+                    props.data.id
+                    //  +
+                    // '/'
+                    // +
+                    // e.id
+                  }
+                >
+                  <i
+                    title="Upload project wise document"
+                    className="icofont-upload-alt p-2 "
+                  ></i>
+                </Link>
               </h6>
             </div>
           </div>
@@ -58,7 +74,7 @@ export default function CurrentClientProject(props) {
                       </span>
                     </Link>
                   </div>
-                </div>{" "}
+                </div>{' '}
                 {/* col */}
                 <div className="col-12">
                   <div className="d-flex align-items-center">
@@ -85,7 +101,7 @@ export default function CurrentClientProject(props) {
                       </span>
                     </Link>
                   </div>
-                </div>{" "}
+                </div>{' '}
                 {/* col */}
                 <div className="col-12">
                   <div className="d-flex align-items-center">
@@ -112,7 +128,7 @@ export default function CurrentClientProject(props) {
             >
               <i
                 className="icofont-tasks-alt p-2"
-                style={{ fontSize: "20px" }}
+                style={{ fontSize: '20px' }}
               ></i>
             </button>
             <h6 className=" fw-bold p-2">View Module</h6>
@@ -123,18 +139,18 @@ export default function CurrentClientProject(props) {
                 <div id={e.id}>
                   <ListGroup
                     className="list-group mb-2"
-                    style={{ textAlign: "left" }}
+                    style={{ textAlign: 'left' }}
                   >
                     <Link
                       to={
                         `/${_base}/ConsolidatedView/ProjectwiseModule/` +
                         props.data.id +
-                        "/" +
+                        '/' +
                         e.id
                       }
                     >
                       <ListGroup.Item>
-                        {i + 1}. {e.module_name}{" "}
+                        {i + 1}. {e.module_name}{' '}
                       </ListGroup.Item>
                     </Link>
                   </ListGroup>
