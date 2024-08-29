@@ -54,9 +54,7 @@ function CreateUserComponent({ match }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const Notify = useSelector(
-    (dashboardSlice) => dashboardSlice.dashboard.notify
-  );
+  const Notify = useSelector((dashbordSlice) => dashbordSlice.dashboard.notify);
 
   const CountryData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.filteredCountryData
@@ -404,17 +402,30 @@ function CreateUserComponent({ match }) {
     ) {
       if (flag === 1) {
         dispatch(postUserData(form)).then((res) => {
-          if (
-            res?.payload?.data?.status === 1 &&
-            res?.payload?.status === 200
-          ) {
-            toast.success(res?.payload?.data?.message);
-            navigate(`/${_base}/User`);
-            dispatch(getEmployeeData());
-            // setNotify({ type: 'success', message: res.payload.data.message });
-            setTimeout(() => {
+          if (res?.payload?.status === 200) {
+            if (res?.payload?.data?.status === 1) {
+              // Success case
+              toast.success(res?.payload?.data?.message, {
+                autoClose: 10000 // 10 seconds in milliseconds
+              });
               navigate(`/${_base}/User`);
-            }, 3000);
+              dispatch(getEmployeeData());
+
+              // Navigate after 3 seconds
+              setTimeout(() => {
+                navigate(`/${_base}/User`);
+              }, 3000);
+            } else {
+              // Error case when status is not 1
+              toast.error(res?.payload?.data?.message, {
+                autoClose: 10000 // 10 seconds in milliseconds
+              });
+            }
+          } else {
+            // Error case when status code is not 200
+            toast.error('An unexpected error occurred. Please try again.', {
+              autoClose: 10000 // 10 seconds in milliseconds
+            });
           }
           setLoading(false);
         });

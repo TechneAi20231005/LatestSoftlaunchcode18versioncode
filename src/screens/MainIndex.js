@@ -176,8 +176,7 @@ import FunctionMasterComponent from './TestCases/FunctionMaster/FunctionMasterCo
 import TestCaseHistoryComponent from './TestCases/TestDraft/TestCaseHistoryComponent';
 import TestDraftComponent from './TestCases/TestDraft/TestDraftComponent';
 import TestBankComponent from './TestCases/TestBank/TestBankComponent';
-
-
+import ProjectWiseModuleHistory from './ConsolidatedView/ProjectWiseModuleHistory';
 
 class MainIndex extends React.Component {
   render() {
@@ -589,8 +588,14 @@ class MainIndex extends React.Component {
             />
             <Route
               exact
-              path={`/${_base}/ConsolidatedView/ProjectwiseModule/:projectId/:moduleId`}
+              // path={`/${_base}/ConsolidatedView/ProjectwiseModule/:projectId/:moduleId`}
+              path={`/${_base}/ConsolidatedView/ProjectwiseModule/:projectId/:moduleId?`}
               element={<ProjectwiseModule />}
+            />
+            <Route
+              exact
+              path={`/${_base}/ProjectWiseModuleHistory/:id`}
+              element={<ProjectWiseModuleHistory />}
             />
             <Route
               exact
@@ -731,8 +736,6 @@ class MainIndex extends React.Component {
               path={`/${_base}/SpecialDayMaster`}
               element={<SpecialDayMasterComponent />}
             />
-
-
             <Route
               exact
               path={`/${_base}/rotationalShiftMaster`}
