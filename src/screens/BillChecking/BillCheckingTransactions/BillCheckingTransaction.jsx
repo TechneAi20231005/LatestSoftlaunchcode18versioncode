@@ -57,6 +57,7 @@ function BillCheckingTransaction() {
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.billTypeDataDropDowm
   );
+
   const vendorDropdown = useSelector(
     (VendorMasterSlice) =>
       VendorMasterSlice.vendorMaster.vendorMasterDropDownNew
@@ -122,6 +123,7 @@ function BillCheckingTransaction() {
     setIsToBillDateRequired(false);
     setIsToReceiveRequired(false);
     setIsPaymentRequired(false);
+    setData([]);
     if (selectInputRef.current.value != null) {
       selectToBillRef.current.value = '';
       document.getElementById('id').value = '';
@@ -245,23 +247,23 @@ function BillCheckingTransaction() {
                 </Link>
               </li>
 
-              {row &&
+              {/* {row &&
                 ((row.level == parseInt(row.total_level) &&
                   row.is_assign_to == 1) ||
                   row.is_editable_for_creator == 1 ||
                   row.is_rejected == 1 ||
                   (authorities && authorities.All_Update_Bill === true) ||
                   (row.level != parseInt(row.total_level) &&
-                    row.is_approver == 1)) && (
-                  <li>
-                    <Link
-                      to={`/${_base}/BillCheckingHistory/` + row.id}
-                      className="btn btn-sm btn-danger text-white w-100"
-                    >
-                      <i className="icofont-history"></i> History
-                    </Link>
-                  </li>
-                )}
+                    row.is_approver == 1)) && ( */}
+              <li>
+                <Link
+                  to={`/${_base}/BillCheckingHistory/` + row.id}
+                  className="btn btn-sm btn-danger text-white w-100"
+                >
+                  <i className="icofont-history"></i> History
+                </Link>
+              </li>
+              {/* )} */}
 
               {row.is_assign_to == 1 && row.level == row.total_level && (
                 <>
@@ -984,8 +986,16 @@ function BillCheckingTransaction() {
           setExportData(tempData);
           setData(tempData);
         } else {
+          setFilteredData([]);
           setNotify({ type: 'danger', message: res.data.message });
         }
+      })
+      .catch((error) => {
+        setFilteredData([]);
+        setNotify({
+          type: 'danger',
+          message: `An error occurred: ${error.message}`
+        });
       });
   };
 
@@ -1620,7 +1630,7 @@ function BillCheckingTransaction() {
                     onClick={handleClearData}
                     style={{ marginTop: '20px', fontWeight: '600' }}
                   >
-                    <i className="icofont-refresh text-white"></i> Reset
+                    <i className="icofont-refresh text-white"></i> ResetSS
                   </button>
                 </div>
                 <span className="fw-bold mt-2" style={{ color: 'red' }}>
