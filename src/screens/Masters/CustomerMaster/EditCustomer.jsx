@@ -15,6 +15,7 @@ import { _base } from '../../../settings/constants';
 import Select from 'react-select';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
+import { toast } from 'react-toastify';
 
 function EditCustomer() {
   const history = useNavigate();
@@ -202,22 +203,31 @@ function EditCustomer() {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
+              toast.success(res.data.message, {
+                position: 'top-right'
+              });
               history(
                 {
                   pathname: `/${_base}/Customer`
-                },
-                {
-                  state: {
-                    type: 'success',
-                    message: res.data.message
-                  }
                 }
+                // {
+                //   state: {
+                //     type: 'success',
+                //     message: res.data.message
+                //   }
+                // }
               );
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message, {
+                position: 'top-right'
+              });
+              // setNotify({ type: 'danger', message: res.data.message });
             }
           } else {
-            setNotify({ type: 'danger', message: res.message });
+            // setNotify({ type: 'danger', message: res.message });
+            toast.error(res.data.message, {
+              position: 'top-right'
+            });
             new ErrorLogService().sendErrorLog(
               'Customer',
               'Create_Customer',
@@ -229,7 +239,11 @@ function EditCustomer() {
         .catch((error) => {
           const { response } = error;
           const { request, ...errorObject } = response;
-          setNotify({ type: 'danger', message: 'Request Error !!!' });
+          // setNotify({ type: 'danger', message: 'Request Error !!!' });
+          toast.error('Request Error !!!', {
+            position: 'top-right'
+          });
+
           new ErrorLogService().sendErrorLog(
             'Customer',
             'Create_Customer',

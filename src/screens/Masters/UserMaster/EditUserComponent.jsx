@@ -316,7 +316,7 @@ function EditUserComponent({ match }) {
     }
 
     var flag = 1;
-    setNotify(null);
+    // setNotify(null);
 
     const formValidation = checkingValidation(form);
     if (formValidation === 1) {
@@ -348,7 +348,10 @@ function EditUserComponent({ match }) {
         .then((res) => {
           if (res?.status === 200) {
             if (res?.data?.status === 1) {
-              toast.success(res?.data?.message);
+              // toast.success(res?.data?.message);
+              toast.success(res?.data?.message, {
+                autoClose: 10000 // 10 seconds in milliseconds
+              });
               navigate(`/${_base}/User`);
 
               // setNotify({ type: 'success', message: res.data.message });
@@ -363,7 +366,10 @@ function EditUserComponent({ match }) {
               //   });
               // }, 3000);
             } else {
-              toast.error(res?.data?.message);
+              toast.error(res?.data?.message, {
+                autoClose: 10000 // 10 seconds in milliseconds
+              });
+              // toast.error(res?.data?.message);
               // setNotify({ type: 'danger', message: res.data.message });
             }
           }

@@ -186,7 +186,14 @@ const RequestModal = (props) => {
       return;
     }
 
-    if (toTime?.length > 0 && toTime < fromTime) {
+    // Combine fromDate and fromTime into a single datetime object
+    const fromDateTime = new Date(`${fromDate}T${fromTime}`).getTime();
+
+    // Combine toDate and toTime into a single datetime object
+    const toDateTime = new Date(`${toDate}T${toTime}`).getTime();
+
+    // Check if toTime is earlier than fromTime, considering different dates
+    if (toTime?.length > 0 && toDateTime < fromDateTime) {
       alert('To time cannot be earlier than from time.');
       return;
     }
@@ -494,16 +501,69 @@ const RequestModal = (props) => {
                               setRegularizeTimeData(updatedData);
                             };
 
+                            // const handleToTimeChange = (index, value) => {
+                            //   const updatedData = [...regularizeTimeData];
+                            //   const toDate = updatedData[index].to_date;
+
+                            //   const currentDate = new Date()
+                            //     .toISOString()
+                            //     .split('T')[0]; // Assuming the format is 'YYYY-MM-DD'
+
+                            //   updatedData[index].to_time = value;
+
+                            //   if (
+                            //     toDate === currentDate &&
+                            //     value > currentTimeFormatted
+                            //   ) {
+                            //     alert('To time cannot be a future time.');
+                            //     return;
+                            //   }
+
+                            //   const fromTime = updatedData[index].from_time;
+                            //   if (fromTime && value < fromTime) {
+                            //     alert(
+                            //       'To time cannot be earlier than from time.'
+                            //     );
+                            //     return;
+                            //   }
+
+                            //   const actualTime = calculateActualTime(
+                            //     updatedData[index].from_date,
+                            //     updatedData[index].to_date,
+                            //     updatedData[index].from_time,
+                            //     updatedData[index].to_time
+                            //   );
+
+                            //   const [hours, minutes] = actualTime
+                            //     .split(':')
+                            //     .map(Number);
+                            //   const actualTimeValue = hours * 60 + minutes;
+                            //   if (actualTimeValue > 12 * 60) {
+                            //     alert(
+                            //       'Actual time is greater than 12:00 hours.'
+                            //     );
+                            //     return;
+                            //   }
+
+                            //   updatedData[index].actual_time = actualTime;
+                            //   setRegularizeTimeData(updatedData);
+                            // };
+
                             const handleToTimeChange = (index, value) => {
                               const updatedData = [...regularizeTimeData];
                               const toDate = updatedData[index].to_date;
+                              const fromDate = updatedData[index].from_date;
 
                               const currentDate = new Date()
                                 .toISOString()
-                                .split('T')[0]; // Assuming the format is 'YYYY-MM-DD'
+                                .split('T')[0]; // Current date in 'YYYY-MM-DD'
+                              const currentTimeFormatted = new Date()
+                                .toTimeString()
+                                .split(' ')[0]; // Current time in 'HH:MM:SS'
 
                               updatedData[index].to_time = value;
 
+                              // Check if 'to_date' is the current date and 'to_time' is in the future
                               if (
                                 toDate === currentDate &&
                                 value > currentTimeFormatted
@@ -513,13 +573,24 @@ const RequestModal = (props) => {
                               }
 
                               const fromTime = updatedData[index].from_time;
-                              if (fromTime && value < fromTime) {
+
+                              // Combine dates and times into full Date objects for accurate comparison
+                              const fromDateTime = new Date(
+                                `${fromDate}T${fromTime}`
+                              ).getTime();
+                              const toDateTime = new Date(
+                                `${toDate}T${value}`
+                              ).getTime();
+
+                              // Check if 'to_time' is earlier than 'from_time' considering the dates
+                              if (toDateTime < fromDateTime) {
                                 alert(
                                   'To time cannot be earlier than from time.'
                                 );
                                 return;
                               }
 
+                              // Calculate actual time in hours and minutes
                               const actualTime = calculateActualTime(
                                 updatedData[index].from_date,
                                 updatedData[index].to_date,
@@ -531,6 +602,7 @@ const RequestModal = (props) => {
                                 .split(':')
                                 .map(Number);
                               const actualTimeValue = hours * 60 + minutes;
+
                               if (actualTimeValue > 12 * 60) {
                                 alert(
                                   'Actual time is greater than 12:00 hours.'

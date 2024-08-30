@@ -25,6 +25,7 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { toast } from 'react-toastify';
 
 function PaymentTemplateMaster() {
   const dispatch = useDispatch();
@@ -401,17 +402,18 @@ function PaymentTemplateMaster() {
       await new PaymentTemplateService()
         .createPaymentTemplate(form)
         .then((res) => {
-
-          
           if (res.status === 200 && res.data.status === 1) {
-
-
-            setNotify({ type: 'success', message: res.data.message });
+            // setNotify({ type: 'success', message: res.data.message });
+            toast.success(res.data.message, {
+              position: 'top-right'
+            });
             dispatch(paymentTemplate());
             setModal({ showModal: false, modalData: '', modalHeader: '' });
-
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            // setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message, {
+              position: 'top-right'
+            });
           }
           // if (res.status === 200 && res.data.status === 1) {
           //   console.log('res', res);
@@ -433,7 +435,11 @@ function PaymentTemplateMaster() {
           // }
         })
         .catch((error) => {
-          setNotify({ type: 'danger', message: 'Request Error !!!' });
+          // setNotify({ type: 'danger', message: 'Request Error !!!' });
+          toast.error('Request Error !!!', {
+            position: 'top-right'
+          });
+
           const { response } = error;
           const { request, ...errorObject } = response;
 
@@ -450,14 +456,23 @@ function PaymentTemplateMaster() {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              setNotify({ type: 'success', message: res.data.message });
+              // setNotify({ type: 'success', message: res.data.message });
+              toast.success(res.data.message, {
+                position: 'top-right'
+              });
               setModal({ showModal: false, modalData: '', modalHeader: '' });
               dispatch(paymentTemplate());
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              // setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message, {
+                position: 'top-right'
+              });
             }
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            // setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message, {
+              position: 'top-right'
+            });
             new ErrorLogService().sendErrorLog(
               'Payment_template',
               'Create_Payment_template',
@@ -469,7 +484,11 @@ function PaymentTemplateMaster() {
         .catch((error) => {
           const { response } = error;
           const { request, ...errorObject } = response;
-          setNotify({ type: 'danger', message: 'Request Error !!!' });
+          // setNotify({ type: 'danger', message: 'Request Error !!!' });
+          toast.error('Request Error !!!', {
+            position: 'top-right'
+          });
+
           new ErrorLogService().sendErrorLog(
             'Payment_template',
             'Create_Payment_template',

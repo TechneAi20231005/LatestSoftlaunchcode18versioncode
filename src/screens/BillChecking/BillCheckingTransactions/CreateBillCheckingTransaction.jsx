@@ -199,7 +199,7 @@ export default function CreateBillCheckingTransaction({ match }) {
       if (res?.status === 200) {
         if (res.data.status === 1) {
           setAssignTo(res.data.message);
-          toast.success(res.data.message);
+          // toast.success(res.data.message);
           setAssignToDropdown(null);
           setAssignToDropdown(
             res.data.data.map((d) => ({ value: d.id, label: d.employee_name }))
@@ -231,8 +231,6 @@ export default function CreateBillCheckingTransaction({ match }) {
   const startDay = String(startFinancialYear.getDate()).padStart(2, '0');
 
   const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
-
-  
 
   const handleReset = () => {};
   const handleFilter = async (e) => {
@@ -421,18 +419,27 @@ export default function CreateBillCheckingTransaction({ match }) {
 
       if (res.status === 200) {
         if (res.data.status === 1) {
+          toast.success(res.data.message, {
+            position: 'top-right'
+          });
           history(
             {
               pathname: `/${_base}/BillCheckingTransaction`
-            },
-            { state: { alert: { type: 'success', message: res.data.message } } }
+            }
+            // { state: { alert: { type: 'success', message: res.data.message } } }
           );
           loadData();
         } else {
-          setNotify({ type: 'danger', message: res.data.message });
+          // setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message, {
+            position: 'top-right'
+          });
         }
       } else {
-        setNotify({ type: 'danger', message: res.data.message });
+        // setNotify({ type: 'danger', message: res.data.message });
+        toast.error(res.data.message, {
+          position: 'top-right'
+        });
         new ErrorLogService().sendErrorLog(
           'BillCheckingTransaction',
           'BillCheckingTransaction',
@@ -443,7 +450,11 @@ export default function CreateBillCheckingTransaction({ match }) {
     } catch (error) {
       const { response } = error;
       const { request, ...errorObject } = response;
-      setNotify({ type: 'danger', message: 'Request Error !!!' });
+      // setNotify({ type: 'danger', message: 'Request Error !!!' });
+      toast.error('Request Error !!!', {
+        position: 'top-right'
+      });
+
       new ErrorLogService().sendErrorLog(
         'BillCheckingTransaction',
         'BillCheckingTransaction',
