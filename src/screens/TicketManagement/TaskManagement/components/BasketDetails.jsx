@@ -236,7 +236,7 @@ export default function BasketDetails(props) {
                   className="form-control form-control-sm"
                   onChange={handleFromDate}
                   required
-                  readOnly={props.data && props.data.start_date ? true : false}
+                  readOnly={props?.data?.is_basket_edit === 1 ? false : true}
                   // min={ticketData && ticketData.ticket_date}
                   min={new Date().toISOString().slice(0, 10)}
                   value={props.data ? props.data.start_date : null}
@@ -254,7 +254,7 @@ export default function BasketDetails(props) {
                   className="form-control form-control-sm"
                   required
                   min={todate}
-                  readOnly={props.data && props.data.end_date ? true : false}
+                  readOnly={props?.data?.is_basket_edit === 1 ? false : true}
                   value={props.data ? props.data.end_date : null}
                 />
               </div>
