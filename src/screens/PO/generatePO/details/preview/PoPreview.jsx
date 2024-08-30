@@ -1,5 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Col, Container, Spinner } from 'react-bootstrap';
+import {
+  Col,
+  Container,
+  OverlayTrigger,
+  Spinner,
+  Tooltip
+} from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -37,6 +43,7 @@ function PoPreview() {
     currentId: '',
     currentValue: ''
   });
+  const [dataTableModifiedData, setDataTableModifiedData] = useState([]);
   const [orderQtyInputValue, setOrderQtyInputValue] = useState('');
   const [
     openDeleteOrderConfirmationModal,
@@ -59,14 +66,33 @@ function PoPreview() {
       sortable: false
     },
     {
+      name: 'Vendor Name',
+      selector: (row) =>
+        row?.vender_name ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={
+              <Tooltip id={`tooltip-${row.id}`}>{row?.vender_name}</Tooltip>
+            }
+          >
+            <span>{row?.vender_name || '--'}</span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
+      sortable: false
+    },
+    {
       name: 'Knockoff Wt Range',
       selector: (row) => row?.knockoff_wt_range || '---',
-      sortable: true
+      sortable: true,
+      width: '160px'
     },
     {
       name: 'Karagir Size Range',
       selector: (row) => row?.karagir_size_range || '---',
-      sortable: true
+      sortable: true,
+      width: '160px'
     },
     {
       name: 'Order Quantity',
@@ -88,39 +114,42 @@ function PoPreview() {
     },
     {
       name: 'Action',
-      cell: (row) => (
-        <div className="action_container">
-          <button
-            className="btn btn-info text-white rounded-circle"
-            onClick={() => {
-              row?.id === orderQty?.currentId && orderQty?.isEditable
-                ? handelEditOrder(row?.id)
-                : setOrderQty({
-                    isEditable: true,
-                    currentId: row?.id,
-                    currentValue: row?.order_qty
-                  });
-            }}
-          >
-            {row?.id === orderQty?.currentId && orderQty?.isEditable ? (
-              <i className="icofont-check-alt" />
-            ) : (
-              <i className="icofont-edit" />
-            )}
-          </button>
-          <button
-            className="btn btn-danger text-white rounded-circle"
-            onClick={() =>
-              setOpenDeleteOrderConfirmationModal({
-                open: true,
-                currentId: row?.id
-              })
-            }
-          >
-            <i className="icofont-ui-delete" />
-          </button>
-        </div>
-      ),
+      cell: (row) =>
+        !row?.off_action ? (
+          <div className="action_container">
+            <button
+              className="btn btn-info text-white rounded-circle"
+              onClick={() => {
+                row?.id === orderQty?.currentId && orderQty?.isEditable
+                  ? handelEditOrder(row?.id)
+                  : setOrderQty({
+                      isEditable: true,
+                      currentId: row?.id,
+                      currentValue: row?.order_qty
+                    });
+              }}
+            >
+              {row?.id === orderQty?.currentId && orderQty?.isEditable ? (
+                <i className="icofont-check-alt" />
+              ) : (
+                <i className="icofont-edit" />
+              )}
+            </button>
+            <button
+              className="btn btn-danger text-white rounded-circle"
+              onClick={() =>
+                setOpenDeleteOrderConfirmationModal({
+                  open: true,
+                  currentId: row?.id
+                })
+              }
+            >
+              <i className="icofont-ui-delete" />
+            </button>
+          </div>
+        ) : (
+          ''
+        ),
       button: true,
       ignoreRowClick: true,
       allowOverflow: true
@@ -149,7 +178,7 @@ function PoPreview() {
 
   const handelCancelPo = () => {
     dispatch(resetUserAddedOrderList());
-    navigate(`/${_base}/GeneratePO`);
+    navigate(`/${_base}/GeneratePO`, { replace: true });
   };
 
   const handelEditOrder = (id) => {
@@ -204,6 +233,26 @@ function PoPreview() {
     });
   }, [pendingOrderErrorFileOnTheSportDownloadData]);
 
+  // Modifying data and calculating total order qty
+  useEffect(() => {
+    if (userAddedPoDataList?.length > 0) {
+      const totalQty = userAddedPoDataList?.reduce(
+        (acc, curr) => acc + Number(curr?.order_qty || 0),
+        0
+      );
+      setDataTableModifiedData([
+        ...userAddedPoDataList,
+        {
+          item: 'Total',
+          order_qty: totalQty,
+          off_action: true
+        }
+      ]);
+    } else {
+      setDataTableModifiedData([]);
+    }
+  }, [userAddedPoDataList]);
+
   useEffect(() => {
     setOrderQtyInputValue(orderQty?.currentValue);
   }, [orderQty?.currentValue]);
@@ -218,7 +267,7 @@ function PoPreview() {
     <>
       <Container fluid className="pending_order_preview_container">
         <h3 className="fw-bold text_primary">PO</h3>
-        <DataTable columns={columns} data={userAddedPoDataList} />
+        <DataTable columns={columns} data={dataTableModifiedData} />
         <div className="d-flex justify-content-end mt-3 gap-2">
           <button
             className="btn btn-dark"
