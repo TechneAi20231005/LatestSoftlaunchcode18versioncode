@@ -56,16 +56,6 @@ function PoPreview() {
   //  table column data
   const columns = [
     {
-      name: 'Item',
-      selector: (row) => row?.item || '---',
-      sortable: false
-    },
-    {
-      name: 'Category',
-      selector: (row) => row?.category || '---',
-      sortable: false
-    },
-    {
       name: 'Vendor Name',
       selector: (row) =>
         row?.vender_name ? (
@@ -82,6 +72,17 @@ function PoPreview() {
         ),
       sortable: false
     },
+    {
+      name: 'Item',
+      selector: (row) => row?.item || '---',
+      sortable: false
+    },
+    {
+      name: 'Category',
+      selector: (row) => row?.category || '---',
+      sortable: false
+    },
+
     {
       name: 'Knockoff Wt Range',
       selector: (row) => row?.knockoff_wt_range || '---',
@@ -243,7 +244,7 @@ function PoPreview() {
       setDataTableModifiedData([
         ...userAddedPoDataList,
         {
-          item: 'Total',
+          vender_name: 'Total',
           order_qty: totalQty,
           off_action: true
         }
