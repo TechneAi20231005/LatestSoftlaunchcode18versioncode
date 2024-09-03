@@ -1,54 +1,38 @@
 // // created by Asmita Margaje
 
-import React, { useEffect, useState, useRef } from "react";
-import { Modal, Table } from "react-bootstrap";
+import React, { useEffect, useState } from 'react';
+import { Modal } from 'react-bootstrap';
 
-import Alert from "../../../../components/Common/Alert";
+import Alert from '../../../../components/Common/Alert';
 
-import {
-  getRegularizationTime,
-  getRegularizationTimeData,
-  changeStatusRegularizationTime,
-} from "../../../../services/TicketService/TaskService";
+import { getRegularizationTimeData } from '../../../../services/TicketService/TaskService';
 
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from 'react-redux';
 
-import { postTimeRegularizationData } from "../../BasketManagement/Slices/TimeRegularizationAction";
-import TableLoadingSkelton from "../../../../components/custom/loader/TableLoadingSkelton";
+import { postTimeRegularizationData } from '../../BasketManagement/Slices/TimeRegularizationAction';
+import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
 const RequestModal = (props) => {
   const [notify, setNotify] = useState(null);
 
   const basketStartDate = props.date;
 
-  const [date, setDate] = useState("");
-
-  const [timeDifference, setTimeDifference] = useState("");
+  const timeDifference = '';
   const dispatch = useDispatch();
 
   const currentDate = new Date();
   const year = currentDate.getFullYear();
-  const month = String(currentDate.getMonth() + 1).padStart(2, "0");
-  const day = String(currentDate.getDate()).padStart(2, "0");
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
   const formattedDate = `${year}-${month}-${day}`;
 
-  const handleFromDate = (e) => {
-    setDate(e.target.value);
-  };
-
-  const [timeData, setTimeData] = useState({});
   var ticket_id = props.data.ticket_id;
   var ticket_basket_id = props.data.ticket_basket_id;
-  var task_owner_id = localStorage.getItem("id");
   var ticket_task_id = props.data.id;
-
-  const [firstCheckboxChecked, setFirstCheckboxChecked] = useState(false);
-  const [secondCheckboxChecked, setSecondCheckboxChecked] = useState(false);
 
   const [isLoading, setIsLoading] = useState(false);
 
   const handleFirstCheckboxChange = (e) => {
     if (e) {
-      setFirstCheckboxChecked(e.target.checked);
       if (e.target.checked) {
         handleSecondCheckboxChange({ target: { checked: false } });
       }
@@ -57,7 +41,6 @@ const RequestModal = (props) => {
 
   const handleSecondCheckboxChange = (e) => {
     if (e) {
-      setSecondCheckboxChecked(e.target.checked);
       if (e.target.checked) {
         handleFirstCheckboxChange({ target: { checked: false } });
       }
@@ -71,46 +54,9 @@ const RequestModal = (props) => {
         increaseChecked: false,
         decreaseChecked: false,
         value: 0,
-        actual_time: null,
-      },
+        actual_time: null
+      }
     ]);
-  };
-
-  // This function is called when the checkbox for regularization time increase is clicked.
-  const handleIncreaseChange = (index) => {
-    // Create a copy of the 'rows' array to avoid directly modifying the state.
-    const updatedRows = [...rows];
-
-    // Set the 'increaseChecked' property of the row at the specified index to true.
-    updatedRows[index].increaseChecked = true;
-
-    // Set the 'decreaseChecked' property of the same row to false.
-
-    updatedRows[index].decreaseChecked = false;
-
-    // Update the state with the modified array of rows.
-    setRows(updatedRows);
-  };
-
-  const handleActualChange = (index) => {
-    const updatedRows = [...rows];
-    updatedRows[index].actual_time = timeDifference;
-    setRows(updatedRows);
-  };
-
-  // This function is called when the checkbox for regularization time decrease is clicked.
-  const handleDecreaseChange = (index) => {
-    // Create a copy of the 'rows' array to avoid directly modifying the state.
-    const updatedRows = [...rows];
-
-    // Set the 'decreaseChecked' property of the row at the specified index to true.
-    updatedRows[index].decreaseChecked = true;
-
-    // Set the 'increaseChecked' property of the same row to false.
-    updatedRows[index].increaseChecked = false;
-
-    // Update the state with the modified array of rows.
-    setRows(updatedRows);
   };
 
   const handleSubmit = async (e) => {
@@ -118,34 +64,27 @@ const RequestModal = (props) => {
     setNotify(null);
 
     const data = new FormData(e.target);
-    data?.append("scheduled_time", props.data.task_hours);
-    // data.append('actual_total_time',"00:30");
+    data?.append('scheduled_time', props.data.task_hours);
     dispatch(postTimeRegularizationData(data)).then((res) => {
       if (res?.payload?.data?.status === 1) {
-        setNotify({ type: "success", message: res?.payload?.data?.message });
+        setNotify({ type: 'success', message: res?.payload?.data?.message });
         setTimeout(() => {
           props.close();
           props.taskData();
         }, 1000);
       } else {
-        setNotify({ type: "danger", message: res?.payload?.data?.message });
+        setNotify({ type: 'danger', message: res?.payload?.data?.message });
       }
     });
-    // handleClose();
   };
 
-  // handle click event of the Remove button
   const handleRemoveClick = (index) => {
     const list = [...rows];
     list.splice(index, 1);
     setRows(list);
   };
 
-  // handle click event of the Add button
-  const [remark, setRemark] = useState();
-  const handleAddClick = (e) => {
-    setRemark(e.target.value);
-  };
+  const remark = null;
 
   const [regularizeTimeData, setRegularizeTimeData] = useState([]);
 
@@ -157,26 +96,21 @@ const RequestModal = (props) => {
         if (res.status === 200) {
           setIsLoading(false);
           if (res.data.data) {
-            // setData(null);
             setRegularizeTimeData(res.data.data);
           }
         }
       }
     );
   };
-
   useEffect(() => {
-    // Code to update the actual_time value automatically
     const updatedRows = rows.map((row) => ({
       ...row,
-      actual_time: timeDifference,
+      actual_time: timeDifference
     }));
     setRows(updatedRows);
   }, [timeDifference]);
 
-  useEffect(() => {
-    // setNotify(null);
-  }, []);
+  useEffect(() => {}, []);
 
   useEffect(() => {
     loadData();
@@ -184,12 +118,13 @@ const RequestModal = (props) => {
 
   const [rows, setRows] = useState([
     {
-      from_date: "",
-      to_date: "",
-      from_time: "",
-      to_time: "",
-      actual_time: "",
-    },
+      from_date: '',
+      to_date: '',
+      from_time: '',
+      to_time: '',
+      actual_time: '',
+      remark: ''
+    }
     // Add more rows as needed
   ]);
 
@@ -199,10 +134,10 @@ const RequestModal = (props) => {
       const toDateObj = new Date(toDate);
 
       // Extract hours and minutes from the time strings
-      const fromHours = Number(fromTime.split(":")[0]);
-      const fromMinutes = Number(fromTime.split(":")[1]);
-      const toHours = Number(toTime.split(":")[0]);
-      const toMinutes = Number(toTime.split(":")[1]);
+      const fromHours = Number(fromTime.split(':')[0]);
+      const fromMinutes = Number(fromTime.split(':')[1]);
+      const toHours = Number(toTime.split(':')[0]);
+      const toMinutes = Number(toTime.split(':')[1]);
 
       fromDateObj.setHours(fromHours, fromMinutes);
       toDateObj.setHours(toHours, toMinutes);
@@ -215,17 +150,54 @@ const RequestModal = (props) => {
 
       const timeDiffMinutes = Math.floor(positiveTimeDiffMs / (1000 * 60));
       const hours = Math.floor(timeDiffMinutes / 60);
-      const minutes = (timeDiffMinutes % 60).toString().padStart(2, "0");
+      const minutes = (timeDiffMinutes % 60).toString().padStart(2, '0');
 
       return `${hours}:${minutes}`;
     }
 
-    return "";
+    return '';
   };
+
+  const now = new Date();
+  const currentHours = now.getHours();
+  const currentMinutes = now.getMinutes();
+
+  // Format hours and minutes to always have two digits
+  const formattedHours = currentHours.toString().padStart(2, '0');
+  const formattedMinutes = currentMinutes.toString().padStart(2, '0');
+
+  // Combine formatted hours and minutes
+  const currentTimeFormatted = `${formattedHours}:${formattedMinutes}`;
 
   const handleActualTimeChange = (index, fromTime, toTime) => {
     const fromDate = rows[index].from_date;
     const toDate = rows[index].to_date;
+
+    // Get the current date formatted similarly to fromDate and toDate
+    const currentDate = new Date().toISOString().split('T')[0]; // Assuming the format is 'YYYY-MM-DD'
+
+    if (fromDate === currentDate && fromTime > currentTimeFormatted) {
+      alert('From time cannot be a future time.');
+      return;
+    }
+
+    if (toDate === currentDate && toTime > currentTimeFormatted) {
+      alert('To time cannot be a future time.');
+      return;
+    }
+
+    // Combine fromDate and fromTime into a single datetime object
+    const fromDateTime = new Date(`${fromDate}T${fromTime}`).getTime();
+
+    // Combine toDate and toTime into a single datetime object
+    const toDateTime = new Date(`${toDate}T${toTime}`).getTime();
+
+    // Check if toTime is earlier than fromTime, considering different dates
+    if (toTime?.length > 0 && toDateTime < fromDateTime) {
+      alert('To time cannot be earlier than from time.');
+      return;
+    }
+
     const actualTime = calculateTimeDifference(
       fromDate,
       toDate,
@@ -234,7 +206,7 @@ const RequestModal = (props) => {
     );
 
     // Convert actual time to hours and minutes
-    const [hours, minutes] = actualTime.split(":").map(Number);
+    const [hours, minutes] = actualTime.split(':').map(Number);
 
     // Convert actual time to a numerical value for comparison
     const actualTimeValue = hours * 60 + minutes;
@@ -242,7 +214,7 @@ const RequestModal = (props) => {
     // Check if actual time is greater than 12:00 hours
     if (actualTimeValue > 12 * 60) {
       // Alert if actual time exceeds 12:00 hours
-      alert("Actual time is greater than 12:00 hours.");
+      alert('Actual time is greater than 12:00 hours.');
       // Return without updating the UI
       return;
     }
@@ -263,20 +235,15 @@ const RequestModal = (props) => {
     });
   };
 
-  const [fromDate, setFromDate] = useState(""); // State for from_date
-  const [toDate, setToDate] = useState("");
+  const [fromDate, setFromDate] = useState(''); // State for from_date
 
   const handleDateChange = (index, dateType, value, fromTime, toTime) => {
-    if (dateType === "from_date") {
+    if (dateType === 'from_date') {
       setFromDate((prevFromDates) => ({
         ...prevFromDates,
-        [index]: value,
+        [index]: value
       }));
-    } else if (dateType === "to_date") {
-      setToDate((prevToDates) => ({
-        ...prevToDates,
-        [index]: value,
-      }));
+    } else if (dateType === 'to_date') {
     }
 
     setRows((prev) => {
@@ -286,7 +253,7 @@ const RequestModal = (props) => {
             ...data,
             [dateType]: value,
             from_time: fromTime,
-            to_time: toTime,
+            to_time: toTime
           };
         } else {
           return data;
@@ -305,15 +272,6 @@ const RequestModal = (props) => {
 
       return updatedRows;
     });
-  };
-
-  const handleInputChange = (e, index) => {
-    const { name, value } = e.target;
-    setRows((prev) =>
-      prev.map((data, rowIndex) =>
-        rowIndex === index ? { ...data, [name]: value } : data
-      )
-    );
   };
 
   function calculateActualTime(fromDate, toDate, fromTime, toTime) {
@@ -338,9 +296,9 @@ const RequestModal = (props) => {
     const minutes = Math.floor((timeDiff % (1000 * 60 * 60)) / (1000 * 60));
 
     // Format the result as HH:mm
-    return `${hours.toString().padStart(2, "0")}:${minutes
+    return `${hours.toString().padStart(2, '0')}:${minutes
       .toString()
-      .padStart(2, "0")}`;
+      .padStart(2, '0')}`;
   }
 
   // Define a function to handle row removal
@@ -353,13 +311,13 @@ const RequestModal = (props) => {
   // Define a function to add a new row
   const addRoww = () => {
     const newRow = {
-      from_date: "", // Initialize with default values
-      to_date: "",
-      from_time: "",
-      to_time: "",
-      actual_time: "", // You may set a default value if needed
+      from_date: '', // Initialize with default values
+      to_date: '',
+      from_time: '',
+      to_time: '',
+      actual_time: '', // You may set a default value if needed
       isAddingNewRow: true,
-      remark: "",
+      remark: ''
     };
     const updatedData = [...regularizeTimeData, newRow];
     setRegularizeTimeData(updatedData);
@@ -371,6 +329,14 @@ const RequestModal = (props) => {
     updatedData[index].remark = value; // Update the remark field of the corresponding row
     setRegularizeTimeData(updatedData); // Update the state with the modified array
   };
+
+  const handleRemarkChangee = (event, index) => {
+    const { value } = event.target;
+    const newRows = [...rows];
+    newRows[index].remark = value;
+    setRows(newRows);
+  };
+
   return (
     <div>
       <Modal
@@ -392,17 +358,17 @@ const RequestModal = (props) => {
             <div className="row">
               <div className="col-md">
                 <h6
-                  style={{ fontWeight: "bold", width: "300px" }}
+                  style={{ fontWeight: 'bold', width: '300px' }}
                 >{`Ticket ID: ${props.data.ticket_id_name}`}</h6>
               </div>
               <div className="col-md ">
-                <h6 style={{ fontWeight: "bold", width: "580px" }}>{`Task Name:
+                <h6 style={{ fontWeight: 'bold', width: '580px' }}>{`Task Name:
   ${props.data.task_name}`}</h6>
               </div>
 
               <div className="col-md">
                 <h6
-                  style={{ fontWeight: "bold" }}
+                  style={{ fontWeight: 'bold' }}
                 >{`Scheduled Time: ${props.data.task_hours}`}</h6>
               </div>
             </div>
@@ -465,21 +431,16 @@ const RequestModal = (props) => {
                               value,
                               dateType
                             ) => {
-                              if (dateType === "from_date") {
+                              if (dateType === 'from_date') {
                                 setFromDate((prevFromDates) => ({
                                   ...prevFromDates,
-                                  [index]: value,
+                                  [index]: value
                                 }));
-                              } else if (dateType === "to_date") {
-                                setToDate((prevToDates) => ({
-                                  ...prevToDates,
-                                  [index]: value,
-                                }));
+                              } else if (dateType === 'to_date') {
                               }
 
                               const updatedData = [...regularizeTimeData];
                               updatedData[index].from_date = value;
-                              // Calculate actual time
                               const actualTime = calculateActualTime(
                                 updatedData[index].from_date,
                                 updatedData[index].to_date,
@@ -502,7 +463,7 @@ const RequestModal = (props) => {
                                 updatedData[index].to_time
                               );
                               const [hours, minutes] = actualTime
-                                .split(":")
+                                .split(':')
                                 .map(Number);
                               const actualTimeValue = hours * 60 + minutes;
 
@@ -512,7 +473,22 @@ const RequestModal = (props) => {
 
                             const handleFromTimeChange = (index, value) => {
                               const updatedData = [...regularizeTimeData];
+                              const fromDate = updatedData[index].from_date;
+
+                              const currentDate = new Date()
+                                .toISOString()
+                                .split('T')[0]; // Assuming the format is 'YYYY-MM-DD'
+
                               updatedData[index].from_time = value;
+
+                              if (
+                                fromDate === currentDate &&
+                                value > currentTimeFormatted
+                              ) {
+                                alert('From time cannot be a future time.');
+                                return;
+                              }
+
                               // Calculate actual time
                               const actualTime = calculateActualTime(
                                 updatedData[index].from_date,
@@ -520,36 +496,117 @@ const RequestModal = (props) => {
                                 updatedData[index].from_time,
                                 updatedData[index].to_time
                               );
-                              const [hours, minutes] = actualTime
-                                .split(":")
-                                .map(Number);
-                              const actualTimeValue = hours * 60 + minutes;
 
                               updatedData[index].actual_time = actualTime;
                               setRegularizeTimeData(updatedData);
                             };
 
+                            // const handleToTimeChange = (index, value) => {
+                            //   const updatedData = [...regularizeTimeData];
+                            //   const toDate = updatedData[index].to_date;
+
+                            //   const currentDate = new Date()
+                            //     .toISOString()
+                            //     .split('T')[0]; // Assuming the format is 'YYYY-MM-DD'
+
+                            //   updatedData[index].to_time = value;
+
+                            //   if (
+                            //     toDate === currentDate &&
+                            //     value > currentTimeFormatted
+                            //   ) {
+                            //     alert('To time cannot be a future time.');
+                            //     return;
+                            //   }
+
+                            //   const fromTime = updatedData[index].from_time;
+                            //   if (fromTime && value < fromTime) {
+                            //     alert(
+                            //       'To time cannot be earlier than from time.'
+                            //     );
+                            //     return;
+                            //   }
+
+                            //   const actualTime = calculateActualTime(
+                            //     updatedData[index].from_date,
+                            //     updatedData[index].to_date,
+                            //     updatedData[index].from_time,
+                            //     updatedData[index].to_time
+                            //   );
+
+                            //   const [hours, minutes] = actualTime
+                            //     .split(':')
+                            //     .map(Number);
+                            //   const actualTimeValue = hours * 60 + minutes;
+                            //   if (actualTimeValue > 12 * 60) {
+                            //     alert(
+                            //       'Actual time is greater than 12:00 hours.'
+                            //     );
+                            //     return;
+                            //   }
+
+                            //   updatedData[index].actual_time = actualTime;
+                            //   setRegularizeTimeData(updatedData);
+                            // };
+
                             const handleToTimeChange = (index, value) => {
                               const updatedData = [...regularizeTimeData];
+                              const toDate = updatedData[index].to_date;
+                              const fromDate = updatedData[index].from_date;
+
+                              const currentDate = new Date()
+                                .toISOString()
+                                .split('T')[0]; // Current date in 'YYYY-MM-DD'
+                              const currentTimeFormatted = new Date()
+                                .toTimeString()
+                                .split(' ')[0]; // Current time in 'HH:MM:SS'
+
                               updatedData[index].to_time = value;
-                              // Calculate actual time
+
+                              // Check if 'to_date' is the current date and 'to_time' is in the future
+                              if (
+                                toDate === currentDate &&
+                                value > currentTimeFormatted
+                              ) {
+                                alert('To time cannot be a future time.');
+                                return;
+                              }
+
+                              const fromTime = updatedData[index].from_time;
+
+                              // Combine dates and times into full Date objects for accurate comparison
+                              const fromDateTime = new Date(
+                                `${fromDate}T${fromTime}`
+                              ).getTime();
+                              const toDateTime = new Date(
+                                `${toDate}T${value}`
+                              ).getTime();
+
+                              // Check if 'to_time' is earlier than 'from_time' considering the dates
+                              if (toDateTime < fromDateTime) {
+                                alert(
+                                  'To time cannot be earlier than from time.'
+                                );
+                                return;
+                              }
+
+                              // Calculate actual time in hours and minutes
                               const actualTime = calculateActualTime(
                                 updatedData[index].from_date,
                                 updatedData[index].to_date,
                                 updatedData[index].from_time,
                                 updatedData[index].to_time
                               );
-                              // Check if actual time exceeds a certain limit (e.g., 12 hours)
+
                               const [hours, minutes] = actualTime
-                                .split(":")
+                                .split(':')
                                 .map(Number);
                               const actualTimeValue = hours * 60 + minutes;
+
                               if (actualTimeValue > 12 * 60) {
                                 alert(
-                                  "Actual time is greater than 12:00 hours."
+                                  'Actual time is greater than 12:00 hours.'
                                 );
-                                // Optionally, you might want to revert the changes made
-                                // or handle this situation according to your app's logic
                                 return;
                               }
 
@@ -561,21 +618,20 @@ const RequestModal = (props) => {
                               <tr
                                 key={index}
                                 className={
-                                  row.is_active === 0 ? "strikethrough" : ""
+                                  row.is_active === 0 ? 'strikethrough' : ''
                                 }
                               >
                                 <td>{index + 1}</td>
                                 <td
                                   className={
-                                    row.is_active === 0 ? "strikethrough" : ""
+                                    row.is_active === 0 ? 'strikethrough' : ''
                                   }
                                 >
                                   <input
-                                    type={row.is_active === 0 ? "text" : "date"}
+                                    type={row.is_active === 0 ? 'text' : 'date'}
                                     className={`form-control form-control-sm ${
-                                      row.is_active === 0 ? "strikethrough" : ""
+                                      row.is_active === 0 ? 'strikethrough' : ''
                                     }`}
-                                    // className="form-control form-control-sm"
                                     name={`from_date[${index}]`}
                                     min={basketStartDate}
                                     max={formattedDate}
@@ -584,19 +640,19 @@ const RequestModal = (props) => {
                                       handleFromDateChange(
                                         index,
                                         e.target.value,
-                                        "from_date"
+                                        'from_date'
                                       )
                                     }
                                     required
-                                    disabled={row.is_regularized === "YES"}
+                                    disabled={row.is_regularized === 'YES'}
                                   />
                                 </td>
 
                                 <td>
                                   <input
-                                    type={row.is_active === 0 ? "text" : "date"}
+                                    type={row.is_active === 0 ? 'text' : 'date'}
                                     className={`form-control form-control-sm ${
-                                      row.is_active === 0 ? "strikethrough" : ""
+                                      row.is_active === 0 ? 'strikethrough' : ''
                                     }`}
                                     name={`to_date[${index}]`}
                                     min={fromDate[index]}
@@ -606,19 +662,19 @@ const RequestModal = (props) => {
                                       handleToDateChange(
                                         index,
                                         e.target.value,
-                                        "to_date"
+                                        'to_date'
                                       )
                                     }
-                                    disabled={row.is_regularized === "YES"}
+                                    disabled={row.is_regularized === 'YES'}
                                     required
                                   />
                                 </td>
 
                                 <td>
                                   <input
-                                    type={row.is_active === 0 ? "text" : "time"}
+                                    type={row.is_active === 0 ? 'text' : 'time'}
                                     className={`form-control form-control-sm${
-                                      row.is_active === 0 ? "strikethrough" : ""
+                                      row.is_active === 0 ? 'strikethrough' : ''
                                     }`}
                                     name={`from_time[${index}]`}
                                     value={row.from_time}
@@ -628,14 +684,14 @@ const RequestModal = (props) => {
                                         e.target.value
                                       )
                                     }
-                                    disabled={row.is_regularized === "YES"}
+                                    disabled={row.is_regularized === 'YES'}
                                     required
                                   />
                                   <i className="icofont-clock"></i>
                                 </td>
                                 <td>
                                   <input
-                                    type={row.is_active === 0 ? "text" : "time"}
+                                    type={row.is_active === 0 ? 'text' : 'time'}
                                     className="form-control form-control-sm"
                                     name={`to_time[${index}]`}
                                     value={row.to_time}
@@ -643,7 +699,7 @@ const RequestModal = (props) => {
                                       handleToTimeChange(index, e.target.value)
                                     }
                                     required
-                                    disabled={row.is_regularized === "YES"}
+                                    disabled={row.is_regularized === 'YES'}
                                   />
                                 </td>
                                 <td>
@@ -651,34 +707,29 @@ const RequestModal = (props) => {
                                     type="text"
                                     className="form-control form-control-sm-2"
                                     name={`actual_time[${index}]`}
-                                    style={{ width: "5rem", height: 32 }}
+                                    style={{ width: '5rem', height: 32 }}
                                     value={
                                       row.actual_time &&
-                                      row.actual_time !== "NaN:NaN"
+                                      row.actual_time !== 'NaN:NaN'
                                         ? row.actual_time
-                                        : row.total_time || "00:00"
+                                        : row.total_time || '00:00'
                                     }
                                     required
-                                    disabled={row.is_regularized === "YES"}
+                                    disabled={row.is_regularized === 'YES'}
                                   />
                                 </td>
                                 <td>
                                   <input
-                                    title={remark && remark ? remark : ""}
+                                    title={remark && remark ? remark : ''}
                                     type="text"
                                     className="form-control form-control-sm"
                                     name={`remark[${index}]`}
                                     value={row.remark}
                                     onChange={(e) =>
                                       handleRemarkChange(e, index)
-                                    } // Assuming you have a function to handle remark changes
+                                    }
                                     required
-                                    disabled={row.is_regularized === "YES"}
-                                    // disabled={
-                                    //   (row.status === "REJECTED" ||
-                                    //     row.status === "APPROVED") &&
-                                    //   !row.isAddingNewRow
-                                    // }
+                                    disabled={row.is_regularized === 'YES'}
                                   />
                                 </td>
                                 <td>
@@ -698,8 +749,8 @@ const RequestModal = (props) => {
                                     <button
                                       onClick={addRoww}
                                       className="btn btn-primary"
-                                      style={{ backgroundColor: "#484C7F" }}
-                                      disabled={row.status === "PENDING"}
+                                      style={{ backgroundColor: '#484C7F' }}
+                                      disabled={row.status === 'PENDING'}
                                     >
                                       <i className="icofont-plus-circle"></i>
                                     </button>
@@ -711,8 +762,8 @@ const RequestModal = (props) => {
                                         handleRemoveClickk(index)
                                       }
                                       disabled={
-                                        row.status === "REJECTED" ||
-                                        row.status === "APPROVED"
+                                        row.status === 'REJECTED' ||
+                                        row.status === 'APPROVED'
                                       }
                                     >
                                       <i className="icofont-ui-delete"></i>
@@ -740,7 +791,7 @@ const RequestModal = (props) => {
                                   onChange={(e) =>
                                     handleDateChange(
                                       index,
-                                      "from_date",
+                                      'from_date',
                                       e.target.value,
                                       row.from_time
                                     )
@@ -759,7 +810,7 @@ const RequestModal = (props) => {
                                   onChange={(e) =>
                                     handleDateChange(
                                       index,
-                                      "to_date",
+                                      'to_date',
                                       e.target.value,
                                       row.from_time,
                                       row.to_time
@@ -808,7 +859,7 @@ const RequestModal = (props) => {
                                   type="text"
                                   className="form-control form-control-sm-2"
                                   name={`actual_time[${index}]`}
-                                  style={{ width: "5rem", height: 32 }}
+                                  style={{ width: '5rem', height: 32 }}
                                   value={row.actual_time}
                                   required
                                 />
@@ -816,21 +867,24 @@ const RequestModal = (props) => {
 
                               <td>
                                 <input
-                                  title={remark && remark ? remark : ""}
+                                  title={remark && remark ? remark : ''}
                                   type="text"
                                   className="form-control form-control-sm"
                                   name={`remark[${index}]`}
-                                  defaultValue={row && row.remark}
+                                  value={row && row.remark}
                                   required
+                                  onChange={(event) =>
+                                    handleRemarkChangee(event, index)
+                                  }
                                 />
                               </td>
 
                               <td>
-                                {index + 1 == 1 && (
+                                {index + 1 === 1 && (
                                   <button
                                     onClick={addRow}
                                     className="btn btn-primary"
-                                    style={{ backgroundColor: "#484C7F" }}
+                                    style={{ backgroundColor: '#484C7F' }}
                                   >
                                     <i className="icofont-plus-circle"></i>
                                   </button>
@@ -839,7 +893,7 @@ const RequestModal = (props) => {
                                 {index + 1 > 1 && (
                                   <button
                                     className="mr10 mr-1 btn btn-danger"
-                                    onClick={() => handleRemoveClick()}
+                                    onClick={() => handleRemoveClick(index)}
                                   >
                                     <i className="icofont-ui-delete"></i>
                                   </button>
@@ -860,7 +914,12 @@ const RequestModal = (props) => {
             <button
               type="submit"
               className="btn btn-sm btn-primary"
-              style={{ backgroundColor: "#484C7F" }}
+              style={{ backgroundColor: '#484C7F' }}
+              disabled={
+                regularizeTimeData?.length > 0 &&
+                regularizeTimeData?.filter((d) => d?.status === 'PENDING')
+                  ?.length > 0
+              }
             >
               Submit
             </button>

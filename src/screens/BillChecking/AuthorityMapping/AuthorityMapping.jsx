@@ -31,6 +31,7 @@ import {
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 const AuthorityMapping = () => {
   //initial state
@@ -44,6 +45,11 @@ const AuthorityMapping = () => {
   const authorities = useSelector(
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.getModuleSettingData
+  );
+
+  const isLoading = useSelector(
+    (BillCheckingTransactionSlice) =>
+      BillCheckingTransactionSlice.billChecking.isLoading
   );
   const userData = useSelector(
     (MyTicketComponentSlice) =>
@@ -215,12 +221,12 @@ const AuthorityMapping = () => {
       )
     },
 
-    {
-      name: 'Submodule Name',
-      selector: (row) => row.sub_module_name,
-      sortable: true,
-      width: '175px'
-    },
+    // {
+    //   name: 'Submodule Name',
+    //   selector: (row) => row.sub_module_name,
+    //   sortable: true,
+    //   width: '175px'
+    // },
 
     {
       name: ' Updated At ',
@@ -428,7 +434,7 @@ const AuthorityMapping = () => {
       }
 
       dispatch(creteAuthority(mainJson));
-      loadData();
+      // loadData();
 
       function findOverlappingUserDetails(userDetails) {
         const overlappingRanges = [];
@@ -509,6 +515,8 @@ const AuthorityMapping = () => {
                   defaultSortField="title"
                   pagination
                   data={filteredData}
+                  progressComponent={<TableLoadingSkelton />}
+                  progressPending={isLoading}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
@@ -571,7 +579,7 @@ const AuthorityMapping = () => {
                   {error && <div style={{ color: 'red' }}>{error}</div>}
                 </div>
 
-                <div className="col-sm-4 ">
+                {/* <div className="col-sm-4 ">
                   <label className="form-label font-weight-bold">
                     Submodule Name :<Astrick color="red" size="13px" />
                   </label>
@@ -593,7 +601,7 @@ const AuthorityMapping = () => {
                     <>
                       <Select
                         type="text"
-                        className="form-control"
+                        // className="form-control"
                         id="submodule_name"
                         name="submodule_name"
                         options={submodulename}
@@ -613,7 +621,7 @@ const AuthorityMapping = () => {
                       />
                     </>
                   )}
-                </div>
+                </div> */}
               </div>
 
               <table

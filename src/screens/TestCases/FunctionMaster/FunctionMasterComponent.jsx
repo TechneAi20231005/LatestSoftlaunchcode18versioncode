@@ -118,8 +118,18 @@ function FunctionMasterComponent() {
     }
   ];
 
+  const transformDataForExport = (data) => {
+    return data.map((row) => ({
+      ...row,
+      status: row.is_active == 1 ? 'Active' : 'Deactive'
+    }));
+  };
+
+  const transformedData = transformDataForExport(filteredFunctionMasterList);
   const exportColumns = [
     { title: 'Function Title', field: 'function_name' },
+    { title: 'Status', field: 'status' },
+
     { title: 'Created At', field: 'created_at' },
     { title: 'Created By', field: 'created_by' },
     { title: 'Updated At', field: 'updated_at' },
@@ -166,7 +176,7 @@ function FunctionMasterComponent() {
             name="interview_search"
             value={searchValue}
             onChange={(e) => setSearchValue(e?.target?.value)}
-            placeholder="Enter review comment..."
+            placeholder="Search function here..."
             className="form-control"
           />
         </Col>
@@ -192,7 +202,7 @@ function FunctionMasterComponent() {
           </button>
           <ExportToExcel
             className="btn btn-danger"
-            apiData={filteredFunctionMasterList}
+            apiData={transformedData}
             columns={exportColumns}
             fileName="Function Master Records"
             disabled={!filteredFunctionMasterList?.length}

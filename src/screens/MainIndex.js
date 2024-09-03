@@ -1,12 +1,6 @@
 import React from 'react';
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  Redirect,
-  Routes
-} from 'react-router-dom';
-import { _apiUrl, _base } from '../settings/constants';
+import { Route, Routes } from 'react-router-dom';
+import { _base } from '../settings/constants';
 import Header from '../components/Common/Header';
 import Dashboard from './Dashboard/Dashboard';
 import Profile from './Dashboard/Profile';
@@ -14,12 +8,9 @@ import Profile from './Dashboard/Profile';
 import NotificationComponent from './Notification/NotificationComponent';
 import ApprovedNotificationComponent from './Notification/ApprovedNotificationComponent';
 
-import TenantForm from './Masters/TenantMaster/EditForm';
-
 import { CustomerComponent } from './Masters/CustomerMaster/CustomerComponent';
 import EditCustomer from './Masters/CustomerMaster/EditCustomer';
 import CreateCustomer from './Masters/CustomerMaster/CreateCustomer';
-import ForgetPassword from '../components/Auth/ForgetPassword';
 
 import { UserComponent } from './Masters/UserMaster/UserComponent';
 import CreateUserComponent from './Masters/UserMaster/CreateUserComponent';
@@ -152,8 +143,6 @@ import EditBillTypeComponent from './BillChecking/Masters/BillTypeMaster/EditBil
 import ViewBillTypeComponent from './BillChecking/Masters/BillTypeMaster/ViewBillTypeComponent';
 import TaskAndTicketTypeMaster from './Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMaster';
 import ViewTicketComponent from './TicketManagement/ViewTicketComponent';
-import ResetPassword from '../components/Auth/ResetPassword';
-import StepAuthentication from '../components/Auth/StepAuthentication';
 
 // Sprint Planning
 import SprintCalendar from './TicketManagement/TaskManagement/Calendar-Graph/SprintCalendar';
@@ -188,26 +177,17 @@ import FunctionMasterComponent from './TestCases/FunctionMaster/FunctionMasterCo
 import TestCaseHistoryComponent from './TestCases/TestDraft/TestCaseHistoryComponent';
 import TestDraftComponent from './TestCases/TestDraft/TestDraftComponent';
 import TestBankComponent from './TestCases/TestBank/TestBankComponent';
+import ProjectWiseModuleHistory from './ConsolidatedView/ProjectWiseModuleHistory';
 
 class MainIndex extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-  //  encryptParameter = (id) => {
-  //   const secretKey = "rushikesh"; // Replace with a secure key
-  //   const encryptedId = CryptoJS.AES.encrypt(id.toString(), secretKey).toString();
-  //   return encryptedId;
-  // };
-
   render() {
-    // Encryption function (same as mentioned before)
     if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
       for (var a in sessionStorage) {
         localStorage.setItem(a, sessionStorage[a]);
       }
     } else {
-      for (var a in localStorage) {
-        sessionStorage.setItem(a, localStorage[a]);
+      for (var b in localStorage) {
+        sessionStorage.setItem(a, localStorage[b]);
       }
     }
     return (
@@ -239,11 +219,6 @@ class MainIndex extends React.Component {
               element={<ApprovedNotificationComponent />}
             />
             <Route path={`/${_base}/Tenant`} element={<TenantComponent />} />
-            <Route
-              exact
-              path={`/${_base}/Tenant/Edit/:id`}
-              element={<TenantForm />}
-            />
             <Route
               exact
               path={`/${_base}/Customer`}
@@ -614,8 +589,14 @@ class MainIndex extends React.Component {
             />
             <Route
               exact
-              path={`/${_base}/ConsolidatedView/ProjectwiseModule/:projectId/:moduleId`}
+              // path={`/${_base}/ConsolidatedView/ProjectwiseModule/:projectId/:moduleId`}
+              path={`/${_base}/ConsolidatedView/ProjectwiseModule/:projectId/:moduleId?`}
               element={<ProjectwiseModule />}
+            />
+            <Route
+              exact
+              path={`/${_base}/ProjectWiseModuleHistory/:id`}
+              element={<ProjectWiseModuleHistory />}
             />
             <Route
               exact

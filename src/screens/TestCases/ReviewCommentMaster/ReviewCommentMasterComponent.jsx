@@ -115,8 +115,21 @@ function ReviewCommentMasterComponent() {
     }
   ];
 
+  const transformDataForExport = (data) => {
+    return data.map((row) => ({
+      ...row,
+      status: row.is_active == 1 ? 'Active' : 'Deactive'
+    }));
+  };
+
+  const transformedData = transformDataForExport(
+    filteredReviewCommentMasterList
+  );
+
   const exportColumns = [
     { title: 'Reviewer Comment Title', field: 'reviewer_comment' },
+    { title: 'Status', field: 'status' },
+
     { title: 'Created At', field: 'created_at' },
     { title: 'Created By', field: 'created_by' },
     { title: 'Updated At', field: 'updated_at' },
@@ -162,7 +175,7 @@ function ReviewCommentMasterComponent() {
             name="interview_search"
             value={searchValue}
             onChange={(e) => setSearchValue(e?.target?.value)}
-            placeholder="Enter review comment..."
+            placeholder="Search reviewer comment here..."
             className="form-control"
           />
         </Col>
@@ -188,7 +201,7 @@ function ReviewCommentMasterComponent() {
           </button>
           <ExportToExcel
             className="btn btn-danger"
-            apiData={filteredReviewCommentMasterList}
+            apiData={transformedData}
             columns={exportColumns}
             fileName="Review Comment Master Records"
             disabled={!filteredReviewCommentMasterList?.length}

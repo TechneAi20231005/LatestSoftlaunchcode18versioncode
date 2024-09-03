@@ -1,17 +1,16 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import CustomerMappingService from '../../../services/SettingService/CustomerMappingService';
+
 import DataTable from 'react-data-table-component';
 
 import PageHeader from '../../../components/Common/PageHeader';
 import Alert from '../../../components/Common/Alert';
 
 import { _base } from '../../../settings/constants';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
-import { OverlayTrigger, Spinner, Tooltip } from 'react-bootstrap';
-import { Modal } from 'react-bootstrap';
-import { UseDispatch, useDispatch, useSelector } from 'react-redux';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
+
+import { useDispatch, useSelector } from 'react-redux';
 
 import {
   exportCustomerMappingData,
@@ -40,22 +39,22 @@ export default function CustomerMappingComponent() {
   );
 
   const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 32)
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 32)
   );
 
   const [notify, setNotify] = useState(null);
 
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  // const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
 
   //search function
 
-  const handleSearch = () => {
+  const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(data, searchTerm);
     setFilteredData(filteredList);
-  };
+  }, [data, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -84,7 +83,7 @@ export default function CustomerMappingComponent() {
       name: 'Sr.No',
       selector: (row) => row.Sro,
       sortable: true,
-      width: '60px'
+      width: '100px'
     },
     // { name: 'Query', selector: row => row.query_type_name, sortable: true,width: "175px" },
 
@@ -92,7 +91,7 @@ export default function CustomerMappingComponent() {
       name: 'Query',
       selector: (row) => row['Query'],
       sortable: true,
-      with: '200px',
+      width: '150px',
       cell: (row) => (
         <div
           className="btn-group"
@@ -104,9 +103,9 @@ export default function CustomerMappingComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.query_type_name && row.query_type_name.length < 10
+                  {row.query_type_name && row.query_type_name.length < 15
                     ? row.query_type_name
-                    : row.query_type_name.substring(0, 10) + '....'}
+                    : row.query_type_name.substring(0, 15) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -196,7 +195,7 @@ export default function CustomerMappingComponent() {
     if (location && location.state) {
       setNotify(location.state.alert);
     }
-  }, []);
+  }, [dispatch, checkRole.length, location]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -205,7 +204,7 @@ export default function CustomerMappingComponent() {
   }, [checkRole]);
   useEffect(() => {
     handleSearch();
-  }, [searchTerm]);
+  }, [searchTerm, handleSearch]);
   useEffect(() => {
     setFilteredData(data);
   }, [data]);

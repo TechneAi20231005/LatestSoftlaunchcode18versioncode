@@ -1,26 +1,43 @@
-import React from "react";
+import React from 'react';
+import './Skeleton.css';
 
-function CardLoadingSkeleton({ rowCount = 3 }) {
+export default function CardLoadingSkeleton() {
   return (
-    <div className="container">
-      {[...new Array(rowCount)].map((_, rowIndex) => (
-        <div key={rowIndex} className="row mb-4">
-          {[...new Array(3)].map((_, colIndex) => (
-            <div key={colIndex} className="col-md-4">
-              <div className="card">
-                <div className="card-body">
-                  <div className="skeleton skeleton-text mb-3 w-80"></div>
-                  <div className="skeleton skeleton-text mb-3 w-60"></div>
-                  <div className="skeleton skeleton-text mb-3 w-70"></div>
-                  <div className="skeleton skeleton-text w-90"></div>
+    <div className="row">
+      {[...Array(9)].map((_, index) => (
+        <div
+          key={index}
+          className="col-xxl-4 col-xl-4 col-lg-4 col-md-4 col-sm-6 mb-4 mt-3"
+        >
+          <div className="card card-no-border">
+            <div className="card-body card-shadow p-4">
+              <div className="d-flex align-items-center justify-content-between mt-3">
+                <div className="lesson_name">
+                  <div className="project-block skeleton">
+                    <i className="icofont-bag-alt"></i>
+                  </div>
                 </div>
               </div>
+              <div className="skeleton skeleton-title mt-3"></div>
+              <div className="row g-2 mt-3">
+                <div className="col-6">
+                  <div className="skeleton skeleton-line"></div>
+                  <div className="skeleton skeleton-line mt-2"></div>
+                </div>
+                <div className="col-6">
+                  <div className="skeleton skeleton-line"></div>
+                  <div className="skeleton skeleton-line mt-2"></div>
+                </div>
+              </div>
+              <div className="skeleton skeleton-divider mt-4 mb-3"></div>
+              <div className="d-flex justify-content-start">
+                <div className="skeleton skeleton-circle"></div>
+                <div className="skeleton skeleton-small-text ms-2"></div>
+              </div>
             </div>
-          ))}
+          </div>
         </div>
       ))}
     </div>
   );
 }
-
-export default CardLoadingSkeleton;

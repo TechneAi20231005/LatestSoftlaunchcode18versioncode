@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 import CustomerMappingService from '../../../services/SettingService/CustomerMappingService';
@@ -54,10 +54,8 @@ export default function CreateCustomerMappingComponent() {
 
   const [userData, setUserData] = useState([]);
 
-  const [department, setDepartment] = useState();
   const [departmentDropdown, setDepartmentDropdown] = useState();
 
-  const [user, setUser] = useState();
   const [userDropdown, setUserDropdown] = useState();
 
   const [selectedCustomer, setSelectedCustomer] = useState(0);
@@ -111,18 +109,14 @@ export default function CreateCustomerMappingComponent() {
     user_policy_label: []
   });
 
-  const loadData = async () => {
-    await getDynamicForm();
-  };
-
-  const getDynamicForm = async () => {
+  const getDynamicForm = useCallback(async () => {
     try {
       const res = await new DynamicFormService().getDynamicForm();
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const data = res.data.data.filter((d) => d.is_active == 1);
-          const select = res.data.data
-            .filter((d) => d.is_active == 1)
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
+          const data = res?.data?.data.filter((d) => d.is_active === 1);
+          const select = res?.data?.data
+            .filter((d) => d.is_active === 1)
             .map((d) => ({ value: d.id, label: d.template_name }));
           setDynamicForm(data);
           setDynamicFormDropdown(select);
@@ -131,8 +125,11 @@ export default function CreateCustomerMappingComponent() {
     } catch (error) {
       console.error('Error fetching dynamic form:', error);
     }
-  };
+  }, []);
 
+  const loadData = useCallback(async () => {
+    await getDynamicForm();
+  }, [getDynamicForm]);
   const handleQueryType = async (e) => {
     setNotify(null);
     setDynamicForm(null);
@@ -143,7 +140,7 @@ export default function CreateCustomerMappingComponent() {
     const queryTypeTemp = queryType.filter((d) => d.id === e.value);
 
     const dynamicFormDropdownTemp = dynamicForm
-      .filter((d) => d.id == queryTypeTemp[0].form_id)
+      .filter((d) => d.id === queryTypeTemp[0].form_id)
       .map((d) => ({ value: d.id, label: d.template_name }));
 
     if (dynamicFormDropdownTemp?.length > 0) {
@@ -163,12 +160,11 @@ export default function CreateCustomerMappingComponent() {
 
   const getDepartment = async () => {
     await new DepartmentService().getDepartment().then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
-          setDepartment(res.data.data.filter((d) => d.is_active == 1));
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
           var defaultValue = [{ value: 0, label: 'Select Department' }];
-          var dropwdown = res.data.data
-            .filter((d) => d.is_active == 1)
+          var dropwdown = res?.data?.data
+            .filter((d) => d.is_active === 1)
             .map((d) => ({ value: d.id, label: d.department }));
           defaultValue = [...defaultValue, ...dropwdown];
           setDepartmentDropdown(defaultValue);
@@ -177,15 +173,13 @@ export default function CreateCustomerMappingComponent() {
     });
   };
 
-  const getUser = async () => {
+  const getUser = useCallback(async () => {
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active';
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
-      if (res.payload.status === 200) {
-        if (res.payload.data.status === 1) {
-          const data = res.payload.data.data.filter((d) => d.is_active === 1);
-          setUser(data);
-          var dropwdown = res.payload.data.data
+      if (res?.payload?.status === 200) {
+        if (res?.payload?.data?.status === 1) {
+          var dropwdown = res?.payload?.data?.data
             .filter((d) => d.is_active === 1)
             .map((d) => ({
               value: d.id,
@@ -195,7 +189,7 @@ export default function CreateCustomerMappingComponent() {
         }
       }
     });
-  };
+  }, [dispatch]);
   //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
     if (type === 'Select2' && nameField === 'customer_type_id') {
@@ -209,7 +203,7 @@ export default function CreateCustomerMappingComponent() {
         ? e?.value
         : e?.target?.value;
 
-    if (nameField == 'approach' && value != data.approach) {
+    if (nameField === 'approach' && value !== data.approach) {
       setDepartmentDropdown(null);
       setUserDropdown(null);
       await getDepartment();
@@ -230,8 +224,8 @@ export default function CreateCustomerMappingComponent() {
         e.value
       );
 
-      if (res.status === 200) {
-        if (res.data.status === 1) {
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
           const dropdown = res.data.data
 
             .filter(
@@ -391,7 +385,7 @@ export default function CreateCustomerMappingComponent() {
     } else {
       form.user_id = userID;
     }
-    var flag = 1;
+
     if (data?.approach === 'RW') {
       if (
         (ratioTotal && ratioTotal > 100) ||
@@ -402,12 +396,12 @@ export default function CreateCustomerMappingComponent() {
       }
     }
 
-    if (flag == 1) {
+    if (flag === 1) {
       await new CustomerMappingService()
         .postCustomerMapping(form)
         .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
+          if (res?.status === 200) {
+            if (res?.data?.status === 1) {
               toast.success(res?.data?.message);
 
               navigate(`/${_base}/CustomerMapping`);
@@ -437,7 +431,7 @@ export default function CreateCustomerMappingComponent() {
     if (!checkRole?.length) {
       dispatch(getRoles());
     }
-  }, []);
+  }, [checkRole?.length, dispatch, getUser, loadData]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
@@ -619,8 +613,8 @@ export default function CreateCustomerMappingComponent() {
                           required
                           defaultChecked={
                             data &&
-                            (data.confirmation_required == 1 ||
-                              data.confirmation_required == '0')
+                            (data.confirmation_required === 1 ||
+                              data.confirmation_required === '0')
                           }
                           onChange={handleConfirmationChange}
                         />

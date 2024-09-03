@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import ErrorLogService from '../../../services/ErrorLogService';
 import CustomerService from '../../../services/MastersService/CustomerService';
@@ -15,22 +15,23 @@ import { _base } from '../../../settings/constants';
 import Select from 'react-select';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
+import { toast } from 'react-toastify';
 
-function EditCustomer({ match }) {
+function EditCustomer() {
   const history = useNavigate();
   const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
   const customerId = id;
   const dispatch = useDispatch();
-  const checkRole = useSelector(DashbordSlice =>
-    DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 4),
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 4)
   );
 
   const [data, setData] = useState(null);
   const [customerType, setCustomerType] = useState(null);
 
-  const [country, setCountry] = useState(null);
+  // const [country, setCountry] = useState(null);
   const [countryDropdown, setCountryDropdown] = useState(null);
   const [state, setState] = useState(null);
   const [stateDropdown, setStateDropdown] = useState(null);
@@ -42,21 +43,10 @@ function EditCustomer({ match }) {
   const [stateName, setStateName] = useState(null);
   const [cityName, setCityName] = useState(null);
 
-  const stateRef = useRef(null);
-
-  const roleId = sessionStorage.getItem('role_id');
-
-  const handleDependent = (e, name) => {
-    setData({
-      ...data,
-      [name]: e.value,
-    });
-  };
-
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     await new CustomerService()
       .getCustomerById(customerId)
-      .then(res => {
+      .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
             setData(res.data.data);
@@ -67,84 +57,85 @@ function EditCustomer({ match }) {
           setNotify({ type: 'danger', message: res.message });
         }
       })
-      .catch(error => {
+      .catch((error) => {
         const { response } = error;
         const { request, ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
           'Customer',
           'Get_Customer',
           'INSERT',
-          errorObject.data.message,
+          errorObject.data.message
         );
       });
 
-    await new CustomerType().getCustomerType().then(res => {
+    await new CustomerType().getCustomerType().then((res) => {
       if (res.status === 200) {
-        let counter = 1;
         const data = res.data.data;
         setCustomerType(
-          data.filter(d => d.is_active == 1).map(d => ({ label: d.type_name, value: d.id })),
+          data
+            .filter((d) => d.is_active === 1)
+            .map((d) => ({ label: d.type_name, value: d.id }))
         );
       }
     });
 
     //  **************************Country load data**************************************
-    await new CountryService().getCountrySort().then(res => {
+    await new CountryService().getCountrySort().then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCountry(res.data.data.filter(d => d.is_active === 1));
+        if (res.data.status === 1) {
           setCountryDropdown(
             res.data.data
-              .filter(d => d.is_active == 1)
-              .map(d => ({ value: d.id, label: d.country })),
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({ value: d.id, label: d.country }))
           );
         }
       }
     });
     //  ************************** State load data**************************************
-    await new StateService().getStateSort().then(res => {
+    await new StateService().getStateSort().then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
-          setState(res.data.data.filter(d => d.is_active === 1));
+        if (res.data.status === 1) {
+          setState(res.data.data.filter((d) => d.is_active === 1));
           setStateDropdown(
             res.data.data
-              .filter(d => d.is_active === 1)
-              .map(d => ({
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({
                 value: d.id,
                 label: d.state,
-                country_id: d.country_id,
-              })),
+                country_id: d.country_id
+              }))
           );
         }
       }
     });
     //  ************************** city load data**************************************
-    await new CityService().getCity().then(res => {
+    await new CityService().getCity().then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
-          setCity(res.data.data.filter(d => d.is_active === 1));
+        if (res.data.status === 1) {
+          setCity(res.data.data.filter((d) => d.is_active === 1));
           setCityDropdown(
             res.data.data
-              .filter(d => d.is_active === 1)
-              .map(d => ({
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({
                 value: d.id,
                 label: d.city,
-                state_id: d.state_id,
-              })),
+                state_id: d.state_id
+              }))
           );
         }
       }
     });
 
     dispatch(getRoles());
-  };
+  }, [customerId, dispatch]);
 
   const [emailError, setEmailError] = useState('');
   const [mailError, setMailError] = useState(false);
 
-  const handleEmail = e => {
+  const handleEmail = (e) => {
     const email = e.target.value;
-    const emailRegex = /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
+    const emailRegex =
+      /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
     if (emailRegex.test(email) === false) {
       setEmailError('Invalid Email');
       setMailError(true);
@@ -154,29 +145,24 @@ function EditCustomer({ match }) {
     }
   };
   const [contactError, setContactError] = useState(null);
-  const [contactErr, setContactErr] = useState(false);
-  const [contactNumber, setContactNumber] = useState(null);
-  const handleMobileValidation = e => {
+  const handleMobileValidation = (e) => {
     const contactNumber = e.target.value;
 
-    setContactNumber(contactNumber);
     if (
-      contactNumber.charAt(0) == '9' ||
-      contactNumber.charAt(0) == '8' ||
-      contactNumber.charAt(0) == '7' ||
-      contactNumber.charAt(0) == '6'
+      contactNumber.charAt(0) === '9' ||
+      contactNumber.charAt(0) === '8' ||
+      contactNumber.charAt(0) === '7' ||
+      contactNumber.charAt(0) === '6'
     ) {
-      setContactErr(false);
       setContactError('');
     } else if (contactNumber.length === 10) {
-      setContactErr(true);
       setContactError('Invalid Mobile Number');
     } else {
       setContactError('');
     }
   };
 
-  const handleForm = async e => {
+  const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
     var flag = 1;
@@ -188,76 +174,91 @@ function EditCustomer({ match }) {
     var selectCity = formData.getAll('city_id');
 
     if (
-      customerType == '' ||
-      selectEmail == '' ||
-      selectCountry == '' ||
-      selectState == '' ||
-      selectCity == ''
+      customerType === '' ||
+      selectEmail === '' ||
+      selectCountry === '' ||
+      selectState === '' ||
+      selectCity === ''
     ) {
       flag = 0;
       setNotify(null);
-      if (customerType == '') {
+      if (customerType === '') {
         alert('Please Select Customer Type');
-      } else if (selectEmail == '') {
+      } else if (selectEmail === '') {
         alert('Please Select Email');
-      } else if (selectCountry == '') {
+      } else if (selectCountry === '') {
         alert('Please Select Country');
-      } else if (selectState == '') {
+      } else if (selectState === '') {
         alert('Please Select State');
-      } else if (selectCity == '') {
+      } else if (selectCity === '') {
         alert('Please Select City');
       } else {
       }
     }
 
-    if (flag == 1) {
+    if (flag === 1) {
       setNotify(null);
       await new CustomerService()
         .updateCustomer(customerId, formData)
-        .then(res => {
+        .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
+              toast.success(res.data.message, {
+                position: 'top-right'
+              });
               history(
                 {
-                  pathname: `/${_base}/Customer`,
-                },
-                {
-                  state: {
-                    type: 'success',
-                    message: res.data.message,
-                  },
-                },
+                  pathname: `/${_base}/Customer`
+                }
+                // {
+                //   state: {
+                //     type: 'success',
+                //     message: res.data.message
+                //   }
+                // }
               );
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message, {
+                position: 'top-right'
+              });
+              // setNotify({ type: 'danger', message: res.data.message });
             }
           } else {
-            setNotify({ type: 'danger', message: res.message });
+            // setNotify({ type: 'danger', message: res.message });
+            toast.error(res.data.message, {
+              position: 'top-right'
+            });
             new ErrorLogService().sendErrorLog(
               'Customer',
               'Create_Customer',
               'INSERT',
-              res.message,
+              res.message
             );
           }
         })
-        .catch(error => {
+        .catch((error) => {
           const { response } = error;
           const { request, ...errorObject } = response;
-          setNotify({ type: 'danger', message: 'Request Error !!!' });
+          // setNotify({ type: 'danger', message: 'Request Error !!!' });
+          toast.error('Request Error !!!', {
+            position: 'top-right'
+          });
+
           new ErrorLogService().sendErrorLog(
             'Customer',
             'Create_Customer',
             'INSERT',
-            errorObject.data.message,
+            errorObject.data.message
           );
         });
     }
   };
 
-  const handleCountryChange = e => {
+  const handleCountryChange = (e) => {
     setStateDropdown(
-      state.filter(d => d.country_id == e.value).map(d => ({ value: d.id, label: d.state })),
+      state
+        .filter((d) => d.country_id === e.value)
+        .map((d) => ({ value: d.id, label: d.state }))
     );
     const newStatus = { ...updateStatus, statedrp: 1 };
     setUpdateStatus(newStatus);
@@ -266,9 +267,11 @@ function EditCustomer({ match }) {
     setCityDropdown(null);
   };
 
-  const handleStateChange = e => {
+  const handleStateChange = (e) => {
     setCityDropdown(
-      city.filter(d => d.state_id == e.value).map(d => ({ value: d.id, label: d.city })),
+      city
+        .filter((d) => d.state_id === e.value)
+        .map((d) => ({ value: d.id, label: d.city }))
     );
     const newStatus = { ...updateStatus, citydrp: 1 };
     setUpdateStatus(newStatus);
@@ -278,32 +281,52 @@ function EditCustomer({ match }) {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
-    if (data !== null && stateDropdown !== null && updateStatus.statedrp === undefined) {
-      setStateDropdown(prev => prev.filter(stateItem => stateItem.country_id === data.country_id));
+    if (
+      data !== null &&
+      stateDropdown !== null &&
+      updateStatus.statedrp === undefined
+    ) {
+      setStateDropdown((prev) =>
+        prev.filter((stateItem) => stateItem.country_id === data.country_id)
+      );
       const newStatus = { ...updateStatus, statedrp: 1 };
       setUpdateStatus(newStatus);
-      setStateName(data && stateDropdown && stateDropdown.filter(d => d.value == data.state_id));
+      setStateName(
+        data &&
+          stateDropdown &&
+          stateDropdown.filter((d) => d.value === data.state_id)
+      );
     }
-  }, [data, stateDropdown]);
+  }, [data, stateDropdown, updateStatus]);
 
   useEffect(() => {
-    if (data !== null && cityDropdown !== null && updateStatus.citydrp === undefined) {
-      setCityDropdown(prev => prev.filter(stateItem => stateItem.state_id === data.state_id));
+    if (
+      data !== null &&
+      cityDropdown !== null &&
+      updateStatus.citydrp === undefined
+    ) {
+      setCityDropdown((prev) =>
+        prev.filter((stateItem) => stateItem.state_id === data.state_id)
+      );
       const newStatus = { ...updateStatus, citydrp: 1 };
       setUpdateStatus(newStatus);
       setCityName(
-        data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id)
-          ? data && cityDropdown && cityDropdown.filter(d => d.value == data.city_id)
-          : cityName,
+        data &&
+          cityDropdown &&
+          cityDropdown.filter((d) => d.value === data.city_id)
+          ? data &&
+              cityDropdown &&
+              cityDropdown.filter((d) => d.value === data.city_id)
+          : cityName
       );
     }
     if (checkRole && checkRole[0]?.can_update === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, [data, cityDropdown, checkRole]);
+  }, [data, cityDropdown, checkRole, updateStatus, cityName]);
 
   return (
     <div className="container-xxl">
@@ -337,7 +360,7 @@ function EditCustomer({ match }) {
                         maxLength={30}
                         required
                         defaultValue={data ? data.name : null}
-                        onKeyPress={e => {
+                        onKeyPress={(e) => {
                           Validation.CharactersOnly(e);
                         }}
                       />
@@ -358,7 +381,10 @@ function EditCustomer({ match }) {
                           id="customer_type_id"
                           required
                           defaultValue={
-                            data && customerType.filter(d => d.value == data.customer_type_id)
+                            data &&
+                            customerType.filter(
+                              (d) => d.value === data.customer_type_id
+                            )
                           }
                         />
                       )}
@@ -380,12 +406,14 @@ function EditCustomer({ match }) {
                         placeholder="Email Address"
                         required
                         onChange={handleEmail}
-                        onKeyPress={e => {
+                        onKeyPress={(e) => {
                           Validation.emailOnly(e);
                         }}
                         defaultValue={data.email_id}
                       />
-                      {mailError && <div className="text-danger">{emailError}</div>}
+                      {mailError && (
+                        <div className="text-danger">{emailError}</div>
+                      )}
                     </div>
                   </div>
 
@@ -405,7 +433,7 @@ function EditCustomer({ match }) {
                         defaultValue={data.contact_no}
                         minLength={10}
                         maxLength={10}
-                        onKeyPress={e => {
+                        onKeyPress={(e) => {
                           Validation.NumbersOnly(e);
                         }}
                         onChange={handleMobileValidation}
@@ -419,7 +447,7 @@ function EditCustomer({ match }) {
                       style={{
                         color: 'red',
                         position: 'relative',
-                        left: '12.375rem',
+                        left: '12.375rem'
                       }}
                     >
                       {contactError}
@@ -456,10 +484,17 @@ function EditCustomer({ match }) {
                               id="is_active_1"
                               value="1"
                               defaultChecked={
-                                data && data.is_active == 1 ? true : !data ? true : false
+                                data && data.is_active === 1
+                                  ? true
+                                  : !data
+                                  ? true
+                                  : false
                               }
                             />
-                            <label className="form-check-label" htmlFor="is_active_1">
+                            <label
+                              className="form-check-label"
+                              htmlFor="is_active_1"
+                            >
                               Active
                             </label>
                           </div>
@@ -474,9 +509,14 @@ function EditCustomer({ match }) {
                               id="is_active_0"
                               value="0"
                               // readOnly={(modal.modalData) ? false : true }
-                              defaultChecked={data && data.is_active == 0 ? true : false}
+                              defaultChecked={
+                                data && data.is_active === 0 ? true : false
+                              }
                             />
-                            <label className="form-check-label" htmlFor="is_active_0">
+                            <label
+                              className="form-check-label"
+                              htmlFor="is_active_0"
+                            >
                               Deactive
                             </label>
                           </div>
@@ -508,7 +548,7 @@ function EditCustomer({ match }) {
                         placeholder="Enter maximum 250 character"
                         rows="3"
                         maxLength={250}
-                        onKeyDown={e => {
+                        onKeyDown={(e) => {
                           if (e.key !== 'Enter') {
                             Validation.addressField(e);
                           }
@@ -534,7 +574,7 @@ function EditCustomer({ match }) {
                         defaultValue={data.pincode}
                         minLength={6}
                         maxLength={6}
-                        onKeyPress={e => {
+                        onKeyPress={(e) => {
                           Validation.NumbersOnly(e);
                         }}
                         required
@@ -542,7 +582,10 @@ function EditCustomer({ match }) {
                       />
                     </div>
 
-                    <label className="col-sm-2 col-form-label" style={{ textAlign: 'right' }}>
+                    <label
+                      className="col-sm-2 col-form-label"
+                      style={{ textAlign: 'right' }}
+                    >
                       <b>
                         Country : <Astrick color="red" />
                       </b>
@@ -556,7 +599,9 @@ function EditCustomer({ match }) {
                           defaultValue={
                             data &&
                             countryDropdown &&
-                            countryDropdown.filter(d => d.value == data.country_id)
+                            countryDropdown.filter(
+                              (d) => d.value === data.country_id
+                            )
                           }
                           onChange={handleCountryChange}
                         />
@@ -582,7 +627,10 @@ function EditCustomer({ match }) {
                       )}
                     </div>
 
-                    <label className="col-sm-2 col-form-label" style={{ textAlign: 'right' }}>
+                    <label
+                      className="col-sm-2 col-form-label"
+                      style={{ textAlign: 'right' }}
+                    >
                       <b>
                         City : <Astrick color="red" />
                       </b>
@@ -595,7 +643,7 @@ function EditCustomer({ match }) {
                           id="city_id"
                           name="city_id"
                           defaultValue={cityName}
-                          onChange={e => setCityName(e)}
+                          onChange={(e) => setCityName(e)}
                           value={cityName}
                         />
                       )}
@@ -614,7 +662,10 @@ function EditCustomer({ match }) {
                 ) : (
                   ''
                 )}
-                <Link to={`/${_base}/Customer`} className="btn btn-danger text-white">
+                <Link
+                  to={`/${_base}/Customer`}
+                  className="btn btn-danger text-white"
+                >
                   Cancel
                 </Link>
               </div>

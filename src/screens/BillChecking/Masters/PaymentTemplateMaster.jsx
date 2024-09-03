@@ -24,12 +24,19 @@ import { paymentTemplate } from './BillTypeMaster/PaymentTemplateMasterAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { toast } from 'react-toastify';
 
 function PaymentTemplateMaster() {
   const dispatch = useDispatch();
   const paymentdata = useSelector(
     (PaymentTemplateMasterSlice) =>
       PaymentTemplateMasterSlice.paymentmaster.paymentTemplate
+  );
+
+  const isLoading = useSelector(
+    (PaymentTemplateMasterSlice) =>
+      PaymentTemplateMasterSlice.paymentmaster.isLoading
   );
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id == 46)
@@ -275,7 +282,7 @@ function PaymentTemplateMaster() {
     {
       name: 'Remark',
       selector: (row) => row.remark,
-      width: '150px',
+      width: '270px',
       sortable: true,
 
       cell: (row) => (
@@ -288,9 +295,9 @@ function PaymentTemplateMaster() {
             <OverlayTrigger overlay={<Tooltip>{row.remark} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {row.remark && row.remark.length < 20
+                  {row.remark && row.remark.length < 120
                     ? row.remark
-                    : row.remark.substring(0, 12) + '....'}
+                    : row.remark.substring(0, 120) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -395,28 +402,47 @@ function PaymentTemplateMaster() {
       await new PaymentTemplateService()
         .createPaymentTemplate(form)
         .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setNotify({ type: 'success', message: res.data.message });
-              setModal({ showModal: false, modalData: '', modalHeader: '' });
-              dispatch(paymentTemplate());
-            } else {
-              setNotify({ type: 'danger', message: res.data.message });
-            }
+          if (res.status === 200 && res.data.status === 1) {
+            // setNotify({ type: 'success', message: res.data.message });
+            toast.success(res.data.message, {
+              position: 'top-right'
+            });
+            dispatch(paymentTemplate());
+            setModal({ showModal: false, modalData: '', modalHeader: '' });
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
-            new ErrorLogService().sendErrorLog(
-              'Payment_template',
-              'Create_Payment_template',
-              'INSERT',
-              res.message
-            );
+            // setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message, {
+              position: 'top-right'
+            });
           }
+          // if (res.status === 200 && res.data.status === 1) {
+          //   console.log('res', res);
+          //   if (res.data.status === 1) {
+          //     setNotify({ type: 'success', message: res.data.message });
+          //     setModal({ showModal: false, modalData: '', modalHeader: '' });
+          //     dispatch(paymentTemplate());
+          //   } else {
+          //     setNotify({ type: 'danger', message: res.data.message });
+          //   }
+          // } else {
+          //   setNotify({ type: 'danger', message: res.data.message });
+          //   new ErrorLogService().sendErrorLog(
+          //     'Payment_template',
+          //     'Create_Payment_template',
+          //     'INSERT',
+          //     res.message
+          //   );
+          // }
         })
         .catch((error) => {
+          // setNotify({ type: 'danger', message: 'Request Error !!!' });
+          toast.error('Request Error !!!', {
+            position: 'top-right'
+          });
+
           const { response } = error;
           const { request, ...errorObject } = response;
-          setNotify({ type: 'danger', message: 'Request Error !!!' });
+
           new ErrorLogService().sendErrorLog(
             'Payment_template',
             'Create_Payment_template',
@@ -430,14 +456,23 @@ function PaymentTemplateMaster() {
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              setNotify({ type: 'success', message: res.data.message });
+              // setNotify({ type: 'success', message: res.data.message });
+              toast.success(res.data.message, {
+                position: 'top-right'
+              });
               setModal({ showModal: false, modalData: '', modalHeader: '' });
               dispatch(paymentTemplate());
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              // setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message, {
+                position: 'top-right'
+              });
             }
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            // setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message, {
+              position: 'top-right'
+            });
             new ErrorLogService().sendErrorLog(
               'Payment_template',
               'Create_Payment_template',
@@ -449,7 +484,11 @@ function PaymentTemplateMaster() {
         .catch((error) => {
           const { response } = error;
           const { request, ...errorObject } = response;
-          setNotify({ type: 'danger', message: 'Request Error !!!' });
+          // setNotify({ type: 'danger', message: 'Request Error !!!' });
+          toast.error('Request Error !!!', {
+            position: 'top-right'
+          });
+
           new ErrorLogService().sendErrorLog(
             'Payment_template',
             'Create_Payment_template',
@@ -521,6 +560,8 @@ function PaymentTemplateMaster() {
                   columns={columns}
                   data={filteredData}
                   defaultSortFieldId="id"
+                  progressComponent={<TableLoadingSkelton />}
+                  progressPending={isLoading}
                   pagination
                   selectableRows={false}
                   defaultSortAsc={false}
@@ -747,7 +788,7 @@ function PaymentTemplateMaster() {
               <div className="row g-3 mb-3">
                 <div className="col-sm-12">
                   <label className="form-label font-weight-bold">
-                    Remark :
+                    Remarks :
                   </label>
                   <textarea
                     type="text"
@@ -756,7 +797,7 @@ function PaymentTemplateMaster() {
                     name="remark"
                     defaultValue={modal.modalData ? modal.modalData.remark : ''}
                     rows="4"
-                    maxLength={10000}
+                    maxLength={1000}
                   />
                 </div>
 

@@ -73,7 +73,14 @@ const GraphWeekWise = () => {
         type: 'solid',
         opacity: 0.8
       },
-      colors: ['#C3F5FF', '#FF8888', '#FFC075', '#DB0101', '#9EFFB9'],
+      colors: [
+        '#C3F5FF',
+        '#FFECB3',
+        '#9EFFB9',
+        '#FF8888',
+        '#FFC581',
+        '#484C7F'
+      ],
       annotations: {
         xaxis: [
           {
@@ -281,9 +288,9 @@ const GraphWeekWise = () => {
           },
 
           {
-            name: 'Delay',
+            name: 'IN PROGRESS',
             data: allBasketNames.flatMap((basketName) => {
-              const task = data?.DELAY?.filter(
+              const task = data?.IN_PROGRESS?.filter(
                 (task) => task.basket_name === basketName
               );
               return task?.length > 0
@@ -308,34 +315,7 @@ const GraphWeekWise = () => {
             })
           },
           {
-            name: 'Highly Delay',
-            data: allBasketNames.flatMap((basketName) => {
-              const task = data?.HIGHLY_DELAY?.filter(
-                (task) => task.basket_name === basketName
-              );
-              return task?.length > 0
-                ? task.map((task) => ({
-                    x: basketName,
-                    y: addSmallIncrementIfNeeded(
-                      task.task_start_Date,
-                      task.task_end_date
-                    ),
-                    taskDetail: task
-                  }))
-                : {
-                    x: basketName,
-                    y: [0, 0],
-                    taskDetail: {
-                      basket_name: basketName,
-                      task_start_Date: '',
-                      task_end_date: '',
-                      status: 'No Data'
-                    }
-                  };
-            })
-          },
-          {
-            name: 'In Time',
+            name: 'IN TIME',
             data: allBasketNames.flatMap((basketName) => {
               const task = data?.IN_TIME?.filter(
                 (task) => task.basket_name === basketName
@@ -362,9 +342,63 @@ const GraphWeekWise = () => {
             })
           },
           {
-            name: 'In Progress',
+            name: 'DELAY',
             data: allBasketNames.flatMap((basketName) => {
-              const task = data?.IN_PROGRESS?.filter(
+              const task = data?.DELAY?.filter(
+                (task) => task.basket_name === basketName
+              );
+              return task?.length > 0
+                ? task.map((task) => ({
+                    x: basketName,
+                    y: addSmallIncrementIfNeeded(
+                      task.task_start_Date,
+                      task.task_end_date
+                    ),
+                    taskDetail: task
+                  }))
+                : {
+                    x: basketName,
+                    y: [0, 0],
+                    taskDetail: {
+                      basket_name: basketName,
+                      task_start_Date: '',
+                      task_end_date: '',
+                      status: 'No Data'
+                    }
+                  };
+            })
+          },
+          {
+            name: 'SLIGHTLY DELAY',
+            data: allBasketNames.flatMap((basketName) => {
+              const task = data?.SLIGHTLY_DELAY?.filter(
+                (task) => task.basket_name === basketName
+              );
+              return task?.length > 0
+                ? task.map((task) => ({
+                    x: basketName,
+                    y: addSmallIncrementIfNeeded(
+                      task.task_start_Date,
+                      task.task_end_date
+                    ),
+                    taskDetail: task
+                  }))
+                : {
+                    x: basketName,
+                    y: [0, 0],
+                    taskDetail: {
+                      basket_name: basketName,
+                      task_start_Date: '',
+                      task_end_date: '',
+                      status: 'No Data'
+                    }
+                  };
+            })
+          },
+          {
+            name: 'HIGHLY DELAY',
+            data: allBasketNames.flatMap((basketName) => {
+              const task = data?.HIGHLY_DELAY?.filter(
                 (task) => task.basket_name === basketName
               );
               return task?.length > 0
@@ -433,7 +467,7 @@ const GraphWeekWise = () => {
             ...prevChartData.options.chart,
             height: chartHeight,
             events: {
-              click: () => {
+              dataPointSelection: () => {
                 let prevTab = localStorage.getItem('PreviosTab');
                 localStorage.removeItem('PreviosTab');
                 if (prevTab) {
@@ -486,11 +520,11 @@ const GraphWeekWise = () => {
                 w.globals.initialSeries[seriesIndex].data[dataPointIndex]
                   .taskDetail;
 
-              const taskOwners = taskDetail?.taskOwners.join('');
+              const taskOwners = taskDetail?.taskOwners.join(' , ');
               return `
               <div>
                <span className="mb-0"><strong>Sprint Name:</strong> ${
-                 taskDetail.sprint_name || 'null recieved in response'
+                 taskDetail.sprint_name || '--'
                }</span></br>
                   <span className="mb-0"><strong>Task Name:</strong> ${
                     taskDetail.task_name
@@ -505,20 +539,19 @@ const GraphWeekWise = () => {
                 taskDetail.task_end_date
               ).toLocaleDateString()}</span></br>
               <span className="mb-0"><strong>Total Scheduled Hours:</strong> ${
-                taskDetail.task_scheduled_Hours || 'null recieved in response'
+                taskDetail.task_scheduled_Hours || '--'
               }</span></br>
                  <span className="mb-0"><strong>Scheduled Hours:</strong> ${
-                   taskDetail.actual_task_scheduled_Hours ||
-                   'null recieved in response'
+                   taskDetail.actual_task_scheduled_Hours || '--'
                  }</span></br>
                  <span className="mb-0"><strong>Actual Worked:</strong> ${
-                   taskDetail.task_actual_worked || 'null recieved in response'
+                   taskDetail.task_actual_worked || '--'
                  }</span></br>
               <span className="mb-0"><strong>Status:</strong> ${
-                taskDetail.task_status || 'null recieved in response'
+                taskDetail.task_status || '--'
               }</span></br>
               <span className="mb-0"><strong>Actual Status:</strong> ${
-                taskDetail.task_actual_status || 'null recieved in response'
+                taskDetail.task_actual_status || '--'
               }</span></br>
                  <span className="mb-0"><strong>Task Owners:</strong> ${taskOwners}</span></br>
               </div>
@@ -677,7 +710,7 @@ const GraphWeekWise = () => {
               Year
             </label>
           </div>
-          <div className="col-2 ms-3 text-start">
+          <div className="col-2 select-box ms-3 text-start">
             <Select
               // className=""
               // name="sprint_data"

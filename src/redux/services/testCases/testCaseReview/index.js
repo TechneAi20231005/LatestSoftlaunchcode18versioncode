@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 
 export const getTestCaseReviewListThunk = createAsyncThunk(
   'testCaseReview/getTestCaseReviewListThunk',
-  async ({ limit, page, filter_testcase_data }) => {
+  async ({ limit, page, filter_testcase_data, type }) => {
     try {
       const response = await customAxios.get(
         `testCases/getCount/getTestDraft`,
@@ -13,7 +13,8 @@ export const getTestCaseReviewListThunk = createAsyncThunk(
           params: {
             limit: limit,
             page: page,
-            filter_testcase_data: JSON.stringify(filter_testcase_data)
+            filter_testcase_data: JSON.stringify(filter_testcase_data),
+            type: type
           }
         }
       );
@@ -60,12 +61,35 @@ export const getByTestPlanIDListThunk = createAsyncThunk(
   }
 );
 
+// export test case review data
+
+export const getExportByTestPlanIDListThunk = createAsyncThunk(
+  'testPlanID/getExportByTestPlanIDListThunk',
+  async ({ id, type }) => {
+    try {
+      const response = await customAxios.get(
+        `testCases/getDraftTestCases/getTestCases/${id}?type=${type}`
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          return { data: response?.data, msg: response?.data?.message };
+        } else {
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
+);
+
 export const approveRejectByReviewerMasterThunk = createAsyncThunk(
   'approveReject/approveRejectByReviewerMasterThunk',
-  async ({ formData, onSuccessHandler, onErrorHandler }) => {
+  async ({ formData, onSuccessHandler, onErrorHandler, planID }) => {
     try {
       const response = await customAxios.post(
-        `testCases/reviewerAdd/approveRejectByReviewer`,
+        `testCases/reviewerAdd/approveRejectByReviewer/${planID}`,
         formData
       );
       if (response?.status === 200 || response?.status === 201) {

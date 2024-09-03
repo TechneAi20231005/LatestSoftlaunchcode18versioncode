@@ -1,3 +1,15 @@
+.pending_order_preview_container {
+  .rdt_TableRow {
+    &:last-child {
+      .rdt_TableCell {
+        &:first-child,
+        &:nth-last-child(2) {
+          font-weight: 700;
+        }
+      }
+    }
+  }
+}
 @media only screen and (max-width: 426px) {
   .pending_order_preview_container {
     h3 {

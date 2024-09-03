@@ -538,7 +538,6 @@ export default function EditTicketComponent({ match }) {
         if (rows) {
           var dynamicForm = res.data.data.dynamic_form;
 
-
           const filteredArray = dynamicForm.filter(
             (formInstance) =>
               formInstance.inputType === 'select' &&
@@ -888,8 +887,6 @@ export default function EditTicketComponent({ match }) {
     loadComments();
   }, [loadComments]);
 
-
-
   const [selectedValue, setSelectedValue] = useState('');
   const [selectedCheckBoxValue, setSelectedCheckBoxValue] = useState('');
 
@@ -925,8 +922,6 @@ export default function EditTicketComponent({ match }) {
     }
   }, [user]);
 
-
-  
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_update === 0) {
       // alert("Rushi")

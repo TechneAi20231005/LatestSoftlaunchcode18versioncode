@@ -1,21 +1,26 @@
-import React, { useEffect, useRef, useState, startTransition } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  startTransition,
+  useCallback
+} from 'react';
+import { Link, useParams } from 'react-router-dom';
 import { Card, CardBody, Dropdown, Modal } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import PageHeader from '../../../components/Common/PageHeader';
-import { _attachmentUrl, userSessionData } from '../../../settings/constants';
+import { userSessionData } from '../../../settings/constants';
 import Alert from '../../../components/Common/Alert';
 import ErrorLogService from '../../../services/ErrorLogService';
 import MyTicketService from '../../../services/TicketService/MyTicketService';
 import BasketService from '../../../services/TicketService/BasketService';
 import {
   getTaskData,
-  getTaskPlanner,
   getRegularizationTime,
   getTaskHistory,
   getTaskRegularizationTime
 } from '../../../services/TicketService/TaskService';
-import { getAttachment } from '../../../services/OtherService/AttachmentService';
+
 import BasketDetails from './components/BasketDetails';
 import TaskData from './components/TaskData';
 import TaskModal from './components/TaskModal';
@@ -27,28 +32,28 @@ import TestCasesService from '../../../services/TicketService/TestCaseService';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-import { Spinner } from 'react-bootstrap';
+
 import Select from 'react-select';
 import { Astrick } from '../../../components/Utilities/Style';
 import SprintService from '../../../services/TicketService/SprintService';
 import DataTable from 'react-data-table-component';
 import CardLoadingSkeleton from '../../../components/custom/loader/CardLoadingSkeleton';
+import ManageTaskSkeleton from '../../../components/custom/loader/ManageTaskSkeleton';
 
-export default function TaskComponent({ match }) {
+export default function TaskComponent() {
   const [notify, setNotify] = useState(null);
   const { id } = useParams();
   const ticketId = id;
-  const history = useNavigate();
 
   const [moduleSetting, setModuleSetting] = useState();
   const [ticketData, setTicketData] = useState();
-  const [attachment, setAttachment] = useState();
+
   const [expectedSolveDate, setExpectedSolveDate] = useState();
   const [ticketStartDate, setTicketStartDate] = useState();
   const [currentTaskStatus, setCurrentTaskStatus] = useState('PENDING');
 
   //Basket Modal Related
-  const [basketModal, setBasketModal] = useState(false);
+
   const [basketData, setBasketData] = useState(null);
   const [showBasketModal, setShowBasketModal] = useState(false);
 
@@ -75,8 +80,8 @@ export default function TaskComponent({ match }) {
   const [exportSprintData, setExportSprintData] = useState([]);
   const [sprintFirstDate, setSprintFirstDate] = useState('');
   const [sprintLastDate, setSprintLastDate] = useState('');
-
-  const getTicketData = async () => {
+  const [minEndDate, setMinEndDate] = useState('');
+  const getTicketData = useCallback(async () => {
     await new MyTicketService()
       .getTicketById(ticketId)
       .then((res) => {
@@ -85,11 +90,6 @@ export default function TaskComponent({ match }) {
             setTicketData(res.data.data);
             setTicketStartDate(res.data.data.ticket_date);
             setExpectedSolveDate(res.data.data.expected_solve_date);
-            // getAttachment(res.data.data.id, "TICKET").then((resp) => {
-            //   if (resp.status === 200) {
-            //     setAttachment(resp.data.data);
-            //   }
-            // });
           }
         }
       })
@@ -104,7 +104,7 @@ export default function TaskComponent({ match }) {
           errorObject.data.message
         );
       });
-  };
+  }, [ticketId]);
 
   const handleCloseBasketModal = () => {
     setShowBasketModal(false);
@@ -140,121 +140,119 @@ export default function TaskComponent({ match }) {
     setShowBasketModal(true);
   };
 
-  // var sortingArr;
-  // function sortFunc(a, b) {
-  //   return sortingArr.indexOf(a.id) - sortingArr.indexOf(b.id);
-  // }
-
   //Basket & Task Data
   const [ownership, setOwnership] = useState([]);
   const [data, setData] = useState();
   const [basketIdArray, setBasketIdArray] = useState();
   const [isReviewer, setIsReviewer] = useState(null);
-  const [taskHistory, setTaskHistory] = useState();
+  // const [taskHistory, setTaskHistory] = useState();
   const [tasksData, setTasksData] = useState();
   const [allTaskList, setAllTaskList] = useState([]); //Defined as empty array
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  // const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [isLoading, setIsLoading] = useState(true);
   const [basketStartDate, setBasketStartDate] = useState();
 
-  const getBasketData = async (sprint_id, task_status) => {
-    const tempAllTaskList = [];
-    const taskDataa = [];
-    const tasksDataa = [];
-    const sprintId = sprint_id ? sprint_id : 0;
-    toast.clearWaitingQueue();
-    const toastId = toast.loading('Fetching Latest Api Data... (0 sec)');
+  const getBasketData = useCallback(
+    async (sprint_id, task_status) => {
+      const tempAllTaskList = [];
 
-    let counter = 0;
-    const interval = setInterval(() => {
-      counter += 1;
-      toast.update(toastId, {
-        render: `Fetching Latest Api Data... (${counter} sec)`
-      });
-    }, 1000);
-    // setIsLoading(true);
-    try {
-      await new BasketService()
-        .getBasketTaskData(ticketId, sprintId, task_status)
-        .then((res) => {
-          if (res.status === 200) {
-            setShowLoaderModal(false);
-            setIsLoading(false);
-            if (res.data.status === 1) {
+      const tasksDataa = [];
+      const sprintId = sprint_id ? sprint_id : 0;
+      // toast.clearWaitingQueue();
+      // const toastId = toast.loading('Fetching Latest Api Data... (0 sec)');
+
+      // let counter = 0;
+      // const interval = setInterval(() => {
+      //   counter += 1;
+      //   toast.update(toastId, {
+      //     render: `Fetching Latest Api Data... (${counter} sec)`
+      //   });
+      // }, 1000);
+      // setIsLoading(true);
+      try {
+        await new BasketService()
+          .getBasketTaskData(ticketId, sprintId, task_status)
+          .then((res) => {
+            if (res.status === 200) {
+              // setShowLoaderModal(false);
               setIsLoading(false);
+              if (res.data.status === 1) {
+                setIsLoading(false);
 
-              // const temp = res.data.data;
-              // sortingArr = res.data.basket_id_array;
-              setIsReviewer(res.data.is_reviewer);
-              setOwnership(res.data.ownership);
-              setBasketIdArray(res.data.basket_id_array);
-              // setIsRegularised(res.data.is_regularized)
-              setData(null);
-              // res.data.data.sort(sortFunc);
+                // const temp = res.data.data;
+                // sortingArr = res.data.basket_id_array;
+                setIsReviewer(res.data.is_reviewer);
+                setOwnership(res.data.ownership);
+                setBasketIdArray(res.data.basket_id_array);
+                // setIsRegularised(res.data.is_regularized)
+                setData(null);
+                // res.data.data.sort(sortFunc);
 
-              res.data.data.map((tasks, index) => {
-                setBasketStartDate(tasks.start_date);
-                tasks.taskData.forEach((d, i) => {
-                  let taskOwnerNames = d.taskOwners
-                    .map((owner) => owner.taskOwnerName)
-                    .join(', ');
-                  tasksDataa.push({
-                    ticket_id_name: d.ticket_id_name,
-                    Task_Names: d.task_name,
-                    Task_Hours: d.task_hours,
-                    Start_Date: d.task_start_date,
-                    End_Date: d.task_end_date,
-                    Status: d.status,
-                    Priority: d.priority,
-                    Total_Worked: d.total_worked,
-                    Basket_Name: tasks.basket_name,
-                    taskOwnerNames: taskOwnerNames,
+                res.data.data.forEach((tasks, index) => {
+                  setBasketStartDate(tasks.start_date);
+                  tasks.taskData.forEach((d, i) => {
+                    let taskOwnerNames = d.taskOwners
+                      .map((owner) => owner.taskOwnerName)
+                      .join(', ');
+                    tasksDataa.push({
+                      ticket_id_name: d.ticket_id_name,
+                      Task_Names: d.task_name,
+                      Task_Hours: d.task_hours,
+                      Start_Date: d.task_start_date,
+                      End_Date: d.task_end_date,
+                      Status: d.status,
+                      Priority: d.priority,
+                      Total_Worked: d.total_worked,
+                      Basket_Name: tasks.basket_name,
+                      taskOwnerNames: taskOwnerNames,
 
-                    task_type: d.parent_name
+                      task_type: d.parent_name
+                    });
                   });
                 });
-              });
 
-              startTransition(() => {
-                setData(res.data.data);
-                setTasksData(tasksDataa);
-              });
+                startTransition(() => {
+                  setData(res.data.data);
+                  setTasksData(tasksDataa);
+                });
 
-              res.data.data.forEach((dataa) => {
-                dataa.taskData.forEach((task) => {
-                  tempAllTaskList.push({
-                    value: task.id,
-                    label: task.task_name
+                res.data.data.forEach((dataa) => {
+                  dataa.taskData.forEach((task) => {
+                    tempAllTaskList.push({
+                      value: task.id,
+                      label: task.task_name
+                    });
                   });
                 });
-              });
-              setAllTaskList([]);
-              setAllTaskList(tempAllTaskList);
+                setAllTaskList([]);
+                setAllTaskList(tempAllTaskList);
 
-              setIsLoading(false); // Loading finished
+                setIsLoading(false); // Loading finished
+              }
             }
-          }
-        });
-    } catch (error) {
-      toast.update(toastId, {
-        render: 'Error fetching data!',
-        type: toast.TYPE.ERROR,
-        isLoading: false,
-        autoClose: 3000
-      });
-    } finally {
-      clearInterval(interval);
-      if (toastId) {
-        toast.update(toastId, {
-          render: 'Data fetched successfully!',
-          type: toast.TYPE.SUCCESS,
-          isLoading: false,
-          autoClose: 3000
-        });
+          });
+      } catch (error) {
+        // toast.update(toastId, {
+        //   render: 'Error fetching data!',
+        //   type: toast.TYPE.ERROR,
+        //   isLoading: false,
+        //   autoClose: 3000
+        // });
+      } finally {
+        // clearInterval(interval);
+        // if (toastId) {
+        //   toast.update(toastId, {
+        //     render: 'Data fetched successfully!',
+        //     type: toast.TYPE.SUCCESS,
+        //     isLoading: false,
+        //     autoClose: 3000
+        //   });
+        // }
       }
-    }
-  };
+    },
+    [ticketId]
+  );
 
   //Task Related
   const [showTaskModal, setShowTaskModal] = useState(false);
@@ -287,7 +285,7 @@ export default function TaskComponent({ match }) {
       await getTaskHistory(id).then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            setTaskHistory(res.data.data);
+            // setTaskHistory(res.data.data);
           }
         }
       });
@@ -301,38 +299,38 @@ export default function TaskComponent({ match }) {
   };
 
   /*  ********************************* PLANNER ************************************** */
-  const [showPlannerModal, setShowPlannerModal] = useState(false);
+  // const [showPlannerModal, setShowPlannerModal] = useState(false);
 
-  const handleClosePlannerModal = () => {
-    setShowPlannerModal(false);
-  };
+  // const handleClosePlannerModal = () => {
+  //   setShowPlannerModal(false);
+  // };
 
   /*  ********************************* Group Activity ************************************** */
   //Suyash 30/5/22
-  const [groupActivityModal, setGroupActivityModal] = useState(false);
-  const [groupActivityModalData, setGroupActivityModalData] = useState();
+  // const [groupActivityModal, setGroupActivityModal] = useState(false);
+  // const [groupActivityModalData, setGroupActivityModalData] = useState();
 
-  const handleShowGroupModal = (e, taskOwners, taskId, dataa) => {
-    setGroupActivityModal(true);
-    setGroupActivityModalData(null);
-    const temp = [];
-    taskOwners.forEach((user) => {
-      let t = user;
-      t = { ...t, status: null };
-      temp.push(t);
-    });
-    const data = { taskOwners: temp, taskId: taskId, all: dataa };
-    setGroupActivityModalData(data);
-  };
+  // const handleShowGroupModal = (e, taskOwners, taskId, dataa) => {
+  //   setGroupActivityModal(true);
+  //   setGroupActivityModalData(null);
+  //   const temp = [];
+  //   taskOwners.forEach((user) => {
+  //     let t = user;
+  //     t = { ...t, status: null };
+  //     temp.push(t);
+  //   });
+  //   const data = { taskOwners: temp, taskId: taskId, all: dataa };
+  //   setGroupActivityModalData(data);
+  // };
 
-  const hideGroupActivityModal = () => {
-    // setGroupActivityModalData([]);
-    setGroupActivityModal(false);
-  };
+  // const hideGroupActivityModal = () => {
+  //   // setGroupActivityModalData([]);
+  //   setGroupActivityModal(false);
+  // };
 
   /*  ********************************* Approval Request ************************************** */
   //Suyash 31/5/22
-  const [approvalRequest, setApprovalRequest] = useState({});
+  const approvalRequest = {};
 
   const handleRequestSubmit = (id, taskId) => {};
 
@@ -355,10 +353,10 @@ export default function TaskComponent({ match }) {
     data: null
   });
 
-  const handleShowApproveRequestModal = () => {
-    const data = null;
-    setApproveRequestModal({ show: true, data: data });
-  };
+  // const handleShowApproveRequestModal = () => {
+  //   const data = null;
+  //   setApproveRequestModal({ show: true, data: data });
+  // };
   const handleShowApproveTaskRequestModal = () => {
     const data = null;
     setApproveTaskRequestModal({ show: true, data: data });
@@ -383,17 +381,17 @@ export default function TaskComponent({ match }) {
     setSprintModal(data);
   };
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     await new ModuleSetting().getSettingByName('Ticket', 'Task').then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
           setModuleSetting(res.data.data);
         }
       }
     });
     await new TestCasesService().getTaskBytTicket(ticketId).then((res) => {
       if (res.status === 200) {
-        if (res.data.status == 1) {
+        if (res.data.status === 1) {
           const temp = res.data.data;
           setTaskDropdown(
             temp.map((d) => ({ value: d.id, label: d.task_name }))
@@ -417,10 +415,8 @@ export default function TaskComponent({ match }) {
         setSprintLastDate(last_sprint_end_date);
       }
     });
-  };
+  }, [ticketId]);
 
-  const [buttonType, setButtontype] = useState();
-  const [basketList, setBasketList] = useState(null);
   const pushForward = async (basketIds) => {
     var sendArray = {
       user_id: parseInt(userSessionData.userId),
@@ -437,6 +433,7 @@ export default function TaskComponent({ match }) {
       ...prevSate,
       [e.target.name]: e.target.value
     }));
+    setEndDateGreaterThanStartDate(e);
   };
 
   const sprintFormHandle = async () => {
@@ -692,80 +689,80 @@ export default function TaskComponent({ match }) {
       name: 'Sr no',
       selector: (row) => row.counter,
       sortable: true,
-      width: '5%'
+      width: '80px'
     },
     {
       name: 'Sprint Name',
       selector: (row) => row?.sprint_name,
       sortable: true,
-      width: '10%'
+      width: '250px'
     },
     {
       name: 'Sprint Start Date',
       selector: (row) => row?.sprint_start_date,
       sortable: true,
-      width: '8%'
+      width: '150px'
     },
     {
       name: 'Sprint End Date',
       selector: (row) => row?.sprint_end_date,
       sortable: true,
-      width: '8%'
+      width: '150px'
     },
     {
       name: 'Task Name',
       selector: (row) => row?.task_name,
       sortable: true,
-      width: '15%'
+      width: '200px'
     },
     {
       name: 'Task User',
       selector: (row) => row?.task_owner,
       sortable: true,
-      width: '10%'
+      width: '180px'
     },
     {
       name: 'Task Start Date',
       selector: (row) => row?.task_start_Date,
       sortable: true,
-      width: '8%'
+      width: '150px'
     },
     {
       name: 'Task End Date',
       selector: (row) => row?.task_delivery_scheduled,
       sortable: true,
-      width: '8%'
+      width: '150px'
     },
 
     {
       name: 'Task actual completion date',
       selector: (row) => row?.task_completed_at,
       sortable: true,
-      width: '10%'
+      width: '150px'
     },
     {
       name: 'Task schedule hours',
       selector: (row) => row?.task_scheduled_Hours,
       sortable: true,
-      width: '8%'
+      width: '150px'
     },
     {
       name: 'Task actual hours played',
       selector: (row) => row?.task_actual_worked,
       sortable: true,
-      width: '8%'
+      width: '150px'
     },
     {
       name: 'Task status',
       selector: (row) => row?.task_status,
       sortable: true,
-      width: '10%'
+      width: '150px'
     },
     {
       name: 'Task actual status',
       selector: (row) => row?.task_actual_status,
       sortable: true,
-      width: '10%'
+      width: '150px'
     }
   ];
   let taskDraggedFromId;
@@ -799,6 +796,7 @@ export default function TaskComponent({ match }) {
     for (let i = 0; i < basketData.length; i++) {
       if (basketData[i].id === ele.id) {
         const findIndex = basketData[i].taskData.findIndex(
+          // eslint-disable-next-line no-self-compare
           (task) => task.id === task.id
         );
         basketData[i].taskData.splice(findIndex, 0, taskRemoved[0]);
@@ -807,10 +805,20 @@ export default function TaskComponent({ match }) {
     setData(basketData);
   };
 
+  const setEndDateGreaterThanStartDate = (e) => {
+    const { value } = e.target;
+    if (value) {
+      const startDate = new Date(value);
+      startDate.setDate(startDate.getDate() + 1);
+      const formattedMinDate = startDate.toISOString().split('T')[0];
+      setMinEndDate(formattedMinDate);
+      return formattedMinDate;
+    }
+  };
+
   var dragId;
-  var dropId;
-  var basketIdArray1;
-  var basketIdArray2;
+  // var dropId;
+
   const dragStartHandler = (e, card) => {
     dragId = card.id;
   };
@@ -825,7 +833,7 @@ export default function TaskComponent({ match }) {
 
   const dropHandler = async (e, card) => {
     e.preventDefault();
-    dropId = card.id;
+    // dropId = card.id;
     let basketData = [...data];
     const indexOfDraggedBasket = basketData.findIndex(
       (basket) => basket.id === dragId
@@ -843,35 +851,19 @@ export default function TaskComponent({ match }) {
     pushForward(basketIdForPayload);
     // basketIdArray1 = basketIdArray;
     return;
-    var drag = basketIdArray1.indexOf(dragId);
-    var drop = basketIdArray1.indexOf(dropId);
-
-    let draggedElement = basketData[drag];
-    let droppedOverElement = basketData[drop];
-    return;
-
-    if (drag > -1) {
-      basketIdArray1.splice(drag, 1);
-      // basketData.splice(drag, 1);
-    }
-
-    basketIdArray1.splice(drop, 0, dragId);
-    basketIdArray2 = basketIdArray1.join();
-    setBasketIdArray(basketIdArray2);
-    pushForward();
   };
   const [showDetails, setShowDetails] = useState(false);
   const detailsHandler = () => {
     setShowDetails((prev) => !prev);
   };
-  const date = new Date();
+  // const date = new Date();
 
-  let day = date.getDate();
-  let month = date.getMonth() + 1;
-  let year = date.getFullYear();
+  // let day = date.getDate();
+  // let month = date.getMonth() + 1;
+  // let year = date.getFullYear();
 
   // This arrangement can be altered based on how we want the date's format to appear.
-  let currentDate = `${day}-${month}-${year}`;
+  // let currentDate = `${day}-${month}-${year}`;
   const goToSprintCalendarGraph = (module) => {
     let linkURL = `/${_base}/Ticket/Task/${ticketId}`;
     localStorage.setItem('PreviosTab', linkURL);
@@ -898,7 +890,13 @@ export default function TaskComponent({ match }) {
     );
     loadData();
     getTicketData();
-  }, []);
+  }, [
+    currentTaskStatus,
+    getBasketData,
+    getTicketData,
+    loadData,
+    selectedOption?.value
+  ]);
 
   // function LoaderComponent() {
   //   return (
@@ -970,7 +968,7 @@ export default function TaskComponent({ match }) {
 
               <div className="col-9 col-md-4  d-flex align-items-center justify-content-between">
                 <div className=" col-10">
-                  {sprintDropDown?.length > 0 && (
+                  {sprintDropDown?.length > 0 && !showSprintReport && (
                     <Select
                       className=""
                       name="sprint_data"
@@ -985,69 +983,70 @@ export default function TaskComponent({ match }) {
                 </div>
 
                 {/* Hamburger Menu for manage task */}
-                <div className="col-2 text-end">
-                  <Dropdown onClick={handleRegularizationRequest}>
-                    <Dropdown.Toggle
-                      as="button"
-                      variant=""
-                      className="btn btn-outline-primary p-1"
-                    >
-                      <i className="icofont-navigation-menu"></i>
-                    </Dropdown.Toggle>
-                    <Dropdown.Menu
-                      as="ul"
-                      className="border-0 shadow p-2 dropdown-menu-columns"
-                    >
-                      <li>
-                        <ExportToExcel
-                          className="btn btn-sm btn-danger btn-custom  w-100"
-                          buttonTitle="Export All Task Data"
-                          fileName="Task Data"
-                          apiData={tasksData}
-                        />
-                      </li>
-                      <li>
-                        {ownership &&
-                          (ownership === 'TICKET' ||
-                            ownership === 'PROJECT') && (
-                            <button
-                              className="btn btn-sm btn-primary text-white btn-custom w-100"
-                              onClick={(e) => {
-                                handleShowBasketModal(null);
-                              }}
-                            >
-                              Create Basket
-                            </button>
-                          )}
-                      </li>
-                      {/* Add Sprint Button  in hamburger*/}
+                {!showSprintReport && (
+                  <div className="col-2 text-end">
+                    <Dropdown onClick={handleRegularizationRequest}>
+                      <Dropdown.Toggle
+                        as="button"
+                        variant=""
+                        className="btn btn-outline-primary p-1"
+                      >
+                        <i className="icofont-navigation-menu"></i>
+                      </Dropdown.Toggle>
+                      <Dropdown.Menu
+                        as="ul"
+                        className="border-0 shadow p-2 dropdown-menu-columns"
+                      >
+                        <li>
+                          <ExportToExcel
+                            className="btn btn-sm btn-danger btn-custom  w-100"
+                            buttonTitle="Export All Task Data"
+                            fileName="Task Data"
+                            apiData={tasksData}
+                          />
+                        </li>
+                        <li>
+                          {ownership &&
+                            (ownership === 'TICKET' ||
+                              ownership === 'PROJECT') && (
+                              <button
+                                className="btn btn-sm btn-primary text-white btn-custom w-100"
+                                onClick={(e) => {
+                                  handleShowBasketModal(null);
+                                }}
+                              >
+                                Create Basket
+                              </button>
+                            )}
+                        </li>
+                        {/* Add Sprint Button  in hamburger*/}
 
-                      <li>
-                        <button
-                          className="btn btn-sm btn-primary text-white btn-custom w-100"
-                          onClick={(e) => {
-                            handleSprintModal({
-                              showModal: true,
-                              modalData: '',
-                              modalHeader: 'Add'
-                            });
-                          }}
-                          disabled={
-                            ownership !== 'TICKET' && ownership !== 'PROJECT'
-                          }
-                        >
-                          + Sprint
-                        </button>
-                      </li>
-                      <li>
-                        <Link to={`/${_base}/getAllTestCases/` + ticketId}>
-                          <button className="btn btn-sm btn-info text-white btn-custom w-100">
-                            All Test Cases
+                        <li>
+                          <button
+                            className="btn btn-sm btn-primary text-white btn-custom w-100"
+                            onClick={(e) => {
+                              handleSprintModal({
+                                showModal: true,
+                                modalData: '',
+                                modalHeader: 'Add'
+                              });
+                            }}
+                            disabled={
+                              ownership !== 'TICKET' && ownership !== 'PROJECT'
+                            }
+                          >
+                            + Sprint
                           </button>
-                        </Link>
-                      </li>
+                        </li>
+                        <li>
+                          <Link to={`/${_base}/getAllTestCases/` + ticketId}>
+                            <button className="btn btn-sm btn-info text-white btn-custom w-100">
+                              All Test Cases
+                            </button>
+                          </Link>
+                        </li>
 
-                      {/* <li>
+                        {/* <li>
                         {ownership && ownership !== "TASK" && (
                           <button
                             // className="btn btn-sm btn-danger text-white"
@@ -1069,26 +1068,27 @@ export default function TaskComponent({ match }) {
                           </button>
                         )}
                       </li> */}
-                      <li>
-                        <button
-                          className="btn btn-sm btn-warning  text-white"
-                          onClick={(e) => {
-                            handleShowApproveTaskRequestModal();
-                            handleTaskRegularizationRequest();
-                          }}
-                        >
-                          Task Regularization Request
-                          {taskRegularizationRequest && (
-                            <span className="badge bg-warning p-2">
-                              {/* {taskRegularizationRequest.length > 0 ? taskRegularizationRequest.length : ""} */}
-                            </span>
-                          )}
-                        </button>
-                        {/* )} */}
-                      </li>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </div>
+                        <li>
+                          <button
+                            className="btn btn-sm btn-warning  text-white"
+                            onClick={(e) => {
+                              handleShowApproveTaskRequestModal();
+                              handleTaskRegularizationRequest();
+                            }}
+                          >
+                            Task Regularization Request
+                            {taskRegularizationRequest && (
+                              <span className="badge bg-warning p-2">
+                                {/* {taskRegularizationRequest.length > 0 ? taskRegularizationRequest.length : ""} */}
+                              </span>
+                            )}
+                          </button>
+                          {/* )} */}
+                        </li>
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -1122,6 +1122,7 @@ export default function TaskComponent({ match }) {
                                 {attachment.name}
                                 <div className="d-flex justify-content-center p-0 mt-1">
                                   <a
+                                    // href="/"
                                     // href={`${_attachmentUrl}/${attachment.path}`}
                                     target="_blank"
                                     className="btn btn-primary btn-sm p-1"
@@ -1142,7 +1143,7 @@ export default function TaskComponent({ match }) {
         </div>
       </div>
       {/* Sprint data view */}
-      {sprintCardData?.length > 0 && (
+      {sprintCardData?.length > 0 && !showSprintReport && (
         <div className=" card mt-2">
           <div className="card-body">
             <div className="d-flex justify-content-around align-items-center p-2">
@@ -1287,19 +1288,19 @@ export default function TaskComponent({ match }) {
                     viewBox="0 0 28 28"
                     fill="none"
                     role="button"
-                    onClick={() => {
-                      setSprintInput({
-                        sprintName: sprintCardData[0]?.name,
-                        sprintDescription: sprintCardData[0]?.description,
-                        startDate: sprintCardData[0]?.start_date,
-                        endDate: sprintCardData[0]?.end_date
-                      });
-                      setSprintModal({
-                        showModal: true,
-                        modalData: sprintCardData[0],
-                        modalHeader: 'Update'
-                      });
-                    }}
+                    // onClick={() => {
+                    //   setSprintInput({
+                    //     sprintName: sprintCardData[0]?.name,
+                    //     sprintDescription: sprintCardData[0]?.description,
+                    //     startDate: sprintCardData[0]?.start_date,
+                    //     endDate: sprintCardData[0]?.end_date
+                    //   });
+                    //   setSprintModal({
+                    //     showModal: true,
+                    //     modalData: sprintCardData[0],
+                    //     modalHeader: 'Update'
+                    //   });
+                    // }}
                   >
                     <g clip-path="url(#clip0_399_8555)">
                       <rect width="28" height="28" rx="8" fill="#484C7F" />
@@ -1421,6 +1422,12 @@ export default function TaskComponent({ match }) {
       </div>
       {showSprintReport ? (
         <div className="text-end">
+          <button
+            className="btn btn-info text-white px-4 py-2"
+            onClick={() => setShowSprintReport(false)}
+          >
+            Back
+          </button>
           <ExportToExcel
             className="my-3 py-2 btn btn-sm btn-danger"
             apiData={exportSprintData}
@@ -1496,8 +1503,8 @@ export default function TaskComponent({ match }) {
               </div>
             </CardBody>
           </Card>
-          {isLoading == true ? (
-            <CardLoadingSkeleton />
+          {isLoading === true ? (
+            <ManageTaskSkeleton />
           ) : (
             <>
               <div className="row  flex-row flex-nowrap g-3 py-xxl-4 overflow-auto">
@@ -1742,7 +1749,7 @@ export default function TaskComponent({ match }) {
                           id="exampleFormControlInput1"
                           name="sprintName"
                           placeholder="Enter Sprint name"
-                          disabled={sprintModal?.modalHeader == 'View'}
+                          disabled={sprintModal?.modalHeader === 'View'}
                           defaultValue={sprintModal?.modalData?.name}
                           onChange={(e) => sprintInputChangeHandler(e)}
                           maxlength={50}
@@ -1814,7 +1821,8 @@ export default function TaskComponent({ match }) {
                             disabled={sprintModal?.modalHeader === 'View'}
                             onChange={(e) => sprintInputChangeHandler(e)}
                             defaultValue={sprintModal?.modalData?.end_date}
-                            min={ticketStartDate}
+                            min={minEndDate}
+                            // min={new Date(sprintInput.startDate).getDate() + 1}
                             max={expectedSolveDate}
                             onKeyDown={(e) => e.preventDefault()}
                             required

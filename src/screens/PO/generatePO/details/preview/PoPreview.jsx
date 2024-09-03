@@ -1,5 +1,11 @@
-import React, { useEffect, useState } from 'react';
-import { Col, Container, Spinner } from 'react-bootstrap';
+import React, { useCallback, useEffect, useState } from 'react';
+import {
+  Col,
+  Container,
+  OverlayTrigger,
+  Spinner,
+  Tooltip
+} from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -16,6 +22,7 @@ import {
 import { createPendingOrderThunk } from '../../../../../redux/services/po/generatePo';
 import { _base } from '../../../../../settings/constants';
 import { NumbersOnly } from '../../../../../components/Utilities/Validation';
+import { exportToExcelCustomHandler } from '../../../../../utils/customFunction';
 import './style.scss';
 
 function PoPreview() {
@@ -24,9 +31,11 @@ function PoPreview() {
   const dispatch = useDispatch();
 
   // // redux state
-  const { userAddedPoDataList, isLoading } = useSelector(
-    (state) => state?.generatePo
-  );
+  const {
+    userAddedPoDataList,
+    isLoading,
+    pendingOrderErrorFileOnTheSportDownloadData
+  } = useSelector((state) => state?.generatePo);
 
   // // local state
   const [orderQty, setOrderQty] = useState({
@@ -34,6 +43,7 @@ function PoPreview() {
     currentId: '',
     currentValue: ''
   });
+  const [dataTableModifiedData, setDataTableModifiedData] = useState([]);
   const [orderQtyInputValue, setOrderQtyInputValue] = useState('');
   const [
     openDeleteOrderConfirmationModal,
@@ -46,6 +56,23 @@ function PoPreview() {
   //  table column data
   const columns = [
     {
+      name: 'Vendor Name',
+      selector: (row) =>
+        row?.vender_name ? (
+          <OverlayTrigger
+            placement="top"
+            overlay={
+              <Tooltip id={`tooltip-${row.id}`}>{row?.vender_name}</Tooltip>
+            }
+          >
+            <span>{row?.vender_name || '--'}</span>
+          </OverlayTrigger>
+        ) : (
+          '--'
+        ),
+      sortable: false
+    },
+    {
       name: 'Item',
       selector: (row) => row?.item || '---',
       sortable: false
@@ -55,15 +82,18 @@ function PoPreview() {
       selector: (row) => row?.category || '---',
       sortable: false
     },
+
     {
       name: 'Knockoff Wt Range',
       selector: (row) => row?.knockoff_wt_range || '---',
-      sortable: true
+      sortable: true,
+      width: '160px'
     },
     {
       name: 'Karagir Size Range',
       selector: (row) => row?.karagir_size_range || '---',
-      sortable: true
+      sortable: true,
+      width: '160px'
     },
     {
       name: 'Order Quantity',
@@ -85,39 +115,42 @@ function PoPreview() {
     },
     {
       name: 'Action',
-      cell: (row) => (
-        <div className="action_container">
-          <button
-            className="btn btn-info text-white rounded-circle"
-            onClick={() => {
-              row?.id === orderQty?.currentId && orderQty?.isEditable
-                ? handelEditOrder(row?.id)
-                : setOrderQty({
-                    isEditable: true,
-                    currentId: row?.id,
-                    currentValue: row?.order_qty
-                  });
-            }}
-          >
-            {row?.id === orderQty?.currentId && orderQty?.isEditable ? (
-              <i className="icofont-check-alt" />
-            ) : (
-              <i className="icofont-edit" />
-            )}
-          </button>
-          <button
-            className="btn btn-danger text-white rounded-circle"
-            onClick={() =>
-              setOpenDeleteOrderConfirmationModal({
-                open: true,
-                currentId: row?.id
-              })
-            }
-          >
-            <i className="icofont-ui-delete" />
-          </button>
-        </div>
-      ),
+      cell: (row) =>
+        !row?.off_action ? (
+          <div className="action_container">
+            <button
+              className="btn btn-info text-white rounded-circle"
+              onClick={() => {
+                row?.id === orderQty?.currentId && orderQty?.isEditable
+                  ? handelEditOrder(row?.id)
+                  : setOrderQty({
+                      isEditable: true,
+                      currentId: row?.id,
+                      currentValue: row?.order_qty
+                    });
+              }}
+            >
+              {row?.id === orderQty?.currentId && orderQty?.isEditable ? (
+                <i className="icofont-check-alt" />
+              ) : (
+                <i className="icofont-edit" />
+              )}
+            </button>
+            <button
+              className="btn btn-danger text-white rounded-circle"
+              onClick={() =>
+                setOpenDeleteOrderConfirmationModal({
+                  open: true,
+                  currentId: row?.id
+                })
+              }
+            >
+              <i className="icofont-ui-delete" />
+            </button>
+          </div>
+        ) : (
+          ''
+        ),
       button: true,
       ignoreRowClick: true,
       allowOverflow: true
@@ -136,6 +169,9 @@ function PoPreview() {
         formData: { payload: userAddedPoDataList },
         onSuccessHandler: () => {
           navigate(`/${_base}/GeneratePO`);
+        },
+        onErrorHandler: () => {
+          navigate(`/${_base}/GeneratePO`);
         }
       })
     );
@@ -143,7 +179,7 @@ function PoPreview() {
 
   const handelCancelPo = () => {
     dispatch(resetUserAddedOrderList());
-    navigate(`/${_base}/GeneratePO`);
+    navigate(`/${_base}/GeneratePO`, { replace: true });
   };
 
   const handelEditOrder = (id) => {
@@ -172,14 +208,67 @@ function PoPreview() {
     setOpenDeleteOrderConfirmationModal({ open: false });
   };
 
+  const exportErrorFileOnPoSubmit = useCallback(() => {
+    const errorFileData = pendingOrderErrorFileOnTheSportDownloadData?.map(
+      (errorData) => ({
+        'Delivery Date': errorData?.delivery_date ?? '--',
+        'Order Date': errorData?.order_date ?? '--',
+        'Karagir 1': errorData?.karagir_1 ?? '--',
+        Item: errorData?.item ?? '--',
+        Category: errorData?.category ?? '--',
+        'Exact Wt': errorData?.exact_wt ?? '--',
+        'Weight Range': errorData?.weight_range ?? '--',
+        'Size Range': errorData?.size_range ?? '--',
+        'Purity Range': errorData?.purity_range ?? '--',
+        'New Order': errorData?.new_qty ?? '--',
+        'Karagir Wt Range': errorData?.karagir_wt_range ?? '--',
+        'Knockoff Wt Range': errorData?.knockoff_wt_range ?? '--',
+        'Karagir Size Range': errorData?.karagir_size_range ?? '--',
+        Remark: errorData?.Error ?? '--'
+      })
+    );
+    handelCancelPo();
+    return exportToExcelCustomHandler({
+      data: errorFileData,
+      fileName: 'PO Error File Records'
+    });
+  }, [pendingOrderErrorFileOnTheSportDownloadData]);
+
+  // Modifying data and calculating total order qty
+  useEffect(() => {
+    if (userAddedPoDataList?.length > 0) {
+      const totalQty = userAddedPoDataList?.reduce(
+        (acc, curr) => acc + Number(curr?.order_qty || 0),
+        0
+      );
+      setDataTableModifiedData([
+        ...userAddedPoDataList,
+        {
+          vender_name: 'Total',
+          order_qty: totalQty,
+          off_action: true
+        }
+      ]);
+    } else {
+      setDataTableModifiedData([]);
+    }
+  }, [userAddedPoDataList]);
+
   useEffect(() => {
     setOrderQtyInputValue(orderQty?.currentValue);
   }, [orderQty?.currentValue]);
+
+  useEffect(() => {
+    if (pendingOrderErrorFileOnTheSportDownloadData?.length) {
+      exportErrorFileOnPoSubmit();
+    }
+  }, [pendingOrderErrorFileOnTheSportDownloadData]);
+
   return (
     <>
       <Container fluid className="pending_order_preview_container">
         <h3 className="fw-bold text_primary">PO</h3>
-        <DataTable columns={columns} data={userAddedPoDataList} />
+        <DataTable columns={columns} data={dataTableModifiedData} />
         <div className="d-flex justify-content-end mt-3 gap-2">
           <button
             className="btn btn-dark"

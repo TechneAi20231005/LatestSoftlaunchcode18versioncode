@@ -3,6 +3,7 @@ import { Col, Row } from 'react-bootstrap';
 import { ExportToExcel } from '../Utilities/Table/ExportToExcel';
 
 const SearchBoxHeader = ({
+  searchTerm,
   setSearchTerm,
   handleSearch,
   handleReset,
@@ -18,6 +19,7 @@ const SearchBoxHeader = ({
           type="search"
           className="form-control"
           placeholder={placeholder}
+          value={searchTerm}
           onChange={(e) => setSearchTerm(e?.target?.value)}
         />
       </Col>

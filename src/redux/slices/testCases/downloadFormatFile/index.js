@@ -7,6 +7,7 @@ import {
   getAllReviewTestDraftList,
   getByTestPlanIDReviewedListThunk,
   getDraftTestCaseList,
+  getExportAllReviewTestDraftList,
   getModuleMasterThunk,
   getProjectModuleMasterThunk,
   getSubModuleMasterThunk,
@@ -22,8 +23,10 @@ const initialState = {
   getDraftTestListData: [],
   allDraftTestListData: [],
   allReviewDraftTestListData: [],
+  exportAllReviewDraftTestListData: [],
   allReviewDraftTestListDataByID: [],
   allReviewDraftTestListData: [],
+  allReviewDraftTestListDataTotal: [],
   filterReviewList: [],
   filterData: { payload: null },
   getModuleData: [],
@@ -55,7 +58,8 @@ const initialState = {
     getSubModuleList: false,
     editTestCase: false,
     sendTestCasesReviewer: false,
-    testDraftHistory: false
+    testDraftHistory: false,
+    exportAllReviewDraftTestListData: false
   },
   errorMsg: {
     getProjectModuleList: '',
@@ -66,7 +70,8 @@ const initialState = {
     allDraftTestListData: '',
     allReviewDraftTestListData: '',
     allReviewDraftTestListDataByID: '',
-    filterReviewedDraftTestList: ''
+    filterReviewedDraftTestList: '',
+    exportAllReviewDraftTestListData: ''
   },
   successMsg: {
     getProjectModuleList: '',
@@ -78,7 +83,8 @@ const initialState = {
     allReviewDraftTestListData: '',
     allReviewDraftTestListDataByID: '',
     testDraftHistory: false,
-    filterReviewedDraftTestList: ''
+    filterReviewedDraftTestList: '',
+    exportAllReviewDraftTestListData: ''
   }
 };
 const downloadFormatSlice = createSlice({
@@ -256,6 +262,22 @@ const downloadFormatSlice = createSlice({
         state.errorMsg.allReviewDraftTestListData = action?.error?.message;
       })
 
+      // export reviewed data
+
+      .addCase(getExportAllReviewTestDraftList.pending, (state, action) => {
+        state.isLoading.exportAllReviewDraftTestListData = true;
+      })
+      .addCase(getExportAllReviewTestDraftList.fulfilled, (state, action) => {
+        state.isLoading.exportAllReviewDraftTestListData = false;
+        state.successMsg.exportAllReviewDraftTestListData = action?.payload;
+        state.exportAllReviewDraftTestListData = action?.payload?.data?.data;
+      })
+      .addCase(getExportAllReviewTestDraftList.rejected, (state, action) => {
+        state.isLoading.exportAllReviewDraftTestListData = false;
+        state.errorMsg.exportAllReviewDraftTestListData =
+          action?.error?.message;
+      })
+
       //// get by id reviewed list
 
       .addCase(getByTestPlanIDReviewedListThunk.pending, (state, action) => {
@@ -267,6 +289,8 @@ const downloadFormatSlice = createSlice({
         state.allReviewDraftTestListDataByID =
           action?.payload?.data?.data?.data;
         state.allReviewDraftTestListData = action?.payload?.data;
+        state.allReviewDraftTestListDataTotal = action?.payload?.data;
+
         state.filterReviewList = action?.payload?.data?.filter_data;
       })
       .addCase(getByTestPlanIDReviewedListThunk.rejected, (state, action) => {

@@ -13,6 +13,7 @@ import DownloadFormatFileModal from './DownloadFormatFileModal';
 import {
   getByTestPlanIDReviewedListThunk,
   getDraftTestCaseList,
+  getExportAllReviewTestDraftList,
   sendTestCaseReviewerThunk
 } from '../../../redux/services/testCases/downloadFormatFile';
 import { getEmployeeData } from '../../Dashboard/DashboardAction';
@@ -95,6 +96,9 @@ function ReviewedTestDraftComponent() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [state, localDispatch] = useReducer(localReducer, initialState);
+  const [isFilterApplied, setIsFilterApplied] = useState(false);
+  const [selectedValue, setSelectedValue] = useState('');
+
   const {
     filterType,
     columnName,
@@ -119,9 +123,14 @@ function ReviewedTestDraftComponent() {
   const {
     allReviewDraftTestListDataByID,
     allReviewDraftTestListData,
-    filterReviewList
+    allReviewDraftTestListDataTotal,
+    filterReviewList,
+    exportAllReviewDraftTestListData
   } = useSelector((state) => state?.downloadFormat);
-
+  console.log(
+    'exportallReviewDraftTestListData',
+    exportAllReviewDraftTestListData
+  );
   const [paginationData, setPaginationData] = useReducer(
     (prevState, nextState) => {
       return { ...prevState, ...nextState };
@@ -135,6 +144,7 @@ function ReviewedTestDraftComponent() {
   const testerData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.getAllTesterDataList
   );
+
   const [downloadmodal, setDownloadModal] = useState({
     showModal: false,
     modalData: '',
@@ -151,6 +161,7 @@ function ReviewedTestDraftComponent() {
     data: '',
     open: false
   });
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleDownloadModal = (data) => {
     setDownloadModal(data);
@@ -161,17 +172,44 @@ function ReviewedTestDraftComponent() {
     dispatch(getEmployeeData());
   };
 
+  // const handleCheckboxChange = (row) => {
+  //   localDispatch({
+  //     type: 'SET_SELECTED_ROWS',
+  //     payload: (prevSelectedRows) => {
+  //       if (prevSelectedRows.includes(row.id)) {
+  //         return prevSelectedRows.filter(
+  //           (selectedRow) => selectedRow !== row.id
+  //         );
+  //       } else {
+  //         return [...prevSelectedRows, row.id];
+  //       }
+  //     }
+  //   });
+  // };
+  const totalRows = exportAllReviewDraftTestListData?.length;
+
   const handleCheckboxChange = (row) => {
     localDispatch({
       type: 'SET_SELECTED_ROWS',
       payload: (prevSelectedRows) => {
+        let updatedSelectedRows;
+
         if (prevSelectedRows.includes(row.id)) {
-          return prevSelectedRows.filter(
-            (selectedRow) => selectedRow !== row.id
+          updatedSelectedRows = prevSelectedRows?.filter(
+            (selectedRow) => selectedRow !== row?.id
           );
         } else {
-          return [...prevSelectedRows, row.id];
+          updatedSelectedRows = [...prevSelectedRows, row.id];
         }
+
+        // Check if all rows are selected
+        if (updatedSelectedRows?.length === totalRows) {
+          localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: true });
+        } else {
+          localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: false });
+        }
+
+        return updatedSelectedRows;
       }
     });
   };
@@ -183,14 +221,16 @@ function ReviewedTestDraftComponent() {
     field: 'field',
     platform: 'platform',
     type_name: 'type_id',
-    id: 'id',
+    tc_id: 'tc_id',
     severity: 'severity',
     group_name: 'group_id',
     steps: 'steps',
     expected_result: 'expected_result',
     status: 'status',
     project_name: 'project_id',
-    test_description: 'test_description'
+    test_description: 'test_description',
+    created_at: 'created_at',
+    created_by: 'created_by'
   };
 
   const generateOptions = (options) => {
@@ -207,6 +247,9 @@ function ReviewedTestDraftComponent() {
   };
 
   const handleFilterClick = (event, column, name, type, id) => {
+    if (clearData === true) {
+      localDispatch({ type: 'SET_FILTERS', payload: [] });
+    }
     const filterKeyMap = {
       module_name: 'module_names',
       sub_module_name: 'sub_module_names',
@@ -214,13 +257,16 @@ function ReviewedTestDraftComponent() {
       field: 'field_names',
       platform: 'platforms',
       type_name: 'type_names',
-      id: 'ids',
+      tc_id: 'ids',
       severity: 'severities',
       group_name: 'group_names',
       steps: 'steps',
       expected_result: 'expected_results',
       status: 'status',
-      project_name: 'project_names'
+      project_name: 'project_names',
+      test_description: 'test_descriptions',
+      created_at: 'created_at',
+      created_by: 'created_by'
     };
     const filteredData = filterReviewList[filterKeyMap[column]];
     const columnId = moduleMapping[column];
@@ -266,7 +312,7 @@ function ReviewedTestDraftComponent() {
     localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: newSelectAllNames });
 
     if (newSelectAllNames) {
-      const draftRowIds = allReviewDraftTestListDataByID.map((row) => row.id);
+      const draftRowIds = exportAllReviewDraftTestListData.map((row) => row.id);
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
     } else {
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
@@ -320,17 +366,45 @@ function ReviewedTestDraftComponent() {
   };
 
   const handleBetweenValueChange = (index, value) => {
-    if (filterType !== 'is not between' && filterType !== 'is between') {
+    if (
+      filterType !== 'is not between' &&
+      filterType !== 'is between' &&
+      selectedValue !== 'is between' &&
+      selectedValue !== 'is not between'
+    ) {
       localDispatch({ type: 'SET_BETWEEN_VALUES', payload: Number(value) });
     } else {
       const newValues = [...betweenValues];
       newValues[index] = value;
+      if (
+        newValues[0] !== undefined &&
+        newValues[1] !== undefined &&
+        newValues[0] !== '' &&
+        newValues[1] !== ''
+      ) {
+        const value1 = parseFloat(newValues[0]);
+        const value2 = parseFloat(newValues[1]);
+
+        if (!isNaN(value1) && !isNaN(value2)) {
+          if (value1 > value2) {
+            setErrorMessage(
+              'The first value should not be greater than the second value.'
+            );
+          } else {
+            setErrorMessage('');
+          }
+        }
+      }
       localDispatch({ type: 'SET_BETWEEN_VALUES', payload: newValues });
     }
   };
-
   const getFilteredValues = () => {
-    if (filterType === 'is not between' || filterType === 'is between') {
+    if (
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
+    ) {
       return betweenValues.map((value) => Number(value));
     }
 
@@ -338,12 +412,16 @@ function ReviewedTestDraftComponent() {
   };
 
   const handleApplyFilter = async () => {
+    setClearData(false);
     const newFilter =
-      filterType === 'is not between' || filterType === 'is between'
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
         ? {
             column: filterColumnId,
             column_name: filterColumn,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             searchText: getFilteredValues(),
             sort: sortOrder
           }
@@ -351,16 +429,37 @@ function ReviewedTestDraftComponent() {
             column: filterColumnId,
             column_name: filterColumn,
             searchText: type === 'text' ? filterText : betweenValues,
-            filter: filterType,
+            filter: filterType ? filterType : selectedValue,
             sort: sortOrder
           };
 
-    const updatedFilters = [...filters, newFilter];
-    localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+    // const updatedFilters = [...filters, newFilter];
+    const getLatestConditions = (data) => {
+      const latestConditions = {};
 
+      // Traverse the list to keep the most recent condition for each column
+      data.forEach((condition) => {
+        const column = condition.column;
+        latestConditions[column] = condition;
+      });
+
+      // Convert the dictionary back to a list
+      const latestConditionsList = Object.values(latestConditions);
+
+      return latestConditionsList;
+    };
+    const updatedFiltersData = [...filters, newFilter];
+
+    const updatedFilters = getLatestConditions(updatedFiltersData);
+    localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumnId]: true
+    }));
     try {
       dispatch(
         getByTestPlanIDReviewedListThunk({
+          id: id,
           limit: paginationData.rowPerPage,
           page: paginationData.currentPage,
           filter_testcase_data: updatedFilters
@@ -372,7 +471,46 @@ function ReviewedTestDraftComponent() {
     } catch (error) {}
   };
 
+  const handleSearchChange = (e) => {
+    const term = e.target.value;
+    localDispatch({
+      type: 'SET_SEARCH_TERM',
+      payload: term
+    });
+  };
+
+  const handleClearAllFilter = async () => {
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumn]: false
+    }));
+    const updatedFilters = filters?.filter(
+      (filter) => filter.column !== filterColumnId
+    );
+
+    localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+
+    try {
+      dispatch(
+        getByTestPlanIDReviewedListThunk({
+          id: id,
+          limit: paginationData.rowPerPage,
+          page: paginationData.currentPage,
+          filter_testcase_data: updatedFilters
+        })
+      );
+      localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
+      localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
+      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+    } catch (error) {}
+  };
+
+  const filteredResults = filterValues?.filter((item) =>
+    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
   const handleApplyButton = async () => {
+    setClearData(false);
+
     const newFilter = {
       column: filterColumnId,
       column_name: filterColumn,
@@ -383,10 +521,15 @@ function ReviewedTestDraftComponent() {
 
     const updatedFilters = [...filters, newFilter];
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+    setIsFilterApplied((prev) => ({
+      ...prev,
+      [filterColumn]: true
+    }));
 
     try {
       dispatch(
         getByTestPlanIDReviewedListThunk({
+          id: id,
           limit: paginationData.rowPerPage,
           page: paginationData.currentPage,
           filter_testcase_data: updatedFilters
@@ -402,9 +545,9 @@ function ReviewedTestDraftComponent() {
     {
       name: 'Action',
       selector: (row) => (
-        <>
+        <div className="d-flex align-items-center">
           <i
-            className="icofont-edit text-primary cp me-3"
+            className="icofont-edit text-primary btn btn-outline-secondary cp me-3"
             onClick={() =>
               setAddEditTestCasesModal({
                 type: 'EDIT',
@@ -415,12 +558,12 @@ function ReviewedTestDraftComponent() {
           />
 
           <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.id}`}>
-            <i class="icofont-history cp bg-warning rounded-circle" />
+            <i class="icofont-history cp  btn btn-outline-secondary " />
           </Link>
-        </>
+        </div>
       ),
       sortable: false,
-      width: '90px'
+      width: '150px'
     },
 
     {
@@ -454,7 +597,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e, row) =>
               handleFilterClick(e, 'module_name', 'Module', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['module_name'] ? 'text-warning' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -473,7 +618,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.module_name && row.module_name.length < 20
+                  {row.module_name && row.module_name?.length < 20
                     ? row.module_name
                     : row.module_name.substring(0, 50) + '....'}
                 </span>
@@ -498,7 +643,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e, row) =>
               handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['sub_module_name'] ? 'text-warning' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -514,9 +661,9 @@ function ReviewedTestDraftComponent() {
           {row.sub_module_name && (
             <OverlayTrigger overlay={<Tooltip>{row.sub_module_name} </Tooltip>}>
               <div>
-                <span className="ms-1">
+                <span className="ms-1 d-block">
                   {' '}
-                  {row.sub_module_name && row.sub_module_name.length < 20
+                  {row.sub_module_name && row.sub_module_name?.length < 20
                     ? row.sub_module_name
                     : row.sub_module_name.substring(0, 50) + '....'}
                 </span>
@@ -541,7 +688,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'function_name', 'Function', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['function_name'] ? 'text-warning' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -559,7 +708,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.function_name && row.function_name.length < 20
+                  {row.function_name && row.function_name?.length < 20
                     ? row.function_name
                     : row.function_name.substring(0, 50) + '....'}
                 </span>
@@ -582,7 +731,9 @@ function ReviewedTestDraftComponent() {
           <span>Field</span>
           <i
             onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['field'] ? 'text-warning' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -600,7 +751,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.field && row.field.length < 20
+                  {row.field && row.field?.length < 20
                     ? row.field
                     : row.field.substring(0, 50) + '....'}
                 </span>
@@ -625,7 +776,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'type_name', 'Testing Type', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['type_name'] ? 'text-warning' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -643,7 +796,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.type_name && row.type_name.length < 20
+                  {row.type_name && row.type_name?.length < 20
                     ? row.type_name
                     : row.type_name.substring(0, 50) + '....'}
                 </span>
@@ -668,7 +821,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'group_name', 'Testing Group', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['group_name'] ? 'text-warning' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -686,7 +841,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.group_name && row.group_name.length < 20
+                  {row.group_name && row.group_name?.length < 20
                     ? row.group_name
                     : row.group_name.substring(0, 50) + '....'}
                 </span>
@@ -708,12 +863,16 @@ function ReviewedTestDraftComponent() {
         <div>
           <span>Testing Id</span>
           <i
-            onClick={(e) => handleFilterClick(e, 'id', 'Testing Id', 'number')}
-            className="icofont-filter ms-2"
+            onClick={(e) =>
+              handleFilterClick(e, 'tc_id', 'Testing Id', 'number')
+            }
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['tc_id'] ? 'text-warning' : 'text-dark'
+            }`}
           />
         </div>
       ),
-      selector: (row) => row.id,
+      selector: (row) => row.tc_id,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -722,10 +881,10 @@ function ReviewedTestDraftComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.id && (
-            <OverlayTrigger overlay={<Tooltip>{row.id} </Tooltip>}>
+          {row.tc_id && (
+            <OverlayTrigger overlay={<Tooltip>{row.tc_id} </Tooltip>}>
               <div>
-                <span className="ms-1">{row.id}</span>
+                <span className="ms-1">{row.tc_id}</span>
               </div>
             </OverlayTrigger>
           )}
@@ -744,14 +903,18 @@ function ReviewedTestDraftComponent() {
         <div>
           <span>Severity</span>
           <i
-            onClick={(e) => handleFilterClick(e, 'id', 'Severity', 'text')}
-            className="icofont-filter ms-2"
+            onClick={(e) =>
+              handleFilterClick(e, 'severity', 'Severity', 'text')
+            }
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['severity'] ? 'text-warning' : 'text-dark'
+            }`}
           />
         </div>
       ),
       selector: (row) => row.severity,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -788,13 +951,15 @@ function ReviewedTestDraftComponent() {
                 'text'
               )
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['test_description'] ? 'text-warning' : 'text-dark'
+            }`}
           />
         </div>
       ),
       selector: (row) => row.test_description,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -806,48 +971,11 @@ function ReviewedTestDraftComponent() {
               overlay={<Tooltip>{row.test_description} </Tooltip>}
             >
               <div>
-                <span className="ms-1">{row.test_description}</span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
-    },
-    {
-      name: (
-        <div>
-          <span>Expected Result</span>
-          <i
-            onClick={(e) =>
-              handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
-            }
-            className="icofont-filter ms-2"
-          />
-        </div>
-      ),
-      selector: (row) => row.expected_result,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.expected_result && (
-            <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
-              <div>
                 <span className="ms-1">
                   {' '}
-                  {row.expected_result && row.expected_result.length < 20
-                    ? row.expected_result
-                    : row.expected_result.substring(0, 50) + '....'}
+                  {row.test_description && row.test_description?.length < 20
+                    ? row.test_description
+                    : row.test_description.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -867,12 +995,14 @@ function ReviewedTestDraftComponent() {
           <span>Steps</span>
           <i
             onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['steps'] ? 'text-warning' : 'text-dark'
+            }`}
           />
         </div>
       ),
       selector: (row) => row.steps,
-      width: '7rem',
+      width: '10rem',
       sortable: false,
       cell: (row) => (
         <div
@@ -883,11 +1013,56 @@ function ReviewedTestDraftComponent() {
           {row.steps && (
             <OverlayTrigger overlay={<Tooltip>{row.steps} </Tooltip>}>
               <div>
-                <span className="ms-1">
+                <span className="ms-1 d-block">
                   {' '}
-                  {row.steps && row.type_name.length < 20
+                  {row.steps && row.type_name?.length < 20
                     ? row.steps
                     : row.steps.substring(0, 50) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      ),
+      header: (column, sortDirection) => (
+        <div className="d-flex align-items-center">
+          <span>{column.name}</span>
+          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+        </div>
+      )
+    },
+
+    {
+      name: (
+        <div>
+          <span>Expected Result</span>
+          <i
+            onClick={(e) =>
+              handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
+            }
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['expected_result'] ? 'text-warning' : 'text-dark'
+            }`}
+          />
+        </div>
+      ),
+      selector: (row) => row.expected_result,
+      width: '10rem',
+      sortable: false,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.expected_result && (
+            <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
+              <div>
+                <span className="ms-1 d-block">
+                  {' '}
+                  {row.expected_result && row.expected_result?.length < 20
+                    ? row.expected_result
+                    : row.expected_result.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -908,7 +1083,9 @@ function ReviewedTestDraftComponent() {
           <span>Status</span>
           <i
             onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['status'] ? 'text-warning' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -926,7 +1103,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.status && row.status.length < 20
+                  {row.status && row.status?.length < 20
                     ? row.status
                     : row.status.substring(0, 50) + '....'}
                 </span>
@@ -949,18 +1126,40 @@ function ReviewedTestDraftComponent() {
       sortable: true,
 
       width: '250px',
-      cell: (row) => (
-        <select
-          className="form-select"
-          aria-label="Default select example"
-          value={row.comment_id || ''}
-          id="comment_id"
-          name="comment_id"
-          disabled
-        >
-          {generateOptions(getFilterReviewCommentMasterList)}
-        </select>
-      )
+      // cell: (row) => (
+      //     <select
+      //       className="form-select"
+      //       aria-label="Default select example"
+      //       value={row.comment_id || ''}
+      //       id="comment_id"
+      //       name="comment_id"
+      //       disabled
+      //     >
+      //       {generateOptions(getFilterReviewCommentMasterList)}
+      //     </select>
+      // )
+      cell: (row) => {
+        // Get the selected option text to display in the tooltip
+        const selectedOptionText =
+          getFilterReviewCommentMasterList?.find(
+            (option) => option?.value === row?.comment_id
+          )?.label || 'No comment selected';
+
+        return (
+          <OverlayTrigger overlay={<Tooltip>{selectedOptionText}</Tooltip>}>
+            <select
+              className="form-select"
+              aria-label="Default select example"
+              value={row.comment_id || ''}
+              id="comment_id"
+              name="comment_id"
+              disabled
+            >
+              {generateOptions(getFilterReviewCommentMasterList)}
+            </select>
+          </OverlayTrigger>
+        );
+      }
     },
     {
       name: 'Remark',
@@ -968,16 +1167,18 @@ function ReviewedTestDraftComponent() {
       sortable: true,
       width: '300px',
       cell: (row) => (
-        <input
-          className="form-control"
-          type="text"
-          id="other_remark"
-          name="other_remark"
-          placeholder="Enter Remark"
-          aria-label="default input example"
-          defaultValue={row.other_remark}
-          disabled
-        />
+        <OverlayTrigger overlay={<Tooltip>{row.other_remark}</Tooltip>}>
+          <input
+            className="form-control"
+            type="text"
+            id="other_remark"
+            name="other_remark"
+            placeholder="Enter Remark"
+            aria-label="default input example"
+            defaultValue={row.other_remark}
+            disabled
+          />
+        </OverlayTrigger>
       )
     },
 
@@ -989,7 +1190,9 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'project_name', 'Project', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['project_name'] ? 'text-warning' : 'text-dark'
+            }`}
           />
         </div>
       ),
@@ -1007,7 +1210,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.project_name && row.project_name.length < 20
+                  {row.project_name && row.project_name?.length < 20
                     ? row.project_name
                     : row.project_name.substring(0, 50) + '....'}
                 </span>
@@ -1032,13 +1235,15 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'created_at', 'created_at', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['created_at'] ? 'text-warning' : 'text-dark'
+            }`}
           />
         </div>
       ),
       selector: (row) => row.created_at,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -1050,7 +1255,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.created_at && row.created_at.length < 20
+                  {row.created_at && row.created_at?.length < 20
                     ? row.created_at
                     : row.created_at.substring(0, 50) + '....'}
                 </span>
@@ -1075,13 +1280,15 @@ function ReviewedTestDraftComponent() {
             onClick={(e) =>
               handleFilterClick(e, 'created_by', 'created_by', 'text')
             }
-            className="icofont-filter ms-2"
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['created_by'] ? 'text-warning' : 'text-dark'
+            }`}
           />
         </div>
       ),
       selector: (row) => row.created_by,
       width: '10rem',
-      sortable: true,
+      sortable: false,
       cell: (row) => (
         <div
           className="btn-group"
@@ -1093,7 +1300,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.created_by && row.created_by.length < 20
+                  {row.created_by && row.created_by?.length < 20
                     ? row.created_by
                     : row.created_by.substring(0, 50) + '....'}
                 </span>
@@ -1118,6 +1325,8 @@ function ReviewedTestDraftComponent() {
     { title: 'Field', field: 'field' },
     { title: 'Testing Type', field: 'type_name' },
     { title: 'Testing Group', field: 'group_name' },
+    { title: 'Test ID', field: 'tc_id' },
+    { title: 'Test Description', field: 'test_description' },
     { title: 'Steps', field: 'steps' },
     { title: 'Severity', field: 'severity' },
     { title: 'Expected Result', field: 'expected_result' },
@@ -1170,17 +1379,67 @@ function ReviewedTestDraftComponent() {
 
   useEffect(() => {
     dispatch(getReviewCommentMasterListThunk());
+    const newFilter =
+      filterType === 'is not between' ||
+      filterType === 'is between' ||
+      selectedValue === 'is between' ||
+      selectedValue === 'is not between'
+        ? {
+            column: filterColumnId,
+            column_name: filterColumn,
+            filter: filterType ? filterType : selectedValue,
+            searchText: getFilteredValues(),
+            sort: sortOrder
+          }
+        : {
+            column: filterColumnId,
+            column_name: filterColumn,
+            searchText: type === 'text' ? filterText : betweenValues,
+            filter: filterType ? filterType : selectedValue,
+            sort: sortOrder
+          };
 
+    // const updatedFilters = [...filters, newFilter];
+    const getLatestConditions = (data) => {
+      const latestConditions = {};
+
+      // Traverse the list to keep the most recent condition for each column
+      data.forEach((condition) => {
+        const column = condition.column;
+        latestConditions[column] = condition;
+      });
+
+      // Convert the dictionary back to a list
+      const latestConditionsList = Object.values(latestConditions);
+
+      return latestConditionsList;
+    };
+    const updatedFiltersData = [...filters, newFilter];
+
+    const updatedFilters = getLatestConditions(updatedFiltersData);
     dispatch(
       getByTestPlanIDReviewedListThunk({
         id: id,
         limit: paginationData.rowPerPage,
-        page: paginationData.currentPage
+        page: paginationData.currentPage,
+        filter_testcase_data:
+          updatedFilters?.length === 1 &&
+          updatedFilters[0]?.column === filterColumnId
+            ? []
+            : updatedFilters
       })
     );
   }, [paginationData.rowPerPage, paginationData.currentPage]);
+  const [clearData, setClearData] = useState(false);
 
   const handleButtonClick = () => {
+    setIsFilterApplied(false);
+
+    setClearData(true);
+    setPaginationData({
+      rowPerPage: 10,
+      currentPage: 1
+    });
     dispatch(
       getByTestPlanIDReviewedListThunk({
         id: id,
@@ -1189,6 +1448,76 @@ function ReviewedTestDraftComponent() {
       })
     );
   };
+  useEffect(() => {
+    if (sortOrder && sortOrder != null) {
+      // handleApplyFilter(sortOrder);
+      const newFilter =
+        filterType === 'is not between' ||
+        filterType === 'is between' ||
+        selectedValue === 'is between' ||
+        selectedValue === 'is not between'
+          ? {
+              column: filterColumnId,
+              column_name: filterColumn,
+              filter: filterType ? filterType : selectedValue,
+              searchText: getFilteredValues(),
+              sort: sortOrder
+            }
+          : {
+              column: filterColumnId,
+              column_name: filterColumn,
+              searchText: type === 'text' ? filterText : betweenValues,
+              filter: filterType ? filterType : selectedValue,
+              sort: sortOrder
+            };
+
+      // const updatedFilters = [...filters, newFilter];
+      const getLatestConditions = (data) => {
+        const latestConditions = {};
+
+        // Traverse the list to keep the most recent condition for each column
+        data.forEach((condition) => {
+          const column = condition.column;
+          latestConditions[column] = condition;
+        });
+
+        // Convert the dictionary back to a list
+        const latestConditionsList = Object.values(latestConditions);
+
+        return latestConditionsList;
+      };
+      const updatedFiltersData = [...filters, newFilter];
+
+      const updatedFilters = getLatestConditions(updatedFiltersData);
+      localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+      setIsFilterApplied((prev) => ({
+        ...prev,
+        [filterColumnId]: true
+      }));
+      try {
+        dispatch(
+          getByTestPlanIDReviewedListThunk({
+            id: id,
+            limit: paginationData.rowPerPage,
+            page: paginationData.currentPage,
+            filter_testcase_data: updatedFilters
+          })
+        );
+        localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
+        localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
+        localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+      } catch (error) {}
+    }
+  }, [sortOrder]);
+
+  useEffect(() => {
+    dispatch(
+      getExportAllReviewTestDraftList({
+        id: id,
+        type: 'ALL'
+      })
+    );
+  }, []);
 
   return (
     <div className="container-xxl">
@@ -1229,26 +1558,26 @@ function ReviewedTestDraftComponent() {
           );
         }}
       />
+
       <Container fluid className="employee_joining_details_container">
         <h5 className="mb-0 text-primary">Test Cases</h5>
         <hr className="primary_divider mt-1" />
         <DataTable
           columns={columns}
           data={allReviewDraftTestListDataByID}
+          persistTableHead={true}
           defaultSortField="role_id"
           pagination
           selectableRows={false}
           paginationServer
-          paginationTotalRows={allReviewDraftTestListData?.total}
+          paginationTotalRows={allReviewDraftTestListDataTotal?.data?.total}
           paginationDefaultPage={paginationData?.currentPage}
           onChangePage={(page) => setPaginationData({ currentPage: page })}
           onChangeRowsPerPage={(newPageSize) => {
             setPaginationData({ rowPerPage: newPageSize });
             setPaginationData({ currentPage: 1 });
           }}
-          paginationRowsPerPageOptions={[
-            50, 100, 150, 200, 300, 500, 700, 1000
-          ]}
+          paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
         />
@@ -1266,6 +1595,17 @@ function ReviewedTestDraftComponent() {
 
         <button
           onClick={() => {
+            // handleSendToReviewerModal({
+            //   showModal: true,
+            //   modalData: '',
+            //   modalHeader: 'Send To Reviewer Modal'
+            // });
+            if (selectAllNames !== true) {
+              alert(
+                'Please select all test cases to send for review, partial selection is not allowed.'
+              );
+              return; // Exit the function or prevent further execution
+            }
             handleSendToReviewerModal({
               showModal: true,
               modalData: '',
@@ -1367,7 +1707,7 @@ function ReviewedTestDraftComponent() {
           handleCheckboxChange={handleFilterCheckboxChange}
           selectedFilters={selectedFilters}
           handleSelectAll={handleSelectAll}
-          filterData={filterValues}
+          filterData={filteredResults}
           searchTerm={searchTerm}
           filterType={filterType}
           paginationData={paginationData}
@@ -1378,6 +1718,11 @@ function ReviewedTestDraftComponent() {
           type={type}
           handleApplyButton={handleApplyButton}
           localDispatch={localDispatch}
+          handleSearchChange={handleSearchChange}
+          handleClearAllFilter={handleClearAllFilter}
+          errorMessage={errorMessage}
+          setSelectedValue={setSelectedValue}
+          selectedValue={selectedValue}
         />
       )}
     </div>

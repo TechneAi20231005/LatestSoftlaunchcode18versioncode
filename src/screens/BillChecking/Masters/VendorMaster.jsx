@@ -31,6 +31,8 @@ import { Table } from 'react-bootstrap';
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { toast } from 'react-toastify';
 
 function VendorMaster({ match }) {
   const [data, setData] = useState([]);
@@ -86,6 +88,7 @@ function VendorMaster({ match }) {
   }
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
 
   //search function
 
@@ -541,9 +544,14 @@ function VendorMaster({ match }) {
   ];
 
   const loadData = async () => {
+    setIsLoading(null);
+    setIsLoading(true);
+
     const data = [];
     await new VendorMasterService().getVendors().then((res) => {
       if (res.status === 200) {
+        setIsLoading(false);
+
         let counter = 1;
         const temp = res.data.data;
         for (const key in temp) {
@@ -824,16 +832,25 @@ function VendorMaster({ match }) {
           .then((res) => {
             if (res.status === 200) {
               if (res.data.status === 1) {
-                setNotify({ type: 'success', message: res.data.message });
+                // setNotify({ type: 'success', message: res.data.message });
+                toast.success(res.data.message, {
+                  position: 'top-right'
+                });
                 setModal({ showModal: false, modalData: '', modalHeader: '' });
                 setPanAttachment([]);
                 loadData();
               } else {
-                setError({ type: 'danger', message: res.data.message });
+                // setError({ type: 'danger', message: res.data.message });
+                toast.error(res.data.message, {
+                  position: 'top-right'
+                });
                 setModal({ showModal: true, modalData: '', modalHeader: '' });
               }
             } else {
-              setError({ type: 'danger', message: res.data.message });
+              // setError({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message, {
+                position: 'top-right'
+              });
               setModal({ showModal: true, modalData: '', modalHeader: '' });
 
               new ErrorLogService().sendErrorLog(
@@ -847,7 +864,11 @@ function VendorMaster({ match }) {
           .catch((error) => {
             const { response } = error;
             const { request, ...errorObject } = response;
-            setError({ type: 'danger', message: 'Request Error !!!' });
+            // setError({ type: 'danger', message: 'Request Error !!!' });
+            toast.error('Request Error !!!', {
+              position: 'top-right'
+            });
+
             new ErrorLogService().sendErrorLog(
               'Vendor',
               'Create_Vendor',
@@ -890,14 +911,23 @@ function VendorMaster({ match }) {
           .then((res) => {
             if (res.status === 200) {
               if (res.data.status === 1) {
-                setNotify({ type: 'success', message: res.data.message });
+                // setNotify({ type: 'success', message: res.data.message });
+                toast.success(res.data.message, {
+                  position: 'top-right'
+                });
                 setModal({ showModal: false, modalData: '', modalHeader: '' });
                 loadData();
               } else {
-                setError({ type: 'danger', message: res.data.message });
+                // setError({ type: 'danger', message: res.data.message });
+                toast.error(res.data.message, {
+                  position: 'top-right'
+                });
               }
             } else {
-              setError({ type: 'danger', message: res.data.message });
+              // setError({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message, {
+                position: 'top-right'
+              });
               new ErrorLogService().sendErrorLog(
                 'Vendor',
                 'Create_Vendor',
@@ -1290,7 +1320,9 @@ function VendorMaster({ match }) {
   const handleEmail = (e) => {
     const email = e.target.value;
     const emailRegex =
-      /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
+      // /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
+      /^([a-zA-Z\d\.-]+)@([a-zA-Z\d-]+)\.([a-zA-Z]{2,8})(\.[a-zA-Z]{2,8})?$/;
+
     if (email === '') {
       setEmailError('');
       setMailError(false);
@@ -1735,6 +1767,8 @@ function VendorMaster({ match }) {
                     expandableRows={true}
                     pagination
                     expandableRowsComponent={ExpandedComponent}
+                    progressComponent={<TableLoadingSkelton />}
+                    progressPending={isLoading}
                     selectableRows={false}
                     defaultSortAsc={false}
                     className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline "
@@ -2558,6 +2592,10 @@ function VendorMaster({ match }) {
                       defaultValue={
                         modal.modalData ? modal.modalData.msme_no : ''
                       }
+                      onInput={(event) => {
+                        const input = event.target;
+                        input.value = input.value.toUpperCase();
+                      }}
                       onKeyPress={(e) => {
                         if (!/^([A-Za-z0-9]{1})$/.test(e.key)) {
                           e.preventDefault();

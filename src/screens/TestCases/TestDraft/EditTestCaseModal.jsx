@@ -52,9 +52,18 @@ function EditTestCaseModal({
     getSubModuleData
   } = useSelector((state) => state?.downloadFormat);
 
+  const newModuleListData = getModuleData
+    ?.filter((d) => d.project_id === currentTestCasesData?.project_id)
+    ?.map((i) => ({ value: i.id, label: i.module_name }));
+
+  const newSubModuleListData = getSubModuleData
+    ?.filter((d) => d.module_id === currentTestCasesData?.module_id)
+    ?.map((i) => ({ value: i.id, label: i.sub_module_name }));
+
   const [moduleDropdown, setModuleDropdown] = useState();
 
   const [subModuleDropdown, setSubModuleDropdown] = useState();
+  const [disable, setDisable] = useState(false);
 
   const severityData = [
     {
@@ -74,7 +83,6 @@ function EditTestCaseModal({
       label: 'Low'
     }
   ];
-
   const testCaseInitialValue = {
     project_id:
       type === 'EDIT' ? currentTestCasesData?.project_id?.toString() : '',
@@ -86,7 +94,7 @@ function EditTestCaseModal({
       type === 'EDIT' ? currentTestCasesData?.function_id?.toString() : '',
     field: type === 'EDIT' ? currentTestCasesData?.field : '',
     type_id: type === 'EDIT' ? currentTestCasesData?.type_id?.toString() : '',
-    id: type === 'EDIT' ? currentTestCasesData?.id?.toString() : '',
+    tc_id: type === 'EDIT' ? currentTestCasesData?.tc_id?.toString() : '',
     group_id: type === 'EDIT' ? currentTestCasesData?.group_id?.toString() : '',
     severity: type === 'EDIT' ? currentTestCasesData?.severity : '',
     steps: type === 'EDIT' ? currentTestCasesData?.steps : '',
@@ -95,14 +103,15 @@ function EditTestCaseModal({
     expected_result:
       type === 'EDIT' ? currentTestCasesData?.expected_result : ''
   };
-
   const handleEditTestCase = ({ formData }) => {
+    setDisable(true);
     dispatch(
       editTestCaseThunk({
         currentId: currentTestCasesData?.id,
         formData: formData,
         onSuccessHandler: () => {
           close();
+          setDisable(false);
           {
             payloadType === 'DRAFT' &&
               dispatch(
@@ -144,6 +153,7 @@ function EditTestCaseModal({
     setFieldValue('module_id', '');
     setFieldValue('submodule_id', '');
     setModuleDropdown(null);
+    setSubModuleDropdown(null);
     const filteredModules = getModuleData
       .filter((d) => d.project_id === parseInt(e.target.value))
       .map((d) => ({ value: d.id, label: d.module_name }));
@@ -171,16 +181,17 @@ function EditTestCaseModal({
     if (getSubModuleList?.length <= 0) {
       dispatch(getSubModuleMasterThunk());
     }
-    dispatch(
-      getByTestPlanIDListThunk({
-        id: id,
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage
-      })
-    );
+    // dispatch(
+    //   getByTestPlanIDListThunk({
+    //     id: id,
+    //     limit: paginationData.rowPerPage,
+    //     page: paginationData.currentPage
+    //   })
+    // );
     dispatch(getFunctionMasterListThunk());
     dispatch(getTestingGroupMasterListThunk());
     dispatch(getTestingTypeMasterListThunk());
+    setSubModuleDropdown(newSubModuleListData);
   }, []);
 
   return (
@@ -203,6 +214,7 @@ function EditTestCaseModal({
                     name="project_id"
                     label="Project Name"
                     placeholder="Select"
+                    requiredField
                     handleChange={(event) =>
                       handleProjectChange(event, setFieldValue)
                     }
@@ -210,27 +222,27 @@ function EditTestCaseModal({
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
-                    data={!moduleDropdown ? getModuleList : moduleDropdown}
+                    data={!moduleDropdown ? newModuleListData : moduleDropdown}
                     component={CustomDropdown}
                     name="module_id"
                     label="Module Name"
+                    requiredField
                     placeholder="Select"
                     handleChange={(event) =>
                       handleModuleChange(event, setFieldValue)
                     }
                   />
                 </Col>
+
                 <Col md={4} lg={4}>
                   <Field
-                    options={
-                      !subModuleDropdown ? getSubModuleList : subModuleDropdown
-                    }
-                    component={CustomReactSelect}
+                    data={subModuleDropdown}
+                    component={CustomDropdown}
                     name="submodule_id"
                     label="SubModule Name"
                     placeholder="Select"
-                    isMulti
-                    required
+                    // isMulti
+                    requiredField
                   />
                 </Col>
 
@@ -266,21 +278,20 @@ function EditTestCaseModal({
                 <Col md={4} lg={4}>
                   <Field
                     component={CustomInput}
-                    name="id"
+                    name="tc_id"
                     label="Test Id"
                     placeholder="Enter testing id"
                     requiredField
                     disabled
                   />
                 </Col>
+
                 <Col md={4} lg={4}>
                   <Field
                     data={filterTestingGroupMasterList}
                     component={CustomDropdown}
                     name="group_id"
                     label="Testing Group"
-                    placeholder="Enter testing group name"
-                    requiredField
                   />
                 </Col>
 
@@ -326,7 +337,11 @@ function EditTestCaseModal({
               </Row>
 
               <div className="d-flex justify-content-end gap-2">
-                <button className="btn btn-dark px-4" type="submit">
+                <button
+                  // disabled={disable}
+                  className="btn btn-dark px-4"
+                  type="submit"
+                >
                   Update
                 </button>
                 <button

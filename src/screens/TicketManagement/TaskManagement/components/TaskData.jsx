@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { _base, userSessionData } from '../../../../settings/constants';
+import { Link } from 'react-router-dom';
+import { _base } from '../../../../settings/constants';
 import Avatar from 'react-avatar';
-import { Dropdown, Modal } from 'react-bootstrap';
+import { Dropdown } from 'react-bootstrap';
 import SubtaskModal from './SubtaskModal';
 import TaskHistoryModal from './TaskHistoryModal';
 import RequestModal from './RequestModal';
@@ -10,24 +10,13 @@ import GroupActivityModal from './GroupActivityModal';
 import TaskRegularizationModal from './TaskRegularizationModal';
 import {
   postTimerData,
-  deleteTask,
   getRegularizationTimeData
 } from '../../../../services/TicketService/TaskService';
 import * as time from '../../../../components/Utilities/Functions';
 import ModuleSetting from '../../../../services/SettingService/ModuleSetting';
-import TestCasesService from '../../../../services/TicketService/TestCaseService';
-import {
-  getTaskData,
-  getTaskPlanner,
-  getRegularizationTime,
-  getTaskHistory,
-  getTaskRegularizationTime
-} from '../../../../services/TicketService/TaskService';
-import PlannerModal from './PlannerModal';
-import { useDispatch, useSelector } from 'react-redux';
 
-import { getmoduleSetting } from '../TaskComponentAction';
-import TaskComponentSlice from '../TaskComponentSlice';
+import { getTaskPlanner } from '../../../../services/TicketService/TaskService';
+import PlannerModal from './PlannerModal';
 
 export default function TaskData(props) {
   var priorityColor = 'bg-default';
@@ -35,7 +24,7 @@ export default function TaskData(props) {
   const date = props.date;
   const isRegularisedData = props.data.regularized_data;
   const allData = props;
-  const [userTypeData, setUserTypeData] = useState(null);
+
   const [loading, setLoading] = useState(false);
 
   if (data.priority === 'High') {
@@ -85,8 +74,8 @@ export default function TaskData(props) {
 
   const loadData = async () => {
     await new ModuleSetting().getSettingByName('Ticket', 'Task').then((res) => {
-      if (res.status == 200) {
-        if (res.data.status == 1) {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
           setModuleSetting(res.data.data);
         }
       }
@@ -136,16 +125,6 @@ export default function TaskData(props) {
     setTaskRegularizationModal((prev) => !prev);
   };
 
-  const handleTaskDelete = (taskId, e) => {
-    e.preventDefault();
-    var response = window.confirm('Are you sure you want to delete this task?');
-    if (response) {
-      deleteTask(taskId).then((res) => {
-        loadBasket();
-      });
-    }
-  };
-
   //Group Activity
   const [showGroupActivityModal, setShowGroupActivityModal] = useState(false);
   const showGroupActivity = (e, taskOwners, taskId, dataa) => {
@@ -169,18 +148,6 @@ export default function TaskData(props) {
   const loadBasket = () => {
     props.loadBasket();
   };
-
-  const [taskOwner, setTaskOwner] = useState();
-
-  const current = new Date();
-  var isRegularised = props.isRegularised;
-
-  const year = current.getFullYear();
-  const tempMonth = parseInt(current.getMonth()) + 1;
-  const month = tempMonth < 10 ? '0' + tempMonth : tempMonth;
-  const day = current.getDate();
-
-  const todayDate = year + '-' + month + '-' + day;
 
   const [regularizeTimeData, setRegularizeTimeData] = useState([]);
 
@@ -236,7 +203,7 @@ export default function TaskData(props) {
           role="group"
           aria-label="Basic outlined example"
         >
-          {data.status == 'COMPLETED' ? (
+          {data.status === 'COMPLETED' ? (
             <button
               type="button"
               className="btn btn-outline-secondary p-1 px-2"
@@ -331,7 +298,7 @@ export default function TaskData(props) {
           props.data.taskOwnersId.indexOf(
             parseInt(localStorage.getItem('id'))
           ) >= 0 &&
-          props.data.type == 'TASK' &&
+          props.data.type === 'TASK' &&
           props.data.status !== 'COMPLETED' && (
             <div>
               {(timerState === 'START' || timerState == null) && (
@@ -400,7 +367,7 @@ export default function TaskData(props) {
             </div>
           )}
 
-        {props.data.type == 'GROUP_ACTIVITY' &&
+        {props.data.type === 'GROUP_ACTIVITY' &&
           props.data.status !== 'COMPLETED' && (
             <div>
               {(timerState === 'START' || timerState == null) && (
@@ -488,7 +455,7 @@ export default function TaskData(props) {
           </div>
         </div>
 
-        {data.status == 'COMPLETED' ? (
+        {data.status === 'COMPLETED' ? (
           <>
             <Dropdown className="d-inline-flex m-1">
               <Dropdown.Toggle
@@ -515,7 +482,10 @@ export default function TaskData(props) {
                     >
                       {data &&
                         data.taskOwners.map((d) => {
-                          if (d.id == localStorage.getItem('id')) {
+                          if (
+                            parseInt(d.id) ===
+                            parseInt(localStorage.getItem('id'))
+                          ) {
                             return (
                               <button
                                 className="btn btn-sm text-white w-100"
@@ -543,7 +513,7 @@ export default function TaskData(props) {
               <i className="icofont-navigation-menu"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-3">
-              {moduleSetting && moduleSetting['Planner'] == 1 && (
+              {moduleSetting && Number(moduleSetting['Planner']) === 1 && (
                 <li
                   onClick={(e) =>
                     handleShowPlannerModal(
@@ -558,7 +528,7 @@ export default function TaskData(props) {
                   </button>
                 </li>
               )}
-              {props && props.isReviewer == 0 && (
+              {props && props.isReviewer === 0 && (
                 <li>
                   <Link
                     to={
@@ -606,7 +576,9 @@ export default function TaskData(props) {
                 >
                   {data &&
                     data.taskOwners.map((d) => {
-                      if (d.id == localStorage.getItem('id')) {
+                      if (
+                        parseInt(d.id) === parseInt(localStorage.getItem('id'))
+                      ) {
                         return (
                           <button
                             className="btn btn-sm text-white w-100"

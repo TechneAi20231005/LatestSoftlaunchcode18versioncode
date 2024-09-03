@@ -14,17 +14,14 @@ import {
 import { RenderIf } from '../../../../utils';
 import addEditInterviewMaster from './validation/addEditInterviewMaster';
 import CustomAlertModal from '../../../../components/custom/modal/CustomAlertModal';
-import { departmentData } from '../../../Masters/DepartmentMaster/DepartmentMasterAction';
-import {
-  getDesignationData,
-  getEmployeeData
-} from '../../../Dashboard/DashboardAction';
+import { getEmployeeData } from '../../../Dashboard/DashboardAction';
 import {
   addInterviewMasterThunk,
   editInterviewMasterThunk,
   getInterviewMasterListThunk
 } from '../../../../redux/services/hrms/employeeJoining/interviewListMaster';
 import { experienceLevel } from '../../../../settings/constants';
+import useDropdownData from '../../../../hooks/useDropdownData';
 
 function AddEditInterviewMasterModal({
   show,
@@ -74,14 +71,6 @@ function AddEditInterviewMasterModal({
   };
 
   // // redux state
-  const {
-    departmentData: departmentDataList,
-    status: isDepartmentDataListLoading
-  } = useSelector((state) => state?.department);
-  const {
-    getDesignationData: designationMasterList,
-    status: isDesignationMasterList
-  } = useSelector((DesignationSlice) => DesignationSlice.designationMaster);
   const { employeeData, status: isEmployeeMasterList } = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard
   );
@@ -95,31 +84,19 @@ function AddEditInterviewMasterModal({
 
   const [employeesName, setEmployeesName] = useState({});
 
+
   const [selectedDesignationData, setSelectedDesignationData] = useState({
     id: '',
     designationFor: ''
+  });
 
-  }); 
- // // dropdown data
-  const departmentType = [
-    { label: 'Select', value: '', isDisabled: true },
-    ...(departmentDataList
-      ?.filter((item) => item?.is_active === 1)
-      ?.map((item) => ({
-        label: item?.department,
-        value: item?.id
-      })) || [])
-  ];
-  const designationType = [
-    { label: 'Select', value: '', isDisabled: true },
-    ...(designationMasterList
-      ?.filter((item) => item?.is_active === 1)
-
-      ?.map((item) => ({
-        label: item?.designation,
-        value: item?.id
-      })) || [])
-  ];
+  // // dropdown data
+  const {
+    preferredDesignationDropdown,
+    preferredDesignationDropdownLoading,
+    preferredDepartmentDropdown,
+    preferredDepartmentDropdownLoading
+  } = useDropdownData({ render: show });
 
   useEffect(() => {
     const filterData = [
@@ -135,7 +112,8 @@ function AddEditInterviewMasterModal({
         ?.map((item) => ({
           label: `${item?.first_name} ${item?.middle_name} ${item?.last_name}`,
           value: item?.id
-        })) || [])
+        }))
+        ?.sort((a, b) => a.label.localeCompare(b.label)) || [])
     ];
     if (selectedDesignationData?.id) {
       setEmployeesName({
@@ -181,12 +159,6 @@ function AddEditInterviewMasterModal({
 
   useEffect(() => {
     if (show) {
-      if (!departmentDataList?.length) {
-        dispatch(departmentData());
-      }
-      if (!designationMasterList?.length) {
-        dispatch(getDesignationData());
-      }
       if (!employeeData?.length) {
         dispatch(getEmployeeData());
       }
@@ -219,6 +191,7 @@ function AddEditInterviewMasterModal({
         );
         setEmployeesName(transformedEmployeeData);
       }
+
     } else {
       setSelectedDesignationData({ id: '', designationFor: '' });
       setEmployeesName({});
@@ -257,12 +230,12 @@ function AddEditInterviewMasterModal({
               <Row className="">
                 <Col md={4} lg={4}>
                   <Field
-                    options={departmentType}
+                    options={preferredDepartmentDropdown}
                     component={CustomReactSelect}
                     name="department_id"
                     label="Department"
                     placeholder={
-                      isDepartmentDataListLoading === 'loading'
+                      preferredDepartmentDropdownLoading === 'loading'
                         ? 'Loading...'
                         : 'Select'
                     }
@@ -272,12 +245,12 @@ function AddEditInterviewMasterModal({
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
-                    options={designationType}
+                    options={preferredDesignationDropdown}
                     component={CustomReactSelect}
                     name="designation_id"
                     label="Designation"
                     placeholder={
-                      isDesignationMasterList === 'loading'
+                      preferredDesignationDropdownLoading
                         ? 'Loading...'
                         : 'Select'
                     }
@@ -377,12 +350,12 @@ function AddEditInterviewMasterModal({
                         </Col>
                         <Col sm={6} md={6} lg={3}>
                           <Field
-                            options={designationType}
+                            options={preferredDesignationDropdown}
                             component={CustomReactSelect}
                             name={`step_details[${index}].designation_id`}
                             label="Designation"
                             placeholder={
-                              isDesignationMasterList === 'loading'
+                              preferredDesignationDropdownLoading
                                 ? 'Loading...'
                                 : 'Select'
                             }

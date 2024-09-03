@@ -13,7 +13,7 @@ const SprintCalendar = () => {
   const params = useParams();
   const { id: ticketId, date } = params;
   const [selectedOption, setSelectedOption] = useState('week');
-  const [calendarData, setCalendarData] = useState([]);
+  // const [calendarData, setCalendarData] = useState([]);
   const [notify, setNotify] = useState({});
   const [componentToRender, setComponentToRender] = useState(null);
   const [currentDateRange, setCurrentDateRange] = useState('');
@@ -21,7 +21,7 @@ const SprintCalendar = () => {
   const [firstStartDate, setFirstStarDate] = useState('');
   const [lastEndDate, setLasteEndDate] = useState('');
   const [withinRangeDates, setWithinRangeDates] = useState([]);
-  const [dateArray, setDateArray] = useState([]);
+  // const [dateArray, setDateArray] = useState([]);
   const [daywiseData, setDaywiseData] = useState([]);
   const [currentDaywiseDate, setCurrentDaywiseDate] = useState({});
   const [weekData, setWeekData] = useState([]);
@@ -29,14 +29,14 @@ const SprintCalendar = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [open, setOpen] = useState(false);
   const [ticketDetails, setTicketDetails] = useState({});
-  const [taskStatus, setTaskStatus] = useState([
+  const taskStatus = [
     { id: 1, statusName: 'TO_DO', color: '#C3F5FF' },
     { id: 2, statusName: 'IN_PROGRESS', color: '#FFECB3' },
     { id: 3, statusName: 'IN_TIME', color: '#9EFFB9' },
     { id: 4, statusName: 'DELAY', color: '#FF8888' },
     { id: 5, statusName: 'SLIGHTLY_DELAY', color: '#FFC581' },
     { id: 6, statusName: 'HIGHLY_DELAY', color: '#484C7F' }
-  ]);
+  ];
 
   const generateDateArray = () => {
     const start = new Date(firstStartDate);
@@ -48,7 +48,7 @@ const SprintCalendar = () => {
       days.push({ id: count++, date: new Date(currentDate) });
       currentDate.setDate(currentDate.getDate() + 1);
     }
-    setDateArray(days);
+    // setDateArray(days);
     return days;
   };
 
@@ -141,7 +141,7 @@ const SprintCalendar = () => {
         .getSprintCalendar(ticketId)
         .then(async (res) => {
           if (res?.data?.status && res?.data?.data) {
-            setCalendarData(res?.data?.data);
+            // setCalendarData(res?.data?.data);
 
             setFirstStarDate(res?.data?.data[0]?.first_sprint_date);
             setLasteEndDate(res?.data?.data[0]?.last_sprint_date);
@@ -166,7 +166,7 @@ const SprintCalendar = () => {
           }
         });
     } catch (error) {
-      setCalendarData(null);
+      // setCalendarData(null);
       setIsLoading(false);
       setNotify({ type: 'danger', message: 'Error fetching calendar data!!!' });
     }
@@ -299,7 +299,7 @@ const SprintCalendar = () => {
   }, [
     selectedOption,
     daywiseData,
-    taskStatus,
+    // taskStatus,
     currentDaywiseDate,
     weekData,
     isLoading

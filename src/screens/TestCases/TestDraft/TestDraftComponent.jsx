@@ -19,6 +19,7 @@ import {
   getSubModuleMasterThunk,
   importTestDraftThunk
 } from '../../../redux/services/testCases/downloadFormatFile';
+import { getEmployeeData } from '../../Dashboard/DashboardAction';
 export default function TestDraftComponent({}) {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -39,6 +40,7 @@ export default function TestDraftComponent({}) {
     },
     { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
   );
+
   const [downloadmodal, setDownloadModal] = useState({
     showModal: false,
     modalData: '',
@@ -51,6 +53,7 @@ export default function TestDraftComponent({}) {
     modalHeader: ''
   });
 
+  const [clearData, setClearData] = useState(false);
   const handleResetLocationState = () => {
     setState(null);
     sessionStorage.removeItem('locationState');
@@ -70,9 +73,13 @@ export default function TestDraftComponent({}) {
 
   const handleBulkModal = (data) => {
     setBulkModal(data);
+    setDisable(false);
   };
 
+  const [disable, setDisable] = useState(false);
+
   const handleBulkUpload = (e) => {
+    setDisable(true);
     e.preventDefault();
     const file = e.target.elements.file_attachment.files[0]; // Access the file from the event target
 
@@ -88,6 +95,8 @@ export default function TestDraftComponent({}) {
         formData,
         onSuccessHandler: () => {
           setBulkModal({ showModal: false });
+          setDisable(false);
+
           dispatch(
             getDraftTestCaseList({
               limit: paginationData.rowPerPage,
@@ -95,7 +104,9 @@ export default function TestDraftComponent({}) {
             })
           );
         },
-        onErrorHandler: () => {}
+        onErrorHandler: () => {
+          setBulkModal({ showModal: false });
+        }
       })
     );
   };
@@ -108,8 +119,9 @@ export default function TestDraftComponent({}) {
     { title: 'Field', field: 'field' },
     { title: 'Testing Type', field: 'type_name' },
     { title: 'Testing Group', field: 'group_name' },
-    { title: 'Test ID', field: 'id' },
+    { title: 'Test ID', field: 'tc_id' },
     { title: 'Test Description', field: 'test_description' },
+    { title: 'Severity', field: 'severity' },
 
     { title: 'Steps', field: 'steps' },
     { title: 'Expected Result', field: 'expected_result' },
@@ -131,19 +143,30 @@ export default function TestDraftComponent({}) {
     { title: 'Created At', field: 'created_at' },
     { title: 'Updated At', field: 'updated_at' }
   ];
+  const [isFilterApplied, setIsFilterApplied] = useState(false);
 
   const handleButtonClick = () => {
+    setClearData(true);
+
+    setIsFilterApplied(false);
+
+    setPaginationData({
+      rowPerPage: 10,
+      currentPage: 1
+    });
     currentTab === 'test_summary'
       ? dispatch(
           getDraftTestCaseList({
-            limit: paginationData.rowPerPage,
-            page: paginationData.currentPage
+            limit: 10,
+            page: 1,
+            filter_testcase_data: []
           })
         )
       : dispatch(
           getAllReviewTestDraftList({
             limit: paginationData.rowPerPage,
-            page: paginationData.currentPage
+            page: paginationData.currentPage,
+            filter_testcase_data: []
           })
         );
   };
@@ -158,6 +181,7 @@ export default function TestDraftComponent({}) {
         type: 'ALL'
       })
     );
+    dispatch(getEmployeeData());
   }, []);
 
   useEffect(() => {
@@ -238,30 +262,27 @@ export default function TestDraftComponent({}) {
               >
                 Import Test Draft File
               </button>
-              <ExportToExcel
-                className="btn btn-danger"
-                apiData={
-                  currentTab === 'test_summary'
-                    ? allDraftTestListData
-                    : allReviewDraftTestListData
-                }
-                columns={
-                  currentTab === 'test_summary'
-                    ? exportColumns
-                    : exportReviewedColumns
-                }
-                fileName={
-                  currentTab === 'test_summary'
-                    ? 'Test Summary Records'
-                    : 'Review Test Draft Records'
-                }
-                disabled={
-                  currentTab === 'review_test_draft' ||
-                  allDraftTestListData?.length <= 0
-                    ? true
-                    : false
-                }
-              />
+              {currentTab === 'test_summary' && (
+                <ExportToExcel
+                  className="btn btn-danger"
+                  apiData={allDraftTestListData}
+                  columns={exportColumns}
+                  fileName={'Test Summary Records'}
+                  disabled={allDraftTestListData?.length <= 0 ? true : false}
+                />
+              )}
+
+              {currentTab === 'review_test_draft' && (
+                <ExportToExcel
+                  className="btn btn-danger"
+                  apiData={allReviewDraftTestListData}
+                  columns={exportReviewedColumns}
+                  fileName={'Review Test Draft Records'}
+                  disabled={
+                    allReviewDraftTestListData?.length <= 0 ? true : false
+                  }
+                />
+              )}
             </div>
           );
         }}
@@ -275,10 +296,26 @@ export default function TestDraftComponent({}) {
         />
       </div>
       <RenderIf render={currentTab === 'test_summary'}>
-        <TestDraftDetails />
+        <TestDraftDetails
+          clearData={clearData}
+          setClearData={setClearData}
+          setIsFilterApplied={setIsFilterApplied}
+          isFilterApplied={isFilterApplied}
+          setPaginationData={setPaginationData}
+          paginationData={paginationData}
+        />
       </RenderIf>
       <RenderIf render={currentTab === 'review_test_draft'}>
-        {currentTab === 'review_test_draft' && <ReviewedTestDraftDetails />}
+        {currentTab === 'review_test_draft' && (
+          <ReviewedTestDraftDetails
+            clearData={clearData}
+            setClearData={setClearData}
+            setIsFilterApplied={setIsFilterApplied}
+            isFilterApplied={isFilterApplied}
+            setPaginationData={setPaginationData}
+            paginationData={paginationData}
+          />
+        )}
       </RenderIf>
 
       {downloadmodal.showModal === true && (
@@ -327,6 +364,7 @@ export default function TestDraftComponent({}) {
               type="submit"
               className="btn btn-primary text-white"
               style={{ backgroundColor: '#484C7F' }}
+              disabled={disable}
               onClick={() => {
                 handleBulkModal({
                   showModal: true,

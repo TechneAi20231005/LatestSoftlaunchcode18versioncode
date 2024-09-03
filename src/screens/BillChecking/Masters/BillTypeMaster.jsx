@@ -12,6 +12,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
 function BillTypeMaster() {
   //initial state
@@ -28,6 +29,7 @@ function BillTypeMaster() {
   //local state
   const [data, setData] = useState([]);
   const [notify, setNotify] = useState();
+  const [isLoading, setIsLoading] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
@@ -249,10 +251,14 @@ function BillTypeMaster() {
   ];
 
   const loadData = async () => {
+    setIsLoading(null);
+    setIsLoading(true);
     const data = [];
 
     await new BillTypeMasterService().getBillTypeData().then((res) => {
       if (res.status === 200) {
+        setIsLoading(false);
+
         let counter = 1;
         const temp = res.data.data;
         for (const key in temp) {
@@ -284,14 +290,12 @@ function BillTypeMaster() {
 
   useEffect(() => {
     // Check if the message has been displayed before
-
-    if (location && location.state) {
-      // Display the message
-      setNotify(location.state.alert);
-
-      // Mark that the message has been displayed
-    }
-  }, [location]);
+    // if (location && location.state) {
+    //   // Display the message
+    //   setNotify(location.state.alert);
+    //   // Mark that the message has been displayed
+    // }
+  }, []);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -348,6 +352,8 @@ function BillTypeMaster() {
                   pagination
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
+                  progressComponent={<TableLoadingSkelton />}
+                  progressPending={isLoading}
                 />
               )}
             </div>

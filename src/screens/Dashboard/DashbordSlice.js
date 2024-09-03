@@ -29,6 +29,7 @@ import {
 } from './DashboardAction';
 
 import { all } from 'axios';
+import { toast } from 'react-toastify';
 
 const initialState = {
   status: '',
@@ -829,12 +830,18 @@ export const DashbordSlice = createSlice({
       if (payload?.data?.status === 1) {
         state.status = 'succeded';
         state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
+        // state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message, {
+          position: 'top-right'
+        });
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
         state.notify = null;
-        state.notify = { type: 'danger', message: payload.data.message };
+        // state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message, {
+          position: 'top-right'
+        });
       }
     });
     builder.addCase(postCustomerData.rejected, (state) => {
