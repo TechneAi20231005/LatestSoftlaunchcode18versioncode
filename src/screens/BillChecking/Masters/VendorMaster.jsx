@@ -50,9 +50,9 @@ function VendorMaster({ match }) {
   const [Panuppercase, SetPanUpeeerCase] = useState();
   const [ifscodeUppercase, setIfsccodeUppercase] = useState();
   const [succes, setSucces] = useState();
-  const [error, setError] = useState();
+  const [error, setError] = useState(null);
 
-  const [notify, setNotify] = useState();
+  const [notify, setNotify] = useState(null);
   const [modal, setModal] = useState({
     showModal: false,
     modalData: '',
@@ -171,7 +171,7 @@ function VendorMaster({ match }) {
             <i className="icofont-edit text-success"></i>
           </button>
           <Link
-            to={`/${_base}/ViewVendorDetails/` + row.id}
+            to={`/${_base}/ViewVendorDetails/` + row?.id}
             className="btn btn-sm btn-primary text-white"
             style={{ borderRadius: '50%', height: '30px', marginLeft: '5px' }}
           >
@@ -546,6 +546,8 @@ function VendorMaster({ match }) {
   const loadData = async () => {
     setIsLoading(null);
     setIsLoading(true);
+    setNotify(null);
+    setError(null);
 
     const data = [];
     await new VendorMasterService().getVendors().then((res) => {
@@ -1672,18 +1674,23 @@ function VendorMaster({ match }) {
     form.append('created_by', userSessionData.userId);
 
     setError(null);
-
     await new VendorMasterService().bulkUploadVendor(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           handleBulkModal({ showModal: false });
-          setNotify({ type: 'success', message: res.data.message });
+          // setNotify({ type: 'success', message: res.data.message });
+          toast.success(res.data.message, {
+            position: 'top-right',
+            autoClose: 10000
+          });
           loadData();
         } else {
-          setError({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message, {
+            position: 'top-right',
+            autoClose: 10000
+          });
           URL = `${_attachmentUrl}` + res.data.data;
           window.open(URL, '_blank')?.focus();
-          setNotify({ type: 'danger', message: res.data.message });
         }
       }
     });
@@ -1702,6 +1709,7 @@ function VendorMaster({ match }) {
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
+                    setNotify(null);
                     handleModal({
                       showModal: true,
                       modalData: '',
@@ -3525,7 +3533,7 @@ function VendorMaster({ match }) {
                       onKeyPress={(e) => {
                         Validation.CharactersNumbersOnlyForPan(e);
                       }}
-                      defaultValue={modal.modalData.consider_in_payment}
+                      defaultValue={modal.modalData.consider_in_payment?.toUpperCase()}
                     >
                       <option value="">SELECT...</option>
                       <option value="YES">YES</option>
@@ -3805,6 +3813,7 @@ function VendorMaster({ match }) {
                 type="button"
                 className="btn btn-danger text-white"
                 onClick={() => {
+                  setNotify(null);
                   handleModal({
                     showModal: false,
                     modalData: '',
