@@ -296,7 +296,7 @@ function BillCheckingTransaction() {
                 </>
               )}
               {authorities &&
-                authorities.Is_Cancle_Bill === true &&
+                authorities.Is_Cancle_Bill &&
                 row?.full_or_partial_payment_done != 1 && (
                   <li>
                     <button
