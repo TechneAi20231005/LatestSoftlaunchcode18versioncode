@@ -295,19 +295,21 @@ function BillCheckingTransaction() {
                   </li>
                 </>
               )}
-              {authorities && authorities.Is_Cancle_Bill === true && (
-                <li>
-                  <button
-                    className="btn btn-sm btn-danger text-white"
-                    onClick={(e) => {
-                      handleCancelBill(e, row.id);
-                    }}
-                    style={{ width: '100%', zIndex: 100 }}
-                  >
-                    <i class="icofont-ui-close"></i> Cancel{' '}
-                  </button>
-                </li>
-              )}
+              {authorities &&
+                authorities.Is_Cancle_Bill &&
+                row?.full_or_partial_payment_done != 1 && (
+                  <li>
+                    <button
+                      className="btn btn-sm btn-danger text-white"
+                      onClick={(e) => {
+                        handleCancelBill(e, row.id);
+                      }}
+                      style={{ width: '100%', zIndex: 100 }}
+                    >
+                      <i class="icofont-ui-close"></i> Cancel{' '}
+                    </button>
+                  </li>
+                )}
             </Dropdown.Menu>
           </Dropdown>
         );
@@ -813,6 +815,8 @@ function BillCheckingTransaction() {
             external_audit_remark: temp[key].external_audit_remark,
 
             levels_of_approval: temp[key].level + 1,
+            full_or_partial_payment_done:
+              temp[key].full_or_partial_payment_done,
 
             level_approver: temp[key].level_approver,
             is_editable_for_creator: temp[key].is_editable_for_creator,
