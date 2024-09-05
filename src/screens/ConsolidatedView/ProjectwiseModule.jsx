@@ -96,7 +96,7 @@ export default function ProjectwiseModule() {
 
           setProjectWiseModuleDropdown(
             temp
-              .filter((d) => d.project_id == projectId)
+              .filter((d) => d.project_id == projectId && d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.module_name }))
           );
         }
@@ -119,7 +119,7 @@ export default function ProjectwiseModule() {
           );
           setProjectWiseSubModuleDropdown(
             temp
-              .filter((d) => d.project_id == projectId)
+              .filter((d) => d.project_id == projectId && d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.sub_module_name }))
           );
         }
