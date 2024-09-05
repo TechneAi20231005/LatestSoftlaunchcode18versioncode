@@ -34,8 +34,8 @@ export default function ProjectwiseModule() {
   const [showToALL, setShowToAll] = useState(false);
   const [docList, setDocList] = useState([]);
   const [toggleRadio, setToggleRadio] = useState(true);
-  const [subModuleValue, setSubModuleValue] = useState(0);
-  const [moduleValue, setModuleValue] = useState(0);
+  const [subModuleValue, setSubModuleValue] = useState(null);
+  const [moduleValue, setModuleValue] = useState(null);
 
   const [fileName, setFileName] = useState('');
   const [notify, setNotify] = useState(null);
@@ -129,9 +129,10 @@ export default function ProjectwiseModule() {
     await new SubModuleService()
       .getSubModuleDocuments(
         projectId,
-        moduleId,
+        // moduleId,
+        ModuleID,
         'ACTIVE',
-        subModuleValue ? subModuleValue : 0
+        subModuleValue ? subModuleValue : null
       )
       .then((res) => {
         if (res.status === 200) {
@@ -229,7 +230,7 @@ export default function ProjectwiseModule() {
         setSubModuleValue(0);
       }
       await new SubModuleService()
-        .getSubModuleDocuments(projectId, ModuleID, 'ACTIVE', 0)
+        .getSubModuleDocuments(projectId, ModuleID, 'ACTIVE', null)
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status == 1) {
@@ -262,6 +263,8 @@ export default function ProjectwiseModule() {
   };
 
   const uploadDocHandler = async (e) => {
+    const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
+
     e.preventDefault();
     if (isLoading) {
       return;
@@ -284,7 +287,7 @@ export default function ProjectwiseModule() {
     await new SubModuleService()
       .getSubModuleDocuments(
         projectId,
-        ModuleID,
+        newModuleID,
         'ACTIVE',
         subModuleValue ? subModuleValue : null
       )
@@ -552,9 +555,10 @@ export default function ProjectwiseModule() {
     await new SubModuleService()
       .getSubModuleDocuments(
         projectId,
-        moduleId,
+        // moduleId,
+        ModuleID,
         type,
-        subModuleValue ? subModuleValue : 0
+        subModuleValue ? subModuleValue : null
       )
       .then((res) => {
         if (res.status === 200) {
@@ -628,12 +632,18 @@ export default function ProjectwiseModule() {
               <div className={'project-block bg-lightgreen'}>
                 <i className="icofont-briefcase"></i>
               </div>
-
-              <span className="small text-muted project_name fw-bold text-center">
-                {data && data.project_name}
-              </span>
+              {ModuleID?.length > 0 ? (
+                <span className="small text-muted project_name fw-bold text-center">
+                  {data && data.project_name}
+                </span>
+              ) : (
+                <h6 className="mb-0 fw-bold  fs-6  mb-2">
+                  {data && data.project_name}
+                </h6>
+              )}
               <h6 className="mb-0 fw-bold  fs-6  mb-2">
-                {data && data.module_name}
+                {console.log('data', data)}
+                {ModuleID?.length > 0 ? data && data.module_name : ''}
               </h6>
             </div>
           </div>
@@ -870,7 +880,11 @@ export default function ProjectwiseModule() {
             </Modal.Header>
             <Modal.Body>
               <input type="hidden" value={projectId} name="project_id" />
-              <input type="hidden" value={moduleValue} name="module_id" />
+              <input
+                type="hidden"
+                value={moduleValue ? moduleValue : ModuleID}
+                name="module_id"
+              />
               <div className="deadline-form">
                 <div className="row g-3 mb-3 mt-2">
                   <input
