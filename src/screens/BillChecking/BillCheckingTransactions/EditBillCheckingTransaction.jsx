@@ -846,9 +846,9 @@ export default function CreateBillCheckingTransaction({ match }) {
   // Calculate the end date of the current financial year (March 31 of the next year)
   const endFinancialYear = new Date(currentDatee.getFullYear(), 2, 31); // Month is zero-based (2 for March)
 
-  const startFinancialYear = new Date(currentDate.getFullYear() - 1, 3, 1);
-  // const currentYear = currentDate.getFullYear();
-  // const startFinancialYear = new Date(currentYear, 3, 1); // April 1 of the current year
+  // const startFinancialYear = new Date(currentDate.getFullYear() - 1, 3, 1);
+  const currentYear = currentDate.getFullYear();
+  const startFinancialYear = new Date(currentYear, 3, 1); // April 1 of the current year
   const startPastYear = startFinancialYear.getFullYear() - 1;
   const startYear = startFinancialYear.getFullYear();
 
@@ -1049,11 +1049,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                           Bill Date: <Astrick color="red" size="13px" />
                         </b>
                       </label>
-                      {console.log('formattedStartDate', formattedStartDate)}
-                      {console.log(
-                        'formattedStartPastDate',
-                        formattedStartPastDate
-                      )}
 
                       <input
                         type="date"
