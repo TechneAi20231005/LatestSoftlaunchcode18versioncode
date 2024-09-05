@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Col, Row } from 'react-bootstrap';
 import { Field, Form, Formik } from 'formik';
 import { useDispatch, useSelector } from 'react-redux';
@@ -8,7 +8,7 @@ import CustomModal from '../../../components/custom/modal/CustomModal';
 import { CustomReactSelect } from '../../../components/custom/inputs/CustomInputs';
 import {
   getItemCategoryListThunk,
-  getKaragirKnockOffWtSizeRangeFilterListThunk,
+  getKaragirKnockOffWtSizeRangeFilterListThunk
 } from '../../../redux/services/po/common';
 import { getGenerateRequisitionListThunk } from '../../../redux/services/po/generateRequisition';
 import { RenderIf } from '../../../utils';
@@ -19,81 +19,80 @@ function GenerateRequisitionFilterModal({
   searchValue,
   setFilterModalData,
   paginationData,
-  prevFilterModalData,
+  prevFilterModalData
 }) {
   // // initial state
   const dispatch = useDispatch();
 
   const filterInitialValue = {
     knockoff_karagir: prevFilterModalData?.knockoff_karagir ?? 0,
-    item: prevFilterModalData?.item ?? [],
+    item: prevFilterModalData?.item ?? '',
     category: prevFilterModalData?.category ?? [],
     weight_range: prevFilterModalData?.weight_range ?? [],
-    size_range: prevFilterModalData?.size_range ?? [],
+    size_range: prevFilterModalData?.size_range ?? []
   };
   // // redux state
   const {
     itemCategoryList,
-    karagirKnockOffWtSizeRangeFilterData: { karagir_wt_range, knockoff_wt_range, size_range },
-    isLoading: { getItemCategoryList, getKaragirKnockOffWtSizeRangeFilterData },
-  } = useSelector(state => state?.poCommon);
+    karagirKnockOffWtSizeRangeFilterData: {
+      karagir_wt_range,
+      knockoff_wt_range,
+      size_range
+    },
+    isLoading: { getItemCategoryList, getKaragirKnockOffWtSizeRangeFilterData }
+  } = useSelector((state) => state?.poCommon);
+
+  // // local state
+  const [selectedItem, setSelectedItem] = useState('');
+  const [categoryOptionData, setCategoryOptionData] = useState([]);
 
   // // dropdown data
   const viewForOption = [
     {
       label: 'Knock Off WT Range',
-      value: 0,
+      value: 0
     },
     {
       label: 'Karagir WT Range',
-      value: 1,
-    },
+      value: 1
+    }
   ];
 
-  const uniqueItems = [...new Set(itemCategoryList?.map(item => item.item))];
-  const uniqueCategories = [...new Set(itemCategoryList?.map(item => item.category))];
+  const uniqueItems = [...new Set(itemCategoryList?.map((item) => item.item))];
 
   const itemOptionData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...(uniqueItems?.map(item => ({
+    ...(uniqueItems?.map((item) => ({
       label: item,
-      value: item,
-    })) || []),
-  ];
-
-  const categoryOptionData = [
-    { label: 'Select', value: '', isDisabled: true },
-    ...(uniqueCategories?.map(category => ({
-      label: category,
-      value: category,
-    })) || []),
+      value: item
+    })) || [])
   ];
 
   const knockOffWeightRangeData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...(knockoff_wt_range?.map(items => ({
+    ...(knockoff_wt_range?.map((items) => ({
       label: items,
-      value: items,
-    })) || []),
+      value: items
+    })) || [])
   ];
 
   const karagirWeightRangeData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...(karagir_wt_range?.map(items => ({
+    ...(karagir_wt_range?.map((items) => ({
       label: items,
-      value: items,
-    })) || []),
+      value: items
+    })) || [])
   ];
 
   const sizeRangeData = [
     { label: 'Select', value: '', isDisabled: true },
-    ...(size_range?.map(items => ({
+    ...(size_range?.map((items) => ({
       label: items,
-      value: items,
-    })) || []),
+      value: items
+    })) || [])
   ];
 
-  const handleSearch = values => {
+  const handleSearch = (values) => {
     setFilterModalData(values);
     onClose();
   };
@@ -106,11 +105,27 @@ function GenerateRequisitionFilterModal({
         limit: paginationData.rowPerPage,
         page: paginationData.currentPage,
         search: searchValue,
-        filterValue: {},
-      }),
+        filterValue: {}
+      })
     );
     onClose();
   };
+
+  // // Filter categories based on selected item
+  useEffect(() => {
+    if (selectedItem) {
+      const filteredCategories = itemCategoryList
+        .filter((item) => item.item === selectedItem)
+        .map((item) => ({
+          label: item.category,
+          value: item.category
+        }));
+      setCategoryOptionData([
+        { label: 'Select', value: '', isDisabled: true },
+        ...filteredCategories
+      ]);
+    }
+  }, [selectedItem, itemCategoryList]);
 
   // // life cycle for category dropdown, weight range ans size range dropdown
   useEffect(() => {
@@ -118,13 +133,17 @@ function GenerateRequisitionFilterModal({
       if (!itemCategoryList?.length) {
         dispatch(getItemCategoryListThunk());
       }
-      if (!karagir_wt_range?.length || !knockoff_wt_range?.length || !size_range?.length) {
+      if (
+        !karagir_wt_range?.length ||
+        !knockoff_wt_range?.length ||
+        !size_range?.length
+      ) {
         dispatch(
           getKaragirKnockOffWtSizeRangeFilterListThunk({
             itemName: '',
             categoryName: '',
-            type: 'filterData',
-          }),
+            type: 'filterData'
+          })
         );
       }
     }
@@ -135,7 +154,7 @@ function GenerateRequisitionFilterModal({
       <Formik
         initialValues={filterInitialValue}
         enableReinitialize
-        onSubmit={values => {
+        onSubmit={(values) => {
           handleSearch(values);
         }}
       >
@@ -162,7 +181,7 @@ function GenerateRequisitionFilterModal({
                   placeholder={getItemCategoryList ? 'Loading...' : 'Select'}
                   disabled={getItemCategoryList}
                   isSearchable
-                  isMulti
+                  handleChange={(e) => setSelectedItem(e?.value)}
                 />
               </Col>
               <Col md={6}>
@@ -185,7 +204,11 @@ function GenerateRequisitionFilterModal({
                     styleData="w-100"
                     name="weight_range"
                     label="Knock Off Weight Range"
-                    placeholder={getKaragirKnockOffWtSizeRangeFilterData ? 'Loading...' : 'Select'}
+                    placeholder={
+                      getKaragirKnockOffWtSizeRangeFilterData
+                        ? 'Loading...'
+                        : 'Select'
+                    }
                     disabled={getKaragirKnockOffWtSizeRangeFilterData}
                     isSearchable
                     isMulti
@@ -198,7 +221,11 @@ function GenerateRequisitionFilterModal({
                     styleData="w-100"
                     name="weight_range"
                     label="Karagir Weight Range"
-                    placeholder={getKaragirKnockOffWtSizeRangeFilterData ? 'Loading...' : 'Select'}
+                    placeholder={
+                      getKaragirKnockOffWtSizeRangeFilterData
+                        ? 'Loading...'
+                        : 'Select'
+                    }
                     disabled={getKaragirKnockOffWtSizeRangeFilterData}
                     isSearchable
                     isMulti
@@ -212,7 +239,11 @@ function GenerateRequisitionFilterModal({
                   styleData="w-100"
                   name="size_range"
                   label="Karagir Size Range"
-                  placeholder={getKaragirKnockOffWtSizeRangeFilterData ? 'Loading...' : 'Select'}
+                  placeholder={
+                    getKaragirKnockOffWtSizeRangeFilterData
+                      ? 'Loading...'
+                      : 'Select'
+                  }
                   disabled={getKaragirKnockOffWtSizeRangeFilterData}
                   isSearchable
                   isMulti
@@ -220,7 +251,11 @@ function GenerateRequisitionFilterModal({
               </Col>
             </Row>
             <div className="d-flex justify-content-end mt-3 gap-2">
-              <button className="btn btn-warning text-white" type="submit" disabled={!dirty}>
+              <button
+                className="btn btn-warning text-white"
+                type="submit"
+                disabled={!dirty}
+              >
                 <i className="icofont-search-1 " /> Search
               </button>
               <button
