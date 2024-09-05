@@ -5,7 +5,10 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // // static import
 import CustomModal from '../../../components/custom/modal/CustomModal';
-import { CustomReactSelect } from '../../../components/custom/inputs/CustomInputs';
+import {
+  CustomCheckbox,
+  CustomReactSelect
+} from '../../../components/custom/inputs/CustomInputs';
 import {
   getItemCategoryListThunk,
   getKaragirKnockOffWtSizeRangeFilterListThunk
@@ -29,7 +32,8 @@ function GenerateRequisitionFilterModal({
     item: prevFilterModalData?.item ?? '',
     category: prevFilterModalData?.category ?? [],
     weight_range: prevFilterModalData?.weight_range ?? [],
-    size_range: prevFilterModalData?.size_range ?? []
+    size_range: prevFilterModalData?.size_range ?? [],
+    is_hide: prevFilterModalData?.is_hide ?? ''
   };
   // // redux state
   const {
@@ -95,7 +99,9 @@ function GenerateRequisitionFilterModal({
   const handleSearch = (values) => {
     setFilterModalData(values);
     onClose();
+    console.log(values);
   };
+  console.log(prevFilterModalData);
 
   const handleReset = ({ restFun }) => {
     restFun();
@@ -150,7 +156,12 @@ function GenerateRequisitionFilterModal({
   }, [open]);
 
   return (
-    <CustomModal show={open} title="All Basket" width="md" onClose={onClose}>
+    <CustomModal
+      show={open}
+      title="Generate requisition filter modal"
+      width="md"
+      onClose={onClose}
+    >
       <Formik
         initialValues={filterInitialValue}
         enableReinitialize
@@ -247,6 +258,14 @@ function GenerateRequisitionFilterModal({
                   disabled={getKaragirKnockOffWtSizeRangeFilterData}
                   isSearchable
                   isMulti
+                />
+              </Col>
+              <Col md={6}>
+                <Field
+                  component={CustomCheckbox}
+                  id="is_hide"
+                  name="is_hide"
+                  label="Hide zero open pieces"
                 />
               </Col>
             </Row>
