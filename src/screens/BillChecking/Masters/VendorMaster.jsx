@@ -170,13 +170,22 @@ function VendorMaster({ match }) {
           >
             <i className="icofont-edit text-success"></i>
           </button>
-          <Link
+          {/* <Link
             to={`/${_base}/ViewVendorDetails/` + row?.id}
             className="btn btn-sm btn-primary text-white"
             style={{ borderRadius: '50%', height: '30px', marginLeft: '5px' }}
           >
             <i className="icofont-eye-alt"></i>
-          </Link>
+          </Link> */}
+          {row?.id && (
+            <Link
+              to={`/${_base}/ViewVendorDetails/${row?.id}`}
+              className="btn btn-sm btn-primary text-white"
+              style={{ borderRadius: '50%', height: '30px', marginLeft: '5px' }}
+            >
+              <i className="icofont-eye-alt"></i>
+            </Link>
+          )}
         </div>
       )
     },
