@@ -57,6 +57,7 @@ function BillCheckingTransaction() {
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.billTypeDataDropDowm
   );
+
   const vendorDropdown = useSelector(
     (VendorMasterSlice) =>
       VendorMasterSlice.vendorMaster.vendorMasterDropDownNew
@@ -122,6 +123,7 @@ function BillCheckingTransaction() {
     setIsToBillDateRequired(false);
     setIsToReceiveRequired(false);
     setIsPaymentRequired(false);
+    setData([]);
     if (selectInputRef.current.value != null) {
       selectToBillRef.current.value = '';
       document.getElementById('id').value = '';
@@ -245,23 +247,23 @@ function BillCheckingTransaction() {
                 </Link>
               </li>
 
-              {row &&
+              {/* {row &&
                 ((row.level == parseInt(row.total_level) &&
                   row.is_assign_to == 1) ||
                   row.is_editable_for_creator == 1 ||
                   row.is_rejected == 1 ||
                   (authorities && authorities.All_Update_Bill === true) ||
                   (row.level != parseInt(row.total_level) &&
-                    row.is_approver == 1)) && (
-                  <li>
-                    <Link
-                      to={`/${_base}/BillCheckingHistory/` + row.id}
-                      className="btn btn-sm btn-danger text-white w-100"
-                    >
-                      <i className="icofont-history"></i> History
-                    </Link>
-                  </li>
-                )}
+                    row.is_approver == 1)) && ( */}
+              <li>
+                <Link
+                  to={`/${_base}/BillCheckingHistory/` + row.id}
+                  className="btn btn-sm btn-danger text-white w-100"
+                >
+                  <i className="icofont-history"></i> History
+                </Link>
+              </li>
+              {/* )} */}
 
               {row.is_assign_to == 1 && row.level == row.total_level && (
                 <>
@@ -293,19 +295,21 @@ function BillCheckingTransaction() {
                   </li>
                 </>
               )}
-              {authorities && authorities.Is_Cancle_Bill === true && (
-                <li>
-                  <button
-                    className="btn btn-sm btn-danger text-white"
-                    onClick={(e) => {
-                      handleCancelBill(e, row.id);
-                    }}
-                    style={{ width: '100%', zIndex: 100 }}
-                  >
-                    <i class="icofont-ui-close"></i> Cancel{' '}
-                  </button>
-                </li>
-              )}
+              {authorities &&
+                authorities.Is_Cancle_Bill &&
+                row?.full_or_partial_payment_done != 1 && (
+                  <li>
+                    <button
+                      className="btn btn-sm btn-danger text-white"
+                      onClick={(e) => {
+                        handleCancelBill(e, row.id);
+                      }}
+                      style={{ width: '100%', zIndex: 100 }}
+                    >
+                      <i class="icofont-ui-close"></i> Cancel{' '}
+                    </button>
+                  </li>
+                )}
             </Dropdown.Menu>
           </Dropdown>
         );
@@ -811,6 +815,8 @@ function BillCheckingTransaction() {
             external_audit_remark: temp[key].external_audit_remark,
 
             levels_of_approval: temp[key].level + 1,
+            full_or_partial_payment_done:
+              temp[key].full_or_partial_payment_done,
 
             level_approver: temp[key].level_approver,
             is_editable_for_creator: temp[key].is_editable_for_creator,
@@ -984,8 +990,16 @@ function BillCheckingTransaction() {
           setExportData(tempData);
           setData(tempData);
         } else {
+          setFilteredData([]);
           setNotify({ type: 'danger', message: res.data.message });
         }
+      })
+      .catch((error) => {
+        setFilteredData([]);
+        setNotify({
+          type: 'danger',
+          message: `An error occurred: ${error.message}`
+        });
       });
   };
 
@@ -1620,7 +1634,7 @@ function BillCheckingTransaction() {
                     onClick={handleClearData}
                     style={{ marginTop: '20px', fontWeight: '600' }}
                   >
-                    <i className="icofont-refresh text-white"></i> Reset
+                    <i className="icofont-refresh text-white"></i> ResetSS
                   </button>
                 </div>
                 <span className="fw-bold mt-2" style={{ color: 'red' }}>

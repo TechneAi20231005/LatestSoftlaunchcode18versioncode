@@ -11,6 +11,7 @@ import {
   getPendingOrderErrorFileThunk,
   getUnixCodeAgainstVendorForErrorFileThunk
 } from '../../../redux/services/po/generatePo';
+import { resetPoErrorFile } from '../../../redux/slices/po/generatePo';
 import { exportToExcelCustomHandler } from '../../../utils/customFunction';
 
 function GeneratePoErrorFileModal({ open, close }) {
@@ -94,6 +95,7 @@ function GeneratePoErrorFileModal({ open, close }) {
   useEffect(() => {
     if (pendingOrderErrorFileData?.length) {
       transformPoErrorDataForExport();
+      dispatch(resetPoErrorFile());
     }
   }, [pendingOrderErrorFileData]);
 
@@ -144,7 +146,7 @@ function GeneratePoErrorFileModal({ open, close }) {
                 </Col>
               </Row>
 
-              <div className="d-flex justify-content-md-end mt-3 btn_container">
+              <div className="d-flex justify-content-md-end mt-3">
                 <button
                   className="btn btn-dark col-6"
                   type="submit"

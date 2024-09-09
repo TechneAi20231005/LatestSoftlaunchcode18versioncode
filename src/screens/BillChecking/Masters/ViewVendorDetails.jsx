@@ -1,35 +1,33 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Modal } from "react-bootstrap";
-import DataTable from "react-data-table-component";
-import ErrorLogService from "../../../services/ErrorLogService";
-import CountryService from "../../../services/MastersService/CountryService";
-import PageHeader from "../../../components/Common/PageHeader";
-import Select from "react-select";
-import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
-import Alert from "../../../components/Common/Alert";
-import StateService from "../../../services/MastersService/StateService";
-import CityService from "../../../services/MastersService/CityService";
+import React, { useEffect, useState, useRef } from 'react';
+import { Modal } from 'react-bootstrap';
+import DataTable from 'react-data-table-component';
+import ErrorLogService from '../../../services/ErrorLogService';
+import CountryService from '../../../services/MastersService/CountryService';
+import PageHeader from '../../../components/Common/PageHeader';
+import Select from 'react-select';
+import { Astrick } from '../../../components/Utilities/Style';
+import * as Validation from '../../../components/Utilities/Validation';
+import Alert from '../../../components/Common/Alert';
+import StateService from '../../../services/MastersService/StateService';
+import CityService from '../../../services/MastersService/CityService';
 import {
   getAttachment,
-  deleteAttachment,
-} from "../../../services/OtherService/AttachmentService";
-import { _pincodeUrl } from "../../../settings/constants";
-import VendorMasterService from "../../../services/Bill Checking/Masters/VendorMasterService";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
-import { _attachmentUrl } from "../../../settings/constants";
-import PaymentTemplateService from "../../../services/Bill Checking/Masters/PaymentTemplateService";
-import BillCheckingTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
-import { Link, useParams } from "react-router-dom";
-import { _base } from "../../../settings/constants";
-import { Table } from "react-bootstrap";
+  deleteAttachment
+} from '../../../services/OtherService/AttachmentService';
+import { _pincodeUrl } from '../../../settings/constants';
+import VendorMasterService from '../../../services/Bill Checking/Masters/VendorMasterService';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
+import { _attachmentUrl } from '../../../settings/constants';
+import PaymentTemplateService from '../../../services/Bill Checking/Masters/PaymentTemplateService';
+import BillCheckingTransactionService from '../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService';
+import { Link, useParams } from 'react-router-dom';
+import { _base } from '../../../settings/constants';
+import { Table } from 'react-bootstrap';
 
 const ViewVendorDetails = ({ match }) => {
   const { id } = useParams();
   const [data, setData] = useState(null);
-
-  
 
   const [CountryDropdown, setCountryDropdown] = useState();
   const [stateDropdown, setStateDropdown] = useState();
@@ -50,7 +48,7 @@ const ViewVendorDetails = ({ match }) => {
         setCountryDropdown(
           res.data.data.map((d) => ({
             value: d.id,
-            label: d.country.charAt(0).toUpperCase() + d.country.slice(1),
+            label: d.country.charAt(0).toUpperCase() + d.country.slice(1)
           }))
         );
       }
@@ -61,7 +59,7 @@ const ViewVendorDetails = ({ match }) => {
         setStateDropdown(
           res.data.data.map((d) => ({
             value: d.id,
-            label: d.state,
+            label: d.state
           }))
         );
       }
@@ -72,7 +70,7 @@ const ViewVendorDetails = ({ match }) => {
         setCityDropdown(
           res.data.data.map((d) => ({
             value: d.id,
-            label: d.city,
+            label: d.city
           }))
         );
       }
@@ -268,8 +266,8 @@ const ViewVendorDetails = ({ match }) => {
                             >
                               <i
                                 className="icofont-download"
-                                style={{ fontSize: "15px" }}
-                              ></i>{" "}
+                                style={{ fontSize: '15px' }}
+                              ></i>{' '}
                             </a>
                           </div>
                           <div>{attachment}</div>
@@ -316,8 +314,8 @@ const ViewVendorDetails = ({ match }) => {
                             >
                               <i
                                 className="icofont-download"
-                                style={{ fontSize: "15px" }}
-                              ></i>{" "}
+                                style={{ fontSize: '15px' }}
+                              ></i>{' '}
                             </a>
                           </div>
                           <div>{attachment}</div>
@@ -368,7 +366,7 @@ const ViewVendorDetails = ({ match }) => {
                             >
                               <i
                                 className="icofont-download"
-                                style={{ fontSize: "15px" }}
+                                style={{ fontSize: '15px' }}
                               ></i>
                             </a>
                           </div>
@@ -418,8 +416,8 @@ const ViewVendorDetails = ({ match }) => {
                             >
                               <i
                                 className="icofont-download"
-                                style={{ fontSize: "15px" }}
-                              ></i>{" "}
+                                style={{ fontSize: '15px' }}
+                              ></i>{' '}
                             </a>
                           </div>
                           <div>{attachment}</div>
@@ -525,8 +523,8 @@ const ViewVendorDetails = ({ match }) => {
                               >
                                 <i
                                   className="icofont-download"
-                                  style={{ fontSize: "15px" }}
-                                ></i>{" "}
+                                  style={{ fontSize: '15px' }}
+                                ></i>{' '}
                               </a>
                             </div>
                             <div>{attachment}</div>
@@ -561,8 +559,8 @@ const ViewVendorDetails = ({ match }) => {
                           >
                             <i
                               className="icofont-download"
-                              style={{ fontSize: "15px" }}
-                            ></i>{" "}
+                              style={{ fontSize: '15px' }}
+                            ></i>{' '}
                           </a>
                           <p>{attachment}</p>
                         </div>
@@ -582,7 +580,7 @@ const ViewVendorDetails = ({ match }) => {
                     id="consider_in_payment"
                     name="consider_in_payment"
                     disabled
-                    value={data && data?.consider_in_payment}
+                    value={data && data?.consider_in_payment?.toUpperCase()}
                   >
                     {/* <option value="">SELECT...</option>
                     <option
@@ -714,7 +712,7 @@ const ViewVendorDetails = ({ match }) => {
                     </div>
                     <div
                       className="col-md-3 mt-4"
-                      style={{ marginLeft: "20px" }}
+                      style={{ marginLeft: '20px' }}
                     >
                       <div className="form-check">
                         <input
@@ -732,7 +730,7 @@ const ViewVendorDetails = ({ match }) => {
                         </label>
                       </div>
                     </div>
-                    <div className="mt-3" style={{ textAlign: "right" }}>
+                    <div className="mt-3" style={{ textAlign: 'right' }}>
                       <Link
                         to={`/${_base}/vendorMaster`}
                         className="btn btn-danger text-white"
