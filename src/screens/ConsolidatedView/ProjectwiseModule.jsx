@@ -612,16 +612,83 @@ export default function ProjectwiseModule() {
     setSelectedRows(idArray);
   };
 
+  // const uploadAttachmentHandler = (event) => {
+  //   const files = event.target.files;
+  //   const filesArray = Array.from(files);
+  //   setAttachments((prevAttachments) => [...prevAttachments, ...filesArray]);
+  // };
+
   const uploadAttachmentHandler = (event) => {
     const files = event.target.files;
     const filesArray = Array.from(files);
-    setAttachments((prevAttachments) => [...prevAttachments, ...filesArray]);
+
+    // Maximum file size in bytes (50 MB)
+    const maxFileSize = 50 * 1024 * 1024;
+
+    // Allowed file extensions
+    const allowedExtensions = [
+      'doc',
+      'docx',
+      'pdf',
+      'pptx',
+      'png',
+      'jpeg',
+      'xlsx',
+      'txt',
+      'csv',
+      'xls',
+      'wps'
+    ];
+
+    // Flags to track errors
+    let hasInvalidFiles = false;
+    let invalidFiles = [];
+
+    // Helper function to get the file extension
+    const getFileExtension = (filename) =>
+      filename.split('.').pop().toLowerCase();
+
+    // Filter valid files
+    const validFiles = filesArray.filter((file) => {
+      const fileExtension = getFileExtension(file.name);
+
+      // Check file size
+      if (file.size > maxFileSize) {
+        hasInvalidFiles = true;
+        invalidFiles.push(file.name); // Collect names of files with invalid size
+        return false; // Exclude files larger than 50 MB
+      }
+
+      // Check file extension
+      if (!allowedExtensions.includes(fileExtension)) {
+        hasInvalidFiles = true;
+        invalidFiles.push(file.name); // Collect names of files with invalid type
+        return false; // Exclude files with invalid extension
+      }
+
+      return true; // Include files within the size limit and with valid extension
+    });
+
+    // Show alert if any files are invalid
+    if (hasInvalidFiles) {
+      const invalidFileNames = invalidFiles.join(', ');
+      alert(
+        `The selected file is invalid: ${invalidFileNames}. Ensure they are 50 MB or smaller and have a valid type.`
+      );
+      event.target.value = '';
+    }
+
+    // Update state with valid files only
+    if (validFiles.length > 0) {
+      setAttachments((prevAttachments) => [...prevAttachments, ...validFiles]);
+    }
+
+    // Clear the file input to avoid reselecting the same files
   };
 
   useEffect(() => {
     loadData();
   }, []);
-
   return (
     <>
       <div className=" card col-md-6 w-100">
@@ -642,7 +709,6 @@ export default function ProjectwiseModule() {
                 </h6>
               )}
               <h6 className="mb-0 fw-bold  fs-6  mb-2">
-                {console.log('data', data)}
                 {ModuleID?.length > 0 ? data && data.module_name : ''}
               </h6>
             </div>
