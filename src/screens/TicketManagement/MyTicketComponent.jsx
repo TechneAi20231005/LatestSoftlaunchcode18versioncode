@@ -1927,8 +1927,7 @@ export default function MyTicketComponent() {
                 setKey('Search_Result');
                 setIsLoading(false);
 
-                const temp = res?.data?.data?.data;
-
+                const temp = res?.data?.data;
                 var counter = 1;
                 var searchResultExport = [];
                 for (let key in temp) {
@@ -1971,6 +1970,7 @@ export default function MyTicketComponent() {
                 }
 
                 setKey('Search_Result');
+
                 setSearchResultExport(searchResultExport);
               } else {
                 alert('No Data Found');

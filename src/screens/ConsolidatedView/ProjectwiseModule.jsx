@@ -34,8 +34,8 @@ export default function ProjectwiseModule() {
   const [showToALL, setShowToAll] = useState(false);
   const [docList, setDocList] = useState([]);
   const [toggleRadio, setToggleRadio] = useState(true);
-  const [subModuleValue, setSubModuleValue] = useState(0);
-  const [moduleValue, setModuleValue] = useState(0);
+  const [subModuleValue, setSubModuleValue] = useState(null);
+  const [moduleValue, setModuleValue] = useState(null);
 
   const [fileName, setFileName] = useState('');
   const [notify, setNotify] = useState(null);
@@ -96,7 +96,7 @@ export default function ProjectwiseModule() {
 
           setProjectWiseModuleDropdown(
             temp
-              .filter((d) => d.project_id == projectId)
+              .filter((d) => d.project_id == projectId && d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.module_name }))
           );
         }
@@ -119,7 +119,7 @@ export default function ProjectwiseModule() {
           );
           setProjectWiseSubModuleDropdown(
             temp
-              .filter((d) => d.project_id == projectId)
+              .filter((d) => d.project_id == projectId && d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.sub_module_name }))
           );
         }
@@ -129,9 +129,10 @@ export default function ProjectwiseModule() {
     await new SubModuleService()
       .getSubModuleDocuments(
         projectId,
-        moduleId,
+        // moduleId,
+        ModuleID,
         'ACTIVE',
-        subModuleValue ? subModuleValue : 0
+        subModuleValue ? subModuleValue : null
       )
       .then((res) => {
         if (res.status === 200) {
@@ -229,7 +230,7 @@ export default function ProjectwiseModule() {
         setSubModuleValue(0);
       }
       await new SubModuleService()
-        .getSubModuleDocuments(projectId, ModuleID, 'ACTIVE', 0)
+        .getSubModuleDocuments(projectId, ModuleID, 'ACTIVE', null)
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status == 1) {
@@ -262,6 +263,8 @@ export default function ProjectwiseModule() {
   };
 
   const uploadDocHandler = async (e) => {
+    const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
+
     e.preventDefault();
     if (isLoading) {
       return;
@@ -284,7 +287,7 @@ export default function ProjectwiseModule() {
     await new SubModuleService()
       .getSubModuleDocuments(
         projectId,
-        ModuleID,
+        newModuleID,
         'ACTIVE',
         subModuleValue ? subModuleValue : null
       )
@@ -552,9 +555,10 @@ export default function ProjectwiseModule() {
     await new SubModuleService()
       .getSubModuleDocuments(
         projectId,
-        moduleId,
+        // moduleId,
+        ModuleID,
         type,
-        subModuleValue ? subModuleValue : 0
+        subModuleValue ? subModuleValue : null
       )
       .then((res) => {
         if (res.status === 200) {
@@ -608,16 +612,83 @@ export default function ProjectwiseModule() {
     setSelectedRows(idArray);
   };
 
+  // const uploadAttachmentHandler = (event) => {
+  //   const files = event.target.files;
+  //   const filesArray = Array.from(files);
+  //   setAttachments((prevAttachments) => [...prevAttachments, ...filesArray]);
+  // };
+
   const uploadAttachmentHandler = (event) => {
     const files = event.target.files;
     const filesArray = Array.from(files);
-    setAttachments((prevAttachments) => [...prevAttachments, ...filesArray]);
+
+    // Maximum file size in bytes (50 MB)
+    const maxFileSize = 50 * 1024 * 1024;
+
+    // Allowed file extensions
+    const allowedExtensions = [
+      'doc',
+      'docx',
+      'pdf',
+      'pptx',
+      'png',
+      'jpeg',
+      'xlsx',
+      'txt',
+      'csv',
+      'xls',
+      'wps'
+    ];
+
+    // Flags to track errors
+    let hasInvalidFiles = false;
+    let invalidFiles = [];
+
+    // Helper function to get the file extension
+    const getFileExtension = (filename) =>
+      filename.split('.').pop().toLowerCase();
+
+    // Filter valid files
+    const validFiles = filesArray.filter((file) => {
+      const fileExtension = getFileExtension(file.name);
+
+      // Check file size
+      if (file.size > maxFileSize) {
+        hasInvalidFiles = true;
+        invalidFiles.push(file.name); // Collect names of files with invalid size
+        return false; // Exclude files larger than 50 MB
+      }
+
+      // Check file extension
+      if (!allowedExtensions.includes(fileExtension)) {
+        hasInvalidFiles = true;
+        invalidFiles.push(file.name); // Collect names of files with invalid type
+        return false; // Exclude files with invalid extension
+      }
+
+      return true; // Include files within the size limit and with valid extension
+    });
+
+    // Show alert if any files are invalid
+    if (hasInvalidFiles) {
+      const invalidFileNames = invalidFiles.join(', ');
+      alert(
+        `The selected file is invalid: ${invalidFileNames}. Ensure they are 50 MB or smaller and have a valid type.`
+      );
+      event.target.value = '';
+    }
+
+    // Update state with valid files only
+    if (validFiles.length > 0) {
+      setAttachments((prevAttachments) => [...prevAttachments, ...validFiles]);
+    }
+
+    // Clear the file input to avoid reselecting the same files
   };
 
   useEffect(() => {
     loadData();
   }, []);
-
   return (
     <>
       <div className=" card col-md-6 w-100">
@@ -628,12 +699,17 @@ export default function ProjectwiseModule() {
               <div className={'project-block bg-lightgreen'}>
                 <i className="icofont-briefcase"></i>
               </div>
-
-              <span className="small text-muted project_name fw-bold text-center">
-                {data && data.project_name}
-              </span>
+              {ModuleID?.length > 0 ? (
+                <span className="small text-muted project_name fw-bold text-center">
+                  {data && data.project_name}
+                </span>
+              ) : (
+                <h6 className="mb-0 fw-bold  fs-6  mb-2">
+                  {data && data.project_name}
+                </h6>
+              )}
               <h6 className="mb-0 fw-bold  fs-6  mb-2">
-                {data && data.module_name}
+                {ModuleID?.length > 0 ? data && data.module_name : ''}
               </h6>
             </div>
           </div>
@@ -870,7 +946,11 @@ export default function ProjectwiseModule() {
             </Modal.Header>
             <Modal.Body>
               <input type="hidden" value={projectId} name="project_id" />
-              <input type="hidden" value={moduleValue} name="module_id" />
+              <input
+                type="hidden"
+                value={moduleValue ? moduleValue : ModuleID}
+                name="module_id"
+              />
               <div className="deadline-form">
                 <div className="row g-3 mb-3 mt-2">
                   <input
