@@ -1884,7 +1884,7 @@ export default function MyTicketComponent() {
     }
   };
 
-  const handleForm = useCallback(async (e) => {
+  const handleForm = async (e) => {
     try {
       if (e) {
         e.preventDefault();
@@ -1912,7 +1912,6 @@ export default function MyTicketComponent() {
 
       if (e) {
         e.preventDefault();
-
         const form = document.getElementById('your_form_id');
         const formData = new FormData(form);
 
@@ -1928,10 +1927,10 @@ export default function MyTicketComponent() {
                 setKey('Search_Result');
                 setIsLoading(false);
 
-                const temp = res?.data?.data?.data;
+                const temp = res?.data?.data;
                 var counter = 1;
                 var searchResultExport = [];
-                for (const key in temp) {
+                for (let key in temp) {
                   searchResultExport.push({
                     Sr: counter++,
                     TICKET_ID: temp[key].ticket_id,
@@ -1969,6 +1968,7 @@ export default function MyTicketComponent() {
                     ticket_solved_by: temp[key].ticket_solved_by
                   });
                 }
+
                 setKey('Search_Result');
 
                 setSearchResultExport(searchResultExport);
@@ -2000,7 +2000,8 @@ export default function MyTicketComponent() {
       // Handle errors that may occur during the getTicketReport call
       // You can add additional error handling logic here, such as displaying an error message to the user.
     }
-  }, []);
+  };
+
   const passTicketHandler = () => {};
   const handleChangeStatus = (e) => {
     setStatusValue(e);
