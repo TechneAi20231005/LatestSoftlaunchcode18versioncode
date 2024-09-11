@@ -74,6 +74,12 @@ function PoHistory() {
       width: '120px'
     },
     {
+      name: 'PO number',
+      selector: (row) => row?.po_number || '---',
+      sortable: false,
+      width: '120px'
+    },
+    {
       sortable: false,
       name: 'Karagir 1',
       selector: (row) =>
@@ -174,6 +180,7 @@ function PoHistory() {
     return data?.map((row) => ({
       'Delivery Date': row?.delivery_date ?? '--',
       'Order Date': row?.order_date ?? '--',
+      'PO number': row?.po_number,
       'Karagir 1': row?.karagir ?? '--',
       Item: row?.item ?? '--',
       Category: row?.category ?? '--',
