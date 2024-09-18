@@ -1,4 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
+import moment from 'moment';
 import DataTable from 'react-data-table-component';
 import ErrorLogService from '../../services/ErrorLogService';
 import UserService from '../../services/MastersService/UserService';
@@ -43,8 +44,15 @@ function UserTaskReportComponent() {
     { name: 'Task Name', selector: (row) => row.task_name, sortable: true },
     { name: 'User Name', selector: (row) => row.user_name, sortable: true },
     {
-      name: 'Total Worked',
+      name: 'Total Worked Hours',
       selector: (row) => row.total_worked,
+      sortable: true
+    },
+    {
+      name: 'Total Worked Mins',
+      selector: (row) =>
+        Math.floor(moment.duration(row.total_worked, 'hours').asMinutes()),
+      width: '150px',
       sortable: true
     },
     { name: 'Status', selector: (row) => row.status, sortable: true },
@@ -134,6 +142,9 @@ function UserTaskReportComponent() {
                 task_name: temp[key].task_name,
                 user_name: temp[key].employee_name,
                 total_worked: temp[key].total_worked,
+                total_worked_minutes: Math.floor(
+                  moment.duration(temp[key].total_worked, 'hours').asMinutes()
+                ),
                 status: temp[key].status,
                 updated_at: temp[key].updated_at
               });
@@ -148,6 +159,9 @@ function UserTaskReportComponent() {
                 task_name: temp[key].task_name,
                 user_name: temp[key].employee_name,
                 total_worked: temp[key].total_worked,
+                total_worked_minutes: Math.floor(
+                  moment.duration(temp[key].total_worked, 'hours').asMinutes()
+                ),
                 status: temp[key].status,
                 updated_at: temp[key].updated_at
               });
