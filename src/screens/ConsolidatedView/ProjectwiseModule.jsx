@@ -12,6 +12,7 @@ import SubModuleService from '../../services/ProjectManagementService/SubModuleS
 import ModuleService from '../../services/ProjectManagementService/ModuleService';
 import Alert from '../../components/Common/Alert';
 import { Modal, Button } from 'react-bootstrap';
+import { toast } from 'react-toastify';
 
 export default function ProjectwiseModule() {
   const params = useParams();
@@ -58,6 +59,7 @@ export default function ProjectwiseModule() {
   const handleModal = (data) => {
     setModal(data);
   };
+
   const submoduleRef = useRef(null);
   const moduleRef = useRef(null);
   const ModuleID = moduleId?.length > 0 ? moduleId : null;
@@ -119,7 +121,7 @@ export default function ProjectwiseModule() {
           );
           setProjectWiseSubModuleDropdown(
             temp
-              .filter((d) => d.project_id == projectId && d.is_active === 1)
+              .filter((d) => d.module_id === moduleValue && d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.sub_module_name }))
           );
         }
@@ -278,10 +280,16 @@ export default function ProjectwiseModule() {
     form.append('show_to_all', 1);
     await new SubModuleService().postSubModuleDocument(form).then((res) => {
       if (res?.data?.status === 1) {
-        setNotify({ type: 'success', message: res?.data?.message });
+        // setNotify({ type: 'success', message: res?.data?.message });
+        toast.success(res?.data?.message, {
+          position: 'top-right'
+        });
         handleModal({ showModal: false, modalData: '', modalHeader: '' });
       } else {
-        setNotify({ type: 'danger', message: res?.data?.message });
+        // setNotify({ type: 'danger', message: res?.data?.message });
+        toast.error(res?.data?.message, {
+          position: 'top-right'
+        });
       }
     });
     await new SubModuleService()
@@ -305,10 +313,12 @@ export default function ProjectwiseModule() {
   };
 
   const fetchData = async (e) => {
+    const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
+
     await new SubModuleService()
       .getSubModuleDocuments(
         projectId,
-        ModuleID,
+        newModuleID,
         'ACTIVE',
         subModuleValue ? subModuleValue : null
       )
@@ -364,9 +374,15 @@ export default function ProjectwiseModule() {
 
                 // setShowbtn(false)
               }
-              setNotify({ type: 'success', message: res?.data?.message });
+              // setNotify({ type: 'success', message: res?.data?.message });
+              toast.success(res?.data?.message, {
+                position: 'top-right'
+              });
             } else {
-              setNotify({ type: 'danger', message: res?.data?.message });
+              // setNotify({ type: 'danger', message: res?.data?.message });
+              toast.error(res?.data?.message, {
+                position: 'top-right'
+              });
             }
           });
 
@@ -407,7 +423,10 @@ export default function ProjectwiseModule() {
 
       setIsLoading(false);
     } catch (error) {
-      setNotify({ type: 'danger', message: error });
+      // setNotify({ type: 'danger', message: error });
+      toast.error(error, {
+        position: 'top-right'
+      });
       setIsLoading(false);
     }
   };
@@ -633,6 +652,7 @@ export default function ProjectwiseModule() {
       'pptx',
       'png',
       'jpeg',
+      'jpg',
       'xlsx',
       'txt',
       'csv',
@@ -688,7 +708,7 @@ export default function ProjectwiseModule() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [moduleValue]);
   return (
     <>
       <div className=" card col-md-6 w-100">
