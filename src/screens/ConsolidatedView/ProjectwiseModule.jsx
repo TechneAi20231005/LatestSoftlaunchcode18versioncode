@@ -66,6 +66,8 @@ export default function ProjectwiseModule() {
 
   const loadData = async () => {
     const userId = sessionStorage.getItem('id');
+    const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
+
     await new ConsolidatedService()
       .getProjectsModules(projectId, ModuleID)
       .then((res) => {
@@ -132,7 +134,7 @@ export default function ProjectwiseModule() {
       .getSubModuleDocuments(
         projectId,
         // moduleId,
-        ModuleID,
+        newModuleID,
         'ACTIVE',
         subModuleValue ? subModuleValue : null
       )
@@ -179,6 +181,9 @@ export default function ProjectwiseModule() {
   };
 
   const changeSubModuleHandle = async (e, type) => {
+    const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
+    console.log('mmmm', newModuleID);
+
     if (e === null) {
       return;
     }
@@ -196,7 +201,6 @@ export default function ProjectwiseModule() {
         (subModule) => subModule.id == value
       );
       setIsSubModuleActive(findSubModuleActivity[0].is_active);
-      const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
 
       await new SubModuleService()
         .getSubModuleDocuments(projectId, newModuleID, 'ACTIVE', value)
@@ -232,7 +236,7 @@ export default function ProjectwiseModule() {
         setSubModuleValue(0);
       }
       await new SubModuleService()
-        .getSubModuleDocuments(projectId, ModuleID, 'ACTIVE', null)
+        .getSubModuleDocuments(projectId, newModuleID, 'ACTIVE', null)
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status == 1) {
