@@ -1,21 +1,21 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { consolidatedData } from "./ConsolidatedAction";
+import { createSlice } from '@reduxjs/toolkit';
+import { consolidatedData } from './ConsolidatedAction';
 const initialState = {
-  err: "",
+  err: '',
   isLoading: {
-    consolidatedDataList: false,
+    consolidatedDataList: false
   },
   showLoaderModal: false,
-  consolidatedData: [],
+  consolidatedData: []
 };
 
 export const ConsolidatedSlice = createSlice({
-  name: "ConsolidatedSlice",
+  name: 'ConsolidatedSlice',
   initialState,
   reducers: {
     loaderModal: (state, action) => {
       state.showLoaderModal = action.payload;
-    },
+    }
   },
   extraReducers: (builder) => {
     builder.addCase(consolidatedData.pending, (state) => {
@@ -27,7 +27,6 @@ export const ConsolidatedSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let consolidatedData = payload.data.data;
-
         state.showLoaderModal = false;
         let count = 1;
         for (let i = 0; i < consolidatedData.length; i++) {
@@ -39,6 +38,6 @@ export const ConsolidatedSlice = createSlice({
     builder.addCase(consolidatedData.rejected, (state) => {
       state.isLoading.consolidatedDataList = false;
     });
-  },
+  }
 });
 export default ConsolidatedSlice.reducer;
