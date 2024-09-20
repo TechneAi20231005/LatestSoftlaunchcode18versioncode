@@ -13,6 +13,7 @@ import ModuleService from '../../services/ProjectManagementService/ModuleService
 import Alert from '../../components/Common/Alert';
 import { Modal, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import CustomAlertModal from '../../components/custom/modal/CustomAlertModal';
 
 export default function ProjectwiseModule() {
   const params = useParams();
@@ -50,6 +51,7 @@ export default function ProjectwiseModule() {
   const [isModuleActive, setIsModuleActive] = useState(1);
   const [isSubModuleActive, setIsSubModuleActive] = useState(1);
   const [attachments, setAttachments] = useState([]);
+  const [openConfirmModal, setOpenConfirmModal] = useState(false);
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -66,6 +68,8 @@ export default function ProjectwiseModule() {
 
   const loadData = async () => {
     const userId = sessionStorage.getItem('id');
+    const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
+
     await new ConsolidatedService()
       .getProjectsModules(projectId, ModuleID)
       .then((res) => {
@@ -132,7 +136,7 @@ export default function ProjectwiseModule() {
       .getSubModuleDocuments(
         projectId,
         // moduleId,
-        ModuleID,
+        newModuleID,
         'ACTIVE',
         subModuleValue ? subModuleValue : null
       )
@@ -179,6 +183,8 @@ export default function ProjectwiseModule() {
   };
 
   const changeSubModuleHandle = async (e, type) => {
+    const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
+
     if (e === null) {
       return;
     }
@@ -189,14 +195,11 @@ export default function ProjectwiseModule() {
 
     if (type === 'SUBMODULE') {
       setSubModuleValue(value);
-      // if (moduleRef.current) {
-      //   moduleRef.current.clearValue();
-      // }
+
       const findSubModuleActivity = submoduleData.filter(
         (subModule) => subModule.id == value
       );
       setIsSubModuleActive(findSubModuleActivity[0].is_active);
-      const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
 
       await new SubModuleService()
         .getSubModuleDocuments(projectId, newModuleID, 'ACTIVE', value)
@@ -232,7 +235,7 @@ export default function ProjectwiseModule() {
         setSubModuleValue(0);
       }
       await new SubModuleService()
-        .getSubModuleDocuments(projectId, ModuleID, 'ACTIVE', null)
+        .getSubModuleDocuments(projectId, newModuleID, 'ACTIVE', null)
         .then((res) => {
           if (res.status === 200) {
             if (res.data.status == 1) {
@@ -264,44 +267,80 @@ export default function ProjectwiseModule() {
     }
   };
 
+  const [formData, setFormData] = useState(null);
+
   const uploadDocHandler = async (e) => {
     const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
+    e?.preventDefault();
 
-    e.preventDefault();
     if (isLoading) {
       return;
     }
+
     setIsLoading(true);
     setNotify(null);
 
     const form = new FormData(e.target);
     form.append('submodule_id', subModuleValue ? subModuleValue : '');
-
     form.append('show_to_all', 1);
-    await new SubModuleService().postSubModuleDocument(form).then((res) => {
-      if (res?.data?.status === 1) {
-        // setNotify({ type: 'success', message: res?.data?.message });
-        toast.success(res?.data?.message, {
-          position: 'top-right'
-        });
+
+    setFormData(form);
+    try {
+      const response = await new SubModuleService().postSubModuleDocument(form);
+
+      if (response?.data?.status === 200 || response?.data?.status === 1) {
+        toast.success(response?.data?.message, { position: 'top-right' });
         handleModal({ showModal: false, modalData: '', modalHeader: '' });
+
+        const docResponse = await new SubModuleService().getSubModuleDocuments(
+          projectId,
+          newModuleID,
+          'ACTIVE',
+          subModuleValue ? subModuleValue : null
+        );
+        setDocList(docResponse.data.data);
+
+        setIsLoading(false);
+        setToggleRadio(true);
+      } else if (response?.data?.status === 403) {
+        setOpenConfirmModal(true);
+        handleModal({ showModal: false, modalData: '', modalHeader: '' });
+        setIsLoading(false);
       } else {
-        // setNotify({ type: 'danger', message: res?.data?.message });
-        toast.error(res?.data?.message, {
-          position: 'top-right'
-        });
+        toast.error(response?.data?.message, { position: 'top-right' });
+        setIsLoading(false);
+      }
+    } catch (error) {
+      toast.error('An error occurred during upload', { position: 'top-right' });
+      setIsLoading(false);
+    }
+  };
+
+  const uploadConfirmationDocHandler = async () => {
+    const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
+    setIsLoading(true);
+    handleModal({ showModal: false, modalData: '', modalHeader: '' });
+    formData.append('is_replace', 1);
+    await new SubModuleService().postSubModuleDocument(formData).then((res) => {
+      if (res?.data?.status === 200 || res?.data?.status === 1) {
+        toast.success(res?.data?.message, { position: 'top-right' });
+        handleModal({ showModal: false, modalData: '', modalHeader: '' });
+        setOpenConfirmModal(false);
+
+        new SubModuleService()
+          .getSubModuleDocuments(
+            projectId,
+            newModuleID,
+            'ACTIVE',
+            subModuleValue ? subModuleValue : null
+          )
+          .then((res) => setDocList(res.data.data));
+      } else {
+        toast.error(res?.data?.message, { position: 'top-right' });
       }
     });
-    await new SubModuleService()
-      .getSubModuleDocuments(
-        projectId,
-        newModuleID,
-        'ACTIVE',
-        subModuleValue ? subModuleValue : null
-      )
-      .then((res) => setDocList(res.data.data));
+
     setIsLoading(false);
-    setToggleRadio(true);
   };
 
   const downloadFile = async (e, url) => {
@@ -371,10 +410,7 @@ export default function ProjectwiseModule() {
               } else if (status === 'DEACTIVE') {
                 setToggleRadio(false);
                 setSelectedRows([]);
-
-                // setShowbtn(false)
               }
-              // setNotify({ type: 'success', message: res?.data?.message });
               toast.success(res?.data?.message, {
                 position: 'top-right'
               });
@@ -1071,6 +1107,40 @@ export default function ProjectwiseModule() {
           )}
         </div>
       </div>
+
+      <Modal
+        centered
+        show={openConfirmModal}
+        onHide={() => setOpenConfirmModal(false)}
+      >
+        <Modal.Body className="position-relative">
+          <div className="text-center">
+            <i
+              style={{ fontSize: '60px' }}
+              className="icofont-info-circle text-warning"
+            />
+          </div>
+          <h6 className="p-2">
+            This file already exists. Do you want to replace it.{' '}
+          </h6>
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            className="btn btn-primary"
+            onClick={() => {
+              uploadConfirmationDocHandler(); // Call the API if confirmed
+            }}
+          >
+            Yes
+          </button>
+          <button
+            className="btn btn-secondary"
+            onClick={() => setOpenConfirmModal(false)}
+          >
+            No
+          </button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }
