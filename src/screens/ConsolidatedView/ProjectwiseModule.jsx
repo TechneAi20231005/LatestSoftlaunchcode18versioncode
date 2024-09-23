@@ -729,7 +729,7 @@ export default function ProjectwiseModule() {
     if (hasInvalidFiles) {
       const invalidFileNames = invalidFiles.join(', ');
       alert(
-        `The selected file is invalid: ${invalidFileNames}. Ensure they are 50 MB or smaller and have a valid type.`
+        `The selected file is invalid : ${invalidFileNames}. Ensure this is  50 MB or smaller size  or have a valid extension.`
       );
       event.target.value = '';
     }
