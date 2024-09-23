@@ -167,8 +167,8 @@ function GenerateRequisition() {
       'Karagir Wt Range': row?.karagir_wt_range ?? '--',
       'Knockoff Wt Range': row?.knockoff_wt_range ?? '--',
       'Karagir Size Range': row?.size_range ?? '--',
-      'Open Pieces': row?.open_qty ?? '--',
-      'Total Weight': row?.total_wt ?? '--'
+      'Open Pieces': row?.open_qty ?? '--'
+      // 'Total Weight': row?.total_wt ?? '--'
     }));
   };
 
