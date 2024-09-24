@@ -157,16 +157,18 @@ function GenerateRequisition() {
 
   const transformDataForExport = (data) => {
     return data?.map((row, index) => ({
-      'Sr No.': index + 1,
+      // 'Sr No.': index + 1,
       Item: row?.item ?? '--',
       Category: row?.category ?? '--',
-      'Karagir Size Range': row?.size_range ?? '--',
+      'Exact Wt': row?.exact_wt ?? '--',
+      'Weight Range': row?.weight_range ?? '--',
+      'Size Range': row?.size_range_1 ?? '--',
+      'Purity Range': row?.purity_range ?? '--',
       'Karagir Wt Range': row?.karagir_wt_range ?? '--',
       'Knockoff Wt Range': row?.knockoff_wt_range ?? '--',
-      'Exact Wt': row?.exact_wt ?? '--',
-      'Open Pieces': row?.open_qty ?? '--',
-      'Purity Range': row?.purity_range ?? '--',
-      'Total Weight': row?.total_wt ?? '--'
+      'Karagir Size Range': row?.size_range ?? '--',
+      'Open Pieces': row?.open_qty ?? '--'
+      // 'Total Weight': row?.total_wt ?? '--'
     }));
   };
 
