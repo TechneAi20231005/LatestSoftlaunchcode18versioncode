@@ -1884,6 +1884,7 @@ export default function MyTicketComponent() {
     }
   };
 
+  const [searchData, setSearchData] = useState();
   const handleForm = async (e) => {
     setIsLoading(null);
     setIsLoading(true);
@@ -1917,7 +1918,7 @@ export default function MyTicketComponent() {
         e.preventDefault();
         const form = document.getElementById('your_form_id');
         const formData = new FormData(form);
-
+        setSearchData(formData);
         await new ReportService()
           .getTicketReport(formData)
           .then((res) => {
@@ -2014,7 +2015,6 @@ export default function MyTicketComponent() {
                 // setKey('Search_Result');
                 // setIsLoading(false);
                 const temp = res?.data?.data;
-                console.log('expo', res.data.data);
                 var counter = 1;
                 var searchResultExport = [];
                 for (let key in temp) {
@@ -2433,13 +2433,15 @@ export default function MyTicketComponent() {
   const handleSearchChanged = async (e, type) => {
     e.preventDefault();
     var form;
+    const searchDataEntries = Object.fromEntries(searchData.entries());
     if (type === 'LIMIT') {
       const limit = parseInt(e.target.value);
       form = {
         limit: limit,
         typeOf: 'SearchResult',
         page: 1,
-        ticket_id: ticketId
+        ticket_id: ticketId,
+        ...searchDataEntries
 
         // Resetting to the first page when limit changes
       };
@@ -2447,13 +2449,15 @@ export default function MyTicketComponent() {
       form = {
         typeOf: 'SearchResult',
         page: searchResultData?.current_page - 1,
-        ticket_id: ticketId
+        ticket_id: ticketId,
+        ...searchDataEntries
       };
     } else if (type === 'PLUS') {
       form = {
         typeOf: 'SearchResult',
         page: searchResultData?.current_page + 1,
-        ticket_id: ticketId
+        ticket_id: ticketId,
+        ...searchDataEntries
       };
     }
 
@@ -3026,11 +3030,11 @@ export default function MyTicketComponent() {
                           <DataTable
                             columns={searchResultColumns}
                             data={searchResult}
-                            customStyles={customStyles}
+                            // customStyles={customStyles}
                             defaultSortField="title"
                             paginations
                             fixedHeader={true}
-                            fixedHeaderScrollHeight={'500px'}
+                            // fixedHeaderScrollHeight={'500px'}
                             selectableRows={false}
                             className="table msyDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                             highlightOnHover={true}
