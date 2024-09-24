@@ -2432,17 +2432,35 @@ export default function MyTicketComponent() {
 
   const handleSearchChanged = async (e, type) => {
     e.preventDefault();
+
     var form;
-    const searchDataEntries = Object.fromEntries(searchData.entries());
+    const searchDataEntries = Object?.fromEntries(searchData?.entries());
+
+    const formatEntries = (entries) => {
+      return Object?.keys(entries)?.reduce((acc, key) => {
+        const value = entries[key];
+        const cleanKey = key.replace('[]', '');
+
+        if (cleanKey === 'ticket_id') {
+          acc[cleanKey] = value;
+        } else if (value && value.trim() !== '') {
+          acc[cleanKey] = [value];
+        } else {
+          acc[cleanKey] = [''];
+        }
+
+        return acc;
+      }, {});
+    };
+    const limit = parseInt(e.target.value);
+
     if (type === 'LIMIT') {
-      const limit = parseInt(e.target.value);
       form = {
         limit: limit,
         typeOf: 'SearchResult',
         page: 1,
         ticket_id: ticketId,
-        ...searchDataEntries
-
+        ...formatEntries(searchDataEntries)
         // Resetting to the first page when limit changes
       };
     } else if (type === 'MINUS') {
@@ -2450,14 +2468,17 @@ export default function MyTicketComponent() {
         typeOf: 'SearchResult',
         page: searchResultData?.current_page - 1,
         ticket_id: ticketId,
-        ...searchDataEntries
+        ...formatEntries(searchDataEntries)
       };
     } else if (type === 'PLUS') {
       form = {
         typeOf: 'SearchResult',
         page: searchResultData?.current_page + 1,
         ticket_id: ticketId,
-        ...searchDataEntries
+        limit: searchResultData?.per_page,
+
+        // ...searchDataEntries
+        ...formatEntries(searchDataEntries)
       };
     }
 
@@ -2469,10 +2490,29 @@ export default function MyTicketComponent() {
           );
           setIsLoading(false);
           if (type === 'PLUS' && res.data.data.data.length > 0) {
-            setSearchResultData({
-              ...searchResultData,
-              current_page: searchResultData.current_page + 1
-            });
+            // setSearchResultData({
+            //   ...searchResultData,
+            //   current_page: searchResultData.current_page + 1
+            // });
+            setSearchResultData(res.data.data);
+            setSearchResult(res.data.data.data);
+          }
+
+          if (type === 'MINUS' && res.data.data.data.length > 0) {
+            // setSearchResultData({
+            //   ...searchResultData,
+            //   current_page: searchResultData.current_page + 1
+            // });
+            setSearchResultData(res.data.data);
+            setSearchResult(res.data.data.data);
+          }
+          if (type === 'LIMIT' && res.data.data.data.length > 0) {
+            // setSearchResultData({
+            //   ...searchResultData,
+            //   current_page: searchResultData.current_page + 1
+            // });
+            setSearchResultData(res.data.data);
+            setSearchResult(res.data.data.data);
           }
         }
       }
@@ -3068,6 +3108,7 @@ export default function MyTicketComponent() {
                           onClick={(e) => {
                             handleSearchChanged(e, 'MINUS');
                           }}
+                          disabled={searchResultData?.from === 1 ? true : false}
                           className="mx-2"
                         >
                           <i className="icofont-arrow-left"></i>
