@@ -18,7 +18,7 @@ import { addJobRoleMasterThunk, editJobRoleMasterThunk, getJobRoleMasterListThun
 function AddEditJobRoleMaster({ show, close, type, currentJobRoleData }) {
     const dispatch = useDispatch();
     const addEditJobRoleInitialValue = {
-        jobRole_name: type === 'EDIT' ? currentJobRoleData?.jobRole_name : '',
+        job_role_name: type === 'EDIT' ? currentJobRoleData?.job_role_name : '',
         remark: type === 'EDIT' ? currentJobRoleData?.remark || '' : '',
         is_active: type === 'EDIT' ? currentJobRoleData?.is_active?.toString() : 1
     };
@@ -26,6 +26,7 @@ function AddEditJobRoleMaster({ show, close, type, currentJobRoleData }) {
     // // function
 
     const handleAddEditJobRole = ({ formData }) => {
+        console.log(type,"typeof")
         if (type === 'ADD') {
             dispatch(
                 addJobRoleMasterThunk({

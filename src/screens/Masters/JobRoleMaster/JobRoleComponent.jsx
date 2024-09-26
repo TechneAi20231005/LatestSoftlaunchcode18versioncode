@@ -10,11 +10,11 @@ import AddEditJobRoleMaster from './AddEditjobRoleMaster';
 import { getJobRoleMasterListThunk } from '../../../redux/services/jobRoleMaster';
 
 function JobRoleMasterComponent() {
+
     const dispatch = useDispatch();
     const { jobRoleMasterList, isLoading } = useSelector(
         (state) => state?.jobRoleMaster
     );
-    console.log("jjj",jobRoleMasterList)
     const [searchValue, setSearchValue] = useState('');
     const [filterJobRoleMasterList, setFilterJobRoleMasterList] = useState([]);
     const [addEditJobRoleModal, setAddEditJobRoleModal] = useState({
@@ -77,19 +77,19 @@ function JobRoleMasterComponent() {
         },
         {
             name: 'Created At',
-            selector: (row) => row.created_at||"--",
+            selector: (row) => row.created_at || "--",
             sortable: false,
             width: '175px'
         },
         {
             name: 'Created By',
-            selector: (row) => row.created_by ||"--",
+            selector: (row) => row.created_by || "--",
             sortable: false,
             width: '175px'
         },
         {
             name: 'Updated At',
-            selector: (row) => row.updated_at ||"--",
+            selector: (row) => row.updated_at || "--",
             sortable: false,
             width: '175px'
         },
@@ -134,17 +134,24 @@ function JobRoleMasterComponent() {
                 <PageHeader headerTitle="Job Role Master" />
                 <div>
                     <button className="btn btn-primary text-white"
-                        onClick={() => setAddEditJobRoleModal({
-                            type: "ADD",
-                            data: '',
-                            open: true,
-                        })}
+                        onClick={
+
+                            () => {
+                                setAddEditJobRoleModal({
+                                    type: "ADD",
+                                    data: '',
+                                    open: true,
+                                });
+                            }
+                        }
                     >
                         <i className="icofont-plus px-2"></i>
                         Add Job Role Type
                     </button>
                 </div>
             </div>
+
+
             <Row className='row_gap_3'>
                 <Col
                     xs={12}
@@ -187,13 +194,13 @@ function JobRoleMasterComponent() {
             </Row>
             <DataTable
                 columns={columns}
-                data={jobRoleMasterList}
+                data={filterJobRoleMasterList}
                 defaultSortField="role_id"
                 pagination
                 selectableRows={false}
                 className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                 highlightOnHover={true}
-                progressPending={isLoading?.getJobRoleList}
+                progressPending={isLoading?.getJobRoleMasterList}
                 progressComponent={<TableLoadingSkelton />}
             />
             <AddEditJobRoleMaster

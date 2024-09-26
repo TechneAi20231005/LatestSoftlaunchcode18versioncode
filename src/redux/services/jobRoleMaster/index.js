@@ -2,7 +2,6 @@ import { createAsyncThunk, current } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import customAxios from "../../../http/axios";
 import { errorHandler } from "../../../utils";
-import { useParam } from 'react-router-dom'
 
 export const getJobRoleMasterListThunk = createAsyncThunk(
     'jobRoleMaster/getJobRoleMasterList',

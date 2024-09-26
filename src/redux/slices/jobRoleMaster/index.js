@@ -1,19 +1,16 @@
 import { createSlice } from '@reduxjs/toolkit';
+
 import {
+  getJobRoleMasterListThunk,
   addJobRoleMasterThunk,
-  editJobRoleMasterThunk,
-  getJobRoleMasterListThunk
-} from '../../services/jobRoleMaster';
-// import {
-//   addJobRoleMasterThunk,
-//   editJobRoleMasterThunk,
-//   getJobRoleMasterListThunk
-// } from '../../slices/jobRoleMaster';
+  editJobRoleMasterThunk
+} from "../../services/jobRoleMaster/index"
 
 const initialState = {
   jobRoleMasterList: [],
   filterJobRoleMasterList: [],
   editJobRoleMaster: [],
+
   isLoading: {
     getJobRoleMasterList: false,
     addJobRoleMaster: false,
@@ -21,11 +18,13 @@ const initialState = {
     filterJobRoleMasterList: false
   },
   errorMsg: {
+    addJobRoleMaster: '',
     getJobRoleMasterList: '',
     filterJobRoleMasterList: '',
     editJobRoleMaster: ''
   },
   successMsg: {
+    addJobRoleMaster: '',
     getJobRoleMasterList: '',
     filterJobRoleMasterList: '',
     editJobRoleMaster: ''
@@ -38,6 +37,8 @@ const jobRoleMasterSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
+
+    //get job role master
       .addCase(getJobRoleMasterListThunk.pending, (state, action) => {
         state.isLoading.getJobRoleMasterList = true;
       })
@@ -52,17 +53,21 @@ const jobRoleMasterSlice = createSlice({
         state.jobRoleMasterList = [];
         state.errorMsg.getJobRoleMasterList = action.error.message;
       })
+
+      //add job role master
       .addCase(addJobRoleMasterThunk.pending, (state, action) => {
         state.isLoading.addJobRoleMaster = true;
       })
       .addCase(addJobRoleMasterThunk.fulfilled, (state, action) => {
         state.isLoading.addJobRoleMaster = false;
-        state.successMsg.addJobRoleMaster = action.payload;
+        state.successMsg.addJobRoleMaster = action?.payload?.data;
       })
       .addCase(addJobRoleMasterThunk.rejected, (state, action) => {
         state.isLoading.addJobRoleMaster = false;
-        state.errorMsg.addJobRoleMaster = action.error.message;
+        state.errorMsg.addJobRoleMaster = action?.error?.message;
       })
+
+      //edit job role master
 
       .addCase(editJobRoleMasterThunk.pending, (state, action) => {
         state.isLoading.editJobRoleMaster = true;
