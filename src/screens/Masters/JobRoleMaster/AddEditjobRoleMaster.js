@@ -15,12 +15,12 @@ import {addJobRoleMasterValidation} from './validation/AddJobRoleMaster'
 import { addJobRoleMasterThunk, editJobRoleMasterThunk, getJobRoleMasterListThunk } from '../../../redux/services/jobRoleMaster';
 
 
-function AddEditJobRoleMaster({ show, close, type, currentFunctionData }) {
+function AddEditJobRoleMaster({ show, close, type, currentJobRoleData }) {
     const dispatch = useDispatch();
     const addEditJobRoleInitialValue = {
-        function_name: type === 'EDIT' ? currentFunctionData?.function_name : '',
-        remark: type === 'EDIT' ? currentFunctionData?.remark || '' : '',
-        is_active: type === 'EDIT' ? currentFunctionData?.is_active?.toString() : 1
+        jobRole_name: type === 'EDIT' ? currentJobRoleData?.jobRole_name : '',
+        remark: type === 'EDIT' ? currentJobRoleData?.remark || '' : '',
+        is_active: type === 'EDIT' ? currentJobRoleData?.is_active?.toString() : 1
     };
 
     // // function
@@ -40,7 +40,7 @@ function AddEditJobRoleMaster({ show, close, type, currentFunctionData }) {
         } else {
             dispatch(
                 editJobRoleMasterThunk({
-                    currentId: currentFunctionData?.id,
+                    currentId: currentJobRoleData?.id,
                     formData: formData,
                     onSuccessHandler: () => {
                         close();

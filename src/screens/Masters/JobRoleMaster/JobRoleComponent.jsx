@@ -4,7 +4,6 @@ import PageHeader from '../../../components/Common/PageHeader';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
 import DataTable from 'react-data-table-component';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import { dummyData } from './dummyData';
 import { useDispatch, useSelector } from 'react-redux';
 import { customSearchHandler } from '../../../utils/customFunction';
 import AddEditJobRoleMaster from './AddEditjobRoleMaster';
@@ -78,25 +77,25 @@ function JobRoleMasterComponent() {
         },
         {
             name: 'Created At',
-            selector: (row) => row.created_at,
+            selector: (row) => row.created_at||"--",
             sortable: false,
             width: '175px'
         },
         {
             name: 'Created By',
-            selector: (row) => row.created_by,
+            selector: (row) => row.created_by ||"--",
             sortable: false,
             width: '175px'
         },
         {
             name: 'Updated At',
-            selector: (row) => row.updated_at,
+            selector: (row) => row.updated_at ||"--",
             sortable: false,
             width: '175px'
         },
         {
             name: "Updated By",
-            selector: (row) => row.updated_by,
+            selector: (row) => row.updated_by || "--",
             sortable: false,
             width: '175px'
         }

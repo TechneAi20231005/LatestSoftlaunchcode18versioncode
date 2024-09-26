@@ -1,5 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { addJobRoleMasterThunk, editJobRoleMasterThunk, getJobRoleMasterListThunk } from '../../services/jobRoleMaster';
+import {
+  addJobRoleMasterThunk,
+  editJobRoleMasterThunk,
+  getJobRoleMasterListThunk
+} from '../../services/jobRoleMaster';
 // import {
 //   addJobRoleMasterThunk,
 //   editJobRoleMasterThunk,
@@ -55,22 +59,25 @@ const jobRoleMasterSlice = createSlice({
         state.isLoading.addJobRoleMaster = false;
         state.successMsg.addJobRoleMaster = action.payload;
       })
-      .addCase(addJobRoleMasterThunk.rejected,(state,action)=>{
-        state.isLoading.addJobRoleMaster=false;
-        state.errorMsg.addJobRoleMaster=action.error.message;
+      .addCase(addJobRoleMasterThunk.rejected, (state, action) => {
+        state.isLoading.addJobRoleMaster = false;
+        state.errorMsg.addJobRoleMaster = action.error.message;
       })
 
-      .addCase(editJobRoleMasterThunk.pending,(state,action)=>{
-        state.isLoading.editJobRoleMaster=true;
+      .addCase(editJobRoleMasterThunk.pending, (state, action) => {
+        state.isLoading.editJobRoleMaster = true;
       })
-      .addCase(editJobRoleMasterThunk.fulfilled,(state,action)=>{
-        state.isLoading.editJobRoleMaster=false;
-        state.successMsg.editJobRoleMaster=action.payload;
+      .addCase(editJobRoleMasterThunk.fulfilled, (state, action) => {
+        state.isLoading.editJobRoleMaster = false;
+        state.successMsg.editJobRoleMaster = action.payload;
       })
-      .addCase(editJobRoleMasterThunk.rejected,(state,action)=>{
-        state.isLoading.editJobRoleMaster=false;
-        state.errorMsg.editJobRoleMaster=action.error.message;
+      .addCase(editJobRoleMasterThunk.rejected, (state, action) => {
+        state.isLoading.editJobRoleMaster = false;
+        state.errorMsg.editJobRoleMaster = action.error.message;
       })
   }
 })
 export default jobRoleMasterSlice.reducer;
+
+
+/// jobrolemaste.created_by || "__"

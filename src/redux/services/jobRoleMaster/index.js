@@ -2,49 +2,50 @@ import { createAsyncThunk, current } from "@reduxjs/toolkit";
 import { toast } from "react-toastify";
 import customAxios from "../../../http/axios";
 import { errorHandler } from "../../../utils";
-import {useParam} from 'react-router-dom'
+import { useParam } from 'react-router-dom'
 
-export const getJobRoleMasterListThunk=createAsyncThunk(
+export const getJobRoleMasterListThunk = createAsyncThunk(
     'jobRoleMaster/getJobRoleMasterList',
-    async ()=>{
-        try{
-            const response=await customAxios.get(
+    async () => {
+        try {
+            const response = await customAxios.get(
                 `jobRoleMaster/getJobRole/1`
             );
-            if(response?.status===200 || response?.status===201){
+            if (response?.status === 200 || response?.status === 201) {
+                // if ([200, 201].includes(response.status)) {
                 console.log(response.data)
-                if(response?.data?.status===1){
-                    return {data:response?.data?.data, msg:response?.data?.message};
-                }else{
+                if (response?.data?.status === 1) {
+                    return { data: response?.data?.data, msg: response?.data?.message };
+                } else {
                     errorHandler(response)
-                    
                 }
             }
-        }catch(error){
+        } catch (error) {
             errorHandler(error?.response);
             return Promise.reject(error?.response?.data?.message)
         }
     }
 );
 
-export const addJobRoleMasterThunk=createAsyncThunk(
+export const addJobRoleMasterThunk = createAsyncThunk(
     'jobRoleMaster/addJobRole',
-    async({formData,onSuccessHandler,onErrorHandler})=>{
-        try{
-            const response=await customAxios.post(
-                `/postJobRole`,formData
+    async ({ formData, onSuccessHandler, onErrorHandler }) => {
+        try {
+            const response = await customAxios.post(
+                `/jobRoleMaster/postJobRole`, formData
             );
-            if(response?.status===200 || response?.status===201){
-                if(response?.data?.status===1){
+            if (response?.status === 200 || response?.status === 201) {
+                // if ([200, 201].includes(response.status)) {
+                if (response?.data?.status === 1) {
                     onSuccessHandler();
                     toast.success(response?.data?.message);
                     return response?.data?.message;
-                }else{
+                } else {
                     onErrorHandler();
                     errorHandler(response);
                 }
             }
-        }catch(error){
+        } catch (error) {
             onErrorHandler();
             errorHandler(error?.response);
             return Promise.reject(error?.response?.data?.message)
@@ -52,24 +53,24 @@ export const addJobRoleMasterThunk=createAsyncThunk(
     }
 );
 
-export const editJobRoleMasterThunk=createAsyncThunk(
+export const editJobRoleMasterThunk = createAsyncThunk(
     'jobRoleMaster/editJobRole',
-    async({formData,onSuccessHandler,onErrorHandler,id})=>{
-        try{
-            const response=await customAxios.post(
-                `/postJobRole/${id}`,formData
+    async ({ formData, onSuccessHandler, onErrorHandler, id }) => {
+        try {
+            const response = await customAxios.post(
+                `/postJobRole/${id}`, formData
             );
-            if(response?.status===200 || response?.status===201){
-                if(response?.data?.status===1){
+            if (response?.status === 200 || response?.status === 201) {
+                if (response?.data?.status === 1) {
                     onSuccessHandler();
                     toast.success(response?.data?.message)
                     return response?.data?.message;
-                }else{
+                } else {
                     onErrorHandler();
                     errorHandler(response)
                 }
             }
-        }catch(error){
+        } catch (error) {
             onErrorHandler();
             errorHandler(error?.response);
             return Promise.reject(error?.response?.data?.message)
