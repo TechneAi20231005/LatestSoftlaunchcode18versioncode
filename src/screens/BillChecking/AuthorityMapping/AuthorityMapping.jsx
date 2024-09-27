@@ -305,7 +305,7 @@ const AuthorityMapping = () => {
   };
 
   const handleRemoveSpecificRow = (index) => async () => {
-    const id = assign[index].id;
+    const id = assign[index]?.id;
 
     // Delete the item
     await new BillCheckingTransactionService()
@@ -497,6 +497,7 @@ const AuthorityMapping = () => {
       />
       {/* SEARCH FILTER */}
       <SearchBoxHeader
+        searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
