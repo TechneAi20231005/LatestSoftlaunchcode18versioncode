@@ -680,7 +680,7 @@ const EditBillTypeComponent = ({ match }) => {
                   required={true}
                   onChange={handlbillType}
                   defaultValue={billTypeData && billTypeData.bill_type}
-                  maxLength={20}
+                  maxLength={25}
                 />
                 <small
                   style={{

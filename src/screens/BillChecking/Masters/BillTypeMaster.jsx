@@ -333,6 +333,7 @@ function BillTypeMaster() {
 
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by Bill type name...."
@@ -340,7 +341,6 @@ function BillTypeMaster() {
         showExportButton={false}
         // exportData={exportData}
       />
-
       <div className="card mt-2">
         <div className="card-body">
           <div className="row clearfix g-3">
