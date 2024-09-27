@@ -1424,11 +1424,12 @@ export default function CreateBillCheckingTransaction({ match }) {
                           </b>
                         </label>
                         <input
-                          type="number"
+                          type="text"
                           className="form-control form-control-sm"
                           id="tcs"
                           name="tcs"
                           step="any"
+                          maxLength={13}
                           onChange={(e) => handleTcs(e)}
                           defaultValue={isTcsApplicable === true ? data.tcs : 0}
                           readOnly={
@@ -1438,8 +1439,36 @@ export default function CreateBillCheckingTransaction({ match }) {
                                 true
                               : false
                           }
+                          // onKeyPress={(e) => {
+                          //   Validation.NumbersSpeicalOnlyDot(e);
+                          // }}
                           onKeyPress={(e) => {
-                            Validation.NumbersSpeicalOnlyDot(e);
+                            const inputValue = e.key;
+                            const currentInput = e.target.value;
+                            const decimalIndex = currentInput.indexOf('.');
+
+                            if (
+                              !/^\d$/.test(inputValue) &&
+                              inputValue !== '.' &&
+                              inputValue !== 'Backspace'
+                            ) {
+                              e.preventDefault();
+                            }
+
+                            if (
+                              decimalIndex !== -1 &&
+                              currentInput.length - decimalIndex > 2
+                            ) {
+                              e.preventDefault();
+                            }
+
+                            if (
+                              currentInput.length >= 10 &&
+                              inputValue !== '.' &&
+                              decimalIndex === -1
+                            ) {
+                              e.preventDefault();
+                            }
                           }}
                           required={isTcsApplicable === true ? true : false}
                         />
@@ -1696,7 +1725,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             onChange={(e) => handleTds(e)}
                             readOnly={
                               data.is_rejected == 1 ||
-                              data.created_by == localStorage.getItem('id') ||
+                              // data.created_by == localStorage.getItem('id') ||
                               (data.current_user_is_approver == 1 &&
                                 data.current_user_is_approver == 0)
                                 ? false
@@ -1718,7 +1747,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             onChange={(e) => handleTds(e)}
                             readOnly={
                               data.is_rejected == 1 ||
-                              data.created_by == localStorage.getItem('id') ||
+                              // data.created_by == localStorage.getItem('id') ||
                               (data.current_user_is_approver == 1 &&
                                 data.current_user_is_approver == 0)
                                 ? false

@@ -620,11 +620,12 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-                <div className="col-sm-3 mt-4">
-                  <label className="form-label font-weight-bold">
-                    Template :
-                  </label>
-                  {paymentDropdown && (
+                {paymentDropdown && (
+                  <div className="col-sm-3 mt-4">
+                    <label className="form-label font-weight-bold">
+                      Template :
+                    </label>
+
                     <Select
                       id="payment_template"
                       name="payment_template"
@@ -637,8 +638,8 @@ const ViewVendorDetails = ({ match }) => {
                       }
                       isDisabled
                     />
-                  )}
-                </div>
+                  </div>
+                )}
                 <div className="col-sm-3 mt-4">
                   <label className="form-label font-weight-bold">
                     Card Number :
