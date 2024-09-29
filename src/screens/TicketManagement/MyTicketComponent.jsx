@@ -1884,7 +1884,7 @@ export default function MyTicketComponent() {
     }
   };
 
-  const [searchData, setSearchData] = useState();
+  const [searchData, setSearchData] = useState([]);
   const handleForm = async (e) => {
     setIsLoading(null);
     setIsLoading(true);
@@ -1978,6 +1978,8 @@ export default function MyTicketComponent() {
 
                 // setSearchResultExport(searchResultExport);
               } else {
+                setIsLoading(false);
+
                 alert('No Data Found');
               }
             } else {
@@ -2057,7 +2059,7 @@ export default function MyTicketComponent() {
                 // setKey('Search_Result');
                 setSearchResultExport(searchResultExport);
               } else {
-                alert('No Data Found');
+                // alert('No Data Found');
               }
             } else {
               new ErrorLogService().sendErrorLog(
