@@ -259,7 +259,7 @@ const ViewVendorDetails = ({ match }) => {
                               accept="image/jpg,image/jpeg,image/png,application/pdf"
                             >
                               <i
-                                className="icofont-eye"
+                                className="icofont-download"
                                 style={{ fontSize: '15px' }}
                               ></i>{' '}
                             </a>
@@ -318,7 +318,7 @@ const ViewVendorDetails = ({ match }) => {
                               className="btn btn-info btn-sm p-0 mr-2"
                             >
                               <i
-                                className="icofont-eye"
+                                className="icofont-download"
                                 style={{ fontSize: '15px' }}
                               ></i>
                             </a>
@@ -370,7 +370,7 @@ const ViewVendorDetails = ({ match }) => {
                               accept="image/jpg,image/jpeg,image/png,application/pdf"
                             >
                               <i
-                                className="icofont-eye"
+                                className="icofont-download"
                                 style={{ fontSize: '15px' }}
                               ></i>
                             </a>
@@ -420,7 +420,7 @@ const ViewVendorDetails = ({ match }) => {
                               accept="image/jpg,image/jpeg,image/png,application/pdf"
                             >
                               <i
-                                className="icofont-eye"
+                                className="icofont-download"
                                 style={{ fontSize: '15px' }}
                               ></i>{' '}
                             </a>
@@ -523,7 +523,7 @@ const ViewVendorDetails = ({ match }) => {
                                 accept="image/jpg,image/jpeg,image/png,application/pdf"
                               >
                                 <i
-                                  className="icofont-eye"
+                                  className="icofont-download"
                                   style={{ fontSize: '15px' }}
                                 ></i>{' '}
                               </a>
@@ -560,7 +560,7 @@ const ViewVendorDetails = ({ match }) => {
                             accept="image/jpg,image/jpeg,image/png,application/pdf"
                           >
                             <i
-                              className="icofont-eye"
+                              className="icofont-download"
                               style={{ fontSize: '15px' }}
                             ></i>{' '}
                           </a>
