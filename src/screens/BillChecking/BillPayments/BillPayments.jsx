@@ -323,7 +323,7 @@ const BillPayments = () => {
             renderRight={() => {
               return (
                 <div className="d-flex flex-row-reverse">
-                  {authorities && authorities.Bill_Payment === true && (
+                  {authorities && authorities?.Bill_Payment === true && (
                     <button
                       type="button"
                       style={{

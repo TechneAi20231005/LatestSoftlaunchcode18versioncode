@@ -815,11 +815,20 @@ const EditBillTypeComponent = ({ match }) => {
                         type="number" // Change type to text
                         key={index}
                         value={item.amount ? item.amount : ''}
+                        // onKeyPress={(e) => {
+                        //   if (
+                        //     !/^[0-9]*(\.[0-9]{0,2})?$/.test(
+                        //       e.target.value + e.key
+                        //     ) ||
+                        //     e.target.value.length >= 10
+                        //   ) {
+                        //     e.preventDefault();
+                        //   }
+                        // }}
                         onKeyPress={(e) => {
+                          // Only allow digits (0-9) and limit the maximum length to 10
                           if (
-                            !/^[0-9]*(\.[0-9]{0,2})?$/.test(
-                              e.target.value + e.key
-                            ) ||
+                            !/^[0-9]*$/.test(e.key) ||
                             e.target.value.length >= 10
                           ) {
                             e.preventDefault();
