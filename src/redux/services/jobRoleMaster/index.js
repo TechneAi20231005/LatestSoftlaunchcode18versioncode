@@ -27,6 +27,7 @@ export const getJobRoleMasterListThunk = createAsyncThunk(
 );
 
 export const addJobRoleMasterThunk = createAsyncThunk(
+
     'jobRoleMaster/addJobRole',
     async ({ formData, onSuccessHandler, onErrorHandler }) => {
         try {
@@ -54,10 +55,11 @@ export const addJobRoleMasterThunk = createAsyncThunk(
 
 export const editJobRoleMasterThunk = createAsyncThunk(
     'jobRoleMaster/editJobRole',
-    async ({ formData, onSuccessHandler, onErrorHandler, id }) => {
+    async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
+
         try {
             const response = await customAxios.post(
-                `/postJobRole/${id}`, formData
+                `/jobRoleMaster/postJobRole/${currentId}`, formData
             );
             if (response?.status === 200 || response?.status === 201) {
                 if (response?.data?.status === 1) {

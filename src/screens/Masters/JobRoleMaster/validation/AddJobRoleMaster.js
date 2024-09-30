@@ -4,7 +4,7 @@ import {
   UNDERSCORE_SPACE_SLASH_REGEX
 } from '../../../../utils/regexPool';
 export const addJobRoleMasterValidation = Yup.object().shape({
-  function_name: Yup.string()
+  job_role: Yup.string()
     .required('Job role title is required ')
     .min(2)
     .max(50, 'Job role  title must be at most 50 characters')
