@@ -328,11 +328,11 @@ export default function CreateBillCheckingTransaction({ match }) {
       .getVendorsDropdown()
       .then((res) => {
         const filterData = res?.data?.data.filter(
-          (d) => d.consider_in_payment.toUpperCase() === 'YES'
+          (d) => d.consider_in_payment?.toUpperCase() === 'YES'
         );
         if (res.status === 200) {
           if (res.data.status == 1) {
-            const temp = filterData.filter((d) => d.is_active == 1);
+            const temp = filterData?.filter((d) => d.is_active == 1);
             setVendor(res.data.data);
             setVendorDropdown(
               temp.map((d) => ({
@@ -1275,31 +1275,89 @@ export default function CreateBillCheckingTransaction({ match }) {
 
                     {isTcsApplicable == 1 ? (
                       <input
-                        type="number"
+                        type="text"
                         className="form-control form-control-sm"
                         id="tcs"
                         name="tcs"
                         step="any"
                         value={billAmountValues.tcs}
+                        maxLength={13}
                         onChange={handleInputChange}
                         required={isTcsApplicable == 1 ? true : false}
+                        // onKeyPress={(e) => {
+                        //   Validation.NumbersSpeicalOnlyDot(e);
+                        // }}
                         onKeyPress={(e) => {
-                          Validation.NumbersSpeicalOnlyDot(e);
+                          const inputValue = e.key;
+                          const currentInput = e.target.value;
+                          const decimalIndex = currentInput.indexOf('.');
+
+                          if (
+                            !/^\d$/.test(inputValue) &&
+                            inputValue !== '.' &&
+                            inputValue !== 'Backspace'
+                          ) {
+                            e.preventDefault();
+                          }
+
+                          if (
+                            decimalIndex !== -1 &&
+                            currentInput.length - decimalIndex > 2
+                          ) {
+                            e.preventDefault();
+                          }
+
+                          if (
+                            currentInput.length >= 10 &&
+                            inputValue !== '.' &&
+                            decimalIndex === -1
+                          ) {
+                            e.preventDefault();
+                          }
                         }}
                       />
                     ) : (
                       <input
-                        type="number"
+                        type="text"
                         className="form-control form-control-sm"
                         id="tcs"
                         name="tcs"
                         step="any"
                         value={0}
+                        maxLength={10}
                         readOnly={true}
                         onChange={handleInputChange}
                         required={isTcsApplicable == 1 ? true : false}
+                        // onKeyPress={(e) => {
+                        //   Validation.NumbersSpeicalOnlyDot(e);
+                        // }}
                         onKeyPress={(e) => {
-                          Validation.NumbersSpeicalOnlyDot(e);
+                          const inputValue = e.key;
+                          const currentInput = e.target.value;
+                          const decimalIndex = currentInput.indexOf('.');
+
+                          if (
+                            !/^\d$/.test(inputValue) &&
+                            inputValue !== '.' &&
+                            inputValue !== 'Backspace'
+                          ) {
+                            e.preventDefault();
+                          }
+
+                          if (
+                            decimalIndex !== -1 &&
+                            currentInput.length - decimalIndex > 2
+                          ) {
+                            e.preventDefault();
+                          }
+
+                          if (
+                            currentInput.length >= 10 &&
+                            inputValue !== '.' &&
+                            decimalIndex === -1
+                          ) {
+                            e.preventDefault();
+                          }
                         }}
                       />
                     )}

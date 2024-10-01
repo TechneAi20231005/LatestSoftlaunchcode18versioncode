@@ -162,6 +162,7 @@ export default function ResourcePlanningReportComponent() {
                 // }
 
                 const exportTempData = [];
+
                 for (const i in data) {
                   const tasks = Array.isArray(data[i].tasks)
                     ? data[i].tasks
@@ -171,6 +172,9 @@ export default function ResourcePlanningReportComponent() {
                     exportTempData.push({
                       sr: counter++,
                       ticket_id: task.ticket_id,
+                      sprint_name: task.sprint_name || "-",
+                      sprint_start_date: task.start_date || "-",
+                      sprint_end_date: task.end_date || "-",
                       date: data[i].date,
                       user_name: data[i].user_name,
                       task_name: task.task_name,
@@ -222,6 +226,7 @@ export default function ResourcePlanningReportComponent() {
           <tr>
             <th>Sr</th>
             <th>Task Name</th>
+            <th>Sprint Name</th>
             <th>Task Hour</th>
           </tr>
         </thead>
@@ -242,6 +247,7 @@ export default function ResourcePlanningReportComponent() {
                     </Link>
                     - {task.task_name}
                   </td>
+                  <td>{task.sprint_name || "-"}</td>
                   <td>{task.total_hours}</td>
                 </tr>
               );
@@ -368,6 +374,7 @@ export default function ResourcePlanningReportComponent() {
                   highlightOnHover={true}
                   expandableRows
                   expandableRowsComponent={ExpandedComponent}
+
                 />
               )}
             </div>

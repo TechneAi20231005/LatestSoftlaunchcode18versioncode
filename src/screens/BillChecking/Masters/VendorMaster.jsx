@@ -97,6 +97,24 @@ function VendorMaster({ match }) {
     setFilteredData(filteredList);
   };
 
+  // const downLoadAttachment = (attachmentLink) => {
+  //   if (attachmentLink) {
+  //     const splitAttachment = attachmentLink.split('/');
+  //     const linkAttachment = `${_attachmentUrl}${attachmentLink}`;
+  //     const url = window.URL.createObjectURL(new Blob([linkAttachment]));
+  //     const link = document.createElement('a');
+  //     link.href = url;
+  //     link.download = splitAttachment[splitAttachment.length - 1];
+  //     link.setAttribute(
+  //       'download',
+  //       splitAttachment[splitAttachment.length - 1]
+  //     );
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
+  //   }
+  // };
+
   // Function to handle reset button click
   const handleReset = () => {
     setSearchTerm('');
@@ -177,7 +195,8 @@ function VendorMaster({ match }) {
           >
             <i className="icofont-eye-alt"></i>
           </Link> */}
-          {row?.id && (
+
+          {_base && row && row?.id && (
             <Link
               to={`/${_base}/ViewVendorDetails/${row?.id}`}
               className="btn btn-sm btn-primary text-white"
@@ -1693,6 +1712,11 @@ function VendorMaster({ match }) {
             autoClose: 10000
           });
           loadData();
+        } else if (res.data.status == 2) {
+          toast.error(res.data.message, {
+            position: 'top-right',
+            autoClose: 10000
+          });
         } else {
           toast.error(res.data.message, {
             position: 'top-right',
@@ -1779,7 +1803,7 @@ function VendorMaster({ match }) {
                 {data && (
                   <DataTable
                     columns={columns}
-                    data={filteredData}
+                    data={filteredData && filteredData}
                     defaultSortFieldId="id"
                     expandableRows={true}
                     pagination
@@ -2224,7 +2248,12 @@ function VendorMaster({ match }) {
                               style={{ backgroundColor: '#EBF5FB' }}
                             >
                               <div className="card-header p-1">
-                                <div className="d-flex justify-content-between align-items-center p-0 ">
+                                <div
+                                  className="d-flex justify-content-between align-items-center p-0 "
+                                  // onClick={() =>
+                                  //   downLoadAttachment(attachment?.path)
+                                  // }
+                                >
                                   <a
                                     href={
                                       attachment?.path
@@ -3413,7 +3442,8 @@ function VendorMaster({ match }) {
                             });
                           } else if (
                             !value.match(
-                              /^[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
+                              // /^[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
+                              /^(?=.*[A-Za-z])[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
                             )
                           ) {
                             setInputState({
@@ -3449,7 +3479,8 @@ function VendorMaster({ match }) {
                             });
                           } else if (
                             !value.match(
-                              /^[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
+                              // /^[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
+                              /^(?=.*[A-Za-z])[A-Za-z0-9\s\-&@#$%^*()_+={}[\]:;"'<>,.?/|]+$/
                             )
                           ) {
                             setInputState({
@@ -3563,8 +3594,9 @@ function VendorMaster({ match }) {
                       name="acme_account_name"
                       value={erp}
                       readOnly={
-                        authorities &&
-                        authorities.Update_ERP_Account_Name === false
+                        (authorities &&
+                          authorities.Update_ERP_Account_Name === false) ||
+                        modal?.modalHeader === 'Add Vendor'
                           ? true
                           : false
                       }
@@ -3595,7 +3627,6 @@ function VendorMaster({ match }) {
                       </small>
                     )}
                   </div>
-
                   {consider === 'YES' && paymentDropdown && (
                     <div className="col-sm-3 mt-3">
                       <label className="form-label font-weight-bold">
@@ -3668,7 +3699,7 @@ function VendorMaster({ match }) {
                     </div>
                   )}
                   {consider && consider === 'PETTY_CASH' && considerInPay && (
-                    <div className="col-sm-3 mt-4">
+                    <div className="col-sm-3 mt-3">
                       <label className="form-label font-weight-bold">
                         Ref Number :
                       </label>

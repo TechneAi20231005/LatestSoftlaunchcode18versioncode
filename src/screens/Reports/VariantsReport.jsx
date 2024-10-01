@@ -36,6 +36,12 @@ export default function ResourcePlanningReportComponent() {
       sortable: true,
       width: '175px'
     },
+    {
+      name: 'Sprint Name',
+      selector: (row) => row.sprint_name || "-",
+      sortable: true,
+      width: '150px'
+    },
 
     {
       name: 'Task Name',
@@ -277,6 +283,9 @@ export default function ResourcePlanningReportComponent() {
                     sr: count++,
                     ticket_id: data[key].ticket_id,
                     task_owner: data[key].task_owner,
+                    sprint_name: data[key].sprint_name || "-",
+                    sprint_start_date: data[key].start_date || "-",
+                    sprint_end_date: data[key].end_date || "-",
                     task_name: data[key].task_name,
                     type_name: data[key].type_name,
                     task_start_Date: data[key].task_start_Date,

@@ -1634,7 +1634,7 @@ function BillCheckingTransaction() {
                     onClick={handleClearData}
                     style={{ marginTop: '20px', fontWeight: '600' }}
                   >
-                    <i className="icofont-refresh text-white"></i> ResetSS
+                    <i className="icofont-refresh text-white"></i> Reset
                   </button>
                 </div>
                 <span className="fw-bold mt-2" style={{ color: 'red' }}>

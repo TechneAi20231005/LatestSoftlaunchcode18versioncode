@@ -323,7 +323,9 @@ const EditBillTypeComponent = ({ match }) => {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const a = res.data.data.filter((d) => d.is_active == 1);
+          const a = res.data.data.filter(
+            (d) => d.is_active == 1 && d.account_for === 'SELF'
+          );
           setUserData(
             a.map((d) => ({
               value: d.id,
@@ -680,7 +682,7 @@ const EditBillTypeComponent = ({ match }) => {
                   required={true}
                   onChange={handlbillType}
                   defaultValue={billTypeData && billTypeData.bill_type}
-                  maxLength={20}
+                  maxLength={25}
                 />
                 <small
                   style={{
@@ -815,11 +817,20 @@ const EditBillTypeComponent = ({ match }) => {
                         type="number" // Change type to text
                         key={index}
                         value={item.amount ? item.amount : ''}
+                        // onKeyPress={(e) => {
+                        //   if (
+                        //     !/^[0-9]*(\.[0-9]{0,2})?$/.test(
+                        //       e.target.value + e.key
+                        //     ) ||
+                        //     e.target.value.length >= 10
+                        //   ) {
+                        //     e.preventDefault();
+                        //   }
+                        // }}
                         onKeyPress={(e) => {
+                          // Only allow digits (0-9) and limit the maximum length to 10
                           if (
-                            !/^[0-9]*(\.[0-9]{0,2})?$/.test(
-                              e.target.value + e.key
-                            ) ||
+                            !/^[0-9]*$/.test(e.key) ||
                             e.target.value.length >= 10
                           ) {
                             e.preventDefault();
