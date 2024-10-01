@@ -806,7 +806,12 @@ export default function MyTicketComponent() {
       cell: (row) => actionComponent(row, 'SEARCH_RESULT')
     },
 
-    { name: 'Sr', width: '4rem', cell: (row, index) => index + 1 },
+    {
+      name: 'Sr',
+      width: '4rem',
+      // cell: (row, index) => index + 1
+      cell: (row, index) => (currentPage - 1) * itemsPerPage + index + 1
+    },
     {
       name: 'Ticket Id',
       cell: (row) => (
@@ -927,7 +932,7 @@ export default function MyTicketComponent() {
       name: 'Sr',
       width: '170px',
       center: true,
-      cell: (row, index) => index + 1
+      cell: (row, index) => (currentPage - 1) * itemsPerPage + index + 1
     },
     {
       name: 'Ticket Id',
@@ -1037,6 +1042,8 @@ export default function MyTicketComponent() {
     },
     { name: 'Created By', cell: (row) => row.created_by_name, sortable: true }
   ];
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10); // Adjust
 
   const assignedToMeColumns = [
     {
@@ -1049,7 +1056,12 @@ export default function MyTicketComponent() {
       }`,
       cell: (row) => actionComponent(row, 'ASSIGNED_TO_ME')
     },
-    { name: 'Sr', width: '80px', cell: (row, index) => index + 1 },
+    {
+      name: 'Sr',
+      width: '80px',
+      // cell: (row, index) => index + 1
+      cell: (row, index) => (currentPage - 1) * itemsPerPage + index + 1
+    },
     {
       name: 'Ticket Id',
       width: '150px',
@@ -1188,7 +1200,7 @@ export default function MyTicketComponent() {
       name: 'Sr',
       width: '150px',
       center: true,
-      cell: (row, index) => index + 1
+      cell: (row, index) => (currentPage - 1) * itemsPerPage + index + 1
     },
     {
       name: 'Ticket Id',
@@ -1373,7 +1385,7 @@ export default function MyTicketComponent() {
       name: 'Sr',
       width: '150px',
       center: true,
-      cell: (row, index) => index + 1
+      cell: (row, index) => (currentPage - 1) * itemsPerPage + index + 1
     },
     {
       name: 'Ticket Id',
@@ -1530,7 +1542,7 @@ export default function MyTicketComponent() {
       name: 'Sr',
       width: '170px',
       center: true,
-      cell: (row, index) => index + 1
+      cell: (row, index) => (currentPage - 1) * itemsPerPage + index + 1
     },
     {
       name: 'Ticket Id',
@@ -1885,6 +1897,7 @@ export default function MyTicketComponent() {
   };
 
   const [searchData, setSearchData] = useState([]);
+
   const handleForm = async (e) => {
     setIsLoading(null);
     setIsLoading(true);
@@ -2147,6 +2160,7 @@ export default function MyTicketComponent() {
     setIsLoading(true);
 
     const formData = new FormData(e.target);
+    setSearchData(formData);
     let isAnyFieldFilled = false;
     for (let [value] of formData.entries()) {
       if (value) {
@@ -2175,6 +2189,7 @@ export default function MyTicketComponent() {
               setIsLoading(false);
               setSearchResult(null);
               setSearchResult(res.data.data.data);
+              setSearchResultData(res.data.data);
               setIsLoading(false);
               const temp = res.data.data.data;
 
@@ -2280,6 +2295,8 @@ export default function MyTicketComponent() {
   };
 
   const handleAssignedToMeTab = async (k, e) => {
+    setCurrentPage(null);
+    setItemsPerPage(null);
     setIsLoading(true);
     e.preventDefault();
     var form;
@@ -2405,12 +2422,14 @@ export default function MyTicketComponent() {
     } else if (type === 'MINUS') {
       form = {
         typeOf: 'AssignToMe',
-        page: assignedToMeData.current_page - 1
+        page: assignedToMeData.current_page - 1,
+        limit: assignedToMeData.per_page
       };
     } else if (type === 'PLUS') {
       form = {
         typeOf: 'AssignToMe',
-        page: assignedToMeData.current_page + 1
+        page: assignedToMeData.current_page + 1,
+        limit: assignedToMeData.per_page
       };
     }
 
@@ -2422,10 +2441,34 @@ export default function MyTicketComponent() {
           );
           setIsLoading(false);
           if (type === 'PLUS' && res.data.data.data.length > 0) {
-            setAssignedToMeData({
-              ...assignedToMeData,
-              current_page: assignedToMeData.current_page + 1
-            });
+            // setAssignedToMeData({
+            //   ...assignedToMeData,
+
+            //   current_page: assignedToMeData.current_page + 1
+            // });
+            setAssignedToMeData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'MINUS' && res.data.data.data.length > 0) {
+            // setAssignedToMeData({
+            //   ...assignedToMeData,
+
+            //   current_page: assignedToMeData.current_page + 1
+            // });
+            setAssignedToMeData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'LIMIT' && res.data.data.data.length > 0) {
+            // setAssignedToMeData({
+            //   ...assignedToMeData,
+
+            //   current_page: assignedToMeData.current_page + 1
+            // });
+            setAssignedToMeData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
           }
         }
       }
@@ -2441,21 +2484,27 @@ export default function MyTicketComponent() {
     const formatEntries = (entries) => {
       return Object?.keys(entries)?.reduce((acc, key) => {
         const value = entries[key];
-        const cleanKey = key.replace('[]', '');
+        const cleanKey = key?.replace('[]', '');
 
         if (cleanKey === 'ticket_id') {
+          // If it's a 'ticket_id', keep the value as-is
           acc[cleanKey] = value;
-        } else if (value && value.trim() !== '') {
+        } else if (value && value?.trim() !== '') {
+          // If the value is non-empty, wrap it in an array
           acc[cleanKey] = [value];
+        } else if (cleanKey === 'from_date' || cleanKey === 'to_date') {
+          // Specifically for 'from_date' and 'to_date', set it as an empty string
+          acc[cleanKey] = '';
         } else {
+          // For other fields, set as an array with an empty string
           acc[cleanKey] = [''];
         }
 
         return acc;
       }, {});
     };
-    const limit = parseInt(e.target.value);
 
+    const limit = parseInt(e.target.value);
     if (type === 'LIMIT') {
       form = {
         limit: limit,
@@ -2498,6 +2547,8 @@ export default function MyTicketComponent() {
             // });
             setSearchResultData(res.data.data);
             setSearchResult(res.data.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
           }
 
           if (type === 'MINUS' && res.data.data.data.length > 0) {
@@ -2507,6 +2558,8 @@ export default function MyTicketComponent() {
             // });
             setSearchResultData(res.data.data);
             setSearchResult(res.data.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
           }
           if (type === 'LIMIT' && res.data.data.data.length > 0) {
             // setSearchResultData({
@@ -2515,6 +2568,8 @@ export default function MyTicketComponent() {
             // });
             setSearchResultData(res.data.data);
             setSearchResult(res.data.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
           }
         }
       }
@@ -2534,12 +2589,14 @@ export default function MyTicketComponent() {
     } else if (type === 'MINUS') {
       form = {
         typeOf: 'CreatedByMe',
-        page: createdByMeData.current_page - 1
+        page: createdByMeData.current_page - 1,
+        limit: createdByMeData.per_page
       };
     } else if (type === 'PLUS') {
       form = {
         typeOf: 'CreatedByMe',
-        page: createdByMeData.current_page + 1
+        page: createdByMeData.current_page + 1,
+        limit: createdByMeData.per_page
       };
     }
 
@@ -2553,10 +2610,23 @@ export default function MyTicketComponent() {
           setIsLoading(false);
 
           if (type === 'PLUS' && res.data.data.data.length > 0) {
-            setCreatedByMeData({
-              ...createdByMeData,
-              current_page: createdByMeData.current_page + 1
-            });
+            // setCreatedByMeData({
+            //   ...createdByMeData,
+            //   current_page: createdByMeData.current_page + 1
+            // });
+            setCreatedByMeData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'MINUS' && res.data.data.data.length > 0) {
+            setCreatedByMeData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'LIMIT' && res.data.data.data.length > 0) {
+            setCreatedByMeData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
           }
         }
       }
@@ -2576,12 +2646,14 @@ export default function MyTicketComponent() {
     } else if (type === 'MINUS') {
       form = {
         typeOf: 'DepartmentWise',
-        page: departmentWiseData.current_page - 1
+        page: departmentWiseData.current_page - 1,
+        limit: departmentWiseData.per_page
       };
     } else if (type === 'PLUS') {
       form = {
         typeOf: 'DepartmentWise',
-        page: departmentWiseData.current_page + 1
+        page: departmentWiseData.current_page + 1,
+        limit: departmentWiseData.per_page
       };
     }
 
@@ -2594,10 +2666,19 @@ export default function MyTicketComponent() {
           setIsLoading(false);
 
           if (type === 'PLUS' && res.data.data.data.length > 0) {
-            setDepartmentWiseData({
-              ...departmentWiseData,
-              current_page: departmentWiseData.current_page + 1
-            });
+            setDepartmentWiseData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'MINUS' && res.data.data.data.length > 0) {
+            setDepartmentWiseData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'LIMIT' && res.data.data.data.length > 0) {
+            setDepartmentWiseData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
           }
           setIsLoading(false);
         }
@@ -2618,12 +2699,14 @@ export default function MyTicketComponent() {
     } else if (type === 'MINUS') {
       form = {
         typeOf: 'YouTask',
-        page: yourTaskData.current_page - 1
+        page: yourTaskData.current_page - 1,
+        limit: yourTaskData.per_page
       };
     } else if (type === 'PLUS') {
       form = {
         typeOf: 'YouTask',
-        page: yourTaskData.current_page + 1
+        page: yourTaskData.current_page + 1,
+        limit: yourTaskData.per_page
       };
     }
 
@@ -2635,10 +2718,23 @@ export default function MyTicketComponent() {
           );
           setIsLoading(false);
           if (type === 'PLUS' && res.data.data.data.length > 0) {
-            setYourTaskData({
-              ...yourTaskData,
-              current_page: yourTaskData.current_page + 1
-            });
+            // setYourTaskData({
+            //   ...yourTaskData,
+            //   current_page: yourTaskData.current_page + 1
+            // });
+            setYourTaskData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'MINUS' && res.data.data.data.length > 0) {
+            setYourTaskData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'LIMIT' && res.data.data.data.length > 0) {
+            setYourTaskData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
           }
         }
       }
@@ -2658,12 +2754,14 @@ export default function MyTicketComponent() {
     } else if (type === 'MINUS') {
       form = {
         typeOf: 'UnPassed',
-        page: unpassedData.current_page - 1
+        page: unpassedData.current_page - 1,
+        limit: unpassedData.per_page
       };
     } else if (type === 'PLUS') {
       form = {
         typeOf: 'UnPassed',
-        page: unpassedData.current_page + 1
+        page: unpassedData.current_page + 1,
+        limit: unpassedData.per_page
       };
     } else {
       return;
@@ -2674,10 +2772,30 @@ export default function MyTicketComponent() {
         if (res?.data?.status === 1) {
           setUnpassedTickets(res.data.data.data);
           setIsLoading(false);
-          setUnpassedData({
-            ...unpassedData,
-            current_page: res.data.data.current_page
-          });
+          // setUnpassedData({
+          //   ...unpassedData,
+          //   current_page: res.data.data.current_page
+          // });
+          setUnpassedData(res.data.data);
+        }
+        if (type === 'PLUS' && res.data.data.data.length > 0) {
+          // setYourTaskData({
+          //   ...yourTaskData,
+          //   current_page: yourTaskData.current_page + 1
+          // });
+          setUnpassedData(res.data.data);
+          setCurrentPage(res.data.data.current_page);
+          setItemsPerPage(res.data.data.per_page);
+        }
+        if (type === 'MINUS' && res.data.data.data.length > 0) {
+          setUnpassedData(res.data.data);
+          setCurrentPage(res.data.data.current_page);
+          setItemsPerPage(res.data.data.per_page);
+        }
+        if (type === 'LIMIT' && res.data.data.data.length > 0) {
+          setUnpassedData(res.data.data);
+          setCurrentPage(res.data.data.current_page);
+          setItemsPerPage(res.data.data.per_page);
         }
       }
     });
@@ -3143,12 +3261,16 @@ export default function MyTicketComponent() {
                         assignedToMe &&
                         assignedToMe?.length > 0 ? (
                           <DataTable
-                            customStyles={customStyles}
+                            // customStyles={customStyles}
                             columns={assignedToMeColumns}
+                            onChangeRowsPerPage={(newPerPage, page) => {
+                              setItemsPerPage(newPerPage); // Update items per page
+                              setCurrentPage(page); // Reset current page state when items per page changes
+                            }}
                             data={assignedToMe}
                             defaultSortField="title"
                             fixedHeader={true}
-                            fixedHeaderScrollHeight={'500px'}
+                            // fixedHeaderScrollHeight={'500px'}
                             selectableRows={false}
                             highlightOnHover={true}
                             responsive={true}
@@ -3215,12 +3337,12 @@ export default function MyTicketComponent() {
                         <TableLoadingSkelton />
                       ) : createdByMe && createdByMe?.length > 0 ? (
                         <DataTable
-                          customStyles={customStyles}
+                          // customStyles={customStyles}
                           columns={createdByMeColumns}
                           data={createdByMe}
                           defaultSortField="title"
                           fixedHeader={true}
-                          fixedHeaderScrollHeight={'500px'}
+                          // fixedHeaderScrollHeight={'500px'}
                           selectableRows={false}
                           highlightOnHover={true}
                           responsive={true}
@@ -3289,11 +3411,11 @@ export default function MyTicketComponent() {
                           departmentwiseTicket?.length > 0 ? (
                           <DataTable
                             columns={departmentwisetTicketColumns}
-                            customStyles={customStyles}
+                            // customStyles={customStyles}
                             data={departmentwiseTicket}
                             defaultSortField="title"
                             fixedHeader={true}
-                            fixedHeaderScrollHeight={'500px'}
+                            // fixedHeaderScrollHeight={'500px'}
                             selectableRows={false}
                             highlightOnHover={true}
                           />
@@ -3360,10 +3482,10 @@ export default function MyTicketComponent() {
                           <DataTable
                             columns={yourTaskColumns}
                             data={yourTask}
-                            customStyles={customStyles}
+                            // customStyles={customStyles}
                             defaultSortField="title"
                             fixedHeader={true}
-                            fixedHeaderScrollHeight={'500px'}
+                            // fixedHeaderScrollHeight={'500px'}
                             selectableRows={false}
                             highlightOnHover={true}
                           />
@@ -3487,10 +3609,10 @@ export default function MyTicketComponent() {
                         <DataTable
                           columns={unpassedColumns}
                           data={unpassedTickets}
-                          customStyles={customStyles}
+                          // customStyles={customStyles}
                           defaultSortField="title"
                           fixedHeader={true}
-                          fixedHeaderScrollHeight={'500px'}
+                          // fixedHeaderScrollHeight={'500px'}
                           selectableRows={false}
                           highlightOnHover={true}
                         />
