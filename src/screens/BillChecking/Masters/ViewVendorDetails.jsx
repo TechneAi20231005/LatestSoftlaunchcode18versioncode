@@ -84,6 +84,7 @@ const ViewVendorDetails = ({ match }) => {
       }
     });
   };
+
   useEffect(() => {
     loadData();
   }, []);
@@ -122,7 +123,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
                 <div className="col-sm-4">
                   <label className="form-label font-weight-bold">
                     Mobile No :
@@ -136,7 +136,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
                 <div className="col-sm-3">
                   <label className="form-label font-weight-bold">
                     Email Id :
@@ -150,7 +149,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
                 {CountryDropdown && (
                   <div className="col-sm-3">
                     <label className="form-label font-weight-bold">
@@ -168,7 +166,6 @@ const ViewVendorDetails = ({ match }) => {
                     />
                   </div>
                 )}
-
                 <div className="col-sm-3">
                   <label className="form-label font-weight-bold">State :</label>
                   {stateDropdown && (
@@ -184,7 +181,6 @@ const ViewVendorDetails = ({ match }) => {
                     />
                   )}
                 </div>
-
                 <div className="col-sm-3">
                   <label className="form-label font-weight-bold">City :</label>
                   {cityDropdown && (
@@ -227,7 +223,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
                 <div className="col-sm-3">
                   <label className="form-label font-weight-bold">
                     Aadhaar No :
@@ -242,7 +237,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
                 <div className="col-sm-3 mt-3">
                   <label className="col-form-label">
                     <b>Aadhaar Attachment:</b>
@@ -270,7 +264,9 @@ const ViewVendorDetails = ({ match }) => {
                               ></i>{' '}
                             </a>
                           </div>
-                          <div>{attachment}</div>
+                          <div className="mx-2">
+                            {attachment.split('/').pop()}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -278,7 +274,6 @@ const ViewVendorDetails = ({ match }) => {
                     <p>Attachment Not Available</p>
                   )}
                 </div>
-
                 <div className="col-sm-3 ">
                   <label className="form-label font-weight-bold">
                     PAN No :
@@ -292,7 +287,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
                 <div className="col-sm-3 mt-5">
                   <label className="col-form-label" htmlFor="attachment">
                     <b>PAN Attachment :</b>
@@ -305,7 +299,7 @@ const ViewVendorDetails = ({ match }) => {
                           className="d-flex align-items-center mb-2"
                         >
                           <div className="mr-2">
-                            <a
+                            {/* <a
                               href={`${_attachmentUrl}/${attachment}`}
                               target="_blank"
                               download
@@ -316,9 +310,22 @@ const ViewVendorDetails = ({ match }) => {
                                 className="icofont-download"
                                 style={{ fontSize: '15px' }}
                               ></i>{' '}
+                            </a> */}
+                            <a
+                              href={`${_attachmentUrl}/${attachment}`} // File URL for download
+                              target="_blank"
+                              download // Suggests downloading the file
+                              className="btn btn-info btn-sm p-0 mr-2"
+                            >
+                              <i
+                                className="icofont-download"
+                                style={{ fontSize: '15px' }}
+                              ></i>
                             </a>
                           </div>
-                          <div>{attachment}</div>
+                          <div className="mx-2">
+                            {attachment.split('/').pop()}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -328,7 +335,6 @@ const ViewVendorDetails = ({ match }) => {
                     </div>
                   )}
                 </div>
-
                 <div className="col-sm-3 mt-3">
                   <label className="form-label font-weight-bold">
                     GST No :
@@ -342,7 +348,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
                 <div className="col-sm-3 mt-3">
                   <label className="col-form-label">
                     <b>GST Attachment :</b>
@@ -370,7 +375,9 @@ const ViewVendorDetails = ({ match }) => {
                               ></i>
                             </a>
                           </div>
-                          <div>{attachment}</div>
+                          <div className="mx-2">
+                            {attachment.split('/').pop()}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -378,7 +385,6 @@ const ViewVendorDetails = ({ match }) => {
                     <p>Attachment Not Available</p>
                   )}
                 </div>
-
                 <div className="col-sm-3 ">
                   <label className="form-label font-weight-bold">
                     MSME No :
@@ -392,7 +398,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
                 <div className="col-sm-3 mt-3">
                   <label className="col-form-label" htmlFor="msme_attachment">
                     <b>MSME Attachment:</b>
@@ -420,7 +425,9 @@ const ViewVendorDetails = ({ match }) => {
                               ></i>{' '}
                             </a>
                           </div>
-                          <div>{attachment}</div>
+                          <div className="mx-2">
+                            {attachment.split('/').pop()}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -428,7 +435,6 @@ const ViewVendorDetails = ({ match }) => {
                     <p>Attachment Not Available</p>
                   )}
                 </div>
-
                 <div className="col-sm-3 mt-3">
                   <label className="form-label font-weight-bold">
                     Bank Name :
@@ -442,7 +448,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
                 <div className="col-sm-3 mt-3">
                   <label className="form-label font-weight-bold">
                     Bank Branch Name :
@@ -456,7 +461,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
                 <div className="col-sm-3 mt-3">
                   <label className="form-label font-weight-bold">
                     Account No :
@@ -470,7 +474,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
                 <div className="col-sm-3 mt-3">
                   <label className="form-label font-weight-bold">
                     IFSC Code :
@@ -484,7 +487,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
                 <div className="col-sm-3 mt-3">
                   <label className="form-label font-weight-bold">
                     Beneficiary Name :
@@ -498,7 +500,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
                 <div className="col-sm-3 mt-5">
                   <label className="col-form-label" htmlFor="attachment">
                     <b>Passbook Attachment:</b>
@@ -527,7 +528,9 @@ const ViewVendorDetails = ({ match }) => {
                                 ></i>{' '}
                               </a>
                             </div>
-                            <div>{attachment}</div>
+                            <div className="mx-2">
+                              {attachment.split('/').pop()}
+                            </div>
                           </div>
                         )
                       )}
@@ -536,7 +539,6 @@ const ViewVendorDetails = ({ match }) => {
                     <p>Attachment Not Available</p>
                   )}
                 </div>
-
                 <div className="col-sm-3 mt-5">
                   <label className="col-form-label">
                     <b>Cheque Attachment:</b>
@@ -562,7 +564,9 @@ const ViewVendorDetails = ({ match }) => {
                               style={{ fontSize: '15px' }}
                             ></i>{' '}
                           </a>
-                          <p>{attachment}</p>
+                          <div className="mx-2">
+                            {attachment.split('/').pop()}
+                          </div>
                         </div>
                       ))}
                     </div>
@@ -605,7 +609,6 @@ const ViewVendorDetails = ({ match }) => {
                     </option> */}
                   </input>
                 </div>
-
                 <div className="col-sm-3 mt-4">
                   <label className="form-label font-weight-bold">
                     ERP Acc Name :
@@ -620,12 +623,11 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-                {paymentDropdown && (
-                  <div className="col-sm-3 mt-4">
-                    <label className="form-label font-weight-bold">
-                      Template :
-                    </label>
-
+                <div className="col-sm-3 mt-4">
+                  <label className="form-label font-weight-bold">
+                    Template :
+                  </label>
+                  {paymentDropdown && (
                     <Select
                       id="payment_template"
                       name="payment_template"
@@ -638,8 +640,8 @@ const ViewVendorDetails = ({ match }) => {
                       }
                       isDisabled
                     />
-                  </div>
-                )}
+                  )}
+                </div>
                 <div className="col-sm-3 mt-4">
                   <label className="form-label font-weight-bold">
                     Card Number :
@@ -668,7 +670,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
                 <div className="col-sm-3 mt-4">
                   <label className="form-label font-weight-bold">
                     Narration :
@@ -683,7 +684,6 @@ const ViewVendorDetails = ({ match }) => {
                     readOnly
                   />
                 </div>
-
                 <div className="col-sm-3 mt-4">
                   <div className="row">
                     <div className="col-sm-3 mt-4">

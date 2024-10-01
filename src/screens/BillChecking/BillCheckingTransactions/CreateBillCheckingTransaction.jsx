@@ -328,11 +328,11 @@ export default function CreateBillCheckingTransaction({ match }) {
       .getVendorsDropdown()
       .then((res) => {
         const filterData = res?.data?.data.filter(
-          (d) => d.consider_in_payment.toUpperCase() === 'YES'
+          (d) => d.consider_in_payment?.toUpperCase() === 'YES'
         );
         if (res.status === 200) {
           if (res.data.status == 1) {
-            const temp = filterData.filter((d) => d.is_active == 1);
+            const temp = filterData?.filter((d) => d.is_active == 1);
             setVendor(res.data.data);
             setVendorDropdown(
               temp.map((d) => ({

@@ -97,24 +97,23 @@ function VendorMaster({ match }) {
     setFilteredData(filteredList);
   };
 
-  const downLoadAttachment = (attachmentLink) => {
-    console.log('attachmentLink', attachmentLink);
-    if (attachmentLink) {
-      const splitAttachment = attachmentLink.split('/');
-      const linkAttachment = `${_attachmentUrl}/${attachmentLink}`;
-      const url = window.URL.createObjectURL(new Blob([linkAttachment]));
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = splitAttachment[splitAttachment.length - 1];
-      link.setAttribute(
-        'download',
-        splitAttachment[splitAttachment.length - 1]
-      );
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    }
-  };
+  // const downLoadAttachment = (attachmentLink) => {
+  //   if (attachmentLink) {
+  //     const splitAttachment = attachmentLink.split('/');
+  //     const linkAttachment = `${_attachmentUrl}${attachmentLink}`;
+  //     const url = window.URL.createObjectURL(new Blob([linkAttachment]));
+  //     const link = document.createElement('a');
+  //     link.href = url;
+  //     link.download = splitAttachment[splitAttachment.length - 1];
+  //     link.setAttribute(
+  //       'download',
+  //       splitAttachment[splitAttachment.length - 1]
+  //     );
+  //     document.body.appendChild(link);
+  //     link.click();
+  //     document.body.removeChild(link);
+  //   }
+  // };
 
   // Function to handle reset button click
   const handleReset = () => {
@@ -2251,9 +2250,9 @@ function VendorMaster({ match }) {
                               <div className="card-header p-1">
                                 <div
                                   className="d-flex justify-content-between align-items-center p-0 "
-                                  onClick={() =>
-                                    downLoadAttachment(attachment?.path)
-                                  }
+                                  // onClick={() =>
+                                  //   downLoadAttachment(attachment?.path)
+                                  // }
                                 >
                                   <a
                                     href={
@@ -3700,7 +3699,7 @@ function VendorMaster({ match }) {
                     </div>
                   )}
                   {consider && consider === 'PETTY_CASH' && considerInPay && (
-                    <div className="col-sm-3 mt-4">
+                    <div className="col-sm-3 mt-3">
                       <label className="form-label font-weight-bold">
                         Ref Number :
                       </label>

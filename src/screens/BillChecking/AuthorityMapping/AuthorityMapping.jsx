@@ -314,7 +314,7 @@ const AuthorityMapping = () => {
         if (res.status === 200) {
           // Create a new array with the item removed
           const updatedAssign = [...assign];
-          updatedAssign.splice(index, 1);
+          updatedAssign?.splice(index, 1);
 
           // Update the state
           setAssign(updatedAssign);
@@ -330,10 +330,10 @@ const AuthorityMapping = () => {
     setting_value: 'Y',
     is_active: statusData,
 
-    user_details: assign.map((item) => ({
-      user_id: Array.isArray(item.user_id) ? item.user_id : [item.user_id],
-      from_date: item.from_date,
-      to_date: item.to_date
+    user_details: assign?.map((item) => ({
+      user_id: Array?.isArray(item?.user_id) ? item?.user_id : [item?.user_id],
+      from_date: item?.from_date,
+      to_date: item?.to_date
     }))
   };
 

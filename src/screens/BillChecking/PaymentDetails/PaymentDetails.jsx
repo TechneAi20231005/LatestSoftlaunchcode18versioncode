@@ -488,7 +488,7 @@ function PaymentDetails({ location, match }) {
                       className="form-control form-control-sm"
                       id="amount_to_be_paid"
                       name="amount_to_be_paid"
-                      maxLength={13}
+                      maxLength={10}
                       onKeyPress={(e) => {
                         const allowedKeys = [
                           '0',
@@ -501,37 +501,66 @@ function PaymentDetails({ location, match }) {
                           '7',
                           '8',
                           '9',
-                          '.',
                           'Backspace'
                         ];
                         const inputValue = e.key;
 
+                        // Prevent non-integer keys
                         if (!allowedKeys.includes(inputValue)) {
                           e.preventDefault();
                         }
 
-                        const currentInput = e.target.value;
-                        const decimalIndex = currentInput.indexOf('.');
-
-                        if (inputValue === '.' && decimalIndex !== -1) {
-                          e.preventDefault(); // Prevent entering more than one decimal point
-                        }
-
+                        // Prevent exceeding maximum length for integers
                         if (
-                          decimalIndex !== -1 &&
-                          currentInput.length - decimalIndex > 2
+                          e.target.value.length >= 13 &&
+                          inputValue !== 'Backspace'
                         ) {
-                          e.preventDefault(); // Prevent more than two decimal places
-                        }
-
-                        if (
-                          currentInput.length >= 10 &&
-                          inputValue !== '.' &&
-                          decimalIndex === -1
-                        ) {
-                          e.preventDefault(); // Limit total length excluding decimal point to 10 characters
+                          e.preventDefault(); // Limit total length to 13 characters
                         }
                       }}
+                      // onKeyPress={(e) => {
+                      //   const allowedKeys = [
+                      //     '0',
+                      //     '1',
+                      //     '2',
+                      //     '3',
+                      //     '4',
+                      //     '5',
+                      //     '6',
+                      //     '7',
+                      //     '8',
+                      //     '9',
+                      //     '.',
+                      //     'Backspace'
+                      //   ];
+                      //   const inputValue = e.key;
+
+                      //   if (!allowedKeys.includes(inputValue)) {
+                      //     e.preventDefault();
+                      //   }
+
+                      //   const currentInput = e.target.value;
+                      //   const decimalIndex = currentInput.indexOf('.');
+
+                      //   if (inputValue === '.' && decimalIndex !== -1) {
+                      //     e.preventDefault(); // Prevent entering more than one decimal point
+                      //   }
+
+                      //   if (
+                      //     decimalIndex !== -1 &&
+                      //     currentInput.length - decimalIndex > 2
+                      //   ) {
+                      //     e.preventDefault(); // Prevent more than two decimal places
+                      //   }
+
+                      //   if (
+                      //     currentInput.length >= 10 &&
+                      //     inputValue !== '.' &&
+                      //     decimalIndex === -1
+                      //   ) {
+                      //     e.preventDefault(); // Limit total length excluding decimal point to 10 characters
+                      //   }
+                      // }}
                       // readOnly={
                       //   (modal.modalData &&
                       //     modal.modalData.payment_status == 15) ||

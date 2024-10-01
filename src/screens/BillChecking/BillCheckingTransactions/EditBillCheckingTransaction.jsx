@@ -429,12 +429,12 @@ export default function CreateBillCheckingTransaction({ match }) {
         if (res.data.status == 1) {
           setVendor(res.data.data);
           const filterData = res.data.data.filter(
-            (d) => d.consider_in_payment === 'YES'
+            (d) => d.consider_in_payment?.toUpperCase() === 'YES'
           );
           setVendorDropdown(
             filterData
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({
+              ?.filter((d) => d.is_active == 1)
+              ?.map((d) => ({
                 value: d.id,
                 label: d.vendor_name
               }))
@@ -871,6 +871,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   const formattedDate = `${year}-${month}-${day}`;
 
   let recordRoom = userDropdown && userDropdown.filter((d) => d.value === 692);
+  console.log('rrr', recordRoom);
 
   return (
     <div className="container-xxl">
