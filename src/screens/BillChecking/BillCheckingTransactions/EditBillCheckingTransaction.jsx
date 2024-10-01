@@ -871,6 +871,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   const formattedDate = `${year}-${month}-${day}`;
 
   let recordRoom = userDropdown && userDropdown.filter((d) => d.value === 692);
+  console.log('rrr', recordRoom);
 
   return (
     <div className="container-xxl">
