@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 // import { ProgressBar } from "react-bootstrap";
 import FileSaver, { saveAs } from 'file-saver';
-import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
+import {
+  Link,
+  useHistory,
+  useLocation,
+  useNavigate,
+  useParams
+} from 'react-router-dom';
 import ConsolidatedService from '../../services/ProjectManagementService/ConsolidatedService';
 import GeneralSettingService from '../../services/SettingService/GeneralSettingService';
 import { _apiUrl, _attachmentUrl, _base } from '../../settings/constants';
@@ -14,6 +20,7 @@ import Alert from '../../components/Common/Alert';
 import { Modal, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import CustomAlertModal from '../../components/custom/modal/CustomAlertModal';
+import PageHeader from '../../components/Common/PageHeader';
 
 export default function ProjectwiseModule() {
   const params = useParams();
@@ -61,6 +68,7 @@ export default function ProjectwiseModule() {
   const handleModal = (data) => {
     setModal(data);
   };
+  const navigate = useNavigate();
 
   const submoduleRef = useRef(null);
   const moduleRef = useRef(null);
@@ -747,7 +755,14 @@ export default function ProjectwiseModule() {
   }, [moduleValue]);
   return (
     <>
-      <div className=" card col-md-6 w-100">
+      <PageHeader showBackBtn headerTitle="Upload Documents" />
+      {/* <div className="d-flex justify-content-start ">
+        <i
+          onClick={() => navigate(`/${_base}/ConsolidatedView`)}
+          class="icofont-arrow-left fs-1 text-primary"
+        ></i>
+      </div> */}
+      <div className=" card col-md-6 w-100 mt-3">
         <div className="card-body">
           {notify && <Alert alertData={notify} />}
           <div className="d-flex align-items-center justify-content-center mt-5 mb-4">
