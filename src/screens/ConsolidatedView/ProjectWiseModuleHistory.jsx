@@ -2,13 +2,18 @@ import React, { useEffect, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import Tooltip from 'react-bootstrap/Tooltip';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import SubModuleService from '../../services/ProjectManagementService/SubModuleService';
 import PageHeader from '../../components/Common/PageHeader';
+import { _base } from '../../settings/constants';
 const ProjectWiseModuleHistory = ({ match }) => {
   const { id } = useParams();
   const [data, setData] = useState();
+  const [projectId, setProjectId] = useState([]);
 
+  const [moduleId, setModuleId] = useState([]);
+
+  const navigate = useNavigate();
   const columns = [
     {
       name: 'Sr',
@@ -210,6 +215,9 @@ const ProjectWiseModuleHistory = ({ match }) => {
           let counter = 1;
           const tempData = [];
           const temp = res.data.data;
+          setModuleId(res?.data?.data[0]?.module_id);
+          setProjectId(res?.data?.data[0]?.project_id);
+
           for (const key in temp) {
             tempData.push({
               counter: counter++,
@@ -258,6 +266,21 @@ const ProjectWiseModuleHistory = ({ match }) => {
               </div>
             </div>
           </div>
+        </div>
+        <div className="d-flex justify-content-end mt-3">
+          <button
+            onClick={() =>
+              navigate(
+                `/${_base}/ConsolidatedView/ProjectwiseModule/` +
+                  projectId +
+                  '/' +
+                  moduleId
+              )
+            }
+            className="btn btn-primary text-white"
+          >
+            Back
+          </button>
         </div>
       </div>
     </>

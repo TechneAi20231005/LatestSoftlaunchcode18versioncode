@@ -288,24 +288,25 @@ export const CustomCheckbox = ({
   const touch = getIn(touched, field.name);
   const error = getIn(errors, field.name);
   const { setFieldValue } = useFormikContext();
+
   return (
     <>
-      <div className="cp custom-checkbox wrapper justify-content-start">
+      <div className="cp custom-checkbox d-flex justify-content-start align-items-center">
         <input
-          name={props.name}
-          id={props.id}
+          {...props}
+          {...field}
           type="checkbox"
           className={`${error && touch && 'is-invalid'} ${
             props.checkboxclass
           } cp`}
-          checked={props.val}
+          checked={field.value}
           disabled={props.disabled}
           onChange={() => {
-            setFieldValue(field.name, !props.val);
+            setFieldValue(field.name, !field.value);
           }}
         />
         <label
-          className={`${props.inputClassName} d-flex`}
+          className={`${props.inputClassName} mb-0 ms-1`}
           htmlFor={props.id}
           style={{ userSelect: 'none' }}
         >

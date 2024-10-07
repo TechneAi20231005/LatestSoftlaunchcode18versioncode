@@ -428,12 +428,14 @@ export default function TaskComponent() {
   };
 
   // sprint form handling
-  const sprintInputChangeHandler = (e) => {
+  const sprintInputChangeHandler = (e, type) => {
     setSprintInput((prevSate) => ({
       ...prevSate,
       [e.target.name]: e.target.value
     }));
-    setEndDateGreaterThanStartDate(e);
+    if (type) {
+      setEndDateGreaterThanStartDate(e);
+    }
   };
 
   const sprintFormHandle = async () => {
@@ -469,7 +471,13 @@ export default function TaskComponent() {
     try {
       const res = await new SprintService().postSprintForTicket(payload);
       if (res?.data?.status) {
-        setNotify({ type: 'success', message: res?.data?.message });
+        // setNotify({ type: 'success', message: res?.data?.message });
+        toast.success(res?.data?.message, {
+          position: 'top-right',
+          autoClose: 5000
+
+          // transition: Bounce
+        });
         setSprintModal({
           showModal: false,
           modalData: '',
@@ -495,15 +503,28 @@ export default function TaskComponent() {
           }));
           setSprintDropDown(temp);
         } else {
-          setNotify({ type: 'danger', message: sprintRes?.data?.message });
+          // setNotify({ type: 'danger', message: sprintRes?.data?.message });
+          toast.error(sprintRes?.data?.message, {
+            position: 'top-right',
+            autoClose: 5000
+
+            // transition: Bounce
+          });
         }
       } else {
-        setNotify({ type: 'danger', message: res?.data?.message });
+        // setNotify({ type: 'danger', message: res?.data?.message });
+        toast.error(res?.data?.message, {
+          position: 'top-right',
+          autoClose: 5000
+          // theme: 'danger'
+          // transition: Bounce
+        });
       }
     } catch (error) {
-      setNotify({
-        type: 'danger',
-        message: 'An error occurred while processing your request.'
+      toast.error('error while processing request', {
+        position: 'top-right',
+        autoClose: 5000
+        // transition: Bounce
       });
     }
   };
@@ -650,7 +671,12 @@ export default function TaskComponent() {
       .updateSprintDetail(payload, sprint_id)
       .then(async (res) => {
         if (res?.data?.status === 1) {
-          setNotify({ type: 'success', message: res?.data?.message });
+          // setNotify({ type: 'success', message: res?.data?.message });
+          toast.success(res?.data?.message, {
+            position: 'top-right',
+            autoClose: 5000
+            // transition: Bounce
+          });
           setSprintModal({
             showModal: false,
             modalData: '',
@@ -810,6 +836,10 @@ export default function TaskComponent() {
     if (value) {
       const startDate = new Date(value);
       startDate.setDate(startDate.getDate() + 1);
+      console.log(
+        'startDate.toISOString()',
+        startDate.toISOString().split('T')
+      );
       const formattedMinDate = startDate.toISOString().split('T')[0];
       setMinEndDate(formattedMinDate);
       return formattedMinDate;
@@ -928,7 +958,7 @@ export default function TaskComponent() {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Manage Task" />
-      {notify && <Alert alertData={notify} />}
+      {/* {notify && <Alert alertData={notify} />} */}
 
       <div className="card mt-2">
         <div className="card-body">
@@ -1797,7 +1827,9 @@ export default function TaskComponent() {
                             name="startDate"
                             id="startDate"
                             disabled={sprintModal?.modalHeader === 'View'}
-                            onChange={(e) => sprintInputChangeHandler(e)}
+                            onChange={(e) =>
+                              sprintInputChangeHandler(e, 'startDate')
+                            }
                             defaultValue={sprintModal?.modalData?.start_date}
                             onKeyDown={(e) => e.preventDefault()}
                             min={ticketStartDate}

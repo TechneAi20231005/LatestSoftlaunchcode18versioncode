@@ -1,6 +1,6 @@
 export const NumbersOnly = (e) => {
   //angka only
-  var regex = new RegExp("^(?!0{9})[0-9 \b]+$");
+  var regex = new RegExp('^(?!0{9})[0-9 \b]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -10,7 +10,7 @@ export const NumbersOnly = (e) => {
 
 export const RequiredNumbersOnly = (e) => {
   // angka only
-  var regex = new RegExp("^(?!0{9})[0-9 \b]+$");
+  var regex = new RegExp('^(?!0{9})[0-9 \b]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
 
   // Check if the input is 0
@@ -27,7 +27,7 @@ export const RequiredNumbersOnly = (e) => {
 
 export const MobileNumbersOnly = (e) => {
   //angka only
-  var regex = new RegExp("^(?!0{9})[0-9 \b]+$");
+  var regex = new RegExp('^(?!0{9})[0-9 \b]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -69,7 +69,7 @@ export const mobileNumbersOnly = (e) => {
 
 export const GSTNumberOnly = (e) => {
   //angka only
-  var regex = new RegExp("^[a-zA-Z0-9]+$");
+  var regex = new RegExp('^[a-zA-Z0-9]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -79,7 +79,7 @@ export const GSTNumberOnly = (e) => {
 
 export const NumbersOnlyWithMinus = (e) => {
   //angka only
-  var regex = new RegExp("^[0-9-\b]+$");
+  var regex = new RegExp('^[0-9-\b]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -89,7 +89,7 @@ export const NumbersOnlyWithMinus = (e) => {
 
 export const NumbersOnlyWithoutMinus = (e) => {
   //angka only
-  var regex = new RegExp("^[0-9\b/-]+$");
+  var regex = new RegExp('^[0-9\b/-]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -100,7 +100,7 @@ export const NumbersOnlyWithoutMinus = (e) => {
 export const MobileNumberOnly = (e) => {
   //angka only
   var mob = e.target.value;
-  if (mob.charAt(0) === "0" && mob.charAt(0) === "") {
+  if (mob.charAt(0) === '0' && mob.charAt(0) === '') {
     // if (mob.length == 10) {
     //   var regex = new RegExp("^[6-9]{1}[0-9]{9}+$");
     //   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
@@ -118,7 +118,7 @@ export const MobileNumberOnly = (e) => {
 
 export const NumbersOnlyForPincode = (e) => {
   //angka only
-  var regex = new RegExp("^[1-9]{1}[0-9]{5}$");
+  var regex = new RegExp('^[1-9]{1}[0-9]{5}$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -128,7 +128,7 @@ export const NumbersOnlyForPincode = (e) => {
 
 export const pincodeWithOutSpace = (e) => {
   //angka only
-  var regex = new RegExp("^[0-9]+$");
+  var regex = new RegExp('^[0-9]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -137,7 +137,7 @@ export const pincodeWithOutSpace = (e) => {
 };
 
 export const NumbersSpeicalOnlyDot = (e) => {
-  var regex = new RegExp("^[0-9.\b]+$");
+  var regex = new RegExp('^[0-9.\b]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -146,7 +146,7 @@ export const NumbersSpeicalOnlyDot = (e) => {
 };
 
 export const NumbersSpecialOnlyDecimal = (e) => {
-  var regex = new RegExp("^[0-9.,-]+$");
+  var regex = new RegExp('^[0-9.,-]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   var value = e.target.value + key;
   if (!regex.test(value)) {
@@ -157,7 +157,7 @@ export const NumbersSpecialOnlyDecimal = (e) => {
     e.preventDefault();
     return false;
   }
-  var parts = value.split(".");
+  var parts = value.split('.');
   if (parts.length > 1 && parts[1].length > 2) {
     e.preventDefault();
     return false;
@@ -165,7 +165,7 @@ export const NumbersSpecialOnlyDecimal = (e) => {
 };
 
 export const NumbersSpeicalOnly = (e) => {
-  var regex = new RegExp("[0-9*,#+]+$");
+  var regex = new RegExp('[0-9*,#+]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -173,7 +173,7 @@ export const NumbersSpeicalOnly = (e) => {
   }
 };
 export const Characters = (e) => {
-  var regex = new RegExp("^[A-Za-z]+$");
+  var regex = new RegExp('^[A-Za-z]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -191,7 +191,7 @@ export const Characters = (e) => {
 // };
 
 export const onlyCapitalLetter = (e) => {
-  var regex = new RegExp("^[A-Z ]$");
+  var regex = new RegExp('^[A-Z ]$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -201,7 +201,7 @@ export const onlyCapitalLetter = (e) => {
 };
 
 export const CharacterWithSpace = (e) => {
-  var regex = new RegExp("^[a-zA-Z0-9\\s@#$%^&*()_+={}\\[\\]:;\"'<>,.?/|]+$");
+  var regex = new RegExp('^[a-zA-Z0-9\\s@#$%^&*()_+={}\\[\\]:;"\'<>,.?/|]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -210,7 +210,7 @@ export const CharacterWithSpace = (e) => {
 };
 
 export const userNameOnly = (e) => {
-  var regex = new RegExp("^[a-zA-Z0-9]+$");
+  var regex = new RegExp('^[a-zA-Z0-9]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -219,7 +219,7 @@ export const userNameOnly = (e) => {
 };
 
 export const password = (e) => {
-  var regex = new RegExp("[A-Za-z0-9!@#$%^&*().,<>{}<>?_=+-|;:'\"/]");
+  var regex = new RegExp('[A-Za-z0-9!@#$%^&*().,<>{}<>?_=+-|;:\'"/]');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -229,7 +229,7 @@ export const password = (e) => {
 
 export const addressFieldOnly = (e) => {
   const regex = new RegExp(
-    "^[A-Za-z0-9 .,?!@#$%^&*()_+-=;:'\"\\/\\[\\]{}|`~\\n]{0,50}$"
+    '^[A-Za-z0-9 .,?!@#$%^&*()_+-=;:\'"\\/\\[\\]{}|`~\\n]{0,50}$'
   );
 
   if (e.keyCode === 13) {
@@ -245,7 +245,7 @@ export const addressFieldOnly = (e) => {
 
 export const addressField = (e) => {
   const regex = new RegExp(
-    "^[A-Za-z0-9 .,?!@#$%^&*()_+-=;:'\"\\/\\[\\]{}|`~\\n]{0,250}$"
+    '^[A-Za-z0-9 .,?!@#$%^&*()_+-=;:\'"\\/\\[\\]{}|`~\\n]{0,250}$'
   );
 
   if (e.keyCode === 13) {
@@ -269,7 +269,7 @@ export const addressField = (e) => {
 // };
 
 export const CharactersOnly = (e) => {
-  var regex = new RegExp("^[a-zA-Z0-9]+$");
+  var regex = new RegExp('^[a-zA-Z0-9]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -278,7 +278,7 @@ export const CharactersOnly = (e) => {
 };
 
 export const CharactersNumbersOnly = (e) => {
-  var regex = new RegExp("^[a-zA-Z0-9 !\"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~]+$");
+  var regex = new RegExp('^[a-zA-Z0-9 !"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -287,7 +287,7 @@ export const CharactersNumbersOnly = (e) => {
 };
 
 export const CharactersNumbersOnlyWithComma = (e) => {
-  var regex = new RegExp("^[a-zA-Z 0-9, ]+$");
+  var regex = new RegExp('^[a-zA-Z 0-9, ]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -308,11 +308,11 @@ export const CharactersNumbersOnlyWithComma = (e) => {
 
 export const validateTemplateName = (e, existingTemplates) => {
   var regex = new RegExp(
-    "^[a-zA-Z0-9 !@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?]+$"
+    '^[a-zA-Z0-9 !@#$%^&*()_+\\-=\\[\\]{};\':"\\\\|,.<>\\/?]+$'
   );
   var templateName = e.target.value.trim();
 
-  if (templateName === "") {
+  if (templateName === '') {
     return;
   }
 
@@ -323,14 +323,14 @@ export const validateTemplateName = (e, existingTemplates) => {
   }
 
   if (existingTemplates.includes(templateName)) {
-    alert("Template name already exists");
+    alert('Template name already exists');
     e.preventDefault();
     return false;
   }
 
   if (!regex.test(templateName)) {
     alert(
-      "Template name should only contain letters, numbers, and special characters"
+      'Template name should only contain letters, numbers, and special characters'
     );
     e.preventDefault();
     return false;
@@ -338,7 +338,7 @@ export const validateTemplateName = (e, existingTemplates) => {
 };
 
 export const MSMENumbersOnly = (e) => {
-  var regex = new RegExp("/^([A-Za-z]{5}d{2}[A-Za-z0-9]{1,2}d{7})$|^(d{12})$/");
+  var regex = new RegExp('/^([A-Za-z]{5}d{2}[A-Za-z0-9]{1,2}d{7})$|^(d{12})$/');
 
   if (regex == regex) {
     return true;
@@ -348,7 +348,7 @@ export const MSMENumbersOnly = (e) => {
 };
 
 export const CharactersNumbersOnlyForPan = (e) => {
-  var regex = new RegExp("^[a-zA-Z0-9]+$");
+  var regex = new RegExp('^[a-zA-Z0-9]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   // if (e.key >= 'a' && e.key <= 'z') {
   //     e.preventDefault();
@@ -369,7 +369,7 @@ export const validatePAN = (e) => {
 
 export const CharactersNumberAccountNumberonly = (e) => {
   // Only allow numbers (0-9)
-  var regex = new RegExp("^[0-9]+$");
+  var regex = new RegExp('^[0-9]+$');
   var inputValue =
     e.target.value + String.fromCharCode(!e.charCode ? e.which : e.charCode);
 
@@ -385,7 +385,7 @@ export const CharactersNumberAccountNumberonly = (e) => {
 };
 
 const bank = (e) => {
-  var regex = new RegExp("^[a-zA-Z0-9\\s]+$"); // allow characters, numbers, and spaces
+  var regex = new RegExp('^[a-zA-Z0-9\\s]+$'); // allow characters, numbers, and spaces
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -409,7 +409,7 @@ const bank = (e) => {
 // };
 
 export const CharactersNumbersOnlyi = (e) => {
-  var regex = new RegExp("^[a-zA-Z0-9\\u0900-\\u097F ]+$");
+  var regex = new RegExp('^[a-zA-Z0-9\\u0900-\\u097F ]+$');
 
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
 
@@ -425,8 +425,8 @@ export const CharactersNumbersOnlyi = (e) => {
 };
 
 export const CharactersNumbersSpeicalOnly = (e) => {
-  var regex = new RegExp("^[a-zA-Z0-9\\s]+$");
-  var regex1 = new RegExp("^[\\u0900-\\u097F\\s]+$");
+  var regex = new RegExp('^[a-zA-Z0-9\\s]+$');
+  var regex1 = new RegExp('^[\\u0900-\\u097F\\s]+$');
 
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
 
@@ -437,8 +437,8 @@ export const CharactersNumbersSpeicalOnly = (e) => {
 };
 
 export const CharactersNumbersSpeicalOnlyforPassTicket = (e) => {
-  var regex = new RegExp("^[a-zA-Z0-9\\s]+$");
-  var regex1 = new RegExp("^[\\u0900-\\u097F\\s]+$");
+  var regex = new RegExp('^[a-zA-Z0-9\\s]+$');
+  var regex1 = new RegExp('^[\\u0900-\\u097F\\s]+$');
 
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
 
@@ -464,7 +464,7 @@ export const emailOnly = (e) => {
 
 export const RefNumbersSpeicalOnly = (e) => {
   var regex = new RegExp(
-    "^[0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?\\s-]{0,20}$"
+    '^[0-9!@#$%^&*()_+\\-=\\[\\]{};\':"\\\\|,.<>\\/?\\s-]{0,20}$'
   );
 
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
@@ -481,7 +481,9 @@ export const RefNumbersSpeicalOnly = (e) => {
 };
 export const NarrationAlphanumeric = (e) => {
   // Define a regular expression that matches alphanumeric characters and space
-  var regex = /^[A-Za-z]*$/;
+  var regex = /^[a-zA-Z0-9 ]*$/;
+
+  // /^[A-Za-z]*$/;
 
   // Get the current input value
   var inputValue = e.target.value;
@@ -508,7 +510,7 @@ export const NarrationAlphanumeric = (e) => {
 
 export const RefNumbersSpecialAlphanumeric = (e) => {
   var regex = new RegExp(
-    "^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};':\"\\\\|,.<>\\/?\\s-]{0,20}$"
+    '^[a-zA-Z0-9!@#$%^&*()_+\\-=\\[\\]{};\':"\\\\|,.<>\\/?\\s-]{0,20}$'
   );
 
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
@@ -525,14 +527,14 @@ export const RefNumbersSpecialAlphanumeric = (e) => {
 };
 
 export const CardNumbersOnly = (e) => {
-  var regex = new RegExp("^[0-9]{0,20}$");
+  var regex = new RegExp('^[0-9]{0,20}$');
 
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
 
   if (
     !regex.test(key) &&
-    key.toUpperCase() !== "N" &&
-    key.toUpperCase() !== "A"
+    key.toUpperCase() !== 'N' &&
+    key.toUpperCase() !== 'A'
   ) {
     e.preventDefault();
     return false;
@@ -540,7 +542,7 @@ export const CardNumbersOnly = (e) => {
 };
 
 export const CharacterFirstOnly = (e) => {
-  var regex = new RegExp("^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$");
+  var regex = new RegExp('^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -549,7 +551,7 @@ export const CharacterFirstOnly = (e) => {
 };
 
 export const EmailOnly = (e) => {
-  var regex = new RegExp("^([a-zd.-]+)@([a-zd-]+).([a-z]{2,8})(.[a-z]{2,8})?$");
+  var regex = new RegExp('^([a-zd.-]+)@([a-zd-]+).([a-z]{2,8})(.[a-z]{2,8})?$');
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
   if (!regex.test(key)) {
     e.preventDefault();
@@ -562,7 +564,7 @@ export const imageOnly = (e) => {
   if (!imageFile.name.match(/\.(jpg|jpeg|png|gif)$/)) {
     e.preventDefault();
     e.target.value = null;
-    alert("Please select valid image.");
+    alert('Please select valid image.');
     return false;
   }
 };

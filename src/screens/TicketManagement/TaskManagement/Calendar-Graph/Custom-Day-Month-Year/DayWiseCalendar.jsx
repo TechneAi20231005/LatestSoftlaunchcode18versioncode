@@ -135,7 +135,9 @@ const DayWiseCalendar = (props) => {
                   </p>
 
                   <span className="me-3">
-                    {data?.actualWorked ? data?.actualWorked : '00:00:00'}
+                    {data?.task_actual_worked
+                      ? data?.task_actual_worked
+                      : '00:00:00'}
                   </span>
                   <span>{data.task_scheduled_Hours}</span>
                 </div>

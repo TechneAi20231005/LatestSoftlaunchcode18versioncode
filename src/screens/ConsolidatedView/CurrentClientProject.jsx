@@ -133,31 +133,33 @@ export default function CurrentClientProject(props) {
             </button>
             <h6 className=" fw-bold p-2">View Module</h6>
           </div>
-          {props.data.project_modules.map((e, i) => {
-            return (
-              <Collapse in={isOpen} className="mt-2">
-                <div id={e.id}>
-                  <ListGroup
-                    className="list-group mb-2"
-                    style={{ textAlign: 'left' }}
-                  >
-                    <Link
-                      to={
-                        `/${_base}/ConsolidatedView/ProjectwiseModule/` +
-                        props.data.id +
-                        '/' +
-                        e.id
-                      }
+          {props.data.project_modules
+            .filter((d) => d.is_active === 1)
+            .map((e, i) => {
+              return (
+                <Collapse in={isOpen} className="mt-2">
+                  <div id={e.id}>
+                    <ListGroup
+                      className="list-group mb-2"
+                      style={{ textAlign: 'left' }}
                     >
-                      <ListGroup.Item>
-                        {i + 1}. {e.module_name}{' '}
-                      </ListGroup.Item>
-                    </Link>
-                  </ListGroup>
-                </div>
-              </Collapse>
-            );
-          })}
+                      <Link
+                        to={
+                          `/${_base}/ConsolidatedView/ProjectwiseModule/` +
+                          props.data.id +
+                          '/' +
+                          e.id
+                        }
+                      >
+                        <ListGroup.Item>
+                          {i + 1}. {e.module_name}{' '}
+                        </ListGroup.Item>
+                      </Link>
+                    </ListGroup>
+                  </div>
+                </Collapse>
+              );
+            })}
         </div>
       </div>
     </div>

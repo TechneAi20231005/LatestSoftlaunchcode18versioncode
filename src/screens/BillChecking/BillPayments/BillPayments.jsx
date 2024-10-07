@@ -11,7 +11,6 @@ import DataTable from 'react-data-table-component';
 import { ExportBillPaymentFile } from '../../../components/Utilities/Table/ExportBillPaymentFile';
 import { Table } from 'react-bootstrap';
 
-
 import axios from 'axios';
 import { _attachmentUrl } from '../../../settings/constants';
 import { Astrick } from '../../../components/Utilities/Style';
@@ -324,7 +323,7 @@ const BillPayments = () => {
             renderRight={() => {
               return (
                 <div className="d-flex flex-row-reverse">
-                  {authorities && authorities.Bill_Payment === true && (
+                  {authorities && authorities?.Bill_Payment === true && (
                     <button
                       type="button"
                       style={{
@@ -407,12 +406,13 @@ const BillPayments = () => {
                           id="date"
                           name="date"
                           max={formattedDate}
+                          required
                           onChange={(e) => handleTillDate(e)}
                         />
                       </div>
                     </div>
                     <div className="col-md-6 text-end">
-                      <div className="btn btn-group">
+                      <div className="btn btn-group  ">
                         {filteredData &&
                           authorities &&
                           authorities.Bill_Payment === true && (
@@ -441,14 +441,14 @@ const BillPayments = () => {
                         defaultValue="filterButton"
                         id="filterButton"
                         onClick={(e) => (myForm.current.buttonId = e.target.id)}
-                        className="btn btn-primary text-white"
+                        className="btn btn-primary text-white mt-3 "
                       >
                         Search
                       </button>
 
                       {filteredData && (
                         <ExportBillPaymentFile
-                          className="btn btn-sm btn-danger"
+                          className="btn btn-sm btn-danger mt-3"
                           apiData={exportFilteredData}
                           fileName="Bill Payemnt Report"
                         />
