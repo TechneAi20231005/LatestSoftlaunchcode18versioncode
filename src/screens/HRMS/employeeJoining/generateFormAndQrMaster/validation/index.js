@@ -2,7 +2,7 @@ import * as Yup from 'yup';
 import { ALPHA_NUMERIC_REGEX } from '../../../../../utils/regexPool';
 
 export const generateFormValidation = Yup.object().shape({
-  tenant_name: Yup.string().required('Tenant name is required'),
+  // tenant_name: Yup.string().required('Tenant name is required'),
   source_name: Yup.string().required('Source is required'),
   job_opening_id: Yup.array()
     .min(1, 'Select at least one job opening')
@@ -12,7 +12,9 @@ export const generateFormValidation = Yup.object().shape({
     .required('Location is required'),
   logo: Yup.mixed().test('logoRequired', 'Logo is required', function (value) {
     const brandingType = this.parent.branding_type;
-    if (brandingType === 'logo' && (!value || value.trim() === '')) {
+
+    // Check if `brandingType` is 'logo' and if `value` is missing
+    if (brandingType === 'logo' && !value) {
       return false;
     }
     return true;

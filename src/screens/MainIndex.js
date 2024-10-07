@@ -157,7 +157,8 @@ import RemarkMaster from './HRMS/employeeJoining/remarkMaster/RemarkMaster';
 import SalaryMaster from './HRMS/employeeJoining/salaryMaster/SalaryMaster';
 import EmployeeJoining from './HRMS/employeeJoining/candidateList/details/EmployeeJoining';
 import GenerateFormAndQrMaster from './HRMS/employeeJoining/generateFormAndQrMaster/GenerateFormAndQrMaster';
-
+import GenerateQrList from './HRMS/employeeJoining/generateFormAndQrMaster/GenerateQrList';
+import ViewQrList from './HRMS/employeeJoining/generateFormAndQrMaster/ViewQrList';
 // // // PO
 import GenerateRequisition from './PO/generateRequisition/GenerateRequisition';
 import GeneratePo from './PO/generatePO/GeneratePo';
@@ -827,6 +828,16 @@ class MainIndex extends React.Component {
             <Route
               exact
               path={`/${_base}/qr-generator`}
+              element={<GenerateQrList />}
+            />
+            <Route
+              exact
+              path={`/${_base}/qr-generator/:id`}
+              element={<ViewQrList />}
+            />
+            <Route
+              exact
+              path={`/${_base}/create-qr-generator`}
               element={<GenerateFormAndQrMaster />}
             />
             {/* PO */}
