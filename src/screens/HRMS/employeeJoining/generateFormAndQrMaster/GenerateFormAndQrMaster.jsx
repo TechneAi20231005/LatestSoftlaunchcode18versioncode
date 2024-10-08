@@ -24,6 +24,7 @@ import './style.scss';
 function GenerateFormAndQrMaster() {
   // // initial state
   const qrRef = useRef(null);
+  const fileInputRef = useRef(null);
   const [show, setShow] = useState(true);
   const [success, setsuccess] = useState(false);
   const [formData, setFormData] = useState({
@@ -126,29 +127,60 @@ function GenerateFormAndQrMaster() {
       setFormData(formInitialValue);
       // reset()
       setsuccess(false);
+      setQrStyleData( { qrColor: '#000', qrType: 'squares', logoPath: '' })
       if (resetFormRef.current) {
         resetFormRef.current();
       }
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
     }
   };
+
   const handleAddQrCode = (values) => {
-    let payLoad = {
-      source_id: values?.source_name,
-      theme_color: values?.theme_color,
-      email_id: values?.recruiter_email_id,
-      contact_no: values?.recruiter_contact_no,
-      locations: values?.branch_id,
-      designations: values?.job_opening_id,
-      company_name: values?.company_name
-    };
+
+    const canvas = qrRef.current?.canvasRef?.current;
+    const pngUrl = canvas?.toDataURL('image/png');
+    const formDatas = new FormData();
+    formDatas.append('source_id', values?.source_name);
+    formDatas.append('theme_color', values?.theme_color);
+    formDatas.append('email_id', values?.recruiter_email_id);
+    formDatas.append('contact_no', values?.recruiter_contact_no);
+    values?.branch_id.forEach((location) => {
+      formDatas?.append('locations[]', location);
+    });
+
+    values?.job_opening_id.forEach((designation) => {
+      formDatas?.append('designations[]', designation);
+    });
+
+    formDatas.append('company_name', formData.branding_type === "text" ? values?.company_name : "");
+
+    formDatas.append('qr_scanner', pngUrl);
+
+    formDatas.append('logo_image',  formData.branding_type === "logo" ? values?.logo : "");
+    // let payLoad = {
+    //   source_id: values?.source_name,
+    //   theme_color: values?.theme_color,
+    //   email_id: values?.recruiter_email_id,
+    //   contact_no: values?.recruiter_contact_no,
+    //   locations: values?.branch_id,
+    //   designations: values?.job_opening_id,
+    //   company_name: values?.company_name,
+    //   qr_scanner: pngUrl,
+    //   logo_image: values?.logo?.name,
+    // };
+    // console.log(payLoad, "payLoad")
+
+
     dispatch(
       addQrCodeList({
-        formData: payLoad,
+        formData: formDatas,
         onSuccessHandler: () => {
           setsuccess(true);
         },
         onErrorHandler: () => {
-          setsuccess(false)
+          setsuccess(false);
         }
       })
     );
@@ -156,7 +188,6 @@ function GenerateFormAndQrMaster() {
 
   let caseValue = 'Views';
   const iframeSrc = `http://3.108.206.34/techne-ai-employee-joining-soft-lunch/?case=${caseValue}`;
-
 
   return (
     <>
@@ -177,7 +208,9 @@ function GenerateFormAndQrMaster() {
                     initialValues={formData}
                     validationSchema={generateFormValidation}
                     onSubmit={(values, errors, resetForm) => {
+                      console.log(values, "values")
                       handleAddQrCode(values);
+                      setFormData(values)
                       // setFormData(values)
                     }}
                   >
@@ -232,9 +265,10 @@ function GenerateFormAndQrMaster() {
                                       ? 'is-invalid'
                                       : ''
                                   }`}
-                                  accept="image/*"
+                                  accept=".png, .psd, .jpg, .svg, .eps, .pdf, .ai, .tiff, .gif, .bmp, .heic, .jpeg"
+                                  ref={fileInputRef}
                                   onChange={(event) => {
-                                    console.log(event?.target?.files[0]);
+                                    console.log(event.target.files[0])
                                     setFieldValue(
                                       'logo',
                                       event.target.files[0]
@@ -311,7 +345,7 @@ function GenerateFormAndQrMaster() {
                                   requiredField
                                 />
                               </Col>
-                              <Col sm={6}>
+                              {/* <Col sm={6}>
                                 <RenderIf
                                   render={values.branding_type === 'text'}
                                 >
@@ -324,7 +358,7 @@ function GenerateFormAndQrMaster() {
                                     requiredField
                                   />
                                 </RenderIf>
-                              </Col>
+                              </Col> */}
                             </Row>
                             <Field
                               component={CustomInput}
@@ -347,7 +381,7 @@ function GenerateFormAndQrMaster() {
                                 style={{ height: '50px', width: '300px' }}
                                 type="submit"
                                 className="btn btn-dark ms-0"
-                                disabled={!(isValid && dirty)}
+                                // disabled={!(isValid && dirty)}
                               >
                                 Generate Application Form
                               </button>
@@ -368,7 +402,12 @@ function GenerateFormAndQrMaster() {
                                       if (resetFormRef.current) {
                                         resetFormRef.current();
                                       }
-                                      // resetForm()
+                                      if (fileInputRef.current) {
+                                        fileInputRef.current.value = ''; // Clears the input field
+                                      }
+                                      setQrStyleData( { qrColor: '#000', qrType: 'squares', logoPath: '' })
+
+                                      resetForm()
                                       setsuccess(false);
                                     }}
                                     className="btn btn-danger ms-4"
@@ -392,9 +431,9 @@ function GenerateFormAndQrMaster() {
                   <div className="d-flex align-items-center gap-3">
                     <QRCode
                       ref={qrRef}
-                      value="https://example.com"
+                      value="http://3.108.206.34/techne-ai-employee-joining-soft-lunch"
                       // size={250}
-                      logoImage={qrStyleData?.logoPath}
+                      logoImage={formData?.branding_type === "text" ? "" : qrStyleData?.logoPath}
                       fgColor={qrStyleData?.qrColor}
                       qrStyle={qrStyleData?.qrType}
                       logoHeight={40}
@@ -465,7 +504,7 @@ function GenerateFormAndQrMaster() {
           <div>
             <button style={{ background: 'none', border: 0 }}>
               <i
-                className="icofont-simple-left fs-2 back_icon_btn"
+                className="icofont-simple-left fs-2 back_icon_btn cp"
                 onClick={() => setShow(true)}
               />
             </button>

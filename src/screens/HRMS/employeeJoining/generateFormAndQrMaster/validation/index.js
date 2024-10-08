@@ -31,21 +31,21 @@ export const generateFormValidation = Yup.object().shape({
     .min(2, 'Company name must be at least 2 characters')
     .max(20, 'Company name must be at most 20 characters'),
   theme_color: Yup.string().required('Theme Color is required'),
-  company_name_color: Yup.string().when('branding_type', {
-    is: 'text',
-    then: Yup.string().required('Company name color is required')
-  }),
-  company_name_color: Yup.string().test(
-    'companyNameColorRequired',
-    'Company name color is required',
-    function (value) {
-      const brandingType = this.parent.branding_type;
-      if (brandingType === 'text' && (!value || value.trim() === '')) {
-        return false;
-      }
-      return true;
-    }
-  ),
+  // company_name_color: Yup.string().when('branding_type', {
+  //   is: 'text',
+  //   then: Yup.string().required('Company name color is required')
+  // }),
+  // company_name_color: Yup.string().test(
+  //   'companyNameColorRequired',
+  //   'Company name color is required',
+  //   function (value) {
+  //     const brandingType = this.parent.branding_type;
+  //     if (brandingType === 'text' && (!value || value.trim() === '')) {
+  //       return false;
+  //     }
+  //     return true;
+  //   }
+  // ),
   recruiter_email_id: Yup.string()
     .test(
       'either-email-or-contact',

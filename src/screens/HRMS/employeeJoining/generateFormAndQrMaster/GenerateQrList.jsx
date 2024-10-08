@@ -11,13 +11,19 @@ import { _base } from '../../../../settings/constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { getQrCodeList } from '../../../../redux/services/hrms/employeeJoining/qrCodeListMaster';
 import Alert from '../../../../components/Common/Alert';
-
+// import ViewQrImageModal from './viewQrImageModal';
+import ViewQrImageModal from './ViewQrImageModal';
 
 const GenerateQrList = () => {
   const dispatch = useDispatch();
+
   const [searchValue, setSearchValue] = useState('');
   const [filterQrList, setFilterQrList] = useState([]);
+  const [message, setMessage] = useState(null);
+  const [open, setOpen] = useState(false);
+  const [src, setSrc] = useState(null);
   const navigate = useNavigate();
+
   useEffect(() => {
     dispatch(getQrCodeList());
   }, []);
@@ -28,6 +34,7 @@ const GenerateQrList = () => {
 
   useEffect(() => {
     setFilterQrList(qrCodeMasterList?.data);
+    setMessage(notify);
   }, [qrCodeMasterList]);
   const handleSearch = () => {
     const filteredList = customSearchHandler(
@@ -45,17 +52,37 @@ const GenerateQrList = () => {
     setSearchValue('');
     setFilterQrList(qrCodeMasterList?.data);
   };
+  const handleDownload = (pngUrl) => {
+    if (pngUrl) {
+      let downloadLink = document.createElement('a');
+      downloadLink.href = pngUrl;
+      downloadLink.download = `${'test'} QR.png`;
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    }
+  };
 
   const columns = [
     {
       name: 'Action',
       selector: (row) => (
-        <i
-            class="icofont-eye-alt text-primary cp"
-          onClick={() =>
-            navigate(`${row?.id}`, { state: { currentCandidateId: row?.id } })
-          }
-        />
+        <>
+          <div style={{ display: 'flex', gap: 12 }}>
+            <i
+              class="icofont-eye-alt text-primary cp"
+              onClick={() =>
+                navigate(`${row?.id}`, {
+                  state: { currentCandidateId: row?.id }
+                })
+              }
+            />
+            <i
+              onClick={() => handleDownload(row?.qr_scanner)}
+              class="icofont-download cp"
+            ></i>
+          </div>
+        </>
       ),
       sortable: false,
       width: '70px'
@@ -69,17 +96,30 @@ const GenerateQrList = () => {
     {
       name: 'Logo',
       sortable: true,
+      width: "150px",
       selector: (row) => (
-      row?.logo
-      ),
+        <a
+          href="#"
+          onClick={() => {
+           if(row?.logo_image){
+            setOpen(true);
+            setSrc(row?.logo_image);
+           }
+          }}
+          style={{ textDecoration: 'underline', color: 'blue' }}
+        >
+
+          {row?.logo_image?.split('/').pop() || '_'}
+        </a>
+      )
     },
 
     {
       name: 'Source',
       selector: (row) =>
         row?.source?.length > 0
-            ? row.source.map(src => src.source_name).join(', ')
-            : "-",
+          ? row.source.map((src) => src.source_name).join(', ')
+          : '-',
       sortable: true
     },
 
@@ -97,17 +137,16 @@ const GenerateQrList = () => {
       name: 'Location',
       selector: (row) =>
         row?.locations?.length > 0
-            ? row.locations.map(location => location.location_name).join(', ')
-            : "-",
+          ? row.locations.map((location) => location.location_name).join(', ')
+          : '-',
       sortable: true
-
     },
     {
       name: 'Openings',
       selector: (row) =>
         row.designations.length > 0
-            ? row.designations.map(item => item.designation_name).join(', ')
-            : "-",
+          ? row.designations.map((item) => item.designation_name).join(', ')
+          : '-',
       sortable: true
     },
     {
@@ -119,7 +158,7 @@ const GenerateQrList = () => {
 
   return (
     <Container fluid>
-      {notify && <Alert alertData={notify} />}
+      {message && <Alert alertData={message} />}
 
       <PageHeader
         headerTitle="QR Generator"
@@ -178,6 +217,14 @@ const GenerateQrList = () => {
         progressPending={isLoading?.getQrCodeMasterList}
         progressComponent={<TableLoadingSkelton />}
       />
+      {open && (
+        <ViewQrImageModal
+          show={open}
+          src={src}
+          onClose={() => setOpen(false)}
+          close={() => setOpen(false)}
+        />
+      )}
     </Container>
   );
 };
