@@ -219,8 +219,8 @@ export default function ProjectwiseModule() {
                   is_active: temp[key].is_active,
                   document_attachment: temp[key].document_attachment,
                   sub_module_name: temp[key].sub_module_name
-                    ? temp[key].sub_module_name
-                    : 'No Sub Module'
+                  // ? temp[key].sub_module_name
+                  // : 'No Sub Module'
                 });
               }
               setDocList(null);
@@ -254,8 +254,8 @@ export default function ProjectwiseModule() {
                   document_attachment: temp[key].document_attachment,
 
                   sub_module_name: temp[key].sub_module_name
-                    ? temp[key].sub_module_name
-                    : 'No Sub Module'
+                  // ? temp[key].sub_module_name
+                  // : 'No Sub Module'
                 });
               }
               setDocList(null);
@@ -390,11 +390,11 @@ export default function ProjectwiseModule() {
       payload.ids = [...idArr];
       if (selectedData[0].is_active) {
         payload.is_active = 0;
-        setToggleRadio(false);
-        deleteAndFetch('DEACTIVE');
+        setToggleRadio(true);
+        deleteAndFetch('ACTIVE');
       } else {
         payload.is_active = 1;
-        deleteAndFetch('ACTIVE');
+        deleteAndFetch('DEACTIVE');
         setToggleRadio(false);
       }
 
@@ -421,7 +421,6 @@ export default function ProjectwiseModule() {
               });
             }
           });
-
         await new SubModuleService()
           .getSubModuleDocuments(
             projectId,
@@ -581,8 +580,7 @@ export default function ProjectwiseModule() {
     },
     {
       name: 'SubModule Name',
-      selector: (row) =>
-        row.sub_module_name ? row.sub_module_name : 'No sub module ',
+      selector: (row) => row.sub_module_name,
 
       sortable: true
     }
@@ -933,30 +931,36 @@ export default function ProjectwiseModule() {
                     : 'd-none col-4 text-center'
                 }
               >
-                {showbtn === true && docList && selectedRows?.length > 0 && (
-                  <button
-                    type="button"
-                    disabled={
-                      isProjectOwner !== 1 && !checkDelete ? true : false
-                    }
-                    className="btn btn-danger"
-                    onClick={deleteRestoreDoc}
-                  >
-                    Delete Files
-                  </button>
-                )}
-                {showbtn === false && docList && selectedRows?.length > 0 && (
-                  <button
-                    type="button"
-                    disabled={
-                      isProjectOwner !== 1 && !checkDelete ? true : false
-                    }
-                    className="btn btn-success"
-                    onClick={deleteRestoreDoc}
-                  >
-                    Restore
-                  </button>
-                )}
+                {showbtn === true &&
+                  docList &&
+                  selectedRows?.length > 0 &&
+                  checkDelete === true && (
+                    <button
+                      type="button"
+                      disabled={
+                        isProjectOwner !== 1 && !checkDelete ? true : false
+                      }
+                      className="btn btn-danger"
+                      onClick={deleteRestoreDoc}
+                    >
+                      Delete Files
+                    </button>
+                  )}
+                {showbtn === false &&
+                  docList &&
+                  selectedRows?.length > 0 &&
+                  checkDelete === true && (
+                    <button
+                      type="button"
+                      disabled={
+                        isProjectOwner !== 1 && !checkDelete ? true : false
+                      }
+                      className="btn btn-success"
+                      onClick={deleteRestoreDoc}
+                    >
+                      Restore
+                    </button>
+                  )}
                 <button
                   type="button"
                   className="btn btn-primary"
@@ -1092,6 +1096,7 @@ export default function ProjectwiseModule() {
               >
                 3) Please Select Module or Submodule to Filter The Documents
               </span>
+
               <DataTable
                 columns={columns}
                 data={docList}
