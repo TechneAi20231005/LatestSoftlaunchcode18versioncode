@@ -22,6 +22,7 @@ import { Astrick } from '../../../../components/Utilities/Style';
 
 export default function TaskModal(props) {
   const [notify, setNotify] = useState();
+  const [isDisabled, setIsDisabled] = useState(false)
   // const typeRef = useRef();
   // const [parent, setParent] = useState();
   const priority = ['High', 'Medium', 'Low'];
@@ -43,6 +44,7 @@ export default function TaskModal(props) {
 
   const todateformat = '';
   const fromdateformat = '';
+  console.log(props,"props")
   // const [taskDropdown, setTaskDropdown] = useState();
   const handleFromDate = (e) => {
     setFromdate(e.target.value);
@@ -497,9 +499,14 @@ export default function TaskModal(props) {
 
   const assignUserRef = useRef();
   const handleForm = async (e) => {
-    // setLoading(true);
 
     e.preventDefault();
+    setIsDisabled(true)
+
+    // setLoading(true);
+
+
+
     const formData = new FormData(e.target);
     if (!selectedOption && !formData.get('id')) {
       setParentTaskName('Please select a parent task type.');
@@ -603,6 +610,7 @@ export default function TaskModal(props) {
                       setNotify({ type: 'danger', message: res.data.message });
                     }
                   } else {
+                    setIsDisabled(false)
                     // setLoading(false);
                     setNotify({ type: 'danger', message: res.message });
                     new ErrorLogService().sendErrorLog(
@@ -652,6 +660,7 @@ export default function TaskModal(props) {
                   setNotify({ type: 'danger', message: res.data.message });
                 }
               } else {
+                setIsDisabled(false)
                 // setLoading(false);
                 setNotify({ type: 'danger', message: res.data.message });
                 new ErrorLogService().sendErrorLog(
@@ -1216,7 +1225,7 @@ export default function TaskModal(props) {
                   onChange={(e) => {
                     uploadAttachmentHandler(e, 'UPLOAD', '');
                   }}
-                  readOnly={props.data.status === 'COMPLETED' ? true : false}
+                  readOnly={props.data.status === 'COMPLETED' && isDisabled ? true : false}
                 />
               </div>
             </div>
@@ -1337,7 +1346,7 @@ export default function TaskModal(props) {
               type="submit"
               className="btn btn-sm btn-primary"
               style={{ backgroundColor: '#484C7F' }}
-              disabled={props.data.status === 'COMPLETED' ? true : false}
+              disabled={props.data.status === 'COMPLETED' || isDisabled ? true : false}
             >
               Submit
             </button>
