@@ -1225,7 +1225,7 @@ export default function TaskModal(props) {
                   onChange={(e) => {
                     uploadAttachmentHandler(e, 'UPLOAD', '');
                   }}
-                  readOnly={props.data.status === 'COMPLETED' && isDisabled ? true : false}
+                  readOnly={props.data.status === 'COMPLETED' ? true : false}
                 />
               </div>
             </div>
