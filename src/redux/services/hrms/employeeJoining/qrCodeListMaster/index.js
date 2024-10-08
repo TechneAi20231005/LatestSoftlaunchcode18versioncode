@@ -29,7 +29,7 @@ export const addQrCodeList = createAsyncThunk(
         if (response?.data?.status === 1) {
           onSuccessHandler();
           toast.success(response?.data?.message);
-          return response?.data?.message;
+          return response?.data?.data;
         } else {
           onErrorHandler();
           errorHandler(response);

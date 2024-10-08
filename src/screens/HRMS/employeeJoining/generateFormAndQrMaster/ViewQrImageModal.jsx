@@ -4,6 +4,7 @@ import CustomModal from '../../../../components/custom/modal/CustomModal';
 import { _attachmentUrl, attachmentUrl } from '../../../../settings/constants';
 
 const ViewQrImageModal = ({ show, close, onClose, src }) => {
+
   return (
     <CustomModal onClose={onClose} show={show} title="View Logo" width="sm">
       <div className="modal-body d-flex justify-content-center align-items-center">

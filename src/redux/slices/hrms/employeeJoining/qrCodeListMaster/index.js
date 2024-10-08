@@ -8,6 +8,7 @@ import {
 const initialState = {
   qrCodeMasterList: [],
   qrCodeDetailsData: [],
+  addQrCodeData: [],
   notify: null,
   isLoading: {
     getQrCodeMasterList: false,
@@ -75,8 +76,10 @@ const qrCodeMasterSlice = createSlice({
         state.isLoading.addQrCodeMasterList = true;
       })
       .addCase(addQrCodeList.fulfilled, (state, action) => {
+        console.log(action, 'payload');
         state.isLoading.addQrCodeMasterList = false;
         state.successMsg.addQrCodeMasterList = action.payload;
+        state.addQrCodeData = action?.payload;
       })
       .addCase(addQrCodeList.rejected, (state, action) => {
         state.isLoading.addQrCodeMasterList = false;

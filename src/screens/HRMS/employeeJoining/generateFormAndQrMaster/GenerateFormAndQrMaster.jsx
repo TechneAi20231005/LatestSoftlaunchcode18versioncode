@@ -20,6 +20,8 @@ import { getBranchMasterListThunk } from '../../../../redux/services/hrms/employ
 import './style.scss';
 import { addQrCodeList } from '../../../../redux/services/hrms/employeeJoining/qrCodeListMaster';
 import './style.scss';
+import Alert from '../../../../components/Common/Alert';
+
 
 function GenerateFormAndQrMaster() {
   // // initial state
@@ -52,6 +54,18 @@ function GenerateFormAndQrMaster() {
     recruiter_email_id: '',
     recruiter_contact_no: ''
   };
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+
+  const { addQrCodeData} = useSelector(
+    (state) => state?.qrCodeMaster
+  );
+  console.log(addQrCodeData,"Hello")
+
+  const formattedDate = `${month}-${day}-${year}`; // Default locale date
+
   const resetFormRef = useRef(null);
   const dispatch = useDispatch();
   useEffect(() => {
@@ -120,11 +134,12 @@ function GenerateFormAndQrMaster() {
       console.log(pngUrl, 'url');
       let downloadLink = document.createElement('a');
       downloadLink.href = pngUrl;
-      downloadLink.download = `${formData?.tenant_name} QR.png`;
+      downloadLink.download = `${'QR Code'}-${formattedDate}.jpg`;
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
       setFormData(formInitialValue);
+
       // reset()
       setsuccess(false);
       setQrStyleData( { qrColor: '#000', qrType: 'squares', logoPath: '' })
@@ -187,12 +202,29 @@ function GenerateFormAndQrMaster() {
   };
 
   let caseValue = 'Views';
-  const iframeSrc = `http://3.108.206.34/techne-ai-employee-joining-soft-lunch/?case=${caseValue}`;
+  const baseUrl = 'http://3.108.206.34/techne-ai-employee-joining-soft-lunch';
+  const themeColor = addQrCodeData?.theme_color
+  const emailId = addQrCodeData?.email_id
+  const logoImage = addQrCodeData?.logo_image || null
+  const phone = addQrCodeData?.contact_no
+
+  const params = new URLSearchParams({
+    themeColor: themeColor,
+    emailId: emailId,
+    logoImage: logoImage,
+    case: caseValue,
+    phone: phone
+  });
+
+  const iframeSrc = `${baseUrl}?${params.toString()}`;
+  console.log(iframeSrc)
 
   return (
     <>
+
       {show && (
         <Container fluid>
+
           <PageHeader showBackBtn headerTitle="Generate QR Code" />
           <Row className="mt-2 row_gap_3 generate_from_qr_container">
             <Col
