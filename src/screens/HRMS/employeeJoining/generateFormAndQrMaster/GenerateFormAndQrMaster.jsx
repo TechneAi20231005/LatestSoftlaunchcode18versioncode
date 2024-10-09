@@ -20,7 +20,7 @@ import { getBranchMasterListThunk } from '../../../../redux/services/hrms/employ
 import './style.scss';
 import { addQrCodeList } from '../../../../redux/services/hrms/employeeJoining/qrCodeListMaster';
 import './style.scss';
-import Alert from '../../../../components/Common/Alert';
+import { toast } from 'react-toastify';
 
 
 function GenerateFormAndQrMaster() {
@@ -29,6 +29,7 @@ function GenerateFormAndQrMaster() {
   const fileInputRef = useRef(null);
   const [show, setShow] = useState(true);
   const [success, setsuccess] = useState(false);
+  const [isDownload, setIsDownload] = useState(false)
   const [formData, setFormData] = useState({
     source_name: '',
     job_opening_id: [],
@@ -62,7 +63,7 @@ function GenerateFormAndQrMaster() {
   const { addQrCodeData} = useSelector(
     (state) => state?.qrCodeMaster
   );
-  console.log(addQrCodeData,"Hello")
+
 
   const formattedDate = `${month}-${day}-${year}`; // Default locale date
 
@@ -139,9 +140,10 @@ function GenerateFormAndQrMaster() {
       downloadLink.click();
       document.body.removeChild(downloadLink);
       setFormData(formInitialValue);
-
+      toast.success("QR Code downloaded successfully");
       // reset()
-      setsuccess(false);
+      // setsuccess(false);
+      setIsDownload(true)
       setQrStyleData( { qrColor: '#000', qrType: 'squares', logoPath: '' })
       if (resetFormRef.current) {
         resetFormRef.current();
@@ -153,6 +155,7 @@ function GenerateFormAndQrMaster() {
   };
 
   const handleAddQrCode = (values) => {
+
 
     const canvas = qrRef.current?.canvasRef?.current;
     const pngUrl = canvas?.toDataURL('image/png');
@@ -216,8 +219,10 @@ function GenerateFormAndQrMaster() {
     phone: phone
   });
 
+
+
   const iframeSrc = `${baseUrl}?${params.toString()}`;
-  console.log(iframeSrc)
+
 
   return (
     <>
@@ -239,8 +244,8 @@ function GenerateFormAndQrMaster() {
                   <Formik
                     initialValues={formData}
                     validationSchema={generateFormValidation}
-                    onSubmit={(values, errors, resetForm) => {
-                      console.log(values, "values")
+                    onSubmit={(values, errors) => {
+
                       handleAddQrCode(values);
                       setFormData(values)
                       // setFormData(values)
@@ -413,6 +418,7 @@ function GenerateFormAndQrMaster() {
                                 style={{ height: '50px', width: '300px' }}
                                 type="submit"
                                 className="btn btn-dark ms-0"
+                                disabled={success}
                                 // disabled={!(isValid && dirty)}
                               >
                                 Generate Application Form
@@ -424,11 +430,13 @@ function GenerateFormAndQrMaster() {
                                     style={{ height: '50px' }}
                                     onClick={() => setShow(false)}
                                     className="btn btn-primary ms-4"
+                                    disabled={isDownload}
                                   >
                                     View
                                   </button>
                                   <button
                                     style={{ height: '50px' }}
+                                    disabled={isDownload}
                                     onClick={() => {
                                       setFormData({});
                                       if (resetFormRef.current) {
@@ -502,7 +510,7 @@ function GenerateFormAndQrMaster() {
                     <button
                       type="button"
                       className="btn btn-dark ms-0 w-100"
-                      disabled={!success}
+                      disabled={!success || isDownload}
                       onClick={downloadQrCode}
                     >
                       <i className="icofont-download me-2" />

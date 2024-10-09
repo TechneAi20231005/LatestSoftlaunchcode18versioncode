@@ -13,6 +13,7 @@ import { getQrCodeList } from '../../../../redux/services/hrms/employeeJoining/q
 import Alert from '../../../../components/Common/Alert';
 // import ViewQrImageModal from './viewQrImageModal';
 import ViewQrImageModal from './ViewQrImageModal';
+import { toast } from 'react-toastify';
 
 const GenerateQrList = () => {
   const dispatch = useDispatch();
@@ -52,14 +53,21 @@ const GenerateQrList = () => {
     setSearchValue('');
     setFilterQrList(qrCodeMasterList?.data);
   };
+  const currentDate = new Date();
+  const year = currentDate.getFullYear();
+  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  const day = String(currentDate.getDate()).padStart(2, '0');
+
+  const formattedDate = `${month}-${day}-${year}`;
   const handleDownload = (pngUrl) => {
     if (pngUrl) {
       let downloadLink = document.createElement('a');
       downloadLink.href = pngUrl;
-      downloadLink.download = `${'test'} QR.png`;
+     downloadLink.download = `${'QR Code'}-${formattedDate}.jpg`;
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
+      toast.success("QR Code downloaded successfully");
     }
   };
 
