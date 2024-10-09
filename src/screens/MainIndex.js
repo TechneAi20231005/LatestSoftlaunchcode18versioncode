@@ -177,6 +177,7 @@ import TestCaseHistoryComponent from './TestCases/TestDraft/TestCaseHistoryCompo
 import TestDraftComponent from './TestCases/TestDraft/TestDraftComponent';
 import TestBankComponent from './TestCases/TestBank/TestBankComponent';
 import ProjectWiseModuleHistory from './ConsolidatedView/ProjectWiseModuleHistory';
+import JobRoleComponent from './Masters/JobRoleMaster/JobRoleComponent';
 
 class MainIndex extends React.Component {
   render() {
@@ -257,6 +258,8 @@ class MainIndex extends React.Component {
             />
             <Route path={`/${_base}/State`} element={<StateComponent />} />
             <Route path={`/${_base}/City`} element={<CityComponent />} />
+            <Route path={`/${_base}/JobRoleMaster`} element={<JobRoleComponent />} />
+
             <Route
               exact
               path={`/${_base}/Designation`}

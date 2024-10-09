@@ -6,7 +6,7 @@ import React, {
   useMemo
 } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { _base } from '../../../settings/constants';
+import { _base, reportUrl } from '../../../settings/constants';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import ErrorLogService from '../../../services/ErrorLogService';
@@ -37,6 +37,7 @@ import {
 
 import RoleService from '../../../services/MastersService/RoleService';
 import { toast } from 'react-toastify';
+import { getJobRoleMasterListThunk } from '../../../redux/services/jobRoleMaster';
 function EditUserComponent({ match }) {
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState('All_Tickets');
@@ -50,6 +51,10 @@ function EditUserComponent({ match }) {
   );
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 3)
+  );
+
+  const { job_role } = useSelector(
+    (jobRoleSlice) => jobRoleSlice.dashboard.filterJobRoleData
   );
 
   const { id } = useParams();
@@ -166,6 +171,7 @@ function EditUserComponent({ match }) {
     passwordErr: '',
     confirmed_PassErr: '',
     roleErr: '',
+    jobRoleErr: '',
     designationErr: '',
     departmentErr: '',
     ticketTypeShowErr: '',
@@ -182,6 +188,7 @@ function EditUserComponent({ match }) {
     // var selectPassword = form.getAll('password')[0];
     // var selectWhatsapp = form.getAll('whats_app_contact_no')[0];
     var selectRole = form.getAll('role_id')[0];
+    var selectJobRole = form.getAll('job_role')[0];
     var selectDesignation = form.getAll('designation_id')[0];
 
     let flag = 0;
@@ -202,6 +209,9 @@ function EditUserComponent({ match }) {
       flag = 1;
     } else if (selectContactNo === '') {
       setInputState({ ...state, contactNoErr: ' Please enter contact no.' });
+      flag = 1;
+    } else if (selectJobRole === '') {
+      setInputState({ ...state, jobRoleErr: 'Please enter job role' });
       flag = 1;
     } else if (selectRole === '') {
       setInputState({ ...state, roleErr: ' Please Select role' });
@@ -410,6 +420,12 @@ function EditUserComponent({ match }) {
     value: d.value,
     label: d.label
   }));
+
+  const jobRoleDropDown =
+    jobRoleDropDown &&
+    jobRoleDropDown?.filter((d) => {
+      return d.label?.toLowerCase;
+    });
   const orderedSelfRoleData = filterSelfRole?.sort(function (a, b) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
@@ -797,6 +813,9 @@ function EditUserComponent({ match }) {
     }
   }, [data, cityDropdown, updateStatus, cityName]);
 
+  useEffect(() => {
+    dispatch(getJobRoleMasterListThunk());
+  }, []);
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Edit User" />
