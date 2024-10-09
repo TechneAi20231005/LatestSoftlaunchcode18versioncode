@@ -20,14 +20,22 @@ export const transformDataForExportHandler = (data, headers, keys) => {
 
 export const customSearchHandler = (list, searchValue) => {
   if (!searchValue) return list;
+
   const filteredList = list.filter((branch) => {
-    const branchValues = Object.values(branch);
-    return branchValues.some((value) => {
-      return (
-        typeof value === 'string' &&
-        value?.toLowerCase()?.includes(searchValue?.toLowerCase())
-      );
-    });
+    const searchInObject = (obj) => {
+      return Object.values(obj).some((value) => {
+        if (typeof value === 'string') {
+          return value.toLowerCase().includes(searchValue.toLowerCase());
+        } else if (Array.isArray(value)) {
+          return value.some((item) => searchInObject(item));
+        } else if (typeof value === 'object' && value !== null) {
+          return searchInObject(value);
+        }
+        return false;
+      });
+    };
+
+    return searchInObject(branch);
   });
 
   return filteredList;

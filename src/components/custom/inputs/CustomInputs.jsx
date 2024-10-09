@@ -248,15 +248,15 @@ export const CustomRadioButton = ({
   const touch = getIn(touched, field.name);
   const error = getIn(errors, field.name);
   return (
-    <div className={`${props.styleData} space-y-10 custom_radio`}>
-      <div className="d-flex space-x-10 switch_item">
-        <label className={`${props.className} d-flex mx-2`}>
+    <div className={`${props.styleData}`}>
+      <div className="d-flex">
+        <label className={`${props.className} d-flex mx-2 cp`}>
           <input
             {...props}
             {...field}
             className={`${props.inputClassName} ${
               error && touch && 'is-invalid'
-            }`}
+            } cp`}
             id={props.label}
             onChange={(e) => {
               field.onChange(e);
