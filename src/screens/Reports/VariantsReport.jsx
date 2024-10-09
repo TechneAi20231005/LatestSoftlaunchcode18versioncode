@@ -31,6 +31,12 @@ export default function ResourcePlanningReportComponent() {
     { name: 'Sr', selector: (row) => row.sr, sortable: true, width: '75px' },
     { name: 'Ticket Id', selector: (row) => row.ticket_id, sortable: true },
     {
+      name: 'Job Role',
+      selector: (row) => row.job_role || "-",
+      sortable: true,
+      width: '150px'
+    },
+    {
       name: 'Task Owner',
       selector: (row) => row.task_owner,
       sortable: true,
@@ -42,6 +48,7 @@ export default function ResourcePlanningReportComponent() {
       sortable: true,
       width: '150px'
     },
+
 
     {
       name: 'Task Name',
@@ -263,6 +270,7 @@ export default function ResourcePlanningReportComponent() {
                     ticket_id: data[key].ticket_id,
                     task_owner: data[key].task_owner,
                     sprint_name: data[key].sprint_name,
+                    job_role: data[key].job_role,
                     task_name: data[key].task_name,
                     type_name: data[key].type_name,
                     task_start_Date: data[key].task_start_Date,
@@ -283,6 +291,7 @@ export default function ResourcePlanningReportComponent() {
                   exportTempData.push({
                     sr: count++,
                     ticket_id: data[key].ticket_id,
+                    job_role: data[key].job_role || "-",
                     task_owner: data[key].task_owner,
                     sprint_name: data[key].sprint_name || "-",
                     sprint_start_date: data[key].sprint_start_date || "-",

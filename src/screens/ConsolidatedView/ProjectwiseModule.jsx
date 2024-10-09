@@ -607,6 +607,7 @@ export default function ProjectwiseModule() {
   };
 
   const handleDataShow = async (type) => {
+
     await new SubModuleService()
       .getSubModuleDocuments(
         projectId,
@@ -657,14 +658,23 @@ export default function ProjectwiseModule() {
   };
 
   const selectedDOC = (e) => {
+
     if (!toggleRadio) {
       setShowbtn(false);
     } else {
       setShowbtn(true);
     }
-    setSelectedData(e.selectedRows);
-    const idArray = e.selectedRows.map((d) => d.id);
+    const filteredRows = e.selectedRows.filter((row) => {
+
+      return toggleRadio ? row.is_active === 1 : row.is_active === 0;
+    });
+    setSelectedData(filteredRows);
+
+
+    const idArray = filteredRows.map((d) => d.id);
+
     setSelectedRows(idArray);
+
   };
 
   // const uploadAttachmentHandler = (event) => {
@@ -933,6 +943,7 @@ export default function ProjectwiseModule() {
                     : 'd-none col-4 text-center'
                 }
               >
+                {/* {console.log("showbtn:", showbtn, "selectedRows:", selectedRows)} */}
                 {showbtn === true && docList && selectedRows?.length > 0 && (
                   <button
                     type="button"
