@@ -21,15 +21,23 @@ import './style.scss';
 import { addQrCodeList } from '../../../../redux/services/hrms/employeeJoining/qrCodeListMaster';
 import './style.scss';
 import { toast } from 'react-toastify';
-
+import moment from 'moment';
 
 function GenerateFormAndQrMaster() {
   // // initial state
+  const dispatch = useDispatch();
+  const { addQrCodeData } = useSelector((state) => state?.qrCodeMaster);
+  const { sourceMasterList } = useSelector((state) => state?.sourceMaster);
+  const { getDesignationData } = useSelector(
+    (state) => state.designationMaster
+  );
+  const { branchMasterList } = useSelector((state) => state?.branchMaster);
   const qrRef = useRef(null);
   const fileInputRef = useRef(null);
   const [show, setShow] = useState(true);
   const [success, setsuccess] = useState(false);
-  const [isDownload, setIsDownload] = useState(false)
+  const [isDownload, setIsDownload] = useState(false);
+  const currentDate = moment().format('MM-DD-YYYY');
   const [formData, setFormData] = useState({
     source_name: '',
     job_opening_id: [],
@@ -42,6 +50,9 @@ function GenerateFormAndQrMaster() {
     recruiter_email_id: '',
     recruiter_contact_no: ''
   });
+
+  let tenantId = localStorage.getItem('actual_tenant_id');
+
   const formInitialValue = {
     // tenant_name: '',
     source_name: '',
@@ -55,31 +66,23 @@ function GenerateFormAndQrMaster() {
     recruiter_email_id: '',
     recruiter_contact_no: ''
   };
-  const currentDate = new Date();
-  const year = currentDate.getFullYear();
-  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-  const day = String(currentDate.getDate()).padStart(2, '0');
+  let caseValue = 'Views';
+  const baseUrl = 'http://3.108.206.34/techne-ai-employee-joining-soft-lunch';
+  const themeColor = addQrCodeData?.theme_color;
+  const emailId = addQrCodeData?.email_id;
+  const logoImage = addQrCodeData?.logo_image || null;
+  const phone = addQrCodeData?.contact_no;
 
-  const { addQrCodeData} = useSelector(
-    (state) => state?.qrCodeMaster
-  );
-
-
-  const formattedDate = `${month}-${day}-${year}`; // Default locale date
+  const params = new URLSearchParams({
+    themeColor: themeColor,
+    emailId: emailId,
+    logoImage: logoImage,
+    case: caseValue,
+    phone: phone
+  });
+  const iframeSrc = `${baseUrl}?${params.toString()}`;
 
   const resetFormRef = useRef(null);
-  const dispatch = useDispatch();
-  useEffect(() => {
-    dispatch(getSourceMasterListThunk());
-    dispatch(getDesignationDataListThunk());
-    dispatch(getBranchMasterListThunk());
-  }, []);
-
-  const { sourceMasterList } = useSelector((state) => state?.sourceMaster);
-  const { getDesignationData } = useSelector(
-    (state) => state.designationMaster
-  );
-  const { branchMasterList } = useSelector((state) => state?.branchMaster);
 
   const filterAndMapData = (data, labelKey, valueKey) => {
     return data
@@ -109,15 +112,6 @@ function GenerateFormAndQrMaster() {
     { qrColor: '#000', qrType: 'squares', logoPath: '' }
   );
 
-  // // dropdown data
-  const tenantData = [
-    { label: 'Select', value: '', isDisabled: true },
-    { label: 'tenant 1', value: 'tenant_1' },
-    { label: 'tenant 2', value: 'tenant_2' },
-    { label: 'tenant 3', value: 'tenant_3' },
-    { label: 'tenant_3_tenant_1_tenant_2', value: 'tenant_4' }
-  ];
-
   const qrStyleOptions = [
     { label: 'Squares', value: 'squares' },
     { label: 'Dots', value: 'dots' },
@@ -127,24 +121,21 @@ function GenerateFormAndQrMaster() {
   // // all handler
   const downloadQrCode = (reset) => {
     const canvas = qrRef.current?.canvasRef?.current;
-    console.log(canvas, 'canvas');
     if (canvas) {
       const pngUrl = canvas?.toDataURL('image/png');
-      // ?.replace('image/png', 'image/octet-stream');
 
       console.log(pngUrl, 'url');
       let downloadLink = document.createElement('a');
       downloadLink.href = pngUrl;
-      downloadLink.download = `${'QR Code'}-${formattedDate}.jpg`;
+      downloadLink.download = `${'QR Code'}-${currentDate}.jpg`;
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
       setFormData(formInitialValue);
-      toast.success("QR Code downloaded successfully");
-      // reset()
+      toast.success('QR Code downloaded successfully');
       // setsuccess(false);
-      setIsDownload(true)
-      setQrStyleData( { qrColor: '#000', qrType: 'squares', logoPath: '' })
+      setIsDownload(true);
+      setQrStyleData({ qrColor: '#000', qrType: 'squares', logoPath: '' });
       if (resetFormRef.current) {
         resetFormRef.current();
       }
@@ -155,8 +146,6 @@ function GenerateFormAndQrMaster() {
   };
 
   const handleAddQrCode = (values) => {
-
-
     const canvas = qrRef.current?.canvasRef?.current;
     const pngUrl = canvas?.toDataURL('image/png');
     const formDatas = new FormData();
@@ -172,24 +161,17 @@ function GenerateFormAndQrMaster() {
       formDatas?.append('designations[]', designation);
     });
 
-    formDatas.append('company_name', formData.branding_type === "text" ? values?.company_name : "");
+    formDatas.append(
+      'company_name',
+      formData.branding_type === 'text' ? values?.company_name : ''
+    );
 
     formDatas.append('qr_scanner', pngUrl);
 
-    formDatas.append('logo_image',  formData.branding_type === "logo" ? values?.logo : "");
-    // let payLoad = {
-    //   source_id: values?.source_name,
-    //   theme_color: values?.theme_color,
-    //   email_id: values?.recruiter_email_id,
-    //   contact_no: values?.recruiter_contact_no,
-    //   locations: values?.branch_id,
-    //   designations: values?.job_opening_id,
-    //   company_name: values?.company_name,
-    //   qr_scanner: pngUrl,
-    //   logo_image: values?.logo?.name,
-    // };
-    // console.log(payLoad, "payLoad")
-
+    formDatas.append(
+      'logo_image',
+      formData.branding_type === 'logo' ? values?.logo : ''
+    );
 
     dispatch(
       addQrCodeList({
@@ -204,32 +186,16 @@ function GenerateFormAndQrMaster() {
     );
   };
 
-  let caseValue = 'Views';
-  const baseUrl = 'http://3.108.206.34/techne-ai-employee-joining-soft-lunch';
-  const themeColor = addQrCodeData?.theme_color
-  const emailId = addQrCodeData?.email_id
-  const logoImage = addQrCodeData?.logo_image || null
-  const phone = addQrCodeData?.contact_no
-
-  const params = new URLSearchParams({
-    themeColor: themeColor,
-    emailId: emailId,
-    logoImage: logoImage,
-    case: caseValue,
-    phone: phone
-  });
-
-
-
-  const iframeSrc = `${baseUrl}?${params.toString()}`;
-
+  useEffect(() => {
+    dispatch(getSourceMasterListThunk());
+    dispatch(getDesignationDataListThunk());
+    dispatch(getBranchMasterListThunk());
+  }, []);
 
   return (
     <>
-
       {show && (
         <Container fluid>
-
           <PageHeader showBackBtn headerTitle="Generate QR Code" />
           <Row className="mt-2 row_gap_3 generate_from_qr_container">
             <Col
@@ -245,9 +211,8 @@ function GenerateFormAndQrMaster() {
                     initialValues={formData}
                     validationSchema={generateFormValidation}
                     onSubmit={(values, errors) => {
-
                       handleAddQrCode(values);
-                      setFormData(values)
+                      setFormData(values);
                       // setFormData(values)
                     }}
                   >
@@ -305,7 +270,7 @@ function GenerateFormAndQrMaster() {
                                   accept=".png, .psd, .jpg, .svg, .eps, .pdf, .ai, .tiff, .gif, .bmp, .heic, .jpeg"
                                   ref={fileInputRef}
                                   onChange={(event) => {
-                                    console.log(event.target.files[0])
+                                    console.log(event.target.files[0]);
                                     setFieldValue(
                                       'logo',
                                       event.target.files[0]
@@ -335,15 +300,7 @@ function GenerateFormAndQrMaster() {
                                 />
                               </RenderIf>
                             </div>
-                            {/* <Field
-                          options={tenantData}
-                          component={CustomReactSelect}
-                          name="tenant_name"
-                          label="Tenant Name"
-                          placeholder="Select"
-                          requiredField
 
-                        /> */}
                             <Field
                               options={sourceData}
                               component={CustomReactSelect}
@@ -443,11 +400,15 @@ function GenerateFormAndQrMaster() {
                                         resetFormRef.current();
                                       }
                                       if (fileInputRef.current) {
-                                        fileInputRef.current.value = ''; // Clears the input field
+                                        fileInputRef.current.value = '';
                                       }
-                                      setQrStyleData( { qrColor: '#000', qrType: 'squares', logoPath: '' })
+                                      setQrStyleData({
+                                        qrColor: '#000',
+                                        qrType: 'squares',
+                                        logoPath: ''
+                                      });
 
-                                      resetForm()
+                                      resetForm();
                                       setsuccess(false);
                                     }}
                                     className="btn btn-danger ms-4"
@@ -471,14 +432,17 @@ function GenerateFormAndQrMaster() {
                   <div className="d-flex align-items-center gap-3">
                     <QRCode
                       ref={qrRef}
-                      value="http://3.108.206.34/techne-ai-employee-joining-soft-lunch"
+                      value={`http://3.108.206.34/techne-ai-employee-joining-soft-lunch/?tenant_id=${tenantId}`}
                       // size={250}
-                      logoImage={formData?.branding_type === "text" ? "" : qrStyleData?.logoPath}
+                      logoImage={
+                        formData?.branding_type === 'text'
+                          ? ''
+                          : qrStyleData?.logoPath
+                      }
                       fgColor={qrStyleData?.qrColor}
                       qrStyle={qrStyleData?.qrType}
                       logoHeight={40}
                       logoWidth={40}
-                      // logoOpacity={0.95}
                       eyeRadius={10}
                       logoPaddingStyle="circle"
                       removeQrCodeBehindLogo={true}

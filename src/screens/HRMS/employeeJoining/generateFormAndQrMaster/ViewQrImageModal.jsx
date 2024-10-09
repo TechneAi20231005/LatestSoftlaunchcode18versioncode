@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 // // static import
 import CustomModal from '../../../../components/custom/modal/CustomModal';
-import { _attachmentUrl, attachmentUrl } from '../../../../settings/constants';
+import { _attachmentUrl } from '../../../../settings/constants';
 
 const ViewQrImageModal = ({ show, close, onClose, src }) => {
 

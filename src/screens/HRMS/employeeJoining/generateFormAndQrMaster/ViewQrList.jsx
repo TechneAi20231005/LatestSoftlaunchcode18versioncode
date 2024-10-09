@@ -8,20 +8,16 @@ import { getQrCodeListById } from '../../../../redux/services/hrms/employeeJoini
 import Alert from '../../../../components/Common/Alert';
 
 const ViewQrList = () => {
+  const dispatch = useDispatch();
+  const { qrCodeDetailsData, notify } = useSelector(
+    (state) => state?.qrCodeMaster
+  );
   const qrRef = useRef(null);
   const location = useLocation();
   const info = useParams();
-  const dispatch = useDispatch();
 
   const currentId = location?.state?.currentCandidateId || info.id;
 
-  useEffect(() => {
-    dispatch(getQrCodeListById({ currentId: currentId }));
-  }, []);
-
-  const { qrCodeDetailsData, isLoading, notify } = useSelector(
-    (state) => state?.qrCodeMaster
-  );
   const { data = {} } = qrCodeDetailsData || {};
   const {
     locations = [],
@@ -60,8 +56,11 @@ const ViewQrList = () => {
     { label: 'Email ID', value: email_id },
     { label: 'Contact Number', value: contact_no },
     { label: 'Location', value: locationData },
-    { label: 'Openings', value: designationData}
+    { label: 'Openings', value: designationData }
   ];
+  useEffect(() => {
+    dispatch(getQrCodeListById({ currentId: currentId }));
+  }, []);
 
   return (
     <Container fluid>
@@ -86,4 +85,4 @@ const ViewQrList = () => {
   );
 };
 
-export default ViewQrList;
+export default ViewQrList

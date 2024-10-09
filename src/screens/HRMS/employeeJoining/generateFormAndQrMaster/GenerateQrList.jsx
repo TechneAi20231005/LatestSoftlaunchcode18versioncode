@@ -11,13 +11,16 @@ import { _base } from '../../../../settings/constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { getQrCodeList } from '../../../../redux/services/hrms/employeeJoining/qrCodeListMaster';
 import Alert from '../../../../components/Common/Alert';
-// import ViewQrImageModal from './viewQrImageModal';
 import ViewQrImageModal from './ViewQrImageModal';
 import { toast } from 'react-toastify';
+import moment from 'moment';
 
 const GenerateQrList = () => {
   const dispatch = useDispatch();
-
+  const { qrCodeMasterList, isLoading, notify } = useSelector(
+    (state) => state?.qrCodeMaster
+  );
+  const currentDate = moment().format('MM-DD-YYYY');
   const [searchValue, setSearchValue] = useState('');
   const [filterQrList, setFilterQrList] = useState([]);
   const [message, setMessage] = useState(null);
@@ -25,18 +28,6 @@ const GenerateQrList = () => {
   const [src, setSrc] = useState(null);
   const navigate = useNavigate();
 
-  useEffect(() => {
-    dispatch(getQrCodeList());
-  }, []);
-
-  const { qrCodeMasterList, isLoading, notify } = useSelector(
-    (state) => state?.qrCodeMaster
-  );
-
-  useEffect(() => {
-    setFilterQrList(qrCodeMasterList?.data);
-    setMessage(notify);
-  }, [qrCodeMasterList]);
   const handleSearch = () => {
     const filteredList = customSearchHandler(
       qrCodeMasterList?.data,
@@ -45,29 +36,20 @@ const GenerateQrList = () => {
     setFilterQrList(filteredList);
   };
 
-  useEffect(() => {
-    handleSearch();
-  }, [searchValue]);
-
   const handleReset = () => {
     setSearchValue('');
     setFilterQrList(qrCodeMasterList?.data);
   };
-  const currentDate = new Date();
-  const year = currentDate.getFullYear();
-  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-  const day = String(currentDate.getDate()).padStart(2, '0');
 
-  const formattedDate = `${month}-${day}-${year}`;
   const handleDownload = (pngUrl) => {
     if (pngUrl) {
       let downloadLink = document.createElement('a');
       downloadLink.href = pngUrl;
-     downloadLink.download = `${'QR Code'}-${formattedDate}.jpg`;
+      downloadLink.download = `${'QR Code'}-${currentDate}.jpg`;
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
-      toast.success("QR Code downloaded successfully");
+      toast.success('QR Code downloaded successfully');
     }
   };
 
@@ -104,19 +86,18 @@ const GenerateQrList = () => {
     {
       name: 'Logo',
       sortable: true,
-      width: "150px",
+      width: '150px',
       selector: (row) => (
         <a
           href="#"
           onClick={() => {
-           if(row?.logo_image){
-            setOpen(true);
-            setSrc(row?.logo_image);
-           }
+            if (row?.logo_image) {
+              setOpen(true);
+              setSrc(row?.logo_image);
+            }
           }}
           style={{ textDecoration: 'underline', color: 'blue' }}
         >
-
           {row?.logo_image?.split('/').pop() || '_'}
         </a>
       )
@@ -163,6 +144,18 @@ const GenerateQrList = () => {
       sortable: true
     }
   ];
+  useEffect(() => {
+    handleSearch();
+  }, [searchValue]);
+
+  useEffect(() => {
+    dispatch(getQrCodeList());
+  }, []);
+
+  useEffect(() => {
+    setFilterQrList(qrCodeMasterList?.data);
+    setMessage(notify);
+  }, [qrCodeMasterList]);
 
   return (
     <Container fluid>
