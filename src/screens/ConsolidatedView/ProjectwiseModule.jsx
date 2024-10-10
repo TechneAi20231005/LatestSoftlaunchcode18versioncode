@@ -42,6 +42,7 @@ export default function ProjectwiseModule() {
   const [show, setShow] = useState('');
   const [showToALL, setShowToAll] = useState(false);
   const [docList, setDocList] = useState([]);
+  const [filterData, setFilterData] = useState([]);
   const [toggleRadio, setToggleRadio] = useState(true);
   const [subModuleValue, setSubModuleValue] = useState(null);
   const [moduleValue, setModuleValue] = useState(null);
@@ -158,6 +159,12 @@ export default function ProjectwiseModule() {
               temp[i].counter = count++;
             }
             setDocList(temp);
+
+            setFilterData(
+              temp?.filter(
+                (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+              )
+            );
           }
         }
       });
@@ -225,6 +232,7 @@ export default function ProjectwiseModule() {
                   project_name: temp[key].project_name,
                   module_name: temp[key].module_name,
                   is_active: temp[key].is_active,
+                  uploaded_by: temp[key].uploaded_by,
                   document_attachment: temp[key].document_attachment,
                   sub_module_name: temp[key].sub_module_name
                     ? temp[key].sub_module_name
@@ -232,8 +240,14 @@ export default function ProjectwiseModule() {
                 });
               }
               setDocList(null);
+              setFilterData(null);
               setToggleRadio(true);
               setDocList(tempData);
+              setFilterData(
+                tempData?.filter(
+                  (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                )
+              );
             }
           }
         });
@@ -260,6 +274,7 @@ export default function ProjectwiseModule() {
                   sub_module_name: temp[key].sub_module_name,
                   is_active: temp[key].is_active,
                   document_attachment: temp[key].document_attachment,
+                  uploaded_by: temp[key].uploaded_by,
 
                   sub_module_name: temp[key].sub_module_name
                     ? temp[key].sub_module_name
@@ -267,8 +282,14 @@ export default function ProjectwiseModule() {
                 });
               }
               setDocList(null);
+              setFilterData(null);
               setToggleRadio(true);
               setDocList(tempData);
+              setFilterData(
+                tempData?.filter(
+                  (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                )
+              );
             }
           }
         });
@@ -307,6 +328,11 @@ export default function ProjectwiseModule() {
           subModuleValue ? subModuleValue : null
         );
         setDocList(docResponse.data.data);
+        setFilterData(
+          docResponse?.data?.data?.filter(
+            (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+          )
+        );
 
         setIsLoading(false);
         setToggleRadio(true);
@@ -342,7 +368,14 @@ export default function ProjectwiseModule() {
             'ACTIVE',
             subModuleValue ? subModuleValue : null
           )
-          .then((res) => setDocList(res.data.data));
+          .then((res) => {
+            setDocList(res.data.data);
+            setFilterData(
+              res.data.data?.filter(
+                (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+              )
+            );
+          });
       } else {
         toast.error(res?.data?.message, { position: 'top-right' });
       }
@@ -378,6 +411,11 @@ export default function ProjectwiseModule() {
               temp[i].counter = count++;
             }
             setDocList(temp);
+            setFilterData(
+              temp?.filter(
+                (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+              )
+            );
           }
         }
       });
@@ -393,16 +431,17 @@ export default function ProjectwiseModule() {
       let idArr = [];
 
       for (let i = 0; i < selectedData.length; i++) {
-        idArr.push(selectedData[i]);
+        idArr.push(selectedData[i].id);
       }
+
       payload.ids = [...idArr];
       if (selectedData[0].is_active) {
         payload.is_active = 0;
-        setToggleRadio(false);
-        deleteAndFetch('DEACTIVE');
+        setToggleRadio(true);
+        deleteAndFetch('ACTIVE');
       } else {
         payload.is_active = 1;
-        deleteAndFetch('ACTIVE');
+        deleteAndFetch('DEACTIVE');
         setToggleRadio(false);
       }
 
@@ -414,12 +453,12 @@ export default function ProjectwiseModule() {
               if (status === 'ACTIVE') {
                 setToggleRadio(true);
                 setSelectedRows([]);
-                setSelectedData([])
+                setSelectedData([]);
                 // setShowbtn(true)
               } else if (status === 'DEACTIVE') {
                 setToggleRadio(false);
                 setSelectedRows([]);
-                setSelectedData([])
+                setSelectedData([]);
               }
               toast.success(res?.data?.message, {
                 position: 'top-right'
@@ -455,13 +494,21 @@ export default function ProjectwiseModule() {
                     module_name: temp[key].module_name,
                     is_active: temp[key].is_active,
                     document_attachment: temp[key].document_attachment,
+                    uploaded_by: temp[key].uploaded_by,
+
                     sub_module_name: temp[key].sub_module_name
                       ? temp[key].sub_module_name
                       : ''
                   });
                 }
                 setDocList(null);
+                setFilterData(null);
                 setDocList(tempData);
+                setFilterData(
+                  tempData?.filter(
+                    (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                  )
+                );
               }
             }
           });
@@ -646,6 +693,7 @@ export default function ProjectwiseModule() {
                 module_name: temp[key].module_name,
                 is_active: temp[key].is_active,
                 document_attachment: temp[key].document_attachment,
+                uploaded_by: temp[key].uploaded_by,
 
                 sub_module_name: temp[key].sub_module_name
                   ? temp[key].sub_module_name
@@ -653,7 +701,13 @@ export default function ProjectwiseModule() {
               });
             }
             setDocList(null);
+            setFilterData(null);
             setDocList(tempData);
+            setFilterData(
+              tempData?.filter(
+                (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+              )
+            );
           }
         }
       });
@@ -671,15 +725,16 @@ export default function ProjectwiseModule() {
     } else {
       setShowbtn(true);
     }
-    const filteredRows = e.selectedRows.filter((row) => {
-      return toggleRadio ? row.is_active === 1 : row.is_active === 0;
-    });
+    setSelectedData(e.selectedRows);
+
+    // const filteredRows = e.selectedRows.filter((row) => {
+    //   return toggleRadio ? row.is_active === 1 : row.is_active === 0;
+    // });
     // setSelectedData(filteredRows);
 
-    const idArray = filteredRows.map((d) => d.id);
+    const idArray = e.selectedRows.map((d) => d.id);
     setSelectedRows(idArray);
-    setSelectedData(idArray)
-
+    // setSelectedData(idArray);
   };
 
   // const uploadAttachmentHandler = (event) => {
@@ -958,7 +1013,6 @@ export default function ProjectwiseModule() {
                     : 'd-none col-4 text-center'
                 }
               >
-
                 {showbtn === true &&
                   docList &&
                   selectedRows?.length > 0 &&
@@ -1123,7 +1177,7 @@ export default function ProjectwiseModule() {
               </span>
               <DataTable
                 columns={columns}
-                data={authorityCheck === true ? docList : FilterData}
+                data={authorityCheck === true ? docList : filterData}
                 defaultSortField="title"
                 conditionalRowStyles={conditionalRowStyles}
                 pagination
