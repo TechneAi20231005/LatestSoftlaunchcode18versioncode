@@ -453,23 +453,7 @@ function GenerateFormAndQrMaster() {
                                     style={{ height: '50px' }}
                                     disabled={isDownload}
                                     onClick={handleRemove}
-                                    // onClick={() => {
-                                    //   setFormData({});
-                                    //   if (resetFormRef.current) {
-                                    //     resetFormRef.current();
-                                    //   }
-                                    //   if (fileInputRef.current) {
-                                    //     fileInputRef.current.value = '';
-                                    //   }
-                                    //   setQrStyleData({
-                                    //     qrColor: '#000',
-                                    //     qrType: 'squares',
-                                    //     logoPath: ''
-                                    //   });
 
-                                    //   resetForm();
-                                    //   setsuccess(false);
-                                    // }}
                                     className="btn btn-danger ms-4"
                                   >
                                     Remove Form
