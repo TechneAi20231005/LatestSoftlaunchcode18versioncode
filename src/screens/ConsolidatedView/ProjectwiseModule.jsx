@@ -393,7 +393,7 @@ export default function ProjectwiseModule() {
       let idArr = [];
 
       for (let i = 0; i < selectedData.length; i++) {
-        idArr.push(selectedData[i].id);
+        idArr.push(selectedData[i]);
       }
       payload.ids = [...idArr];
       if (selectedData[0].is_active) {
@@ -414,10 +414,12 @@ export default function ProjectwiseModule() {
               if (status === 'ACTIVE') {
                 setToggleRadio(true);
                 setSelectedRows([]);
+                setSelectedData([])
                 // setShowbtn(true)
               } else if (status === 'DEACTIVE') {
                 setToggleRadio(false);
                 setSelectedRows([]);
+                setSelectedData([])
               }
               toast.success(res?.data?.message, {
                 position: 'top-right'
@@ -672,11 +674,12 @@ export default function ProjectwiseModule() {
     const filteredRows = e.selectedRows.filter((row) => {
       return toggleRadio ? row.is_active === 1 : row.is_active === 0;
     });
-    setSelectedData(filteredRows);
+    // setSelectedData(filteredRows);
 
     const idArray = filteredRows.map((d) => d.id);
-
     setSelectedRows(idArray);
+    setSelectedData(idArray)
+
   };
 
   // const uploadAttachmentHandler = (event) => {
@@ -955,7 +958,7 @@ export default function ProjectwiseModule() {
                     : 'd-none col-4 text-center'
                 }
               >
-                {/* {console.log("showbtn:", showbtn, "selectedRows:", selectedRows)} */}
+
                 {showbtn === true &&
                   docList &&
                   selectedRows?.length > 0 &&
