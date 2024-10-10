@@ -43,6 +43,27 @@ export const addQrCodeList = createAsyncThunk(
   }
 );
 
+export const removeQrCodeList = createAsyncThunk(
+  'QRcode/removeQrCodeListing',
+  async ({ currentId, onSuccessHandler }) => {
+    try {
+      const response = await customAxios.post(`QRcode/postData/${currentId}`);
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          onSuccessHandler();
+          // toast.success(response?.data?.message);
+          return response?.data?.data;
+        } else {
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
+);
+
 export const getQrCodeListById = createAsyncThunk(
   'QRcode/getQrCodeListById',
   async ({ currentId }) => {
