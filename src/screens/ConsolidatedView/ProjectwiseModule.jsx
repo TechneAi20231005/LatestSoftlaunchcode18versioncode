@@ -385,7 +385,9 @@ export default function ProjectwiseModule() {
       let idArr = [];
 
       for (let i = 0; i < selectedData.length; i++) {
-        idArr.push(selectedData[i].id);
+        console.log(selectedData[i])
+        // return false
+        idArr.push(selectedData[i]);
       }
       payload.ids = [...idArr];
       if (selectedData[0].is_active) {
@@ -397,6 +399,7 @@ export default function ProjectwiseModule() {
         deleteAndFetch('ACTIVE');
         setToggleRadio(false);
       }
+      console.log(payload, "payload")
 
       async function deleteAndFetch(status) {
         await new SubModuleService()
@@ -406,10 +409,12 @@ export default function ProjectwiseModule() {
               if (status === 'ACTIVE') {
                 setToggleRadio(true);
                 setSelectedRows([]);
+                setSelectedData([])
                 // setShowbtn(true)
               } else if (status === 'DEACTIVE') {
                 setToggleRadio(false);
                 setSelectedRows([]);
+                setSelectedData([])
               }
               toast.success(res?.data?.message, {
                 position: 'top-right'
@@ -668,12 +673,13 @@ export default function ProjectwiseModule() {
 
       return toggleRadio ? row.is_active === 1 : row.is_active === 0;
     });
-    setSelectedData(filteredRows);
+    // setSelectedData(filteredRows);
 
 
     const idArray = filteredRows.map((d) => d.id);
-
+   console.log(idArray,"array")
     setSelectedRows(idArray);
+    setSelectedData(idArray)
 
   };
 
