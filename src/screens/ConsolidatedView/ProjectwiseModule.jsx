@@ -385,8 +385,6 @@ export default function ProjectwiseModule() {
       let idArr = [];
 
       for (let i = 0; i < selectedData.length; i++) {
-        console.log(selectedData[i])
-        // return false
         idArr.push(selectedData[i]);
       }
       payload.ids = [...idArr];
@@ -399,7 +397,6 @@ export default function ProjectwiseModule() {
         deleteAndFetch('ACTIVE');
         setToggleRadio(false);
       }
-      console.log(payload, "payload")
 
       async function deleteAndFetch(status) {
         await new SubModuleService()
@@ -677,7 +674,6 @@ export default function ProjectwiseModule() {
 
 
     const idArray = filteredRows.map((d) => d.id);
-   console.log(idArray,"array")
     setSelectedRows(idArray);
     setSelectedData(idArray)
 
