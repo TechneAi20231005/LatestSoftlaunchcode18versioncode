@@ -1,7 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 // import { ProgressBar } from "react-bootstrap";
 import FileSaver, { saveAs } from 'file-saver';
-import { Link, useHistory, useLocation, useParams } from 'react-router-dom';
+import {
+  Link,
+  useHistory,
+  useLocation,
+  useNavigate,
+  useParams
+} from 'react-router-dom';
 import ConsolidatedService from '../../services/ProjectManagementService/ConsolidatedService';
 import GeneralSettingService from '../../services/SettingService/GeneralSettingService';
 import { _apiUrl, _attachmentUrl, _base } from '../../settings/constants';
@@ -14,6 +20,7 @@ import Alert from '../../components/Common/Alert';
 import { Modal, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import CustomAlertModal from '../../components/custom/modal/CustomAlertModal';
+import PageHeader from '../../components/Common/PageHeader';
 
 export default function ProjectwiseModule() {
   const params = useParams();
@@ -61,6 +68,7 @@ export default function ProjectwiseModule() {
   const handleModal = (data) => {
     setModal(data);
   };
+  const navigate = useNavigate();
 
   const submoduleRef = useRef(null);
   const moduleRef = useRef(null);
@@ -220,7 +228,7 @@ export default function ProjectwiseModule() {
                   document_attachment: temp[key].document_attachment,
                   sub_module_name: temp[key].sub_module_name
                     ? temp[key].sub_module_name
-                    : 'No Sub Module'
+                    : ''
                 });
               }
               setDocList(null);
@@ -255,7 +263,7 @@ export default function ProjectwiseModule() {
 
                   sub_module_name: temp[key].sub_module_name
                     ? temp[key].sub_module_name
-                    : 'No Sub Module'
+                    : ''
                 });
               }
               setDocList(null);
@@ -449,7 +457,7 @@ export default function ProjectwiseModule() {
                     document_attachment: temp[key].document_attachment,
                     sub_module_name: temp[key].sub_module_name
                       ? temp[key].sub_module_name
-                      : 'No Sub Module'
+                      : ''
                   });
                 }
                 setDocList(null);
@@ -583,8 +591,7 @@ export default function ProjectwiseModule() {
     },
     {
       name: 'SubModule Name',
-      selector: (row) =>
-        row.sub_module_name ? row.sub_module_name : 'No sub module ',
+      selector: (row) => (row.sub_module_name ? row.sub_module_name : ' '),
 
       sortable: true
     }
@@ -609,7 +616,6 @@ export default function ProjectwiseModule() {
   };
 
   const handleDataShow = async (type) => {
-
     await new SubModuleService()
       .getSubModuleDocuments(
         projectId,
@@ -643,7 +649,7 @@ export default function ProjectwiseModule() {
 
                 sub_module_name: temp[key].sub_module_name
                   ? temp[key].sub_module_name
-                  : 'No Sub Module'
+                  : ''
               });
             }
             setDocList(null);
@@ -660,18 +666,15 @@ export default function ProjectwiseModule() {
   };
 
   const selectedDOC = (e) => {
-
     if (!toggleRadio) {
       setShowbtn(false);
     } else {
       setShowbtn(true);
     }
     const filteredRows = e.selectedRows.filter((row) => {
-
       return toggleRadio ? row.is_active === 1 : row.is_active === 0;
     });
     // setSelectedData(filteredRows);
-
 
     const idArray = filteredRows.map((d) => d.id);
     setSelectedRows(idArray);
@@ -754,12 +757,22 @@ export default function ProjectwiseModule() {
     // Clear the file input to avoid reselecting the same files
   };
 
+  const FilterData =
+    docList && docList?.filter((i) => i?.uploaded_by === sessionStorage?.id);
+
   useEffect(() => {
     loadData();
   }, [moduleValue]);
   return (
     <>
-      <div className=" card col-md-6 w-100">
+      <PageHeader showBackBtn headerTitle="Upload Documents" />
+      {/* <div className="d-flex justify-content-start ">
+        <i
+          onClick={() => navigate(`/${_base}/ConsolidatedView`)}
+          class="icofont-arrow-left fs-1 text-primary"
+        ></i>
+      </div> */}
+      <div className=" card col-md-6 w-100 mt-3">
         <div className="card-body">
           {notify && <Alert alertData={notify} />}
           <div className="d-flex align-items-center justify-content-center mt-5 mb-4">
@@ -870,7 +883,7 @@ export default function ProjectwiseModule() {
                   projectWiseSubModuleDropdown?.length > 0) && (
                   <div className="d-md-flex mt-2">
                     <label className="form-label col-sm-3 mt-2 me-2 fw-bold">
-                      Sub Module:
+                      SubModule:
                     </label>
                     <Select
                       className="w-100"
@@ -945,19 +958,22 @@ export default function ProjectwiseModule() {
                     : 'd-none col-4 text-center'
                 }
               >
-                {/* {console.log("showbtn:", showbtn, "selectedRows:", selectedRows)} */}
-                {showbtn === true && docList && selectedRows?.length > 0 && (
-                  <button
-                    type="button"
-                    disabled={
-                      isProjectOwner !== 1 && !checkDelete ? true : false
-                    }
-                    className="btn btn-danger"
-                    onClick={deleteRestoreDoc}
-                  >
-                    Delete Files
-                  </button>
-                )}
+
+                {showbtn === true &&
+                  docList &&
+                  selectedRows?.length > 0 &&
+                  checkDelete === true && (
+                    <button
+                      type="button"
+                      disabled={
+                        isProjectOwner !== 1 && !checkDelete ? true : false
+                      }
+                      className="btn btn-danger"
+                      onClick={deleteRestoreDoc}
+                    >
+                      Delete Files
+                    </button>
+                  )}
                 {showbtn === false && docList && selectedRows?.length > 0 && (
                   <button
                     type="button"
@@ -1107,7 +1123,7 @@ export default function ProjectwiseModule() {
               </span>
               <DataTable
                 columns={columns}
-                data={docList}
+                data={authorityCheck === true ? docList : FilterData}
                 defaultSortField="title"
                 conditionalRowStyles={conditionalRowStyles}
                 pagination
