@@ -18,7 +18,10 @@ import { getSourceMasterListThunk } from '../../../../redux/services/hrms/employ
 import { getDesignationDataListThunk } from '../../../../screens/Masters/DesignationMaster/DesignationAction';
 import { getBranchMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/branchMaster';
 import './style.scss';
-import { addQrCodeList } from '../../../../redux/services/hrms/employeeJoining/qrCodeListMaster';
+import {
+  addQrCodeList,
+  removeQrCodeList
+} from '../../../../redux/services/hrms/employeeJoining/qrCodeListMaster';
 import './style.scss';
 import { toast } from 'react-toastify';
 import moment from 'moment';
@@ -27,6 +30,7 @@ function GenerateFormAndQrMaster() {
   // // initial state
   const dispatch = useDispatch();
   const { addQrCodeData } = useSelector((state) => state?.qrCodeMaster);
+  console.log(addQrCodeData, 'data');
   const { sourceMasterList } = useSelector((state) => state?.sourceMaster);
   const { getDesignationData } = useSelector(
     (state) => state.designationMaster
@@ -37,6 +41,7 @@ function GenerateFormAndQrMaster() {
   const [show, setShow] = useState(true);
   const [success, setsuccess] = useState(false);
   const [isDownload, setIsDownload] = useState(false);
+  const [isGenerate, setIsGenerate] = useState(false);
   const currentDate = moment().format('MM-DD-YYYY');
   const [formData, setFormData] = useState({
     source_name: '',
@@ -72,6 +77,7 @@ function GenerateFormAndQrMaster() {
   const emailId = addQrCodeData?.email_id;
   const logoImage = addQrCodeData?.logo_image || null;
   const phone = addQrCodeData?.contact_no;
+  const removeId = addQrCodeData?.id;
 
   const params = new URLSearchParams({
     themeColor: themeColor,
@@ -142,6 +148,9 @@ function GenerateFormAndQrMaster() {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
       }
+      setTimeout(() => {
+        window.history.back();
+      }, 1500);
     }
   };
 
@@ -178,12 +187,57 @@ function GenerateFormAndQrMaster() {
         formData: formDatas,
         onSuccessHandler: () => {
           setsuccess(true);
+          setIsGenerate(true);
         },
         onErrorHandler: () => {
           setsuccess(false);
         }
       })
     );
+  };
+  const handleRemove = () => {
+    dispatch(
+      removeQrCodeList({
+        currentId: removeId,
+        onSuccessHandler: () => {
+          console.log('removed sucessfully');
+          setIsGenerate(false);
+          // setsuccess(true);
+        }
+      })
+    );
+    setFormData({});
+    if (resetFormRef.current) {
+      resetFormRef.current();
+    }
+    if (fileInputRef.current) {
+      fileInputRef.current.value = '';
+    }
+    setQrStyleData({
+      qrColor: '#000',
+      qrType: 'squares',
+      logoPath: ''
+    });
+
+    // resetForm();
+    setsuccess(false);
+  };
+  const handleBack = () => {
+    if (isGenerate && !isDownload) {
+      dispatch(
+        removeQrCodeList({
+          currentId: removeId,
+          onSuccessHandler: () => {
+            window.history.back();
+            // setsuccess(true);
+          }
+        })
+      );
+      console.log('calling a api');
+    } else {
+      window.history.back();
+      console.log('going back ');
+    }
   };
 
   useEffect(() => {
@@ -196,7 +250,11 @@ function GenerateFormAndQrMaster() {
     <>
       {show && (
         <Container fluid>
-          <PageHeader showBackBtn headerTitle="Generate QR Code" />
+          <PageHeader
+            isremove
+            handleBack={handleBack}
+            headerTitle="Generate QR Code"
+          />
           <Row className="mt-2 row_gap_3 generate_from_qr_container">
             <Col
               xs={12}
@@ -360,7 +418,7 @@ function GenerateFormAndQrMaster() {
                               name="recruiter_email_id"
                               label="Recruiter Email ID"
                               placeholder="Enter Recruiter Email Id"
-                              requiredField
+                              // requiredField
                             />
                             <Field
                               component={CustomInput}
@@ -368,7 +426,7 @@ function GenerateFormAndQrMaster() {
                               name="recruiter_contact_no"
                               label="Recruiter Contact Number"
                               placeholder="Enter Recruiter Contact Number"
-                              requiredField
+                              // requiredField
                             />
                             <div style={{ display: 'flex' }}>
                               <button
@@ -394,23 +452,8 @@ function GenerateFormAndQrMaster() {
                                   <button
                                     style={{ height: '50px' }}
                                     disabled={isDownload}
-                                    onClick={() => {
-                                      setFormData({});
-                                      if (resetFormRef.current) {
-                                        resetFormRef.current();
-                                      }
-                                      if (fileInputRef.current) {
-                                        fileInputRef.current.value = '';
-                                      }
-                                      setQrStyleData({
-                                        qrColor: '#000',
-                                        qrType: 'squares',
-                                        logoPath: ''
-                                      });
+                                    onClick={handleRemove}
 
-                                      resetForm();
-                                      setsuccess(false);
-                                    }}
                                     className="btn btn-danger ms-4"
                                   >
                                     Remove Form
