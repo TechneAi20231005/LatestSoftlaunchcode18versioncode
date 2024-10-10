@@ -228,7 +228,7 @@ export default function ProjectwiseModule() {
                   document_attachment: temp[key].document_attachment,
                   sub_module_name: temp[key].sub_module_name
                     ? temp[key].sub_module_name
-                    : 'No Sub Module'
+                    : ''
                 });
               }
               setDocList(null);
@@ -263,7 +263,7 @@ export default function ProjectwiseModule() {
 
                   sub_module_name: temp[key].sub_module_name
                     ? temp[key].sub_module_name
-                    : 'No Sub Module'
+                    : ''
                 });
               }
               setDocList(null);
@@ -455,7 +455,7 @@ export default function ProjectwiseModule() {
                     document_attachment: temp[key].document_attachment,
                     sub_module_name: temp[key].sub_module_name
                       ? temp[key].sub_module_name
-                      : 'No Sub Module'
+                      : ''
                   });
                 }
                 setDocList(null);
@@ -589,8 +589,7 @@ export default function ProjectwiseModule() {
     },
     {
       name: 'SubModule Name',
-      selector: (row) =>
-        row.sub_module_name ? row.sub_module_name : 'No sub module ',
+      selector: (row) => (row.sub_module_name ? row.sub_module_name : ' '),
 
       sortable: true
     }
@@ -615,7 +614,6 @@ export default function ProjectwiseModule() {
   };
 
   const handleDataShow = async (type) => {
-
     await new SubModuleService()
       .getSubModuleDocuments(
         projectId,
@@ -649,7 +647,7 @@ export default function ProjectwiseModule() {
 
                 sub_module_name: temp[key].sub_module_name
                   ? temp[key].sub_module_name
-                  : 'No Sub Module'
+                  : ''
               });
             }
             setDocList(null);
@@ -666,23 +664,19 @@ export default function ProjectwiseModule() {
   };
 
   const selectedDOC = (e) => {
-
     if (!toggleRadio) {
       setShowbtn(false);
     } else {
       setShowbtn(true);
     }
     const filteredRows = e.selectedRows.filter((row) => {
-
       return toggleRadio ? row.is_active === 1 : row.is_active === 0;
     });
     setSelectedData(filteredRows);
 
-
     const idArray = filteredRows.map((d) => d.id);
 
     setSelectedRows(idArray);
-
   };
 
   // const uploadAttachmentHandler = (event) => {
@@ -759,6 +753,9 @@ export default function ProjectwiseModule() {
 
     // Clear the file input to avoid reselecting the same files
   };
+
+  const FilterData =
+    docList && docList?.filter((i) => i?.uploaded_by === sessionStorage?.id);
 
   useEffect(() => {
     loadData();
@@ -883,7 +880,7 @@ export default function ProjectwiseModule() {
                   projectWiseSubModuleDropdown?.length > 0) && (
                   <div className="d-md-flex mt-2">
                     <label className="form-label col-sm-3 mt-2 me-2 fw-bold">
-                      Sub Module:
+                      SubModule:
                     </label>
                     <Select
                       className="w-100"
@@ -959,18 +956,21 @@ export default function ProjectwiseModule() {
                 }
               >
                 {/* {console.log("showbtn:", showbtn, "selectedRows:", selectedRows)} */}
-                {showbtn === true && docList && selectedRows?.length > 0 && (
-                  <button
-                    type="button"
-                    disabled={
-                      isProjectOwner !== 1 && !checkDelete ? true : false
-                    }
-                    className="btn btn-danger"
-                    onClick={deleteRestoreDoc}
-                  >
-                    Delete Files
-                  </button>
-                )}
+                {showbtn === true &&
+                  docList &&
+                  selectedRows?.length > 0 &&
+                  checkDelete === true && (
+                    <button
+                      type="button"
+                      disabled={
+                        isProjectOwner !== 1 && !checkDelete ? true : false
+                      }
+                      className="btn btn-danger"
+                      onClick={deleteRestoreDoc}
+                    >
+                      Delete Files
+                    </button>
+                  )}
                 {showbtn === false && docList && selectedRows?.length > 0 && (
                   <button
                     type="button"
@@ -1120,7 +1120,7 @@ export default function ProjectwiseModule() {
               </span>
               <DataTable
                 columns={columns}
-                data={docList}
+                data={authorityCheck === true ? docList : FilterData}
                 defaultSortField="title"
                 conditionalRowStyles={conditionalRowStyles}
                 pagination
