@@ -140,7 +140,12 @@ const GenerateQrList = () => {
     },
     {
       name: 'Created At',
-      selector: (row) => row?.created || '--',
+      selector: (row) => row?.created_at || '--',
+      sortable: true
+    },
+    {
+      name: 'Created By',
+      selector: (row) => row?.created_by || '--',
       sortable: true
     }
   ];
@@ -181,7 +186,7 @@ const GenerateQrList = () => {
             name="interview_search"
             value={searchValue}
             onChange={(e) => setSearchValue(e?.target?.value)}
-            placeholder="Enter candidate name..."
+            placeholder="Search here..."
             className="form-control"
           />
         </Col>
@@ -215,6 +220,7 @@ const GenerateQrList = () => {
         selectableRows={false}
         className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
         highlightOnHover={true}
+        persistTableHead={true}
         progressPending={isLoading?.getQrCodeMasterList}
         progressComponent={<TableLoadingSkelton />}
       />
