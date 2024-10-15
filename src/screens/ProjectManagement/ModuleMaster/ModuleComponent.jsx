@@ -14,7 +14,7 @@ import { customSearchHandler } from '../../../utils/customFunction';
 function ModuleComponent() {
   //initial state
   const location = useLocation();
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
 
   //local state
 

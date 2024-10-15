@@ -228,7 +228,7 @@ export default class BillCheckingTransactionService {
       }
     };
     return axios.get(
-      _URL + '/getBillCheckById/' + id + '/' + sessionStorage.getItem('id'),
+      _URL + '/getBillCheckById/' + id + '/' + localStorage.getItem('id'),
       config
     );
   }

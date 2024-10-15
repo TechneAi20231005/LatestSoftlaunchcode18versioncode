@@ -75,7 +75,7 @@ export default function ProjectwiseModule() {
   const ModuleID = moduleId?.length > 0 ? moduleId : null;
 
   const loadData = async () => {
-    const userId = sessionStorage.getItem('id');
+    const userId = localStorage.getItem('id');
     const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
 
     await new ConsolidatedService()
@@ -758,7 +758,7 @@ export default function ProjectwiseModule() {
   };
 
   const FilterData =
-    docList && docList?.filter((i) => i?.uploaded_by === sessionStorage?.id);
+    docList && docList?.filter((i) => i?.uploaded_by === localStorage?.id);
 
   useEffect(() => {
     loadData();

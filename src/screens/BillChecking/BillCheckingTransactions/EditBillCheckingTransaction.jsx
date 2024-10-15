@@ -1822,7 +1822,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       data.is_rejected != 1 &&
                       data.approvers_id.length > 0 &&
                       data.approvers_id.includes(
-                        parseInt(sessionStorage.getItem('id'))
+                        parseInt(localStorage.getItem('id'))
                       ) && (
                         <>
                           <div className=" col-md mt-4">
