@@ -41,17 +41,41 @@ const GenerateQrList = () => {
     setFilterQrList(qrCodeMasterList?.data);
   };
 
-  const handleDownload = (pngUrl) => {
-    if (pngUrl) {
-      let downloadLink = document.createElement('a');
-      downloadLink.href = pngUrl;
-      downloadLink.download = `${'QR Code'}-${currentDate}.jpg`;
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-      toast.success('QR Code downloaded successfully');
-    }
+
+
+  const DownloadSvg = (svgData) => {
+
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 500; // Use the original width of the SVG
+    canvas.height = 500; // Use the original height of the SVG
+
+    const img = new Image();
+    const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(svgBlob);
+
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      const pngUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = pngUrl;
+      link.download = `${'QR Code'}-${currentDate}.png`;
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    };
+
+    img.onerror = (error) => {
+      console.error('Error loading image', error);
+    };
+
+    img.src = url;
+    toast.success('QR Code downloaded successfully');
   };
+
 
   const columns = [
     {
@@ -68,7 +92,8 @@ const GenerateQrList = () => {
               }
             />
             <i
-              onClick={() => handleDownload(row?.qr_scanner)}
+              // onClick={() => handleDownload(row?.qr_scanner)}
+              onClick={() => DownloadSvg(row?.qr_scanner)}
               class="icofont-download cp"
             ></i>
           </div>
