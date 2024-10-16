@@ -29,6 +29,8 @@ export default function ProjectwiseModule() {
   const location = useLocation();
   const [data, setData] = useState(null);
   const [isProjectOwner, setIsProjectOwner] = useState(null);
+  const [isReviewer, setIsReviewer] = useState(null);
+
   const [idd, setId] = useState(null);
   const [submoduleData, setSubmoduleData] = useState([]);
   const [subModuleDropdown, setSubModuleDropdown] = useState(null);
@@ -169,11 +171,13 @@ export default function ProjectwiseModule() {
           if (res?.status === 200 && res?.data?.status == 1) {
             const authorityData = res?.data?.data?.result;
             setIsProjectOwner(res?.data?.data?.is_projectOwner);
+            setIsReviewer(res?.data?.data?.is_Reviewer);
+
             const checked = authorityData.find(
-              (d) => d.setting_name === 'Show To ALL'
+              (d) => d?.setting_name === 'Show To ALL'
             );
             const deleteCheck = authorityData.find(
-              (d) => d.setting_name === 'Delete DOC'
+              (d) => d?.setting_name === 'Delete DOC'
             );
             if (checked) {
               setAuthorityCheck(true);
@@ -189,7 +193,6 @@ export default function ProjectwiseModule() {
         });
     } catch (error) {}
   };
-
   const changeSubModuleHandle = async (e, type) => {
     const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
 
@@ -225,6 +228,8 @@ export default function ProjectwiseModule() {
                   project_name: temp[key].project_name,
                   module_name: temp[key].module_name,
                   is_active: temp[key].is_active,
+                  uploaded_by: temp[key].uploaded_by,
+
                   document_attachment: temp[key].document_attachment,
                   sub_module_name: temp[key].sub_module_name
                     ? temp[key].sub_module_name
@@ -260,6 +265,7 @@ export default function ProjectwiseModule() {
                   sub_module_name: temp[key].sub_module_name,
                   is_active: temp[key].is_active,
                   document_attachment: temp[key].document_attachment,
+                  uploaded_by: temp[key].uploaded_by,
 
                   sub_module_name: temp[key].sub_module_name
                     ? temp[key].sub_module_name
@@ -384,26 +390,38 @@ export default function ProjectwiseModule() {
   };
 
   const deleteRestoreDoc = async () => {
+    const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
+
     try {
       if (isLoading) {
         return;
       }
       setIsLoading(true);
       const payload = {};
-      let idArr = [];
+      // let idArr = [];
 
-      for (let i = 0; i < selectedData.length; i++) {
-        idArr.push(selectedData[i].id);
-      }
-      payload.ids = [...idArr];
-      if (selectedData[0].is_active) {
+      // for (let i = 0; i < selectedData.length; i++) {
+      //   idArr.push(selectedData[i].id);
+      // }
+      // payload.ids = [...idArr];
+      // if (selectedData[0].is_active) {
+      //   payload.is_active = 0;
+      //   setToggleRadio(false);
+      //   deleteAndFetch('DEACTIVE');
+      // } else {
+      //   payload.is_active = 1;
+      //   deleteAndFetch('ACTIVE');
+      //   setToggleRadio(false);
+      // }
+
+      if (toggleRadio === true) {
+        payload.ids = selectedRows;
         payload.is_active = 0;
-        setToggleRadio(false);
-        deleteAndFetch('DEACTIVE');
-      } else {
-        payload.is_active = 1;
         deleteAndFetch('ACTIVE');
-        setToggleRadio(false);
+      } else {
+        payload.ids = selectedRows;
+        payload.is_active = 1;
+        deleteAndFetch('DEACTIVE');
       }
 
       async function deleteAndFetch(status) {
@@ -433,7 +451,7 @@ export default function ProjectwiseModule() {
         await new SubModuleService()
           .getSubModuleDocuments(
             projectId,
-            ModuleID,
+            newModuleID,
             status,
             subModuleValue ? subModuleValue : null
           )
@@ -453,6 +471,8 @@ export default function ProjectwiseModule() {
                     module_name: temp[key].module_name,
                     is_active: temp[key].is_active,
                     document_attachment: temp[key].document_attachment,
+                    uploaded_by: temp[key].uploaded_by,
+
                     sub_module_name: temp[key].sub_module_name
                       ? temp[key].sub_module_name
                       : ''
@@ -488,12 +508,58 @@ export default function ProjectwiseModule() {
       .updateProjectDocument(row.id, form)
       .then((res) => {
         if (res.status === 200 && res.data.status == 1) {
-          fetchData();
+          // fetchData();
         }
       });
   };
 
+  // const [selectedRows, setSelectedRows] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+
+  const handleSelectAll = () => {
+    if (selectAll) {
+      setSelectedRows([]); // Deselect all
+    } else {
+      const allIds = docList.map((row) => row.id); // Assuming 'id' is your row identifier
+      setSelectedRows(allIds); // Select all
+    }
+    setSelectAll(!selectAll);
+  };
+
+  const handleRowSelect = (id) => {
+    if (selectedRows.includes(id)) {
+      setSelectedRows(selectedRows.filter((rowId) => rowId !== id)); // Deselect
+    } else {
+      setSelectedRows([...selectedRows, id]); // Select
+    }
+  };
+
   const columns = [
+    {
+      name: (
+        <div>
+          <input
+            type="checkbox"
+            checked={selectAll}
+            onChange={handleSelectAll}
+          />
+        </div>
+      ),
+      sortable: false,
+      cell: (row) => {
+        return (
+          <>
+            <input
+              type="checkbox"
+              checked={selectedRows.includes(row.id)}
+              onChange={() => handleRowSelect(row.id)}
+            />
+          </>
+        );
+      },
+      width: '10%'
+    },
+
     {
       name: 'Sr no',
       selector: (row) => row.counter,
@@ -522,6 +588,7 @@ export default function ProjectwiseModule() {
       },
       width: '10%'
     },
+
     {
       name: 'Actions',
       selector: () => 'world',
@@ -536,7 +603,7 @@ export default function ProjectwiseModule() {
               title="History"
             >
               <Link
-                to={`/${_base}/ProjectWiseModuleHistory/${row.id}`}
+                to={`/${_base}/ProjectWiseModuleHistory/${row?.id}`}
                 ProjectWiseModuleHistory
               >
                 <i className="icofont-history btn btn-sm btn-info text-white"></i>
@@ -614,11 +681,13 @@ export default function ProjectwiseModule() {
   };
 
   const handleDataShow = async (type) => {
+    const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
+
     await new SubModuleService()
       .getSubModuleDocuments(
         projectId,
         // moduleId,
-        ModuleID,
+        newModuleID,
         type,
         subModuleValue ? subModuleValue : null
       )
@@ -644,7 +713,7 @@ export default function ProjectwiseModule() {
                 module_name: temp[key].module_name,
                 is_active: temp[key].is_active,
                 document_attachment: temp[key].document_attachment,
-
+                uploaded_by: temp[key].uploaded_by,
                 sub_module_name: temp[key].sub_module_name
                   ? temp[key].sub_module_name
                   : ''
@@ -755,20 +824,25 @@ export default function ProjectwiseModule() {
   };
 
   const FilterData =
-    docList && docList?.filter((i) => i?.uploaded_by === sessionStorage?.id);
+    docList &&
+    docList?.filter(
+      (i) =>
+        i?.uploaded_by === parseInt(sessionStorage?.id) || i?.show_to_all === 1
+    );
 
   useEffect(() => {
     loadData();
   }, [moduleValue]);
   return (
     <>
-      <PageHeader showBackBtn headerTitle="Upload Documents" />
-      {/* <div className="d-flex justify-content-start ">
+      {/* <PageHeader headerTitle="Upload Documents" /> */}
+      <div className="d-flex justify-content-start ">
         <i
           onClick={() => navigate(`/${_base}/ConsolidatedView`)}
           class="icofont-arrow-left fs-1 text-primary"
-        ></i>
-      </div> */}
+        ></i>{' '}
+        <h2 className="text-primary">Upload Documents</h2>
+      </div>
       <div className=" card col-md-6 w-100 mt-3">
         <div className="card-body">
           {notify && <Alert alertData={notify} />}
@@ -777,17 +851,17 @@ export default function ProjectwiseModule() {
               <div className={'project-block bg-lightgreen'}>
                 <i className="icofont-briefcase"></i>
               </div>
-              {ModuleID?.length > 0 ? (
+              {!isNaN(parseInt(moduleId)) ? (
                 <span className="small text-muted project_name fw-bold text-center">
-                  {data && data.project_name}
+                  {data && data?.project_name}
                 </span>
               ) : (
                 <h6 className="mb-0 fw-bold  fs-6  mb-2">
-                  {data && data.project_name}
+                  {data && data?.project_name}
                 </h6>
               )}
               <h6 className="mb-0 fw-bold  fs-6  mb-2">
-                {ModuleID?.length > 0 ? data && data.module_name : ''}
+                {!isNaN(parseInt(moduleId)) ? data?.module_name : ''}
               </h6>
             </div>
           </div>
@@ -801,7 +875,7 @@ export default function ProjectwiseModule() {
                 >
                   <span className="ms-2">
                     {/* {data && data.ticket.In_Progress} Pending Tickets */}
-                    {data && data.details.ticket.PENDING} Pending Tickets
+                    {data && data?.details?.ticket?.PENDING} Pending Tickets
                   </span>
                 </Link>
               </div>
@@ -955,7 +1029,6 @@ export default function ProjectwiseModule() {
                     : 'd-none col-4 text-center'
                 }
               >
-                {/* {console.log("showbtn:", showbtn, "selectedRows:", selectedRows)} */}
                 {showbtn === true &&
                   docList &&
                   selectedRows?.length > 0 &&
@@ -987,7 +1060,7 @@ export default function ProjectwiseModule() {
                   type="button"
                   className="btn btn-primary"
                   disabled={
-                    moduleId?.length > 0
+                    parseInt(moduleId)?.length > 0
                       ? !isProjectActive ||
                         !isModuleActive ||
                         !isSubModuleActive
@@ -1120,12 +1193,18 @@ export default function ProjectwiseModule() {
               </span>
               <DataTable
                 columns={columns}
-                data={authorityCheck === true ? docList : FilterData}
+                data={
+                  authorityCheck === true ||
+                  isProjectOwner === 1 ||
+                  isReviewer === 1
+                    ? docList
+                    : FilterData
+                }
                 defaultSortField="title"
                 conditionalRowStyles={conditionalRowStyles}
                 pagination
-                selectableRows={true}
-                onSelectedRowsChange={selectedDOC}
+                // selectableRows={true}
+                // onSelectedRowsChange={selectedDOC}
                 className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                 highlightOnHover={true}
               />
