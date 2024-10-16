@@ -63,6 +63,8 @@ import downloadFormatSlice from '../slices/testCases/downloadFormatFile';
 import testCaseReviewSlice from '../slices/testCases/testCaseReview';
 import testBankSlice from '../slices/testCases/testBank';
 import sidebarSlice from '../slices/Sidebar';
+import jobRoleMaster from '../slices/jobRoleMaster';
+
 export const store = configureStore({
   reducer: {
     login: loginReducer,
@@ -96,7 +98,8 @@ export const store = configureStore({
     customerMaster: CustomerMappingSlice,
     dynamicFormDropDown: DynamicFormDropDownSlice,
     consolidatedData: ConsolidatedSlice,
-
+    jobRoleMaster: jobRoleMaster,
+    
     // // HRMS>>Employee Joining
     branchMaster: branchMasterSlice,
     sourceMaster: sourceMasterSlice,
