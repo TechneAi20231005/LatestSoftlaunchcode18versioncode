@@ -89,7 +89,7 @@ function localReducer(state, action) {
 }
 
 function TestDraftDetails(props) {
-  const clearAllFilter = props.clearData;
+  const clearAllFilter = props?.clearData;
 
   const dispatch = useDispatch();
 
@@ -140,12 +140,6 @@ function TestDraftDetails(props) {
     modalHeader: ''
   });
 
-  // const [paginationData, setPaginationData] = useReducer(
-  //   (prevState, nextState) => {
-  //     return { ...prevState, ...nextState };
-  //   },
-  //   { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
-  // );
   const [disable, setDisable] = useState(false);
   const [reviewerError, setReviewerError] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -176,7 +170,7 @@ function TestDraftDetails(props) {
     localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: newSelectAllNames });
 
     if (newSelectAllNames) {
-      const draftRowIds = allDraftTestListData
+      const draftRowIds = props?.allDraftTestListData
         .filter((row) => row.status === 'DRAFT')
         .map((row) => row.id);
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
@@ -420,7 +414,7 @@ function TestDraftDetails(props) {
 
     // const updatedFilters = [...filters, newFilter];
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
-    props.setIsFilterApplied((prev) => ({
+    props?.setIsFilterApplied((prev) => ({
       ...prev,
       [filterColumnId]: true
     }));
@@ -471,7 +465,7 @@ function TestDraftDetails(props) {
 
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
 
-    props.setIsFilterApplied((prev) => ({
+    props?.setIsFilterApplied((prev) => ({
       ...prev,
       [filterColumn]: true
     }));
@@ -491,7 +485,7 @@ function TestDraftDetails(props) {
   };
 
   const handleClearAllFilter = async () => {
-    props.setIsFilterApplied((prev) => ({
+    props?.setIsFilterApplied((prev) => ({
       ...prev,
       [filterColumn]: false
     }));
@@ -1576,7 +1570,7 @@ function TestDraftDetails(props) {
 
       // const updatedFilters = [...filters, newFilter];
       localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
-      props.setIsFilterApplied((prev) => ({
+      props?.setIsFilterApplied((prev) => ({
         ...prev,
         [filterColumnId]: true
       }));
