@@ -58,7 +58,8 @@ export default function Header() {
 
   function handleLogout() {
     localStorage.clear();
-    localStorage.clear();
+    // localStorage.clear();
+    sessionStorage.clear();
     window.location.href = `${process.env.PUBLIC_URL}/`;
   }
 

@@ -13,19 +13,19 @@ import './App.css';
 // Main application component
 const App = () => {
   // State to manage the token (password) using useState hook
-  const [token, setToken] = useState(sessionStorage.getItem('jwt_token'));
+  const [token, setToken] = useState(localStorage.getItem('jwt_token'));
   const onlineStatus = useOnlineStatus();
   const [checkUrl, setCheckUrl] = useState(false);
   const checkBaseUrl = () => {
     let base = `/${_base}/`;
     if (base === window.location.pathname) {
       localStorage.clear();
-      sessionStorage.clear();
+      // localStorage.clear();
       setToken(null);
       setCheckUrl(false);
     } else if (base !== window.location.pathname && localStorage.length === 6) {
       localStorage.clear();
-      sessionStorage.clear();
+      // localStorage.clear();
       setToken(null);
       setCheckUrl(null);
       setCheckUrl(false);
@@ -49,7 +49,7 @@ const App = () => {
         // Token has expired, log out the user and clear relevant data
         localStorage.removeItem('jwt_token');
         localStorage.removeItem('jwt_token_expiration');
-        sessionStorage.clear();
+        localStorage.clear();
         // Redirect user to the login page
         window.location.href = `${process.env.PUBLIC_URL}/`;
       }
@@ -73,7 +73,7 @@ const App = () => {
         {token &&
           onlineStatus &&
           checkUrl === true &&
-          sessionStorage.length > 6 && (
+          localStorage.length > 6 && (
             <>
               <Sidebar />
               <MainIndex />

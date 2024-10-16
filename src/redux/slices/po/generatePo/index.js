@@ -8,7 +8,7 @@ import {
 
 const initialState = {
   pendingOrderList: [],
-  userAddedPoDataList: JSON.parse(sessionStorage.getItem('poDataList')) || [],
+  userAddedPoDataList: JSON.parse(localStorage.getItem('poDataList')) || [],
   unixCodeListAgainstVendor: [],
   pendingOrderErrorFileData: [],
   pendingOrderErrorFileOnTheSportDownloadData: [],
@@ -60,7 +60,7 @@ const generatePoSlice = createSlice({
       });
 
       // Update local storage
-      sessionStorage.setItem(
+      localStorage.setItem(
         'poDataList',
         JSON.stringify(state.userAddedPoDataList)
       );
@@ -75,7 +75,7 @@ const generatePoSlice = createSlice({
         state.userAddedPoDataList[index].order_qty = order_qty;
 
         // Update local storage
-        sessionStorage.setItem(
+        localStorage.setItem(
           'poDataList',
           JSON.stringify(state.userAddedPoDataList)
         );
@@ -89,7 +89,7 @@ const generatePoSlice = createSlice({
       );
 
       // Update local storage
-      sessionStorage.setItem(
+      localStorage.setItem(
         'poDataList',
         JSON.stringify(state.userAddedPoDataList)
       );
@@ -98,7 +98,7 @@ const generatePoSlice = createSlice({
     resetUserAddedOrderList(state) {
       state.userAddedPoDataList = [];
       state.pendingOrderErrorFileOnTheSportDownloadData = [];
-      sessionStorage.removeItem('poDataList');
+      localStorage.removeItem('poDataList');
     },
 
     resetPendingOrderListData(state) {
@@ -136,7 +136,7 @@ const generatePoSlice = createSlice({
           action?.payload?.data;
 
         // Clear local storage
-        sessionStorage.removeItem('poDataList');
+        localStorage.removeItem('poDataList');
       })
       .addCase(createPendingOrderThunk.rejected, (state, action) => {
         state.isLoading.createPendingOrder = false;
