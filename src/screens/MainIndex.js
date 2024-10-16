@@ -182,15 +182,16 @@ import ProjectWiseModuleHistory from './ConsolidatedView/ProjectWiseModuleHistor
 
 class MainIndex extends React.Component {
   render() {
-    if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
-      for (var a in sessionStorage) {
-        localStorage.setItem(a, sessionStorage[a]);
-      }
-    } else {
-      for (var b in localStorage) {
-        sessionStorage.setItem(a, localStorage[b]);
-      }
-    }
+    // if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
+    //   for (var a in sessionStorage) {
+    //     localStorage.setItem(a, sessionStorage[a]);
+    //   }
+    // } else {
+    //   for (var b in localStorage) {
+    //     sessionStorage.setItem(a, localStorage[b]);
+    //   }
+    // }
+
     return (
       <div className="main px-lg-4 px-md-4">
         <Header />
