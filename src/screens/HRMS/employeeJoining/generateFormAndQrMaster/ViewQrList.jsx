@@ -25,7 +25,7 @@ const ViewQrList = () => {
     designations = [],
     email_id,
     contact_no,
-    logo,
+    logo_image,
     company_name
   } = data;
 
@@ -50,7 +50,7 @@ const ViewQrList = () => {
     </div>
   );
   const details = [
-    { label: 'Logo', value: logo },
+    { label: 'Logo', value:  logo_image?.split('/')?.pop() },
     { label: 'Company Name', value: company_name },
     { label: 'Source', value: sourceData },
     { label: 'Email ID', value: email_id },

@@ -25,12 +25,12 @@ import {
 import './style.scss';
 import { toast } from 'react-toastify';
 import moment from 'moment';
-
+import EmployeeJoiningForm from './JoiningForm/EmployeeJoiningForm';
 function GenerateFormAndQrMaster() {
   // // initial state
   const dispatch = useDispatch();
   const { addQrCodeData } = useSelector((state) => state?.qrCodeMaster);
-  // console.log(addQrCodeData, 'data');
+
   const { sourceMasterList } = useSelector((state) => state?.sourceMaster);
   const { getDesignationData } = useSelector(
     (state) => state.designationMaster
@@ -71,22 +71,10 @@ function GenerateFormAndQrMaster() {
     recruiter_email_id: '',
     recruiter_contact_no: ''
   };
-  let caseValue = 'Views';
-  const baseUrl = 'http://3.108.206.34/techne-ai-employee-joining-soft-lunch';
-  const themeColor = addQrCodeData?.theme_color;
-  const emailId = addQrCodeData?.email_id;
-  const logoImage = addQrCodeData?.logo_image || null;
-  const phone = addQrCodeData?.contact_no;
+
   const removeId = addQrCodeData?.id;
 
-  const params = new URLSearchParams({
-    themeColor: themeColor,
-    emailId: emailId,
-    logoImage: logoImage,
-    case: caseValue,
-    phone: phone
-  });
-  const iframeSrc = `${baseUrl}?${params.toString()}`;
+
 
   const resetFormRef = useRef(null);
 
@@ -126,32 +114,38 @@ function GenerateFormAndQrMaster() {
 
   // // all handler
   const downloadQrCode = (reset) => {
-    const canvas = qrRef.current?.canvasRef?.current;
-    if (canvas) {
-      const pngUrl = canvas?.toDataURL('image/png');
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    canvas.width = 500;
+    canvas.height = 500;
 
-      console.log(pngUrl, 'url');
-      let downloadLink = document.createElement('a');
-      downloadLink.href = pngUrl;
-      downloadLink.download = `${'QR Code'}-${currentDate}.jpg`;
-      document.body.appendChild(downloadLink);
-      downloadLink.click();
-      document.body.removeChild(downloadLink);
-      setFormData(formInitialValue);
-      toast.success('QR Code downloaded successfully');
-      // setsuccess(false);
-      setIsDownload(true);
-      setQrStyleData({ qrColor: '#000', qrType: 'squares', logoPath: '' });
-      if (resetFormRef.current) {
-        resetFormRef.current();
-      }
-      if (fileInputRef.current) {
-        fileInputRef.current.value = '';
-      }
-      setTimeout(() => {
-        window.history.back();
-      }, 1500);
-    }
+    const img = new Image();
+    const svgBlob = new Blob([addQrCodeData?.qr_scanner], { type: 'image/svg+xml' });
+    const url = URL.createObjectURL(svgBlob);
+
+    img.onload = () => {
+      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+      const pngUrl = canvas.toDataURL('image/png');
+      const link = document.createElement('a');
+      link.href = pngUrl;
+      link.download = `${'QR Code'}-${currentDate}.png`;
+      document.body.appendChild(link);
+      link.click();
+
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    };
+
+    img.onerror = (error) => {
+      console.error('Error loading image', error);
+    };
+
+    img.src = url;
+    toast.success('QR Code downloaded successfully');
+    setTimeout(() => {
+      window.history.back();
+    }, 1500);
   };
 
   const handleAddQrCode = (values) => {
@@ -175,7 +169,7 @@ function GenerateFormAndQrMaster() {
       formData.branding_type === 'text' ? values?.company_name : ''
     );
 
-    formDatas.append('qr_colour', qrStyleData.qrColor)
+    formDatas.append('qr_color', qrStyleData.qrColor)
 
     // formDatas.append('qr_scanner', pngUrl);
 
@@ -198,6 +192,7 @@ function GenerateFormAndQrMaster() {
     );
   };
   const handleRemove = () => {
+    // return false
     dispatch(
       removeQrCodeList({
         currentId: removeId,
@@ -240,6 +235,9 @@ function GenerateFormAndQrMaster() {
       window.history.back();
       console.log('going back ');
     }
+  };
+  const handleViewIframe = () => {
+    setShow(false);
   };
 
   useEffect(() => {
@@ -285,10 +283,9 @@ function GenerateFormAndQrMaster() {
                       setFieldValue,
                       resetForm
                     }) => {
-
                       resetFormRef.current = resetForm;
                       setFormData(values);
-                      console.log(values,"values")
+
 
                       return (
                         <Form>
@@ -305,9 +302,7 @@ function GenerateFormAndQrMaster() {
                                   className="ms-0"
                                   onChange={() => {
 
-                                    console.log("hello")
                                     setFieldValue('company_name', '');
-
                                   }}
                                 />
                                 <Field
@@ -319,17 +314,10 @@ function GenerateFormAndQrMaster() {
                                   inputClassName="me-1"
                                   onChange={() => {
 
-                                    console.log("hello")
 
                                     setQrStyleData({ logoPath: '' });
-                                    setFieldValue(
-                                      'logo',
-                                      ""
-                                    );
-
-
+                                    setFieldValue('logo', '');
                                   }}
-
                                 />
                               </div>
                               <RenderIf
@@ -352,7 +340,7 @@ function GenerateFormAndQrMaster() {
                                   accept=".png, .psd, .jpg, .svg, .eps, .pdf, .ai, .tiff, .gif, .bmp, .heic, .jpeg"
                                   ref={fileInputRef}
                                   onChange={(event) => {
-                                    console.log(event.target.files[0]);
+
                                     setFieldValue(
                                       'logo',
                                       event.target.files[0]
@@ -372,9 +360,8 @@ function GenerateFormAndQrMaster() {
                               </RenderIf>
                               <RenderIf
                                 render={values.branding_type === 'text'}
-
                               >
-                                 {/* {setQrStyleData({ logoPath: '' })} */}
+                                {/* {setQrStyleData({ logoPath: '' })} */}
                                 <Field
                                   component={CustomInput}
                                   type="text"
@@ -392,6 +379,7 @@ function GenerateFormAndQrMaster() {
                               label="Select Source"
                               placeholder="Select"
                               requiredField
+
                             />
                             <Field
                               options={jobOpeningData}
@@ -469,7 +457,7 @@ function GenerateFormAndQrMaster() {
                                   {' '}
                                   <button
                                     style={{ height: '50px' }}
-                                    onClick={() => setShow(false)}
+                                    onClick={handleViewIframe}
                                     className="btn btn-primary ms-4"
                                     disabled={isDownload}
                                   >
@@ -479,7 +467,6 @@ function GenerateFormAndQrMaster() {
                                     style={{ height: '50px' }}
                                     disabled={isDownload}
                                     onClick={handleRemove}
-
                                     className="btn btn-danger ms-4"
                                   >
                                     Remove Form
@@ -496,78 +483,79 @@ function GenerateFormAndQrMaster() {
               </Card>
             </Col>
             <Col xs={12} sm={6} md={5} xxl={4} className="qr_container">
-  <Card className="w-100">
-    <CardBody className="w-100 d-flex flex-column gap-3 justify-content-center">
-      <div className="d-flex flex-column flex-md-row align-items-center gap-3">
-        {/* QR Code */}
-        <QRCode
-          ref={qrRef}
-          value={`http://3.108.206.34/techne-ai-employee-joining-soft-lunch/?tenant_id=${tenantId}`}
-          // size={250}
-          logoImage={qrStyleData?.logoPath}
-          fgColor={qrStyleData?.qrColor}
-          qrStyle={qrStyleData?.qrType}
-          logoHeight={40}
-          logoWidth={40}
-          eyeRadius={10}
-          logoPaddingStyle="square"
-          removeQrCodeBehindLogo={true}
-        />
+              <Card className="w-100">
+                <CardBody className="w-100 d-flex flex-column gap-3 justify-content-center">
+                  <div className="d-flex flex-column flex-md-row align-items-center gap-3">
+                    {/* QR Code */}
+                    <QRCode
+                      ref={qrRef}
+                      value={`http://3.108.206.34/techne-ai-employee-joining-soft-lunch/?tenant_id=${tenantId}`}
+                      // size={250}
+                      logoImage={qrStyleData?.logoPath}
+                      fgColor={qrStyleData?.qrColor}
+                      qrStyle={qrStyleData?.qrType}
+                      logoHeight={40}
+                      logoWidth={40}
+                      eyeRadius={10}
+                      logoPaddingStyle="square"
+                      removeQrCodeBehindLogo={true}
+                    />
 
-        {/* Icon stack */}
-        <Stack className="justify-content-between flex-row flex-md-column mt-3 mt-md-0">
-          <i
-            className="icofont-qr-code fs-1 text-primary cp"
-            onClick={() => setQrStyleData({ qrColor: '#484c7f' })}
-          />
-          <i
-            className="icofont-qr-code fs-1 text-secondary cp"
-            onClick={() => setQrStyleData({ qrColor: '#f19828' })}
-          />
-          <i
-            className="icofont-qr-code fs-1 text-danger cp"
-            onClick={() => setQrStyleData({ qrColor: '#dc3545' })}
-          />
-          <i
-            className="icofont-qr-code fs-1 text-info cp"
-            onClick={() => setQrStyleData({ qrColor: '#0dcaf0' })}
-          />
-          <i
-            className="icofont-qr-code fs-1 cp"
-            onClick={() => setQrStyleData({ qrColor: '#000000' })}
-          />
-        </Stack>
-      </div>
+                    {/* Icon stack */}
+                    <Stack className="justify-content-between flex-row flex-md-column mt-3 mt-md-0">
+                      <i
+                        className="icofont-qr-code fs-1 text-primary cp"
+                        onClick={() => setQrStyleData({ qrColor: '#484c7f' })}
+                      />
+                      <i
+                        className="icofont-qr-code fs-1 text-secondary cp"
+                        onClick={() => setQrStyleData({ qrColor: '#f19828' })}
+                      />
+                      <i
+                        className="icofont-qr-code fs-1 text-danger cp"
+                        onClick={() => setQrStyleData({ qrColor: '#dc3545' })}
+                      />
+                      <i
+                        className="icofont-qr-code fs-1 text-info cp"
+                        onClick={() => setQrStyleData({ qrColor: '#0dcaf0' })}
+                      />
+                      <i
+                        className="icofont-qr-code fs-1 cp"
+                        onClick={() => setQrStyleData({ qrColor: '#000000' })}
+                      />
+                    </Stack>
+                  </div>
 
-      {/* Button and dropdown container */}
-      <div className="d-flex align-items-center btn_container">
-        <button
-          type="button"
-          className="btn btn-dark ms-0 w-100"
-          disabled={!success || isDownload}
-          onClick={downloadQrCode}
-        >
-          <i className="icofont-download me-2" />
-          Download
-        </button>
-        <Select
-          options={qrStyleOptions}
-          className="w-100"
-          onChange={(e) => setQrStyleData({ qrType: e.value })}
-          defaultValue={qrStyleOptions[0]}
-        />
-        <label>
-          <input
-            type="color"
-            onChange={(e) => setQrStyleData({ qrColor: e.target.value })}
-          />
-          <i className="icofont-paint text-light rounded cp" />
-        </label>
-      </div>
-    </CardBody>
-  </Card>
-</Col>
-
+                  {/* Button and dropdown container */}
+                  <div className="d-flex align-items-center btn_container">
+                    <button
+                      type="button"
+                      className="btn btn-dark ms-0 w-100"
+                      disabled={!success || isDownload}
+                      onClick={downloadQrCode}
+                    >
+                      <i className="icofont-download me-2" />
+                      Download
+                    </button>
+                    <Select
+                      options={qrStyleOptions}
+                      className="w-100"
+                      onChange={(e) => setQrStyleData({ qrType: e.value })}
+                      defaultValue={qrStyleOptions[0]}
+                    />
+                    <label>
+                      <input
+                        type="color"
+                        onChange={(e) =>
+                          setQrStyleData({ qrColor: e.target.value })
+                        }
+                      />
+                      <i className="icofont-paint text-light rounded cp" />
+                    </label>
+                  </div>
+                </CardBody>
+              </Card>
+            </Col>
           </Row>
         </Container>
       )}
@@ -582,13 +570,8 @@ function GenerateFormAndQrMaster() {
               />
             </button>
           </div>
-          <div style={{ height: '100vh' }}>
-            <iframe
-              width="100%"
-              height="100%"
-              src={iframeSrc}
-              title="Generate Form"
-            ></iframe>
+          <div>
+            <EmployeeJoiningForm data={addQrCodeData} />
           </div>
         </>
       )}

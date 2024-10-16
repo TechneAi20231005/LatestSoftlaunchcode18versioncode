@@ -1,0 +1,29 @@
+.form_containers {
+    .heading {
+      text-transform: uppercase;
+      text-align: center;
+      padding-bottom: 5px;
+      border-bottom: 3px solid #6b2424;
+    }
+    button {
+      background-color: var(--primary_color);
+      color: #fff;
+      &:hover {
+        background-color: var(--primary_color);
+        color: #fff;
+      }
+      &:disabled {
+        background-color: rgb(85, 1, 1);
+        color: #fff;
+        cursor: no-drop;
+      }
+    }
+  }
+
+  @media only screen and (max-width: 426px) {
+    .form_containers {
+      .heading {
+        font-size: 20px;
+      }
+    }
+  }
