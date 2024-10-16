@@ -44,6 +44,7 @@ export default function ProjectwiseModule() {
   const [show, setShow] = useState('');
   const [showToALL, setShowToAll] = useState(false);
   const [docList, setDocList] = useState([]);
+  const [filterData, setFilterData] = useState([]);
   const [toggleRadio, setToggleRadio] = useState(true);
   const [subModuleValue, setSubModuleValue] = useState(null);
   const [moduleValue, setModuleValue] = useState(null);
@@ -160,6 +161,12 @@ export default function ProjectwiseModule() {
               temp[i].counter = count++;
             }
             setDocList(temp);
+
+            setFilterData(
+              temp?.filter(
+                (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+              )
+            );
           }
         }
       });
@@ -229,7 +236,6 @@ export default function ProjectwiseModule() {
                   module_name: temp[key].module_name,
                   is_active: temp[key].is_active,
                   uploaded_by: temp[key].uploaded_by,
-
                   document_attachment: temp[key].document_attachment,
                   sub_module_name: temp[key].sub_module_name
                     ? temp[key].sub_module_name
@@ -237,8 +243,14 @@ export default function ProjectwiseModule() {
                 });
               }
               setDocList(null);
+              setFilterData(null);
               setToggleRadio(true);
               setDocList(tempData);
+              setFilterData(
+                tempData?.filter(
+                  (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                )
+              );
             }
           }
         });
@@ -273,8 +285,14 @@ export default function ProjectwiseModule() {
                 });
               }
               setDocList(null);
+              setFilterData(null);
               setToggleRadio(true);
               setDocList(tempData);
+              setFilterData(
+                tempData?.filter(
+                  (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                )
+              );
             }
           }
         });
@@ -313,6 +331,11 @@ export default function ProjectwiseModule() {
           subModuleValue ? subModuleValue : null
         );
         setDocList(docResponse.data.data);
+        setFilterData(
+          docResponse?.data?.data?.filter(
+            (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+          )
+        );
 
         setIsLoading(false);
         setToggleRadio(true);
@@ -348,7 +371,14 @@ export default function ProjectwiseModule() {
             'ACTIVE',
             subModuleValue ? subModuleValue : null
           )
-          .then((res) => setDocList(res.data.data));
+          .then((res) => {
+            setDocList(res.data.data);
+            setFilterData(
+              res.data.data?.filter(
+                (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+              )
+            );
+          });
       } else {
         toast.error(res?.data?.message, { position: 'top-right' });
       }
@@ -384,6 +414,11 @@ export default function ProjectwiseModule() {
               temp[i].counter = count++;
             }
             setDocList(temp);
+            setFilterData(
+              temp?.filter(
+                (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+              )
+            );
           }
         }
       });
@@ -432,10 +467,12 @@ export default function ProjectwiseModule() {
               if (status === 'ACTIVE') {
                 setToggleRadio(true);
                 setSelectedRows([]);
+                setSelectedData([]);
                 // setShowbtn(true)
               } else if (status === 'DEACTIVE') {
                 setToggleRadio(false);
                 setSelectedRows([]);
+                setSelectedData([]);
               }
               toast.success(res?.data?.message, {
                 position: 'top-right'
@@ -479,7 +516,13 @@ export default function ProjectwiseModule() {
                   });
                 }
                 setDocList(null);
+                setFilterData(null);
                 setDocList(tempData);
+                setFilterData(
+                  tempData?.filter(
+                    (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                  )
+                );
               }
             }
           });
@@ -720,7 +763,13 @@ export default function ProjectwiseModule() {
               });
             }
             setDocList(null);
+            setFilterData(null);
             setDocList(tempData);
+            setFilterData(
+              tempData?.filter(
+                (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+              )
+            );
           }
         }
       });
@@ -738,14 +787,16 @@ export default function ProjectwiseModule() {
     } else {
       setShowbtn(true);
     }
-    const filteredRows = e.selectedRows.filter((row) => {
-      return toggleRadio ? row.is_active === 1 : row.is_active === 0;
-    });
-    setSelectedData(filteredRows);
+    setSelectedData(e.selectedRows);
 
-    const idArray = filteredRows.map((d) => d.id);
+    // const filteredRows = e.selectedRows.filter((row) => {
+    //   return toggleRadio ? row.is_active === 1 : row.is_active === 0;
+    // });
+    // setSelectedData(filteredRows);
 
+    const idArray = e.selectedRows.map((d) => d.id);
     setSelectedRows(idArray);
+    // setSelectedData(idArray);
   };
 
   // const uploadAttachmentHandler = (event) => {

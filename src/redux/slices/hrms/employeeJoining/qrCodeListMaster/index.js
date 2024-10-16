@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 import {
   getQrCodeList,
   getQrCodeListById,
-  addQrCodeList
+  addQrCodeList,
+  removeQrCodeList
 } from '../../../../services/hrms/employeeJoining/qrCodeListMaster';
 
 const initialState = {
@@ -13,7 +14,8 @@ const initialState = {
   isLoading: {
     getQrCodeMasterList: false,
     getQrCodeDetailsData: false,
-    addQrCodeMasterList: false
+    addQrCodeMasterList: false,
+    removeCodeMasterList: false
   },
 
   errorMsg: {
@@ -84,6 +86,16 @@ const qrCodeMasterSlice = createSlice({
       .addCase(addQrCodeList.rejected, (state, action) => {
         state.isLoading.addQrCodeMasterList = false;
         state.errorMsg.addQrCodeMasterList = action.error.message;
+      })
+      //remove list
+      .addCase(removeQrCodeList.pending, (state, action) => {
+        state.isLoading.removeCodeMasterList = true;
+      })
+      .addCase(removeQrCodeList.fulfilled, (state, action) => {
+        state.isLoading.removeCodeMasterList = false;
+      })
+      .addCase(removeQrCodeList.rejected, (state, action) => {
+        state.isLoading.removeCodeMasterList = false;
       });
   }
 });

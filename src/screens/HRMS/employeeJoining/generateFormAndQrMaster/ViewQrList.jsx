@@ -46,7 +46,7 @@ const ViewQrList = () => {
   const DetailRow = ({ label, value }) => (
     <div className="mb-3 d-flex">
       <span style={{ minWidth: '180px', fontWeight: 'bold' }}>{label}:</span>
-      <span style={{ flex: 1 }}>{value || '-'}</span>
+      <span style={{ flex: 1, wordWrap: 'break-word', wordBreak: 'break-all' }}>{value || '-'}</span>
     </div>
   );
   const details = [

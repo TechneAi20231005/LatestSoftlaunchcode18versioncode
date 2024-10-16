@@ -261,7 +261,12 @@ export const CustomRadioButton = ({
             onChange={(e) => {
               field.onChange(e);
               if (props.handleChange) {
-                props.handleChange(e);
+                props.handleChange(e); // Custom handleChange logic
+              }
+
+              // Otherwise, fallback to `onChange` if provided
+              else if (props.onChange) {
+                props.onChange(e); // New custom onChange logic
               }
             }}
           />
