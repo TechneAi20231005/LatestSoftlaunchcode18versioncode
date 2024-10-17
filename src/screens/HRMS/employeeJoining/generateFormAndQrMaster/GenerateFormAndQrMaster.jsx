@@ -73,6 +73,7 @@ function GenerateFormAndQrMaster() {
   };
 
   const removeId = addQrCodeData?.id;
+  let tenateId = localStorage.getItem("actual_tenant_id")
 
 
 
@@ -164,6 +165,7 @@ function GenerateFormAndQrMaster() {
       formDatas?.append('designations[]', designation);
     });
 
+     formDatas.append('tenant_id', tenateId);
     formDatas.append(
       'company_name',
       formData.branding_type === 'text' ? values?.company_name : ''
