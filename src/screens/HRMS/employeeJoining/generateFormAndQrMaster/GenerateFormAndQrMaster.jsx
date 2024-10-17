@@ -496,8 +496,8 @@ function GenerateFormAndQrMaster() {
                       logoImage={qrStyleData?.logoPath}
                       fgColor={qrStyleData?.qrColor}
                       qrStyle={qrStyleData?.qrType}
-                      logoHeight={40}
-                      logoWidth={40}
+                      logoHeight={80}
+                      logoWidth={80}
                       eyeRadius={10}
                       logoPaddingStyle="square"
                       removeQrCodeBehindLogo={true}
