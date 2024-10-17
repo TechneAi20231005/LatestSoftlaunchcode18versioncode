@@ -41,29 +41,35 @@ const GenerateQrList = () => {
     setFilterQrList(qrCodeMasterList?.data);
   };
 
-
-
   const DownloadSvg = (svgData) => {
-
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = 500; // Use the original width of the SVG
-    canvas.height = 500; // Use the original height of the SVG
+
+    // Set a higher resolution for the canvas
+    const svgSize = 2000; // Increase to 2000px to ensure better quality
+    canvas.width = svgSize;
+    canvas.height = svgSize;
 
     const img = new Image();
     const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
     const url = URL.createObjectURL(svgBlob);
 
     img.onload = () => {
+      // Draw the image on the canvas with the original SVG aspect ratio preserved
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
+      // Export the canvas content as a PNG
       const pngUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
+      // const currentDate = new Date().toISOString().split('T')[0]; // Get current date for naming
       link.href = pngUrl;
-      link.download = `${'QR Code'}-${currentDate}.png`;
+      link.download = `QR_Code-${currentDate}.png`;
+
+      // Simulate a click to trigger download
       document.body.appendChild(link);
       link.click();
 
+      // Cleanup
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
     };
@@ -73,9 +79,10 @@ const GenerateQrList = () => {
     };
 
     img.src = url;
+
+    // Notify the user
     toast.success('QR Code downloaded successfully');
   };
-
 
   const columns = [
     {
@@ -111,7 +118,7 @@ const GenerateQrList = () => {
     {
       name: 'Logo',
       sortable: true,
-      width: '150px',
+      width: '120px',
       selector: (row) => (
         <a
           href="#"
@@ -126,7 +133,9 @@ const GenerateQrList = () => {
           {row?.logo_image?.split('/').pop() || '_'}
         </a>
       )
+
     },
+
 
     {
       name: 'Source',
@@ -134,18 +143,58 @@ const GenerateQrList = () => {
         row?.source?.length > 0
           ? row.source.map((src) => src.source_name).join(', ')
           : '-',
-      sortable: true
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row?.source?.length > 0 &&
+            row.source.map((src, index) => (
+              <OverlayTrigger
+                key={index}
+                overlay={<Tooltip>{src.source_name}</Tooltip>}
+              >
+                <span>{src.source_name}</span>
+              </OverlayTrigger>
+            ))}
+        </div>
+      )
     },
 
     {
       name: 'Email ',
       selector: (row) => row?.email_id || '--',
-      sortable: true
+      sortable: true,
+       width: '150px',
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          <OverlayTrigger overlay={<Tooltip>{row?.email_id}</Tooltip>}>
+            <span className="ms-0">{row?.email_id || '--'}</span>
+          </OverlayTrigger>
+        </div>
+      )
     },
     {
       name: 'Contact No',
       selector: (row) => row?.contact_no || '--',
-      sortable: true
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          <OverlayTrigger overlay={<Tooltip>{row?.contact_no}</Tooltip>}>
+            <span>{row?.contact_no || '--'}</span>
+          </OverlayTrigger>
+        </div>
+      )
     },
     {
       name: 'Location',
@@ -153,15 +202,59 @@ const GenerateQrList = () => {
         row?.locations?.length > 0
           ? row.locations.map((location) => location.location_name).join(', ')
           : '-',
-      sortable: true
+      sortable: true,
+      cell: (row) => {
+        const locationNames = row?.locations?.map((location) => location.location_name).join(', ');
+
+        return (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row?.locations?.length > 0 ? (
+              <OverlayTrigger
+                overlay={<Tooltip>{locationNames || '-'}</Tooltip>}
+              >
+                <span>{locationNames || '-'}</span>
+              </OverlayTrigger>
+            ) : (
+              '-'
+            )}
+          </div>
+        );
+      },
     },
+
     {
       name: 'Openings',
       selector: (row) =>
         row.designations.length > 0
           ? row.designations.map((item) => item.designation_name).join(', ')
           : '-',
-      sortable: true
+      sortable: true,
+      cell: (row) => {
+        const designationNames = row?.designations?.map((designation) => designation.designation_name).join(', ');
+
+        return (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.designations.length > 0 ? (
+              <OverlayTrigger
+                overlay={<Tooltip>{designationNames || '-'}</Tooltip>}
+              >
+                <span>{designationNames || '-'}</span>
+              </OverlayTrigger>
+            ) : (
+              '-'
+            )}
+          </div>
+        );
+      }
+
     },
     {
       name: 'Created At',
@@ -171,7 +264,18 @@ const GenerateQrList = () => {
     {
       name: 'Created By',
       selector: (row) => row?.created_by || '--',
-      sortable: true
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          <OverlayTrigger overlay={<Tooltip>{row?.created_by}</Tooltip>}>
+            <span>{row?.created_by || '--'}</span>
+          </OverlayTrigger>
+        </div>
+      )
     }
   ];
   useEffect(() => {
