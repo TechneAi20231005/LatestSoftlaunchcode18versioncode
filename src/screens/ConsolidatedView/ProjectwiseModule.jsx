@@ -330,9 +330,30 @@ export default function ProjectwiseModule() {
           'ACTIVE',
           subModuleValue ? subModuleValue : null
         );
-        setDocList(docResponse.data.data);
+
+        var tempData = [];
+        var temp = docResponse.data.data;
+        let counter = 1;
+        for (const key in temp) {
+          tempData.push({
+            counter: counter++,
+            id: temp[key].id,
+            show_to_all: temp[key].show_to_all,
+            project_name: temp[key].project_name,
+            module_name: temp[key].module_name,
+            sub_module_name: temp[key].sub_module_name,
+            is_active: temp[key].is_active,
+            document_attachment: temp[key].document_attachment,
+            uploaded_by: temp[key].uploaded_by,
+
+            sub_module_name: temp[key].sub_module_name
+              ? temp[key].sub_module_name
+              : ''
+          });
+        }
+        setDocList(tempData);
         setFilterData(
-          docResponse?.data?.data?.filter(
+          tempData?.filter(
             (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
           )
         );
@@ -605,7 +626,7 @@ export default function ProjectwiseModule() {
 
     {
       name: 'Sr no',
-      selector: (row) => row.counter,
+      selector: (row) => row && row?.counter,
       sortable: true,
       width: '10%'
     },
@@ -621,10 +642,10 @@ export default function ProjectwiseModule() {
               onChange={(e) => {
                 dontShowToAll(e, row);
               }}
-              disabled={!authorityCheck && isProjectOwner === 0}
-              defaultChecked={
-                row.show_to_all == 1 || isProjectOwner === 1 ? true : false
+              disabled={
+                !authorityCheck && isProjectOwner === 0 && isReviewer === 0
               }
+              defaultChecked={row.show_to_all == 1}
             />
           </>
         );
@@ -1073,7 +1094,6 @@ export default function ProjectwiseModule() {
                   </div>
                 </div>
               </div>
-              {console.log('isss', isProjectOwner)}
               <div
                 className={
                   isProjectActive === 1
@@ -1099,7 +1119,7 @@ export default function ProjectwiseModule() {
                       className="btn btn-danger"
                       onClick={deleteRestoreDoc}
                     >
-                      Delete Files
+                      Delete File
                     </button>
                   )}
                 {showbtn === false && docList && selectedRows?.length > 0 && (
