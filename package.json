@@ -13,6 +13,7 @@
     "base-64": "^1.0.0",
     "bcryptjs": "^2.4.3",
     "bootstrap": "^5.3.2",
+    "caniuse-lite": "^1.0.30001669",
     "dateformat": "^5.0.3",
     "draft-convert": "^2.1.13",
     "draft-js": "^0.11.7",

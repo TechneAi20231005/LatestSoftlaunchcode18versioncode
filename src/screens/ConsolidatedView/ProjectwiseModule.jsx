@@ -694,12 +694,13 @@ export default function ProjectwiseModule() {
     },
     {
       name: 'Module Name',
-      selector: (row) => row.module_name,
+      selector: (row) => (row.module_name ? row.module_name : 'No Module'),
       sortable: true
     },
     {
       name: 'SubModule Name',
-      selector: (row) => (row.sub_module_name ? row.sub_module_name : ' '),
+      selector: (row) =>
+        row.sub_module_name ? row.sub_module_name : 'No SubModule',
 
       sortable: true
     }
@@ -1072,7 +1073,7 @@ export default function ProjectwiseModule() {
                   </div>
                 </div>
               </div>
-
+              {console.log('isss', isProjectOwner)}
               <div
                 className={
                   isProjectActive === 1
@@ -1083,11 +1084,17 @@ export default function ProjectwiseModule() {
                 {showbtn === true &&
                   docList &&
                   selectedRows?.length > 0 &&
-                  checkDelete === true && (
+                  (checkDelete === true ||
+                    isProjectOwner === 1 ||
+                    isReviewer === 1) && (
                     <button
                       type="button"
                       disabled={
-                        isProjectOwner !== 1 && !checkDelete ? true : false
+                        isProjectOwner === 1 ||
+                        isReviewer === 1 ||
+                        checkDelete === true
+                          ? false
+                          : true
                       }
                       className="btn btn-danger"
                       onClick={deleteRestoreDoc}
