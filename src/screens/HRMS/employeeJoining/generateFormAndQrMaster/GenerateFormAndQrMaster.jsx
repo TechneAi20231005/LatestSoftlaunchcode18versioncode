@@ -491,7 +491,7 @@ function GenerateFormAndQrMaster() {
                     {/* QR Code */}
                     <QRCode
                       ref={qrRef}
-                      value={`http://3.108.206.34/techne-ai-employee-joining-soft-lunch/?tenant_id=${tenantId}`}
+                      value={`http://3.108.206.34/employee-joining-uat/${addQrCodeData?.id}`}
                       // size={250}
                       logoImage={qrStyleData?.logoPath}
                       fgColor={qrStyleData?.qrColor}
@@ -541,9 +541,10 @@ function GenerateFormAndQrMaster() {
                     </button>
                     <Select
                       options={qrStyleOptions}
-                      className="w-100"
+                      className="w-100 pe-none"
                       onChange={(e) => setQrStyleData({ qrType: e.value })}
                       defaultValue={qrStyleOptions[0]}
+
                     />
                     <label>
                       <input

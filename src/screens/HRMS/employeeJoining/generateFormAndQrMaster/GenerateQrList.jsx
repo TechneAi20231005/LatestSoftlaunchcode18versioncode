@@ -45,8 +45,7 @@ const GenerateQrList = () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
 
-    // Set a higher resolution for the canvas
-    const svgSize = 2000; // Increase to 2000px to ensure better quality
+    const svgSize = 800;
     canvas.width = svgSize;
     canvas.height = svgSize;
 
@@ -55,17 +54,14 @@ const GenerateQrList = () => {
     const url = URL.createObjectURL(svgBlob);
 
     img.onload = () => {
-      // Draw the image on the canvas with the original SVG aspect ratio preserved
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-      // Export the canvas content as a PNG
       const pngUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
-      // const currentDate = new Date().toISOString().split('T')[0]; // Get current date for naming
+
       link.href = pngUrl;
       link.download = `QR_Code-${currentDate}.png`;
 
-      // Simulate a click to trigger download
       document.body.appendChild(link);
       link.click();
 
@@ -133,9 +129,7 @@ const GenerateQrList = () => {
           {row?.logo_image?.split('/').pop() || '_'}
         </a>
       )
-
     },
-
 
     {
       name: 'Source',
@@ -167,7 +161,7 @@ const GenerateQrList = () => {
       name: 'Email ',
       selector: (row) => row?.email_id || '--',
       sortable: true,
-       width: '150px',
+      width: '150px',
       cell: (row) => (
         <div
           className="btn-group"
@@ -204,7 +198,9 @@ const GenerateQrList = () => {
           : '-',
       sortable: true,
       cell: (row) => {
-        const locationNames = row?.locations?.map((location) => location.location_name).join(', ');
+        const locationNames = row?.locations
+          ?.map((location) => location.location_name)
+          .join(', ');
 
         return (
           <div
@@ -223,7 +219,7 @@ const GenerateQrList = () => {
             )}
           </div>
         );
-      },
+      }
     },
 
     {
@@ -234,7 +230,9 @@ const GenerateQrList = () => {
           : '-',
       sortable: true,
       cell: (row) => {
-        const designationNames = row?.designations?.map((designation) => designation.designation_name).join(', ');
+        const designationNames = row?.designations
+          ?.map((designation) => designation.designation_name)
+          .join(', ');
 
         return (
           <div
@@ -254,7 +252,6 @@ const GenerateQrList = () => {
           </div>
         );
       }
-
     },
     {
       name: 'Created At',
