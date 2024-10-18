@@ -349,6 +349,7 @@ const GenerateQrList = () => {
         persistTableHead={true}
         progressPending={isLoading?.getQrCodeMasterList}
         progressComponent={<TableLoadingSkelton />}
+
       />
       {open && (
         <ViewQrImageModal

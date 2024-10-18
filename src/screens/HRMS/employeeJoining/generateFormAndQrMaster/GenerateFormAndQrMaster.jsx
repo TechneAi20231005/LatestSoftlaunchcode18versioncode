@@ -89,6 +89,7 @@ function GenerateFormAndQrMaster() {
   };
 
   const sourceData = filterAndMapData(sourceMasterList, 'source_name', 'id');
+
   const jobOpeningData = filterAndMapData(
     getDesignationData,
     'designation',
@@ -117,8 +118,8 @@ function GenerateFormAndQrMaster() {
   const downloadQrCode = (reset) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = 500;
-    canvas.height = 500;
+    canvas.width = 800;
+    canvas.height = 800;
 
     const img = new Image();
     const svgBlob = new Blob([addQrCodeData?.qr_scanner], { type: 'image/svg+xml' });
@@ -205,7 +206,7 @@ function GenerateFormAndQrMaster() {
         }
       })
     );
-    setFormData({});
+    setFormData(formInitialValue);
     if (resetFormRef.current) {
       resetFormRef.current();
     }
@@ -269,6 +270,7 @@ function GenerateFormAndQrMaster() {
                 <CardBody>
                   <Formik
                     initialValues={formData}
+                    enableReinitialize
                     validationSchema={generateFormValidation}
                     onSubmit={(values, errors) => {
                       handleAddQrCode(values);
@@ -286,7 +288,7 @@ function GenerateFormAndQrMaster() {
                       resetForm
                     }) => {
                       resetFormRef.current = resetForm;
-                      setFormData(values);
+                      // setFormData(values);
 
 
                       return (
@@ -347,6 +349,7 @@ function GenerateFormAndQrMaster() {
                                       'logo',
                                       event.target.files[0]
                                     );
+
                                     setQrStyleData({
                                       logoPath: URL.createObjectURL(
                                         event.target.files[0]
@@ -496,8 +499,8 @@ function GenerateFormAndQrMaster() {
                       logoImage={qrStyleData?.logoPath}
                       fgColor={qrStyleData?.qrColor}
                       qrStyle={qrStyleData?.qrType}
-                      logoHeight={80}
-                      logoWidth={80}
+                      logoHeight={70}
+                      logoWidth={70}
                       eyeRadius={10}
                       logoPaddingStyle="square"
                       removeQrCodeBehindLogo={true}
