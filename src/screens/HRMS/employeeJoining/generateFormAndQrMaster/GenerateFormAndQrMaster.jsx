@@ -89,6 +89,7 @@ function GenerateFormAndQrMaster() {
   };
 
   const sourceData = filterAndMapData(sourceMasterList, 'source_name', 'id');
+
   const jobOpeningData = filterAndMapData(
     getDesignationData,
     'designation',
@@ -117,8 +118,8 @@ function GenerateFormAndQrMaster() {
   const downloadQrCode = (reset) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = 500;
-    canvas.height = 500;
+    canvas.width = 800;
+    canvas.height = 800;
 
     const img = new Image();
     const svgBlob = new Blob([addQrCodeData?.qr_scanner], { type: 'image/svg+xml' });
@@ -205,7 +206,7 @@ function GenerateFormAndQrMaster() {
         }
       })
     );
-    setFormData({});
+    setFormData(formInitialValue);
     if (resetFormRef.current) {
       resetFormRef.current();
     }
@@ -269,6 +270,7 @@ function GenerateFormAndQrMaster() {
                 <CardBody>
                   <Formik
                     initialValues={formData}
+                    enableReinitialize
                     validationSchema={generateFormValidation}
                     onSubmit={(values, errors) => {
                       handleAddQrCode(values);
@@ -286,7 +288,7 @@ function GenerateFormAndQrMaster() {
                       resetForm
                     }) => {
                       resetFormRef.current = resetForm;
-                      setFormData(values);
+                      // setFormData(values);
 
 
                       return (
@@ -347,6 +349,7 @@ function GenerateFormAndQrMaster() {
                                       'logo',
                                       event.target.files[0]
                                     );
+
                                     setQrStyleData({
                                       logoPath: URL.createObjectURL(
                                         event.target.files[0]
@@ -491,13 +494,13 @@ function GenerateFormAndQrMaster() {
                     {/* QR Code */}
                     <QRCode
                       ref={qrRef}
-                      value={`http://3.108.206.34/techne-ai-employee-joining-soft-lunch/?tenant_id=${tenantId}`}
+                      value={`http://3.108.206.34/employee-joining-uat/${addQrCodeData?.id}`}
                       // size={250}
                       logoImage={qrStyleData?.logoPath}
                       fgColor={qrStyleData?.qrColor}
                       qrStyle={qrStyleData?.qrType}
-                      logoHeight={40}
-                      logoWidth={40}
+                      logoHeight={70}
+                      logoWidth={70}
                       eyeRadius={10}
                       logoPaddingStyle="square"
                       removeQrCodeBehindLogo={true}
@@ -541,9 +544,10 @@ function GenerateFormAndQrMaster() {
                     </button>
                     <Select
                       options={qrStyleOptions}
-                      className="w-100"
+                      className="w-100 pe-none"
                       onChange={(e) => setQrStyleData({ qrType: e.value })}
                       defaultValue={qrStyleOptions[0]}
+
                     />
                     <label>
                       <input

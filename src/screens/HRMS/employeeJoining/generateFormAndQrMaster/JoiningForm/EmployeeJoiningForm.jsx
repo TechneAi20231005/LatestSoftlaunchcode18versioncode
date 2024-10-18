@@ -14,7 +14,7 @@ import Header from '../../../../../components/Common/EmployeeFormHeader/Header';
 import './style.scss';
 
 function EmployeeJoiningForm({ data }) {
-  console.log(data,"data")
+  console.log(data, 'data');
   // // initial state
   const candidatesInitialValue = {
     source_id: '',
@@ -53,10 +53,16 @@ function EmployeeJoiningForm({ data }) {
         mobileNo={data?.contact_no || ''}
         emailId={data?.email_id || ''}
         themeColor={data?.theme_color || ''}
-        logo={data?.logo_image || ""}
+        logo={data?.logo_image || ''}
+        companyName={data?.company_name}
       />
       <Container fluid className="form_containers py-3 sm-py-4">
-        <h1 className="heading">Online Application Form</h1>
+        <h1
+          style={{ borderBottom: `3px solid ${data?.theme_color}` }}
+          className="heading"
+        >
+          Online Application Form
+        </h1>
         <Formik
           initialValues={candidatesInitialValue}
           // validationSchema={employeeJoiningValidation}

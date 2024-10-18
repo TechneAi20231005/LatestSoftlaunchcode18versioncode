@@ -268,14 +268,16 @@ const ProjectWiseModuleHistory = ({ match }) => {
           </div>
         </div>
         <div className="d-flex justify-content-end mt-3">
+          {console.log()}
           <button
             onClick={() =>
-              navigate(
-                `/${_base}/ConsolidatedView/ProjectwiseModule/` +
-                  projectId +
-                  '/' +
-                  moduleId
-              )
+              window.history.back()
+              // navigate(
+              //   `/${_base}/ConsolidatedView/ProjectwiseModule/` +
+              //     projectId +
+              //     '/' +
+              //     moduleId
+              // )
             }
             className="btn btn-primary text-white"
           >
