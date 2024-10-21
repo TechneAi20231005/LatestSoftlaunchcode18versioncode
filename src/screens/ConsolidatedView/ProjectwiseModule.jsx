@@ -642,9 +642,7 @@ export default function ProjectwiseModule() {
               onChange={(e) => {
                 dontShowToAll(e, row);
               }}
-              disabled={
-                !authorityCheck && isProjectOwner === 0 && isReviewer === 0
-              }
+              disabled={!authorityCheck && !isProjectOwner && !isReviewer}
               defaultChecked={row.show_to_all == 1}
             />
           </>
