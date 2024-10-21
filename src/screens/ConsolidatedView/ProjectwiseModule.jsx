@@ -178,8 +178,7 @@ export default function ProjectwiseModule() {
           if (res?.status === 200 && res?.data?.status == 1) {
             const authorityData = res?.data?.data?.result;
             setIsProjectOwner(res?.data?.data?.is_projectOwner);
-            setIsReviewer(res?.data?.data?.is_Reviewer);
-
+            setIsReviewer(parseInt(res?.data?.data?.is_Reviewer));
             const checked = authorityData.find(
               (d) => d?.setting_name === 'Show To ALL'
             );
@@ -393,9 +392,30 @@ export default function ProjectwiseModule() {
             subModuleValue ? subModuleValue : null
           )
           .then((res) => {
-            setDocList(res.data.data);
+            // setDocList(res.data.data);
+            var tempData = [];
+            var temp = res.data.data;
+            let counter = 1;
+            for (const key in temp) {
+              tempData.push({
+                counter: counter++,
+                id: temp[key].id,
+                show_to_all: temp[key].show_to_all,
+                project_name: temp[key].project_name,
+                module_name: temp[key].module_name,
+                sub_module_name: temp[key].sub_module_name,
+                is_active: temp[key].is_active,
+                document_attachment: temp[key].document_attachment,
+                uploaded_by: temp[key].uploaded_by,
+
+                sub_module_name: temp[key].sub_module_name
+                  ? temp[key].sub_module_name
+                  : ''
+              });
+            }
+            setDocList(tempData);
             setFilterData(
-              res.data.data?.filter(
+              tempData?.filter(
                 (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
               )
             );
@@ -643,7 +663,7 @@ export default function ProjectwiseModule() {
                 dontShowToAll(e, row);
               }}
               disabled={
-                !authorityCheck && isProjectOwner === 0 && isReviewer === 0
+                authorityCheck === false && isProjectOwner === 0 && !isReviewer
               }
               defaultChecked={row.show_to_all == 1}
             />
@@ -685,10 +705,26 @@ export default function ProjectwiseModule() {
                 href={_attachmentUrl + row?.document_attachment}
                 target="_blank"
                 rel="noopener noreferrer"
+                style={{
+                  pointerEvents:
+                    authorityCheck === false &&
+                    isProjectOwner === 0 &&
+                    !isReviewer
+                      ? 'none'
+                      : 'auto'
+                }}
               >
                 <i
                   className="icofont-download me-3 btn btn-sm btn-secondary text-white"
-                  style={{ color: '#F19828' }}
+                  // style={{ color: '#F19828' }}
+                  style={{
+                    color:
+                      authorityCheck === false &&
+                      isProjectOwner === 0 &&
+                      !isReviewer
+                        ? '#ccc'
+                        : '#F19828'
+                  }}
                 ></i>
               </a>
             </p>
@@ -1005,11 +1041,11 @@ export default function ProjectwiseModule() {
                   <label className="form-label col-sm-3 mt-2 me-2 fw-bold">
                     Module:
                   </label>
-                  {moduleDropdown && (
+                  {(moduleDropdown || projectWiseModuleDropdown) && (
                     <Select
                       className="w-100"
                       options={
-                        ModuleID?.length > 0
+                        parseInt(ModuleID)?.length > 0
                           ? moduleDropdown
                           : projectWiseModuleDropdown
                       }
@@ -1022,28 +1058,28 @@ export default function ProjectwiseModule() {
                     />
                   )}
                 </div>
-
                 {((subModuleDropdown && subModuleDropdown?.length > 0) ||
-                  projectWiseSubModuleDropdown?.length > 0) && (
-                  <div className="d-md-flex mt-2">
-                    <label className="form-label col-sm-3 mt-2 me-2 fw-bold">
-                      SubModule:
-                    </label>
-                    <Select
-                      className="w-100"
-                      options={
-                        ModuleID?.length > 0
-                          ? subModuleDropdown
-                          : projectWiseSubModuleDropdown
-                      }
-                      ref={submoduleRef}
-                      onChange={(e) => {
-                        changeSubModuleHandle(e, 'SUBMODULE');
-                      }}
-                      name="submodule_id"
-                    />
-                  </div>
-                )}
+                  projectWiseSubModuleDropdown?.length > 0) &&
+                  moduleValue && (
+                    <div className="d-md-flex mt-2">
+                      <label className="form-label col-sm-3 mt-2 me-2 fw-bold">
+                        SubModule:
+                      </label>
+                      <Select
+                        className="w-100"
+                        options={
+                          parseInt(ModuleID)?.length > 0
+                            ? subModuleDropdown
+                            : projectWiseSubModuleDropdown
+                        }
+                        ref={submoduleRef}
+                        onChange={(e) => {
+                          changeSubModuleHandle(e, 'SUBMODULE');
+                        }}
+                        name="submodule_id"
+                      />
+                    </div>
+                  )}
               </div>
 
               <div className="col-4 text-center">

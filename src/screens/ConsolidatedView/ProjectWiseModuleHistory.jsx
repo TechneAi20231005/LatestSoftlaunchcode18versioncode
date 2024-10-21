@@ -168,7 +168,7 @@ const ProjectWiseModuleHistory = ({ match }) => {
 
     {
       name: ' Deleted By',
-      selector: (row) => (row.is_active === 1 ? row.deleted_by : ''),
+      selector: (row) => (row.is_active === 1 ? '' : row.deleted_by),
       sortable: true,
       conditionalCellStyles: [
         {
