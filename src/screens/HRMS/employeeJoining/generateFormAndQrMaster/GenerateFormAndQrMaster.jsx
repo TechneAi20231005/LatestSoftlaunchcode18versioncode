@@ -115,39 +115,43 @@ function GenerateFormAndQrMaster() {
   ];
 
   // // all handler
-  const downloadQrCode = (reset) => {
+  const downloadQrCode = () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-    canvas.width = 800;
-    canvas.height = 800;
-
+    const svgSize = 800;
+    canvas.width = svgSize;
+    canvas.height = svgSize;
     const img = new Image();
-    const svgBlob = new Blob([addQrCodeData?.qr_scanner], { type: 'image/svg+xml' });
+    const svgBlob = new Blob([addQrCodeData?.qr_scanner], {
+      type: 'image/svg+xml'
+    });
     const url = URL.createObjectURL(svgBlob);
-
     img.onload = () => {
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
       const pngUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
+      // const currentDate = new Date().toISOString().split('T')[0];
+      // YYYY-MM-DD format for filename
       link.href = pngUrl;
-      link.download = `${'QR Code'}-${currentDate}.png`;
+      link.download = `QR_Code-
+${currentDate}
+.png`;
       document.body.appendChild(link);
       link.click();
-
+      // Cleanup
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
+      // Notify the user about successful download
+      toast.success('QR Code downloaded successfully');
+      setTimeout(() => {
+        window.history.back();
+      }, 1500);
     };
-
     img.onerror = (error) => {
       console.error('Error loading image', error);
+      toast.error('Failed to download QR Code');
     };
-
     img.src = url;
-    toast.success('QR Code downloaded successfully');
-    setTimeout(() => {
-      window.history.back();
-    }, 1500);
   };
 
   const handleAddQrCode = (values) => {
