@@ -115,14 +115,14 @@ function GenerateFormAndQrMaster() {
   ];
 
   // // all handler
-  const downloadQrCode = (svgData) => {
+  const downloadQrCode = () => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const svgSize = 800;
     canvas.width = svgSize;
     canvas.height = svgSize;
     const img = new Image();
-    const svgBlob = new Blob([svgData], {
+    const svgBlob = new Blob([addQrCodeData?.qr_scanner], {
       type: 'image/svg+xml'
     });
     const url = URL.createObjectURL(svgBlob);
@@ -143,6 +143,9 @@ ${currentDate}
       URL.revokeObjectURL(url);
       // Notify the user about successful download
       toast.success('QR Code downloaded successfully');
+      setTimeout(() => {
+        window.history.back();
+      }, 1500);
     };
     img.onerror = (error) => {
       console.error('Error loading image', error);
