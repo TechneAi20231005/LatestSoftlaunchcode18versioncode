@@ -705,26 +705,26 @@ export default function ProjectwiseModule() {
                 href={_attachmentUrl + row?.document_attachment}
                 target="_blank"
                 rel="noopener noreferrer"
-                style={{
-                  pointerEvents:
-                    authorityCheck === false &&
-                    isProjectOwner === 0 &&
-                    !isReviewer
-                      ? 'none'
-                      : 'auto'
-                }}
+                // style={{
+                //   pointerEvents:
+                //     authorityCheck === false &&
+                //     isProjectOwner === 0 &&
+                //     !isReviewer
+                //       ? 'none'
+                //       : 'auto'
+                // }}
               >
                 <i
                   className="icofont-download me-3 btn btn-sm btn-secondary text-white"
                   // style={{ color: '#F19828' }}
-                  style={{
-                    color:
-                      authorityCheck === false &&
-                      isProjectOwner === 0 &&
-                      !isReviewer
-                        ? '#ccc'
-                        : '#F19828'
-                  }}
+                  // style={{
+                  //   color:
+                  //     authorityCheck === false &&
+                  //     isProjectOwner === 0 &&
+                  //     !isReviewer
+                  //       ? '#ccc'
+                  //       : '#F19828'
+                  // }}
                 ></i>
               </a>
             </p>
