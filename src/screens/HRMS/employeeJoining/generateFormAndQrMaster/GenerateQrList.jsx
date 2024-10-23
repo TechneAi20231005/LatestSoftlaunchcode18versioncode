@@ -44,40 +44,37 @@ const GenerateQrList = () => {
   const DownloadSvg = (svgData) => {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
-
     const svgSize = 800;
     canvas.width = svgSize;
     canvas.height = svgSize;
-
     const img = new Image();
-    const svgBlob = new Blob([svgData], { type: 'image/svg+xml' });
+    const svgBlob = new Blob([svgData], {
+      type: 'image/svg+xml'
+    });
     const url = URL.createObjectURL(svgBlob);
-
     img.onload = () => {
       ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-
       const pngUrl = canvas.toDataURL('image/png');
       const link = document.createElement('a');
-
+      // const currentDate = new Date().toISOString().split('T')[0];
+      // YYYY-MM-DD format for filename
       link.href = pngUrl;
-      link.download = `QR_Code-${currentDate}.png`;
-
+      link.download = `QR_Code-
+${currentDate}
+.png`;
       document.body.appendChild(link);
       link.click();
-
       // Cleanup
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
-    };
 
+      toast.success('QR Code downloaded successfully');
+    };
     img.onerror = (error) => {
       console.error('Error loading image', error);
+      toast.error('Failed to download QR Code');
     };
-
     img.src = url;
-
-    // Notify the user
-    toast.success('QR Code downloaded successfully');
   };
 
   const columns = [
@@ -349,7 +346,6 @@ const GenerateQrList = () => {
         persistTableHead={true}
         progressPending={isLoading?.getQrCodeMasterList}
         progressComponent={<TableLoadingSkelton />}
-
       />
       {open && (
         <ViewQrImageModal
