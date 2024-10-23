@@ -127,10 +127,7 @@ function ReviewedTestDraftComponent() {
     filterReviewList,
     exportAllReviewDraftTestListData
   } = useSelector((state) => state?.downloadFormat);
-  console.log(
-    'exportallReviewDraftTestListData',
-    exportAllReviewDraftTestListData
-  );
+
   const [paginationData, setPaginationData] = useReducer(
     (prevState, nextState) => {
       return { ...prevState, ...nextState };
@@ -143,6 +140,10 @@ function ReviewedTestDraftComponent() {
   );
   const testerData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.getAllTesterDataList
+  );
+
+  const filterTestData = testerData?.filter(
+    (d) => d?.value != localStorage?.getItem('id')
   );
 
   const [downloadmodal, setDownloadModal] = useState({
@@ -1661,7 +1662,7 @@ function ReviewedTestDraftComponent() {
           <Select
             id="reviewer_id"
             name="reviewer_id"
-            options={testerData}
+            options={filterTestData}
             required={true}
             onChange={(e) => {
               const selectedId = e?.value;
