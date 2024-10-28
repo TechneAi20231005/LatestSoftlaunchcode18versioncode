@@ -298,8 +298,8 @@ export default function MyTicketComponent() {
       } else {
         return (
           <div className="d-flex justify-content-between">
-            {data.created_by === sessionStorage.getItem('id') ||
-              (data.assign_to_user_id === sessionStorage.getItem('id') &&
+            {data.created_by === localStorage.getItem('id') ||
+              (data.assign_to_user_id === localStorage.getItem('id') &&
                 data.status_name !== 'Solved' && (
                   <Link
                     to={`/${_base}/Ticket/Edit/` + data.id}
@@ -3168,6 +3168,9 @@ export default function MyTicketComponent() {
                 }}
                 className=" tab-body-header rounded d-inline-flex"
               >
+                {console.log('searchResultExport', searchResultExport)}
+                {console.log('searchResult', searchResult)}
+
                 {searchResult && (
                   <Tab
                     eventKey="Search_Result"

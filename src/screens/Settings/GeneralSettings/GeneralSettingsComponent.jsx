@@ -88,7 +88,7 @@ function GeneralSettings() {
     dispatch(getGeneralSettingData());
     dispatch(getUserForMyTicketsData(inputRequired));
 
-    const roleId = sessionStorage.getItem('role_id');
+    const roleId = localStorage.getItem('role_id');
 
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {

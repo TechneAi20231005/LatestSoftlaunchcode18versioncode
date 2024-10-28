@@ -164,21 +164,25 @@ export default function ResourcePlanningReportComponent() {
                 const exportTempData = [];
 
                 for (const i in data) {
+
                   const tasks = Array.isArray(data[i].tasks)
                     ? data[i].tasks
                     : [];
                   let counter = 1;
                   for (const task of tasks) {
+
                     exportTempData.push({
                       sr: counter++,
                       ticket_id: task.ticket_id,
+                       job_role: data[i].job_role || "-",
                       sprint_name: task.sprint_name || "-",
                       sprint_start_date: task.sprint_start_date || "-",
                       sprint_end_date: task.sprint_end_date || "-",
                       date: data[i].date,
                       user_name: data[i].user_name,
+                      type_name: task.type_name || "-",
                       task_name: task.task_name,
-                      total_hours: task.total_hours
+                      total_hours: task.total_hours,
                     });
                   }
                 }

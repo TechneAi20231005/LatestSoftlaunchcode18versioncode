@@ -220,7 +220,6 @@ function TestCaseReviewDetails() {
 
   const [commentIdError, setCommentIdError] = useState('');
   const [changedRows, setChangedRows] = useState({});
-
   const handleSubmit = async (status) => {
     // const updatedRows = exportTestCaseReviewData
     //   ?.filter((row) => selectedRows?.includes(row.tc_id))
@@ -236,6 +235,11 @@ function TestCaseReviewDetails() {
       );
       return false; // Exit the function or prevent further execution
     }
+
+    if (status === 'APPROVED' && selectedRows?.length <= 0) {
+      alert('Please select the test cases that you want to approve.');
+      return false; // Exit the function or prevent further execution
+    }
     const getUpdatedRows = () => {
       let updatedRows = [];
 
@@ -246,7 +250,7 @@ function TestCaseReviewDetails() {
             id: row?.id,
             tc_id: row?.tc_id,
             comment_id: comments[row?.id] || row?.comment_id || commonComment,
-            other_remark: remarks[row?.id] || row?.other_remark
+            other_remark: remarks[row?.id] || row?.other_remark || commonRemark
           }));
       }
 
@@ -284,6 +288,12 @@ function TestCaseReviewDetails() {
     const newCommentIdErrors = [];
 
     updatedRows?.forEach((row) => {
+      if (!row?.comment_id) {
+        newCommentIdErrors[row?.tc_id] = 'Reviewer comment is required';
+      }
+    });
+
+    selectedRows?.forEach((row) => {
       if (!row?.comment_id) {
         newCommentIdErrors[row?.tc_id] = 'Reviewer comment is required';
       }
@@ -980,7 +990,7 @@ function TestCaseReviewDetails() {
             // selectedRows && selectedRows.includes(row.tc_id)
             //   ? remarks[row.other_remark] || row.other_remark
             //   : commonRemark
-            row.other_remark
+            row.other_remark || remarks[row.id] || commonRemark
           }
           onChange={(e) =>
             handleRowChange(row.id, 'other_remark', e.target.value)
