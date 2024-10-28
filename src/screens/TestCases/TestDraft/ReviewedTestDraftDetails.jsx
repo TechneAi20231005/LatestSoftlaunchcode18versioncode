@@ -453,7 +453,9 @@ function ReviewedTestDraftDetails(props) {
             <OverlayTrigger overlay={<Tooltip>{row.test_plan_id} </Tooltip>}>
               <div>
                 <Link
-                  to={`/${_base + '/ReviewedTestDraftComponent/' + row?.id}`}
+                  to={`/${
+                    _base + '/ReviewedTestDraftComponent/' + row?.id
+                  }?testPlanId=${row?.test_plan_id}`}
                   className="link_underline_primary"
                 >
                   {row.test_plan_id}

@@ -461,7 +461,9 @@ function TestCaseReviewComponent() {
             <OverlayTrigger overlay={<Tooltip>{row.test_plan_id} </Tooltip>}>
               <div>
                 <Link
-                  to={`/${_base + '/TestCaseReviewDetails/' + row?.id}`}
+                  to={`/${
+                    _base + '/TestCaseReviewDetails/' + row?.id
+                  }?testPlanId=${row?.test_plan_id}`}
                   className="link_underline_primary"
                 >
                   {row.test_plan_id}

@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useState } from 'react';
 import { Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import PageHeader from '../../../components/Common/PageHeader';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
 import { _base } from '../../../settings/constants';
@@ -89,6 +89,11 @@ function localReducer(state, action) {
 
 function TestCaseReviewDetails() {
   const { id } = useParams();
+  const location = useLocation();
+
+  const queryParams = new URLSearchParams(location.search);
+  const testPlanId = queryParams.get('testPlanId');
+
   const planID = id;
   const dispatch = useDispatch();
 
@@ -1761,7 +1766,7 @@ function TestCaseReviewDetails() {
   return (
     <div className="container-xxl">
       <PageHeader
-        headerTitle="Test Case Review"
+        headerTitle={`Test Case Review : ${testPlanId}`}
         renderRight={() => {
           return (
             <div className="col-md-6 d-flex justify-content-end">

@@ -974,6 +974,14 @@ function TestCaseHistoryComponent() {
           progressPending={isLoading?.testDraftHistory}
           progressComponent={<TableLoadingSkelton />}
         />
+        <div className="d-flex justify-content-end mt-3">
+          <button
+            onClick={() => window.history.back()}
+            className="btn btn-primary text-white "
+          >
+            Back
+          </button>
+        </div>
       </Container>
     </>
   );

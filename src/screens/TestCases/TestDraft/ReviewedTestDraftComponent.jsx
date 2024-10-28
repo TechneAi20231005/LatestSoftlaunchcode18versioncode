@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useState } from 'react';
 import { Container, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import Select from 'react-select';
 import { Astrick } from '../../../components/Utilities/Style';
 import PageHeader from '../../../components/Common/PageHeader';
@@ -92,6 +92,10 @@ function localReducer(state, action) {
 
 function ReviewedTestDraftComponent() {
   const { id } = useParams();
+  const location = useLocation();
+
+  const queryParams = new URLSearchParams(location.search);
+  const testPlanId = queryParams.get('testPlanId');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -1523,7 +1527,7 @@ function ReviewedTestDraftComponent() {
   return (
     <div className="container-xxl">
       <PageHeader
-        headerTitle="Test Draft"
+        headerTitle={`Test Draft : ${testPlanId}`}
         renderRight={() => {
           return (
             <div className="col-md-6 d-flex justify-content-end">
