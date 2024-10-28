@@ -3118,7 +3118,7 @@ export default function MyTicketComponent() {
                       name="ticket_id"
                       defaultValue={ticket}
                       onChange={handleTicket}
-                      maxLength={30}
+                      maxLength={1000}
                       onKeyPress={(e) => {
                         Validation.CharactersNumbersSpeicalOnly(e);
                       }}
