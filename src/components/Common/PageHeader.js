@@ -3,8 +3,15 @@ import { Nav } from 'react-bootstrap';
 import './style.scss';
 class PageHeader extends React.Component {
   render() {
-    const { headerTitle, isTabShow, renderRight, paddingStart, showBackBtn } =
-      this.props;
+    const {
+      headerTitle,
+      isTabShow,
+      renderRight,
+      paddingStart,
+      showBackBtn,
+      isremove = false,
+      handleBack
+    } = this.props;
 
     return (
       <div
@@ -22,6 +29,13 @@ class PageHeader extends React.Component {
                   onClick={() => window.history.back()}
                 />
               )}
+              {isremove && (
+                <i
+                  className="icofont-simple-left fs-2 back_icon_btn"
+                  onClick={handleBack}
+                />
+              )}
+
               <span> {headerTitle}</span>
             </h3>
             {isTabShow ? (

@@ -42,6 +42,7 @@ import remarkMasterSlice from '../slices/hrms/employeeJoining/remarkMaster';
 import salaryMasterSlice from '../slices/hrms/employeeJoining/salaryMaster';
 import interviewMasterSlice from '../slices/hrms/employeeJoining/interviewListMaster';
 import candidatesMasterSlice from '../slices/hrms/employeeJoining/candidatesListMaster';
+import qrCodeListMasterSlice from '../slices/hrms/employeeJoining/qrCodeListMaster';
 import candidatesFollowUpSlice from '../slices/hrms/employeeJoining/followUp';
 import candidatesRemarkHistorySlice from '../slices/hrms/employeeJoining/remarkHistory';
 import interViewProcessDataSlice from '../slices/hrms/employeeJoining/interviewProcess';
@@ -106,6 +107,7 @@ export const store = configureStore({
     salaryMaster: salaryMasterSlice,
     interviewMaster: interviewMasterSlice,
     candidatesMaster: candidatesMasterSlice,
+    qrCodeMaster: qrCodeListMasterSlice,
     candidatesFollowUp: candidatesFollowUpSlice,
     candidatesRemarkHistory: candidatesRemarkHistorySlice,
     interViewProcess: interViewProcessDataSlice,

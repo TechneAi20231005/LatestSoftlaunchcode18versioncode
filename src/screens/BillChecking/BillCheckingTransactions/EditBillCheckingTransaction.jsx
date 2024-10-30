@@ -429,12 +429,12 @@ export default function CreateBillCheckingTransaction({ match }) {
         if (res.data.status == 1) {
           setVendor(res.data.data);
           const filterData = res.data.data.filter(
-            (d) => d.consider_in_payment === 'YES'
+            (d) => d.consider_in_payment?.toUpperCase() === 'YES'
           );
           setVendorDropdown(
             filterData
-              .filter((d) => d.is_active == 1)
-              .map((d) => ({
+              ?.filter((d) => d.is_active == 1)
+              ?.map((d) => ({
                 value: d.id,
                 label: d.vendor_name
               }))
@@ -871,6 +871,7 @@ export default function CreateBillCheckingTransaction({ match }) {
   const formattedDate = `${year}-${month}-${day}`;
 
   let recordRoom = userDropdown && userDropdown.filter((d) => d.value === 692);
+  console.log('rrr', recordRoom);
 
   return (
     <div className="container-xxl">
@@ -1424,11 +1425,12 @@ export default function CreateBillCheckingTransaction({ match }) {
                           </b>
                         </label>
                         <input
-                          type="number"
+                          type="text"
                           className="form-control form-control-sm"
                           id="tcs"
                           name="tcs"
                           step="any"
+                          maxLength={13}
                           onChange={(e) => handleTcs(e)}
                           defaultValue={isTcsApplicable === true ? data.tcs : 0}
                           readOnly={
@@ -1438,8 +1440,36 @@ export default function CreateBillCheckingTransaction({ match }) {
                                 true
                               : false
                           }
+                          // onKeyPress={(e) => {
+                          //   Validation.NumbersSpeicalOnlyDot(e);
+                          // }}
                           onKeyPress={(e) => {
-                            Validation.NumbersSpeicalOnlyDot(e);
+                            const inputValue = e.key;
+                            const currentInput = e.target.value;
+                            const decimalIndex = currentInput.indexOf('.');
+
+                            if (
+                              !/^\d$/.test(inputValue) &&
+                              inputValue !== '.' &&
+                              inputValue !== 'Backspace'
+                            ) {
+                              e.preventDefault();
+                            }
+
+                            if (
+                              decimalIndex !== -1 &&
+                              currentInput.length - decimalIndex > 2
+                            ) {
+                              e.preventDefault();
+                            }
+
+                            if (
+                              currentInput.length >= 10 &&
+                              inputValue !== '.' &&
+                              decimalIndex === -1
+                            ) {
+                              e.preventDefault();
+                            }
                           }}
                           required={isTcsApplicable === true ? true : false}
                         />
@@ -1696,7 +1726,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             onChange={(e) => handleTds(e)}
                             readOnly={
                               data.is_rejected == 1 ||
-                              data.created_by == localStorage.getItem('id') ||
+                              // data.created_by == localStorage.getItem('id') ||
                               (data.current_user_is_approver == 1 &&
                                 data.current_user_is_approver == 0)
                                 ? false
@@ -1718,7 +1748,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             onChange={(e) => handleTds(e)}
                             readOnly={
                               data.is_rejected == 1 ||
-                              data.created_by == localStorage.getItem('id') ||
+                              // data.created_by == localStorage.getItem('id') ||
                               (data.current_user_is_approver == 1 &&
                                 data.current_user_is_approver == 0)
                                 ? false
@@ -1792,7 +1822,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       data.is_rejected != 1 &&
                       data.approvers_id.length > 0 &&
                       data.approvers_id.includes(
-                        parseInt(sessionStorage.getItem('id'))
+                        parseInt(localStorage.getItem('id'))
                       ) && (
                         <>
                           <div className=" col-md mt-4">

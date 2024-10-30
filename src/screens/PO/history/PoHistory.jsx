@@ -80,6 +80,12 @@ function PoHistory() {
       width: '120px'
     },
     {
+      name: 'Remark',
+      selector: (row) => row?.remark || '---',
+      sortable: false,
+      width: '120px'
+    },
+    {
       sortable: false,
       name: 'Karagir 1',
       selector: (row) =>

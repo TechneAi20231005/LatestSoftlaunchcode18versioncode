@@ -14,7 +14,7 @@ const _createComment = _URL + '/comment/createComment';
 const _getAllComment = _URL + '/comment/getAllComment/';
 const _createGanttChart = _apiUrl + 'hoursWiseTaskRecord/';
 
-const _passTicket = _URL + "/passTicket";
+const _passTicket = _URL + '/passTicket';
 // const _passBulkTicket = _URL + "/bulkpassTicket";
 
 export default class MyTicketService {
@@ -121,22 +121,51 @@ export default class MyTicketService {
     return axios.post(_updateTicket + id, payload, config);
   }
 
+  // postComment(payload) {
+  //   payload = {
+  //     ...payload,
+  //     created_by: userSessionData.userId,
+  //     created_at: userSessionData.time
+  //   };
+
+  //   const token = localStorage.getItem('jwt_token');
+
+  //   const config = {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //       Accept: 'application/json',
+  //       'Content-Type': 'application/json'
+  //     }
+  //   };
+  //   return axios.post(_createComment, payload, config);
+  // }
   postComment(payload) {
-    payload = {
-      ...payload,
-      created_by: userSessionData.userId,
-      created_at: userSessionData.time
-    };
+    // Check if payload is FormData
+    if (payload instanceof FormData) {
+      // Append extra fields to FormData
+      payload.append('created_by', userSessionData.userId);
+      payload.append('created_at', userSessionData.time);
+    } else {
+      // If it's not FormData, proceed as usual (for non-file cases)
+      payload = {
+        ...payload,
+        created_by: userSessionData.userId,
+        created_at: userSessionData.time
+      };
+    }
 
     const token = localStorage.getItem('jwt_token');
 
+    // Configuration for Axios request
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-        'Content-Type': 'application/json'
+        Accept: 'application/json'
+        // Remove 'Content-Type' header so Axios can set it automatically
+        // when using FormData, it will be set to multipart/form-data
       }
     };
+
     return axios.post(_createComment, payload, config);
   }
 

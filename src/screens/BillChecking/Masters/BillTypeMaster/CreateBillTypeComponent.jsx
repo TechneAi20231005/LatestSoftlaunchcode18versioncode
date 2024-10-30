@@ -67,19 +67,19 @@ const CreateBillTypeComponent = () => {
     }
 
     // If this is not the first click, increment the amount by 1
-    if (newData.length > 1) {
+    if (newData?.length > 1) {
       firstAmount += 1;
     }
 
     // Use a for loop to validate the new amount against all existing amounts
-    for (let i = 0; i < newData.length; i++) {
+    for (let i = 0; i < newData?.length; i++) {
       if (i === index) {
         // Skip the current slab
         continue;
       }
 
       // Check if the new amount is greater than or equal to the previous amount
-      if (firstAmount <= newData[i].amount) {
+      if (firstAmount <= newData[i]?.amount) {
         alert(
           `Amount in section ${
             index + 1
@@ -92,7 +92,7 @@ const CreateBillTypeComponent = () => {
     // Create a new section with the calculated amount
     const newSection = {
       amount: firstAmount,
-      slab: newData.length + 1,
+      slab: newData?.length + 1,
       level: [
         {
           bill_approval_level: 1,
@@ -104,7 +104,7 @@ const CreateBillTypeComponent = () => {
     };
 
     // Insert the new section in between the current and the next section
-    if (index < newData.length - 1) {
+    if (index < newData?.length - 1) {
       newData.splice(index + 1, 0, newSection);
     } else {
       // If index is the last section, simply add the new section to the end
@@ -112,7 +112,7 @@ const CreateBillTypeComponent = () => {
     }
 
     // Reindex the sections
-    for (let i = 0; i < newData.length; i++) {
+    for (let i = 0; i < newData?.length; i++) {
       newData[i].slab = i + 1;
     }
 
@@ -260,8 +260,8 @@ const CreateBillTypeComponent = () => {
     } else {
       // For all other indices
       if (index > 0) {
-        var previousAmount = slabsData[index - 1].amount;
-        var nextAmount = slabsData[index + 1].amount;
+        var previousAmount = slabsData[index - 1]?.amount;
+        var nextAmount = slabsData[index + 1]?.amount;
       }
 
       if (index === numSlabs - 2) {
@@ -306,7 +306,9 @@ const CreateBillTypeComponent = () => {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const a = res.data.data.filter((d) => d.is_active == 1);
+          const a = res.data.data.filter(
+            (d) => d.is_active == 1 && d.account_for === 'SELF'
+          );
           setUserData(
             a.map((d) => ({
               value: d.id,
@@ -500,7 +502,7 @@ const CreateBillTypeComponent = () => {
       return;
     } else {
       formData.append('approverData', JSON.stringify(approverData));
-      formData.append('user_id', sessionStorage.getItem('id'));
+      formData.append('user_id', localStorage.getItem('id'));
       formData.append('bill_type', e.target.bill_type.value);
       try {
         const res = await new BillTypeMasterService().createBillType(formData);
@@ -556,7 +558,7 @@ const CreateBillTypeComponent = () => {
               <input
                 type="hidden"
                 id="user_id"
-                value={sessionStorage.getItem('id')}
+                value={localStorage.getItem('id')}
               />
               <div className="col-sm-4 ">
                 <label className="form-label font-weight-bold">
@@ -632,11 +634,20 @@ const CreateBillTypeComponent = () => {
                       }
                       maxLength="10"
                       value={item.amount ? item.amount : ''}
+                      // onKeyPress={(e) => {
+                      //   if (
+                      //     !/^[0-9]*(\.[0-9]{0,2})?$/.test(
+                      //       e.target.value + e.key
+                      //     ) ||
+                      //     e.target.value.length >= 10
+                      //   ) {
+                      //     e.preventDefault();
+                      //   }
+                      // }}
                       onKeyPress={(e) => {
+                        // Only allow digits (0-9) and limit the maximum length to 10
                         if (
-                          !/^[0-9]*(\.[0-9]{0,2})?$/.test(
-                            e.target.value + e.key
-                          ) ||
+                          !/^[0-9]*$/.test(e.key) ||
                           e.target.value.length >= 10
                         ) {
                           e.preventDefault();

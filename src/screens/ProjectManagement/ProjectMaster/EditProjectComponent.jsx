@@ -249,7 +249,6 @@ export default function EditProjectComponent({ match }) {
                         />
                       )}
                     </div>
-                    {console.log('data', data)}
                     <label
                       className="col-sm-2 col-form-label"
                       style={{ textAlign: 'right' }}

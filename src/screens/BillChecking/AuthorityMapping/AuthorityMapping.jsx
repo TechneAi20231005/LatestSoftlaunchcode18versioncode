@@ -305,7 +305,7 @@ const AuthorityMapping = () => {
   };
 
   const handleRemoveSpecificRow = (index) => async () => {
-    const id = assign[index].id;
+    const id = assign[index]?.id;
 
     // Delete the item
     await new BillCheckingTransactionService()
@@ -314,7 +314,7 @@ const AuthorityMapping = () => {
         if (res.status === 200) {
           // Create a new array with the item removed
           const updatedAssign = [...assign];
-          updatedAssign.splice(index, 1);
+          updatedAssign?.splice(index, 1);
 
           // Update the state
           setAssign(updatedAssign);
@@ -323,17 +323,17 @@ const AuthorityMapping = () => {
   };
 
   const mainJson = {
-    updated_by: sessionStorage.getItem('id'),
+    updated_by: localStorage.getItem('id'),
     updated_at: new Date(),
     setting_id: modal?.modalData?.id,
 
     setting_value: 'Y',
     is_active: statusData,
 
-    user_details: assign.map((item) => ({
-      user_id: Array.isArray(item.user_id) ? item.user_id : [item.user_id],
-      from_date: item.from_date,
-      to_date: item.to_date
+    user_details: assign?.map((item) => ({
+      user_id: Array?.isArray(item?.user_id) ? item?.user_id : [item?.user_id],
+      from_date: item?.from_date,
+      to_date: item?.to_date
     }))
   };
 
@@ -497,6 +497,7 @@ const AuthorityMapping = () => {
       />
       {/* SEARCH FILTER */}
       <SearchBoxHeader
+        searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
