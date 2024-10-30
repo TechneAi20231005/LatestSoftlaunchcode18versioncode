@@ -92,3 +92,13 @@ export const exportToExcelCustomHandler = ({
 
   saveAs(dataBlob, `${fileName}.xlsx`);
 };
+
+//
+
+export const formatingTableNameData = (str) => {
+  if (str.length > 50) {
+    return str.slice(0, 49) + '...';
+  } else {
+    return str;
+  }
+};

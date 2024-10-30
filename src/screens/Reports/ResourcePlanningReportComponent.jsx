@@ -14,6 +14,13 @@ import { _base } from '../../settings/constants';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../Dashboard/DashboardAction';
+import {
+  formatingTableNameData,
+  reportTable
+} from '../../utils/customFunction';
+import { Col, Container, Row, OverlayTrigger, Tooltip } from 'react-bootstrap';
+
+// import Tooltip from 'react-bootstrap/Tooltip';
 
 export default function ResourcePlanningReportComponent() {
   const [userData, setUserData] = useState(null);
@@ -31,6 +38,7 @@ export default function ResourcePlanningReportComponent() {
 
   const [todateformat, setTodateformat] = useState('');
   const [fromdateformat, setFromdateformat] = useState('');
+  const [selectedId, setSelectedId] = useState(null);
 
   const columns = [
     { name: 'Sr', selector: (row) => row.sr, sortable: false, width: '70px' },
@@ -164,25 +172,23 @@ export default function ResourcePlanningReportComponent() {
                 const exportTempData = [];
 
                 for (const i in data) {
-
                   const tasks = Array.isArray(data[i].tasks)
                     ? data[i].tasks
                     : [];
                   let counter = 1;
                   for (const task of tasks) {
-
                     exportTempData.push({
                       sr: counter++,
                       ticket_id: task.ticket_id,
-                       job_role: data[i].job_role || "-",
-                      sprint_name: task.sprint_name || "-",
-                      sprint_start_date: task.sprint_start_date || "-",
-                      sprint_end_date: task.sprint_end_date || "-",
+                      job_role: data[i].job_role || '-',
+                      sprint_name: task.sprint_name || '-',
+                      sprint_start_date: task.sprint_start_date || '-',
+                      sprint_end_date: task.sprint_end_date || '-',
                       date: data[i].date,
                       user_name: data[i].user_name,
-                      type_name: task.type_name || "-",
+                      type_name: task.type_name || '-',
                       task_name: task.task_name,
-                      total_hours: task.total_hours,
+                      total_hours: task.total_hours
                     });
                   }
                 }
@@ -222,6 +228,10 @@ export default function ResourcePlanningReportComponent() {
       }
     }
   };
+  const expandTaskName = (id) => {
+    setSelectedId(id);
+    console.log(id);
+  };
 
   const ExpandedComponent = ({ data }) => (
     <pre>
@@ -240,19 +250,40 @@ export default function ResourcePlanningReportComponent() {
             data.tasks.map((task, key) => {
               return (
                 <tr>
-                  <td>{key + 1}</td>
+                  <td style={{ width: '5%' }}>{key + 1}</td>
                   {/*        // Updated by Asmita Margaje */}
-                  <td>
+                  <td style={{ width: '50%', paddingRight: '20px' }}>
                     <Link to={`/${_base}/Ticket/Task/${task.id}`}>
                       <span style={{ fontWeight: 'bold' }}>
                         {' '}
                         {task.ticket_id}{' '}
                       </span>
                     </Link>
-                    - {task.task_name}
+                    <OverlayTrigger
+                      overlay={<Tooltip>{task?.task_name} </Tooltip>}
+                    >
+                      <span
+                        onClick={() => expandTaskName(task?.id)}
+                        // title={task.task_name}
+
+                        data-bs-toggle="tooltip"
+                        // title={task.task_name}
+                        style={{
+                          cursor: 'pointer',
+                          wordBreak: 'break-word',
+                          whiteSpace: selectedId === task?.id ? 'normal' : null
+                          // wordBreak: selectedId === task?.id ? 'break-word' : null
+                        }}
+                      >
+                        {selectedId === task?.id
+                          ? task.task_name
+                          : formatingTableNameData(task.task_name)}
+                      </span>
+                    </OverlayTrigger>
+                    {/* - {task.task_name} */}
                   </td>
-                  <td>{task.sprint_name || "-"}</td>
-                  <td>{task.total_hours}</td>
+                  <td style={{ width: '35%' }}>{task.sprint_name || '-'}</td>
+                  <td style={{ width: '10%' }}>{task.total_hours}</td>
                 </tr>
               );
             })}
@@ -378,7 +409,6 @@ export default function ResourcePlanningReportComponent() {
                   highlightOnHover={true}
                   expandableRows
                   expandableRowsComponent={ExpandedComponent}
-
                 />
               )}
             </div>
