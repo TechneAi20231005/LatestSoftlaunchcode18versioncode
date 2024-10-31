@@ -37,7 +37,10 @@ import {
 
 import RoleService from '../../../services/MastersService/RoleService';
 import { toast } from 'react-toastify';
-import { getJobRoleMasterListThunk } from '../../../redux/services/jobRoleMaster';
+import {
+  editJobRoleMasterThunk,
+  getJobRoleMasterListThunk
+} from '../../../redux/services/jobRoleMaster';
 function EditUserComponent({ match }) {
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState('All_Tickets');
@@ -53,10 +56,6 @@ function EditUserComponent({ match }) {
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 3)
   );
 
-  const { job_role } = useSelector(
-    (jobRoleSlice) => jobRoleSlice.dashboard.filterJobRoleData
-  );
-
   const { id } = useParams();
   const userId = parseInt(id);
 
@@ -67,7 +66,7 @@ function EditUserComponent({ match }) {
   const [stateDropdown, setStateDropdown] = useState(null);
   const [city, setCity] = useState(null);
   const [cityDropdown, setCityDropdown] = useState(null);
-
+  const [jobRoleDropDown, setJobRoleDropDown] = useState(null);
   // const [userDepartment, setUserDepartment] = useState(null);
   const [departmentDropdown, setDepartmentDropdown] = useState(null);
   // const [defaultDepartmentDropdown, setDefaultDepartmentDropdown] = useState();
@@ -96,13 +95,12 @@ function EditUserComponent({ match }) {
   ]);
 
   const [designationDropdown, setDesignationDropdown] = useState([]);
-  console.log('designationDropdown', designationDropdown);
+
   const sortDesignationDropdown = [...designationDropdown].sort((a, b) => {
     if (a.label < b.label) return -1;
     if (a.label > b.label) return 1;
     return 0;
   });
-  console.log('sortDesignationDropdown', sortDesignationDropdown);
 
   const [updateStatus, setUpdateStatus] = useState({});
 
@@ -127,6 +125,17 @@ function EditUserComponent({ match }) {
 
   const confirmedPasswordRef = useRef(0);
   const userForm = useRef();
+
+  const { jobRoleMasterList } = useSelector((state) => state?.jobRoleMaster);
+
+  const jobRoleDropDownValues = jobRoleMasterList?.map((i) => ({
+    value: i.id,
+    label: i.job_role
+  }));
+
+  // const job_role = useSelector(
+  //   (jobRoleSlice) => jobRoleSlice.dashboard.filterJobRoleData
+  // );
 
   // const [passwordError, setPasswordError] = useState(null);
   // const [passwordValid, setPasswordValid] = useState(false);
@@ -421,11 +430,6 @@ function EditUserComponent({ match }) {
     label: d.label
   }));
 
-  const jobRoleDropDown =
-    jobRoleDropDown &&
-    jobRoleDropDown?.filter((d) => {
-      return d.label?.toLowerCase;
-    });
   const orderedSelfRoleData = filterSelfRole?.sort(function (a, b) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
@@ -522,6 +526,22 @@ function EditUserComponent({ match }) {
           );
         }
       }
+    });
+
+    // job role data list dropdown
+
+    // await new editJobRoleMasterThunk().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status === 1) {
+    //       setJobRoleDropDown(
+    //         res.data.data.filter((d) => ({ value: d.id, label: d.job_role }))
+    //       );
+    //     }
+    //   }
+    // });
+
+    const orderedSelfRoleData = filterSelfRole?.sort(function (a, b) {
+      return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
     });
 
     await new UserService()
@@ -816,6 +836,7 @@ function EditUserComponent({ match }) {
   useEffect(() => {
     dispatch(getJobRoleMasterListThunk());
   }, []);
+
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Edit User" />
@@ -1403,6 +1424,32 @@ function EditUserComponent({ match }) {
                           >
                             {inputState.designationErr}
                           </small>
+                        )}
+                      </div>
+
+                      {/* job role */}
+                      <div className="form-group row mt-3">
+                        <label className="col-sm-2 col-form-label">
+                          <b>
+                            Select Job Role : <Astrick color="red" />
+                          </b>
+                        </label>
+
+                        {jobRoleMasterList && (
+                          <div className="col-sm-3">
+                            <Select
+                              id="job_role"
+                              name="job_role"
+                              options={jobRoleDropDownValues}
+                              defaultValue={
+                                data &&
+                                jobRoleDropDownValues &&
+                                jobRoleDropDownValues.filter(
+                                  (d) => d.value === data.job_role
+                                )
+                              }
+                            />
+                          </div>
                         )}
                       </div>
 
