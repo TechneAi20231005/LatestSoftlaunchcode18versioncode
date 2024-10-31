@@ -250,9 +250,9 @@ export default function ResourcePlanningReportComponent() {
             data.tasks.map((task, key) => {
               return (
                 <tr>
-                  <td style={{ width: '5%' }}>{key + 1}</td>
+                  <td className="col-1">{key + 1}</td>
                   {/*        // Updated by Asmita Margaje */}
-                  <td style={{ width: '50%', paddingRight: '20px' }}>
+                  <td className="col-6">
                     <Link to={`/${_base}/Ticket/Task/${task.id}`}>
                       <span style={{ fontWeight: 'bold' }}>
                         {' '}
@@ -263,16 +263,14 @@ export default function ResourcePlanningReportComponent() {
                       overlay={<Tooltip>{task?.task_name} </Tooltip>}
                     >
                       <span
+                        className="wb-bw cp"
                         onClick={() => expandTaskName(task?.id)}
                         // title={task.task_name}
 
                         data-bs-toggle="tooltip"
                         // title={task.task_name}
                         style={{
-                          cursor: 'pointer',
-                          wordBreak: 'break-word',
                           whiteSpace: selectedId === task?.id ? 'normal' : null
-                          // wordBreak: selectedId === task?.id ? 'break-word' : null
                         }}
                       >
                         {selectedId === task?.id
@@ -282,8 +280,8 @@ export default function ResourcePlanningReportComponent() {
                     </OverlayTrigger>
                     {/* - {task.task_name} */}
                   </td>
-                  <td style={{ width: '35%' }}>{task.sprint_name || '-'}</td>
-                  <td style={{ width: '10%' }}>{task.total_hours}</td>
+                  <td className="col-4">{task.sprint_name || '-'}</td>
+                  <td className="col-1">{task.total_hours}</td>
                 </tr>
               );
             })}
