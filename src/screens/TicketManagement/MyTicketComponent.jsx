@@ -2029,7 +2029,7 @@ export default function MyTicketComponent() {
                 // setSearchResultData(res.data.data);
                 // setKey('Search_Result');
                 // setIsLoading(false);
-                const temp = res?.data?.data;
+                const temp = res?.data?.data?.data;
                 var counter = 1;
                 var searchResultExport = [];
                 for (let key in temp) {
@@ -2068,9 +2068,9 @@ export default function MyTicketComponent() {
                     ticket_solved_date: temp[key].ticket_solved_date,
                     ticket_solved_by: temp[key].ticket_solved_by
                   });
+                  setSearchResultExport(searchResultExport);
                 }
                 // setKey('Search_Result');
-                setSearchResultExport(searchResultExport);
               } else {
                 // alert('No Data Found');
               }
@@ -3118,7 +3118,7 @@ export default function MyTicketComponent() {
                       name="ticket_id"
                       defaultValue={ticket}
                       onChange={handleTicket}
-                      maxLength={30}
+                      // maxLength={30}
                       onKeyPress={(e) => {
                         Validation.CharactersNumbersSpeicalOnly(e);
                       }}
