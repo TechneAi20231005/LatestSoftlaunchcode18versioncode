@@ -3120,7 +3120,7 @@ export default function MyTicketComponent() {
                       onChange={handleTicket}
                       // maxLength={30}
                       onKeyPress={(e) => {
-                        Validation.CharactersNumbersSpeicalOnly(e);
+                        Validation.CharactersNumbersSpeicalOnlyForTicket(e);
                       }}
                     />
                   </div>
