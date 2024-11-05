@@ -20,4 +20,4 @@ const ViewQrImageModal = ({ show, close, onClose, src }) => {
   );
 };
 
-export default ViewQrImageModal;
+export default React.memo(ViewQrImageModal);
