@@ -1,3 +1,15 @@
+/* In your CSS file */
+.custom-margin {
+  margin-left: -5px; /* Mobile */
+}
+
+@media (min-width: 768px) {
+  .custom-margin {
+    margin-left: -9px; /* Laptop and larger */
+  }
+}
+
+
 .generate_from_qr_container {
   .form_container {
     .branding_type_container {

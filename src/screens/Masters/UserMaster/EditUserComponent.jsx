@@ -6,7 +6,7 @@ import React, {
   useMemo
 } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { _base } from '../../../settings/constants';
+import { _base, reportUrl } from '../../../settings/constants';
 import Tab from 'react-bootstrap/Tab';
 import Tabs from 'react-bootstrap/Tabs';
 import ErrorLogService from '../../../services/ErrorLogService';
@@ -37,6 +37,10 @@ import {
 
 import RoleService from '../../../services/MastersService/RoleService';
 import { toast } from 'react-toastify';
+import {
+  editJobRoleMasterThunk,
+  getJobRoleMasterListThunk
+} from '../../../redux/services/jobRoleMaster';
 function EditUserComponent({ match }) {
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState('All_Tickets');
@@ -62,7 +66,7 @@ function EditUserComponent({ match }) {
   const [stateDropdown, setStateDropdown] = useState(null);
   const [city, setCity] = useState(null);
   const [cityDropdown, setCityDropdown] = useState(null);
-
+  const [jobRoleDropDown, setJobRoleDropDown] = useState(null);
   // const [userDepartment, setUserDepartment] = useState(null);
   const [departmentDropdown, setDepartmentDropdown] = useState(null);
   // const [defaultDepartmentDropdown, setDefaultDepartmentDropdown] = useState();
@@ -91,13 +95,12 @@ function EditUserComponent({ match }) {
   ]);
 
   const [designationDropdown, setDesignationDropdown] = useState([]);
-  console.log('designationDropdown', designationDropdown);
+
   const sortDesignationDropdown = [...designationDropdown].sort((a, b) => {
     if (a.label < b.label) return -1;
     if (a.label > b.label) return 1;
     return 0;
   });
-  console.log('sortDesignationDropdown', sortDesignationDropdown);
 
   const [updateStatus, setUpdateStatus] = useState({});
 
@@ -122,6 +125,17 @@ function EditUserComponent({ match }) {
 
   const confirmedPasswordRef = useRef(0);
   const userForm = useRef();
+
+  const { jobRoleMasterList } = useSelector((state) => state?.jobRoleMaster);
+
+  const jobRoleDropDownValues = jobRoleMasterList?.map((i) => ({
+    value: i.id,
+    label: i.job_role
+  }));
+
+  // const job_role = useSelector(
+  //   (jobRoleSlice) => jobRoleSlice.dashboard.filterJobRoleData
+  // );
 
   // const [passwordError, setPasswordError] = useState(null);
   // const [passwordValid, setPasswordValid] = useState(false);
@@ -166,6 +180,7 @@ function EditUserComponent({ match }) {
     passwordErr: '',
     confirmed_PassErr: '',
     roleErr: '',
+    jobRoleErr: '',
     designationErr: '',
     departmentErr: '',
     ticketTypeShowErr: '',
@@ -182,6 +197,7 @@ function EditUserComponent({ match }) {
     // var selectPassword = form.getAll('password')[0];
     // var selectWhatsapp = form.getAll('whats_app_contact_no')[0];
     var selectRole = form.getAll('role_id')[0];
+    var selectJobRole = form.getAll('job_role')[0];
     var selectDesignation = form.getAll('designation_id')[0];
 
     let flag = 0;
@@ -202,6 +218,9 @@ function EditUserComponent({ match }) {
       flag = 1;
     } else if (selectContactNo === '') {
       setInputState({ ...state, contactNoErr: ' Please enter contact no.' });
+      flag = 1;
+    } else if (selectJobRole === '') {
+      setInputState({ ...state, jobRoleErr: 'Please enter job role' });
       flag = 1;
     } else if (selectRole === '') {
       setInputState({ ...state, roleErr: ' Please Select role' });
@@ -410,6 +429,7 @@ function EditUserComponent({ match }) {
     value: d.value,
     label: d.label
   }));
+
   const orderedSelfRoleData = filterSelfRole?.sort(function (a, b) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
@@ -506,6 +526,22 @@ function EditUserComponent({ match }) {
           );
         }
       }
+    });
+
+    // job role data list dropdown
+
+    // await new editJobRoleMasterThunk().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status === 1) {
+    //       setJobRoleDropDown(
+    //         res.data.data.filter((d) => ({ value: d.id, label: d.job_role }))
+    //       );
+    //     }
+    //   }
+    // });
+
+    const orderedSelfRoleData = filterSelfRole?.sort(function (a, b) {
+      return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
     });
 
     await new UserService()
@@ -796,6 +832,10 @@ function EditUserComponent({ match }) {
       );
     }
   }, [data, cityDropdown, updateStatus, cityName]);
+
+  useEffect(() => {
+    dispatch(getJobRoleMasterListThunk());
+  }, []);
 
   return (
     <div className="container-xxl">
@@ -1384,6 +1424,32 @@ function EditUserComponent({ match }) {
                           >
                             {inputState.designationErr}
                           </small>
+                        )}
+                      </div>
+
+                      {/* job role */}
+                      <div className="form-group row mt-3">
+                        <label className="col-sm-2 col-form-label">
+                          <b>
+                            Select Job Role : <Astrick color="red" />
+                          </b>
+                        </label>
+
+                        {jobRoleMasterList && (
+                          <div className="col-sm-3">
+                            <Select
+                              id="job_role"
+                              name="job_role"
+                              options={jobRoleDropDownValues}
+                              defaultValue={
+                                data &&
+                                jobRoleDropDownValues &&
+                                jobRoleDropDownValues.filter(
+                                  (d) => d.value === data.job_role
+                                )
+                              }
+                            />
+                          </div>
                         )}
                       </div>
 
