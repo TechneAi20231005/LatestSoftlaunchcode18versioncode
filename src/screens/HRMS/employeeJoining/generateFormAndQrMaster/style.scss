@@ -8,6 +8,31 @@
     margin-left: -9px; /* Laptop and larger */
   }
 }
+.link-color{
+  color: blue;
+  text-underline-offset: 2px;
+}
+
+
+
+
+@keyframes zoomIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.image-animate {
+  animation: zoomIn 0.4s ease-in-out;
+}
+
+
+
 
 
 .generate_from_qr_container {

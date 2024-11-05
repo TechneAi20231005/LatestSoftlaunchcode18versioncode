@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useRef, useState, useMemo } from 'react';
+import React, { useEffect, useReducer, useRef, useState, useMemo, Suspense } from 'react';
 import { Card, CardBody, Col, Container, Row, Stack } from 'react-bootstrap';
 import { Field, Form, Formik } from 'formik';
 import { QRCode } from 'react-qrcode-logo';
@@ -25,7 +25,12 @@ import {
 import './style.scss';
 import { toast } from 'react-toastify';
 import moment from 'moment';
-import EmployeeJoiningForm from './JoiningForm/EmployeeJoiningForm';
+// import EmployeeJoiningForm from './JoiningForm/EmployeeJoiningForm';
+import { downloadSvgAsPng } from '../../../../utils/customSvgDownload';
+const EmployeeJoiningForm = React.lazy(() =>
+  import('./JoiningForm/EmployeeJoiningForm')
+);
+
 function GenerateFormAndQrMaster() {
   // // initial state
   const dispatch = useDispatch();
@@ -73,9 +78,7 @@ function GenerateFormAndQrMaster() {
   };
 
   const removeId = addQrCodeData?.id;
-  let tenateId = localStorage.getItem("actual_tenant_id")
-
-
+  let tenateId = localStorage.getItem('actual_tenant_id');
 
   const resetFormRef = useRef(null);
 
@@ -116,42 +119,7 @@ function GenerateFormAndQrMaster() {
 
   // // all handler
   const downloadQrCode = () => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const svgSize = 800;
-    canvas.width = svgSize;
-    canvas.height = svgSize;
-    const img = new Image();
-    const svgBlob = new Blob([addQrCodeData?.qr_scanner], {
-      type: 'image/svg+xml'
-    });
-    const url = URL.createObjectURL(svgBlob);
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const pngUrl = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      // const currentDate = new Date().toISOString().split('T')[0];
-      // YYYY-MM-DD format for filename
-      link.href = pngUrl;
-      link.download = `QR_Code-
-${currentDate}
-.png`;
-      document.body.appendChild(link);
-      link.click();
-      // Cleanup
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-      // Notify the user about successful download
-      toast.success('QR Code downloaded successfully');
-      setTimeout(() => {
-        window.history.back();
-      }, 1500);
-    };
-    img.onerror = (error) => {
-      console.error('Error loading image', error);
-      toast.error('Failed to download QR Code');
-    };
-    img.src = url;
+    downloadSvgAsPng(addQrCodeData?.qr_scanner, 'QR_Code', true);
   };
 
   const handleAddQrCode = (values) => {
@@ -170,13 +138,13 @@ ${currentDate}
       formDatas?.append('designations[]', designation);
     });
 
-     formDatas.append('tenant_id', tenateId);
+    formDatas.append('tenant_id', tenateId);
     formDatas.append(
       'company_name',
       values.branding_type === 'text' ? values?.company_name : ''
     );
 
-    formDatas.append('qr_color', qrStyleData.qrColor)
+    formDatas.append('qr_color', qrStyleData.qrColor);
 
     // formDatas.append('qr_scanner', pngUrl);
 
@@ -275,10 +243,8 @@ ${currentDate}
                   <Formik
                     initialValues={formData}
                     enableReinitialize
-
                     validationSchema={generateFormValidation}
                     onSubmit={(values, errors) => {
-
                       handleAddQrCode(values);
                       setFormData(values);
                       // setFormData(values)
@@ -294,9 +260,7 @@ ${currentDate}
                       resetForm
                     }) => {
                       resetFormRef.current = resetForm;
-                      console.log(values,"values")
                       // setFormData(values);
-
 
                       return (
                         <Form>
@@ -313,7 +277,6 @@ ${currentDate}
                                   inputClassName="me-1"
                                   className="ms-0"
                                   onChange={() => {
-
                                     setFieldValue('company_name', '');
                                   }}
                                 />
@@ -326,8 +289,6 @@ ${currentDate}
                                   disabled={success}
                                   inputClassName="me-1"
                                   onChange={() => {
-
-
                                     setQrStyleData({ logoPath: '' });
                                     setFieldValue('logo', '');
                                   }}
@@ -336,12 +297,6 @@ ${currentDate}
                               <RenderIf
                                 render={values.branding_type === 'logo'}
                               >
-                                {/* <Field
-                              component={CustomInput}
-                              type="file"
-                              name="logo"
-                              withOutLabel
-                            /> */}
                                 <input
                                   type="file"
                                   name="logo"
@@ -354,7 +309,6 @@ ${currentDate}
                                   ref={fileInputRef}
                                   disabled={success}
                                   onChange={(event) => {
-
                                     setFieldValue(
                                       'logo',
                                       event.target.files[0]
@@ -396,7 +350,6 @@ ${currentDate}
                               disabled={success}
                               placeholder="Select"
                               requiredField
-
                             />
                             <Field
                               options={jobOpeningData}
@@ -431,20 +384,6 @@ ${currentDate}
                                   requiredField
                                 />
                               </Col>
-                              {/* <Col sm={6}>
-                                <RenderIf
-                                  render={values.branding_type === 'text'}
-                                >
-                                  <Field
-                                    component={CustomInput}
-                                    type="color"
-                                    name="company_name_color"
-                                    label="Company Name Color"
-                                    placeholder="Enter Company Color"
-                                    requiredField
-                                  />
-                                </RenderIf>
-                              </Col> */}
                             </Row>
                             <Field
                               component={CustomInput}
@@ -564,7 +503,6 @@ ${currentDate}
                       className="w-100 pe-none"
                       onChange={(e) => setQrStyleData({ qrType: e.value })}
                       defaultValue={qrStyleOptions[0]}
-
                     />
                     <label>
                       <input
@@ -585,21 +523,17 @@ ${currentDate}
 
       {!show && (
         <>
-          <div className='custom-margin'>
-               <PageHeader
-            isremove
-            handleBack={() => setShow(true)}
-            headerTitle=""
-          />
-            {/* <button style={{ background: 'none', border: 0 }}>
-              <i
-                className="icofont-simple-left fs-2 back_icon_btn cp"
-                onClick={() => setShow(true)}
-              />
-            </button> */}
+          <div className="custom-margin">
+            <PageHeader
+              isremove
+              handleBack={() => setShow(true)}
+              headerTitle=""
+            />
           </div>
           <div>
-            <EmployeeJoiningForm data={addQrCodeData} />
+            <Suspense>
+              <EmployeeJoiningForm data={addQrCodeData} />
+            </Suspense>
           </div>
         </>
       )}

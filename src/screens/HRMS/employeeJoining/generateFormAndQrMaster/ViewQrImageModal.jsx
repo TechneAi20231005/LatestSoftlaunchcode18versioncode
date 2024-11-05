@@ -11,8 +11,8 @@ const ViewQrImageModal = ({ show, close, onClose, src }) => {
         <img
           src={_attachmentUrl + src}
           alt="Logo"
-          className="img-fluid"
-          loading
+          className="img-fluid image-animate"
+          loading='true'
           style={{ maxWidth: '80%' }}
         />
       </div>

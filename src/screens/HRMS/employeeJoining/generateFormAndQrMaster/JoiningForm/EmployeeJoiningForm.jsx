@@ -9,12 +9,10 @@ import {
 } from '../../../../../components/custom/inputs/CustomInputs';
 import RenderIf from '../../../../../utils/RenderIf';
 import { employeeJoiningValidation } from './validation';
-// import { useGetRequest, usePostRequest } from "../../hooks/customHooks";
 import Header from '../../../../../components/Common/EmployeeFormHeader/Header';
 import './style.scss';
 
 function EmployeeJoiningForm({ data }) {
-  console.log(data, 'data');
   // // initial state
   const candidatesInitialValue = {
     source_id: '',
@@ -37,7 +35,13 @@ function EmployeeJoiningForm({ data }) {
 
   const preferredLocation = [];
 
-  const sourceType = [];
+  const sourceType = data?.source?.map((item) => {
+    return {
+      label: item?.source_name,
+      value: item?.id
+    }
+  });
+
 
   const experienceLevel = [
     { label: 'Fresher', value: 'fresher' },
@@ -46,6 +50,7 @@ function EmployeeJoiningForm({ data }) {
     { label: '3-5 years of experience', value: '3-5' },
     { label: '5+ years of experience', value: '5+' }
   ];
+
 
   return (
     <>
@@ -65,9 +70,7 @@ function EmployeeJoiningForm({ data }) {
         </h1>
         <Formik
           initialValues={candidatesInitialValue}
-          // validationSchema={employeeJoiningValidation}
           onSubmit={(values, { resetForm }) => {
-            // handelApply({ formData: values, restFunc: resetForm });
           }}
         >
           {({ values, touched, errors, setFieldValue }) => (
@@ -82,7 +85,7 @@ function EmployeeJoiningForm({ data }) {
                       label="Source"
                       // placeholder={QrFormLoading ? "Loading..." : "Select"}
                       requiredField
-                      value={sourceType}
+                      value={data?.source_id}
                       disabled
                     />
                   </Col>
@@ -121,7 +124,6 @@ function EmployeeJoiningForm({ data }) {
                       component={CustomReactSelect}
                       name="designation_id"
                       label="Preferred Role"
-                      // placeholder={QrFormLoading ? "Loading..." : "Select"}
                       requiredField
                       isMulti
                     />
@@ -132,7 +134,6 @@ function EmployeeJoiningForm({ data }) {
                       component={CustomReactSelect}
                       name="location_id"
                       label="Preferred Location"
-                      // placeholder={QrFormLoading ? "Loading..." : "Select"}
                       requiredField
                       isMulti
                     />
@@ -168,7 +169,6 @@ function EmployeeJoiningForm({ data }) {
                   <Col sm={6} md={6}>
                     <Field
                       component={CustomCurrencyInput}
-                      // onKeyDown={NumbersOnly}
                       name="expected_ctc"
                       label="Expected Monthly Salary (Net)"
                       placeholder="Enter expected monthly salary"
@@ -178,7 +178,6 @@ function EmployeeJoiningForm({ data }) {
                   <Col sm={6} md={6}>
                     <Field
                       component={CustomCurrencyInput}
-                      // onKeyDown={NumbersOnly}
                       name="current_ctc"
                       label="Current Monthly Salary"
                       placeholder="Enter current monthly salary"

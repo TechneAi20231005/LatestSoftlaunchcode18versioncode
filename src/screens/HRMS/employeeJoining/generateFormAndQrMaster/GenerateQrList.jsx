@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState, Suspense } from 'react';
 import { Col, Container, Row, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useNavigate } from 'react-router-dom';
@@ -11,16 +11,16 @@ import { _base } from '../../../../settings/constants';
 import { useDispatch, useSelector } from 'react-redux';
 import { getQrCodeList } from '../../../../redux/services/hrms/employeeJoining/qrCodeListMaster';
 import Alert from '../../../../components/Common/Alert';
-import ViewQrImageModal from './ViewQrImageModal';
 import { toast } from 'react-toastify';
+import { downloadSvgAsPng } from '../../../../utils/customSvgDownload';
 import moment from 'moment';
+const ViewQrImageModal = React.lazy(() => import('./ViewQrImageModal'));
 
 const GenerateQrList = () => {
   const dispatch = useDispatch();
   const { qrCodeMasterList, isLoading, notify } = useSelector(
     (state) => state?.qrCodeMaster
   );
-  const currentDate = moment().format('MM-DD-YYYY');
   const [searchValue, setSearchValue] = useState('');
   const [filterQrList, setFilterQrList] = useState([]);
   const [message, setMessage] = useState(null);
@@ -42,236 +42,229 @@ const GenerateQrList = () => {
   };
 
   const DownloadSvg = (svgData) => {
-    const canvas = document.createElement('canvas');
-    const ctx = canvas.getContext('2d');
-    const svgSize = 800;
-    canvas.width = svgSize;
-    canvas.height = svgSize;
-    const img = new Image();
-    const svgBlob = new Blob([svgData], {
-      type: 'image/svg+xml'
-    });
-    const url = URL.createObjectURL(svgBlob);
-    img.onload = () => {
-      ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-      const pngUrl = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      // const currentDate = new Date().toISOString().split('T')[0];
-      // YYYY-MM-DD format for filename
-      link.href = pngUrl;
-      link.download = `QR_Code-
-${currentDate}
-.png`;
-      document.body.appendChild(link);
-      link.click();
-      // Cleanup
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-
-      toast.success('QR Code downloaded successfully');
-    };
-    img.onerror = (error) => {
-      console.error('Error loading image', error);
-      toast.error('Failed to download QR Code');
-    };
-    img.src = url;
+    downloadSvgAsPng(svgData, 'QR_Code', false);
   };
 
-  const columns = [
-    {
-      name: 'Action',
-      selector: (row) => (
-        <>
-          <div style={{ display: 'flex', gap: 12 }}>
-            <i
-              class="icofont-eye-alt text-primary cp"
-              onClick={() =>
-                navigate(`${row?.id}`, {
-                  state: { currentCandidateId: row?.id }
-                })
+  const columns = useMemo(
+    () => [
+      {
+        name: 'Action',
+        selector: (row) => (
+          <>
+            <div style={{ display: 'flex', gap: 12 }}>
+              <i
+                class="icofont-eye-alt text-primary cp"
+                onClick={() =>
+                  navigate(`${row?.id}`, {
+                    state: { currentCandidateId: row?.id }
+                  })
+                }
+              />
+              <OverlayTrigger overlay={<Tooltip>{'Download Qr Code'}</Tooltip>}>
+                <i
+                  onClick={() => DownloadSvg(row?.qr_scanner)}
+                  class="icofont-download cp"
+                ></i>
+              </OverlayTrigger>
+            </div>
+          </>
+        ),
+        sortable: false,
+        width: '70px'
+      },
+      {
+        name: 'Sr. No.',
+        selector: (row, index) => index + 1,
+        sortable: false,
+        width: '70px'
+      },
+      {
+        name: 'Logo',
+        sortable: true,
+        width: '120px',
+        selector: (row) => (
+          <span role="button" tabIndex="0">
+            <a
+            className="text-decoration-underline link-color"
+              href="#"
+              onClick={() => {
+                if (row?.logo_image) {
+                  setOpen(true);
+                  setSrc(row?.logo_image);
+                }
+              }}
+            >
+              {row?.logo_image?.split('/').pop() || '_'}
+            </a>
+          </span>
+        )
+      },
+
+      {
+        name: 'Source',
+        selector: (row) =>
+          row?.source?.length > 0
+            ? row.source.map((src) => src.source_name).join(', ')
+            : '-',
+        sortable: true,
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row?.source?.length > 0 &&
+              row.source.map((src, index) => (
+                <OverlayTrigger
+                  key={index}
+                  overlay={<Tooltip>{src.source_name}</Tooltip>}
+                >
+                  <span>{src.source_name}</span>
+                </OverlayTrigger>
+              ))}
+          </div>
+        )
+      },
+
+      {
+        name: 'Email ',
+        selector: (row) => row?.email_id || '--',
+        sortable: true,
+        width: '150px',
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            <OverlayTrigger overlay={<Tooltip>{row?.email_id}</Tooltip>}>
+              <span className="ms-0">{row?.email_id || '--'}</span>
+            </OverlayTrigger>
+          </div>
+        )
+      },
+      {
+        name: 'Contact No',
+        selector: (row) => row?.contact_no || '--',
+        sortable: true,
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            <OverlayTrigger overlay={<Tooltip>{row?.contact_no}</Tooltip>}>
+              <span>{row?.contact_no || '--'}</span>
+            </OverlayTrigger>
+          </div>
+        )
+      },
+      {
+        name: 'Location',
+        selector: (row) =>
+          row?.locations?.length > 0
+            ? row.locations.map((location) => location.location_name).join(', ')
+            : '-',
+        sortable: true,
+        cell: (row) => {
+          const locationNames = row?.locations
+            ?.map((location) => location.location_name)
+            .join(', ');
+
+          return (
+            <div
+              className="btn-group"
+              role="group"
+              aria-label="Basic outlined example"
+            >
+              {row?.locations?.length > 0 ? (
+                <OverlayTrigger
+                  overlay={<Tooltip>{locationNames || '-'}</Tooltip>}
+                >
+                  <span>{locationNames || '-'}</span>
+                </OverlayTrigger>
+              ) : (
+                '-'
+              )}
+            </div>
+          );
+        }
+      },
+
+      {
+        name: 'Openings',
+        selector: (row) =>
+          row.designations.length > 0
+            ? row.designations.map((item) => item.designation_name).join(', ')
+            : '-',
+        sortable: true,
+        cell: (row) => {
+          const designationNames = row?.designations
+            ?.map((designation) => designation.designation_name)
+            .join(', ');
+
+          return (
+            <div
+              className="btn-group"
+              role="group"
+              aria-label="Basic outlined example"
+            >
+              {row.designations.length > 0 ? (
+                <OverlayTrigger
+                  overlay={<Tooltip>{designationNames || '-'}</Tooltip>}
+                >
+                  <span>{designationNames || '-'}</span>
+                </OverlayTrigger>
+              ) : (
+                '-'
+              )}
+            </div>
+          );
+        }
+      },
+      {
+        name: 'Created At',
+        selector: (row) => row?.created_at || '--',
+        sortable: true,
+        cell: (row) => (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            <OverlayTrigger
+              overlay={
+                <Tooltip>
+                  {moment(row?.created_at).format('YYYY-MM-DD') || '--'}
+                </Tooltip>
               }
-            />
-            <i
-              // onClick={() => handleDownload(row?.qr_scanner)}
-              onClick={() => DownloadSvg(row?.qr_scanner)}
-              class="icofont-download cp"
-            ></i>
+            >
+              <span>
+                {moment(row?.created_at).format('YYYY-MM-DD') || '--'}
+              </span>
+            </OverlayTrigger>
           </div>
-        </>
-      ),
-      sortable: false,
-      width: '70px'
-    },
-    {
-      name: 'Sr. No.',
-      selector: (row, index) => index + 1,
-      sortable: false,
-      width: '70px'
-    },
-    {
-      name: 'Logo',
-      sortable: true,
-      width: '120px',
-      selector: (row) => (
-        <a
-          href="#"
-          onClick={() => {
-            if (row?.logo_image) {
-              setOpen(true);
-              setSrc(row?.logo_image);
-            }
-          }}
-          style={{ textDecoration: 'underline', color: 'blue' }}
-        >
-          {row?.logo_image?.split('/').pop() || '_'}
-        </a>
-      )
-    },
-
-    {
-      name: 'Source',
-      selector: (row) =>
-        row?.source?.length > 0
-          ? row.source.map((src) => src.source_name).join(', ')
-          : '-',
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.source?.length > 0 &&
-            row.source.map((src, index) => (
-              <OverlayTrigger
-                key={index}
-                overlay={<Tooltip>{src.source_name}</Tooltip>}
-              >
-                <span>{src.source_name}</span>
-              </OverlayTrigger>
-            ))}
-        </div>
-      )
-    },
-
-    {
-      name: 'Email ',
-      selector: (row) => row?.email_id || '--',
-      sortable: true,
-      width: '150px',
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          <OverlayTrigger overlay={<Tooltip>{row?.email_id}</Tooltip>}>
-            <span className="ms-0">{row?.email_id || '--'}</span>
-          </OverlayTrigger>
-        </div>
-      )
-    },
-    {
-      name: 'Contact No',
-      selector: (row) => row?.contact_no || '--',
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          <OverlayTrigger overlay={<Tooltip>{row?.contact_no}</Tooltip>}>
-            <span>{row?.contact_no || '--'}</span>
-          </OverlayTrigger>
-        </div>
-      )
-    },
-    {
-      name: 'Location',
-      selector: (row) =>
-        row?.locations?.length > 0
-          ? row.locations.map((location) => location.location_name).join(', ')
-          : '-',
-      sortable: true,
-      cell: (row) => {
-        const locationNames = row?.locations
-          ?.map((location) => location.location_name)
-          .join(', ');
-
-        return (
+        )
+      },
+      {
+        name: 'Created By',
+        selector: (row) => row?.created_by || '--',
+        sortable: true,
+        cell: (row) => (
           <div
             className="btn-group"
             role="group"
             aria-label="Basic outlined example"
           >
-            {row?.locations?.length > 0 ? (
-              <OverlayTrigger
-                overlay={<Tooltip>{locationNames || '-'}</Tooltip>}
-              >
-                <span>{locationNames || '-'}</span>
-              </OverlayTrigger>
-            ) : (
-              '-'
-            )}
+            <OverlayTrigger overlay={<Tooltip>{row?.created_by}</Tooltip>}>
+              <span>{row?.created_by || '--'}</span>
+            </OverlayTrigger>
           </div>
-        );
+        )
       }
-    },
-
-    {
-      name: 'Openings',
-      selector: (row) =>
-        row.designations.length > 0
-          ? row.designations.map((item) => item.designation_name).join(', ')
-          : '-',
-      sortable: true,
-      cell: (row) => {
-        const designationNames = row?.designations
-          ?.map((designation) => designation.designation_name)
-          .join(', ');
-
-        return (
-          <div
-            className="btn-group"
-            role="group"
-            aria-label="Basic outlined example"
-          >
-            {row.designations.length > 0 ? (
-              <OverlayTrigger
-                overlay={<Tooltip>{designationNames || '-'}</Tooltip>}
-              >
-                <span>{designationNames || '-'}</span>
-              </OverlayTrigger>
-            ) : (
-              '-'
-            )}
-          </div>
-        );
-      }
-    },
-    {
-      name: 'Created At',
-      selector: (row) => row?.created_at || '--',
-      sortable: true
-    },
-    {
-      name: 'Created By',
-      selector: (row) => row?.created_by || '--',
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          <OverlayTrigger overlay={<Tooltip>{row?.created_by}</Tooltip>}>
-            <span>{row?.created_by || '--'}</span>
-          </OverlayTrigger>
-        </div>
-      )
-    }
-  ];
+    ],
+    []
+  );
   useEffect(() => {
     handleSearch();
   }, [searchValue]);
@@ -348,12 +341,14 @@ ${currentDate}
         progressComponent={<TableLoadingSkelton />}
       />
       {open && (
-        <ViewQrImageModal
-          show={open}
-          src={src}
-          onClose={() => setOpen(false)}
-          close={() => setOpen(false)}
-        />
+        <Suspense>
+          <ViewQrImageModal
+            show={open}
+            src={src}
+            onClose={() => setOpen(false)}
+            close={() => setOpen(false)}
+          />
+        </Suspense>
       )}
     </Container>
   );
