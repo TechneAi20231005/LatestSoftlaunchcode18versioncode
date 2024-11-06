@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
@@ -131,6 +131,7 @@ function TestDraftDetails(props) {
     selectedRows,
     betweenValues
   } = state;
+  const [showModal, setShowModal] = useState(false);
 
   const [addEditTestCasesModal, setAddEditTestCasesModal] = useState({
     type: '',
@@ -205,6 +206,7 @@ function TestDraftDetails(props) {
   };
 
   const handleFilterClick = (event, column, name, type, id) => {
+    setShowModal(false);
     if (clearAllFilter === true) {
       localDispatch({ type: 'SET_FILTERS', payload: [] });
     }
@@ -490,7 +492,7 @@ function TestDraftDetails(props) {
 
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
       localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
-      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+      // localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
     } catch (error) {}
   };
 
@@ -1634,25 +1636,45 @@ function TestDraftDetails(props) {
     );
   }, [props?.paginationData.rowPerPage, props?.paginationData.currentPage]);
 
+  // useEffect(() => {
+  //   if (filterValues && searchTerm?.length === 0) {
+  //     localDispatch({ type: 'SET_FILTER_VALUES', payload: filterValues });
+
+  //     localDispatch({
+  //       type: 'SET_SELECTED_FILTER',
+  //       payload: filterValues.map((item) => item.name)
+  //     });
+
+  //     localDispatch({
+  //       type: 'SET_SELECTED_FILTER_IDS',
+  //       payload: filterValues.map((item) => item.id)
+  //     });
+  //   }
+  // }, [filterValues, localDispatch]);
   useEffect(() => {
     if (filterValues && searchTerm?.length === 0) {
-      localDispatch({ type: 'SET_FILTER_VALUES', payload: filterValues });
+      const appliedFilters = filterValues.filter((item) =>
+        state.selectedFilters.includes(item.name)
+      );
+
+      localDispatch({
+        type: 'SET_FILTER_VALUES',
+        payload: filterValues
+      });
 
       localDispatch({
         type: 'SET_SELECTED_FILTER',
-        payload: filterValues.map((item) => item.name)
+        payload: appliedFilters.map((item) => item.name)
       });
 
       localDispatch({
         type: 'SET_SELECTED_FILTER_IDS',
-        payload: filterValues.map((item) => item.id)
+        payload: appliedFilters.map((item) => item.id)
       });
     }
-  }, [filterValues, localDispatch]);
+  }, [filterValues, state.selectedFilters, searchTerm, localDispatch]);
 
   useEffect(() => {
-    // Whenever searchTerm or filterData changes, update the selected filter IDs
-    // if (searchTerm?.length === 0) {
     const filteredData = filteredResults?.filter((item) =>
       item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -1660,6 +1682,28 @@ function TestDraftDetails(props) {
     localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: filteredIds });
     // }
   }, [searchTerm, localDispatch]);
+
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        !showModal &&
+        modalRef.current &&
+        !modalRef.current.contains(event.target)
+      ) {
+        closeModal();
+      }
+    };
+
+    if (modalIsOpen && showModal) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [modalIsOpen, showModal]); // Listen to modal
 
   return (
     <>
@@ -1794,36 +1838,43 @@ function TestDraftDetails(props) {
         />
       )}
 
-      {modalIsOpen && (
-        <CustomFilterModal
-          show={modalIsOpen}
-          handleClose={closeModal}
-          handleApply={handleApplyFilter}
-          handleClearAllButton={handleClearAllButton}
-          position={modalPosition}
-          filterColumn={filterColumn}
-          filterColumnId={filterColumnId}
-          handleCheckboxChange={handleFilterCheckboxChange}
-          selectedFilters={selectedFilters}
-          handleSelectAll={handleSelectAll}
-          filterData={filteredResults}
-          searchTerm={searchTerm}
-          handleSearchChange={handleSearchChange}
-          filterType={filterType}
-          paginationData={props?.paginationData}
-          handleAscendingClick={handleAscendingClick}
-          handleDescendingClick={handleDescendingClick}
-          handleBetweenValueChange={handleBetweenValueChange}
-          columnName={columnName}
-          type={type}
-          handleApplyButton={handleApplyButton}
-          localDispatch={localDispatch}
-          handleClearAllFilter={handleClearAllFilter}
-          errorMessage={errorMessage}
-          setSelectedValue={setSelectedValue}
-          selectedValue={selectedValue}
-        />
-      )}
+      <>
+        {modalIsOpen && (
+          <div ref={modalRef}>
+            {/* {modalIsOpen && ( */}
+            <CustomFilterModal
+              show={modalIsOpen}
+              handleClose={closeModal}
+              handleApply={handleApplyFilter}
+              handleClearAllButton={handleClearAllButton}
+              position={modalPosition}
+              filterColumn={filterColumn}
+              filterColumnId={filterColumnId}
+              handleCheckboxChange={handleFilterCheckboxChange}
+              selectedFilters={selectedFilters}
+              handleSelectAll={handleSelectAll}
+              filterData={filteredResults}
+              searchTerm={searchTerm}
+              handleSearchChange={handleSearchChange}
+              filterType={filterType}
+              paginationData={props?.paginationData}
+              handleAscendingClick={handleAscendingClick}
+              handleDescendingClick={handleDescendingClick}
+              handleBetweenValueChange={handleBetweenValueChange}
+              columnName={columnName}
+              type={type}
+              handleApplyButton={handleApplyButton}
+              localDispatch={localDispatch}
+              handleClearAllFilter={handleClearAllFilter}
+              errorMessage={errorMessage}
+              setSelectedValue={setSelectedValue}
+              selectedValue={selectedValue}
+              setShowModal={setShowModal}
+              showModal={showModal}
+            />
+          </div>
+        )}
+      </>
     </>
   );
 }
