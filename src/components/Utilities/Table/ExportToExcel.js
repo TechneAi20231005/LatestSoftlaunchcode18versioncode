@@ -13,7 +13,8 @@ export const ExportToExcel = ({
   onClickHandler,
   isLoading,
   onApiClick,
-  onSuccessHandler
+  onSuccessHandler,
+  columnWidths = []
 }) => {
   // // initial state
   const fileType =
@@ -26,6 +27,7 @@ export const ExportToExcel = ({
       onClickHandler && onClickHandler();
     } else {
       const ws = XLSX.utils.json_to_sheet(apiData);
+      ws['!cols'] = columnWidths?.map((width) => ({ wch: width }));
       const wb = { Sheets: { data: ws }, SheetNames: ['data'] };
       const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
       const data = new Blob([excelBuffer], { type: fileType });
@@ -37,6 +39,7 @@ export const ExportToExcel = ({
   useEffect(() => {
     if (onApiClick && apiData?.length) {
       const ws = XLSX?.utils?.json_to_sheet(apiData);
+      ws['!cols'] = columnWidths?.map((width) => ({ wch: width }));
       const wb = { Sheets: { data: ws }, SheetNames: ['data'] };
       const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
       const data = new Blob([excelBuffer], { type: fileType });
