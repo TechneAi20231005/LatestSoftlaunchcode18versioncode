@@ -194,6 +194,18 @@ function BillCheckingTransaction() {
     setIsOriginalBillReceived(false);
   };
 
+  const hasSpecialAuthority =
+    authorities?.All_Update_Bill === true ||
+    authorities?.Edit_In_Bill === true ||
+    authorities?.Original_Bill_Needed === true ||
+    authorities?.TCS_Applicable === true ||
+    authorities?.Received_Date === true ||
+    authorities?.Past_Financial_Year_Bill_Date === true ||
+    authorities?.External_Audit === true ||
+    authorities?.Internal_Audit === true ||
+    authorities?.Allow_Edit_Authorized_By_Management === true ||
+    authorities?.Allow_Edit_Authorized_By_HOD === true;
+
   const [userDropdown, setUserDropdown] = useState();
 
   const currentDate = new Date();
@@ -221,7 +233,7 @@ function BillCheckingTransaction() {
                 <i className="icofont-listine-dots"></i>
               </Dropdown.Toggle>
               <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-                {row &&
+                {/* {row &&
                   ((row.level == parseInt(row.total_level) &&
                     row.is_assign_to == 1) ||
                     row.is_editable_for_creator == 1 ||
@@ -238,7 +250,109 @@ function BillCheckingTransaction() {
                         <i className="icofont-edit"></i> Edit
                       </Link>
                     </li>
-                  )}
+                  )} */}
+
+                {/* {row &&
+                  ((row.level != parseInt(row.total_level) &&
+                    row.is_assign_to == 1) ||
+                    (row.is_editable_for_creator == 1 &&
+                      ((authorities && authorities.All_Update_Bill === true) ||
+                        authorities?.Edit_In_Bill === true ||
+                        authorities?.Original_Bill_Needed === true ||
+                        authorities?.TCS_Applicable === true ||
+                        authorities?.Received_Date === true ||
+                        authorities?.Past_Financial_Year_Bill_Date === true ||
+                        authorities?.External_Audit === true ||
+                        authorities?.Internal_Audit === true ||
+                        authorities?.Allow_Edit_Authorized_By_Management ===
+                          true ||
+                        authorities?.Allow_Edit_Authorized_By_HOD === true)) ||
+                    (row.is_rejected == 1 &&
+                      row.is_editable_for_creator == 1 &&
+                      authorities &&
+                      authorities.All_Update_Bill === true) ||
+                    (row.level != parseInt(row.total_level) &&
+                      row.is_approver == 1 &&
+                      ((authorities && authorities.All_Update_Bill === true) ||
+                        authorities?.Edit_In_Bill === true ||
+                        authorities?.Original_Bill_Needed === true ||
+                        authorities?.TCS_Applicable === true ||
+                        authorities?.Received_Date === true ||
+                        authorities?.Past_Financial_Year_Bill_Date === true ||
+                        authorities?.External_Audit === true ||
+                        authorities?.Internal_Audit === true ||
+                        authorities?.Allow_Edit_Authorized_By_Management ===
+                          true ||
+                        authorities?.Allow_Edit_Authorized_By_HOD ===
+                          true))) && (
+                    <li>
+                      <Link
+                        to={`/${_base}/EditBillCheckingTransaction/` + row.id}
+                        className="btn btn-sm btn-primary text-white w-100"
+                      >
+                        <i className="icofont-edit"></i> Edit
+                      </Link>
+                    </li>
+                  )} */}
+
+                {row &&
+                  (() => {
+                    const otherConditions =
+                      (row.level !== parseInt(row.total_level) &&
+                        row.is_assign_to === 1) ||
+                      (row.is_editable_for_creator === 1 &&
+                        ((authorities &&
+                          authorities.All_Update_Bill === true) ||
+                          authorities?.Edit_In_Bill === true ||
+                          authorities?.Original_Bill_Needed === true ||
+                          authorities?.TCS_Applicable === true ||
+                          authorities?.Received_Date === true ||
+                          authorities?.Past_Financial_Year_Bill_Date === true ||
+                          authorities?.External_Audit === true ||
+                          authorities?.Internal_Audit === true ||
+                          authorities?.Allow_Edit_Authorized_By_Management ===
+                            true ||
+                          authorities?.Allow_Edit_Authorized_By_HOD ===
+                            true)) ||
+                      (row.is_rejected === 1 &&
+                        row.is_editable_for_creator === 1 &&
+                        authorities &&
+                        authorities.All_Update_Bill === true) ||
+                      (row.level !== parseInt(row.total_level) &&
+                        row.is_approver === 1 &&
+                        ((authorities &&
+                          authorities.All_Update_Bill === true) ||
+                          authorities?.Edit_In_Bill === true ||
+                          authorities?.Original_Bill_Needed === true ||
+                          authorities?.TCS_Applicable === true ||
+                          authorities?.Received_Date === true ||
+                          authorities?.Past_Financial_Year_Bill_Date === true ||
+                          authorities?.External_Audit === true ||
+                          authorities?.Internal_Audit === true ||
+                          authorities?.Allow_Edit_Authorized_By_Management ===
+                            true ||
+                          authorities?.Allow_Edit_Authorized_By_HOD === true));
+
+                    return hasSpecialAuthority || otherConditions ? (
+                      // <li>
+                      //   <Dropdown.Item
+                      //     as={Link}
+                      //     to={`/${_base}/EditBillCheckingTransaction/` + row.id}
+                      //     className="text-primary d-flex align-items-center"
+                      //   >
+                      //     <i className="icofont-edit me-2"></i> Edit
+                      //   </Dropdown.Item>
+                      // </li>
+                      <li>
+                        <Link
+                          to={`/${_base}/EditBillCheckingTransaction/` + row.id}
+                          className="btn btn-sm btn-primary text-white w-100"
+                        >
+                          <i className="icofont-edit"></i> Edit
+                        </Link>
+                      </li>
+                    ) : null;
+                  })()}
 
                 <li>
                   <Link
