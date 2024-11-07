@@ -75,7 +75,6 @@ function localReducer(state, action) {
     case 'SET_SELECTED_ROWS':
       return {
         ...state,
-        // selectedRows: action.payload
         selectedRows:
           typeof action?.payload === 'function'
             ? action?.payload(state.selectedRows)
@@ -1636,21 +1635,6 @@ function TestDraftDetails(props) {
     );
   }, [props?.paginationData.rowPerPage, props?.paginationData.currentPage]);
 
-  // useEffect(() => {
-  //   if (filterValues && searchTerm?.length === 0) {
-  //     localDispatch({ type: 'SET_FILTER_VALUES', payload: filterValues });
-
-  //     localDispatch({
-  //       type: 'SET_SELECTED_FILTER',
-  //       payload: filterValues.map((item) => item.name)
-  //     });
-
-  //     localDispatch({
-  //       type: 'SET_SELECTED_FILTER_IDS',
-  //       payload: filterValues.map((item) => item.id)
-  //     });
-  //   }
-  // }, [filterValues, localDispatch]);
   useEffect(() => {
     if (filterValues && searchTerm?.length === 0) {
       const appliedFilters = filterValues.filter((item) =>
@@ -1672,7 +1656,7 @@ function TestDraftDetails(props) {
         payload: appliedFilters.map((item) => item.id)
       });
     }
-  }, [filterValues, state.selectedFilters, searchTerm, localDispatch]);
+  }, [filterValues, searchTerm, localDispatch]);
 
   useEffect(() => {
     const filteredData = filteredResults?.filter((item) =>
@@ -1703,7 +1687,7 @@ function TestDraftDetails(props) {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [modalIsOpen, showModal]); // Listen to modal
+  }, [modalIsOpen, showModal]);
 
   return (
     <>
@@ -1725,7 +1709,6 @@ function TestDraftDetails(props) {
             props?.setPaginationData({ rowPerPage: newPageSize });
             props?.setPaginationData({ currentPage: 1 });
           }}
-          // paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
