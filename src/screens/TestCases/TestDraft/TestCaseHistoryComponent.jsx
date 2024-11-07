@@ -38,12 +38,6 @@ function TestCaseHistoryComponent() {
       name: (
         <div>
           <span>Module</span>
-          <i
-          // onClick={(e) =>
-          //   handleFilterClick(e, 'module_name', 'Module', 'text')
-          // }
-          // className="icofont-filter ms-2"
-          />
         </div>
       ),
 
@@ -95,12 +89,6 @@ function TestCaseHistoryComponent() {
       name: (
         <div>
           <span>Submodule Name</span>
-          <i
-          // onClick={(e) =>
-          //   handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
-          // }
-          // className="icofont-filter ms-2"
-          />
         </div>
       ),
       selector: (row) => row.sub_module_name,
@@ -150,12 +138,6 @@ function TestCaseHistoryComponent() {
       name: (
         <div>
           <span>Function</span>
-          <i
-          // onClick={(e) =>
-          //   handleFilterClick(e, 'function_name', 'Function', 'text')
-          // }
-          // className="icofont-filter ms-2"
-          />
         </div>
       ),
       selector: (row) => row.function_name,
@@ -205,10 +187,6 @@ function TestCaseHistoryComponent() {
       name: (
         <div>
           <span>Field</span>
-          <i
-          // onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
-          // className="icofont-filter ms-2"
-          />
         </div>
       ),
       selector: (row) => row.field,
@@ -258,12 +236,6 @@ function TestCaseHistoryComponent() {
       name: (
         <div>
           <span>Testing Type</span>
-          <i
-          // onClick={(e) =>
-          //   handleFilterClick(e, 'type_name', 'Testing Type', 'text')
-          // }
-          // className="icofont-filter ms-2"
-          />
         </div>
       ),
       selector: (row) => row.type_name,
@@ -313,12 +285,6 @@ function TestCaseHistoryComponent() {
       name: (
         <div>
           <span>Testing Group</span>
-          <i
-          // onClick={(e) =>
-          //   handleFilterClick(e, 'group_name', 'Testing Group', 'text')
-          // }
-          // className="icofont-filter ms-2"
-          />
         </div>
       ),
       selector: (row) => row.group_name,
@@ -413,10 +379,6 @@ function TestCaseHistoryComponent() {
       name: (
         <div>
           <span>Severity</span>
-          <i
-          // onClick={(e) => handleFilterClick(e, 'id', 'Severity', 'text')}
-          // className="icofont-filter ms-2"
-          />
         </div>
       ),
       selector: (row) => row.severity,
@@ -431,13 +393,7 @@ function TestCaseHistoryComponent() {
           {row.severity && (
             <OverlayTrigger overlay={<Tooltip>{row.severity} </Tooltip>}>
               <div>
-                <span className="ms-1">
-                  {row.severity}
-                  {/* {' '}
-                  {row.id && row.id.length < 20
-                    ? row.id
-                    : row.id.substring(0, 50) + '....'} */}
-                </span>
+                <span className="ms-1">{row.severity}</span>
               </div>
             </OverlayTrigger>
           )}
@@ -466,10 +422,6 @@ function TestCaseHistoryComponent() {
       name: (
         <div>
           <span>Steps</span>
-          <i
-          // onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-          // className="icofont-filter ms-2"
-          />
         </div>
       ),
       selector: (row) => row.steps,
@@ -519,10 +471,6 @@ function TestCaseHistoryComponent() {
       name: (
         <div>
           <span>Test Description</span>
-          <i
-          // onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-          // className="icofont-filter ms-2"
-          />
         </div>
       ),
       selector: (row) => row.test_description,
@@ -577,12 +525,6 @@ function TestCaseHistoryComponent() {
       name: (
         <div>
           <span>Expected Result</span>
-          <i
-          // onClick={(e) =>
-          //   handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
-          // }
-          // className="icofont-filter ms-2"
-          />
         </div>
       ),
       selector: (row) => row.expected_result,
@@ -632,10 +574,6 @@ function TestCaseHistoryComponent() {
       name: (
         <div>
           <span>Status</span>
-          <i
-          // onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
-          // className="icofont-filter ms-2"
-          />
         </div>
       ),
       selector: (row) => row.status,
@@ -685,12 +623,6 @@ function TestCaseHistoryComponent() {
       name: (
         <div>
           <span>Project</span>
-          <i
-          // onClick={(e) =>
-          //   handleFilterClick(e, 'project_name', 'Project', 'text')
-          // }
-          // className="icofont-filter ms-2"
-          />
         </div>
       ),
       selector: (row) => row.project_name,
@@ -740,12 +672,6 @@ function TestCaseHistoryComponent() {
       name: (
         <div>
           <span>Operation</span>
-          <i
-          // onClick={(e) =>
-          //   handleFilterClick(e, 'project_name', 'Project', 'text')
-          // }
-          // className="icofont-filter ms-2"
-          />
         </div>
       ),
       selector: (row) => row.operation,

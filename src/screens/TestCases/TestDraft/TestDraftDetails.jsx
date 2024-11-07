@@ -144,12 +144,6 @@ function TestDraftDetails(props) {
     modalHeader: ''
   });
 
-  // const [paginationData, setPaginationData] = useReducer(
-  //   (prevState, nextState) => {
-  //     return { ...prevState, ...nextState };
-  //   },
-  //   { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
-  // );
   const [disable, setDisable] = useState(false);
   const [reviewerError, setReviewerError] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -308,8 +302,7 @@ function TestDraftDetails(props) {
       });
     }
   };
-  {
-  }
+
   const handleSelectAll = (event) => {
     if (event.target.checked) {
       localDispatch({
@@ -376,10 +369,6 @@ function TestDraftDetails(props) {
 
   const handleClearAllButton = () => {
     localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
-    // localDispatch({
-    //   type: 'SET_SORT_ORDER',
-    //   payload: null
-    // });
   };
   const [selectedValue, setSelectedValue] = useState('');
 
@@ -408,13 +397,11 @@ function TestDraftDetails(props) {
     const getLatestConditions = (data) => {
       const latestConditions = {};
 
-      // Traverse the list to keep the most recent condition for each column
       data.forEach((condition) => {
         const column = condition.column;
         latestConditions[column] = condition;
       });
 
-      // Convert the dictionary back to a list
       const latestConditionsList = Object.values(latestConditions);
 
       return latestConditionsList;
@@ -423,7 +410,6 @@ function TestDraftDetails(props) {
 
     const updatedFilters = getLatestConditions(updatedFiltersData);
 
-    // const updatedFilters = [...filters, newFilter];
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
     props.setIsFilterApplied((prev) => ({
       ...prev,
@@ -442,8 +428,7 @@ function TestDraftDetails(props) {
       localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
     } catch (error) {}
   };
-  {
-  }
+
   const handleApplyButton = async () => {
     props?.setClearData(false);
     const newFilter = {
@@ -454,18 +439,14 @@ function TestDraftDetails(props) {
       sort: sortOrder
     };
 
-    // const updatedFilters = [...filters, newFilter];
-
     const getLatestConditions = (data) => {
       const latestConditions = {};
 
-      // Traverse the list to keep the most recent condition for each column
       data.forEach((condition) => {
         const column = condition.column;
         latestConditions[column] = condition;
       });
 
-      // Convert the dictionary back to a list
       const latestConditionsList = Object.values(latestConditions);
 
       return latestConditionsList;
@@ -491,7 +472,6 @@ function TestDraftDetails(props) {
 
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
       localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
-      // localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
     } catch (error) {}
   };
 
@@ -551,34 +531,6 @@ function TestDraftDetails(props) {
       sortable: false,
       width: '150px'
     },
-    // {
-    //   name: (
-    //     <div onClick={handleSelectAllNamesChange}>
-    //       <input
-    //         type="checkbox"
-    //         checked={selectAllNames}
-    //         onChange={handleSelectAllNamesChange}
-    //       />
-    //     </div>
-    //   ),
-    //   selector: 'selectAll',
-    //   width: '5rem',
-    //   center: true,
-    //   cell: (row) => {
-    //     if (!row || row.tc_id === null || row.status === null) return null;
-    //     return
-    //     (
-
-    //     <div>
-    //       <input
-    //         type="checkbox"
-    //         checked={selectedRows.includes(row.tc_id)}
-    //         onChange={() => handleCheckboxChange(row)}
-    //         disabled={row.status !== 'DRAFT'}
-    //       />
-    //     </div>
-    //   )}
-    // },
 
     {
       name: (
@@ -655,53 +607,6 @@ function TestDraftDetails(props) {
         </div>
       )
     },
-
-    // {
-    //   name: (
-    //     <div>
-    //       <span>Submodule</span>
-    //       <i
-    //         onClick={(e, row) =>
-    //           handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
-    //         }
-    //         className={`icofont-filter ms-2 ${
-    //           props?.isFilterApplied['sub_module_name']
-    //             ? 'text-warning'
-    //             : 'text-dark'
-    //         }`}
-    //       />
-    //     </div>
-    //   ),
-    //   selector: (row) => row.sub_module_name,
-    //   width: '10rem',
-    //   sortable: false,
-    //   cell: (row) => (
-    //     <div
-    //       className="btn-group"
-    //       role="group"
-    //       aria-label="Basic outlined example"
-    //     >
-    //       {row.sub_module_name && (
-    //         <OverlayTrigger overlay={<Tooltip>{row.sub_module_name} </Tooltip>}>
-    //           <div>
-    //             <span className="ms-1">
-    //               {' '}
-    //               {row.sub_module_name && row.sub_module_name.length < 20
-    //                 ? row.sub_module_name
-    //                 : row.sub_module_name.substring(0, 50) + '....'}
-    //             </span>
-    //           </div>
-    //         </OverlayTrigger>
-    //       )}
-    //     </div>
-    //   ),
-    //   header: (column, sortDirection) => (
-    //     <div className="d-flex align-items-center">
-    //       <span>{column.name}</span>
-    //       <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-    //     </div>
-    //   )
-    // },
 
     {
       name: (
@@ -1540,7 +1445,6 @@ function TestDraftDetails(props) {
 
   useEffect(() => {
     if (sortOrder && sortOrder != null) {
-      // handleApplyFilter(sortOrder);
       const newFilter =
         filterType === 'is not between' ||
         filterType === 'is between' ||
@@ -1564,13 +1468,11 @@ function TestDraftDetails(props) {
       const getLatestConditions = (data) => {
         const latestConditions = {};
 
-        // Traverse the list to keep the most recent condition for each column
         data.forEach((condition) => {
           const column = condition.column;
           latestConditions[column] = condition;
         });
 
-        // Convert the dictionary back to a list
         const latestConditionsList = Object.values(latestConditions);
 
         return latestConditionsList;
@@ -1579,7 +1481,6 @@ function TestDraftDetails(props) {
 
       const updatedFilters = getLatestConditions(updatedFiltersData);
 
-      // const updatedFilters = [...filters, newFilter];
       localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
       props.setIsFilterApplied((prev) => ({
         ...prev,
@@ -1824,7 +1725,6 @@ function TestDraftDetails(props) {
       <>
         {modalIsOpen && (
           <div ref={modalRef}>
-            {/* {modalIsOpen && ( */}
             <CustomFilterModal
               show={modalIsOpen}
               handleClose={closeModal}
