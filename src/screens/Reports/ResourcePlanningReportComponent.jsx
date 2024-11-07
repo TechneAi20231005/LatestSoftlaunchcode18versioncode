@@ -310,7 +310,7 @@ export default function ResourcePlanningReportComponent() {
         <div className="card-body">
           <form onSubmit={handleForm}>
             <div className="row">
-              <div className="col-md-3">
+              <div className="col-md-4">
                 <label htmlFor="" className="">
                   <b>Select User :</b>
                 </label>
@@ -325,7 +325,7 @@ export default function ResourcePlanningReportComponent() {
                 />
               </div>
 
-              <div className="col-md-3">
+              <div className="col-md-4">
                 <label htmlFor="" className="">
                   <b>
                     From Date :<Astrick color="red" size="13px" />
@@ -340,7 +340,7 @@ export default function ResourcePlanningReportComponent() {
                 />
               </div>
 
-              <div className="col-md-3">
+              <div className="col-md-4">
                 <label htmlFor="" className="">
                   <b>
                     To Date :<Astrick color="red" size="13px" />
@@ -355,38 +355,37 @@ export default function ResourcePlanningReportComponent() {
                 />
               </div>
             </div>
-            <div className="row">
-              <div className="col-md-2">
+            <div className="d-flex mt-4">
+              <div className="d-flex  ms-md-auto">
                 <button
-                  className="btn btn-sm btn-warning text-white"
+                  className="btn btn-warning text-white"
                   type="submit"
-                  style={{ marginTop: '20px', fontWeight: '600' }}
+                  style={{ fontWeight: '600' }}
                 >
-                  <i className="icofont-search-1 "></i> Search
+                  <i className="icofont-search-1"></i> Search
                 </button>
                 <button
-                  className="btn btn-sm btn-info text-white"
+                  className="btn btn-info text-white"
                   type="button"
                   onClick={() => window.location.reload(false)}
-                  style={{ marginTop: '20px', fontWeight: '600' }}
+                  style={{ fontWeight: '600' }}
                 >
-                  <i className="icofont-refresh text-white"></i> Reset
+                  <i className=" text-white"></i> Reset
                 </button>
               </div>
-              <div
-                className="col-md-10"
-                style={{
-                  textAlign: 'right',
-                  marginTop: '20px',
-                  fontWeight: '600'
-                }}
-              >
-                <ExportToExcel
-                  className="btn btn-sm btn-danger"
-                  apiData={exportData}
-                  fileName="Planning Report"
-                />
-              </div>
+              {data && data.length > 0 && (
+                <div
+                  style={{
+                    fontWeight: '600'
+                  }}
+                >
+                  <ExportToExcel
+                    className="btn btn-danger"
+                    apiData={exportData}
+                    fileName="Planning Report"
+                  />
+                </div>
+              )}
             </div>
           </form>
         </div>
