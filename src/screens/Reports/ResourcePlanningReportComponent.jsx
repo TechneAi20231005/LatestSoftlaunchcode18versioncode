@@ -38,7 +38,6 @@ export default function ResourcePlanningReportComponent() {
 
   const [todateformat, setTodateformat] = useState('');
   const [fromdateformat, setFromdateformat] = useState('');
-  const [selectedId, setSelectedId] = useState(null);
 
   const columns = [
     { name: 'Sr', selector: (row) => row.sr, sortable: false, width: '70px' },
@@ -228,65 +227,50 @@ export default function ResourcePlanningReportComponent() {
       }
     }
   };
-  const expandTaskName = (id) => {
-    setSelectedId(id);
-    console.log(id);
-  };
 
   const ExpandedComponent = ({ data }) => (
     <pre>
-      <Table>
-        <thead>
-          <tr>
-            <th>Sr</th>
-            <th>Task Name</th>
-            <th>Sprint Name</th>
-            <th>Task Hour</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.tasks &&
-            data.tasks.length > 0 &&
-            data.tasks.map((task, key) => {
-              return (
-                <tr>
-                  <td className="col-1">{key + 1}</td>
-                  {/*        // Updated by Asmita Margaje */}
-                  <td className="col-6">
+      <div className="table-responsive">
+        <Table className="table-fixed">
+          <thead>
+            <tr>
+              <th className="col-sm-1 col-md-1 px-sm-2">Sr</th>
+              <th className="cp col-sm-6 col-md-6 px-sm-2">Task Name</th>
+              <th className="col-sm-4 col-md-4 px-sm-2">Sprint Name</th>
+              <th className="col-sm-1 col-md-1 px-sm-2">Task Hour</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.tasks &&
+              data.tasks.length > 0 &&
+              data.tasks.map((task, key) => (
+                <tr key={key}>
+                  <td className="col-sm-1 col-md-1 px-sm-2">{key + 1}</td>
+                  <td className="col-sm-6 col-md-6 d-flex justify-content-start lh-base px-sm-2">
                     <Link to={`/${_base}/Ticket/Task/${task.id}`}>
-                      <span style={{ fontWeight: 'bold' }}>
-                        {' '}
-                        {task.ticket_id}{' '}
-                      </span>
+                      <span className="fw-bold">{task.ticket_id}</span>
                     </Link>
                     <OverlayTrigger
-                      overlay={<Tooltip>{task?.task_name} </Tooltip>}
+                      overlay={<Tooltip>{task?.task_name}</Tooltip>}
                     >
-                      <span
-                        className="wb-bw cp"
-                        onClick={() => expandTaskName(task?.id)}
-                        // title={task.task_name}
-
-                        data-bs-toggle="tooltip"
-                        // title={task.task_name}
-                        style={{
-                          whiteSpace: selectedId === task?.id ? 'normal' : null
-                        }}
-                      >
-                        {selectedId === task?.id
-                          ? task.task_name
-                          : formatingTableNameData(task.task_name)}
-                      </span>
+                      <div className="cp px-sm-3" data-bs-toggle="tooltip">
+                        {task?.id
+                          ? formatingTableNameData(task.task_name)
+                          : task.task_name}
+                      </div>
                     </OverlayTrigger>
-                    {/* - {task.task_name} */}
                   </td>
-                  <td className="col-4">{task.sprint_name || '-'}</td>
-                  <td className="col-1">{task.total_hours}</td>
+                  <td className="col-sm-4 col-md-4 px-sm-2">
+                    {task.sprint_name || '-'}
+                  </td>
+                  <td className="col-sm-1 col-md-1 px-sm-2">
+                    {task.total_hours}
+                  </td>
                 </tr>
-              );
-            })}
-        </tbody>
-      </Table>
+              ))}
+          </tbody>
+        </Table>
+      </div>
     </pre>
   );
 
