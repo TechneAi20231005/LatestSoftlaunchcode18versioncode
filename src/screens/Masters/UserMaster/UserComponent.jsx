@@ -177,6 +177,7 @@ function UserComponent() {
             WhatsappNo: temp[i].whats_app_contact_no,
             User_Name: temp[i].user_name,
             Role: temp[i].role,
+            Job_Role: temp[i].job_role,
             Designation: temp[i].designation,
             Address: temp[i].address,
             Pincode: temp[i].pincode,
