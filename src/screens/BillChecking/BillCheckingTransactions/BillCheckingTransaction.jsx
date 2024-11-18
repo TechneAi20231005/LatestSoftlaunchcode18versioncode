@@ -210,7 +210,7 @@ function BillCheckingTransaction() {
       sortable: false,
       cell: (row) => {
         return (
-          <Dropdown className="d-inline-flex m-1">
+          <Dropdown drop= {filteredData?.length < 2 && 'start'} className="d-inline-flex m-1">
             <Dropdown.Toggle
               as="button"
               variant=""
@@ -1677,6 +1677,13 @@ function BillCheckingTransaction() {
               progressPending={isLoading}
               selectableRows={false}
               defaultSortAsc={false}
+              customStyles={{
+                rows: {
+                  style: {
+                    minHeight: filteredData?.length < 2 && '95px',
+                  },
+                },
+              }}
               fixedHeader={true}
               fixedHeaderScrollHeight="900px"
               className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
