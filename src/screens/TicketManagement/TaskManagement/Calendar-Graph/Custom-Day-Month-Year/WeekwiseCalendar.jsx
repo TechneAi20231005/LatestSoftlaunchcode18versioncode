@@ -4,7 +4,6 @@ import CalendarSkeleton from './Skeleton/CalendarSkeleton';
 import { Tooltip } from 'react-tooltip';
 const WeekwiseCalendar = (props) => {
   const { data, bgColor, isLoading } = props;
-  console.log(data, 'data');
   const [tooltipContent, setTooltipContent] = useState('');
   const [tooltipPosition, setTooltipPosition] = useState({ x: 0, y: 0 });
   const tooltipRef = useRef(null);
