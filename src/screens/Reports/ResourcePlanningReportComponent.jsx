@@ -14,6 +14,13 @@ import { _base } from '../../settings/constants';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../Dashboard/DashboardAction';
+import {
+  formatingTableNameData,
+  reportTable
+} from '../../utils/customFunction';
+import { Col, Container, Row, OverlayTrigger, Tooltip } from 'react-bootstrap';
+
+// import Tooltip from 'react-bootstrap/Tooltip';
 
 export default function ResourcePlanningReportComponent() {
   const [userData, setUserData] = useState(null);
@@ -164,25 +171,23 @@ export default function ResourcePlanningReportComponent() {
                 const exportTempData = [];
 
                 for (const i in data) {
-
                   const tasks = Array.isArray(data[i].tasks)
                     ? data[i].tasks
                     : [];
                   let counter = 1;
                   for (const task of tasks) {
-
                     exportTempData.push({
                       sr: counter++,
                       ticket_id: task.ticket_id,
-                       job_role: data[i].job_role || "-",
-                      sprint_name: task.sprint_name || "-",
-                      sprint_start_date: task.sprint_start_date || "-",
-                      sprint_end_date: task.sprint_end_date || "-",
+                      job_role: data[i].job_role || '-',
+                      sprint_name: task.sprint_name || '-',
+                      sprint_start_date: task.sprint_start_date || '-',
+                      sprint_end_date: task.sprint_end_date || '-',
                       date: data[i].date,
                       user_name: data[i].user_name,
-                      type_name: task.type_name || "-",
+                      type_name: task.type_name || '-',
                       task_name: task.task_name,
-                      total_hours: task.total_hours,
+                      total_hours: task.total_hours
                     });
                   }
                 }
@@ -225,39 +230,47 @@ export default function ResourcePlanningReportComponent() {
 
   const ExpandedComponent = ({ data }) => (
     <pre>
-      <Table>
-        <thead>
-          <tr>
-            <th>Sr</th>
-            <th>Task Name</th>
-            <th>Sprint Name</th>
-            <th>Task Hour</th>
-          </tr>
-        </thead>
-        <tbody>
-          {data.tasks &&
-            data.tasks.length > 0 &&
-            data.tasks.map((task, key) => {
-              return (
-                <tr>
-                  <td>{key + 1}</td>
-                  {/*        // Updated by Asmita Margaje */}
-                  <td>
+      <div className="table-responsive">
+        <Table className="table-fixed">
+          <thead>
+            <tr>
+              <th className="col-sm-1 col-md-1 px-sm-2">Sr</th>
+              <th className="cp col-sm-6 col-md-6 px-sm-2">Task Name</th>
+              <th className="col-sm-4 col-md-4 px-sm-2">Sprint Name</th>
+              <th className="col-sm-1 col-md-1 px-sm-2">Task Hour</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data.tasks &&
+              data.tasks.length > 0 &&
+              data.tasks.map((task, key) => (
+                <tr key={key}>
+                  <td className="col-sm-1 col-md-1 px-sm-2">{key + 1}</td>
+                  <td className="col-sm-6 col-md-6 d-flex justify-content-start lh-base px-sm-2">
                     <Link to={`/${_base}/Ticket/Task/${task.id}`}>
-                      <span style={{ fontWeight: 'bold' }}>
-                        {' '}
-                        {task.ticket_id}{' '}
-                      </span>
+                      <span className="fw-bold">{task.ticket_id}</span>
                     </Link>
-                    - {task.task_name}
+                    <OverlayTrigger
+                      overlay={<Tooltip>{task?.task_name}</Tooltip>}
+                    >
+                      <div className="cp px-sm-3" data-bs-toggle="tooltip">
+                        {task?.id
+                          ? formatingTableNameData(task.task_name)
+                          : task.task_name}
+                      </div>
+                    </OverlayTrigger>
                   </td>
-                  <td>{task.sprint_name || "-"}</td>
-                  <td>{task.total_hours}</td>
+                  <td className="col-sm-4 col-md-4 px-sm-2">
+                    {task.sprint_name || '-'}
+                  </td>
+                  <td className="col-sm-1 col-md-1 px-sm-2">
+                    {task.total_hours}
+                  </td>
                 </tr>
-              );
-            })}
-        </tbody>
-      </Table>
+              ))}
+          </tbody>
+        </Table>
+      </div>
     </pre>
   );
 
@@ -281,7 +294,7 @@ export default function ResourcePlanningReportComponent() {
         <div className="card-body">
           <form onSubmit={handleForm}>
             <div className="row">
-              <div className="col-md-3">
+              <div className="col-md-4">
                 <label htmlFor="" className="">
                   <b>Select User :</b>
                 </label>
@@ -296,7 +309,7 @@ export default function ResourcePlanningReportComponent() {
                 />
               </div>
 
-              <div className="col-md-3">
+              <div className="col-md-4">
                 <label htmlFor="" className="">
                   <b>
                     From Date :<Astrick color="red" size="13px" />
@@ -311,7 +324,7 @@ export default function ResourcePlanningReportComponent() {
                 />
               </div>
 
-              <div className="col-md-3">
+              <div className="col-md-4">
                 <label htmlFor="" className="">
                   <b>
                     To Date :<Astrick color="red" size="13px" />
@@ -326,38 +339,37 @@ export default function ResourcePlanningReportComponent() {
                 />
               </div>
             </div>
-            <div className="row">
-              <div className="col-md-2">
+            <div className="d-flex mt-4">
+              <div className="d-flex  ms-md-auto">
                 <button
-                  className="btn btn-sm btn-warning text-white"
+                  className="btn btn-warning text-white"
                   type="submit"
-                  style={{ marginTop: '20px', fontWeight: '600' }}
+                  style={{ fontWeight: '600' }}
                 >
-                  <i className="icofont-search-1 "></i> Search
+                  <i className="icofont-search-1"></i> Search
                 </button>
                 <button
-                  className="btn btn-sm btn-info text-white"
+                  className="btn btn-info text-white"
                   type="button"
                   onClick={() => window.location.reload(false)}
-                  style={{ marginTop: '20px', fontWeight: '600' }}
+                  style={{ fontWeight: '600' }}
                 >
-                  <i className="icofont-refresh text-white"></i> Reset
+                  <i className=" text-white"></i> Reset
                 </button>
               </div>
-              <div
-                className="col-md-10"
-                style={{
-                  textAlign: 'right',
-                  marginTop: '20px',
-                  fontWeight: '600'
-                }}
-              >
-                <ExportToExcel
-                  className="btn btn-sm btn-danger"
-                  apiData={exportData}
-                  fileName="Planning Report"
-                />
-              </div>
+              {data && data.length > 0 && (
+                <div
+                  style={{
+                    fontWeight: '600'
+                  }}
+                >
+                  <ExportToExcel
+                    className="btn btn-danger"
+                    apiData={exportData}
+                    fileName="Planning Report"
+                  />
+                </div>
+              )}
             </div>
           </form>
         </div>
@@ -378,7 +390,6 @@ export default function ResourcePlanningReportComponent() {
                   highlightOnHover={true}
                   expandableRows
                   expandableRowsComponent={ExpandedComponent}
-
                 />
               )}
             </div>
