@@ -81,7 +81,7 @@ export default function TestDraftComponent({}) {
   const handleBulkUpload = (e) => {
     setDisable(true);
     e.preventDefault();
-    const file = e.target.elements.file_attachment.files[0]; // Access the file from the event target
+    const file = e.target.elements.file_attachment.files[0];
 
     if (!file) {
       alert('Please choose a file.');

@@ -137,7 +137,6 @@ function DownloadFormatFileModal({ show, close }) {
                     placeholder="Select"
                     ref={subModuleIdRef}
                     isMulti
-                    // required
                   />
                 </Col>
               </Row>

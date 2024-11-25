@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useState } from 'react';
 import { Container, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useParams } from 'react-router-dom';
 import Select from 'react-select';
 import { Astrick } from '../../../components/Utilities/Style';
 import PageHeader from '../../../components/Common/PageHeader';
@@ -92,6 +92,10 @@ function localReducer(state, action) {
 
 function ReviewedTestDraftComponent() {
   const { id } = useParams();
+  const location = useLocation();
+
+  const queryParams = new URLSearchParams(location.search);
+  const testPlanId = queryParams.get('testPlanId');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -173,20 +177,6 @@ function ReviewedTestDraftComponent() {
     dispatch(getEmployeeData());
   };
 
-  // const handleCheckboxChange = (row) => {
-  //   localDispatch({
-  //     type: 'SET_SELECTED_ROWS',
-  //     payload: (prevSelectedRows) => {
-  //       if (prevSelectedRows.includes(row.id)) {
-  //         return prevSelectedRows.filter(
-  //           (selectedRow) => selectedRow !== row.id
-  //         );
-  //       } else {
-  //         return [...prevSelectedRows, row.id];
-  //       }
-  //     }
-  //   });
-  // };
   const totalRows = exportAllReviewDraftTestListData?.length;
 
   const handleCheckboxChange = (row) => {
@@ -203,7 +193,6 @@ function ReviewedTestDraftComponent() {
           updatedSelectedRows = [...prevSelectedRows, row.id];
         }
 
-        // Check if all rows are selected
         if (updatedSelectedRows?.length === totalRows) {
           localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: true });
         } else {
@@ -434,17 +423,14 @@ function ReviewedTestDraftComponent() {
             sort: sortOrder
           };
 
-    // const updatedFilters = [...filters, newFilter];
     const getLatestConditions = (data) => {
       const latestConditions = {};
 
-      // Traverse the list to keep the most recent condition for each column
       data.forEach((condition) => {
         const column = condition.column;
         latestConditions[column] = condition;
       });
 
-      // Convert the dictionary back to a list
       const latestConditionsList = Object.values(latestConditions);
 
       return latestConditionsList;
@@ -1127,20 +1113,8 @@ function ReviewedTestDraftComponent() {
       sortable: true,
 
       width: '250px',
-      // cell: (row) => (
-      //     <select
-      //       className="form-select"
-      //       aria-label="Default select example"
-      //       value={row.comment_id || ''}
-      //       id="comment_id"
-      //       name="comment_id"
-      //       disabled
-      //     >
-      //       {generateOptions(getFilterReviewCommentMasterList)}
-      //     </select>
-      // )
+
       cell: (row) => {
-        // Get the selected option text to display in the tooltip
         const selectedOptionText =
           getFilterReviewCommentMasterList?.find(
             (option) => option?.value === row?.comment_id
@@ -1400,17 +1374,14 @@ function ReviewedTestDraftComponent() {
             sort: sortOrder
           };
 
-    // const updatedFilters = [...filters, newFilter];
     const getLatestConditions = (data) => {
       const latestConditions = {};
 
-      // Traverse the list to keep the most recent condition for each column
       data.forEach((condition) => {
         const column = condition.column;
         latestConditions[column] = condition;
       });
 
-      // Convert the dictionary back to a list
       const latestConditionsList = Object.values(latestConditions);
 
       return latestConditionsList;
@@ -1523,7 +1494,7 @@ function ReviewedTestDraftComponent() {
   return (
     <div className="container-xxl">
       <PageHeader
-        headerTitle="Test Draft"
+        headerTitle={`Test Draft : ${testPlanId}`}
         renderRight={() => {
           return (
             <div className="col-md-6 d-flex justify-content-end">
@@ -1596,16 +1567,11 @@ function ReviewedTestDraftComponent() {
 
         <button
           onClick={() => {
-            // handleSendToReviewerModal({
-            //   showModal: true,
-            //   modalData: '',
-            //   modalHeader: 'Send To Reviewer Modal'
-            // });
             if (selectAllNames !== true) {
               alert(
                 'Please select all test cases to send for review, partial selection is not allowed.'
               );
-              return; // Exit the function or prevent further execution
+              return;
             }
             handleSendToReviewerModal({
               showModal: true,
