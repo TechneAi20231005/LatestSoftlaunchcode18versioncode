@@ -208,7 +208,7 @@ export default function MyTicketComponent() {
     if (type === 'SEARCH_RESULT') {
       if (searchResult && searchResult.length > 0) {
         return (
-          <Dropdown className="d-inline-flex m-1">
+          <Dropdown drop="start" className="d-inline-flex m-1">
             <Dropdown.Toggle
               as="button"
               variant=""
@@ -2801,14 +2801,6 @@ export default function MyTicketComponent() {
     });
   };
 
-  const customStyles = {
-    table: {
-      style: {
-        height: '100vh'
-      }
-    }
-  };
-
   useEffect(() => {
     setLocationState(location.state);
     const timeoutId = setTimeout(() => {
@@ -3191,12 +3183,19 @@ export default function MyTicketComponent() {
                             columns={searchResultColumns}
                             data={searchResult}
                             // customStyles={customStyles}
+                            customStyles={{
+                              rows: {
+                                style: {
+                                  minHeight: searchResult?.length < 2 && '95px'
+                                }
+                              }
+                            }}
                             defaultSortField="title"
                             paginations
                             fixedHeader={true}
                             // fixedHeaderScrollHeight={'500px'}
                             selectableRows={false}
-                            className="table msyDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                            className="table msyDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline "
                             highlightOnHover={true}
                           />
                         ) : (
@@ -3261,7 +3260,13 @@ export default function MyTicketComponent() {
                         assignedToMe &&
                         assignedToMe?.length > 0 ? (
                           <DataTable
-                            // customStyles={customStyles}
+                            customStyles={{
+                              rows: {
+                                style: {
+                                  minHeight: assignedToMe?.length < 2 && '95px'
+                                }
+                              }
+                            }}
                             columns={assignedToMeColumns}
                             onChangeRowsPerPage={(newPerPage, page) => {
                               setItemsPerPage(newPerPage); // Update items per page
@@ -3338,6 +3343,13 @@ export default function MyTicketComponent() {
                       ) : createdByMe && createdByMe?.length > 0 ? (
                         <DataTable
                           // customStyles={customStyles}
+                          customStyles={{
+                            rows: {
+                              style: {
+                                minHeight: createdByMe?.length < 2 && '95px'
+                              }
+                            }
+                          }}
                           columns={createdByMeColumns}
                           data={createdByMe}
                           defaultSortField="title"
@@ -3412,6 +3424,14 @@ export default function MyTicketComponent() {
                           <DataTable
                             columns={departmentwisetTicketColumns}
                             // customStyles={customStyles}
+                            customStyles={{
+                              rows: {
+                                style: {
+                                  minHeight:
+                                    departmentwiseTicket?.length < 2 && '95px'
+                                }
+                              }
+                            }}
                             data={departmentwiseTicket}
                             defaultSortField="title"
                             fixedHeader={true}
@@ -3482,6 +3502,13 @@ export default function MyTicketComponent() {
                           <DataTable
                             columns={yourTaskColumns}
                             data={yourTask}
+                            customStyles={{
+                              rows: {
+                                style: {
+                                  minHeight: yourTask?.length < 2 && '95px'
+                                }
+                              }
+                            }}
                             // customStyles={customStyles}
                             defaultSortField="title"
                             fixedHeader={true}
@@ -3609,6 +3636,13 @@ export default function MyTicketComponent() {
                         <DataTable
                           columns={unpassedColumns}
                           data={unpassedTickets}
+                          customStyles={{
+                            rows: {
+                              style: {
+                                minHeight: unpassedTickets?.length < 2 && '95px'
+                              }
+                            }
+                          }}
                           // customStyles={customStyles}
                           defaultSortField="title"
                           fixedHeader={true}
