@@ -23,7 +23,7 @@ export const CustomInput = ({ field, form: { touched, errors }, ...props }) => {
         {...props}
         className={`form-control ${error && touch ? 'is-invalid' : ''} ${
           props.inputClassName
-        }`}
+         }`}
       />
       {error && touch && (
         <div className="invalid-feedback d-block mb-1">{error}</div>
@@ -189,6 +189,7 @@ export const CustomReactSelect = ({
   form: { touched, errors },
   ...props
 }) => {
+
   const touch = getIn(touched, field.name);
   const error = getIn(errors, field.name);
   const { setFieldValue } = useFormikContext();
@@ -205,7 +206,7 @@ export const CustomReactSelect = ({
     if (options) {
       return isMulti
         ? options.filter((option) => field?.value?.indexOf(option.value) >= 0)
-        : options.find((option) => option.value === field.value);
+        : options.find((option) => option.value === field.value) || '';
     } else {
       return isMulti ? [] : '';
     }
