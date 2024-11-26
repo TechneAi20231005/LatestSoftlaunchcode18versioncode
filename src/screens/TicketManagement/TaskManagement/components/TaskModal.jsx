@@ -51,9 +51,6 @@ export default function TaskModal(props) {
   };
 
   const handleSelect = (label, ID) => {
-    console.log('label', label);
-    console.log('selectedOption', selectedOption);
-
     setSelectedOption(selectedOption === label ? null : label);
     setSelectedOptionId(label);
     setIsMenuOpen(!isMenuOpen);
@@ -171,18 +168,26 @@ export default function TaskModal(props) {
               display: 'flex',
               alignItems: 'center',
               padding: '0.4rem',
-              backgroundColor:
-                hoveredIndex === option.label
-                  ? 'rgba(79, 184, 201, 0.5)'
-                  : 'white',
+              // backgroundColor:
+              //   hoveredIndex === option.label
+              //     ? 'rgba(79, 184, 201, 0.5)'
+              //     : 'white',
+              backgroundColor: taskData?.some(
+                (i) => i?.type_name === option?.label
+              )
+                ? 'white'
+                : hoveredIndex === option.label
+                ? 'rgba(79, 184, 201, 0.5)'
+                : 'white',
               transition: 'background-color 0.3s'
             }}
-            onMouseEnter={() => handleMouseEnter(option.label)}
+            onMouseEnter={() => handleMouseEnter(option?.label)}
             onMouseLeave={handleMouseLeave}
           >
             <i
               className={
-                openOptions?.includes(option.label) && option.options.length > 0
+                openOptions?.includes(option?.label) &&
+                option?.options?.length > 0
                   ? 'icofont-rounded-down'
                   : 'icofont-rounded-right'
               }
@@ -190,14 +195,13 @@ export default function TaskModal(props) {
                 marginRight: '5px',
                 cursor: 'pointer'
               }}
-              onClick={() => toggleOptions(option.label)}
+              onClick={() => toggleOptions(option?.label)}
             ></i>
 
             <div
               onClick={() => {
                 if (option?.options?.length === 0) {
-                  // Only select if there are no children
-                  handleSelect(option.label, option.ID);
+                  handleSelect(option?.label, option.ID);
                 }
               }}
               style={{
@@ -205,13 +209,26 @@ export default function TaskModal(props) {
                 transition: 'color 0.3s'
               }}
             >
-              {option.label}
+              <span
+                style={{
+                  fontWeight: taskData?.some(
+                    (i) => i?.type_name === option?.label
+                  )
+                    ? 'bold'
+                    : 'normal'
+                }}
+              >
+                {option?.label}
+              </span>
             </div>
           </div>
-
-          {openOptions.includes(option.label) &&
+          {openOptions.includes(option?.label) &&
             option?.options?.length > 0 && (
-              <div style={{ marginLeft: '1rem' }}>
+              <div
+                style={{
+                  marginLeft: '1rem'
+                }}
+              >
                 <div style={{ marginLeft: '1rem' }}>
                   {renderOptions(option?.options)}
                 </div>
@@ -854,7 +871,7 @@ export default function TaskModal(props) {
                       position: 'absolute',
                       width: '100%', // Set the width to 100% to match the parent's width
                       top: '100%',
-
+                      backgroundColor: 'blue',
                       maxHeight: '150px', // Adjust the maxHeight here as needed
                       // overflowY: "auto", // Enable vertical scrolling
                       scrollbarWidth: 'none', // Hide scrollbar in Firefox
