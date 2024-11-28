@@ -1902,7 +1902,7 @@ function EditUserComponent({ match }) {
           )}
           {tabKey === 'User_Settings' && (
             <button type="submit" className="btn btn-primary">
-              Submit
+              Update
             </button>
           )}
 

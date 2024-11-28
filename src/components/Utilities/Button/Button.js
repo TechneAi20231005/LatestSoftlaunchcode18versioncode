@@ -92,7 +92,6 @@ export function ButtonComponent(props) {
           to={props.url}
           className="btn btn-primary"
           title={props.title}
-          style={{ background: '#484c7f' }}
           disabled={props.disabled ? true : false}
         >
           {props.icon &&

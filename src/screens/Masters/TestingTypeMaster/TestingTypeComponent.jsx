@@ -210,7 +210,7 @@ function TestingTypeComponent() {
                     );
                   }}
                 >
-                  <i className="icofont-plus-circle me-2 fs-6"></i>Add
+                  <i className="icofont-plus-circle me-2 fs-6"></i>Add Testing Type
                 </button>
               ) : (
                 ''
@@ -368,20 +368,14 @@ function TestingTypeComponent() {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{
-                  backgroundColor: '#484C7F',
-                  width: '80px',
-                  padding: '8px'
-                }}
               >
-                Add
+          Submit
               </button>
             )}
             {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: '#484C7F' }}
               >
                 Update
               </button>

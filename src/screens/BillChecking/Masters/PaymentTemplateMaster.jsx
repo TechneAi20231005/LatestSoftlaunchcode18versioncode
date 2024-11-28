@@ -862,7 +862,7 @@ function PaymentTemplateMaster() {
                 className="btn btn-primary text-white"
                 style={{ backgroundColor: '#484C7F' }}
               >
-                Save
+                Submit
               </button>
             )}
             {modal.modalData && (

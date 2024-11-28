@@ -111,11 +111,11 @@ function FollowUp() {
             </Stack>
 
             <div className="d-flex justify-content-sm-end gap-2 my-3 btn_container">
-              <button className="btn btn-dark px-4" type="submit" disabled={isLoading?.addFollowUp}>
-                {isLoading?.addFollowUp ? <Spinner animation="border" size="sm" /> : 'Add'}
+              <button className="btn btn-primary px-4" type="submit" disabled={isLoading?.addFollowUp}>
+                {isLoading?.addFollowUp ? <Spinner animation="border" size="sm" /> : 'Submit'}
               </button>
               <button
-                className="btn btn-shadow-light px-3"
+                className="btn btn-danger px-3"
                 type="button"
                 onClick={resetForm}
                 disabled={!dirty}

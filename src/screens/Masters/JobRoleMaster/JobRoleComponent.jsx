@@ -154,7 +154,7 @@ function JobRoleMasterComponent() {
             }}
           >
             <i className="icofont-plus px-2"></i>
-            Add Job Role Type
+            Add Job Role
           </button>
         </div>
       </div>

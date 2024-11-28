@@ -956,7 +956,7 @@ function QueryTypeComponent() {
                         />
                       )}
                     </div>
-                    <div className="col-md-2" style={{ marginTop: '30px' }}>
+                    <div className="col-md-2" style={{ marginTop: '33px' }}>
                       <Dropdown style={{}}>
                         <Dropdown.Toggle
                           variant="btn btn-secondary text-white"
@@ -1100,15 +1100,11 @@ function QueryTypeComponent() {
               {!modal.modalData && (
                 <button
                   type="submit"
-                  className="btn btn-primary text-white"
-                  style={{
-                    backgroundColor: '#484C7F',
-                    width: '80px',
-                    padding: '8px'
-                  }}
+                  className="btn text-white"
+
                   disabled={isSubmitting}
                 >
-                  Add
+                 Submit
                 </button>
               )}
               {modal.modalData &&
@@ -1117,7 +1113,6 @@ function QueryTypeComponent() {
                 <button
                   type="submit"
                   className="btn btn-primary text-white"
-                  style={{ backgroundColor: '#484C7F' }}
                 >
                   Update
                 </button>

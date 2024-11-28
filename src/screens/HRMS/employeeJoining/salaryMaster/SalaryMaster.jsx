@@ -252,6 +252,7 @@ function SalaryMaster() {
             <input
               type="search"
               name="interview_search"
+              id="salarymaster_interviewsearch"
               value={searchValue}
               onChange={(e) => setSearchValue(e?.target?.value)}
               placeholder="Search..."
