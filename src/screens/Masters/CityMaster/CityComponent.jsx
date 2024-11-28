@@ -49,7 +49,6 @@ function CityComponent() {
   const isLoading = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.isLoading.getCityDataList
   );
-  console.log('filteredStateData', filteredStateData);
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 7)
   );
@@ -208,8 +207,8 @@ function CityComponent() {
     setStateDropdownData(
       activeState &&
         activeState
-          ?.filter((filterState) => filterState.country_id === e.value)
-          ?.map((d) => ({ value: d.id, label: d.state }))
+          ?.filter((filterState) => filterState?.country_id === e?.value)
+          ?.map((d) => ({ value: d?.id, label: d?.state }))
     );
     const newStatus = { ...updateStatus, statedrp: 1 };
     setUpdateStatus(newStatus);
@@ -374,11 +373,12 @@ function CityComponent() {
                     defaultValue={
                       modal.modalData
                         ? filteredCountryData?.filter(
-                            (d) => modal?.modalData?.country_id === d.value
+                            (d) => modal?.modalData?.country_id === d?.value
                           )
                         : ''
                     }
                     required={true}
+                    isClearable={true}
                   />
                 </div>
 
@@ -394,11 +394,12 @@ function CityComponent() {
                     defaultValue={
                       modal.modalData
                         ? filteredStateData.filter(
-                            (d) => modal.modalData.state_id === d.value
+                            (d) => modal?.modalData?.state_id === d?.value
                           )
                         : ''
                     }
                     required={true}
+                    isClearable={true}
                   />
                 </div>
                 <div className="col-sm-12">

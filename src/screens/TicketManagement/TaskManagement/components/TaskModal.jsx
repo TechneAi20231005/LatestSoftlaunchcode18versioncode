@@ -209,17 +209,7 @@ export default function TaskModal(props) {
                 transition: 'color 0.3s'
               }}
             >
-              <span
-                style={{
-                  fontWeight: taskData?.some(
-                    (i) => i?.type_name === option?.label
-                  )
-                    ? 'bold'
-                    : 'normal'
-                }}
-              >
-                {option?.label}
-              </span>
+              {option?.label}
             </div>
           </div>
           {openOptions.includes(option?.label) &&
