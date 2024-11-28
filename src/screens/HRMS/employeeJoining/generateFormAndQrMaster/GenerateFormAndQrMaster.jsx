@@ -173,7 +173,7 @@ ${currentDate}
      formDatas.append('tenant_id', tenateId);
     formDatas.append(
       'company_name',
-      formData.branding_type === 'text' ? values?.company_name : ''
+      values.branding_type === 'text' ? values?.company_name : ''
     );
 
     formDatas.append('qr_color', qrStyleData.qrColor)
@@ -212,7 +212,7 @@ ${currentDate}
     );
     setFormData(formInitialValue);
     if (resetFormRef.current) {
-      resetFormRef.current();
+      resetFormRef.current(formInitialValue);
     }
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
@@ -275,8 +275,10 @@ ${currentDate}
                   <Formik
                     initialValues={formData}
                     enableReinitialize
+
                     validationSchema={generateFormValidation}
                     onSubmit={(values, errors) => {
+
                       handleAddQrCode(values);
                       setFormData(values);
                       // setFormData(values)
@@ -292,6 +294,7 @@ ${currentDate}
                       resetForm
                     }) => {
                       resetFormRef.current = resetForm;
+                      console.log(values,"values")
                       // setFormData(values);
 
 
@@ -306,6 +309,7 @@ ${currentDate}
                                   name="branding_type"
                                   label="Select Logo"
                                   value="logo"
+                                  disabled={success}
                                   inputClassName="me-1"
                                   className="ms-0"
                                   onChange={() => {
@@ -319,6 +323,7 @@ ${currentDate}
                                   name="branding_type"
                                   label="Enter Company Name"
                                   value="text"
+                                  disabled={success}
                                   inputClassName="me-1"
                                   onChange={() => {
 
@@ -347,6 +352,7 @@ ${currentDate}
                                   }`}
                                   accept=".png, .psd, .jpg, .svg, .eps, .pdf, .ai, .tiff, .gif, .bmp, .heic, .jpeg"
                                   ref={fileInputRef}
+                                  disabled={success}
                                   onChange={(event) => {
 
                                     setFieldValue(
@@ -374,6 +380,7 @@ ${currentDate}
                                 <Field
                                   component={CustomInput}
                                   type="text"
+                                  disabled={success}
                                   name="company_name"
                                   withOutLabel
                                   placeholder="Enter Company Name"
@@ -386,6 +393,7 @@ ${currentDate}
                               component={CustomReactSelect}
                               name="source_name"
                               label="Select Source"
+                              disabled={success}
                               placeholder="Select"
                               requiredField
 
@@ -395,6 +403,7 @@ ${currentDate}
                               component={CustomReactSelect}
                               name="job_opening_id"
                               label="Select Opening"
+                              disabled={success}
                               placeholder="Select"
                               requiredField
                               isMulti
@@ -404,6 +413,7 @@ ${currentDate}
                               component={CustomReactSelect}
                               name="branch_id"
                               label="Select Location"
+                              disabled={success}
                               placeholder="Select"
                               requiredField
                               isMulti
@@ -415,6 +425,7 @@ ${currentDate}
                                   component={CustomInput}
                                   type="color"
                                   name="theme_color"
+                                  disabled={success}
                                   label="Theme Color"
                                   placeholder="Enter Theme Color"
                                   requiredField
@@ -440,6 +451,7 @@ ${currentDate}
                               type="email"
                               name="recruiter_email_id"
                               label="Recruiter Email ID"
+                              disabled={success}
                               placeholder="Enter Recruiter Email Id"
                               // requiredField
                             />
@@ -449,6 +461,7 @@ ${currentDate}
                               name="recruiter_contact_no"
                               label="Recruiter Contact Number"
                               placeholder="Enter Recruiter Contact Number"
+                              disabled={success}
                               // requiredField
                             />
                             <div style={{ display: 'flex' }}>
@@ -572,13 +585,18 @@ ${currentDate}
 
       {!show && (
         <>
-          <div>
-            <button style={{ background: 'none', border: 0 }}>
+          <div className='custom-margin'>
+               <PageHeader
+            isremove
+            handleBack={() => setShow(true)}
+            headerTitle=""
+          />
+            {/* <button style={{ background: 'none', border: 0 }}>
               <i
                 className="icofont-simple-left fs-2 back_icon_btn cp"
                 onClick={() => setShow(true)}
               />
-            </button>
+            </button> */}
           </div>
           <div>
             <EmployeeJoiningForm data={addQrCodeData} />

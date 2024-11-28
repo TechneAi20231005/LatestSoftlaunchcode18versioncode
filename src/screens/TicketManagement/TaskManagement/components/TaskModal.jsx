@@ -22,7 +22,7 @@ import { Astrick } from '../../../../components/Utilities/Style';
 
 export default function TaskModal(props) {
   const [notify, setNotify] = useState();
-  const [isDisabled, setIsDisabled] = useState(false)
+  const [isDisabled, setIsDisabled] = useState(false);
   // const typeRef = useRef();
   // const [parent, setParent] = useState();
   const priority = ['High', 'Medium', 'Low'];
@@ -51,6 +51,9 @@ export default function TaskModal(props) {
   };
 
   const handleSelect = (label, ID) => {
+    console.log('label', label);
+    console.log('selectedOption', selectedOption);
+
     setSelectedOption(selectedOption === label ? null : label);
     setSelectedOptionId(label);
     setIsMenuOpen(!isMenuOpen);
@@ -179,7 +182,7 @@ export default function TaskModal(props) {
           >
             <i
               className={
-                openOptions.includes(option.label) && option.options.length > 0
+                openOptions?.includes(option.label) && option.options.length > 0
                   ? 'icofont-rounded-down'
                   : 'icofont-rounded-right'
               }
@@ -191,7 +194,12 @@ export default function TaskModal(props) {
             ></i>
 
             <div
-              onClick={() => handleSelect(option.label, option.ID)}
+              onClick={() => {
+                if (option?.options?.length === 0) {
+                  // Only select if there are no children
+                  handleSelect(option.label, option.ID);
+                }
+              }}
               style={{
                 cursor: 'pointer',
                 transition: 'color 0.3s'
@@ -201,13 +209,11 @@ export default function TaskModal(props) {
             </div>
           </div>
 
-          {openOptions &&
-            openOptions.length > 0 &&
-            openOptions.includes(option.label) &&
-            option.options && (
+          {openOptions.includes(option.label) &&
+            option?.options?.length > 0 && (
               <div style={{ marginLeft: '1rem' }}>
                 <div style={{ marginLeft: '1rem' }}>
-                  {renderOptions(option.options)}
+                  {renderOptions(option?.options)}
                 </div>
               </div>
             )}
@@ -499,13 +505,10 @@ export default function TaskModal(props) {
 
   const assignUserRef = useRef();
   const handleForm = async (e) => {
-
     e.preventDefault();
-    setIsDisabled(true)
+    setIsDisabled(true);
 
     // setLoading(true);
-
-
 
     const formData = new FormData(e.target);
     if (!selectedOption && !formData.get('id')) {
@@ -610,7 +613,7 @@ export default function TaskModal(props) {
                       setNotify({ type: 'danger', message: res.data.message });
                     }
                   } else {
-                    setIsDisabled(false)
+                    setIsDisabled(false);
                     // setLoading(false);
                     setNotify({ type: 'danger', message: res.message });
                     new ErrorLogService().sendErrorLog(
@@ -660,7 +663,7 @@ export default function TaskModal(props) {
                   setNotify({ type: 'danger', message: res.data.message });
                 }
               } else {
-                setIsDisabled(false)
+                setIsDisabled(false);
                 // setLoading(false);
                 setNotify({ type: 'danger', message: res.data.message });
                 new ErrorLogService().sendErrorLog(
@@ -1346,7 +1349,9 @@ export default function TaskModal(props) {
               type="submit"
               className="btn btn-sm btn-primary"
               style={{ backgroundColor: '#484C7F' }}
-              disabled={props.data.status === 'COMPLETED' || isDisabled ? true : false}
+              disabled={
+                props.data.status === 'COMPLETED' || isDisabled ? true : false
+              }
             >
               Submit
             </button>

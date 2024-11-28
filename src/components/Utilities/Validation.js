@@ -435,6 +435,17 @@ export const CharactersNumbersSpeicalOnly = (e) => {
     return false;
   }
 };
+export const CharactersNumbersSpeicalOnlyForTicket = (e) => {
+  var regex = new RegExp('^[a-zA-Z0-9\\s]+$');
+  var regex1 = new RegExp('^[\\u0900-\\u097F\\s]+$');
+
+  var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+
+  // if (e.target.value.length >= 50) {
+  //   e.preventDefault();
+  //   return false;
+  // }
+};
 
 export const CharactersNumbersSpeicalOnlyforPassTicket = (e) => {
   var regex = new RegExp('^[a-zA-Z0-9\\s]+$');
