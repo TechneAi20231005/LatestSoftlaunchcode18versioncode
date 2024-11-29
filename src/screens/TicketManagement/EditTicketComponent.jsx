@@ -1891,7 +1891,7 @@ export default function EditTicketComponent({ match }) {
               <div className="mt-3" style={{ textAlign: 'right' }}>
                 {isSolved == false && (
                   <button type="submit" className="btn btn-sm btn-primary">
-                    Submit
+                    Update
                   </button>
                 )}
                 <Link
