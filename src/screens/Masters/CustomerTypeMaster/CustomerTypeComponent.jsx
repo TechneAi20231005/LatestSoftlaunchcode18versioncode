@@ -418,7 +418,7 @@ function CustomerTypeComponent() {
             {!modal.modalData && (
               <button
                 type="submit"
-                className="btn text-white"
+                className="btn btn-primary text-white"
 
               >
                Submit

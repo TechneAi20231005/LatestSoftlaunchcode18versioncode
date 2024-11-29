@@ -380,7 +380,7 @@ function StatusComponent() {
             {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
               <button
                 type="submit"
-                className="btn text-white"
+                className="btn btn-primary text-white"
               >
                 Update
               </button>
