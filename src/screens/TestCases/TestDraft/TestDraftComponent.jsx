@@ -103,6 +103,12 @@ export default function TestDraftComponent({}) {
               page: paginationData.currentPage
             })
           );
+
+          dispatch(
+            getAllDraftTestCaseList({
+              type: 'ALL'
+            })
+          );
         },
         onErrorHandler: () => {
           setBulkModal({ showModal: false });
@@ -303,6 +309,7 @@ export default function TestDraftComponent({}) {
           isFilterApplied={isFilterApplied}
           setPaginationData={setPaginationData}
           paginationData={paginationData}
+          allDraftTestListData={allDraftTestListData}
         />
       </RenderIf>
       <RenderIf render={currentTab === 'review_test_draft'}>
