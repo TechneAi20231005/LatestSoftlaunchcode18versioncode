@@ -4,11 +4,7 @@ import DataTable from 'react-data-table-component';
 
 import StatusService from '../../../services/MastersService/StatusService';
 import PageHeader from '../../../components/Common/PageHeader';
-
-import { Astrick } from '../../../components/Utilities/Style';
-import * as Validation from '../../../components/Utilities/Validation';
 import Alert from '../../../components/Common/Alert';
-
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getStatusData,
@@ -22,6 +18,8 @@ import { handleModalClose, handleModalOpen } from './StatusComponentSlice';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { statusMasterValidation } from './validation/StatusMasterValidation';
 
 function StatusComponent() {
   const dispatch = useDispatch();
@@ -147,18 +145,37 @@ function StatusComponent() {
       width: '175px'
     }
   ];
+  const initialValues = {
+    status: modal.modalData ? modal.modalData.status : '',
+    remark: modal.modalData ? modal.modalData.remark : '',
+    is_active:
+      modal?.modalData?.is_active !== undefined
+        ? String(modal?.modalData?.is_active)
+        : '1'
+  };
 
   const loadData = async () => {};
+  // console.log(modal.modalData, 'modalData');
 
-  const handleForm = (id) => async (e) => {
-    e.preventDefault();
+  const handleForm = async (values, id) => {
+    console.log(id, values, 'formDatas');
+    const formData = new FormData();
+    formData.append('status', values.status);
+    formData.append('remark', values.remark);
+
+    const editformdata = new FormData();
+    editformdata.append('status', values.status);
+    editformdata.append('remark', values.remark);
+    editformdata.append('is_active', values.is_active);
+
+    // e.preventDefault();
     // setNotify(null);
-    const form = new FormData(e.target);
+    // const form = new FormData(values);
     if (!id) {
-      dispatch(postStatusData(form));
+      dispatch(postStatusData(formData));
       dispatch(getStatusData());
     } else {
-      dispatch(updateStatusData({ id: id, payload: form }));
+      dispatch(updateStatusData({ id: id, payload: editformdata }));
       dispatch(getStatusData());
     }
   };
@@ -260,7 +277,135 @@ function StatusComponent() {
           );
         }}
       >
-        <form
+        <Formik
+          initialValues={initialValues}
+          validationSchema={statusMasterValidation}
+          onSubmit={(values) => {
+            handleForm(values, modal.modalData ? modal.modalData.id : '');
+          }}
+        >
+          {({}) => (
+            <Form>
+              <Modal.Header closeButton>
+                <Modal.Title className="fw-bold">
+                  {modal.modalHeader}
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="deadline-form">
+                  <div className="row g-3 mb-3">
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Status Name :<span style={{ color: 'red' }}>*</span>
+                      </label>
+                      <Field
+                        type="text"
+                        className="form-control form-control-sm"
+                        name="status"
+                      />
+                      <ErrorMessage
+                        name="status"
+                        component="div"
+                        className="text-danger"
+                      />
+                    </div>
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Remark :
+                      </label>
+                      <Field
+                        type="text"
+                        className="form-control form-control-sm"
+                        name="remark"
+                      />
+                      <ErrorMessage
+                        name="remark"
+                        component="div"
+                        className="text-danger"
+                      />
+                    </div>
+                    {modal.modalData && (
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Status :<span style={{ color: 'red' }}>*</span>
+                        </label>
+                        <div className="row">
+                          <div className="col-md-2">
+                            <div className="form-check">
+                              <Field
+                                className="form-check-input"
+                                type="radio"
+                                name="is_active"
+                                value="1"
+                              />
+                              <label className="form-check-label">Active</label>
+                            </div>
+                          </div>
+                          <div className="col-md-1">
+                            <div className="form-check">
+                              <Field
+                                className="form-check-input"
+                                type="radio"
+                                name="is_active"
+                                value="0"
+                                disabled={!modal.modalData}
+                              />
+                              <label className="form-check-label">
+                                Deactive
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                {!modal.modalData ? (
+                  <button
+                    type="submit"
+                    className="btn btn-primary text-white"
+                    style={{
+                      backgroundColor: '#484C7F',
+                      width: '80px',
+                      padding: '8px'
+                    }}
+                  >
+                    Add
+                  </button>
+                ) : (
+                  checkRole &&
+                  checkRole[0]?.can_update === 1 && (
+                    <button
+                      type="submit"
+                      className="btn btn-primary text-white"
+                      style={{ backgroundColor: '#484C7F' }}
+                    >
+                      Update
+                    </button>
+                  )
+                )}
+                <button
+                  type="button"
+                  className="btn btn-danger text-white"
+                  onClick={() =>
+                    dispatch(
+                      handleModalClose({
+                        showModal: false,
+                        modalData: '',
+                        modalHeader: ''
+                      })
+                    )
+                  }
+                >
+                  Cancel
+                </button>
+              </Modal.Footer>
+            </Form>
+          )}
+        </Formik>
+        {/* <form
           method="post"
           onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
         >
@@ -408,7 +553,7 @@ function StatusComponent() {
               Cancel
             </button>
           </Modal.Footer>
-        </form>
+        </form> */}
       </Modal>
     </div>
   );
