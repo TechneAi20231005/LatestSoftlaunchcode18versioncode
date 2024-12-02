@@ -23,7 +23,6 @@ import { handleModalInStore } from '../../Dashboard/DashbordSlice';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
-import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { StateMasterValidation } from './validation/StateMasterValidation';
 
 function StateComponent() {
