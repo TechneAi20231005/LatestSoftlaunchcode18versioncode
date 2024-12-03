@@ -655,13 +655,12 @@ function Profile() {
                   </span>
                 )}
 
-                <div className="mt-3" style={{ textAlign: "right" }}>
+                <div className="mt-3 text-end">
                   <button
                     type="submit"
                     className="btn btn-primary text-white"
-                    style={{ backgroundColor: "#484C7F" }}
                   >
-                    Update
+                Update
                   </button>
                 </div>
               </form>

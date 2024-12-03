@@ -939,18 +939,16 @@ const EditTemplateComponent = ({ match, props }) => {
                       <button
                         type="submit"
                         className="btn btn-sm btn-primary"
-                        style={{ backgroundColor: '#484C7F' }}
                         onClick={handleSubmit}
                       >
                         Update
                       </button>
                       <button
                         type="button"
-                        className="btn btn-sm btn-primary"
-                        style={{ backgroundColor: '#FFBA32' }}
+                        className="btn btn-sm btn-danger"
                         onClick={(e) => handleModal(e, false, null)}
                       >
-                        Close
+                        Cancel
                       </button>
                     </Modal.Footer>
                   </Modal>

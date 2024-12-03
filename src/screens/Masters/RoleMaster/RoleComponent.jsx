@@ -439,20 +439,15 @@ function RoleComponent({ location }) {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{
-                  backgroundColor: '#484C7F',
-                  width: '80px',
-                  padding: '8px'
-                }}
+
               >
-                Add
+                Submit
               </button>
             )}
             {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: '#484C7F' }}
               >
                 Update
               </button>

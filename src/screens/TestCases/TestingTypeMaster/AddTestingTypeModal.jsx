@@ -77,6 +77,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
                     component={CustomInput}
                     name="type_name"
                     label="Testing Type Title"
+                    id="testingtypemaster_testingtypetitle"
                     placeholder="Enter Testing Type Title"
                     requiredField
                   />
@@ -86,6 +87,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
                     component={CustomInput}
                     name="remark"
                     label="Remark"
+                    id="testingtypemaster_remark"
                     placeholder="Enter Remark"
                   />
                 </Col>
@@ -100,6 +102,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
                       type="radio"
                       name="is_active"
                       label="Active"
+                      id="testingtypemaster_active"
                       value="1"
                       inputClassName="me-1"
                     />
@@ -108,6 +111,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
                       type="radio"
                       name="is_active"
                       label="Deactive"
+                      id="testingtypemaster_deactive"
                       value="0"
                       inputClassName="me-1"
                     />
@@ -117,15 +121,15 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
 
               <div className="d-flex justify-content-end gap-2 mt-3">
                 <button
-                  className="btn btn-dark px-4"
+                  className="btn btn-primary px-4"
                   type="submit"
                   disabled={!dirty}
                 >
-                  {type === 'ADD' ? 'Save' : 'Update'}
+                  {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>
                 <button
                   onClick={() => close()}
-                  className="btn btn-shadow-light px-3"
+                  className="btn btn-danger px-3"
                   type="button"
                 >
                   Cancel

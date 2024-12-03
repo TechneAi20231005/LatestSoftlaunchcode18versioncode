@@ -33,7 +33,7 @@ export default function InsightsTasks() {
 
 
 
-  
+
 
   const searchRef = useRef();
   const handleSearch = (e) => {
@@ -46,12 +46,12 @@ export default function InsightsTasks() {
           mainTicketId.includes(search.toLowerCase()) ||
           taskName.includes(search.toLowerCase())
         );
-  
+
       });
       setPreviousTask(null)
       setPreviousTask(temp1)
     }
-  
+
     else {
       alert("Please Search Name");
     }
@@ -75,6 +75,7 @@ export default function InsightsTasks() {
             <div className="col-md-9">
               <input
                 type="text"
+                id="dashboard_searchuserticket"
                 className="form-control"
                 placeholder="Search by User Ticket...."
               ref={searchRef}
@@ -158,5 +159,3 @@ export default function InsightsTasks() {
 
     )
   }
-
-

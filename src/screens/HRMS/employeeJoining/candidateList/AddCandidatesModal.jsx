@@ -110,6 +110,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomReactSelect}
                       name="source_id"
                       label="Source"
+                      id="candidate_source"
                       placeholder={
                         sourceDropdownLoading ? 'Loading...' : 'Select'
                       }
@@ -122,6 +123,7 @@ function AddCandidatesModal({ show, close }) {
                         component={CustomInput}
                         name="referred_by_name"
                         label="Referred By"
+                        id="candidate_referredby"
                         placeholder="Enter referred by name"
                         requiredField
                       />
@@ -132,6 +134,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomInput}
                       name="full_name"
                       label="Full Name"
+                      id="candidate_fullname"
                       placeholder="Enter full name"
                       requiredField
                     />
@@ -142,6 +145,7 @@ function AddCandidatesModal({ show, close }) {
                       name="dob"
                       type="date"
                       label="Date Of Birth"
+                      id="candidate_dob"
                       requiredField
                     />
                   </Col>
@@ -151,6 +155,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomReactSelect}
                       name="designation_id"
                       label="Preferred Designation"
+                      id="candidate_preferreddesignation"
                       placeholder={
                         preferredDesignationDropdownLoading
                           ? 'Loading...'
@@ -166,6 +171,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomReactSelect}
                       name="location_id"
                       label="Preferred Location"
+                      id="candidate_location"
                       placeholder={
                         preferredLocationDropdownLoading
                           ? 'Loading...'
@@ -180,6 +186,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomInput}
                       name="mobile_no"
                       label="Phone Number"
+                      id="candidate_phone"
                       placeholder="Enter contact number"
                       requiredField
                       type="number"
@@ -191,6 +198,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomInput}
                       name="email"
                       label="Email"
+                      id="candidate_email"
                       placeholder="Enter email address"
                     />
                   </Col>
@@ -200,6 +208,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomDropdown}
                       name="relevant_experience"
                       label="Current Years Of Work Experience"
+                      id="candidate_experience"
                       placeholder="Select"
                       requiredField
                     />
@@ -209,6 +218,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomCurrencyInput}
                       name="expected_ctc"
                       label="Expected Monthly Salary (Net)"
+                      id="candidate_expectedsalary"
                       placeholder="Enter expected monthly salary"
                       type="number"
                     />
@@ -218,6 +228,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomCurrencyInput}
                       name="current_ctc"
                       label="Current Monthly Salary"
+                      id="candidate_currentsalary"
                       placeholder="Enter current monthly salary"
                       type="number"
                     />
@@ -227,6 +238,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomInput}
                       name="notice_period"
                       label="Notice Period (In days)"
+                      id="candidate_noticeperiod"
                       placeholder="Enter notice period in days"
                       type="number"
                     />
@@ -238,6 +250,7 @@ function AddCandidatesModal({ show, close }) {
                     <input
                       type="file"
                       name="resume_path"
+                      id="candidate_resumepath"
                       className={`form-control ${
                         errors.resume_path && touched.resume_path
                           ? 'is-invalid'
@@ -270,15 +283,15 @@ function AddCandidatesModal({ show, close }) {
                     {isLoading?.addCandidatesMaster ? (
                       <Spinner animation="border" size="sm" />
                     ) : (
-                      'Add'
+                      'Submit'
                     )}
                   </button>
                   <button
                     onClick={close}
-                    className="btn btn-shadow-light px-3"
+                    className="btn btn-danger px-3"
                     type="button"
                   >
-                    Close
+                    Cancel
                   </button>
                 </div>
               </Stack>
