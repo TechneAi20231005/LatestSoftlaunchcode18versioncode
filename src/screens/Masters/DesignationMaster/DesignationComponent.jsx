@@ -5,9 +5,7 @@ import DataTable from 'react-data-table-component';
 import DesignationService from '../../../services/MastersService/DesignationService';
 
 import PageHeader from '../../../components/Common/PageHeader';
-
-import { Astrick } from '../../../components/Utilities/Style';
-import * as Validation from '../../../components/Utilities/Validation';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import Alert from '../../../components/Common/Alert';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -22,6 +20,7 @@ import { handleModalClose, handleModalOpen } from './DesignationSlice';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 
 function DesignationComponent() {
   //initial state
@@ -145,26 +144,47 @@ function DesignationComponent() {
     }
   ];
 
-  const handleForm = (id) => async (e) => {
-    e.preventDefault();
+  const fields = [
+    {
+      name: 'designation',
+      label: 'Designation name',
+      max: 100,
+      required: true,
+      alphaNumeric: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 1000,
+      required: false,
+      alphaNumeric: true
+    }
+  ];
 
-    const form = new FormData(e.target);
+  const validationSchema = CustomValidation(fields);
+  const loadData = async () => {};
+
+  const handleForm = async (values, id) => {
+    const formData = new FormData();
+    formData.append('designation', values.designation);
+    formData.append('remark', values.remark);
+
+    const editformdata = new FormData();
+    editformdata.append('designation', values.designation);
+    editformdata.append('remark', values.remark);
+    editformdata.append('is_active', values.is_active);
+
     if (!id) {
-      dispatch(postDesignationData(form)).then((res) => {
-        if (res?.payload?.data?.status === 1) {
-          dispatch(getDesignationDataListThunk());
-        } else {
-        }
-      });
+      dispatch(postDesignationData(formData));
+      setTimeout(() => {
+        dispatch(getDesignationDataListThunk());
+      }, 500);
     } else {
-      dispatch(updatedDesignationData({ id: id, payload: form })).then(
-        (res) => {
-          if (res?.payload?.data?.status === 1) {
-            dispatch(getDesignationDataListThunk());
-          } else {
-          }
-        }
-      );
+      dispatch(updatedDesignationData({ id: id, payload: editformdata }));
+
+      setTimeout(() => {
+        dispatch(getDesignationDataListThunk());
+      }, 500);
     }
   };
 
@@ -188,6 +208,14 @@ function DesignationComponent() {
   useEffect(() => {
     handleSearch();
   }, [searchTerm, handleSearch]);
+
+  const initialValues = {
+    designation: modal.modalData?.designation || '',
+    remark: modal.modalData?.remark || '',
+    is_active: modal.modalData?.is_active
+      ? String(modal.modalData.is_active)
+      : '1'
+  };
 
   return (
     <div className="container-xxl">
@@ -247,165 +275,160 @@ function DesignationComponent() {
           )}
         </div>
       </Container>
-
       <Modal centered show={modal.showModal}>
-        <form
-          method="post"
-          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={(values) => {
+            handleForm(values, modal.modalData ? modal.modalData.id : '');
+          }}
         >
-          <Modal.Header
-            onClick={() => {
-              dispatch(
-                handleModalClose({
-                  showModal: false,
-                  modalData: '',
-                  modalHeader: ''
-                })
-              );
-            }}
-            closeButton
-          >
-            <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="deadline-form">
-              <div className="row g-3 mb-3">
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Designation Name :<Astrick color="red" size="13px" />
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="designation"
-                    name="designation"
-                    required
-                    maxLength={30}
-                    defaultValue={
-                      modal.modalData ? modal.modalData.designation : ''
-                    }
-                    onKeyPress={(e) => {
-                      Validation.CharacterWithSpace(e);
-                    }}
-                    onPaste={(e) => {
-                      e.preventDefault();
-                      return false;
-                    }}
-                    onCopy={(e) => {
-                      e.preventDefault();
-                      return false;
-                    }}
-                  />
-                </div>
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Remark :
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="remark"
-                    name="remark"
-                    maxLength={50}
-                    defaultValue={modal.modalData ? modal.modalData.remark : ''}
-                  />
-                </div>
-                {modal.modalData && (
-                  <div className="col-sm-12">
-                    <label className="form-label font-weight-bold">
-                      Status : <Astrick color="red" size="13px" />
-                    </label>
-                    <div className="row">
-                      <div className="col-md-2">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_1"
-                            value="1"
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 1
-                                ? true
-                                : !modal.modalData
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_1"
-                          >
-                            Active
-                          </label>
-                        </div>
-                      </div>
-                      <div className="col-md-1">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_0"
-                            value="0"
-                            readOnly={modal.modalData ? false : true}
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_0"
-                          >
-                            Deactive
-                          </label>
-                        </div>
-                      </div>
+          {({ isSubmitting }) => (
+            <Form>
+              <Modal.Header
+                closeButton
+                onClick={() =>
+                  dispatch(
+                    handleModalClose({
+                      showModal: false,
+                      modalData: null,
+                      modalHeader: ''
+                    })
+                  )
+                }
+              >
+                <Modal.Title className="fw-bold">
+                  {modal.modalHeader}
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="deadline-form">
+                  <div className="row g-3 mb-3">
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Designation Name:{' '}
+                        <span style={{ color: 'red' }}>*</span>
+                      </label>
+                      <Field
+                        type="text"
+                        name="designation"
+                        id="designation"
+                        className="form-control form-control-sm"
+                      />
+                      <ErrorMessage
+                        name="designation"
+                        component="div"
+                        className="text-danger small"
+                        onPaste={(e) => {
+                          e.preventDefault();
+                          return false;
+                        }}
+                        onCopy={(e) => {
+                          e.preventDefault();
+                          return false;
+                        }}
+                      />
                     </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            {!modal.modalData && (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
 
-              >
-                Submit
-              </button>
-            )}
-            {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-              >
-                Update
-              </button>
-            ) : (
-              ''
-            )}
-            <button
-              type="button"
-              className="btn btn-danger text-white"
-              onClick={() => {
-                dispatch(
-                  handleModalClose({
-                    showModal: false,
-                    modalData: '',
-                    modalHeader: ''
-                  })
-                );
-              }}
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </form>
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Remark:
+                      </label>
+                      <Field
+                        type="text"
+                        id="remark"
+                        name="remark"
+                        className="form-control form-control-sm"
+                      />
+                      <ErrorMessage
+                        name="remark"
+                        component="div"
+                        className="text-danger small"
+                      />
+                    </div>
+
+                    {modal.modalData && (
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Status: <span style={{ color: 'red' }}>*</span>
+                        </label>
+                        <div className="row">
+                          <div className="col-md-2">
+                            <label className="form-check-label">
+                              <Field
+                                type="radio"
+                                name="is_active"
+                                id="is_active_1"
+                                value="1"
+                                className="form-check-input"
+                              />
+                              Active
+                            </label>
+                          </div>
+                          <div className="col-md-2">
+                            <label className="form-check-label">
+                              <Field
+                                type="radio"
+                                name="is_active"
+                                id="is_active_0"
+                                value="0"
+                                className="form-check-input"
+                              />
+                              Deactive
+                            </label>
+                          </div>
+                        </div>
+                        <ErrorMessage
+                          name="is_active"
+                          component="div"
+                          className="text-danger small"
+                        />
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                {/* Submit Button */}
+                {!modal.modalData && (
+                  <button
+                    type="submit"
+                    className="btn btn-primary text-white"
+                    disabled={isSubmitting}
+                  >
+                    Submit
+                  </button>
+                )}
+                {modal.modalData &&
+                  checkRole &&
+                  checkRole[0]?.can_update === 1 && (
+                    <button
+                      type="submit"
+                      className="btn btn-primary text-white"
+                      disabled={isSubmitting}
+                    >
+                      Update
+                    </button>
+                  )}
+                <button
+                  type="button"
+                  className="btn btn-danger text-white"
+                  onClick={() =>
+                    dispatch(
+                      handleModalClose({
+                        showModal: false,
+                        modalData: null,
+                        modalHeader: ''
+                      })
+                    )
+                  }
+                >
+                  Cancel
+                </button>
+              </Modal.Footer>
+            </Form>
+          )}
+        </Formik>
       </Modal>
     </div>
   );
