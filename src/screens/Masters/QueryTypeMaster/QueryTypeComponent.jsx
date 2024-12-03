@@ -25,6 +25,8 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { toast } from 'react-toastify';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { Field, Form, Formik, ErrorMessage } from 'formik';
 
 function QueryTypeComponent() {
   //initial state
@@ -152,6 +154,7 @@ function QueryTypeComponent() {
             data-bs-toggle="modal"
             data-bs-target="#edit"
             onClick={(e) => {
+              setNotify(null);
               handleModal({
                 showModal: true,
                 modalData: row,
@@ -689,36 +692,47 @@ function QueryTypeComponent() {
     loadDataEditPopup();
   };
 
-  const handleForm = (id) => async (e) => {
-    e.preventDefault();
+  const handleForm = async (values, id) => {
+    console.log(values, id, 'formData');
+    const formData = new FormData();
+    formData.append('query_type_name', values.query_type_name);
+    formData.append('form_id', values.form_id);
+    values?.query_group_data.forEach((item) => {
+      formData?.append('query_group_data[]', item?.value);
+    });
+    // formData.append('query_group_data', values?.query_group_data?.map((item) => item.value));
+
+    formData.append('remark', values.remark);
+    formData.append('is_active', values.is_active);
+    // e.preventDefault();
     setIsSubmitting(true);
     setNotify(null);
-    const form = new FormData(e.target);
+    // const form = new FormData(values);
     var flag = 1;
     setNotify(null);
-    var selectFormId = form.getAll('form_id');
-    // var selectCustomerId = form.getAll('customer_id');
-    var selectQueryGroup = form.getAll('query_group_data[]');
+    // var selectFormId = form.getAll('form_id');
+    // // var selectCustomerId = form.getAll('customer_id');
+    // var selectQueryGroup = form.getAll('query_group_data[]');
 
-    if (selectFormId.length === 0) {
-      flag = 0;
-      alert('Please select Form');
-    }
+    // if (selectFormId.length === 0) {
+    //   flag = 0;
+    //   alert('Please select Form');
+    // }
     // if (selectCustomerId.length === 0) {
     //   flag = 0;
     //   alert("Please select customer");
     // }
-    if (selectQueryGroup.length === 0) {
-      flag = 0;
-      alert('Please Select query group');
-    }
+    // if (selectQueryGroup.length === 0) {
+    //   flag = 0;
+    //   alert('Please Select query group');
+    // }
 
     if (flag === 1) {
       try {
         if (!id) {
-          form.delete('is_active');
-          form.append('is_active', 1);
-          const res = await new QueryTypeService().postQueryType(form);
+          formData.delete('is_active');
+          formData.append('is_active', 1);
+          const res = await new QueryTypeService().postQueryType(formData);
           if (res.status === 200) {
             // setShowLoaderModal(false);
             setIsSubmitting(false);
@@ -746,9 +760,12 @@ function QueryTypeComponent() {
           //   );
           // }
         } else {
-          form.delete('is_active');
-          form.append('is_active', isActive);
-          const res = await new QueryTypeService().updateQueryType(id, form);
+          formData.delete('is_active');
+          formData.append('is_active', isActive);
+          const res = await new QueryTypeService().updateQueryType(
+            id,
+            formData
+          );
           if (res.status === 200) {
             // setShowLoaderModal(false);
             setIsSubmitting(false);
@@ -814,6 +831,48 @@ function QueryTypeComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+  console.log(modal.modalData, 'modal.modalData');
+
+  let valueof = modal.modalData
+    ? dynamicFormDropdown.find((d) => modal.modalData.form_id === d.value)
+    : '';
+  console.log(valueof, 'valueof');
+
+  const initialValues = {
+    query_type_name: modal.modalData ? modal.modalData?.query_type_name : '',
+    form_id: valueof?.value || '',
+    query_group_data: modal.modalData
+      ? modal.modalData.query_group_data.map((d) => ({
+          value: d.query_type_group_id,
+          label: d.group_name
+        }))
+      : [],
+    remark: modal.modalData ? modal.modalData?.remark : '',
+    is_active:
+      modal.modalData?.is_active !== undefined
+        ? modal.modalData.is_active.toString()
+        : '1'
+  };
+  const fields = [
+    {
+      name: 'query_type_name',
+      label: 'Query Type name',
+      required: true,
+      alphaNumeric: true,
+      max: 100
+    },
+    { name: 'form_id', label: 'Select Form', required: true },
+    { name: 'query_group_data', label: 'Query Group', isObject: true },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 1000,
+      required: false,
+      alphaNumeric: true
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
 
   return (
     <>
@@ -883,257 +942,239 @@ function QueryTypeComponent() {
             });
           }}
         >
-          <form
-            method="post"
-            onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(values) => {
+              handleForm(values, modal.modalData ? modal.modalData.id : '');
+            }}
           >
-            <Modal.Header closeButton>
-              <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-              <div className="deadline-form">
-                <div className="row g-3 mb-3">
-                  <div className="col-sm-12">
-                    <label className="form-label font-weight-bold">
-                      Query Type Name : <Astrick color="red" size="13px" />
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      id="query_type_name"
-                      name="query_type_name"
-                      placeholder="Please start with string"
-                      maxLength={50}
-                      required
-                      onKeyPress={(e) => {
-                        Validation.CharactersNumbersOnly(e);
-                      }}
-                      defaultValue={
-                        modal.modalData ? modal.modalData.query_type_name : ''
-                      }
-                    />
-                  </div>
-                  <div className="col-sm-12">
-                    <label className="form-label font-weight-bold">
-                      Select Form : <Astrick color="red" size="13px" />
-                    </label>
-
-                    <Select
-                      options={dynamicFormDropdown}
-                      id="form_id"
-                      name="form_id"
-                      defaultValue={
-                        modal.modalData &&
-                        dynamicFormDropdown &&
-                        dynamicFormDropdown.filter(
-                          (d) => d.value === modal.modalData.form_id
-                        )
-                      }
-                      required={true}
-                    />
-                  </div>
-
-                  <div className="row mt-3">
-                    <div className="col-md-10">
-                      <label className="form-label font-weight-bold mt-1">
-                        Query Group : <Astrick color="red" size="13px" />
-                      </label>
-
-                      {queryGroupDropdown && (
-                        <Select
-                          options={queryGroupDropdown}
-                          id="query_group_data"
-                          name="query_group_data[]"
-                          isMulti={true}
-                          required
-                          defaultValue={
-                            modal.modalData &&
-                            modal.modalData.query_group_data.map((d) => ({
-                              value: d.query_type_group_id,
-                              label: d.group_name
-                            }))
+            {({ values, setFieldValue }) => (
+              <Form>
+                <Modal.Header closeButton>
+                  <Modal.Title className="fw-bold">
+                    {modal.modalHeader}
+                  </Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                  <div className="deadline-form">
+                    <div className="row g-3 mb-3">
+                      {/* Query Type Name */}
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Query Type Name: <Astrick color="red" size="13px" />
+                        </label>
+                        <Field
+                          type="text"
+                          className="form-control form-control-sm"
+                          id="query_type_name"
+                          name="query_type_name"
+                          placeholder="Please start with string"
+                          maxLength={50}
+                          onKeyPress={(e) =>
+                            Validation.CharactersNumbersOnly(e)
                           }
                         />
-                      )}
-                    </div>
-                    <div className="col-md-2" style={{ marginTop: '33px' }}>
-                      <Dropdown style={{}}>
-                        <Dropdown.Toggle
-                          variant="btn btn-secondary text-white"
-                          id="dropdown-basic"
-                        >
-                          <i className="icofont-listine-dots"></i>
-                        </Dropdown.Toggle>
+                        <ErrorMessage
+                          name="query_type_name"
+                          component="div"
+                          className="text-danger"
+                        />
+                      </div>
 
-                        <Dropdown.Menu as="ul" st>
-                          <li
-                            className="btn btn-sm btn-warning text-white"
-                            onClick={(e) => {
-                              handleModalEditPopup({
-                                showModalEditPopup: true,
-                                modalDataEditPopup: '',
-                                modalHeaderEditPopup: 'Add Query Group'
-                              });
+                      {/* Select Form */}
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Select Form: <Astrick color="red" size="13px" />
+                        </label>
+                        <Select
+                          options={dynamicFormDropdown}
+                          id="form_id"
+                          name="form_id"
+                          defaultValue={
+                            modal.modalData
+                              ? dynamicFormDropdown.find(
+                                  (d) => modal.modalData.form_id === d.value
+                                )
+                              : ''
+                          }
+                          onChange={(option) =>
+                            setFieldValue('form_id', option?.value)
+                          }
+                        />
+                        <ErrorMessage
+                          name="form_id"
+                          component="div"
+                          className="text-danger"
+                        />
+                      </div>
+
+                      {/* Query Group */}
+                      <div className="row mt-3">
+                        <div className="col-md-10">
+                          <label className="form-label font-weight-bold mt-1">
+                            Query Group: <Astrick color="red" size="13px" />
+                          </label>
+                          <Select
+                            options={queryGroupDropdown}
+                            id="query_group_data"
+                            name="query_group_data"
+                            isMulti
+                            value={values.query_group_data}
+                            // value={values.query_group_data}
+                            onChange={(options) => {
+                              console.log(options, 'options');
+                              setFieldValue('query_group_data', options);
                             }}
-                            style={{ width: '100%', zIndex: 100 }}
-                          >
-                            <i className="icofont-ui-edit"></i> Edit & View
-                          </li>
-                          <li
-                            className="btn btn-secondary text-white"
-                            onClick={() => {
-                              handleModalQueryGroup({
-                                showModalQueryGroup: true,
-                                modalDataQueryGroup: null,
-                                modalHeaderQueryGroup: 'Add Query Group'
-                              });
-                            }}
-                            style={{ width: '100%', zIndex: 100 }}
-                          >
-                            <i className="icofont-ui-edit"></i> Add
-                          </li>
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </div>
-                  </div>
-
-                  <div className="form-check">
-                    <input
-                      className="form-check-input"
-                      type="hidden"
-                      name="is_active"
-                      id="is_active_1"
-                      defaultChecked={
-                        modal.modalData && modal.modalData.is_active === 1
-                          ? true
-                          : !modal.modalData
-                          ? true
-                          : false
-                      }
-                    />
-                  </div>
-
-                  <div className="col-sm-12">
-                    <label className="form-label font-weight-bold">
-                      Remark :
-                    </label>
-                    <input
-                      type="text"
-                      className="form-control form-control-sm"
-                      id="remark"
-                      name="remark"
-                      maxLength={50}
-                      defaultValue={
-                        modal.modalData ? modal.modalData.remark : ''
-                      }
-                      // required
-                    />
-                  </div>
-                  {modal.modalData && (
-                    <div className="col-sm-12">
-                      <label className="form-label font-weight-bold">
-                        Status : <Astrick color="red" size="13px" />
-                      </label>
-                      <div className="row">
-                        <div className="col-md-2">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="is_active"
-                              id="is_active_1"
-                              onClick={(e) => {
-                                handleIsActive(e);
-                              }}
-                              value={isActive}
-                              defaultChecked={
-                                modal.modalData &&
-                                modal.modalData.is_active === 1
-                                  ? true
-                                  : !modal.modalData
-                                  ? true
-                                  : false
-                              }
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="is_active_1"
-                            >
-                              Active
-                            </label>
-                          </div>
+                          />
+                          <ErrorMessage
+                            name="query_group_data"
+                            component="div"
+                            className="text-danger"
+                          />
                         </div>
-                        <div className="col-md-1">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="is_active"
-                              id="is_active_0"
-                              onClick={(e) => {
-                                handleIsActive(e);
-                              }}
-                              value={isActive}
-                              readOnly={modal.modalData ? false : true}
-                              defaultChecked={
-                                modal.modalData &&
-                                modal.modalData.is_active === 0
-                                  ? true
-                                  : false
-                              }
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="is_active_0"
+                        <div className="col-md-2" style={{ marginTop: '33px' }}>
+                          <Dropdown>
+                            <Dropdown.Toggle
+                              variant="btn btn-secondary text-white"
+                              id="dropdown-basic"
                             >
-                              Deactive
-                            </label>
-                          </div>
+                              <i className="icofont-listine-dots"></i>
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu as="ul">
+                              <li
+                                className="btn btn-sm btn-warning text-white"
+                                onClick={(e) => {
+                                  handleModalEditPopup({
+                                    showModalEditPopup: true,
+                                    modalDataEditPopup: '',
+                                    modalHeaderEditPopup: 'Add Query Group'
+                                  });
+                                }}
+                                style={{ width: '100%', zIndex: 100 }}
+                              >
+                                <i className="icofont-ui-edit"></i> Edit & View
+                              </li>
+                              <li
+                                className="btn btn-secondary text-white"
+                                onClick={() => {
+                                  handleModalQueryGroup({
+                                    showModalQueryGroup: true,
+                                    modalDataQueryGroup: null,
+                                    modalHeaderQueryGroup: 'Add Query Group'
+                                  });
+                                }}
+                                style={{ width: '100%', zIndex: 100 }}
+                              >
+                                <i className="icofont-ui-edit"></i> Add
+                              </li>
+                            </Dropdown.Menu>
+                          </Dropdown>
                         </div>
                       </div>
-                    </div>
-                  )}
-                </div>
-              </div>
-            </Modal.Body>
-            <Modal.Footer>
-              {!modal.modalData && (
-                <button
-                  type="submit"
-                  className="btn btn-primary text-white"
 
-                  disabled={isSubmitting}
-                >
-                 Submit
-                </button>
-              )}
-              {modal.modalData &&
-              checkRole &&
-              checkRole[0]?.can_update === 1 ? (
-                <button
-                  type="submit"
-                  className="btn btn-primary text-white"
-                >
-                  Update
-                </button>
-              ) : (
-                ''
-              )}
-              <button
-                type="button"
-                className="btn btn-danger text-white"
-                onClick={() => {
-                  handleModal({
-                    showModal: false,
-                    modalData: '',
-                    modalHeader: ''
-                  });
-                }}
-              >
-                Cancel
-              </button>
-            </Modal.Footer>
-          </form>
+                      {/* Remark */}
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Remark:
+                        </label>
+                        <Field
+                          type="text"
+                          className="form-control form-control-sm"
+                          id="remark"
+                          name="remark"
+                          maxLength={50}
+                        />
+                        <ErrorMessage
+                          name="remark"
+                          component="div"
+                          className="text-danger"
+                        />
+                      </div>
+
+                      {/* Status */}
+                      {modal.modalData && (
+                        <div className="col-sm-12">
+                          <label className="form-label font-weight-bold">
+                            Status: <Astrick color="red" size="13px" />
+                          </label>
+                          <div className="row">
+                            <div className="col-md-2">
+                              <div className="form-check">
+                                <Field
+                                  type="radio"
+                                  className="form-check-input"
+                                  id="is_active_1"
+                                  name="is_active"
+                                  value="1"
+                                />
+                                <label
+                                  className="form-check-label"
+                                  htmlFor="is_active_1"
+                                >
+                                  Active
+                                </label>
+                              </div>
+                            </div>
+                            <div className="col-md-1">
+                              <div className="form-check">
+                                <Field
+                                  type="radio"
+                                  className="form-check-input"
+                                  id="is_active_0"
+                                  name="is_active"
+                                  value="0"
+                                />
+                                <label
+                                  className="form-check-label"
+                                  htmlFor="is_active_0"
+                                >
+                                  Deactive
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Modal.Body>
+                <Modal.Footer>
+                  {!modal.modalData && (
+                    <button
+                      type="submit"
+                      className="btn btn-primary text-white"
+                    >
+                      Submit
+                    </button>
+                  )}
+                  {modal.modalData &&
+                    checkRole &&
+                    checkRole[0]?.can_update === 1 && (
+                      <button
+                        type="submit"
+                        className="btn btn-primary text-white"
+                      >
+                        Update
+                      </button>
+                    )}
+                  <button
+                    type="button"
+                    className="btn btn-danger text-white"
+                    onClick={() =>
+                      handleModal({
+                        showModal: false,
+                        modalData: '',
+                        modalHeader: ''
+                      })
+                    }
+                  >
+                    Cancel
+                  </button>
+                </Modal.Footer>
+              </Form>
+            )}
+          </Formik>
         </Modal>
       </div>
 

@@ -12,6 +12,13 @@ export const CustomValidation = (fields) => {
           .of(Yup.string())
           .min(1, `${field.label} is required`);
       }
+      if (field.isObject) {
+        validator = Yup.array()
+          .of(
+            Yup.object()
+          )
+          .min(1, `${field.label} is required`);
+      }
 
       // Required field validation
       if (field.required) {
