@@ -3835,16 +3835,14 @@ function VendorMaster({ match }) {
                 <button
                   type="submit"
                   className="btn btn-primary text-white"
-                  style={{ backgroundColor: '#484C7F' }}
                 >
-                  Save
+              Submit
                 </button>
               )}
               {modal.modalData && (
                 <button
                   type="submit"
                   className="btn btn-primary text-white"
-                  style={{ backgroundColor: '#484C7F' }}
                 >
                   Update
                 </button>
@@ -3861,7 +3859,7 @@ function VendorMaster({ match }) {
                   });
                 }}
               >
-                Close
+                Cancel
               </button>
             </Modal.Footer>
           </form>

@@ -1891,7 +1891,7 @@ export default function EditTicketComponent({ match }) {
               <div className="mt-3" style={{ textAlign: 'right' }}>
                 {isSolved == false && (
                   <button type="submit" className="btn btn-sm btn-primary">
-                    Submit
+                    Update
                   </button>
                 )}
                 <Link
@@ -2000,7 +2000,6 @@ export default function EditTicketComponent({ match }) {
                   <button
                     type="submit"
                     className="btn btn-primary text-white"
-                    style={{ backgroundColor: '#484C7F' }}
                   >
                     Submit
                   </button>
@@ -2011,7 +2010,7 @@ export default function EditTicketComponent({ match }) {
                       handleConfirmationModal(false, null);
                     }}
                   >
-                    Close
+                    Cancel
                   </button>
                 </span>
               </div>

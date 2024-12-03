@@ -161,7 +161,7 @@ function TestingGroupMasterComponent() {
     <div className="container-xxl">
       <div className="d-flex justify-content-between">
         <PageHeader headerTitle="Testing Group Master" />
-        <div style={{ marginTop: '-30px' }}>
+        <div>
           <button
             className="btn btn-primary text-white "
             onClick={() =>
@@ -182,6 +182,7 @@ function TestingGroupMasterComponent() {
         <Col xs={12} md={7} xxl={8}>
           <input
             type="search"
+            id="testinggroupmaster_interviewsearch"
             name="interview_search"
             value={searchValue}
             onChange={(e) => setSearchValue(e?.target?.value)}

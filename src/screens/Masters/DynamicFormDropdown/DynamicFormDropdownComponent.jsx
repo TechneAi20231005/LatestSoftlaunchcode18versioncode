@@ -10,7 +10,6 @@ import PageHeader from '../../../components/Common/PageHeader';
 import Alert from '../../../components/Common/Alert';
 
 import 'react-data-table-component-extensions/dist/index.css';
-
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 
@@ -215,7 +214,7 @@ export default function DynamicFormDropdownComponent() {
                 to={`/${_base}/DynamicFormDropdown/Create`}
                 className="btn btn-dark btn-set-task w-sm-100"
               >
-                <i className="icofont-plus-circle me-2 fs-6"></i>Dropdown
+                <i className="icofont-plus-circle me-2 fs-6"></i>Add Dropdown
               </Link>
             </div>
           );

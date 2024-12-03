@@ -20,6 +20,9 @@ import {
 import { getRoles } from '../Dashboard/DashboardAction';
 import { getAllTenant, updatetenantData } from './TenantConponentAction';
 import { handleError } from './TenantComponentSlice';
+import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { TenantValidation } from './Validation/TenantMasterValidation';
+import { toast } from 'react-toastify';
 
 export default function EditTenant() {
   const navigate = useNavigate();
@@ -73,7 +76,19 @@ export default function EditTenant() {
   const [errorMessage, setErrorMessage] = useState('');
 
   const [inputState, setInputState] = useState({});
-
+  const initialValues = {
+    company_name: data?.company_name || '',
+    series: data?.series || '',
+    company_type: data?.company_type || '',
+    email_id: data?.email_id || '',
+    contact_no: data?.contact_no || '',
+    address: data?.address || '',
+    pincode: data?.pincode || '',
+    country_id: data?.country_id || '',
+    state_id: data?.state_id || '',
+    city_id: data?.city_id || '',
+    status: toggleRadio ? 'active' : 'deactive'
+  };
   const handleContactValidation = (e) => {
     const contactValidation = e.target.value;
 
@@ -91,7 +106,6 @@ export default function EditTenant() {
       contactValidation.charAt(0) === '6'
     ) {
       setInputState({ ...state, contactNoErr: '' });
-      // setContactValid(false);
     } else {
     }
 
@@ -122,38 +136,29 @@ export default function EditTenant() {
   const stateRef = useRef(null);
   const cityRef = useRef(null);
 
-  const handleDependentChange = (e, type) => {
+  const handleDependentChange = (e, type, setFieldValue) => {
     if (type === 'COUNTRY') {
-      setClearFlag(true);
       setStateDropdownData(
         stateDropdown
           .filter(
             (filterState) =>
-              filterState.is_active === 1 && filterState.country_id === e?.value
+              filterState.is_active === 1 && filterState.country_id === e.value
           )
           .map((d) => ({ value: d.id, label: d.state }))
       );
 
-      if (stateRef?.current) {
-        stateRef?.current?.clearValue();
-      }
-
       setCityDropdownData([]);
     }
+
     if (type === 'STATE') {
       setCityDropdownData(
         AllcityDropDownData.filter(
           (filterState) =>
-            filterState.is_active === 1 && filterState.state_id === e?.value
+            filterState.is_active === 1 && filterState.state_id === e.value
         ).map((d) => ({ value: d.id, label: d.city }))
       );
-
-      if (cityRef?.current) {
-        cityRef?.current?.clearValue();
-      }
     }
   };
-
   const loadData = useCallback(async () => {
     dispatch(getCountryDataSort());
 
@@ -174,22 +179,33 @@ export default function EditTenant() {
     });
   }, [dispatch, tenanatId]);
 
-  const handleForm = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
+  const handleForm = async (values) => {
+    const formData = new FormData();
+
+    formData.append('company_name', values.company_name);
+    formData.append('series', values.series);
+    formData.append('company_type', values.company_type);
+
+    formData.append('email_id', values.email_id);
+    formData.append('contact_no', values.contact_no);
+    formData.append('address', values.address);
+    formData.append('pincode', values.pincode);
+    formData.append('country_id', values.country_id);
+    formData.append('state_id', values.state_id);
+    formData.append('city_id', values.city_id);
     formData.append('is_active', toggleRadio ? 1 : 0);
     dispatch(updatetenantData({ id: tenanatId, payload: formData })).then(
       (res) => {
         if (res.payload.data.status === 1 && res.payload.status === 200) {
           navigate(`/${_base}/TenantMaster`);
           dispatch(getAllTenant());
-          dispatch(
-            handleError({ type: 'success', message: res.payload.data.message })
-          );
+          toast.success(res.payload.data.message, {
+            autoClose: 10000
+          });
         } else {
-          dispatch(
-            handleError({ type: 'danger', message: res.payload.data.message })
-          );
+          toast.error(res.payload.data.message, {
+            autoClose: 10000
+          });
         }
       }
     );
@@ -247,309 +263,321 @@ export default function EditTenant() {
       {notify && notify?.type === 'danger' && <Alert alertData={notify} />}
       <PageHeader headerTitle="Edit Tenant" />
       {data && (
-        <form onSubmit={handleForm}>
-          <div className="card card-body">
-            <div className="form-group row">
-              <label className="col-sm-2 col-form-label">
-                <b>
-                  Tenant Name :<Astrick color="red" />
-                </b>
-              </label>
-              <div className="col-sm-4">
-                <input
-                  type="text"
-                  className="form-control form-control-sm"
-                  id="company_name"
-                  name="company_name"
-                  placeholder="Company Name"
-                  required
-                  defaultValue={data && data.company_name}
-                  onKeyPress={(e) => {
-                    Validation.CharacterWithSpace(e);
-                  }}
-                />
-              </div>
-              <label className="col-sm-2 col-form-label">
-                <b>
-                  Ticket ID Series :<Astrick color="red" />
-                </b>
-              </label>
-              <div className="col-sm-4">
-                <input
-                  type="text"
-                  className="form-control form-control-sm"
-                  id="series"
-                  name="series"
-                  placeholder="Enter Tenant Id Series"
-                  maxLength={2}
-                  required
-                  readOnly
-                  defaultValue={data && data.series}
-                  onKeyPress={(e) => handleKeyPress(e)}
-                />
-                {errorMessage && (
-                  <div style={{ color: 'red' }}>{errorMessage}</div>
-                )}
-              </div>
-            </div>
-
-            <div className="form-group row mt-2">
-              <label className="col-sm-2 col-form-label">
-                <b>
-                  Company Type : <Astrick color="red" />
-                </b>
-              </label>
-              <div className="col-sm-8">
-                {' '}
-                <div className="row">
-                  <div className="col-sm-6">
-                    <Select
-                      name="company_type"
-                      id="company_type"
-                      options={companyType}
-                      defaultValue={
-                        data &&
-                        companyType
-                          .filter((d) => d.value === data.company_type)
-                          .map((d) => ({ label: d.label, value: d.value }))
-                      }
+        <Formik
+          initialValues={initialValues}
+          validationSchema={TenantValidation}
+          onSubmit={(values) => {
+            handleForm(values);
+          }}
+        >
+          {({
+            values,
+            handleChange,
+            handleBlur,
+            handleSubmit,
+            setFieldValue
+          }) => (
+            <Form onSubmit={handleSubmit}>
+              <div className="card card-body">
+                {/* Tenant Name */}
+                <div className="form-group row">
+                  <label className="col-sm-2 col-form-label">
+                    <b>
+                      Tenant Name :<Astrick color="red" />
+                    </b>
+                  </label>
+                  <div className="col-sm-4">
+                    <Field
+                      type="text"
+                      className="form-control form-control-sm"
+                      id="company_name"
+                      name="company_name"
+                      placeholder="Company Name"
+                      required
+                      onKeyPress={(e) => Validation.CharacterWithSpace(e)}
+                    />
+                    <ErrorMessage
+                      name="company_name"
+                      component="div"
+                      style={{ color: 'red' }}
                     />
                   </div>
-                  <div className="col-sm-6">
-                    <div className="form-group">
-                      <h5 className="text-danger">
-                        <b>Important Note:</b>
-                      </h5>
-                      <ul>
-                        <li>Enter two capital alphabets only.</li>
-                      </ul>
+                  <label className="col-sm-2 col-form-label">
+                    <b>
+                      Ticket ID Series :<Astrick color="red" />
+                    </b>
+                  </label>
+                  <div className="col-sm-4">
+                    <Field
+                      type="text"
+                      className="form-control form-control-sm"
+                      id="series"
+                      name="series"
+                      placeholder="Enter Tenant Id Series"
+                      maxLength={2}
+                      required
+                      readOnly
+                      onKeyPress={(e) => handleKeyPress(e)}
+                    />
+                    <ErrorMessage
+                      name="series"
+                      component="div"
+                      style={{ color: 'red' }}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group row mt-2"></div>
+
+                <div className="form-group row mt-2">
+                  <label className="col-sm-2 col-form-label">
+                    <b>
+                      Company Type : <Astrick color="red" />
+                    </b>
+                  </label>
+
+                  <div className="col-sm-8">
+                    <div className="row">
+                      <div className="col-sm-6">
+                        <Field
+                          name="company_type"
+                          component={Select}
+                          options={companyType}
+                          value={
+                            companyType &&
+                            companyType.find(
+                              (option) =>
+                                option.value.trim() ===
+                                values.company_type.trim()
+                            )
+                          }
+                          onChange={(selectedOption) => {
+                            setFieldValue(
+                              'company_type',
+                              selectedOption ? selectedOption.value : ''
+                            );
+                          }}
+                        />
+
+                        <ErrorMessage
+                          name="company_type"
+                          component="div"
+                          style={{ color: 'red' }}
+                        />
+                      </div>
+                      <div className="col-sm-6">
+                        <div className="form-group">
+                          <h5 className="text-danger">
+                            <b>Important Note:</b>
+                          </h5>
+                          <ul>
+                            <li>Enter two capital alphabets only.</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="form-group row mt-2">
+                  <label className="col-sm-2 col-form-label">
+                    <b>
+                      Email Address :<Astrick color="red" />
+                    </b>
+                  </label>
+                  <div className="col-sm-4">
+                    <Field
+                      type="email"
+                      className="form-control form-control-sm"
+                      id="email_id"
+                      name="email_id"
+                      placeholder="Email Address"
+                      required
+                      onKeyPress={(e) => Validation.emailOnly(e)}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group row mt-2">
+                  <label className="col-sm-2 col-form-label">
+                    <b>
+                      Contact Number :<Astrick color="red" />
+                    </b>
+                  </label>
+                  <div className="col-sm-4">
+                    <Field
+                      type="text"
+                      className="form-control form-control-sm"
+                      id="contact_no"
+                      name="contact_no"
+                      placeholder="Contact Number"
+                      required
+                      minLength={10}
+                      maxLength={10}
+                      value={values.contact_no}
+                      onChange={handleChange}
+                    />
+                    <ErrorMessage
+                      name="contact_no"
+                      component="div"
+                      style={{ color: 'red' }}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="card">
+                <div className="card-header bg-primary text-white p-2">
+                  <h5>Address Details</h5>
+                </div>
+                <div className="card-body">
+                  <div className="form-group row mt-3">
+                    <label className="col-sm-2 col-form-label">
+                      <b>Address : </b>
+                    </label>
+                    <div className="col-sm-10">
+                      <Field
+                        component="textarea"
+                        className="form-control form-control-sm"
+                        id="address"
+                        name="address"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="form-group row mt-3">
+                    <label className="col-sm-2 col-form-label">
+                      <b>Pincode : </b>
+                    </label>
+                    <div className="col-sm-4">
+                      <Field
+                        type="text"
+                        className="form-control form-control-sm"
+                        id="pincode"
+                        name="pincode"
+                        minLength={6}
+                        maxLength={6}
+                        onKeyPress={(e) => Validation.NumbersOnly(e)}
+                      />
+                    </div>
+
+                    <label
+                      className="col-sm-2 col-form-label"
+                      style={{ textAlign: 'right' }}
+                    >
+                      <b>Country : </b>
+                    </label>
+                    <div className="col-sm-4">
+                      {CountryData && data && (
+                        <Field
+                          name="country_id"
+                          component={Select}
+                          options={CountryData}
+                          value={CountryData.find(
+                            (option) => option.value === values.country_id
+                          )}
+                          onChange={(selectedOption) => {
+                            setFieldValue(
+                              'country_id',
+                              selectedOption ? selectedOption.value : ''
+                            );
+
+                            handleDependentChange(
+                              selectedOption,
+                              'COUNTRY',
+                              setFieldValue
+                            );
+                          }}
+                        />
+                      )}
+                    </div>
+                  </div>
+
+                  <div className="form-group row mt-3">
+                    <label className="col-sm-2 col-form-label">
+                      <b>State : </b>
+                    </label>
+                    <div className="col-sm-4">
+                      <Field
+                        name="state_id"
+                        component={Select}
+                        options={stateDropdownData}
+                        value={
+                          stateDropdownData &&
+                          stateDropdownData?.find(
+                            (option) => option.value === values?.state_id
+                          )
+                        }
+                        onChange={(selectedOption) => {
+                          setFieldValue(
+                            'state_id',
+                            selectedOption ? selectedOption.value : ''
+                          );
+
+                          handleDependentChange(
+                            selectedOption,
+                            'STATE',
+                            setFieldValue
+                          );
+                        }}
+                      />
+                    </div>
+
+                    <label
+                      className="col-sm-2 col-form-label"
+                      style={{ textAlign: 'right' }}
+                    >
+                      <b>City : </b>
+                    </label>
+                    <div className="col-sm-4">
+                      {AllcityDropDownData && data && (
+                        <Field
+                          name="city_id"
+                          component={Select}
+                          options={cityDropdownData}
+                          value={
+                            cityDropdownData &&
+                            cityDropdownData?.find(
+                              (option) => option.value === values?.city_id
+                            )
+                          }
+                          onChange={(selectedOption) => {
+                            setFieldValue(
+                              'city_id',
+                              selectedOption ? selectedOption.value : ''
+                            );
+
+                            handleDependentChange(
+                              selectedOption,
+                              'CITY',
+                              setFieldValue
+                            );
+                          }}
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
 
-            <div className="form-group row mt-2">
-              <label className="col-sm-2 col-form-label">
-                <b>
-                  Email Address :<Astrick color="red" />
-                </b>
-              </label>
-              <div className="col-sm-4">
-                <input
-                  type="email"
-                  className="form-control form-control-sm"
-                  id="email_id"
-                  name="email_id"
-                  placeholder="Email Address"
-                  required
-                  defaultValue={data && data.email_id}
-                  onKeyPress={(e) => {
-                    Validation.emailOnly(e);
-                  }}
-                />
-              </div>
-            </div>
-
-            <div className="form-group row mt-2">
-              <label className="col-sm-2 col-form-label">
-                <b>
-                  Contact Number :<Astrick color="red" />
-                </b>
-              </label>
-              <div className="col-sm-4">
-                <input
-                  type="text"
-                  className="form-control form-control-sm"
-                  id="contact_no"
-                  name="contact_no"
-                  placeholder="Contact Number"
-                  required
-                  minLength={10}
-                  maxLength={10}
-                  onChange={handleContactValidation}
-                  defaultValue={data && data.contact_no}
-                  onKeyPress={(e) => {
-                    Validation.MobileNumbersOnly(e);
-                  }}
-                />
-                {inputState && (
-                  <small
-                    style={{
-                      color: 'red'
-                    }}
-                  >
-                    {inputState.contactNoErr}
-                  </small>
+              <div className="mt-3" style={{ textAlign: 'right' }}>
+                {checkRole && checkRole[0]?.can_update === 1 ? (
+                  <button type="submit" className="btn btn-primary">
+                    Update
+                  </button>
+                ) : (
+                  ''
                 )}
-              </div>
-            </div>
-          </div>
-
-          <div className="card">
-            <div className="card-header bg-primary text-white p-2">
-              <h5>Address Details</h5>
-            </div>
-            <div className="card-body">
-              <div className="form-group row mt-3">
-                <label className="col-sm-2 col-form-label">
-                  <b>Address : </b>
-                </label>
-                <div className="col-sm-10">
-                  <textarea
-                    className="form-control form-control-sm"
-                    id="address"
-                    name="address"
-                    defaultValue={data && data.address}
-                  />
-                </div>
-              </div>
-
-              <div className="form-group row mt-3">
-                <label className="col-sm-2 col-form-label">
-                  <b>Pincode : </b>
-                </label>
-                <div className="col-sm-4">
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="pincode"
-                    name="pincode"
-                    defaultValue={data && data.pincode}
-                    minLength={6}
-                    maxLength={6}
-                    onKeyPress={(e) => {
-                      Validation.NumbersOnly(e);
-                    }}
-                  />
-                </div>
-
-                <label
-                  className="col-sm-2 col-form-label"
-                  style={{ textAlign: 'right' }}
+                <Link
+                  to={`/${_base}/TenantMaster`}
+                  className="btn btn-danger text-white"
                 >
-                  <b>Country : </b>
-                </label>
-                <div className="col-sm-4">
-                  {CountryData && data && (
-                    <Select
-                      options={CountryData}
-                      id="country_id"
-                      name="country_id"
-                      defaultValue={
-                        data &&
-                        CountryData &&
-                        CountryData.filter((d) => data?.country_id === d.value)
-                      }
-                      onChange={(e) => handleDependentChange(e, 'COUNTRY')}
-                    />
-                  )}
-                </div>
+                  Cancel
+                </Link>
               </div>
-
-              <div className="form-group row mt-3">
-                <label className="col-sm-2 col-form-label">
-                  <b>State : </b>
-                </label>
-
-                <div className="col-sm-4">
-                  {stateDropdown && data && (
-                    <Select
-                      options={stateDropdownData}
-                      id="state_id"
-                      name="state_id"
-                      ref={stateRef}
-                      defaultValue={
-                        clearFlag
-                          ? { label: '' }
-                          : data &&
-                            stateDropdown &&
-                            stateDropdown
-                              .filter((d) => d.id === data.state_id)
-                              .map((stateName) => ({
-                                value: stateName.id,
-                                label: stateName.state
-                              }))
-                      }
-                      onChange={(e) => handleDependentChange(e, 'STATE')}
-                    />
-                  )}
-                </div>
-
-                <label
-                  className="col-sm-2 col-form-label"
-                  style={{ textAlign: 'right' }}
-                >
-                  <b>City : </b>
-                </label>
-
-                <div className="col-sm-4">
-                  {AllcityDropDownData && data && (
-                    <Select
-                      options={cityDropdownData}
-                      id="city_id"
-                      name="city_id"
-                      ref={cityRef}
-                      defaultValue={
-                        data &&
-                        AllcityDropDownData &&
-                        AllcityDropDownData.filter(
-                          (d) => d.id === data.city_id
-                        ).map((city) => ({ value: city.id, label: city.city }))
-                      }
-                      onChange={(e) => handleDependentChange(e, 'CITY')}
-                    />
-                  )}
-                </div>
-              </div>
-              <div className="d-flex mt-3">
-                <div className="col-sm-2">
-                  <b>Status :</b>
-                </div>
-                <div className="me-5">
-                  <input
-                    type="radio"
-                    checked={toggleRadio}
-                    className="me-4"
-                    value="active"
-                    onChange={(e) => handleRadios(e.target.value)}
-                  />
-                  <label>
-                    <b>Active</b>
-                  </label>
-                </div>
-                <div>
-                  <input
-                    type="radio"
-                    checked={!toggleRadio}
-                    className="me-4"
-                    value="deactive"
-                    onChange={(e) => handleRadios(e.target.value)}
-                  />
-                  <label>
-                    <b>Deactive</b>
-                  </label>
-                </div>
-              </div>
-            </div>
-
-            <div className="mt-3" style={{ textAlign: 'right' }}>
-              {checkRole && checkRole[0]?.can_update === 1 ? (
-                <button type="submit" className="btn btn-primary">
-                  Update
-                </button>
-              ) : (
-                ''
-              )}
-              <Link
-                to={`/${_base}/TenantMaster`}
-                className="btn btn-danger text-white"
-              >
-                Cancel
-              </Link>
-            </div>
-          </div>
-        </form>
+            </Form>
+          )}
+        </Formik>
       )}
     </div>
   );

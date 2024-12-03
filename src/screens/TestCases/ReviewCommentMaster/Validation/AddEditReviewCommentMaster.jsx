@@ -92,6 +92,7 @@ function AddEditReviewCommentMaster({
                     component={CustomInput}
                     name="reviewer_comment"
                     label="Reviewer Comment Title"
+                    id="reviewcommentmaster_reviewercommenttitle"
                     placeholder="Enter Reviewer Comment Title"
                     requiredField
                   />
@@ -101,6 +102,7 @@ function AddEditReviewCommentMaster({
                     component={CustomInput}
                     name="remark"
                     label="Remark"
+                    id="reviewcommentmaster_remark"
                     placeholder="Enter Remark"
                   />
                 </Col>
@@ -115,6 +117,7 @@ function AddEditReviewCommentMaster({
                       type="radio"
                       name="is_active"
                       label="Active"
+                      id="reviewcommentmaster_active"
                       value="1"
                       inputClassName="me-1"
                     />
@@ -123,6 +126,7 @@ function AddEditReviewCommentMaster({
                       type="radio"
                       name="is_active"
                       label="Deactive"
+                      id="reviewcommentmaster_deactive"
                       value="0"
                       inputClassName="me-1"
                     />
@@ -132,15 +136,15 @@ function AddEditReviewCommentMaster({
 
               <div className="d-flex justify-content-end gap-2 mt-3">
                 <button
-                  className="btn btn-dark px-4"
+                  className="btn btn-primary px-4"
                   type="submit"
                   disabled={!dirty}
                 >
-                  {type === 'ADD' ? 'Save' : 'Update'}
+                  {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>
                 <button
                   onClick={() => close()}
-                  className="btn btn-shadow-light px-3"
+                  className="btn btn-danger px-3"
                   type="button"
                 >
                   Cancel

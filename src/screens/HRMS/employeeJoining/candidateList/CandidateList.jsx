@@ -197,7 +197,7 @@ function CandidateList() {
                 onClick={() => setAddCandidateModal(true)}
               >
                 <i className="icofont-plus me-2 fs-6" />
-                Add Data
+                Add Candidate Data
               </button>
             );
           }}

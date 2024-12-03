@@ -482,7 +482,7 @@ export default function CreateCustomer({ match }) {
 
             <div className="mt-3" style={{ textAlign: 'right' }}>
               <button type="submit" className="btn btn-primary">
-                Add
+                Submit
               </button>
               <Link
                 to={`/${_base}/Customer`}

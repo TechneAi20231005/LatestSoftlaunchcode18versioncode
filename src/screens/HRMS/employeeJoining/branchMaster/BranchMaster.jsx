@@ -164,6 +164,7 @@ function BranchMaster() {
             <input
               type="search"
               name="interview_search"
+              id='branchmaster_branchname'
               value={searchValue}
               onChange={e => setSearchValue(e?.target?.value)}
               placeholder="Enter branch name..."

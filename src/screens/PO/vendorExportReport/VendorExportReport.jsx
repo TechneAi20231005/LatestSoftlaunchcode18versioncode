@@ -221,6 +221,7 @@ function VendorExportReport() {
                     options={venderData}
                     name="vender_name"
                     label="Vendor Name :"
+                    id="vendorexportreport_vendorname"
                     placeholder={getVenderList ? 'Loading...' : 'Select'}
                     isSearchable
                     isMulti
@@ -232,6 +233,7 @@ function VendorExportReport() {
                     type="date"
                     name="order_date"
                     label="Order Date :"
+                    id="venderexportreport_orderdate"
                     placeholderText="dd/mm/yyyy"
                     dateFormat="dd/MM/yyy"
                     showMonthDropdown
@@ -250,6 +252,7 @@ function VendorExportReport() {
                     type="date"
                     name="delivery_date"
                     label="Delivery Date :"
+                    id="vendorexportreport_deliverydate"
                     placeholderText="dd/mm/yyyy"
                     dateFormat="dd/MM/yyy"
                     showMonthDropdown

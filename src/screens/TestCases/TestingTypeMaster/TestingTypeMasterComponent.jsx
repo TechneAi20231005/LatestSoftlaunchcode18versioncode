@@ -154,7 +154,7 @@ function TestingTypeMasterComponent() {
     <div className="container-xxl">
       <div className="d-flex justify-content-between">
         <PageHeader headerTitle="Testing Type Master" />
-        <div style={{ marginTop: '-30px' }}>
+        <div>
           <button
             className="btn btn-primary text-white "
             onClick={() =>
@@ -176,6 +176,7 @@ function TestingTypeMasterComponent() {
           <input
             type="search"
             name="interview_search"
+            id="testingtypemaster_interviewsearch"
             value={searchValue}
             onChange={(e) => setSearchValue(e?.target?.value)}
             placeholder="Search testing type here..."
