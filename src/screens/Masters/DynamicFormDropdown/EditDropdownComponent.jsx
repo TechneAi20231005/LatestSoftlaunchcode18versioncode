@@ -26,6 +26,8 @@ export default function EditDropdownComponent({ match }) {
 
   const dispatch = useDispatch();
 
+  const [message, setMessage] = useState(false)
+  const [display, setDisplay] = useState('')
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 37)
   );
@@ -36,6 +38,7 @@ export default function EditDropdownComponent({ match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
+            setDisplay(true)
             setMaster(res.data.data.master);
             setData(res.data.data.dropdown);
           } else {
@@ -56,6 +59,13 @@ export default function EditDropdownComponent({ match }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!message) {
+      setDisplay("Dropdown Name is Required");
+      return
+    } else {
+      setDisplay(""); // Clear error
+      console.log("Form Submitted with Dropdown Name:", message);
+    }
     const formData = new FormData(e.target);
 
     await new DynamicFormDropdownMasterService()
@@ -162,9 +172,14 @@ export default function EditDropdownComponent({ match }) {
                   className="form-control form-control-sm"
                   name="dropdown_name"
                   id="dropdown_name"
-                  required
+                  // required
+                  onChange={(e) => {
+                    setMessage(e?.target?.value)
+                    setDisplay('')
+                  }}
                   defaultValue={master && master.dropdown_name}
                 />
+                 {display && <div className="text-danger mt-1">{display}</div>}
               </div>
             </div>
 
