@@ -23,7 +23,7 @@ import { handleModalInStore } from '../../Dashboard/DashbordSlice';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
-import { StateMasterValidation } from './validation/StateMasterValidation';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 
 function StateComponent() {
   //initial state
@@ -165,10 +165,14 @@ function StateComponent() {
 
     if (!id) {
       dispatch(postStateData(formData));
-      dispatch(getStateData());
+      setTimeout(() => {
+        dispatch(getStateData());
+      }, 500);
     } else {
       dispatch(updateStateData({ id: id, payload: editformdata }));
-      dispatch(getStateData());
+      setTimeout(() => {
+        dispatch(getStateData());
+      }, 500);
     }
   };
 
@@ -202,25 +206,33 @@ function StateComponent() {
     handleSearch();
   }, [searchTerm, handleSearch]);
 
-  // const fields = [
-  //   // { name: 'country_id', label: 'Country_id', required: true },
-  //   {
-  //     name: 'state',
-  //     label: 'state',
-  //     max: 100,
-  //     required: true,
-  //     alphaNumeric: true
-  //   },
-  //   {
-  //     name: 'remark',
-  //     label: 'Remark',
-  //     max: 1000,
-  //     required: false,
-  //     alphaNumeric: true
-  //   }
-  // ];
+  const fields = [
+    // { name: 'project_id', label: 'Project name', required: true },
+    {
+      name: 'country_id',
+      label: 'Country name',
+      max: 100,
+      required: true,
+      alphaNumeric: false
+    },
+    {
+      name: 'state',
+      label: 'State name',
+      max: 100,
+      required: true,
+      alphaNumeric: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 1000,
+      required: false,
+      alphaNumeric: true
+    }
+  ];
 
-  // const validationSchema = CustomValidation(fields);
+  const validationSchema = CustomValidation(fields);
+
   let valueof = modal.modalData
     ? filteredCountryData.find((d) => modal.modalData.country_id === d.value)
     : '';
@@ -295,9 +307,8 @@ function StateComponent() {
       <Modal centered show={modal.showModal}>
         <Formik
           initialValues={initialValues}
-          validationSchema={StateMasterValidation}
+          validationSchema={validationSchema}
           onSubmit={(values) => {
-            // handleForm(modal.modalData ? modal.modalData.id : '')(values);
             handleForm(values, modal.modalData ? modal.modalData.id : '');
           }}
         >

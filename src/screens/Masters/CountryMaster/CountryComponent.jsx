@@ -11,7 +11,7 @@ import * as Validation from '../../../components/Utilities/Validation';
 import Alert from '../../../components/Common/Alert';
 
 import { useDispatch, useSelector } from 'react-redux';
-
+import { Formik, Form, Field } from 'formik';
 import {
   getCountryData,
   getRoles,
@@ -25,6 +25,7 @@ import {
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 
 function CountryComponent() {
   //initial state
@@ -150,24 +151,32 @@ function CountryComponent() {
     }
   ];
 
-  const handleForm = (id) => async (e) => {
-    e.preventDefault();
-    const form = new FormData(e.target);
+  const handleForm = async (values, id) => {
+    const formData = new FormData();
+    formData.append('country', values.country);
+    formData.append('remark', values.remark);
+
+    const editformdata = new FormData();
+    editformdata.append('country', values.country);
+    editformdata.append('remark', values.remark);
+    editformdata.append('is_active', values.is_active);
 
     if (!id) {
-      dispatch(postCountryData(form)).then((res) => {
+      dispatch(postCountryData(formData)).then((res) => {
         if (res?.payload?.data?.status === 1) {
           dispatch(getCountryData());
         } else {
         }
       });
     } else {
-      dispatch(updateCountryData({ id: id, payload: form })).then((res) => {
-        if (res?.payload?.data?.status === 1) {
-          dispatch(getCountryData());
-        } else {
+      dispatch(updateCountryData({ id: id, payload: editformdata })).then(
+        (res) => {
+          if (res?.payload?.data?.status === 1) {
+            dispatch(getCountryData());
+          } else {
+          }
         }
-      });
+      );
     }
   };
 
@@ -199,6 +208,25 @@ function CountryComponent() {
   useEffect(() => {
     handleSearch();
   }, [searchTerm, handleSearch]);
+
+  const fields = [
+    {
+      name: 'country',
+      label: 'Country name',
+      max: 100,
+      required: true,
+      alphaNumeric: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 1000,
+      required: false,
+      alphaNumeric: true
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
 
   return (
     <div className="container-xxl">
@@ -259,171 +287,168 @@ function CountryComponent() {
       </div>
 
       <Modal centered show={modal.showModal}>
-        <form
-          method="post"
-          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+        <Formik
+          initialValues={{
+            id: modal.modalData?.id || '',
+            country: modal.modalData?.country || '',
+            remark: modal.modalData?.remark || '',
+            is_active:
+              modal.modalData?.is_active !== undefined
+                ? modal.modalData.is_active
+                : 1
+          }}
+          validationSchema={validationSchema}
+          onSubmit={(values) => {
+            handleForm(values, modal.modalData ? modal.modalData.id : '');
+          }}
         >
-          <Modal.Header
-            closeButton
-            onClick={() => {
-              dispatch(
-                handleModalClose({
-                  showModal: false,
-                  modalData: null,
-                  modalHeader: 'Add Country'
-                })
-              );
-            }}
-          >
-            <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="deadline-form">
-              <div className="row g-3 mb-3">
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Country Name :<Astrick color="red" size="13px" />
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="country"
-                    name="country"
-                    maxLength={25}
-                    minLength={4}
-                    required
-                    defaultValue={
-                      modal.modalData ? modal.modalData.country : ''
-                    }
-                    onKeyPress={(e) => {
-                      Validation.CharacterWithSpace(e);
-                    }}
-                    onPaste={(e) => {
-                      e.preventDefault();
-                      return false;
-                    }}
-                    onCopy={(e) => {
-                      e.preventDefault();
-                      return false;
-                    }}
-                  />
-                </div>
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Remark :
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="remark"
-                    name="remark"
-                    maxLength={50}
-                    defaultValue={modal.modalData ? modal.modalData.remark : ''}
-                  />
-                </div>
-
-                {modal.modalData && (
-                  <div className="col-sm-12">
-                    <label className="form-label font-weight-bold">
-                      Status :<Astrick color="red" size="13px" />
-                    </label>
-                    <div className="row">
-                      <div className="col-md-2">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_1"
-                            value="1"
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 1
-                                ? true
-                                : !modal.modalData
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_1"
-                          >
-                            Active
-                          </label>
-                        </div>
-                      </div>
-                      <div className="col-md-1">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_0"
-                            value="0"
-                            readOnly={modal.modalData ? false : true}
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_0"
-                          >
-                            Deactive
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            {!modal.modalData && (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{
-                  backgroundColor: '#484C7F',
-                  width: '80px',
-                  padding: '8px'
+          {({ errors, touched }) => (
+            <Form>
+              <Modal.Header
+                closeButton
+                onClick={() => {
+                  dispatch(
+                    handleModalClose({
+                      showModal: false,
+                      modalData: null,
+                      modalHeader: ''
+                    })
+                  );
                 }}
               >
-                Add
-              </button>
-            )}
-
-            {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{ backgroundColor: '#484C7F' }}
-              >
-                Update
-              </button>
-            ) : (
-              ''
-            )}
-            <button
-              type="button"
-              className="btn btn-danger text-white"
-              onClick={() => {
-                dispatch(
-                  handleModalClose({
-                    showModal: false,
-                    modalData: '',
-                    modalHeader: ''
-                  })
-                );
-              }}
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </form>
+                <Modal.Title className="fw-bold">
+                  {modal.modalHeader}
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="deadline-form">
+                  <div className="row g-3 mb-3">
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Country Name :<Astrick color="red" size="13px" />
+                      </label>
+                      <Field
+                        name="country"
+                        type="text"
+                        className="form-control form-control-sm"
+                        id="country"
+                        maxLength={25}
+                        minLength={4}
+                        defaultValue={
+                          modal.modalData ? modal.modalData.country : ''
+                        }
+                        onKeyPress={(e) => {
+                          Validation.CharacterWithSpace(e);
+                        }}
+                        onPaste={(e) => {
+                          e.preventDefault();
+                          return false;
+                        }}
+                        onCopy={(e) => {
+                          e.preventDefault();
+                          return false;
+                        }}
+                      />
+                      {errors.country && touched.country ? (
+                        <div className="text-danger">{errors.country}</div>
+                      ) : null}
+                    </div>
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Remark :
+                      </label>
+                      <Field
+                        name="remark"
+                        type="text"
+                        className="form-control form-control-sm"
+                      />
+                      {errors.remark && touched.remark ? (
+                        <div className="text-danger">{errors.remark}</div>
+                      ) : null}
+                    </div>
+                    {modal.modalData && (
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Status :<Astrick color="red" size="13px" />
+                        </label>
+                        <div className="row">
+                          <div className="col-md-2">
+                            <label className="form-check-label">
+                              <Field
+                                id="is_active_1"
+                                type="radio"
+                                name="is_active"
+                                value="1"
+                                className="form-check-input"
+                              />
+                              Active
+                            </label>
+                          </div>
+                          <div className="col-md-2">
+                            <label className="form-check-label">
+                              <Field
+                                type="radio"
+                                name="is_active"
+                                value="0"
+                                id="is_active_0"
+                                className="form-check-input"
+                              />
+                              Deactive
+                            </label>
+                          </div>
+                        </div>
+                        {errors.is_active && touched.is_active ? (
+                          <div className="text-danger">{errors.is_active}</div>
+                        ) : null}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                {!modal.modalData && (
+                  <button
+                    type="submit"
+                    className="btn btn-primary text-white"
+                    style={{
+                      backgroundColor: '#484C7F',
+                      width: '80px',
+                      padding: '8px'
+                    }}
+                  >
+                    Add
+                  </button>
+                )}
+                {modal.modalData &&
+                  checkRole &&
+                  checkRole[0]?.can_update === 1 && (
+                    <button
+                      type="submit"
+                      className="btn btn-primary text-white"
+                      style={{ backgroundColor: '#484C7F' }}
+                    >
+                      Update
+                    </button>
+                  )}
+                <button
+                  type="button"
+                  className="btn btn-danger text-white"
+                  onClick={() => {
+                    dispatch(
+                      handleModalClose({
+                        showModal: false,
+                        modalData: '',
+                        modalHeader: ''
+                      })
+                    );
+                  }}
+                >
+                  Cancel
+                </button>
+              </Modal.Footer>
+            </Form>
+          )}
+        </Formik>
       </Modal>
     </div>
   );

@@ -19,7 +19,7 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import { statusMasterValidation } from './validation/StatusMasterValidation';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 
 function StatusComponent() {
   const dispatch = useDispatch();
@@ -154,6 +154,24 @@ function StatusComponent() {
         : '1'
   };
 
+  const fields = [
+    {
+      name: 'status',
+      label: 'Status name',
+      max: 100,
+      required: true,
+      alphaNumeric: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 1000,
+      required: false,
+      alphaNumeric: true
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
   const loadData = async () => {};
   // console.log(modal.modalData, 'modalData');
 
@@ -173,10 +191,15 @@ function StatusComponent() {
     // const form = new FormData(values);
     if (!id) {
       dispatch(postStatusData(formData));
-      dispatch(getStatusData());
+      setTimeout(() => {
+        dispatch(getStatusData());
+      }, 500);
     } else {
       dispatch(updateStatusData({ id: id, payload: editformdata }));
-      dispatch(getStatusData());
+
+      setTimeout(() => {
+        dispatch(getStatusData());
+      }, 500);
     }
   };
 
@@ -279,7 +302,7 @@ function StatusComponent() {
       >
         <Formik
           initialValues={initialValues}
-          validationSchema={statusMasterValidation}
+          validationSchema={validationSchema}
           onSubmit={(values) => {
             handleForm(values, modal.modalData ? modal.modalData.id : '');
           }}
