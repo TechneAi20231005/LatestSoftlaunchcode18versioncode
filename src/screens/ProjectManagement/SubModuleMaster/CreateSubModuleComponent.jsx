@@ -14,6 +14,9 @@ import Select from 'react-select';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
+import { ErrorMessage, Field, Formik, Form } from 'formik';
+import { SubModuleMasterValidation } from './Validation/SubModuleMasterValidation';
+import { ProjectDropdown } from '../ProjectMaster/ProjectComponent';
 
 export default function CreateModuleComponent({ match }) {
   const history = useNavigate();
@@ -29,20 +32,47 @@ export default function CreateModuleComponent({ match }) {
   const [modules, setModules] = useState(null);
   const [modulesDropdown, setModulesDropdown] = useState(null);
 
-  const handleChangevalue = (e) => {
+  const initialValue = {
+    project_id: '',
+    module_id: '',
+    sub_module_name: '',
+    description: '',
+    remark: ''
+  };
+
+  // const handleChange = (e) => {
+  //   setModulesDropdown(
+  //     modules &&
+  //       modules
+  //         .filter((d) => d.project_id === e.value)
+  //         .map((d) => ({ value: d.id, label: d.module_name }))
+  //   );
+  // };
+  const handleChange = (e) => {
+    const selectedValue = e.target.value; // Get the selected project ID
+
     setModulesDropdown(
-      modules &&
-        modules
-          .filter((d) => d.project_id === e.value)
-          .map((d) => ({ value: d.id, label: d.module_name }))
+      modules
+        ?.filter((d) => d.project_id === parseInt(selectedValue, 10)) // Filter by project_id
+        .map((d) => ({ value: d.id, label: d.module_name })) || [] // Map to dropdown options
     );
   };
 
-  const handleForm = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    setNotify(null);
+  // const handleForm = async (e) => {
+  //   e.preventDefault();
+  //   const formData = new FormData(e.target);
+  //   setNotify(null);
+  const handleForm = async (values) => {
+    // e.preventDefault();
+    // const formData = new FormData(e.target);
+    const formData = new FormData();
+    formData.append('project_id', values.project_id);
+    formData.append('module_id', values.module_id);
+    formData.append('sub_module_name', values.sub_module_name);
 
+    formData.append('description', values.description);
+    formData.append('remark', values.remark);
+    setNotify(null);
     await new SubModuleService()
       .postSubModule(formData)
       .then((res) => {
@@ -121,6 +151,188 @@ export default function CreateModuleComponent({ match }) {
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
+      <PageHeader headerTitle="Add Sub-Module" />
+
+      <div className="row clearfix g-3">
+        <div className="col-sm-12">
+          <Formik
+            initialValues={initialValue}
+            validationSchema={SubModuleMasterValidation}
+            onSubmit={(values) => {
+              handleForm(values);
+              // setOtpModal(true);
+            }}
+            // onSubmit={handleForm}
+          >
+            {({ isSubmitting, setFieldValue }) => (
+              <Form>
+                <div className="card mt-2">
+                  <div className="card-body">
+                    <div className="form-group row mt-2">
+                      <label className="col-sm-2 col-form-label">
+                        <b>
+                          Select Project :{' '}
+                          <span style={{ color: 'red' }}>*</span>
+                        </b>
+                      </label>
+                      <div className="col-sm-4">
+                        <Field
+                          as="select"
+                          className="form-control form-control-sm"
+                          id="project_id"
+                          name="project_id"
+                          onChange={(e) => {
+                            setFieldValue('project_id', e?.target?.value);
+                            setModulesDropdown(
+                              modules &&
+                                modules
+                                  .filter(
+                                    (d) =>
+                                      d.project_id === parseInt(e.target.value)
+                                  )
+                                  .map((d) => ({
+                                    value: d.id,
+                                    label: d.module_name
+                                  }))
+                            );
+                          }} // Call handleChange on selection
+                        >
+                          <option value="" label="Select a project" />
+                          {Projectdropdown?.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Field>
+                        <ErrorMessage
+                          name="project_id"
+                          component="div"
+                          className="text-danger"
+                        />
+                      </div>
+                    </div>
+                    <div className="form-group row mt-2">
+                      <label className="col-sm-2 col-form-label">
+                        <b>
+                          Select Module :{' '}
+                          <span style={{ color: 'red' }}>*</span>
+                        </b>
+                      </label>
+                      <div className="col-sm-4">
+                        <Field
+                          as="select"
+                          className="form-control form-control-sm"
+                          id="module_id"
+                          name="module_id"
+                        >
+                          <option value="" label="Select a module" />
+                          {modulesDropdown?.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Field>
+                        <ErrorMessage
+                          name="module_id"
+                          component="div"
+                          className="text-danger"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group row mt-2">
+                      <label className="col-sm-2 col-form-label">
+                        <b>
+                          Sub Module Name :{' '}
+                          <span style={{ color: 'red' }}>*</span>
+                        </b>
+                      </label>
+                      <div className="col-sm-4">
+                        <Field
+                          type="text"
+                          className="form-control form-control-sm"
+                          id="sub_module_name"
+                          name="sub_module_name"
+                          onKeyPress={(e) => {
+                            Validation.addressFieldOnly(e);
+                          }}
+                        />
+                        <ErrorMessage
+                          name="sub_module_name"
+                          component="div"
+                          className="text-danger"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group row mt-2">
+                      <label className="col-sm-2 col-form-label">
+                        <b>
+                          Description : <span style={{ color: 'red' }}>*</span>
+                        </b>
+                      </label>
+                      <div className="col-sm-10">
+                        <Field
+                          as="textarea"
+                          className="form-control form-control-sm"
+                          id="description"
+                          name="description"
+                          rows="6"
+                          onKeyPress={(e) => {
+                            Validation.addressFieldOnly(e);
+                          }}
+                        />
+                        <ErrorMessage
+                          name="description"
+                          component="div"
+                          className="text-danger"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group row mt-3">
+                      <label className="col-sm-2 col-form-label">
+                        <b>Remark:</b>
+                      </label>
+                      <div className="col-sm-10">
+                        <Field
+                          type="text"
+                          className="form-control form-control-sm"
+                          id="remark"
+                          name="remark"
+                        />
+                        <ErrorMessage
+                          name="remark"
+                          component="div"
+                          className="text-danger"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-3" style={{ textAlign: 'right' }}>
+                  <button
+                    type="submit"
+                    className="btn btn-sm btn-primary"
+                    disabled={isSubmitting}
+                  >
+                    Submit
+                  </button>
+                  <Link
+                    to={`/${_base}/Module`}
+                    className="btn btn-sm btn-danger text-white"
+                  >
+                    Cancel
+                  </Link>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </div>
+      </div>
+
+      {/* {notify && <Alert alertData={notify} />}
 
       <PageHeader headerTitle="Add Sub-Module" />
 
@@ -216,9 +428,9 @@ export default function CreateModuleComponent({ match }) {
                   </div>
                 </div>
               </div>{' '}
-              {/* CARD BODY */}
+
             </div>
-            {/* CARD */}
+
 
             <div className="mt-3" style={{ textAlign: 'right' }}>
               <button type="submit" className="btn btn-sm btn-primary">
@@ -233,7 +445,7 @@ export default function CreateModuleComponent({ match }) {
             </div>
           </form>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }
