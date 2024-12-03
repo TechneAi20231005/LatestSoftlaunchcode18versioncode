@@ -131,6 +131,7 @@ export default function CreateCustomerMappingComponent() {
     await getDynamicForm();
   }, [getDynamicForm]);
   const handleQueryType = async (e) => {
+    if (!e || Object.entries(e).length === 0) return;
     setNotify(null);
     setDynamicForm(null);
     setDynamicFormDropdown(null);
@@ -192,6 +193,8 @@ export default function CreateCustomerMappingComponent() {
   }, [dispatch]);
   //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
+    console.log('is clearable e', e);
+    if (!e || Object.entries(e).length === 0) return;
     if (type === 'Select2' && nameField === 'customer_type_id') {
       setSelectedCustomer(e?.length);
     }
@@ -481,6 +484,7 @@ export default function CreateCustomerMappingComponent() {
                     <Select
                       id="query_type_id"
                       name="query_type_id"
+                      isClearable={true}
                       ref={queryTypeDetail}
                       options={queryTypeDropdown}
                       onChange={(e) => {
@@ -500,6 +504,7 @@ export default function CreateCustomerMappingComponent() {
                       <Select
                         id="dynamic_form_id"
                         name="dynamic_form_id"
+                        isClearable={true}
                         options={dynamicFormDropdown}
                         ref={dynamicDetail}
                         onChange={(e) =>
@@ -511,6 +516,7 @@ export default function CreateCustomerMappingComponent() {
                       <Select
                         id="dynamic_form_id"
                         name="dynamic_form_id"
+                        isClearable={true}
                         defaultValue={selectedDynamicForm}
                         ref={dynamicDetail}
                         options={dynamicFormDropdown ? dynamicFormDropdown : ''}
@@ -530,6 +536,7 @@ export default function CreateCustomerMappingComponent() {
                     <Select
                       id="template_id"
                       name="template_id"
+                      isClearable={true}
                       ref={templateDetail}
                       options={[
                         { label: 'Select Template', value: '' },
