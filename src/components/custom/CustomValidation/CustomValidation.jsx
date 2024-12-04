@@ -19,6 +19,40 @@ export const CustomValidation = (fields) => {
           )
           .min(1, `${field.label} is required`);
       }
+      if(field.email){
+       validator = Yup.string()
+        .email('Invalid email address')
+        .required('Email Address is required');
+      }
+      if(field.phone){
+       validator = Yup.string()
+    .required('Contact Number is required')
+    .length(10, 'Contact Number must be 10 digits')
+    .matches(/^[0-9]+$/, 'Only numbers are allowed')
+    .test(
+      'startsWithValidDigit',
+      'System not accepting 9 Consecutive Zeros here.',
+      (value) => {
+        return value ? ['6', '7', '8', '9'].includes(value.charAt(0)) : true;
+      }
+    )
+    .test(
+      'noConsecutiveZeros',
+      'System not accepting 9 consecutive zeros here',
+      (value) => {
+        return value ? !value.includes('000000000') : true;
+      }
+    )
+      }
+      if(field.pincode){
+        validator = Yup.string()
+        .required('PinCode is Required')
+        .length(6, 'Pincode must be 6 digits')
+        .matches(
+          /^[1-9]{1}[0-9]{5}$/,
+          'Pincode must start with a non-zero digit and be 6 digits'
+        )
+      }
 
       // Required field validation
       if (field.required) {
