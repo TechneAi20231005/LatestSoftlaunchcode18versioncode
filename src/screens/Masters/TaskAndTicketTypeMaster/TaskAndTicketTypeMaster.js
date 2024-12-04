@@ -12,7 +12,9 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
-// for task type created customoption function
+import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { toast } from 'react-toastify';
 
 const CustomOption = ({ label, options, onClick, closeDropdown }) => {
   const [expanded, setExpanded] = useState(false);
@@ -21,7 +23,7 @@ const CustomOption = ({ label, options, onClick, closeDropdown }) => {
   const handleClick = (e) => {
     setExpanded(!expanded);
     onClick(label);
-    closeDropdown(); // Close the dropdown after clicking the option
+    closeDropdown();
   };
 
   const handleSelect = () => {
@@ -47,7 +49,7 @@ const CustomOption = ({ label, options, onClick, closeDropdown }) => {
               onClick={handleSelect}
               ID={option.ID}
               openOptions={openOptions}
-              closeDropdown={closeDropdown} // Pass closeDropdown to nested options
+              closeDropdown={closeDropdown}
             />
           ))}
         </div>
@@ -56,14 +58,12 @@ const CustomOption = ({ label, options, onClick, closeDropdown }) => {
   );
 };
 
-//for ticket type created customeOptionTicket function
-
 const CustomOptionTicket = ({ label, options, onClick, closeDropdown }) => {
   const [expanded, setExpanded] = useState(false);
   const handleClick = (e) => {
     setExpanded(!expanded);
     onClick(label);
-    closeDropdown(); // Close the dropdown after clicking the option
+    closeDropdown();
   };
 
   return (
@@ -84,7 +84,7 @@ const CustomOptionTicket = ({ label, options, onClick, closeDropdown }) => {
               options={option.options}
               onClick={onClick}
               ID={option.ID}
-              closeDropdown={closeDropdown} // Pass closeDropdown to nested options
+              closeDropdown={closeDropdown}
             />
           ))}
         </div>
@@ -93,12 +93,9 @@ const CustomOptionTicket = ({ label, options, onClick, closeDropdown }) => {
   );
 };
 
-//for task type created CustomMenuList function
-
 const CustomMenuList = ({ options, onSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [openOptions, setOpenOptions] = useState([]);
-  // const [selectedOption, setSelectedOption] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -117,7 +114,6 @@ const CustomMenuList = ({ options, onSelect }) => {
   };
 
   const handleSelect = (label, ID) => {
-    // setSelectedOption(label);
     onSelect(label, ID);
     setOpenOptions([]);
     setIsMenuOpen(!isMenuOpen);
@@ -240,12 +236,9 @@ const CustomMenuList = ({ options, onSelect }) => {
   );
 };
 
-//for ticket type created CustomMenuListTicket  function
-
 const CustomMenuListTicket = ({ options, onSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [openOptions, setOpenOptions] = useState([]);
-  // const [selectedOption, setSelectedOption] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -264,7 +257,6 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
   };
 
   const handleSelect = (label, ID) => {
-    // setSelectedOption(label);
     onSelect(label, ID);
     setOpenOptions([]);
     setIsMenuOpen(!isMenuOpen);
@@ -388,18 +380,14 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
 };
 
 function TaskAndTicketTypeMaster(props) {
-  // const [selectedValue, setSelectedValue] = useState('');
   const [notify, setNotify] = useState();
   const [data, setData] = useState([]);
-  // const [parent, setParent] = useState();
   const [taskData, setTaskData] = useState([]);
   const [ticketData, setTicketData] = useState([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const [exportData, setExportData] = useState(null);
-  // const [isOpen, setIsOpen] = useState(false);
-  // const selectedOption = null;
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [parentTaskName, setParentTaskName] = useState(null);
   const [parentTicketName, setParentTicketName] = useState(null);
@@ -413,10 +401,7 @@ function TaskAndTicketTypeMaster(props) {
     setParentTicketName('');
   };
 
-  const closeAllDropdowns = () => {
-    // Logic to close all dropdowns
-    // For example, you could set a state variable to trigger re-rendering
-  };
+  const closeAllDropdowns = () => {};
 
   const typeNameRef = useRef(null);
 
@@ -426,21 +411,39 @@ function TaskAndTicketTypeMaster(props) {
     modalHeader: ''
   });
 
-  // const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
-
-  //search function
 
   const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(data, searchTerm);
     setFilteredData(filteredList);
   }, [data, searchTerm]);
 
-  // Function to handle reset button click
   const handleReset = () => {
     setSearchTerm('');
     setFilteredData(data);
   };
+
+  const initialValues = {
+    parent_id: modal?.modalData?.parent_name
+      ? modal?.modalData?.parent_name
+      : '',
+    type_name: modal?.modalData?.type_name ? modal?.modalData?.type_name : '',
+    remark: modal?.modalData?.remark ? modal?.modalData?.remark : '',
+    is_active:
+      modal?.modalData?.is_active !== undefined
+        ? String(modal?.modalData?.is_active)
+        : '1'
+  };
+
+  const fields = [
+    { name: 'parent_id', label: 'Parent Type', required: true },
+
+    { name: 'type_name', label: 'Type name', required: true },
+    { name: 'remark', label: 'Remark' }
+  ];
+
+  const validationSchema = CustomValidation(fields);
+
   const loadData = async () => {
     const exportTempData = [];
     setIsLoading(true);
@@ -480,7 +483,6 @@ function TaskAndTicketTypeMaster(props) {
               exportTempData.push({
                 SrNo: exportTempData.length + 1,
 
-                // id: temp[i].id,
                 type: temp[i].type,
 
                 type_name: temp[i].type_name,
@@ -540,7 +542,6 @@ function TaskAndTicketTypeMaster(props) {
     const primaryLabel = 'Primary';
     const options = [];
 
-    // Push the primary label if it hasn't been pushed before
     if (!hasPrimaryLabel) {
       options.push({
         ID: null,
@@ -548,15 +549,13 @@ function TaskAndTicketTypeMaster(props) {
         isStatic: true,
         options: []
       });
-      hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
+      hasPrimaryLabel = true;
     }
 
-    // Process the taskData
     taskData?.forEach((item) => {
       const label = item.type_name;
 
       if (label !== primaryLabel) {
-        // Push API labels directly into options array
         options.push({
           ID: item.parent_id,
           label: label,
@@ -570,14 +569,12 @@ function TaskAndTicketTypeMaster(props) {
     return options;
   }
 
-  // Transform the taskData
   const transformedOptions = transformData(taskData);
 
   function transformDataTicket(ticketData, hasPrimaryLabel = false) {
     const primaryLabel = 'Primary';
     const options = [];
 
-    // Push the primary label if it hasn't been pushed before
     if (!hasPrimaryLabel) {
       options.push({
         ID: null,
@@ -585,15 +582,13 @@ function TaskAndTicketTypeMaster(props) {
         isStatic: true,
         options: []
       });
-      hasPrimaryLabel = true; // Update the flag to indicate primary label has been added
+      hasPrimaryLabel = true;
     }
 
-    // Process the ticketData
     ticketData?.forEach((item) => {
       const label = item.type_name;
 
       if (label !== primaryLabel) {
-        // Push API labels directly into options array
         options.push({
           ID: item.parent_id,
           label: label,
@@ -607,13 +602,12 @@ function TaskAndTicketTypeMaster(props) {
     return options;
   }
 
-  // Transform the ticketData
   const transformedOptionsTicket = transformDataTicket(ticketData);
 
-  const [selectedType, setSelectedType] = useState('TASK'); // State to track selected type
+  const [selectedType, setSelectedType] = useState('TASK');
   const handleType = async (e) => {
     setData([]);
-    setSelectedType(e.target.value); // Update the selected type when a radio button is clicked
+    setSelectedType(e.target.value);
     await new TaskTicketTypeService()
       .getAllTaskTicketType(e.target.value)
       .then((res) => {
@@ -801,7 +795,6 @@ function TaskAndTicketTypeMaster(props) {
       width: '150px'
     }
   ];
-
   const handleButtonClick = (e) => {
     setModal({ showModal: false });
   };
@@ -811,95 +804,74 @@ function TaskAndTicketTypeMaster(props) {
     setSelectedOption(null);
   };
 
-  const handleForm = (id) => async (e) => {
-    e.preventDefault();
-
-    if (id) {
-      if (modal.modalData.type === '') {
-        alert('Type is required.');
-        return;
-      }
-    }
-    setNotify(null);
-    const form = new FormData(e.target);
-    if (!selectedOption && !id) {
-      setParentTaskName('Please select a parent task type.');
-      setParentTicketName('Please select a parent ticket type.');
-    } else {
-      setParentTaskName(''); // Clear the error message if present
-      setParentTicketName('');
-
-      if (!id) {
-        if (selectedOptionId === 'Primary') {
-          form.append('parent_id', 0);
-        } else {
-          form.append(
-            'parent_id',
-            // selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
-            selectedOptionId
-              ? selectedOptionId
-              : modal?.modalData?.parent_name !== null
-              ? modal?.modalData?.parent_name
-              : 'Primary'
-          );
-        }
-
-        form.append('type', selectedType);
-        setNotify(null);
-        await new TaskTicketTypeService().postType(form).then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setNotify({ type: 'success', message: res.data.message });
-              setModal({ showModal: false });
-
-              loadData();
-            } else {
-              setNotify({ type: 'danger', message: res.data.message });
-            }
-          }
-        });
+  const handleForm = async (values, id) => {
+    const form = new FormData();
+    if (!id) {
+      if (values.parent_id === 'Primary') {
+        form.append('parent_id', 0);
       } else {
-        if (
-          selectedOptionId === 'Primary' ||
-          modal.modalData.parent_name === 'Primary'
-        ) {
-          form.append('parent_id', 0);
-        } else {
-          form.append(
-            'parent_id',
-            // selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
-            selectedOptionId
-              ? selectedOptionId
-              : modal?.modalData?.parent_name !== null
-              ? modal?.modalData?.parent_name
-              : 'Primary'
-          );
-        }
-
-        form.append('type', selectedType);
-
-        await new TaskTicketTypeService()._updateType(id, form).then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setNotify({ type: 'success', message: res.data.message });
-              setModal({ showModal: false });
-              loadData();
-            } else {
-              setNotify({ type: 'danger', message: res.data.message });
-            }
-          } else {
-            // setLoading(false);
-            setNotify({ type: 'danger', message: res.data.message });
-          }
-        });
+        form.append(
+          'parent_id',
+          values.parent_id
+            ? values.parent_id
+            : modal?.modalData?.parent_name || 'Primary'
+        );
       }
-      // setLoading(false);
+      form.append('type_name', values.type_name);
+      form.append('remark', values.remark);
+
+      form.append('type', selectedType);
+      await new TaskTicketTypeService().postType(form).then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            toast.success(res.data.message, {
+              autoClose: 10000
+            });
+            setModal({ showModal: false });
+            loadData();
+          } else {
+            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message, {
+              autoClose: 10000
+            });
+          }
+        }
+      });
+    } else {
+      if (values.parent_id === 'Primary') {
+        form.append('parent_id', 0);
+      } else {
+        form.append(
+          'parent_id',
+          values.parent_id
+            ? values.parent_id
+            : modal?.modalData?.parent_name || 'Primary'
+        );
+      }
+      form.append('type_name', values.type_name);
+      form.append('remark', values.remark);
+      form?.append('is_active', values?.is_active);
+      form.append('type', selectedType);
+
+      await new TaskTicketTypeService()._updateType(id, form).then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            toast.success(res.data.message, {
+              autoClose: 10000
+            });
+            setModal({ showModal: false });
+            loadData();
+          } else {
+            toast.error(res.data.message, {
+              autoClose: 10000
+            });
+          }
+        }
+      });
     }
   };
-
   useEffect(() => {
     loadData();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -911,15 +883,10 @@ function TaskAndTicketTypeMaster(props) {
   }, [handleSearch, searchTerm]);
 
   useEffect(() => {
-    // Check if the modal is closed
     if (!modal.showModal) {
-      setIsMenuOpen(false); // Close the menu when modal is closed
-      // setSelectedOption(null);
+      setIsMenuOpen(false);
     }
   }, [modal.showModal]);
-
-  // Assuming your data is stored in a variable called `data`
-  // const labelsAndParentIDs = extractLabelsAndParentIDs(taskData);
 
   return (
     <div className="container-xxl">
@@ -939,7 +906,7 @@ function TaskAndTicketTypeMaster(props) {
                 onClick={() => {
                   if (!selectedType) {
                     alert('Please select a type first');
-                    return; // Exit the function if selectedType is not selected
+                    return;
                   }
                   const modalHeader =
                     selectedType === 'TASK'
@@ -950,8 +917,6 @@ function TaskAndTicketTypeMaster(props) {
                     modalData: '',
                     modalHeader: modalHeader
                   });
-
-                  // setSelectedValue(''); // Reset any selected value if needed
                 }}
               >
                 <i className="icofont-plus-circle me-2 fs-6"></i>Add
@@ -982,7 +947,7 @@ function TaskAndTicketTypeMaster(props) {
                 id="TASK"
                 value="TASK"
                 onClick={(e) => handleType(e)}
-                checked={selectedType === 'TASK'} // Set checked based on selected type
+                checked={selectedType === 'TASK'}
               />
               <label className="form-check-label" htmlFor="TASK">
                 Task Type
@@ -998,7 +963,7 @@ function TaskAndTicketTypeMaster(props) {
                 id="TICKET"
                 value="TICKET"
                 onClick={(e) => handleType(e)}
-                checked={selectedType === 'TICKET'} // Set checked based on selected type
+                checked={selectedType === 'TICKET'}
               />
               <label className="form-check-label" htmlFor="TICKET">
                 Ticket Type
@@ -1008,7 +973,6 @@ function TaskAndTicketTypeMaster(props) {
         </div>
       </div>
 
-      {/* Modal For Add and Edit Data */}
       <Modal
         centered
         show={modal.showModal}
@@ -1024,23 +988,147 @@ function TaskAndTicketTypeMaster(props) {
           <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <form
-            method="post"
-            onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(values) => {
+              if (handleForm) {
+                handleForm(values, modal.modalData ? modal.modalData.id : '');
+              } else {
+              }
+            }}
           >
-            <div className="deadline-form">
-              <div className="row g-3 mb-3">
-                {selectedType && selectedType === 'TICKET' ? (
-                  <div>
-                    <div>
-                      <label
-                        className="form-label font-weight-bold"
-                        readOnly={true}
-                      >
-                        Parent ticket Type: <Astrick color="red" size="13px" />
-                      </label>
-
+            {({
+              values,
+              errors,
+              touched,
+              handleChange,
+              handleBlur,
+              setFieldValue
+            }) => (
+              <Form>
+                <div className="deadline-form">
+                  <div className="row g-3 mb-3">
+                    {selectedType && selectedType === 'TICKET' ? (
                       <div>
+                        <div>
+                          <label
+                            className="form-label font-weight-bold"
+                            readOnly={true}
+                          >
+                            Parent ticket Type:{' '}
+                            <Astrick color="red" size="13px" />
+                          </label>
+
+                          <div
+                            style={{
+                              position: 'relative',
+                              display: 'inline-block',
+                              width: '100%'
+                            }}
+                          >
+                            <div
+                              className="form-control form-control-sm"
+                              onClick={(e) => handleSelectOptionClick(e)}
+                            >
+                              {values.parent_id
+                                ? values.parent_id
+                                : modal?.modalData?.parent_name !== null
+                                ? modal?.modalData?.parent_name
+                                : 'Primary'}
+                            </div>
+
+                            {isMenuOpen && (
+                              <div
+                                style={{
+                                  position: 'absolute',
+                                  width: '100%',
+                                  top: '100%',
+                                  transition: 'color 0.3s',
+                                  maxHeight: '220px',
+                                  msOverflowStyle: 'none',
+                                  '&::-webkit-scrollbar': {
+                                    display: 'none'
+                                  }
+                                }}
+                              >
+                                <CustomMenuListTicket
+                                  options={transformedOptionsTicket}
+                                  onSelect={(label, ID) => {
+                                    setFieldValue('parent_id', label);
+                                    handleSelect(label, ID);
+                                  }}
+                                  closeAllDropdowns={closeAllDropdowns}
+                                  isMenuOpen={isMenuOpen}
+                                  onClick={(e) => handleSelectOptionClick(e)}
+                                />
+                              </div>
+                            )}
+
+                            {touched.parent_id && errors.parent_id && (
+                              <small style={{ color: 'red' }}>
+                                {errors.parent_id}
+                              </small>
+                            )}
+                          </div>
+
+                          {parentTaskName && (
+                            <small style={{ color: 'red' }}>
+                              {parentTaskName}
+                            </small>
+                          )}
+
+                          <div className="col-sm-12 mt-2">
+                            <label className="form-label font-weight-bold">
+                              Ticket Type Name :
+                              <Astrick color="red" size="13px" />
+                            </label>
+
+                            <Field
+                              type="text"
+                              name="type_name"
+                              className="form-control form-control-sm"
+                              placeholder="Ticket Type Name"
+                              maxLength={30}
+                            />
+                            <ErrorMessage
+                              name="type_name"
+                              component="small"
+                              className="text-danger mt-1"
+                            />
+                          </div>
+
+                          <div className="col-sm-12 mt-2">
+                            <label className="form-label font-weight-bold">
+                              Remark :
+                            </label>
+
+                            <Field
+                              as="textarea"
+                              type="text"
+                              rows={4}
+                              className="form-control form-control-sm"
+                              id="remark"
+                              name="remark"
+                              maxLength={100}
+                            />
+                            <ErrorMessage
+                              name="remark"
+                              component="small"
+                              className="text-danger mt-1"
+                            />
+                          </div>
+                        </div>
+                      </div>
+                    ) : (
+                      <div>
+                        <label
+                          className="form-label font-weight-bold"
+                          readOnly={true}
+                        >
+                          Parent Task Type: <Astrick color="red" size="13px" />
+                        </label>
+
                         <div
                           style={{
                             position: 'relative',
@@ -1050,261 +1138,159 @@ function TaskAndTicketTypeMaster(props) {
                         >
                           <div
                             className="form-control form-control-sm"
-                            onClick={(e) => handleSelectOptionClick(e)}
+                            onClick={(e) => {
+                              handleSelectOptionClick(e);
+                              setFieldValue('parent_id', values.parent_id); // Set the selected parent type
+                            }}
                           >
-                            {selectedOption
-                              ? selectedOption
+                            {values.parent_id
+                              ? values.parent_id
                               : modal?.modalData?.parent_name !== null
                               ? modal?.modalData?.parent_name
-                              : 'Primary'}
+                              : ''}
                           </div>
+
                           {isMenuOpen && (
                             <div
                               style={{
                                 position: 'absolute',
-                                width: '100%', // Set the width to 100% to match the parent's width
+                                width: '100%',
                                 top: '100%',
-                                // color: isHovered ? "red" : "black",
                                 transition: 'color 0.3s',
-                                maxHeight: '220px', // Adjust the maxHeight here as needed
-                                // overflowY: "auto", // Enable vertical scrolling
-                                // scrollbarWidth: "none", // Hide scrollbar in Firefox
-                                msOverflowStyle: 'none', // Hide scrollbar in IE/Edge
+                                maxHeight: '220px',
+                                msOverflowStyle: 'none',
                                 '&::-webkit-scrollbar': {
-                                  display: 'none' // Hide scrollbar in Webkit browsers
+                                  display: 'none'
                                 }
                               }}
                             >
-                              <CustomMenuListTicket
-                                options={transformedOptionsTicket}
-                                onSelect={(label, ID) =>
-                                  handleSelect(label, ID)
-                                }
+                              <CustomMenuList
+                                options={transformedOptions}
+                                onSelect={(label, ID) => {
+                                  handleSelect(label, ID);
+                                  setFieldValue('parent_id', label);
+                                }}
+                                closeAllDropdowns={closeAllDropdowns}
+                                isMenuOpen={isMenuOpen}
                               />
                             </div>
                           )}
+
+                          {touched.parent_id && errors.parent_id && (
+                            <small style={{ color: 'red' }}>
+                              {errors.parent_id}
+                            </small>
+                          )}
                         </div>
-                        {parentTicketName && (
-                          <small
-                            style={{
-                              color: 'red'
-                            }}
-                          >
-                            {parentTicketName}
+
+                        {parentTaskName && (
+                          <small style={{ color: 'red' }}>
+                            {parentTaskName}
                           </small>
                         )}
-                      </div>
 
-                      <div className="col-sm-12 mt-2">
-                        <label className="form-label font-weight-bold">
-                          Ticket Type Name :<Astrick color="red" size="13px" />
-                        </label>
+                        <div className="col-sm-12 mt-2">
+                          <label className="form-label font-weight-bold">
+                            Task Type Name :<Astrick color="red" size="13px" />
+                          </label>
 
-                        <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          id="type_name"
-                          name="type_name"
-                          ref={typeNameRef}
-                          maxLength={100}
-                          required
-                          defaultValue={
-                            modal.modalData && modal?.modalData?.type_name
-                          }
-                        />
-                      </div>
-
-                      <div className="col-sm-12 mt-2">
-                        <label className="form-label font-weight-bold">
-                          Remark :
-                        </label>
-                        <textarea
-                          type="text"
-                          rows={4}
-                          className="form-control form-control-sm"
-                          id="remark"
-                          name="remark"
-                          maxLength={100}
-                          defaultValue={
-                            modal.modalData && modal.modalData.remark
-                          }
-                        />
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  <div>
-                    <label
-                      className="form-label font-weight-bold"
-                      readOnly={true}
-                    >
-                      Parent Task Type: <Astrick color="red" size="13px" />
-                    </label>
-
-                    <div
-                      style={{
-                        position: 'relative',
-                        display: 'inline-block',
-                        width: '100%'
-                      }}
-                    >
-                      <div
-                        className="form-control form-control-sm"
-                        onClick={(e) => handleSelectOptionClick(e)}
-                      >
-                        {selectedOption
-                          ? selectedOption
-                          : modal?.modalData?.parent_name !== null
-                          ? modal?.modalData?.parent_name
-                          : 'Primary'}
-                      </div>
-                      {isMenuOpen && (
-                        <div
-                          style={{
-                            position: 'absolute',
-                            width: '100%', // Set the width to 100% to match the parent's width
-                            top: '100%',
-                            transition: 'color 0.3s',
-                            maxHeight: '220px', // Adjust the maxHeight here as needed
-                            msOverflowStyle: 'none', // Hide scrollbar in IE/Edge
-                            '&::-webkit-scrollbar': {
-                              display: 'none' // Hide scrollbar in Webkit browsers
-                            }
-                          }}
-                        >
-                          <CustomMenuList
-                            options={transformedOptions}
-                            onSelect={(label, ID) => handleSelect(label, ID)}
-                            closeAllDropdowns={closeAllDropdowns}
-                            isMenuOpen={isMenuOpen}
-                            onClick={(e) => handleSelectOptionClick(e)}
+                          <Field
+                            type="text"
+                            name="type_name"
+                            className="form-control form-control-sm"
+                            placeholder="Task Type Name"
+                            maxLength={30}
+                          />
+                          <ErrorMessage
+                            name="type_name"
+                            component="small"
+                            className="text-danger mt-1"
                           />
                         </div>
-                      )}
 
-                      {parentTaskName && (
-                        <small
-                          style={{
-                            color: 'red'
-                          }}
-                        >
-                          {parentTaskName}
-                        </small>
-                      )}
-                    </div>
-
-                    <div className="col-sm-12 mt-2">
-                      <label className="form-label font-weight-bold">
-                        Task Type Name :<Astrick color="red" size="13px" />
-                      </label>
-
-                      <input
-                        type="text"
-                        className="form-control form-control-sm"
-                        id="type_name"
-                        name="type_name"
-                        ref={typeNameRef}
-                        maxLength={100}
-                        required
-                        defaultValue={
-                          modal.modalData && modal?.modalData?.type_name
-                        }
-                      />
-                    </div>
-
-                    <div className="col-sm-12 mt-2">
-                      <label className="form-label font-weight-bold">
-                        Remark :
-                      </label>
-                      <textarea
-                        type="text"
-                        rows={4}
-                        maxLength={100}
-                        className="form-control form-control-sm"
-                        id="remark"
-                        name="remark"
-                        defaultValue={modal.modalData && modal.modalData.remark}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <>
-                  {modal.modalData && (
-                    <div className="col-sm-12">
-                      <label className="form-label font-weight-bold">
-                        Status :<Astrick color="red" size="13px" />
-                      </label>
-                      <div className="row">
-                        <div className="col-md-2">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="is_active"
-                              id="is_active_1"
-                              value="1"
-                              defaultChecked={
-                                modal.modalData &&
-                                modal.modalData.is_active === 1
-                                  ? true
-                                  : !modal.modalData
-                                  ? true
-                                  : false
-                              }
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="is_active_1"
-                            >
-                              Active
-                            </label>
-                          </div>
-                        </div>
-                        <div className="col-md-1">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="is_active"
-                              id="is_active_0"
-                              value="0"
-                              readOnly={modal.modalData ? false : true}
-                              defaultChecked={
-                                modal.modalData &&
-                                modal.modalData.is_active === 0
-                                  ? true
-                                  : false
-                              }
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="is_active_0"
-                            >
-                              Deactive
-                            </label>
-                          </div>
+                        <div className="col-sm-12 mt-2">
+                          <label className="form-label font-weight-bold">
+                            Remark :
+                          </label>
+                          <Field
+                            as="textarea"
+                            type="text"
+                            rows={4}
+                            className="form-control form-control-sm"
+                            id="remark"
+                            name="remark"
+                            maxLength={100}
+                          />
+                          <ErrorMessage
+                            name="remark"
+                            component="small"
+                            className="text-danger mt-1"
+                          />
                         </div>
                       </div>
-                    </div>
-                  )}
-                </>
-              </div>
-            </div>
-            <Modal.Footer>
-              <ButtonComponent
-                type="submit"
-                text={modal?.modalData ? 'Update' : 'Submit'}
-              />
-              <ButtonComponent
-                type="button"
-                buttonColor="danger"
-                textColor="white"
-                getClick={handleButtonClick}
-                text="Cancel"
-              />
-            </Modal.Footer>
-          </form>
+                    )}
+
+                    <>
+                      {modal.modalData && (
+                        <div className="col-sm-12">
+                          <label className="form-label font-weight-bold">
+                            Status :<Astrick color="red" size="13px" />
+                          </label>
+                          <div className="row">
+                            <div className="col-md-2">
+                              <div className="form-check">
+                                <Field
+                                  type="radio"
+                                  className="form-check-input"
+                                  name="is_active"
+                                  value="1"
+                                />
+                                <label
+                                  className="form-check-label"
+                                  htmlFor="is_active_1"
+                                >
+                                  Active
+                                </label>
+                              </div>
+                            </div>
+                            <div className="col-md-1">
+                              <div className="form-check">
+                                <Field
+                                  type="radio"
+                                  className="form-check-input"
+                                  name="is_active"
+                                  value="0"
+                                />
+                                <label
+                                  className="form-check-label"
+                                  htmlFor="is_active_0"
+                                >
+                                  Deactive
+                                </label>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </>
+                  </div>
+                </div>
+                <Modal.Footer>
+                  <ButtonComponent
+                    type="submit"
+                    text={modal?.modalData ? 'Update' : 'Submit'}
+                  />
+                  <ButtonComponent
+                    type="button"
+                    buttonColor="danger"
+                    textColor="white"
+                    getClick={handleButtonClick}
+                    text="Cancel"
+                  />
+                </Modal.Footer>
+              </Form>
+            )}
+          </Formik>
         </Modal.Body>
       </Modal>
 
