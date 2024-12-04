@@ -1442,7 +1442,7 @@ export default function CreateTicketComponent() {
             </div>
           </div>
         )}
-        <div className="mt-3" style={{ textAlign: 'right' }}>
+        <div className="mt-3 text-right">
           {data.ticket_uploading === 'REGULAR' && (
             <button
               type="submit"

@@ -279,6 +279,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   };
 
   const handleQueryType = async (e) => {
+    if (!e || Object.entries(e).length === 0) return;
     setNotify(null);
     setDynamicForm(null);
     setDynamicFormDropdown(null);
@@ -323,6 +324,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
+    if (!e || Object.entries(e).length === 0) return;
     if (type === 'Select2' && nameField === 'customer_type_id') {
       setSelectedCustomer(e?.length);
     }
@@ -631,6 +633,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         <Select
                           id="query_type_id"
                           name="query_type_id"
+                          isClearable={true}
                           options={queryTypeDropdown}
                           ref={queryTypeDetail}
                           defaultValue={queryTypeDropdown.filter(
@@ -654,6 +657,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         <Select
                           id="dynamic_form_id"
                           name="dynamic_form_id"
+                          isClearable={true}
                           ref={dynamicDetail}
                           options={dynamicFormDropdown}
                           defaultValue={dynamicFormDropdown.filter(
@@ -668,6 +672,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         <Select
                           id="dynamic_form_id"
                           name="dynamic_form_id"
+                          isClearable={true}
                           ref={dynamicDetail}
                           defaultValue={selectedDynamicForm}
                           options={
@@ -691,6 +696,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                           id="template_id"
                           name="template_id"
                           options={templateDropdown}
+                          isClearable={true}
                           ref={templateDetail}
                           defaultValue={templateDropdown.filter(
                             (d) => data.template_id === d.value
@@ -884,6 +890,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                               (d) => data.department_id === d.value
                             )}
                             options={departmentDropdown}
+                            isClearable={true}
                             ref={departmentDropdownRef}
                             onChange={(e) => {
                               handleAutoChanges(e, 'Select2', 'department_id');
@@ -913,6 +920,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                               <Select
                                 isMulti={data.approach !== 'SP'}
                                 isSearchable={true}
+                                isClearable={true}
                                 name="user_id[]"
                                 className="basic-multi-select"
                                 classNamePrefix="select"

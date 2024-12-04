@@ -44,7 +44,7 @@ export default function InsightsCompletedTask() {
       setCompletedTask(null)
       setCompletedTask(temp1)
     }
-  
+
     else {
       alert("Please Search Name");
     }
@@ -69,6 +69,7 @@ export default function InsightsCompletedTask() {
               <input
                 type="text"
                 className="form-control"
+                id="dashboard_searchuserticket"
                 placeholder="Search by User Ticket...."
               ref={searchRef}
               onKeyDown={handleKeyDown}
@@ -145,4 +146,3 @@ export default function InsightsCompletedTask() {
 
 
 // created by Asmita Margaje
-

@@ -919,7 +919,7 @@ function TaskAndTicketTypeMaster(props) {
                   });
                 }}
               >
-                <i className="icofont-plus-circle me-2 fs-6"></i>Add
+                <i className="icofont-plus-circle me-2 fs-6"></i>Add Ticket/Task Type
               </button>
             </div>
           );

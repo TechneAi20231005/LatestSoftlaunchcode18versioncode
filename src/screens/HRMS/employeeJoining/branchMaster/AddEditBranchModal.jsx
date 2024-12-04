@@ -83,6 +83,7 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
                     component={CustomInput}
                     name="location_name"
                     label="Branch Name"
+                    id="branchmaster_branchname"
                     placeholder="Enter Branch Name"
                     requiredField
                   />
@@ -92,6 +93,7 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
                     component={CustomInput}
                     name="remark"
                     label="Remark"
+                    id="branchmaster_remark"
                     placeholder="Enter Remark"
                   />
                 </Col>
@@ -105,6 +107,7 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
                     component={CustomRadioButton}
                     type="radio"
                     name="is_active"
+                      id="branchmaster_active"
                     label="Active"
                     value="1"
                     inputClassName="me-1"
@@ -114,6 +117,7 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
                     type="radio"
                     name="is_active"
                     label="Deactive"
+                    id="branchmaster_deactive"
                     value="0"
                     inputClassName="me-1"
                   />
@@ -121,10 +125,10 @@ function AddEditBranchModal({ show, close, type, currentBranchData }) {
               </RenderIf>
 
               <div className="d-flex justify-content-end mt-3 gap-2">
-                <button className="btn btn-dark px-4" type="submit" disabled={!dirty}>
-                  {type === 'ADD' ? 'Save' : 'Update'}
+                <button className="btn btn-primary px-4" type="submit" disabled={!dirty}>
+                  {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>
-                <button onClick={close} className="btn btn-shadow-light px-3" type="button">
+                <button onClick={close} className="btn btn-danger px-3" type="button">
                   Cancel
                 </button>
               </div>

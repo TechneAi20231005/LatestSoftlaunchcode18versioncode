@@ -54,6 +54,7 @@ function CityComponent() {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 7)
   );
   //local state
+  const [isClearable, setIsClearable] = useState(true);
   const [stateDropdownData, setStateDropdownData] = useState([]);
   const [updateStatus, setUpdateStatus] = useState({});
 
@@ -205,6 +206,8 @@ function CityComponent() {
   };
 
   const handleCountryChange = (e) => {
+    if (!e || Object.entries(e).length === 0) return;
+
     setStateDropdownData(
       activeState &&
         activeState
@@ -370,6 +373,7 @@ function CityComponent() {
                     options={filteredCountryData && filteredCountryData}
                     id="country_id"
                     name="country_id"
+                    isClearable={true}
                     onChange={handleCountryChange}
                     defaultValue={
                       modal.modalData
@@ -389,6 +393,7 @@ function CityComponent() {
                   <Select
                     options={stateDropdownData}
                     id="state_id"
+                    isClearable={true}
                     name="state_id"
                     onChange={handleCountryChange}
                     defaultValue={
@@ -509,15 +514,11 @@ function CityComponent() {
                   padding: '8px'
                 }}
               >
-                Add
+                Submit
               </button>
             )}
             {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{ backgroundColor: '#484C7F' }}
-              >
+              <button type="submit" className="btn btn-primary text-white">
                 Update
               </button>
             ) : (

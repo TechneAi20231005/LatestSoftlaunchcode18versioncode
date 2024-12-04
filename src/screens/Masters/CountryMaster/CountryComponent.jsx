@@ -386,13 +386,9 @@ function CountryComponent() {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{
-                  backgroundColor: '#484C7F',
-                  width: '80px',
-                  padding: '8px'
-                }}
+
               >
-                Add
+                Submit
               </button>
             )}
 
@@ -400,7 +396,6 @@ function CountryComponent() {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: '#484C7F' }}
               >
                 Update
               </button>

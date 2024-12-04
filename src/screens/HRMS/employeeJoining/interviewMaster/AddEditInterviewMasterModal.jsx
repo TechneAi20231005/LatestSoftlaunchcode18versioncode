@@ -234,6 +234,7 @@ function AddEditInterviewMasterModal({
                     component={CustomReactSelect}
                     name="department_id"
                     label="Department"
+                    id="interview_department"
                     placeholder={
                       preferredDepartmentDropdownLoading === 'loading'
                         ? 'Loading...'
@@ -249,6 +250,7 @@ function AddEditInterviewMasterModal({
                     component={CustomReactSelect}
                     name="designation_id"
                     label="Designation"
+                    id="interview_designation"
                     placeholder={
                       preferredDesignationDropdownLoading
                         ? 'Loading...'
@@ -264,6 +266,7 @@ function AddEditInterviewMasterModal({
                     component={CustomDropdown}
                     name="experience_level"
                     label="Experience Level"
+                    id="interview_experience"
                     placeholder="Select"
                     requiredField
                     disabled={type === 'VIEW'}
@@ -343,6 +346,7 @@ function AddEditInterviewMasterModal({
                             component={CustomInput}
                             name={`step_details[${index}].step_title`}
                             label="Enter Step Title"
+                            id="interview_steptitle"
                             placeholder="Step Title"
                             requiredField
                             disabled={type === 'VIEW'}
@@ -354,6 +358,7 @@ function AddEditInterviewMasterModal({
                             component={CustomReactSelect}
                             name={`step_details[${index}].designation_id`}
                             label="Designation"
+                            id="interview_designation"
                             placeholder={
                               preferredDesignationDropdownLoading
                                 ? 'Loading...'
@@ -376,6 +381,7 @@ function AddEditInterviewMasterModal({
                             component={CustomReactSelect}
                             name={`step_details[${index}].employee_id`}
                             label="Name"
+                            id="interview_name"
                             placeholder={
                               isEmployeeMasterList === 'loading'
                                 ? 'Loading...'
@@ -408,6 +414,7 @@ function AddEditInterviewMasterModal({
                             type="email"
                             name={`step_details[${index}].employee_email`}
                             label="Email"
+                            id="interview_email"
                             placeholder="Enter Email Address"
                             requiredField
                             disabled
@@ -424,6 +431,7 @@ function AddEditInterviewMasterModal({
                   component={CustomInput}
                   name="remark"
                   label="Remark"
+                  id="interview_remark"
                   placeholder="Enter Remark"
                   disabled={type === 'VIEW'}
                 />
@@ -438,6 +446,7 @@ function AddEditInterviewMasterModal({
                     type="radio"
                     name="is_active"
                     label="Active"
+                    id="interview_active"
                     value="1"
                     inputClassName="me-1"
                     disabled={type === 'VIEW'}
@@ -447,6 +456,7 @@ function AddEditInterviewMasterModal({
                     type="radio"
                     name="is_active"
                     label="Deactive"
+                     id="interview_deactive"
                     value="0"
                     inputClassName="me-1"
                     disabled={type === 'VIEW'}
@@ -465,15 +475,15 @@ function AddEditInterviewMasterModal({
                 ) : (
                   <>
                     <button
-                      className="btn btn-dark px-4"
+                      className="btn btn-primary px-4"
                       type="submit"
                       disabled={!dirty}
                     >
-                      {type === 'ADD' ? 'Save' : 'Update'}
+                      {type === 'ADD' ? 'Submit' : 'Update'}
                     </button>
                     <button
                       onClick={close}
-                      className="btn btn-shadow-light px-3"
+                      className="btn btn-danger px-3"
                       type="button"
                     >
                       Cancel

@@ -70,7 +70,7 @@ function AddEditJobRoleMaster({ show, close, type, currentJobRoleData }) {
         >
           {({ dirty }) => (
             <Form>
-              <Row className="gap-3">
+              <Row className="gap-3 mt-2">
                 <Col sm={12}>
                   <Field
                     component={CustomInput}
@@ -115,15 +115,15 @@ function AddEditJobRoleMaster({ show, close, type, currentJobRoleData }) {
 
               <div className="d-flex justify-content-end gap-2 mt-3">
                 <button
-                  className="btn btn-dark px-4"
+                  className="btn btn-primary px-3"
                   type="submit"
                   disabled={!dirty}
                 >
-                  {type === 'ADD' ? 'Save' : 'Update'}
+                  {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>
                 <button
                   onClick={() => close()}
-                  className="btn btn-shadow-light px-3"
+                  className="btn px-3 btn-danger"
                   type="button"
                 >
                   Cancel
