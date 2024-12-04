@@ -36,6 +36,8 @@ import QueryTypeService from '../../../services/MastersService/QueryTypeService'
 
 function CreateDynamicForm() {
   const [notify, setNotify] = useState(null);
+  const [message, setMessage] = useState(false)
+  const [display, setDisplay] = useState('')
 
   const mainJson = {
     inputWidth: 'col-sm-6',
@@ -432,7 +434,12 @@ function CreateDynamicForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!message.trim()) {
+      setDisplay("Form Name is Required");
+      return
+    } else {
+      setDisplay(""); // Clear error
+    }
     const data = {
       template_name: e.target.template_name.value,
       data: JSON.stringify(rows)
@@ -541,11 +548,17 @@ function CreateDynamicForm() {
                           className="form-control form-control-sm"
                           name="template_name"
                           id="template_name"
-                          required
+                          // required
+                          onChange={(e) => {
+                            console.log(e?.target?.value,"values")
+                            setMessage(e?.target?.value)
+                            setDisplay(false)
+                          }}
                           onKeyPress={(e) => {
                             Validation.CharactersNumbersOnly(e);
                           }}
                         />
+                          {display && <div className="text-danger mt-1">{display}</div>}
                       </div>
                     </div>
 

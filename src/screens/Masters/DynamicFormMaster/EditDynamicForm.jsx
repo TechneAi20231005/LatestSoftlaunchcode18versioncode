@@ -35,6 +35,8 @@ function EditDynamicForm() {
   const formId = id;
 
   const [data, setData] = useState();
+  const [message, setMessage] = useState("");
+  const [display, setDisplay] = useState("");
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -406,7 +408,12 @@ function EditDynamicForm() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+    if (!message.trim()) {
+      setDisplay("Form Name is Required");
+      return;
+    } else {
+      setDisplay(""); // Clear error
+    }
     const data = {
       template_name: e.target.template_name.value,
       is_active: e.target.is_active.value,
@@ -456,6 +463,7 @@ function EditDynamicForm() {
     const res = await dynamicFormService.getDynamicFormById(formId);
     if (res?.status === 200 && res?.data?.status === 1) {
       setData(res?.data?.data);
+      setMessage(res?.data?.data?.template_name)
       setRows(res?.data?.data?.data);
     }
   }, [dispatch, formId]);
@@ -535,9 +543,16 @@ function EditDynamicForm() {
                           className="form-control form-control-sm"
                           name="template_name"
                           id="template_name"
-                          required
-                          defaultValue={data && data.template_name}
+                          // required
+                          onChange={(e) => {
+                            setMessage(e.target.value);
+                            setDisplay("");
+                          }}
+                          value={message}
+
+                          // defaultValue={data && data.template_name}
                         />
+                         {display && <div className="text-danger mt-1">{display}</div>}
                       </div>
                     </div>
 
