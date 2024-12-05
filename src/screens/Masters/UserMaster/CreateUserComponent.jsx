@@ -31,6 +31,7 @@ import { getDesignationDataListThunk } from '../DesignationMaster/DesignationAct
 import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
 import { getRoleData } from '../RoleMaster/RoleMasterAction';
 import { toast } from 'react-toastify';
+import { getJobRoleMasterListThunk } from '../../../redux/services/jobRoleMaster';
 
 function CreateUserComponent({ match }) {
   const [tabKey, setTabKey] = useState('All_Tickets');
@@ -81,6 +82,19 @@ function CreateUserComponent({ match }) {
   const stateDropdown = useSelector(
     (DashbordSlice) => DashbordSlice.dashboard.activeState
   );
+
+  const { jobRoleMasterList, isLoading } = useSelector(
+    (state) => state?.jobRoleMaster
+  );
+
+  const jobRoleDropDown =
+    jobRoleMasterList &&
+    jobRoleMasterList
+      ?.filter((d) => d.is_active === 1)
+      .map((i) => ({
+        value: i.id,
+        label: i.job_role
+      }));
 
   const options = [
     { value: 'MY_TICKETS', label: 'My Tickets' },
@@ -147,7 +161,8 @@ function CreateUserComponent({ match }) {
     confirmed_PassErr: '',
     roleErr: '',
     designationErr: '',
-    departmentErr: ''
+    departmentErr: '',
+    jobRoleErr: ''
   });
 
   function checkingValidation(form) {
@@ -160,6 +175,7 @@ function CreateUserComponent({ match }) {
     var selectPassword = form.getAll('password')[0];
     // var selectWhatsapp = form.getAll('whats_app_contact_no')[0];
     var selectRole = form.getAll('role_id')[0];
+    var selectJobRole = form.getAll('job_role')[0];
     var selectDesignation = form.getAll('designation_id')[0];
 
     let flag = 0;
@@ -192,6 +208,9 @@ function CreateUserComponent({ match }) {
       flag = 1;
     } else if (selectRole === '') {
       setInputState({ ...state, roleErr: ' Please Select role' });
+      flag = 1;
+    } else if (selectJobRole === '') {
+      setInputState({ ...state, jobRoleErr: ' Please Select job role' });
       flag = 1;
     } else if (selectDesignation === '') {
       setInputState({ ...state, designationErr: ' Please Select designation' });
@@ -353,9 +372,15 @@ function CreateUserComponent({ match }) {
   };
 
   const [selectRole, setSelctRole] = useState(null);
+  const [selectJobRole, setSelcJobtRole] = useState(null);
+
   const handleSelectRole = (e) => {
     const newValue = e;
     setSelctRole(newValue);
+  };
+  const handleSelectJobRole = (e) => {
+    const newValue = e;
+    setSelcJobtRole(newValue);
   };
   const handleForm = async (e) => {
     e.preventDefault();
@@ -723,6 +748,10 @@ function CreateUserComponent({ match }) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
+
+  useEffect(() => {
+    dispatch(getJobRoleMasterListThunk());
+  }, []);
 
   return (
     <div className="container-xxl">
@@ -1268,8 +1297,48 @@ function CreateUserComponent({ match }) {
                         )}
                       </div>
                     </div>
+                    <div
+                      className="form-group row mt-4"
+                      style={{ position: 'relative', display: 'flex' }}
+                    >
+                      <label className="col-sm-2 col-form-label">
+                        <b>
+                          Select Job Role : <Astrick color="red" />
+                        </b>
+                      </label>
+                      <div className="col-sm-3">
+                        <Select
+                          id="job_role"
+                          name="job_role"
+                          // defaultValue={filteredRoles}
+                          value={selectJobRole}
+                          // options={filteredRoles}
+                          options={jobRoleDropDown}
+                          onChange={(e) => {
+                            handleSelectJobRole(e);
+                            if (e.value === '') {
+                              setInputState({
+                                ...state,
+                                jobRoleErr: 'Please Select Job Role'
+                              });
+                            } else {
+                              setInputState({ ...state, jobRoleErr: '' });
+                            }
+                          }}
+                        />
+                        {inputState && (
+                          <small
+                            style={{
+                              color: 'red',
+                              position: 'relative'
+                            }}
+                          >
+                            {inputState.jobRoleErr}
+                          </small>
+                        )}
+                      </div>
+                    </div>
                   </div>
-                  {/* CARD BODY */}
                 </div>
                 {/* CARD */}
 

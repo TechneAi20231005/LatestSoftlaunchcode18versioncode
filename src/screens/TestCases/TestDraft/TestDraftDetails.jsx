@@ -105,6 +105,10 @@ function TestDraftDetails(props) {
     (dashboardSlice) => dashboardSlice.dashboard.getAllTesterDataList
   );
 
+  const filterTestData = testerData?.filter(
+    (d) => d?.value != localStorage?.getItem('id')
+  );
+
   const [state, localDispatch] = useReducer(localReducer, initialState);
 
   const {
@@ -1706,7 +1710,6 @@ function TestDraftDetails(props) {
           Send To Reviewer
         </button>
       </div>
-
       <Modal
         centered
         show={sendToReviewerModal.showModal}
@@ -1726,13 +1729,13 @@ function TestDraftDetails(props) {
               Reviewer : <Astrick color="red" size="13px" />
             </b>
           </label>
-          {testerData?.length > 0 && (
+          {filterTestData?.length > 0 && (
             <Select
               type="text"
               className="form-control form-control-sm"
               id="reviewer_id"
               name="reviewer_id"
-              options={testerData}
+              options={filterTestData}
               required
               onChange={(e) => {
                 const selectedId = e?.value;
