@@ -179,6 +179,7 @@ import TestCaseHistoryComponent from './TestCases/TestDraft/TestCaseHistoryCompo
 import TestDraftComponent from './TestCases/TestDraft/TestDraftComponent';
 import TestBankComponent from './TestCases/TestBank/TestBankComponent';
 import ProjectWiseModuleHistory from './ConsolidatedView/ProjectWiseModuleHistory';
+import PowerBidashboard from './Dashboard/PowerBidashboard';
 
 class MainIndex extends React.Component {
   render() {
@@ -225,6 +226,11 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/Customer`}
               element={<CustomerComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/PowerBi`}
+              element={<PowerBidashboard />}
             />
             <Route
               exact
