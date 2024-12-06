@@ -150,10 +150,6 @@ function DepartmentComponent() {
     }
   ];
 
-  // const initialValue={
-  //   modal.modal.data
-  // }
-
   const fields = [
     {
       name: 'department',
@@ -166,8 +162,7 @@ function DepartmentComponent() {
       name: 'remark',
       label: 'Remark',
       max: 1000,
-      required: false,
-      alphaNumeric: true
+      required: false
     }
   ];
 
@@ -327,14 +322,6 @@ function DepartmentComponent() {
                         name="department"
                         component="div"
                         className="text-danger small"
-                        onPaste={(e) => {
-                          e.preventDefault();
-                          return false;
-                        }}
-                        onCopy={(e) => {
-                          e.preventDefault();
-                          return false;
-                        }}
                       />
                     </div>
 
