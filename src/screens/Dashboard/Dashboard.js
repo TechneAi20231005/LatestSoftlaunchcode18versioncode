@@ -849,6 +849,7 @@ export default function HrDashboard(props) {
             <Accordion>
               <Accordion.Item eventKey="0">
                 <Accordion.Header
+                  className="accordion-header"
                   onClick={() => setIsExpanded(!isExpanded)}
                   style={{
                     display: 'flex',
