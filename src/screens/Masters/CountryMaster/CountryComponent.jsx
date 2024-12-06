@@ -209,6 +209,15 @@ function CountryComponent() {
     handleSearch();
   }, [searchTerm, handleSearch]);
 
+  const initialValues = {
+    id: modal.modalData?.id || '',
+    country: modal.modalData?.country || '',
+    remark: modal.modalData?.remark || '',
+    is_active:
+      modal?.modalData?.is_active !== undefined
+        ? String(modal?.modalData?.is_active)
+        : '1'
+  };
   const fields = [
     {
       name: 'country',
@@ -221,8 +230,7 @@ function CountryComponent() {
       name: 'remark',
       label: 'Remark',
       max: 1000,
-      required: false,
-      alphaNumeric: true
+      required: false
     }
   ];
 
@@ -288,15 +296,7 @@ function CountryComponent() {
 
       <Modal centered show={modal.showModal}>
         <Formik
-          initialValues={{
-            id: modal.modalData?.id || '',
-            country: modal.modalData?.country || '',
-            remark: modal.modalData?.remark || '',
-            is_active:
-              modal.modalData?.is_active !== undefined
-                ? modal.modalData.is_active
-                : 1
-          }}
+          initialValues={initialValues}
           validationSchema={validationSchema}
           onSubmit={(values) => {
             handleForm(values, modal.modalData ? modal.modalData.id : '');
@@ -332,22 +332,9 @@ function CountryComponent() {
                         type="text"
                         className="form-control form-control-sm"
                         id="country"
-                        maxLength={25}
-                        minLength={4}
                         defaultValue={
                           modal.modalData ? modal.modalData.country : ''
                         }
-                        onKeyPress={(e) => {
-                          Validation.CharacterWithSpace(e);
-                        }}
-                        onPaste={(e) => {
-                          e.preventDefault();
-                          return false;
-                        }}
-                        onCopy={(e) => {
-                          e.preventDefault();
-                          return false;
-                        }}
                       />
                       {errors.country && touched.country ? (
                         <div className="text-danger">{errors.country}</div>
@@ -362,9 +349,6 @@ function CountryComponent() {
                         type="text"
                         className="form-control form-control-sm"
                       />
-                      {errors.remark && touched.remark ? (
-                        <div className="text-danger">{errors.remark}</div>
-                      ) : null}
                     </div>
                     {modal.modalData && (
                       <div className="col-sm-12">
@@ -373,33 +357,48 @@ function CountryComponent() {
                         </label>
                         <div className="row">
                           <div className="col-md-2">
-                            <label className="form-check-label">
+                            <div className="form-check">
                               <Field
-                                id="is_active_1"
+                                className="form-check-input"
                                 type="radio"
                                 name="is_active"
+                                id="is_active_1"
                                 value="1"
-                                className="form-check-input"
+                                defaultChecked={
+                                  modal.modalData &&
+                                  modal.modalData.is_active === 1
+                                    ? true
+                                    : !modal.modalData
+                                    ? true
+                                    : false
+                                }
                               />
-                              Active
-                            </label>
+                              <label
+                                className="form-check-label"
+                                htmlFor="is_active_1"
+                              >
+                                Active
+                              </label>
+                            </div>
                           </div>
                           <div className="col-md-2">
-                            <label className="form-check-label">
+                            <div className="form-check">
                               <Field
+                                className="form-check-input"
                                 type="radio"
                                 name="is_active"
-                                value="0"
                                 id="is_active_0"
-                                className="form-check-input"
+                                value="0"
                               />
-                              Deactive
-                            </label>
+                              <label
+                                className="form-check-label"
+                                htmlFor="is_active_0"
+                              >
+                                Deactive
+                              </label>
+                            </div>
                           </div>
                         </div>
-                        {errors.is_active && touched.is_active ? (
-                          <div className="text-danger">{errors.is_active}</div>
-                        ) : null}
                       </div>
                     )}
                   </div>

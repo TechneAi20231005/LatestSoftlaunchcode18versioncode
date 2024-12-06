@@ -207,7 +207,6 @@ function StateComponent() {
   }, [searchTerm, handleSearch]);
 
   const fields = [
-    // { name: 'project_id', label: 'Project name', required: true },
     {
       name: 'country_id',
       label: 'Country name',
@@ -226,8 +225,7 @@ function StateComponent() {
       name: 'remark',
       label: 'Remark',
       max: 1000,
-      required: false,
-      alphaNumeric: true
+      required: false
     }
   ];
 
@@ -396,12 +394,6 @@ function StateComponent() {
                         className="form-control form-control-sm"
                         id="remark"
                         name="remark"
-                        maxLength={50}
-                      />
-                      <ErrorMessage
-                        name="remark"
-                        component="div"
-                        className="text-danger"
                       />
                     </div>
 

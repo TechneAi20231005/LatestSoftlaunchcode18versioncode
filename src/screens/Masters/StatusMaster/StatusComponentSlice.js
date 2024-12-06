@@ -34,6 +34,7 @@ export const statusMasterSlice = createSlice({
       state.showLoaderModal = action.payload;
     },
     handleModalOpen: (state, action) => {
+      state.notify = null;
       state.modal = action.payload;
     },
     handleModalClose: (state, action) => {
@@ -66,8 +67,6 @@ export const statusMasterSlice = createSlice({
 
         let sortStatusData = [];
         for (const key in getStatusData) {
-
-
           if (getStatusData[key].id) {
             sortStatusData.push({
               value: getStatusData[key].id,
@@ -84,12 +83,9 @@ export const statusMasterSlice = createSlice({
         let exportStatusData = [];
         for (const i in getStatusData) {
           exportStatusData.push({
-
-
             Sr: getStatusData[i].counter,
             status_Name: getStatusData[i].status,
             Status: getStatusData[i].is_active ? 'Active' : 'Deactive',
-
 
             created_at: getStatusData[i].created_at,
             created_by: getStatusData[i].created_by,
