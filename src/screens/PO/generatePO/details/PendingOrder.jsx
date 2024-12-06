@@ -70,11 +70,7 @@ function PendingOrder() {
       name: 'Pending Quantity',
       selector: (row, index) =>
         row?.open_qty ? (
-          <p className="bg-warning px-1">
-            {Number(row?.open_qty) - Number(row?.total_po_qty) > 0
-              ? Number(row?.open_qty) - Number(row?.total_po_qty)
-              : 0}
-          </p>
+          <p className="bg-warning px-1">{Number(row?.open_qty)}</p>
         ) : (
           '---'
         ),
