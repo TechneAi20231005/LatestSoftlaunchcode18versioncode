@@ -376,19 +376,12 @@ function DepartmentComponent() {
           </Modal.Body>
           <Modal.Footer>
             {!modal.modalData && (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-
-              >
-             Submit
+              <button type="submit" className="btn btn-primary text-white">
+                Submit
               </button>
             )}
             {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-              >
+              <button type="submit" className="btn btn-primary text-white">
                 Update
               </button>
             ) : (
