@@ -148,7 +148,8 @@ function DesignationComponent() {
     {
       name: 'designation',
       label: 'Designation name',
-      max: 100,
+      max: 31,
+      min: 3,
       required: true,
       alphaNumeric: true
     },
