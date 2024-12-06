@@ -148,7 +148,8 @@ function DesignationComponent() {
     {
       name: 'designation',
       label: 'Designation name',
-      max: 100,
+      max: 31,
+      min: 3,
       required: true,
       alphaNumeric: true
     },
@@ -157,7 +158,7 @@ function DesignationComponent() {
       label: 'Remark',
       max: 1000,
       required: false,
-      alphaNumeric: true
+      alphaNumeric: false
     }
   ];
 
@@ -319,14 +320,6 @@ function DesignationComponent() {
                         name="designation"
                         component="div"
                         className="text-danger small"
-                        onPaste={(e) => {
-                          e.preventDefault();
-                          return false;
-                        }}
-                        onCopy={(e) => {
-                          e.preventDefault();
-                          return false;
-                        }}
                       />
                     </div>
 
