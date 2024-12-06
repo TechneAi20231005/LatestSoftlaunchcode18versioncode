@@ -441,65 +441,63 @@ function ProjectComponent() {
   );
 }
 
-function ProjectDropdown(props) {
+function ProjectDropdown({ field, form, ...props }) {
   const [data, setData] = useState(null);
+
   useEffect(() => {
     const tempData = [];
     new ProjectService().getProject().then((res) => {
       if (res.status === 200) {
         let counter = 1;
-        var data = res.data.data.filter((d) => d.is_active === 1);
-
-        data.filter((d) => d.is_active === 1);
-        for (const key in data) {
+        const activeData = res.data.data.filter((d) => d.is_active === 1);
+        for (const key in activeData) {
           tempData.push({
             counter: counter++,
-            id: data[key].id,
-            project_name: data[key].project_name
+            id: activeData[key].id,
+            project_name: activeData[key].project_name
           });
         }
-        setData(null);
         setData(tempData);
       }
     });
   }, []);
 
+  const handleChange = (e) => {
+    const value = e.target.value;
+    form.setFieldValue(field.name, value); // Update Formik value
+  };
+
+  const error = form.errors[field.name];
+  const touched = form.touched[field.name];
+
   return (
     <>
-      {data && (
+      {data ? (
         <select
           className="form-control form-control-sm"
           id={props.id}
-          name={props.name}
-          onChange={props.getChangeValue}
-          required={props.required ? true : false}
+          name={field.name}
+          value={field.value || props.defaultValue || ""} // Controlled by Formik or defaultValue
+          onChange={handleChange}
+          onBlur={field.onBlur}
         >
-          {props.defaultValue === 0 && (
-            <option value="" selected>
-              Select Project
+          {/* Default "Select Project" option */}
+          <option value="" disabled>
+            Select Project
+          </option>
+
+          {/* Options populated dynamically */}
+          {data.map((item, i) => (
+            <option key={i} value={item.id}>
+              {item.project_name}
             </option>
-          )}
-          {props.defaultValue !== 0 && <option value="">Select Project</option>}
-          {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue === item.id) {
-              return (
-                <option key={i} value={item.id} selected>
-                  {item.project_name}
-                </option>
-              );
-            } else {
-              return (
-                <option key={i} value={item.id}>
-                  {item.project_name}
-                </option>
-              );
-            }
-          })}
+          ))}
         </select>
+      ) : (
+        <p>Loading...</p>
       )}
-      {!data && <p> Loading....</p>}
+      {touched && error && <div className="text-danger">{error}</div>}
     </>
   );
 }
-
 export { ProjectComponent, ProjectDropdown };
