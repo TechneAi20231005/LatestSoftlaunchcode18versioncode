@@ -369,7 +369,6 @@ function RoleComponent({ location }) {
                         name="role"
                         id="role"
                         className="form-control form-control-sm"
-                        maxLength="25"
                       />
                       <ErrorMessage
                         name="role"
@@ -387,7 +386,6 @@ function RoleComponent({ location }) {
                         name="remark"
                         id="remark"
                         className="form-control form-control-sm"
-                        maxLength="50"
                       />
                       <ErrorMessage
                         name="remark"
