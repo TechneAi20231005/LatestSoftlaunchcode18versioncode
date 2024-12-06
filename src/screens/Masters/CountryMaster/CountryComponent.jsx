@@ -222,7 +222,8 @@ function CountryComponent() {
     {
       name: 'country',
       label: 'Country name',
-      max: 100,
+      max: 25,
+      min: 3,
       required: true,
       alphaNumeric: true
     },
@@ -230,7 +231,8 @@ function CountryComponent() {
       name: 'remark',
       label: 'Remark',
       max: 1000,
-      required: false
+      required: false,
+      alphaNumeric: false
     }
   ];
 
