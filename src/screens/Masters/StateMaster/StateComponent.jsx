@@ -395,6 +395,11 @@ function StateComponent() {
                         id="remark"
                         name="remark"
                       />
+                      <ErrorMessage
+                        name="remark"
+                        component="div"
+                        className="text-danger"
+                      />
                     </div>
 
                     {modal.modalData && (
