@@ -29,6 +29,7 @@ export const customerMasterSlice = createSlice({
       state.showLoaderModal = action.payload;
     },
     handleModalOpen: (state, action) => {
+      state.notify = null;
       state.modal = action.payload;
     },
     handleModalClose: (state, action) => {
