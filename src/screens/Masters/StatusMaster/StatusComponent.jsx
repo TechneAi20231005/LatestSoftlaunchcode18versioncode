@@ -167,7 +167,7 @@ function StatusComponent() {
       label: 'Remark',
       max: 1000,
       required: false,
-      alphaNumeric: true
+      alphaNumeric: false
     }
   ];
 

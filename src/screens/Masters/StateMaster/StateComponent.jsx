@@ -225,7 +225,8 @@ function StateComponent() {
       name: 'remark',
       label: 'Remark',
       max: 1000,
-      required: false
+      required: false,
+      alphaNumeric: false
     }
   ];
 
@@ -238,7 +239,7 @@ function StateComponent() {
   const initialValues = {
     country_id: valueof?.value || '',
     state: modal.modalData ? modal.modalData?.state : '',
-    remark: modal.modalData ? modal.modalData?.remark : '',
+    remark: modal.modalData?.remark || '',
     is_active:
       modal?.modalData?.is_active !== undefined
         ? String(modal?.modalData?.is_active)
@@ -366,18 +367,6 @@ function StateComponent() {
                         className="form-control form-control-sm"
                         id="state"
                         name="state"
-                        maxLength={25}
-                        onKeyPress={(e) => {
-                          Validation.CharacterWithSpace(e);
-                        }}
-                        onPaste={(e) => {
-                          e.preventDefault();
-                          return false;
-                        }}
-                        onCopy={(e) => {
-                          e.preventDefault();
-                          return false;
-                        }}
                       />
                       <ErrorMessage
                         name="state"
