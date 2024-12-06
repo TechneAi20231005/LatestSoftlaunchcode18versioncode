@@ -185,7 +185,8 @@ function CityComponent() {
     {
       name: 'city',
       label: 'City name',
-      max: 100,
+      max: 50,
+      min: 3,
       required: true,
       alphaNumeric: true
     },
@@ -486,7 +487,6 @@ function CityComponent() {
                         id="city"
                         name="city"
                         className="form-control form-control-sm"
-                        maxLength="25"
                       />
                       <ErrorMessage
                         name="city"
@@ -505,7 +505,6 @@ function CityComponent() {
                         name="remark"
                         id="remark"
                         className="form-control form-control-sm"
-                        maxLength="50"
                       />
                       <ErrorMessage
                         name="remark"
