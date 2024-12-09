@@ -55,6 +55,20 @@ function MenuComponent() {
       };
     });
 
+    const exportData = menuMasterList?.data?.data?.map((item,i)=> {
+      return {
+        "Sr" : i + 1,
+        "tenant_id" : item?.tenant_id,
+        "parent_name" : item?.name || "-",
+        "remark" : item?.remark || "-",
+       "is_active": item?.is_active === 1 ? "Active" : "Deactive",
+       "created_at" : item?.created_at || "-",
+       "created_by_name": item?.created_by_name || "-",
+       "updated_by_name" : item?.updated_by_name || "-"
+      }
+    })
+
+
   const columns = [
     {
       name: 'Action',
@@ -156,8 +170,9 @@ function MenuComponent() {
           handleSearch={handleSearch}
           handleReset={handleReset}
           placeholder="Search by menu name...."
+          exportFileName="Menu Master Record"
+          exportData={exportData}
           // exportFileName="Menu Master Record"
-
           showExportButton={true}
         />
       </div>
