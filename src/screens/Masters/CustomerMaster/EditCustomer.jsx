@@ -16,6 +16,8 @@ import Select from 'react-select';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { toast } from 'react-toastify';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { Field, Form, Formik, ErrorMessage } from 'formik';
 
 function EditCustomer() {
   const history = useNavigate();
@@ -49,6 +51,7 @@ function EditCustomer() {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
+            console.log(res.data.data, "res")
             setData(res.data.data);
           } else {
             setNotify({ type: 'danger', message: res.data.message });
@@ -162,41 +165,52 @@ function EditCustomer() {
     }
   };
 
-  const handleForm = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    var flag = 1;
+  const handleForm = async (values) => {
+    // e.preventDefault();
+    const formData = new FormData();
+    formData.append('address', values.address);
+    formData.append('city_id', values.city_id);
+    formData.append('contact_no', values.contact_no);
+    formData.append('country_id', values.country_id);
+    formData.append('customer_type_id', values.customer_type_id);
+    formData.append('email_id', values.email_id);
+    formData.append('name', values.name);
+    formData.append('pincode', values.pincode);
+    formData.append('state_id', values.state_id);
+    formData.append('remark', values.remark);
+    formData.append('is_active', values.is_active);
+    // var flag = 1;
 
-    var customerType = formData.getAll('customer_type_id');
-    var selectEmail = formData.getAll('email_id');
-    var selectCountry = formData.getAll('country_id');
-    var selectState = formData.getAll('state_id');
-    var selectCity = formData.getAll('city_id');
+    // var customerType = formData.getAll('customer_type_id');
+    // var selectEmail = formData.getAll('email_id');
+    // var selectCountry = formData.getAll('country_id');
+    // var selectState = formData.getAll('state_id');
+    // var selectCity = formData.getAll('city_id');
 
-    if (
-      customerType === '' ||
-      selectEmail === '' ||
-      selectCountry === '' ||
-      selectState === '' ||
-      selectCity === ''
-    ) {
-      flag = 0;
-      setNotify(null);
-      if (customerType === '') {
-        alert('Please Select Customer Type');
-      } else if (selectEmail === '') {
-        alert('Please Select Email');
-      } else if (selectCountry === '') {
-        alert('Please Select Country');
-      } else if (selectState === '') {
-        alert('Please Select State');
-      } else if (selectCity === '') {
-        alert('Please Select City');
-      } else {
-      }
-    }
+    // if (
+    //   customerType === '' ||
+    //   selectEmail === '' ||
+    //   selectCountry === '' ||
+    //   selectState === '' ||
+    //   selectCity === ''
+    // ) {
+    //   flag = 0;
+    //   setNotify(null);
+    //   if (customerType === '') {
+    //     alert('Please Select Customer Type');
+    //   } else if (selectEmail === '') {
+    //     alert('Please Select Email');
+    //   } else if (selectCountry === '') {
+    //     alert('Please Select Country');
+    //   } else if (selectState === '') {
+    //     alert('Please Select State');
+    //   } else if (selectCity === '') {
+    //     alert('Please Select City');
+    //   } else {
+    //   }
+    // }
 
-    if (flag === 1) {
+    // if (flag === 1) {
       setNotify(null);
       await new CustomerService()
         .updateCustomer(customerId, formData)
@@ -251,7 +265,7 @@ function EditCustomer() {
             errorObject.data.message
           );
         });
-    }
+    // }
   };
 
   const handleCountryChange = (e) => {
@@ -264,7 +278,7 @@ function EditCustomer() {
     setUpdateStatus(newStatus);
     setStateName(null);
     setCityName(null);
-    setCityDropdown(null);
+    // setCityDropdown(null);
   };
 
   const handleStateChange = (e) => {
@@ -328,6 +342,43 @@ function EditCustomer() {
     }
   }, [data, cityDropdown, checkRole, updateStatus, cityName]);
 
+  let customerdata = data &&
+    customerType?.find(
+      (d) => d.value === Number(data.customer_type_id)
+    )
+    console.log(customerdata,"customerdata")
+
+  const initialValue = {
+    name: data ? data?.name :'',
+    customer_type_id: data?.customer_type_id ||  '',
+    email_id: data ? data?.email_id : '',
+    contact_no: data ? data?.contact_no : '',
+    remark:  data?.remark || '',
+    address: data ? data?.address : '',
+    pincode: data ? data?.pincode : '',
+    country_id: data?.country_id || '',
+    state_id: data?.state_id || '',
+    city_id: data?.city_id || '',
+    is_active:
+      data?.is_active !== undefined
+        ? data?.is_active.toString()
+        : '1'
+  }
+  const fields = [
+    { name: 'name', label: 'Customer name', required: true, alphaNumeric: true, max: 100 },
+    { name: 'customer_type_id', label: 'Customer Type', required: true },
+    { name: 'email_id', label: 'Email Id', email: true },
+    { name: 'contact_no', label: '', phone: true },
+    { name: 'address', label: 'Address', max: 1000,  required: true, alphaNumeric: true },
+    { name: 'pincode', label: '', pincode: true },
+    { name: 'country_id', label: 'Country Name', required: true },
+    { name: 'state_id', label: 'State Name', required: true },
+    { name: 'city_id', label: 'City Name', required: true },
+    { name: 'remark', label: 'Remark', alphaNumeric: true, required: false },
+  ];
+
+  const validationSchema = CustomValidation(fields);
+
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
@@ -337,7 +388,18 @@ function EditCustomer() {
       <div className="row clearfix g-3">
         <div className="col-sm-12">
           {data && (
-            <form onSubmit={handleForm}>
+             <Formik
+             initialValues={initialValue}
+             validationSchema={validationSchema}
+             onSubmit={(values) => {
+              console.log(values,"values")
+               handleForm(values);
+               // setOtpModal(true);
+             }}
+             >
+               {({ isSubmitting, setFieldValue, values}) => (
+               <Form>
+            {/* <form onSubmit={handleForm}> */}
               {/* ********* MAIN DATA ********* */}
               <div className="card mt-2">
                 <div className="card-header bg-primary text-white p-2">
@@ -351,19 +413,24 @@ function EditCustomer() {
                       </b>
                     </label>
                     <div className="col-sm-4">
-                      <input
+                      <Field
                         type="text"
                         className="form-control form-control-sm"
                         id="name"
                         name="name"
                         placeholder="Customer Name"
                         maxLength={30}
-                        required
-                        defaultValue={data ? data.name : null}
+                        // required
+                        // defaultValue={data ? data.name : null}
                         onKeyPress={(e) => {
                           Validation.CharactersOnly(e);
                         }}
                       />
+                       <ErrorMessage
+                          name="name"
+                          component="div"
+                          className="text-danger"
+                        />
                     </div>
                   </div>
 
@@ -375,19 +442,29 @@ function EditCustomer() {
                     </label>
                     <div className="col-sm-4">
                       {customerType && data.customer_type_id && (
-                        <Select
+                        <Field
                           options={customerType}
                           name="customer_type_id"
+                          component={Select}
                           id="customer_type_id"
-                          required
-                          defaultValue={
+                          onChange={(option)=> {
+                            setFieldValue('customer_type_id', option?.value)
+                          }}
+                          // required
+                          value={
                             data &&
-                            customerType.filter(
-                              (d) => d.value === data.customer_type_id
+                            customerType?.find(
+                              (d) => d.value === Number(values.customer_type_id)
                             )
                           }
                         />
+
                       )}
+                       <ErrorMessage
+                          name="customer_type_id"
+                          component="div"
+                          className="text-danger"
+                        />
                     </div>
                   </div>
 
@@ -398,22 +475,27 @@ function EditCustomer() {
                       </b>
                     </label>
                     <div className="col-sm-4">
-                      <input
+                      <Field
                         type="text"
                         className="form-control form-control-sm"
                         id="email_id"
                         name="email_id"
                         placeholder="Email Address"
-                        required
-                        onChange={handleEmail}
+                        // required
+                        // onChange={handleEmail}
                         onKeyPress={(e) => {
                           Validation.emailOnly(e);
                         }}
-                        defaultValue={data.email_id}
+                        // defaultValue={data.email_id}
                       />
-                      {mailError && (
+                      {/* {mailError && (
                         <div className="text-danger">{emailError}</div>
-                      )}
+                      )} */}
+                        <ErrorMessage
+                          name="email_id"
+                          component="div"
+                          className="text-danger"
+                        />
                     </div>
                   </div>
 
@@ -424,25 +506,30 @@ function EditCustomer() {
                       </b>
                     </label>
                     <div className="col-sm-4">
-                      <input
+                      <Field
                         type="text"
                         className="form-control form-control-sm"
                         id="contact_no"
                         name="contact_no"
                         placeholder="Contact Number"
-                        defaultValue={data.contact_no}
+                        // defaultValue={data.contact_no}
                         minLength={10}
                         maxLength={10}
                         onKeyPress={(e) => {
                           Validation.NumbersOnly(e);
                         }}
-                        onChange={handleMobileValidation}
+                        // onChange={handleMobileValidation}
                         autoComplete="off"
-                        required
+                        // required
                       />
+                         <ErrorMessage
+                          name="contact_no"
+                          component="div"
+                          className="text-danger"
+                        />
                     </div>
                   </div>
-                  {contactError && (
+                  {/* {contactError && (
                     <small
                       style={{
                         color: 'red',
@@ -452,20 +539,25 @@ function EditCustomer() {
                     >
                       {contactError}
                     </small>
-                  )}
+                  )} */}
                   <div className="form-group row mt-3">
                     <label className="col-sm-2 col-form-label">
                       <b>Remark :</b>
                     </label>
                     <div className="col-sm-4">
-                      <input
+                      <Field
                         type="text"
                         className="form-control form-control-sm"
                         id="remark"
                         name="remark"
-                        defaultValue={data && data.remark}
+                        // defaultValue={data && data.remark}
                         maxLength={50}
                       />
+                         <ErrorMessage
+                          name="remark"
+                          component="div"
+                          className="text-danger"
+                        />
                     </div>
                   </div>
 
@@ -477,19 +569,19 @@ function EditCustomer() {
                       <div className="row">
                         <div className="col-md-2">
                           <div className="form-check">
-                            <input
+                            <Field
                               className="form-check-input"
                               type="radio"
                               name="is_active"
                               id="is_active_1"
                               value="1"
-                              defaultChecked={
-                                data && data.is_active === 1
-                                  ? true
-                                  : !data
-                                  ? true
-                                  : false
-                              }
+                              // defaultChecked={
+                              //   data && data.is_active === 1
+                              //     ? true
+                              //     : !data
+                              //     ? true
+                              //     : false
+                              // }
                             />
                             <label
                               className="form-check-label"
@@ -502,16 +594,16 @@ function EditCustomer() {
                         &nbsp; &nbsp;
                         <div className="col-md-1">
                           <div className="form-check">
-                            <input
+                            <Field
                               className="form-check-input"
                               type="radio"
                               name="is_active"
                               id="is_active_0"
                               value="0"
                               // readOnly={(modal.modalData) ? false : true }
-                              defaultChecked={
-                                data && data.is_active === 0 ? true : false
-                              }
+                              // defaultChecked={
+                              //   data && data.is_active === 0 ? true : false
+                              // }
                             />
                             <label
                               className="form-check-label"
@@ -541,21 +633,27 @@ function EditCustomer() {
                       </b>
                     </label>
                     <div className="col-sm-10">
-                      <textarea
+                      <Field
+                       as="textarea"
                         className="form-control form-control-sm"
                         id="address"
                         name="address"
                         placeholder="Enter maximum 250 character"
                         rows="3"
                         maxLength={250}
-                        onKeyDown={(e) => {
-                          if (e.key !== 'Enter') {
-                            Validation.addressField(e);
-                          }
-                        }}
-                        required
-                        defaultValue={data.address}
-                      ></textarea>
+                        // onKeyDown={(e) => {
+                        //   if (e.key !== 'Enter') {
+                        //     Validation.addressField(e);
+                        //   }
+                        // }}
+                        // required
+                        // defaultValue={data.address}
+                        />
+                        <ErrorMessage
+                          name="address"
+                          component="div"
+                          className="text-danger"
+                        />
                     </div>
                   </div>
 
@@ -566,20 +664,25 @@ function EditCustomer() {
                       </b>
                     </label>
                     <div className="col-sm-4">
-                      <input
+                      <Field
                         type="text"
                         className="form-control form-control-sm"
                         id="pincode"
                         name="pincode"
-                        defaultValue={data.pincode}
+                        // defaultValue={data.pincode}
                         minLength={6}
                         maxLength={6}
                         onKeyPress={(e) => {
                           Validation.NumbersOnly(e);
                         }}
-                        required
+                        // required
                         autoComplete="off"
                       />
+                        <ErrorMessage
+                          name="pincode"
+                          component="div"
+                          className="text-danger"
+                        />
                     </div>
 
                     <label
@@ -592,20 +695,36 @@ function EditCustomer() {
                     </label>
                     <div className="col-sm-4">
                       {countryDropdown && data && (
-                        <Select
+                        <Field
                           options={countryDropdown}
+                          component={Select}
                           id="country_id"
                           name="country_id"
-                          defaultValue={
-                            data &&
-                            countryDropdown &&
-                            countryDropdown.filter(
-                              (d) => d.value === data.country_id
-                            )
-                          }
-                          onChange={handleCountryChange}
+                          // defaultValue={
+                          //   data &&
+                          //   countryDropdown &&
+                          //   countryDropdown.filter(
+                          //     (d) => d.value === data.country_id
+                          //   )
+                          // }
+                          // onChange={handleCountryChange}
+                          value={data && countryDropdown &&  countryDropdown.find(
+                            (option) => option.value === Number(values.country_id)
+                          )}
+                          onChange={(option)=> {
+                            setFieldValue('state_id', null);
+                            setFieldValue('city_id', null)
+                          setFieldValue('country_id', option?.value)
+
+                          handleCountryChange(option)
+                          }}
                         />
                       )}
+                        <ErrorMessage
+                          name="country_id"
+                          component="div"
+                          className="text-danger"
+                        />
                     </div>
                   </div>
                   <div className="form-group row mt-3">
@@ -620,11 +739,33 @@ function EditCustomer() {
                           options={stateDropdown}
                           id="state_id"
                           name="state_id"
-                          defaultValue={stateName}
-                          onChange={handleStateChange}
-                          value={stateName}
+                          // defaultValue={stateName}
+                          // onChange={handleStateChange}
+                          defaultValue={data && stateDropdown &&  stateDropdown.find(
+                            (option) => option.value === Number(values.state_id)
+                          )}
+                          value={
+                            values.state_id
+                              ? stateDropdown?.find((item) => item.value === Number(values.state_id))
+                              : null // Ensure value is null if no match
+                          }
+                          // defaultValue={}
+                          onChange={(option)=> {
+                            console.log(option)
+                            setFieldValue('city_id', null)
+                            setFieldValue('state_id', option?.value)
+
+                            handleStateChange(option)
+                          }}
+
+                          // value={stateName}
                         />
                       )}
+                       <ErrorMessage
+                          name="state_id"
+                          component="div"
+                          className="text-danger"
+                        />
                     </div>
 
                     <label
@@ -642,11 +783,27 @@ function EditCustomer() {
                           options={cityDropdown}
                           id="city_id"
                           name="city_id"
-                          defaultValue={cityName}
-                          onChange={(e) => setCityName(e)}
-                          value={cityName}
+                          // defaultValue={cityName}
+                          // onChange={(e) => setCityName(e)}
+                          defaultValue={data && cityDropdown &&  cityDropdown.find(
+                            (option) => option.value === Number(values.city_id)
+                          )}
+                          value={
+                            values.city_id
+                              ? cityDropdown?.find((item) => item.value === Number(values.city_id))
+                              : null // Ensure value is null if no match
+                          }
+                          onChange={(option) => {
+                            setFieldValue('city_id', option?.value)
+                          }}
+                          // value={cityName}
                         />
                       )}
+                        <ErrorMessage
+                          name="city_id"
+                          component="div"
+                          className="text-danger"
+                        />
                     </div>
                   </div>
                 </div>
@@ -669,7 +826,10 @@ function EditCustomer() {
                   Cancel
                 </Link>
               </div>
-            </form>
+            {/* </form> */}
+            </Form>
+             )}
+            </Formik>
           )}
         </div>
       </div>

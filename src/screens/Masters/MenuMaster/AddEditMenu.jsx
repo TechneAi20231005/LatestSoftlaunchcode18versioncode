@@ -1,45 +1,106 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import CustomModal from '../../../components/custom/modal/CustomModal';
 import Select from 'react-select';
 import { CustomValidation } from '../../../../src/components/custom/CustomValidation/CustomValidation';
-const AddMenuForm = ({ onClose, show }) => {
-  // const [menu, setMenu] = useState(false);
-  const [icon, setIcon] = useState(false);
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  addMenuMasterList,
+  editMenuMasterList,
+  getMenuMasterListById
+} from '../../../redux/services/menuMaster';
+const AddMenuForm = ({ onClose, show, data, optionData }) => {
+  console.log(data?.value, 'data');
 
+  const [icon, setIcon] = useState(false);
+  const dispatch = useDispatch();
+  let obj = {
+    label: data?.value?.name ,
+    value: data?.value?.id
+  }
+  console.log(obj, "obj")
   const initialValues = {
-    menu: '',
-    remark: '',
-    is_active: '1'
+    parent_id: data?.case === "Edit" ? obj?.value : "",
+    add_parent_menu: '',
+    name: '',
+    remark: data?.value?.remark || '',
+    is_active: data?.value?.is_active ? String(data?.value?.is_active) : '1'
   };
 
   const handleSubmit = (values) => {
+    const formData = new FormData();
+    formData.append('parent_id', values?.parent_id);
+    // formData.append('add_parent_menu', values?.add_parent_menu);
+    formData.append('name', values?.name);
+    formData.append('remark', values?.remark);
+    formData.append('is_active', values?.is_active);
+    formData.append('iconClass', 'icofont-dotted-right text-white');
+
+    let icondata = null;
+    if (icon) {
+      icondata = new FormData();
+      icondata.append('parent_id', values?.parent_id);
+      icondata.append('name', values?.add_parent_menu);
+      icondata.append('remark', values?.remark);
+      icondata.append('is_active', values?.is_active);
+      icondata.append('iconClass', 'icofont-dotted-right text-white');
+    }
+
+    // const icondata = new FormData();
+    // formData.append('parent_id', values?.parent_id);
+    // formData.append('name', values?.add_parent_menu);
+    // formData.append('remark', values?.remark);
+    // formData.append('is_active', values?.is_active);
+    // formData.append('iconClass', 'icofont-dotted-right text-white');
+
+
+    if (data?.case === 'Add') {
+      dispatch(
+        addMenuMasterList({
+          formData: icon ? icondata : formData,
+          onSuccessHandler: () => {
+            // setIcon(false);
+            onClose();
+          },
+          onErrorHandler: () => {}
+        })
+      );
+    } else {
+      dispatch(
+        editMenuMasterList({
+          currentId: data?.value?.id,
+          formData: formData,
+          onSuccessHandler: () => {
+            // setIcon(false);
+            onClose();
+          },
+          onErrorHandler: () => {}
+        })
+      );
+    }
     console.log('Form Submitted with values:', values);
-    onClose();
   };
 
   const fields = [
     {
-      name: 'parent_menu',
+      name: 'parent_id',
       label: 'Parent Menu',
-      max: 100,
-      required: true,
-      alphaNumeric: true
+      required: !icon
     },
     {
       name: 'add_parent_menu',
       label: 'New Parent Menu',
       max: 100,
-      required: true,
-      alphaNumeric: true
+      required: icon,
+      alphaNumeric: icon
     },
     {
-      name: 'child_menu',
+      name: 'name',
       label: 'Child Menu',
       max: 1000,
-      required: true,
-      alphaNumeric: true
+      required: !icon,
+      alphaNumeric: !icon
     },
     {
       name: 'remark',
@@ -51,9 +112,14 @@ const AddMenuForm = ({ onClose, show }) => {
   ];
   const validationSchema = CustomValidation(fields);
 
-  const handleIcon = () => {
+  const handleIcon = (resetForm) => {
+    resetForm()
     setIcon((prev) => !prev);
   };
+
+  useEffect(() => {
+    setIcon(false);
+  }, [onClose]);
   return (
     <CustomModal onClose={onClose} show={show} width="md">
       <Formik
@@ -61,11 +127,11 @@ const AddMenuForm = ({ onClose, show }) => {
         validationSchema={validationSchema}
         onSubmit={handleSubmit}
       >
-        {({ isSubmitting }) => (
+        {({ isSubmitting, setFieldValue, resetForm }) => (
           <Form>
             <Modal.Header closeButton>
               <Modal.Title className="fw-bold text-primary">
-                Add Menu
+                {data?.case} Menu
               </Modal.Title>
             </Modal.Header>
             <Modal.Body>
@@ -82,20 +148,27 @@ const AddMenuForm = ({ onClose, show }) => {
                           <span className="text-danger">*</span>
                         </label>
                         <i
-                          onClick={handleIcon}
+                          onClick={() => handleIcon(resetForm)}
                           title="Add Parent Menu"
                           className="icofont-plus text-primary fs-5"
                         ></i>
                       </div>
                     </div>
                     <div className="col-md-12">
-                      <Select
-                        id="parent_menu"
-                        name="parent_menu"
-                        required={true}
+                      <Field
+                        component={Select}
+                        id="parent_id"
+                        name="parent_id"
+                        options={optionData}
+                        onChange={(options) =>
+                          setFieldValue('parent_id', options?.value)
+                        }
+                        defaultValue={data?.case === "Edit" ? obj : ""}
+
+                        // required={true}
                       />
                       <ErrorMessage
-                        name="parent_menu"
+                        name="parent_id"
                         component="div"
                         className="text-danger small"
                       />
@@ -107,12 +180,12 @@ const AddMenuForm = ({ onClose, show }) => {
                       </label>
                       <Field
                         type="text"
-                        name="child_menu"
-                        id="child_menu"
+                        name="name"
+                        id="name"
                         className="form-control"
                       />
                       <ErrorMessage
-                        name="child_menu"
+                        name="name"
                         component="div"
                         className="text-danger small"
                       />
@@ -132,7 +205,7 @@ const AddMenuForm = ({ onClose, show }) => {
                           <span className="text-danger">*</span>
                         </label>
                         <i
-                          onClick={handleIcon}
+                          onClick={() => handleIcon(resetForm)}
                           title="Add Parent Menu"
                           className="icofont-minus text-primary fs-5"
                         ></i>
@@ -144,7 +217,6 @@ const AddMenuForm = ({ onClose, show }) => {
                       id="add_parent_menu"
                       name="add_parent_menu"
                       className="form-control"
-                      required={true}
                     />
                     <ErrorMessage
                       name="add_parent_menu"
@@ -171,46 +243,44 @@ const AddMenuForm = ({ onClose, show }) => {
                 </div>
 
                 {/* Status */}
-                <div className="col-md-12">
-                  <label className="form-label font-weight-bold">
-                    Status: <span className="text-danger">*</span>
-                  </label>
-                  <div className="d-flex align-items-center justify-content-start gap-3">
-                    <label className="form-check-label ">
-                      <Field
-                        type="radio"
-                        name="is_active"
-                        id="is_active_1"
-                        value="1"
-                        className="form-check-input me-2"
-                      />
-                      Active
+                {data?.case === 'Edit' && (
+                  <div className="col-md-12">
+                    <label className="form-label font-weight-bold">
+                      Status: <span className="text-danger">*</span>
                     </label>
-                    <label className="form-check-label">
-                      <Field
-                        type="radio"
-                        name="is_active"
-                        id="is_active_0"
-                        value="0"
-                        className="form-check-input me-2"
-                      />
-                      Deactive
-                    </label>
+                    <div className="d-flex align-items-center justify-content-start gap-3">
+                      <label className="form-check-label ">
+                        <Field
+                          type="radio"
+                          name="is_active"
+                          id="is_active_1"
+                          value="1"
+                          className="form-check-input me-2"
+                        />
+                        Active
+                      </label>
+                      <label className="form-check-label">
+                        <Field
+                          type="radio"
+                          name="is_active"
+                          id="is_active_0"
+                          value="0"
+                          className="form-check-input me-2"
+                        />
+                        Deactive
+                      </label>
+                    </div>
+                    <ErrorMessage
+                      name="is_active"
+                      component="div"
+                      className="text-danger small"
+                    />
                   </div>
-                  <ErrorMessage
-                    name="is_active"
-                    component="div"
-                    className="text-danger small"
-                  />
-                </div>
+                )}
               </div>
             </Modal.Body>
             <Modal.Footer>
-              <button
-                type="submit"
-                className="btn btn-primary text-white px-4"
-                disabled={isSubmitting}
-              >
+              <button type="submit" className="btn btn-primary text-white px-4">
                 Submit
               </button>
               <button

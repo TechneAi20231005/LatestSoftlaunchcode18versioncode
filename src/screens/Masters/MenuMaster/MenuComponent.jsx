@@ -1,13 +1,128 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Accordion } from 'react-bootstrap';
 import PageHeader from '../../../components/Common/PageHeader';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { handleModalInStore } from '../../Dashboard/DashbordSlice';
-import { useDispatch } from 'react-redux';
 import EditMenu from './AddEditMenu';
+import DataTable from 'react-data-table-component';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { useDispatch, useSelector } from 'react-redux';
+import { getMenuMasterList } from '../../../redux/services/menuMaster';
+import { customSearchHandler } from '../../../utils/customFunction';
 function MenuComponent() {
   const dispatch = useDispatch();
+  const { menuMasterList, isLoading, notify } = useSelector(
+    (state) => state?.menuMaster
+  );
   const [show, setShow] = useState(false);
+  const [data, setData] = useState({
+    case: '',
+    value: null
+  });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterData, setFilterData] = useState([]);
+
+  const handleSearch = useCallback(() => {
+    const filteredList = customSearchHandler(
+      menuMasterList?.data?.data,
+      searchTerm
+    );
+    setFilterData(filteredList);
+  }, [menuMasterList, searchTerm]);
+
+  const handleReset = () => {
+    setSearchTerm('');
+  };
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm]);
+
+  useEffect(() => {
+    dispatch(getMenuMasterList());
+  }, []);
+  useEffect(() => {
+    setFilterData(menuMasterList?.data?.data);
+  }, [menuMasterList]);
+
+  const optionData = menuMasterList?.data?.data
+    ?.filter((item) => item?.parent_id === null)
+    .map((item) => {
+      return {
+        label: item?.name,
+        value: item?.id
+      };
+    });
+
+  const columns = [
+    {
+      name: 'Action',
+      selector: (row) => {},
+      sortable: false,
+      cell: (row) => (
+        <div className="btn-group" role="group">
+          <button
+            type="button"
+            className="btn btn-outline-secondary"
+            data-bs-toggle="modal"
+            data-bs-target="#edit"
+            onClick={(e) => {
+              setShow(true);
+              setData({ case: 'Edit', value: row });
+            }}
+          >
+            <i className="icofont-edit text-success"></i>
+          </button>
+        </div>
+      ),
+      width: '80px'
+    },
+    {
+      name: 'Sr. No.',
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: '70px'
+    },
+    {
+      name: 'Parent Name',
+      sortable: false,
+      selector: (row) => row?.name || 'Primary'
+    },
+    {
+      name: 'Status',
+      selector: (row) => row.is_active,
+      sortable: true,
+      cell: (row) => (
+        <div>
+          {row.is_active === 1 && (
+            <span className="badge bg-primary" style={{ width: '4rem' }}>
+              Active
+            </span>
+          )}
+          {row.is_active === 0 && (
+            <span className="badge bg-danger" style={{ width: '4rem' }}>
+              Deactive
+            </span>
+          )}
+        </div>
+      )
+      // width: '100px'
+    },
+    {
+      name: 'remark',
+      selector: (row) => row?.remark || '--'
+    },
+    {
+      name: 'Created At',
+      selector: (row) => row?.created_at || '--',
+      sortable: true
+    },
+    {
+      name: 'Updated By',
+      selector: (row) => row?.updated_by || '--',
+      sortable: true
+    }
+  ];
 
   return (
     <>
@@ -22,6 +137,7 @@ function MenuComponent() {
                   className="btn btn-dark px-5"
                   onClick={() => {
                     setShow(true);
+                    setData({ case: 'Add', value: null });
                   }}
                 >
                   <i className="icofont-plus me-2 fs-6" />
@@ -35,9 +151,9 @@ function MenuComponent() {
           }}
         />
         <SearchBoxHeader
-          // setSearchTerm={setSearchTerm}
-          // handleSearch={handleSearch}
-          // handleReset={handleReset}
+          setSearchTerm={setSearchTerm}
+          handleSearch={handleSearch}
+          handleReset={handleReset}
           placeholder="Search by menu name...."
           // exportFileName="Menu Master Record"
           // exportData={exportMenuData}
@@ -45,558 +161,29 @@ function MenuComponent() {
         />
       </div>
 
-      <Accordion>
-        <div className="mb-4 shadow">
-          <Accordion.Item eventKey="0">
-            <Accordion.Header className="fs-4 fw-bold text-primary accordian-button:after ">
-              <div className="d-flex justify-content-between align-items-center w-100">
-                <div className="d-flex align-items-center">
-                  <i className="icofont-home fs-4 text-primary ms-3"></i>
-                  <span className="fs-5 ms-3"> Benefits Invoices </span>
-                </div>
-                <div>
-                  <i
-                    onClick={() => setShow(true)}
-                    className="icofont-edit text-primary fs-6"
-                  ></i>
-                </div>
-              </div>
-            </Accordion.Header>
+      <div>
+        <DataTable
+          columns={columns}
+          data={filterData}
+          // defaultSortField="role_id"
+          pagination
+          selectableRows={false}
+          className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+          highlightOnHover={true}
+          persistTableHead={true}
+          progressPending={isLoading?.getMenuMasterList}
+          progressComponent={<TableLoadingSkelton />}
+        />
+      </div>
 
-            <Accordion.Body className="p-0">
-              <table className="table table-bordered table-hover">
-                <thead style={{ borderBottom: '2px solid #dad5d5' }}>
-                  <tr>
-                    <th
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="col-1 px-2 py-3 text-center"
-                    >
-                      Sr.No.
-                    </th>
-                    <th
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="col-1 px-2 py-3 text-center"
-                    >
-                      Action
-                    </th>
-                    <th
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="col-2 px-2 py-3 text-center"
-                    >
-                      Status
-                    </th>
-                    <th
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="col-4 px-2 py-3"
-                    >
-                      Name
-                    </th>
-                    <th
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="col-4 px-2 py-3"
-                    >
-                      Creation Date
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      1
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <i className="icofont-edit text-success"></i>
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <span
-                        className="badge bg-primary"
-                        style={{ width: '4rem', border: '1px solid #dad5d5' }}
-                      >
-                        Active
-                      </span>
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      DN Limited
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      03/27/2017
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      2
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <i className="icofont-edit text-success"></i>
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <span
-                        className="badge bg-primary"
-                        style={{ width: '4rem', border: '1px solid #dad5d5' }}
-                      >
-                        Active
-                      </span>
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      DN Limited
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      03/27/2017
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      3
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <i className="icofont-edit text-success"></i>
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <span
-                        className="badge bg-primary"
-                        style={{ width: '4rem', border: '1px solid #dad5d5' }}
-                      >
-                        Active
-                      </span>
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      DN Limited
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      03/27/2017
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      4
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <i className="icofont-edit text-success"></i>
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <span
-                        className="badge bg-primary"
-                        style={{ width: '4rem', border: '1px solid #dad5d5' }}
-                      >
-                        Active
-                      </span>
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      DN Limited
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      03/27/2017
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </Accordion.Body>
-          </Accordion.Item>
-        </div>
-        <div className="mb-4 shadow">
-          <Accordion.Item eventKey="1">
-            <Accordion.Header className="fs-4 fw-bold text-primary accordian-button:after">
-              <div className="d-flex justify-content-between align-items-center w-100">
-                <div className="d-flex align-items-center">
-                  <i className="icofont-home fs-4 text-primary ms-3"></i>
-                  <span className="fs-5 ms-3"> Harbinger Invoices </span>
-                </div>
-                <div>
-                  <i
-                    onClick={() => console.log('hello')}
-                    className="icofont-edit text-primary fs-6"
-                  ></i>
-                </div>
-              </div>
-            </Accordion.Header>
-
-            <Accordion.Body className="p-0">
-              <table className="table table-bordered table-hover">
-                <thead style={{ borderBottom: '2px solid #dad5d5' }}>
-                  <tr>
-                    <th
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="col-1 px-2 py-3 text-center"
-                    >
-                      Sr.No.
-                    </th>
-                    <th
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="col-1 px-2 py-3 text-center"
-                    >
-                      Action
-                    </th>
-                    <th
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="col-2 px-2 py-3 text-center"
-                    >
-                      Status
-                    </th>
-                    <th
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="col-4 px-2 py-3"
-                    >
-                      Name
-                    </th>
-                    <th
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="col-4 px-2 py-3"
-                    >
-                      Creation Date
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      1
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <i className="icofont-edit text-success"></i>
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <span
-                        className="badge bg-primary"
-                        style={{ width: '4rem', border: '1px solid #dad5d5' }}
-                      >
-                        Active
-                      </span>
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      DN Limited
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      03/27/2017
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      2
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <i className="icofont-edit text-success"></i>
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <span
-                        className="badge bg-primary"
-                        style={{ width: '4rem', border: '1px solid #dad5d5' }}
-                      >
-                        Active
-                      </span>
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      DN Limited
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      03/27/2017
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      3
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <i className="icofont-edit text-success"></i>
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <span
-                        className="badge bg-primary"
-                        style={{ width: '4rem', border: '1px solid #dad5d5' }}
-                      >
-                        Active
-                      </span>
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      DN Limited
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      03/27/2017
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      4
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <i className="icofont-edit text-success"></i>
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <span
-                        className="badge bg-primary"
-                        style={{ width: '4rem', border: '1px solid #dad5d5' }}
-                      >
-                        Active
-                      </span>
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      DN Limited
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      03/27/2017
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </Accordion.Body>
-          </Accordion.Item>
-        </div>
-        <div className="mb-4 shadow">
-          <Accordion.Item eventKey="2">
-            <Accordion.Header className="fs-4 fw-bold text-primary accordian-button:after">
-              <div className="d-flex justify-content-between align-items-center w-100">
-                <div className="d-flex align-items-center">
-                  <i className="icofont-home fs-4 text-primary ms-3"></i>
-                  <span className="fs-5 ms-3"> Dental Invoices </span>
-                </div>
-                <div>
-                  <i
-                    onClick={() => console.log('hello')}
-                    className="icofont-edit text-primary fs-6"
-                  ></i>
-                </div>
-              </div>
-            </Accordion.Header>
-
-            <Accordion.Body className="p-0">
-              <table className="table table-bordered table-hover">
-                <thead style={{ borderBottom: '2px solid #dad5d5' }}>
-                  <tr>
-                    <th
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="col-1 px-2 py-3 text-center"
-                    >
-                      Sr.No.
-                    </th>
-                    <th
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="col-1 px-2 py-3 text-center"
-                    >
-                      Action
-                    </th>
-                    <th
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="col-2 px-2 py-3 text-center"
-                    >
-                      Status
-                    </th>
-                    <th
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="col-4 px-2 py-3"
-                    >
-                      Name
-                    </th>
-                    <th
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="col-4 px-2 py-3"
-                    >
-                      Creation Date
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  <tr>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      1
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <i className="icofont-edit text-success"></i>
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <span
-                        className="badge bg-primary"
-                        style={{ width: '4rem', border: '1px solid #dad5d5' }}
-                      >
-                        Active
-                      </span>
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      DN Limited
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      03/27/2017
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      2
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <i className="icofont-edit text-success"></i>
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <span
-                        className="badge bg-primary"
-                        style={{ width: '4rem', border: '1px solid #dad5d5' }}
-                      >
-                        Active
-                      </span>
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      DN Limited
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      03/27/2017
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      3
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <i className="icofont-edit text-success"></i>
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <span
-                        className="badge bg-primary"
-                        style={{ width: '4rem', border: '1px solid #dad5d5' }}
-                      >
-                        Active
-                      </span>
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      DN Limited
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      03/27/2017
-                    </td>
-                  </tr>
-                  <tr>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      4
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <i className="icofont-edit text-success"></i>
-                    </td>
-                    <td
-                      style={{ border: '1px solid #dad5d5' }}
-                      className="p-3 text-center"
-                    >
-                      <span
-                        className="badge bg-primary"
-                        style={{ width: '4rem', border: '1px solid #dad5d5' }}
-                      >
-                        Active
-                      </span>
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      DN Limited
-                    </td>
-                    <td style={{ border: '1px solid #dad5d5' }} className="p-3">
-                      03/27/2017
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </Accordion.Body>
-          </Accordion.Item>
-        </div>
-      </Accordion>
-      <EditMenu show={show} onClose={() => setShow(false)} />
+    {
+      show &&   <EditMenu
+      show={show}
+      onClose={() => setShow(false)}
+      data={data}
+      optionData={optionData}
+    />
+    }
     </>
   );
 }

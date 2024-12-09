@@ -5,4 +5,5 @@ export const {
   REACT_APP_ROOT_URL,
   REACT_APP_ATTACHMENT_URL,
   REACT_APP_HOME_URL,
+  REACT_REVAMP_URL
 } = process.env;
