@@ -15,7 +15,7 @@ export const getMenuMasterList = createAsyncThunk(
         }
       };
       const response = await axios.get(
-        `http://103.97.105.81:89/TicketingDev/public/api/menuMaster/getData?export=1`,
+        `http://103.97.105.81:89/TicketingUat/public/api/menuMaster/getData?export=1`,
         config
       );
       if (response?.status === 200 || response?.status === 201) {
@@ -41,7 +41,7 @@ export const addMenuMasterList = createAsyncThunk(
         }
       };
       const response = await axios.post(
-        `http://103.97.105.81:89/TicketingDev/public/api/menuMaster/postData`,
+        `http://103.97.105.81:89/TicketingUat/public/api/menuMaster/postData`,
         formData,
         config
       );
@@ -74,7 +74,7 @@ export const editMenuMasterList = createAsyncThunk(
         }
       };
       const response = await axios.post(
-        `http://103.97.105.81:89/TicketingDev/public/api/menuMaster/postData/${currentId}`,
+        `http://103.97.105.81:89/TicketingUat/public/api/menuMaster/postData/${currentId}`,
         formData,
         config
       );
@@ -101,7 +101,7 @@ export const getMenuMasterListById = createAsyncThunk(
   async ({ currentId }) => {
     try {
       const response = await axios.get(
-        `http://103.97.105.81:89/TicketingDev/public/api/menuMaster/getData/${currentId}`
+        `http://103.97.105.81:89/TicketingUat/public/api/menuMaster/getData/${currentId}`
       );
       if (response?.status === 200 || response?.status === 201) {
         return { data: response?.data, msg: response?.data?.message };
