@@ -10,6 +10,7 @@ import {
   editMenuMasterList,
   getMenuMasterListById
 } from '../../../redux/services/menuMaster';
+import { getMenuMasterList } from '../../../redux/services/menuMaster';
 const AddMenuForm = ({ onClose, show, data, optionData }) => {
 
   const [icon, setIcon] = useState(false);
@@ -59,6 +60,7 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
         addMenuMasterList({
           formData: icon ? icondata : formData,
           onSuccessHandler: () => {
+            dispatch(getMenuMasterList());
             // setIcon(false);
             onClose();
           },
@@ -71,6 +73,7 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
           currentId: data?.value?.id,
           formData: formData,
           onSuccessHandler: () => {
+            dispatch(getMenuMasterList());
             // setIcon(false);
             onClose();
           },
