@@ -8,8 +8,8 @@ export const postLoginUser = createAsyncThunk(
       const res = await postData(config);
 
       if (res?.status === 200 && res?.data?.status === 1) {
-        const data = res?.data?.data;
-        const token = res?.data?.token;
+        const data = res.data;
+        const token = res?.token;
 
         Object.keys(data).forEach((key) => {
           // sessionStorage.setItem(key, data[key]);

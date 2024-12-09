@@ -11,7 +11,6 @@ import {
   getMenuMasterListById
 } from '../../../redux/services/menuMaster';
 const AddMenuForm = ({ onClose, show, data, optionData }) => {
-  console.log(data?.value, 'data');
 
   const [icon, setIcon] = useState(false);
   const dispatch = useDispatch();
@@ -19,7 +18,7 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
     label: data?.value?.name ,
     value: data?.value?.id
   }
-  console.log(obj, "obj")
+
   const initialValues = {
     parent_id: data?.case === "Edit" ? obj?.value : "",
     add_parent_menu: '',
@@ -206,7 +205,7 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
                         </label>
                         <i
                           onClick={() => handleIcon(resetForm)}
-                          title="Add Parent Menu"
+                          title="Add Child Menu"
                           className="icofont-minus text-primary fs-5"
                         ></i>
                       </div>

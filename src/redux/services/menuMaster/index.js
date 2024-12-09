@@ -15,7 +15,7 @@ export const getMenuMasterList = createAsyncThunk(
         }
       };
       const response = await axios.get(
-        `http://103.97.105.81:89/TicketingDev/public/api/menuMaster/getData`,
+        `http://103.97.105.81:89/TicketingDev/public/api/menuMaster/getData?export`,
         config
       );
       if (response?.status === 200 || response?.status === 201) {

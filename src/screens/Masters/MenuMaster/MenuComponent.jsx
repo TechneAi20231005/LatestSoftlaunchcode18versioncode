@@ -14,6 +14,7 @@ function MenuComponent() {
   const { menuMasterList, isLoading, notify } = useSelector(
     (state) => state?.menuMaster
   );
+
   const [show, setShow] = useState(false);
   const [data, setData] = useState({
     case: '',
