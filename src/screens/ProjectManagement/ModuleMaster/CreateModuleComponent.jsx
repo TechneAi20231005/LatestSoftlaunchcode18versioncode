@@ -166,7 +166,7 @@ export default function CreateModuleComponent({ match }) {
                         />
                         <ErrorMessage
                           name="module_name"
-                          component="div"
+                          component="small"
                           className="text-danger"
                         />
                       </div>
@@ -191,7 +191,7 @@ export default function CreateModuleComponent({ match }) {
                         />
                         <ErrorMessage
                           name="description"
-                          component="div"
+                          component="small"
                           className="text-danger"
                         />
                       </div>
@@ -210,7 +210,7 @@ export default function CreateModuleComponent({ match }) {
                         />
                         <ErrorMessage
                           name="remark"
-                          component="div"
+                          component="small"
                           className="text-danger"
                         />
                       </div>
@@ -236,8 +236,6 @@ export default function CreateModuleComponent({ match }) {
               </Form>
             )}
           </Formik>
-
-
         </div>
       </div>
     </div>

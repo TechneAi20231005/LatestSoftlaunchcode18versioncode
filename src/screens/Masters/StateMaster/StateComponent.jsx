@@ -355,7 +355,7 @@ function StateComponent() {
                       />
                       <ErrorMessage
                         name="country_id"
-                        component="div"
+                        component="small"
                         className="text-danger"
                       />
                     </div>
@@ -383,7 +383,7 @@ function StateComponent() {
                       />
                       <ErrorMessage
                         name="state"
-                        component="div"
+                        component="small"
                         className="text-danger"
                       />
                     </div>
@@ -400,7 +400,7 @@ function StateComponent() {
                       />
                       <ErrorMessage
                         name="remark"
-                        component="div"
+                        component="small"
                         className="text-danger"
                       />
                     </div>

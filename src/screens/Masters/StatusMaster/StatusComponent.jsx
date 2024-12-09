@@ -328,7 +328,7 @@ function StatusComponent() {
                       />
                       <ErrorMessage
                         name="status"
-                        component="div"
+                        component="small"
                         className="text-danger"
                       />
                     </div>
@@ -343,7 +343,7 @@ function StatusComponent() {
                       />
                       <ErrorMessage
                         name="remark"
-                        component="div"
+                        component="small"
                         className="text-danger"
                       />
                     </div>

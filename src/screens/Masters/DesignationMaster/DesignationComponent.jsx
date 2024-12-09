@@ -318,7 +318,7 @@ function DesignationComponent() {
                       />
                       <ErrorMessage
                         name="designation"
-                        component="div"
+                        component="small"
                         className="text-danger small"
                       />
                     </div>
@@ -335,7 +335,7 @@ function DesignationComponent() {
                       />
                       <ErrorMessage
                         name="remark"
-                        component="div"
+                        component="small"
                         className="text-danger small"
                       />
                     </div>
@@ -373,7 +373,7 @@ function DesignationComponent() {
                         </div>
                         <ErrorMessage
                           name="is_active"
-                          component="div"
+                          component="small"
                           className="text-danger small"
                         />
                       </div>

@@ -11,16 +11,15 @@ import {
   getMenuMasterListById
 } from '../../../redux/services/menuMaster';
 const AddMenuForm = ({ onClose, show, data, optionData }) => {
-
   const [icon, setIcon] = useState(false);
   const dispatch = useDispatch();
   let obj = {
-    label: data?.value?.name ,
+    label: data?.value?.name,
     value: data?.value?.id
-  }
+  };
 
   const initialValues = {
-    parent_id: data?.case === "Edit" ? obj?.value : "",
+    parent_id: data?.case === 'Edit' ? obj?.value : '',
     add_parent_menu: '',
     name: '',
     remark: data?.value?.remark || '',
@@ -52,7 +51,6 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
     // formData.append('remark', values?.remark);
     // formData.append('is_active', values?.is_active);
     // formData.append('iconClass', 'icofont-dotted-right text-white');
-
 
     if (data?.case === 'Add') {
       dispatch(
@@ -112,7 +110,7 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
   const validationSchema = CustomValidation(fields);
 
   const handleIcon = (resetForm) => {
-    resetForm()
+    resetForm();
     setIcon((prev) => !prev);
   };
 
@@ -162,13 +160,13 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
                         onChange={(options) =>
                           setFieldValue('parent_id', options?.value)
                         }
-                        defaultValue={data?.case === "Edit" ? obj : ""}
+                        defaultValue={data?.case === 'Edit' ? obj : ''}
 
                         // required={true}
                       />
                       <ErrorMessage
                         name="parent_id"
-                        component="div"
+                        component="small"
                         className="text-danger small"
                       />
                     </div>
@@ -185,7 +183,7 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
                       />
                       <ErrorMessage
                         name="name"
-                        component="div"
+                        component="small"
                         className="text-danger small"
                       />
                     </div>
@@ -219,7 +217,7 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
                     />
                     <ErrorMessage
                       name="add_parent_menu"
-                      component="div"
+                      component="small"
                       className="text-danger small"
                     />
                   </div>
@@ -236,7 +234,7 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
                   />
                   <ErrorMessage
                     name="remark"
-                    component="div"
+                    component="small"
                     className="text-danger small"
                   />
                 </div>
@@ -271,7 +269,7 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
                     </div>
                     <ErrorMessage
                       name="is_active"
-                      component="div"
+                      component="small"
                       className="text-danger small"
                     />
                   </div>

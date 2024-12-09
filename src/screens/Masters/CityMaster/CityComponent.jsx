@@ -443,7 +443,7 @@ function CityComponent() {
                       />
                       <ErrorMessage
                         name="country_id"
-                        component="div"
+                        component="small"
                         className="text-danger small"
                       />
                     </div>
@@ -472,7 +472,7 @@ function CityComponent() {
                       />
                       <ErrorMessage
                         name="state_id"
-                        component="div"
+                        component="small"
                         className="text-danger small"
                       />
                     </div>
@@ -490,7 +490,7 @@ function CityComponent() {
                       />
                       <ErrorMessage
                         name="city"
-                        component="div"
+                        component="small"
                         className="text-danger small"
                       />
                     </div>
@@ -508,7 +508,7 @@ function CityComponent() {
                       />
                       <ErrorMessage
                         name="remark"
-                        component="div"
+                        component="small"
                         className="text-danger small"
                       />
                     </div>

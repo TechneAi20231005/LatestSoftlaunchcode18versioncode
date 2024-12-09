@@ -237,7 +237,7 @@ export default function EditModuleComponent({ match }) {
                           </Field>
                           <ErrorMessage
                             name="project_id"
-                            component="div"
+                            component="small"
                             className="text-danger"
                           />
                         </div>
@@ -275,7 +275,7 @@ export default function EditModuleComponent({ match }) {
                           </Field>
                           <ErrorMessage
                             name="module_id"
-                            component="div"
+                            component="small"
                             className="text-danger"
                           />
                         </div>
@@ -301,7 +301,7 @@ export default function EditModuleComponent({ match }) {
                           />
                           <ErrorMessage
                             name="sub_module_name"
-                            component="div"
+                            component="small"
                             className="text-danger"
                           />
                         </div>
@@ -327,7 +327,7 @@ export default function EditModuleComponent({ match }) {
                           />
                           <ErrorMessage
                             name="description"
-                            component="div"
+                            component="small"
                             className="text-danger"
                           />
                         </div>
@@ -347,7 +347,7 @@ export default function EditModuleComponent({ match }) {
                           />
                           <ErrorMessage
                             name="remark"
-                            component="div"
+                            component="small"
                             className="text-danger"
                           />
                         </div>

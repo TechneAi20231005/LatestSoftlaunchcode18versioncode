@@ -29,7 +29,7 @@ import { Field, Form, Formik, ErrorMessage } from 'formik';
 function CustomerTypeComponent() {
   const isActive1Ref = useRef();
   const dispatch = useDispatch();
-  const [message, setMessage] = useState(null)
+  const [message, setMessage] = useState(null);
   const customerData = useSelector(
     (CustomerTypeComponentSlice) =>
       CustomerTypeComponentSlice.customerTypeMaster.getCustomerTypeData
@@ -51,7 +51,6 @@ function CustomerTypeComponent() {
   const notify = useSelector(
     (customerMasterSlice) => customerMasterSlice.customerTypeMaster.notify
   );
-
 
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 12)
@@ -194,12 +193,14 @@ function CustomerTypeComponent() {
         }
       });
     } else {
-      dispatch(updateCustomerData({ id: id, payload: editFormData })).then((res) => {
-        if (res?.payload?.data?.status === 1) {
-          dispatch(getCustomerTypeData());
-        } else {
+      dispatch(updateCustomerData({ id: id, payload: editFormData })).then(
+        (res) => {
+          if (res?.payload?.data?.status === 1) {
+            dispatch(getCustomerTypeData());
+          } else {
+          }
         }
-      });
+      );
     }
   };
 
@@ -233,15 +234,28 @@ function CustomerTypeComponent() {
   }, [dispatch, customerData.length]);
 
   const initialValues = {
-    type_name: modal.modalData?.type_name || "",
-    remark: modal.modalData?.remark || "",
-    is_active: modal.modalData?.is_active !== undefined
-      ? modal.modalData.is_active.toString()
-      : "1",
+    type_name: modal.modalData?.type_name || '',
+    remark: modal.modalData?.remark || '',
+    is_active:
+      modal.modalData?.is_active !== undefined
+        ? modal.modalData.is_active.toString()
+        : '1'
   };
   const fields = [
-    { name: 'type_name', label: 'Customer Type name', max: 100,  required: true, alphaNumeric: true },
-    { name: 'remark', label: 'Remark', max: 1000,  required: false, alphaNumeric: true },
+    {
+      name: 'type_name',
+      label: 'Customer Type name',
+      max: 100,
+      required: true,
+      alphaNumeric: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 1000,
+      required: false,
+      alphaNumeric: true
+    }
   ];
 
   const validationSchema = CustomValidation(fields);
@@ -311,152 +325,159 @@ function CustomerTypeComponent() {
       </div>
 
       <Modal centered show={modal.showModal}>
-      <Formik
-      initialValues={initialValues}
-      validationSchema={validationSchema}
-      onSubmit={(values) => {
-        handleForm(values,modal.modalData ? modal.modalData.id : '');
-        // setOtpModal(true);
-      }}
-    >
-      {({ setFieldValue }) => (
-        <Form>
-          <Modal.Header
-            closeButton
-            onClick={() =>
-              dispatch(
-                handleModalClose({
-                  showModal: false,
-                  modalData: "",
-                  modalHeader: "",
-                })
-              )
-            }
-          >
-            <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="deadline-form">
-              <div className="row g-3 mb-3">
-                {/* Customer Type Name */}
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Customer Type Name :<Astrick color="red" size="13px" />
-                  </label>
-                  <Field
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="type_name"
-                    name="type_name"
-                    onKeyPress={(e) => Validation.CharactersNumbersOnly(e)}
-                    onPaste={(e) => e.preventDefault()}
-                    onCopy={(e) => e.preventDefault()}
-                  />
-                  <ErrorMessage
-                    name="type_name"
-                    component="div"
-                    className="text-danger"
-                  />
-                </div>
-
-                {/* Remark */}
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">Remark :</label>
-                  <Field
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="remark"
-                    name="remark"
-                  />
-                  <ErrorMessage
-                    name="remark"
-                    component="div"
-                    className="text-danger"
-                  />
-                </div>
-
-                {/* Status */}
-                {modal.modalData && (
-                  <div className="col-sm-12">
-                    <label className="form-label font-weight-bold">
-                      Status :<Astrick color="red" size="13px" />
-                    </label>
-                    <div className="row">
-                      <div className="col-md-2">
-                        <div className="form-check">
-                          <Field
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_1"
-                            value="1"
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_1"
-                          >
-                            Active
-                          </label>
-                        </div>
-                      </div>
-                      <div className="col-md-1">
-                        <div className="form-check">
-                          <Field
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_0"
-                            value="0"
-                            disabled={!modal.modalData}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_0"
-                          >
-                            Deactive
-                          </label>
-                        </div>
-                      </div>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={(values) => {
+            handleForm(values, modal.modalData ? modal.modalData.id : '');
+            // setOtpModal(true);
+          }}
+        >
+          {({ setFieldValue }) => (
+            <Form>
+              <Modal.Header
+                closeButton
+                onClick={() =>
+                  dispatch(
+                    handleModalClose({
+                      showModal: false,
+                      modalData: '',
+                      modalHeader: ''
+                    })
+                  )
+                }
+              >
+                <Modal.Title className="fw-bold">
+                  {modal.modalHeader}
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="deadline-form">
+                  <div className="row g-3 mb-3">
+                    {/* Customer Type Name */}
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Customer Type Name :<Astrick color="red" size="13px" />
+                      </label>
+                      <Field
+                        type="text"
+                        className="form-control form-control-sm"
+                        id="type_name"
+                        name="type_name"
+                        onKeyPress={(e) => Validation.CharactersNumbersOnly(e)}
+                        onPaste={(e) => e.preventDefault()}
+                        onCopy={(e) => e.preventDefault()}
+                      />
+                      <ErrorMessage
+                        name="type_name"
+                        component="small"
+                        className="text-danger"
+                      />
                     </div>
+
+                    {/* Remark */}
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Remark :
+                      </label>
+                      <Field
+                        type="text"
+                        className="form-control form-control-sm"
+                        id="remark"
+                        name="remark"
+                      />
+                      <ErrorMessage
+                        name="remark"
+                        component="small"
+                        className="text-danger"
+                      />
+                    </div>
+
+                    {/* Status */}
+                    {modal.modalData && (
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Status :<Astrick color="red" size="13px" />
+                        </label>
+                        <div className="row">
+                          <div className="col-md-2">
+                            <div className="form-check">
+                              <Field
+                                className="form-check-input"
+                                type="radio"
+                                name="is_active"
+                                id="is_active_1"
+                                value="1"
+                              />
+                              <label
+                                className="form-check-label"
+                                htmlFor="is_active_1"
+                              >
+                                Active
+                              </label>
+                            </div>
+                          </div>
+                          <div className="col-md-1">
+                            <div className="form-check">
+                              <Field
+                                className="form-check-input"
+                                type="radio"
+                                name="is_active"
+                                id="is_active_0"
+                                value="0"
+                                disabled={!modal.modalData}
+                              />
+                              <label
+                                className="form-check-label"
+                                htmlFor="is_active_0"
+                              >
+                                Deactive
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                {/* Submit / Update Button */}
+                {!modal.modalData ? (
+                  <button type="submit" className="btn btn-primary text-white">
+                    Submit
+                  </button>
+                ) : (
+                  checkRole &&
+                  checkRole[0]?.can_update === 1 && (
+                    <button
+                      type="submit"
+                      className="btn btn-primary text-white"
+                    >
+                      Update
+                    </button>
+                  )
                 )}
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            {/* Submit / Update Button */}
-            {!modal.modalData ? (
-              <button type="submit" className="btn btn-primary text-white">
-                Submit
-              </button>
-            ) : (
-              checkRole &&
-              checkRole[0]?.can_update === 1 && (
-                <button type="submit" className="btn btn-primary text-white">
-                  Update
+                {/* Cancel Button */}
+                <button
+                  type="button"
+                  className="btn btn-danger text-white"
+                  onClick={() =>
+                    dispatch(
+                      handleModalClose({
+                        showModal: false,
+                        modalData: '',
+                        modalHeader: ''
+                      })
+                    )
+                  }
+                >
+                  Cancel
                 </button>
-              )
-            )}
-            {/* Cancel Button */}
-            <button
-              type="button"
-              className="btn btn-danger text-white"
-              onClick={() =>
-                dispatch(
-                  handleModalClose({
-                    showModal: false,
-                    modalData: "",
-                    modalHeader: "",
-                  })
-                )
-              }
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </Form>
-      )}
-    </Formik>
+              </Modal.Footer>
+            </Form>
+          )}
+        </Formik>
       </Modal>
     </div>
   );
