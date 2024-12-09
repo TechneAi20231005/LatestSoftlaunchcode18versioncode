@@ -185,7 +185,8 @@ function CityComponent() {
     {
       name: 'city',
       label: 'City name',
-      max: 100,
+      max: 50,
+      min: 3,
       required: true,
       alphaNumeric: true
     },
@@ -194,7 +195,7 @@ function CityComponent() {
       label: 'Remark',
       max: 1000,
       required: false,
-      alphaNumeric: true
+      alphaNumeric: false
     }
   ];
 
@@ -245,49 +246,6 @@ function CityComponent() {
       }, 500);
     }
   };
-
-  // const handleSubmit = (values) => {
-  //   const formattedValues = {
-  //     ...values,
-  //     country_id: values.country_id?.value,
-  //     state_id: values.state_id?.value,
-  //   };
-  //   handleForm(formattedValues, modal.modalData ? modal.modalData.id : "");
-  // };
-
-  // const handleForm = (id) => async (e) => {
-  //   e.preventDefault();
-  //   const form = new FormData(e.target);
-  //   var flag = 1;
-
-  //   var selectCountry = form.getAll('country_id');
-  //   var selectState = form.getAll('state_id');
-  //   if (selectCountry === '' || selectState === '') {
-  //     flag = 0;
-  //     if (selectCountry === '') {
-  //       alert('Please Select Country');
-  //     } else if (selectState === '') {
-  //       alert('Please Select State');
-  //     }
-  //   }
-  //   if (flag === 1) {
-  //     if (!id) {
-  //       dispatch(postCityData(form)).then((res) => {
-  //         if (res?.payload?.data?.status === 1) {
-  //           dispatch(getCityData());
-  //         } else {
-  //         }
-  //       });
-  //     } else {
-  //       dispatch(updateCityData({ id: id, payload: form })).then((res) => {
-  //         if (res?.payload?.data?.status === 1) {
-  //           dispatch(getCityData());
-  //         } else {
-  //         }
-  //       });
-  //     }
-  //   }
-  // };
 
   const handleCountryChange = (e) => {
     if (!e || Object.entries(e).length === 0) return;
@@ -529,7 +487,6 @@ function CityComponent() {
                         id="city"
                         name="city"
                         className="form-control form-control-sm"
-                        maxLength="25"
                       />
                       <ErrorMessage
                         name="city"
@@ -548,7 +505,6 @@ function CityComponent() {
                         name="remark"
                         id="remark"
                         className="form-control form-control-sm"
-                        maxLength="50"
                       />
                       <ErrorMessage
                         name="remark"
@@ -563,30 +519,7 @@ function CityComponent() {
                         <label className="form-label font-weight-bold">
                           Status: <span style={{ color: 'red' }}>*</span>
                         </label>
-                        {/* <div className="row">
-                          <div className="col-md-2">
-                            <label className="form-check-label">
-                              <Field
-                                type="radio"
-                                name="is_active"
-                                value="1"
-                                className="form-check-input"
-                              />
-                              Active
-                            </label>
-                          </div>
-                          <div className="col-md-2">
-                            <label className="form-check-label">
-                              <Field
-                                type="radio"
-                                name="is_active"
-                                value="0"
-                                className="form-check-input"
-                              />
-                              Deactive
-                            </label>
-                          </div>
-                        </div> */}
+
                         <div className="row">
                           <div className="col-md-2">
                             <div className="form-check">
@@ -597,12 +530,7 @@ function CityComponent() {
                                 id="is_active_1"
                                 value="1"
                               />
-                              <label
-                                className="form-check-label"
-                                // htmlFor="is_active_1"
-                              >
-                                Active
-                              </label>
+                              <label className="form-check-label">Active</label>
                             </div>
                           </div>
                           <div className="col-md-1">
@@ -614,10 +542,7 @@ function CityComponent() {
                                 id="is_active_0"
                                 value="0"
                               />
-                              <label
-                                className="form-check-label"
-                                // htmlFor="is_active_0"
-                              >
+                              <label className="form-check-label">
                                 Deactive
                               </label>
                             </div>
@@ -629,7 +554,6 @@ function CityComponent() {
                 </div>
               </Modal.Body>
               <Modal.Footer>
-                {/* Submit Button */}
                 {!modal.modalData && (
                   <button
                     type="submit"
@@ -640,7 +564,6 @@ function CityComponent() {
                   </button>
                 )}
 
-                {/* Update Button */}
                 {modal.modalData &&
                   checkRole &&
                   checkRole[0]?.can_update === 1 && (
@@ -653,7 +576,6 @@ function CityComponent() {
                     </button>
                   )}
 
-                {/* Cancel Button */}
                 <button
                   type="button"
                   className="btn btn-danger text-white"
