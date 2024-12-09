@@ -19,13 +19,17 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
     label: data?.value?.name ,
     value: data?.value?.id
   }
+  console.log(data?.value)
 
   const initialValues = {
     parent_id: data?.case === "Edit" ? obj?.value : "",
     add_parent_menu: '',
     name: '',
     remark: data?.value?.remark || '',
-    is_active: data?.value?.is_active ? String(data?.value?.is_active) : '1'
+    is_active:
+    data?.value?.is_active !== undefined
+        ? String(data?.value?.is_active)
+        : '1'
   };
 
   const handleSubmit = (values) => {
