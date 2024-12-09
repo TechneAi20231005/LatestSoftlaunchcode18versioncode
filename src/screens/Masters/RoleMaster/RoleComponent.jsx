@@ -203,7 +203,7 @@ function RoleComponent({ location }) {
       label: 'Remark',
       max: 1000,
       required: false,
-      alphaNumeric: true
+      alphaNumeric: false
     }
   ];
 
@@ -360,7 +360,6 @@ function RoleComponent({ location }) {
               <Modal.Body>
                 <div className="deadline-form">
                   <div className="row g-3 mb-3">
-                    {/* Role Name */}
                     <div className="col-sm-12">
                       <label className="form-label font-weight-bold">
                         Role Name: <span style={{ color: 'red' }}>*</span>
@@ -370,7 +369,6 @@ function RoleComponent({ location }) {
                         name="role"
                         id="role"
                         className="form-control form-control-sm"
-                        maxLength="25"
                       />
                       <ErrorMessage
                         name="role"
@@ -379,7 +377,6 @@ function RoleComponent({ location }) {
                       />
                     </div>
 
-                    {/* Remark */}
                     <div className="col-sm-12">
                       <label className="form-label font-weight-bold">
                         Remark:
@@ -389,7 +386,6 @@ function RoleComponent({ location }) {
                         name="remark"
                         id="remark"
                         className="form-control form-control-sm"
-                        maxLength="50"
                       />
                       <ErrorMessage
                         name="remark"
@@ -398,7 +394,6 @@ function RoleComponent({ location }) {
                       />
                     </div>
 
-                    {/* Status */}
                     {modal.modalData && (
                       <div className="col-sm-12">
                         <label className="form-label font-weight-bold">
@@ -441,7 +436,6 @@ function RoleComponent({ location }) {
                 </div>
               </Modal.Body>
               <Modal.Footer>
-                {/* Submit Button */}
                 {!modal.modalData && (
                   <button
                     type="submit"
@@ -452,7 +446,6 @@ function RoleComponent({ location }) {
                   </button>
                 )}
 
-                {/* Update Button */}
                 {modal.modalData &&
                   checkRole &&
                   checkRole[0]?.can_update === 1 && (
@@ -465,7 +458,6 @@ function RoleComponent({ location }) {
                     </button>
                   )}
 
-                {/* Cancel Button */}
                 <button
                   type="button"
                   className="btn btn-danger text-white"
