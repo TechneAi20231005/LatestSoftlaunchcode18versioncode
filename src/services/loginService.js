@@ -6,7 +6,7 @@ export function getData(config, callback, errorcallback) {}
 export function postData(config) {
   return axios.post(
     //     loginURL,
-    'http://103.97.105.81:89/TicketingDev/public/api/login',
+    'http://103.97.105.81:89/TicketingUat/public/api/login',
     config
   );
 }

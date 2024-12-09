@@ -157,7 +157,7 @@ function MenuComponent() {
           handleReset={handleReset}
           placeholder="Search by menu name...."
           // exportFileName="Menu Master Record"
-          // exportData={exportMenuData}
+
           showExportButton={true}
         />
       </div>
