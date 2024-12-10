@@ -6,7 +6,7 @@ import axios from 'axios';
 
 export const getMenuMasterList = createAsyncThunk(
   'menuMaster/getData',
-  async () => {
+  async ({ page, per_page }) => {
     try {
       const token = localStorage.getItem('jwt_token');
       const config = {
@@ -15,7 +15,7 @@ export const getMenuMasterList = createAsyncThunk(
         }
       };
       const response = await axios.get(
-        `http://103.97.105.81:89/TicketingUat/public/api/menuMaster/getData?export=1`,
+        `http://103.97.105.81:89/TicketingUat/public/api/menuMaster/getData?page=${page}&per_page=${per_page}`,
         config
       );
       if (response?.status === 200 || response?.status === 201) {
