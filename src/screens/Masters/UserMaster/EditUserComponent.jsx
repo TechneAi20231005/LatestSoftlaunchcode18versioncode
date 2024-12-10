@@ -41,10 +41,14 @@ import {
   editJobRoleMasterThunk,
   getJobRoleMasterListThunk
 } from '../../../redux/services/jobRoleMaster';
+import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 function EditUserComponent({ match }) {
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState('All_Tickets');
   const [roleDropdown, setRoleDropdown] = useState([]);
+  const [render, setRender] = useState('SELF');
+
   const navigate = useNavigate();
 
   const dispatch = useDispatch();
@@ -324,100 +328,219 @@ function EditUserComponent({ match }) {
   //     [name]: e.value
   //   });
   // };
+  console.log('data', data);
 
-  const handleForm = async (e) => {
-    e.preventDefault();
-    const form = new FormData(e.target);
-    if (isReadOnly) {
-      form.append('check1', 1);
-    } else {
-      form.append('check1', 0);
-    }
+  const initialValue = {
+    account_for: accountFor ? accountFor : '',
+    customer_id: '',
+    first_name: data?.first_name ? data?.first_name : '',
+    middle_name: data?.middle_name ? data?.middle_name : '',
+    last_name: data?.last_name ? data?.last_name : '',
+    email_id: data?.email_id ? data?.email_id : '',
+    user_name: data?.user_name ? data?.user_name : '',
+    contact_no: data?.contact_no ? data?.contact_no : '',
+    whats_app_contact_no: data?.whats_app_contact_no
+      ? data?.whats_app_contact_no
+      : '',
+    password: data?.password ? data?.password : '',
+    confirm_password: data?.password || '',
+    role_id: data?.role_id || '',
+    job_role: data?.job_role || '',
+    designation_id: data?.designation_id || '',
+    department_id: data?.department_id || [],
+    ticket_show_type: [],
+    ticket_passing_authority: 0,
+    is_default: data?.is_default || 0,
 
-    var flag = 1;
-    // setNotify(null);
+    address: data?.address || '',
+    pincode: data?.pincode || '',
+    country_id: data?.country_id || '',
+    state_id: data?.state_id || '',
+    city_id: data?.city_id || ''
+  };
 
-    const formValidation = checkingValidation(form);
-    if (formValidation === 1) {
-      return false;
-    }
+  const fields = [
+    { name: 'account_for', label: 'Account For' },
+    {
+      name: 'customer_id',
+      label: 'Customer',
+      required: render === 'CUSTOMER' ? true : false
+    },
+    {
+      name: 'first_name',
+      label: 'First Name',
+      required: true,
+      onlyAlphabets: true
+    },
+    {
+      name: 'middle_name',
+      label: 'Middle Name',
+      required: true,
+      onlyAlphabets: true
+    },
+    {
+      name: 'last_name',
+      label: 'Last Name',
+      required: true,
+      onlyAlphabets: true
+    },
+    { name: 'email_id', label: 'Email Address', required: true, isEmail: true },
+    {
+      name: 'user_name',
+      label: 'Username',
+      required: true,
+      alphaNumeric: true
+    },
+    {
+      name: 'contact_no',
+      label: 'Contact Number',
+      required: true,
+      mobileOnly: true
+    },
+    {
+      name: 'whats_app_contact_no',
+      label: 'WhatsApp Contact Number',
+      required: true,
+      mobileOnly: true
+    },
+    { name: 'password', label: 'Password', required: true, isPassword: true },
+    { name: 'confirm_password', label: 'Confirm Password', required: true },
+    { name: 'role_id', label: 'Role ', required: true },
+    { name: 'job_role', label: 'Job Role ', required: true },
+    { name: 'designation_id', label: 'Designation ', required: true }
+    // { name: 'rows', label: 'Rows ', required: true }
+  ];
 
-    var selectDepartment = form.getAll('department_id[]');
-    if (selectDepartment === '') {
-      setInputState({ ...state, departmentErr: ' Please Select Department' });
-      return false;
-    }
+  const validationSchema = CustomValidation(fields);
 
-    if (inputState.PinCodeErr) {
-      alert('Invalid Pincode');
-      return;
-    }
-    var selectTicketTypeShow = form.getAll('ticket_show_type_id[]');
-    if (selectTicketTypeShow === '') {
-      setInputState({
-        ...state,
-        ticketTypeShowErr: ' Please Select Ticket Type Show'
-      });
-      return false;
-    }
+  const handleForm = async (values) => {
+    // e.preventDefault();
+    // const form = new FormData(e.target);
+    // if (isReadOnly) {
+    //   form.append('check1', 1);
+    // } else {
+    //   form.append('check1', 0);
+    // }
 
-    if (flag === 1) {
-      await new UserService()
-        .updateUser(userId, form)
-        .then((res) => {
-          if (res?.status === 200) {
-            if (res?.data?.status === 1) {
-              // toast.success(res?.data?.message);
-              toast.success(res?.data?.message, {
-                autoClose: 10000 // 10 seconds in milliseconds
-              });
-              navigate(`/${_base}/User`);
+    // var flag = 1;
+    // // setNotify(null);
 
-              // setNotify({ type: 'success', message: res.data.message });
+    // const formValidation = checkingValidation(form);
+    // if (formValidation === 1) {
+    //   return false;
+    // }
 
-              dispatch(getEmployeeData());
+    // var selectDepartment = form.getAll('department_id[]');
+    // if (selectDepartment === '') {
+    //   setInputState({ ...state, departmentErr: ' Please Select Department' });
+    //   return false;
+    // }
 
-              // setTimeout(() => {
-              //   navigate(`/${_base}/User`, {
-              //     state: {
-              //       alert: { type: 'success', message: res.data.message }
-              //     }
-              //   });
-              // }, 3000);
-            } else {
-              toast.error(res?.data?.message, {
-                autoClose: 10000 // 10 seconds in milliseconds
-              });
-              // toast.error(res?.data?.message);
-              // setNotify({ type: 'danger', message: res.data.message });
-            }
+    // if (inputState.PinCodeErr) {
+    //   alert('Invalid Pincode');
+    //   return;
+    // }
+    // var selectTicketTypeShow = form.getAll('ticket_show_type_id[]');
+    // if (selectTicketTypeShow === '') {
+    //   setInputState({
+    //     ...state,
+    //     ticketTypeShowErr: ' Please Select Ticket Type Show'
+    //   });
+    //   return false;
+    // }
+
+    const form = new FormData();
+    // form.append('account_for', values.account_for);
+    form.append('customer_id', values?.customer_id);
+    form.append('first_name', values.first_name);
+    form.append('middle_name', values.middle_name);
+    form.append('last_name', values.last_name);
+    form.append('email_id', values.email_id);
+    form.append('user_name', values.user_name);
+    form.append('contact_no', values.contact_no);
+    form.append('whats_app_contact_no', values.whats_app_contact_no);
+    form.append('password', values.password);
+    form.append('confirm_password', values.confirm_password);
+    form.append('role_id', values.role_id);
+    form.append('job_role', values.job_role);
+    form.append('designation_id', values.designation_id);
+    form.append('address', values.address);
+    form.append('pincode', values.pincode);
+    form.append('country_id', values.country_id);
+    form.append('state_id', values.state_id);
+    form.append('city_id', values.city_id);
+    form.append('check1', 1);
+
+    rows?.forEach((id) => {
+      form?.append('department_id[]', id?.department_id);
+    });
+    rows.forEach((id) => {
+      form?.append('ticket_show_type_id[]', id?.ticket_show_type);
+    });
+    rows.forEach((id) => {
+      form?.append('ticket_passing_authority[]', id?.ticket_passing_authority);
+    });
+    rows.forEach((id) => {
+      form?.append('is_default[]', id?.is_default);
+    });
+
+    // if (flag === 1) {
+    await new UserService()
+      .updateUser(userId, form)
+      .then((res) => {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            // toast.success(res?.data?.message);
+            toast.success(res?.data?.message, {
+              autoClose: 10000 // 10 seconds in milliseconds
+            });
+            navigate(`/${_base}/User`);
+
+            // setNotify({ type: 'success', message: res.data.message });
+
+            dispatch(getEmployeeData());
+
+            // setTimeout(() => {
+            //   navigate(`/${_base}/User`, {
+            //     state: {
+            //       alert: { type: 'success', message: res.data.message }
+            //     }
+            //   });
+            // }, 3000);
+          } else {
+            toast.error(res?.data?.message, {
+              autoClose: 10000 // 10 seconds in milliseconds
+            });
+            // toast.error(res?.data?.message);
+            // setNotify({ type: 'danger', message: res.data.message });
           }
+        }
 
-          // else {
-          // setNotify({ type: 'danger', message: res.message });
-          // new ErrorLogService().sendErrorLog(
-          //   'User',
-          //   'Create_User',
-          //   'INSERT',
-          //   res.message
-          // );
-          // }
-        })
-        .catch((res) => {
-          toast.error(res?.data?.message);
-          // if (error.response) {
-          //   const { request, ...errorObject } = error.response;
-          //   new ErrorLogService().sendErrorLog(
-          //     'User',
-          //     'Create_User',
-          //     'INSERT',
-          //     errorObject.data.message
-          //   );
-          // } else {
-          // }
-        });
-      // }
-    }
+        // else {
+        // setNotify({ type: 'danger', message: res.message });
+        // new ErrorLogService().sendErrorLog(
+        //   'User',
+        //   'Create_User',
+        //   'INSERT',
+        //   res.message
+        // );
+        // }
+      })
+      .catch((res) => {
+        toast.error(res?.data?.message);
+        // if (error.response) {
+        //   const { request, ...errorObject } = error.response;
+        //   new ErrorLogService().sendErrorLog(
+        //     'User',
+        //     'Create_User',
+        //     'INSERT',
+        //     errorObject.data.message
+        //   );
+        // } else {
+        // }
+      });
+    // }
+    // }
   };
 
   const sortSlefRole =
@@ -606,7 +729,7 @@ function EditUserComponent({ match }) {
                 is_default: d.is_default
               });
             });
-
+            console.log('res===>', res?.data?.data);
             setRows(temp);
           } else {
             setRows([mappingData]);
@@ -798,15 +921,33 @@ function EditUserComponent({ match }) {
 
   const [isReadOnly, setIsReadOnly] = useState(false);
 
-  function copyTextValue(e) {
-    if (e.target.checked) {
+  // function copyTextValue(e) {
+  //   if (e.target.checked) {
+  //     setIsReadOnly(true);
+  //   } else {
+  //     setIsReadOnly(false);
+  //   }
+  //   var text1 = e.target.checked
+  //     ? document.getElementById('contact_no').value
+  //     : '';
+  //   setCopyData(text1);
+  // }
+  function copyTextValue(e, values, setFieldValue) {
+    const isChecked = e?.target?.checked;
+    console.log('eeee', e?.target?.checked);
+    if (isChecked) {
       setIsReadOnly(true);
     } else {
       setIsReadOnly(false);
     }
-    var text1 = e.target.checked
-      ? document.getElementById('contact_no').value
-      : '';
+
+    // Copy the value from Formik's state for 'contact_no' if checked, otherwise set it to an empty string
+    const text1 = isChecked ? values.contact_no : '';
+
+    // Update Formik state for the target field
+    setFieldValue('whats_app_contact_no', text1);
+
+    // Update local state if required
     setCopyData(text1);
   }
 
@@ -841,8 +982,936 @@ function EditUserComponent({ match }) {
     <div className="container-xxl">
       <PageHeader headerTitle="Edit User" />
       {notify && <Alert alertData={notify} />}
+      {data && (
+        <Formik
+          initialValues={initialValue}
+          validationSchema={validationSchema}
+          onSubmit={(values) => {
+            console.log('values===', values);
+            handleForm(values);
+            // setOtpModal(true);
+          }}
+        >
+          {({ setFieldValue, validateForm, errors, values }) => (
+            <Form>
+              {console.log('values==>', values)}
+              <Tabs
+                defaultActiveKey={tabKey}
+                activeKey={tabKey}
+                onSelect={(k) => setTabKey(k)}
+                transition={false}
+                id="noanim-tab-example1"
+                className=" tab-body-header rounded d-inline-flex"
+              >
+                <Tab eventKey="All_Tickets" title="User Details">
+                  <div className="row clearfix g-3">
+                    <div className="col-sm-12">
+                      <div className="card">
+                        <div className="card-body">
+                          {/* {values?.account_for === 'SELF' && ( */}
+                          <div className="form-group row">
+                            <label className="col-sm-2 col-form-label">
+                              <b>
+                                Account For :
+                                <span style={{ color: 'red' }}>*</span>
+                              </b>
+                            </label>
+                            <div className="col-sm-3">
+                              <Field
+                                as="select"
+                                name="account_for"
+                                className="form-control form-control-sm"
+                                // required
+                                // onChange={(e) => {
+                                //   setRender(e?.target?.value);
+                                //   setFieldValue('account_for', e?.target?.value);
+                                //   console.log(e?.target?.value);
+                                // }}
+                                disabled={true}
+                                value={accountFor}
+                              >
+                                <option value="SELF">SELF</option>
+                                <option value="CUSTOMER">CUSTOMER</option>
+                              </Field>
+                              <ErrorMessage
+                                name="account_for"
+                                component="div"
+                              />
+                            </div>
+                          </div>
+                          {/* )} */}
 
-      <form
+                          {/* {render === 'CUSTOMER' && ( */}
+                          <div className="form-group row mt-3">
+                            <label className="col-sm-2 col-form-label">
+                              <b>
+                                Select Customer:
+                                <span style={{ color: 'red' }}>*</span>
+                              </b>
+                            </label>
+                            <div className="col-sm-3">
+                              {/* <Field
+                                name="customer_id"
+                                component={Select}
+                                // options={CustomerDrp}
+                                // value={CustomerDrp.find(
+                                //   (option) => option.value === values.customer_id
+                                // )}
+                                onChange={(selectedOption) => {
+                                  console.log(selectedOption, '//////');
+                                  setFieldValue(
+                                    'customer_id',
+                                    selectedOption ? selectedOption.value : ''
+                                  );
+                                }}
+                              /> */}
+                              <CustomerDropdown
+                                id="customer_id"
+                                name="customer_id"
+                                defaultValue={
+                                  data.customer_id ? data.customer_id : ''
+                                }
+                                readOnly={true}
+                                required={true}
+                              />
+
+                              <ErrorMessage
+                                name="customer_id"
+                                component="small"
+                                style={{ color: 'red' }}
+                              />
+                            </div>
+                          </div>
+                          {/* )} */}
+                          <div
+                            className="form-group row mt-3"
+                            style={{ position: 'relative', display: 'flex' }}
+                          >
+                            <label className="col-sm-2 col-form-label">
+                              <b>
+                                Full Name :
+                                <span style={{ color: 'red' }}>*</span>
+                              </b>
+                            </label>
+                            {/* <div className="col-sm-10 d-flex align-items-start"> */}
+                            <div className="col-sm-3 pe-2 d-flex flex-column">
+                              <Field
+                                type="text"
+                                name="first_name"
+                                className="form-control form-control-sm"
+                                placeholder="First Name"
+                                maxLength={30}
+                              />
+                              <ErrorMessage
+                                name="first_name"
+                                component="small"
+                                className="text-danger mt-1"
+                              />
+                            </div>
+
+                            <div className="col-sm-3 pe-2 d-flex flex-column">
+                              <Field
+                                type="text"
+                                name="middle_name"
+                                className="form-control form-control-sm"
+                                placeholder="Middle Name"
+                                maxLength={30}
+                              />
+                              <ErrorMessage
+                                name="middle_name"
+                                component="small"
+                                className="text-danger mt-1"
+                              />
+                            </div>
+
+                            <div className="col-sm-3 d-flex flex-column">
+                              <Field
+                                type="text"
+                                name="last_name"
+                                className="form-control form-control-sm"
+                                placeholder="Last Name"
+                                maxLength={30}
+                              />
+                              <ErrorMessage
+                                name="last_name"
+                                component="small"
+                                className="text-danger mt-1"
+                              />
+                            </div>
+                          </div>
+                          {/* </div> */}
+                          <div
+                            className="form-group row mt-4"
+                            style={{ position: 'relative', display: 'flex' }}
+                          >
+                            <label className="col-sm-2 col-form-label">
+                              <b>
+                                Email Address : <Astrick color="red" />
+                              </b>
+                            </label>
+                            <div className="col-sm-3">
+                              <Field
+                                type="text"
+                                name="email_id"
+                                className="form-control form-control-sm"
+                                placeholder="Please enter valid email address"
+                                maxLength={30}
+                              />
+                              <ErrorMessage
+                                name="email_id"
+                                component="small"
+                                className="text-danger mt-1"
+                              />
+                            </div>
+
+                            <label className="col-sm-3 col-form-label text-end">
+                              <b>
+                                Username: <Astrick color="red" />
+                              </b>
+                            </label>
+                            <div className="col-sm-3">
+                              <Field
+                                type="text"
+                                name="user_name"
+                                className="form-control form-control-sm"
+                                placeholder="Username"
+                                maxLength={30}
+                              />
+                              <ErrorMessage
+                                name="user_name"
+                                component="small"
+                                className="text-danger mt-1"
+                              />
+                            </div>
+                          </div>
+
+                          <div
+                            className="form-group row mt-3"
+                            style={{ position: 'relative', display: 'flex' }}
+                          >
+                            <label className="col-sm-2 col-form-label">
+                              <b>
+                                Contact Number : <Astrick color="red" />
+                              </b>
+                            </label>
+                            <div className="col-sm-3">
+                              <Field
+                                type="text"
+                                name="contact_no"
+                                className="form-control form-control-sm"
+                                placeholder="Contact Number"
+                                maxLength={30}
+                                values={data?.contact_no}
+                              />
+                              <ErrorMessage
+                                name="contact_no"
+                                component="small"
+                                className="text-danger mt-1"
+                              />
+                            </div>
+                            <label className="col-sm-3 col-form-label text-end ">
+                              <b className="mx-3">Same as Contact No. or</b>
+                              <br />
+                              <b className="mx-3">Whats App Contact Number :</b>
+
+                              {/* <input
+                          type="checkbox"
+                          name="check1"
+                          onChange={copyTextValue}
+                          style={{ position: 'absolute', top: '32%' }}
+                        /> */}
+
+                              <Field
+                                type="checkbox"
+                                name="check1"
+                                // className="form-check-input"
+                                style={{ position: 'absolute', top: '32%' }}
+                                checked={values.check1}
+                                onChange={(e) =>
+                                  copyTextValue(e, values, setFieldValue)
+                                }
+                              />
+                            </label>
+
+                            <div className="col-sm-3">
+                              <Field
+                                type="text"
+                                className="form-control form-control-sm"
+                                id="whats_app_contact_no"
+                                name="whats_app_contact_no"
+                                placeholder="WhatsApp Contact Number"
+                                readOnly={isReadOnly}
+                                values={data?.whats_app_contact_no}
+                                maxLength={10}
+                                minLength={10}
+                                onChange={(e) => {
+                                  const { value } = e.target;
+                                  setFieldValue('whats_app_contact_no', value); // Updates Formik's state
+                                  handleWhatsappValidation(e); // Additional validation logic
+                                }}
+                              />
+                              <ErrorMessage
+                                name="whats_app_contact_no"
+                                component="small"
+                                className="text-danger mt-1"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="form-group row mt-3">
+                            <label className="col-sm-2 col-form-label">
+                              <b>
+                                {' '}
+                                Password : <Astrick color="red" />
+                              </b>
+                            </label>
+                            {console.log('values1', data.password)}
+                            <div className="col-sm-3">
+                              <InputGroup>
+                                <Field
+                                  typeof="password"
+                                  className="form-control"
+                                  id="password"
+                                  name="password"
+                                  placeholder="Password"
+                                  type={passwordShown ? 'text' : 'password'}
+                                  minLength={6}
+                                  maxLength={20}
+                                  // value={values.password}
+                                  onChange={(e) => {
+                                    setFieldValue('password', e.target.value);
+                                  }}
+                                  onPaste={(e) => {
+                                    e.preventDefault();
+                                    return false;
+                                  }}
+                                  onCopy={(e) => {
+                                    e.preventDefault();
+                                    return false;
+                                  }}
+                                />
+                                <InputGroup.Text
+                                  onClick={() =>
+                                    setPasswordShown(!passwordShown)
+                                  }
+                                  style={{ cursor: 'pointer' }}
+                                >
+                                  <i
+                                    className={`bi ${
+                                      passwordShown
+                                        ? 'bi-eye-slash-fill'
+                                        : 'bi-eye-fill'
+                                    }`}
+                                  ></i>
+                                </InputGroup.Text>
+                              </InputGroup>
+                              <ErrorMessage
+                                name="password"
+                                component="small"
+                                className="text-danger mt-1 d-block"
+                              />
+                            </div>
+
+                            <label className="col-sm-3 col-form-label text-end">
+                              <b>
+                                Confirmed Password :<Astrick color="red" />{' '}
+                              </b>
+                            </label>
+                            <div className="col-sm-3">
+                              <InputGroup>
+                                <Field
+                                  className="form-control"
+                                  id="confirm_password"
+                                  name="confirm_password"
+                                  placeholder="Confirm Password"
+                                  type={passwordShown1 ? 'text' : 'password'}
+                                  minLength={6}
+                                  maxLength={20}
+                                />
+                                <InputGroup.Text
+                                  onClick={() =>
+                                    setPasswordShown1(!passwordShown1)
+                                  }
+                                  style={{ cursor: 'pointer' }}
+                                >
+                                  <i
+                                    className={`bi ${
+                                      passwordShown1
+                                        ? 'bi-eye-slash-fill'
+                                        : 'bi-eye-fill'
+                                    }`}
+                                  ></i>
+                                </InputGroup.Text>
+                              </InputGroup>
+                              <ErrorMessage
+                                name="confirm_password"
+                                component="small"
+                                className="text-danger mt-1 d-block"
+                              />
+                            </div>
+                          </div>
+
+                          <div
+                            className="form-group row mt-4"
+                            style={{ position: 'relative', display: 'flex' }}
+                          >
+                            <label className="col-sm-2 col-form-label">
+                              <b>
+                                Select Role : <Astrick color="red" />
+                              </b>
+                            </label>
+                            <div className="col-sm-3">
+                              <Select
+                                id="role_id"
+                                name="role_id"
+                                value={
+                                  values.role_id
+                                    ? {
+                                        value: values.role_id,
+                                        label:
+                                          orderedSelfRoleData.find(
+                                            (option) =>
+                                              option.value === values.role_id
+                                          )?.label || ''
+                                      }
+                                    : null
+                                } // Set the selected value properly
+                                options={
+                                  accountFor === 'SELF'
+                                    ? orderedSelfRoleData
+                                    : orderedCustomerRoleData
+                                }
+                                onChange={(selectedOption) => {
+                                  setFieldValue(
+                                    'role_id',
+                                    selectedOption?.value
+                                  ); // Save only the value
+                                }}
+                                placeholder="Select Role"
+                              />
+                              <ErrorMessage
+                                name="role_id"
+                                component="small"
+                                className="text-danger mt-1 d-block"
+                              />
+                            </div>
+
+                            <label
+                              className="col-sm-3 col-form-label text-end"
+                              style={{ textAlign: 'right' }}
+                            >
+                              <b>
+                                Select Designation : <Astrick color="red" />
+                              </b>
+                            </label>
+                            <div className="col-sm-3">
+                              <Select
+                                id="designation_id"
+                                name="designation_id"
+                                value={
+                                  values.designation_id
+                                    ? {
+                                        value: values.designation_id,
+                                        label:
+                                          sortDesignationDropdown.find(
+                                            (option) =>
+                                              option.value ===
+                                              values.designation_id
+                                          )?.label || ''
+                                      }
+                                    : null
+                                } // Set the selected value properly
+                                options={sortDesignationDropdown}
+                                onChange={(selectedOption) => {
+                                  setFieldValue(
+                                    'designation_id',
+                                    selectedOption?.value
+                                  );
+                                }}
+                                placeholder="Select Designation"
+                              />
+                              <ErrorMessage
+                                name="designation_id"
+                                component="small"
+                                className="text-danger mt-1 d-block"
+                              />
+                            </div>
+                          </div>
+                          <div
+                            className="form-group row mt-4"
+                            style={{ position: 'relative', display: 'flex' }}
+                          >
+                            <label className="col-sm-2 col-form-label">
+                              <b>
+                                Select Job Role : <Astrick color="red" />
+                              </b>
+                            </label>
+                            {console.log('jobRoleDropDown', jobRoleDropDown)}
+                            <div className="col-sm-3">
+                              <Select
+                                id="job_role"
+                                name="job_role"
+                                value={
+                                  values.job_role
+                                    ? {
+                                        value: values.job_role,
+                                        label:
+                                          jobRoleDropDownValues?.find(
+                                            (option) =>
+                                              option.value === values.job_role
+                                          )?.label || ''
+                                      }
+                                    : null
+                                } // Set the selected value properly
+                                options={jobRoleDropDown}
+                                onChange={(selectedOption) => {
+                                  setFieldValue(
+                                    'job_role',
+                                    selectedOption?.value
+                                  );
+                                }}
+                                placeholder="Select Job Role"
+                              />
+                              <ErrorMessage
+                                name="job_role"
+                                component="small"
+                                className="text-danger mt-1 d-block"
+                              />
+                            </div>
+                          </div>
+
+                          <div className="card mt-2">
+                            <div className="card-header bg-primary text-white p-2 ">
+                              <h5>Address Details</h5>
+                            </div>
+                            <div className="card-body">
+                              <div className="form-group row mt-3">
+                                <label className="col-sm-2 col-form-label">
+                                  <b>Address : </b>
+                                </label>
+                                <div className="col-sm-10">
+                                  <Field
+                                    as="textarea"
+                                    className="form-control form-control-sm"
+                                    id="address"
+                                    name="address"
+                                  />
+                                  <ErrorMessage
+                                    name="address"
+                                    component="div"
+                                    style={{ color: 'red' }}
+                                  />
+                                </div>
+                              </div>
+
+                              <div className="form-group row mt-3">
+                                <label className="col-sm-2 col-form-label">
+                                  <b>Pincode : </b>
+                                </label>
+                                <div className="col-sm-4">
+                                  <Field
+                                    type="text"
+                                    className="form-control form-control-sm"
+                                    id="pincode"
+                                    name="pincode"
+                                    minLength={6}
+                                    maxLength={6}
+                                  />
+                                  <ErrorMessage
+                                    name="pincode"
+                                    component="div"
+                                    style={{ color: 'red' }}
+                                  />
+                                </div>
+
+                                <label
+                                  className="col-sm-2 col-form-label"
+                                  style={{ textAlign: 'right' }}
+                                >
+                                  <b>Country : </b>
+                                </label>
+                                <div className="col-sm-4">
+                                  <Field
+                                    name="country_id"
+                                    component={Select}
+                                    options={CountryData}
+                                    value={CountryData.find(
+                                      (option) =>
+                                        option.value === values.country_id
+                                    )}
+                                    onChange={(selectedOption) => {
+                                      setFieldValue(
+                                        'country_id',
+                                        selectedOption
+                                          ? selectedOption.value
+                                          : ''
+                                      );
+
+                                      handleDependentChange(
+                                        selectedOption,
+                                        'COUNTRY',
+                                        setFieldValue
+                                      );
+                                    }}
+                                  />
+
+                                  <ErrorMessage
+                                    name="country_id"
+                                    component="div"
+                                    style={{ color: 'red' }}
+                                  />
+                                </div>
+                              </div>
+
+                              {/* State */}
+                              <div className="form-group row mt-3">
+                                <label className="col-sm-2 col-form-label">
+                                  <b>State : </b>
+                                </label>
+                                <div className="col-sm-4">
+                                  <Field
+                                    name="state_id"
+                                    component={Select}
+                                    options={
+                                      updateStatus.statedrp !== undefined
+                                        ? stateDropdown
+                                        : []
+                                    }
+                                    value={
+                                      stateDropdown &&
+                                      stateDropdown?.find(
+                                        (option) =>
+                                          option.value === values?.state_id
+                                      )
+                                    }
+                                    onChange={(selectedOption) => {
+                                      setFieldValue(
+                                        'state_id',
+                                        selectedOption
+                                          ? selectedOption.value
+                                          : ''
+                                      );
+
+                                      handleDependentChange(
+                                        selectedOption,
+                                        'STATE',
+                                        setFieldValue
+                                      );
+                                    }}
+                                  />
+
+                                  <ErrorMessage
+                                    name="state_id"
+                                    component="div"
+                                    style={{ color: 'red' }}
+                                  />
+                                </div>
+
+                                <label
+                                  className="col-sm-2 col-form-label"
+                                  style={{ textAlign: 'right' }}
+                                >
+                                  <b>City : </b>
+                                </label>
+                                <div className="col-sm-4">
+                                  {cityDropdown && (
+                                    <Field
+                                      name="city_id"
+                                      component={Select}
+                                      options={
+                                        updateStatus.citydrp !== undefined
+                                          ? cityDropdown
+                                          : []
+                                      }
+                                      onChange={(selectedOption) => {
+                                        // Ensure only the value is passed to Formik
+                                        setFieldValue(
+                                          'city_id',
+                                          selectedOption
+                                            ? selectedOption.value
+                                            : ''
+                                        );
+
+                                        // Handle dependent change for city
+                                        handleDependentChange(
+                                          selectedOption,
+                                          'CITY',
+                                          setFieldValue
+                                        );
+                                      }}
+                                    />
+                                  )}
+                                  <ErrorMessage
+                                    name="city_id"
+                                    component="div"
+                                    style={{ color: 'red' }}
+                                  />
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Tab>
+                <Tab eventKey="User_Settings" title="Departments">
+                  <div className="card">
+                    <div className="card-body">
+                      {rows && (
+                        <div className="">
+                          <table
+                            className="table table-bordered table-responsive mt-5"
+                            id="tab_logic"
+                          >
+                            <thead>
+                              <tr>
+                                <th
+                                  className="text-center"
+                                  style={{ width: '100px' }}
+                                >
+                                  {' '}
+                                  SR No{' '}
+                                </th>
+                                <th
+                                  className="text-center"
+                                  style={{ width: '300px' }}
+                                >
+                                  {' '}
+                                  Department
+                                </th>
+                                <th
+                                  className="text-center"
+                                  style={{ width: '300px' }}
+                                >
+                                  {' '}
+                                  Ticket Type Show{' '}
+                                </th>
+                                <th
+                                  className="text-center"
+                                  style={{ width: '300px' }}
+                                >
+                                  {' '}
+                                  Ticket Passing Authority{' '}
+                                </th>
+                                <th
+                                  className="text-center"
+                                  style={{ width: '300px' }}
+                                >
+                                  {' '}
+                                  Make Default{' '}
+                                </th>
+                                <th
+                                  className="text-center"
+                                  style={{ width: '100px' }}
+                                >
+                                  {' '}
+                                  Action
+                                </th>
+                              </tr>
+                            </thead>
+
+                            <tbody>
+                              {rows &&
+                                rows?.map((item, idx) => (
+                                  <tr key={idx}>
+                                    {console.log('rows', item)}
+                                    <td className="text-center">{idx + 1}</td>
+                                    <td>
+                                      <Select
+                                        isSearchable={true}
+                                        name="department_id[]"
+                                        id={`department_id_` + idx}
+                                        key={idx}
+                                        className="basic-multi-select"
+                                        classNamePrefix="select"
+                                        options={departmentDropdown}
+                                        value={
+                                          departmentDropdown &&
+                                          departmentDropdown?.filter((d) =>
+                                            Array.isArray(item.department_id)
+                                              ? item.department_id.includes(
+                                                  d.value
+                                                )
+                                              : item.department_id === d.value
+                                          )
+                                        }
+                                        required
+                                        style={{ zIndex: '100' }}
+                                        onChange={(selectedOption) =>
+                                          handleUserSelect(selectedOption, idx)
+                                        }
+                                      />
+                                    </td>
+
+                                    <td>
+                                      <Select
+                                        options={options}
+                                        id={`ticket_show_type_id_` + idx}
+                                        name="ticket_show_type_id[]"
+                                        value={
+                                          options &&
+                                          options?.filter((d) =>
+                                            Array.isArray(item.ticket_show_type)
+                                              ? item.ticket_show_type.includes(
+                                                  d.value
+                                                )
+                                              : item.ticket_show_type ===
+                                                d.value
+                                          )
+                                        }
+                                        required
+                                        onChange={(selectedOption) =>
+                                          handleTickeTypeShowSelect(
+                                            selectedOption,
+                                            idx
+                                          )
+                                        }
+                                      />
+                                    </td>
+
+                                    <td className="text-center">
+                                      <input
+                                        type="hidden"
+                                        name="ticket_passing_authority[]"
+                                        value={
+                                          item.ticket_passing_authority
+                                            ? item.ticket_passing_authority
+                                            : 0
+                                        }
+                                      />
+
+                                      <input
+                                        type="checkbox"
+                                        id={`ticket_passing_authority_` + idx}
+                                        checked={
+                                          item.ticket_passing_authority === 1
+                                        }
+                                        onChange={(e) =>
+                                          handleCheckInput(
+                                            e,
+                                            idx,
+                                            'TICKET_PASSING_AUTHORITY'
+                                          )
+                                        }
+                                      />
+                                    </td>
+                                    <td className="text-center">
+                                      <input
+                                        type="hidden"
+                                        name="is_default[]"
+                                        value={
+                                          item.is_default ? item.is_default : ''
+                                        }
+                                      />
+                                      <input
+                                        type="checkbox"
+                                        id={`is_default_` + idx}
+                                        checked={item.is_default === 1}
+                                        onChange={(e) =>
+                                          handleCheckInput(e, idx, 'IS_DEFAULT')
+                                        }
+                                      />
+                                    </td>
+
+                                    <td>
+                                      {idx === 0 && (
+                                        <button
+                                          type="button"
+                                          className="btn btn-sm btn-outline-primary pull-left"
+                                          onClick={handleAddRow}
+                                        >
+                                          <i className="icofont-plus-circle"></i>
+                                        </button>
+                                      )}
+
+                                      {idx !== 0 && (
+                                        <button
+                                          type="button"
+                                          className="btn btn-outline-danger btn-sm"
+                                          onClick={handleRemoveSpecificRow(idx)}
+                                        >
+                                          <i className="icofont-ui-delete"></i>
+                                        </button>
+                                      )}
+                                    </td>
+                                  </tr>
+                                ))}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                  {inputState && (
+                    <small
+                      style={{
+                        color: 'red',
+                        position: 'absolute',
+                        right: '70%'
+                      }}
+                    >
+                      {inputState.departmentErr}
+                    </small>
+                  )}
+                  {inputState && (
+                    <small
+                      style={{
+                        color: 'red',
+                        position: 'absolute',
+                        right: '70%'
+                      }}
+                    >
+                      {inputState.ticketTypeShowErr}
+                    </small>
+                  )}
+                </Tab>
+              </Tabs>
+
+              <div className="mt-3" style={{ textAlign: 'right' }}>
+                {tabKey === 'All_Tickets' && (
+                  <span
+                    onClick={() => {
+                      // const form = new FormData(userForm?.current);
+                      // const flag = checkingValidation(form);
+                      // if (flag === 1) {
+                      //   return false;
+                      // } else {
+                      //   setTabKey('User_Settings');
+                      // }
+                      setTabKey('User_Settings');
+                    }}
+                    className="btn btn-primary"
+                  >
+                    Next
+                  </span>
+                )}
+                {tabKey === 'User_Settings' && (
+                  <button type="submit" className="btn btn-primary">
+                    Update
+                  </button>
+                )}
+
+                {tabKey === 'User_Settings' && (
+                  <button
+                    onClick={() => setTabKey('All_Tickets')}
+                    className="btn btn-primary"
+                  >
+                    Back
+                  </button>
+                )}
+                <Link
+                  to={`/${_base}/User`}
+                  className="btn btn-danger text-white"
+                >
+                  Cancel
+                </Link>
+              </div>
+            </Form>
+          )}
+        </Formik>
+      )}
+      {/* <form
         onSubmit={handleForm}
         ref={userForm}
         encType="multipart/form-data"
@@ -1031,7 +2100,6 @@ function EditUserComponent({ match }) {
                             name="email_id"
                             placeholder="Email Address"
                             defaultValue={data.email_id ? data.email_id : ''}
-                            // onChange={handleEmail}
                             onChange={(event) => {
                               const email = event.target.value;
                               if (
@@ -1047,7 +2115,6 @@ function EditUserComponent({ match }) {
                                 setInputState({ ...state, emailErr: '' });
                               }
                             }}
-                            //onKeyPress={e => { Validation.password(e) }}
                           />
                           {inputState && (
                             <small
@@ -1201,13 +2268,7 @@ function EditUserComponent({ match }) {
                                 id="whats_app_contact_no"
                                 name="whats_app_contact_no"
                                 placeholder="Whats App Contact Number"
-                                // defaultValue={
-                                //   // isReadOnly === false
-                                //   //   ? data.contact_no
-                                //   //   : data.whats_app_contact_no
-                                //   data?.contact_no == data?.whats_app_contact_no  ? data.whats_app_contact_no : ""
 
-                                // }
                                 value={copyData}
                                 readOnly={isReadOnly}
                                 minLength={10}
@@ -1308,7 +2369,6 @@ function EditUserComponent({ match }) {
                               name="confirm_password"
                               id="confirm_password"
                               ref={confirmedPasswordRef}
-                              // onChange={handleConfirmedPassword}
                               type={passwordShown1 ? 'text' : 'Password'}
                               onPaste={(e) => {
                                 e.preventDefault();
@@ -1367,13 +2427,7 @@ function EditUserComponent({ match }) {
                                   ? orderedSelfRoleData
                                   : orderedCustomerRoleData
                               }
-                              // defaultValue={
-                              //   data &&
-                              //   roleDropdown &&
-                              //   roleDropdown.filter(
-                              //     (d) => d.value == data.role_id
-                              //   )
-                              // }
+
                               value={selectRole}
                               onChange={(e) => handleSelectRole(e)}
                             />
@@ -1427,7 +2481,6 @@ function EditUserComponent({ match }) {
                         )}
                       </div>
 
-                      {/* job role */}
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
                           <b>
@@ -1505,10 +2558,8 @@ function EditUserComponent({ match }) {
                         </div>
                       </div>
                     </div>{' '}
-                    {/* CARD BODY */}
                   </div>{' '}
-                  {/* CARD */}
-                  {/* ********* ADDRESS ********* */}
+
                   <div className="card mt-2">
                     <div className="card-header bg-primary text-white p-2">
                       <h5>Address Details</h5>
@@ -1553,7 +2604,7 @@ function EditUserComponent({ match }) {
                             onChange={(event) => {
                               const pincode = event.target.value.trim();
 
-                              const pincodeRegex = /^\d{6}$/; // regular expression to match 6 digits
+                              const pincodeRegex = /^\d{6}$/;
 
                               if (pincode === '') {
                                 setInputState({
@@ -1918,7 +2969,7 @@ function EditUserComponent({ match }) {
             Cancel
           </Link>
         </div>
-      </form>
+      </form> */}
     </div>
   );
 }

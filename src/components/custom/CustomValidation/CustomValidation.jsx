@@ -7,7 +7,8 @@ export const CustomValidation = (fields) => {
   const EMAIL_REGEX = /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/; // Regular expression for email validation
   const CHAR_NUM_REGEX = /^[a-zA-Z0-9 !"#$%&'()*+,-./:;<=>?@[\\]^_`{|}~]+$/;
   const MOBILE_REGEX = /^(?!0{9})[0-9]{1,10}$/;
-  const PASSWORD_REGEX = /^[A-Za-z0-9!@#$%^&*().,<>{}<>?_=+-|;:\'"/]/;
+  const PASSWORD_REGEX =
+    /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
   return Yup.object(
     fields.reduce((acc, field) => {
       let validator = Yup.string();
@@ -76,12 +77,10 @@ export const CustomValidation = (fields) => {
           `${field.label} must be a valid mobile number (1 to 10 digits, no all zeros)`
         );
       }
-
       if (field.isPassword) {
-        validator = validator.matches(
-          PASSWORD_REGEX,
-          `${field.label} must contain letters, numbers, and allowed special symbols`
-        );
+        validator = validator
+          .min(6, `${field.label} must be at least 6 characters`)
+          .max(20, `${field.label} cannot exceed 20 characters`);
       }
 
       if (field.isObject) {
