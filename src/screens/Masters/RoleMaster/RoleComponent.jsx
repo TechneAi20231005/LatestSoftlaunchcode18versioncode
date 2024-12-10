@@ -372,7 +372,7 @@ function RoleComponent({ location }) {
                       />
                       <ErrorMessage
                         name="role"
-                        component="div"
+                        component="small"
                         className="text-danger small"
                       />
                     </div>
@@ -389,7 +389,7 @@ function RoleComponent({ location }) {
                       />
                       <ErrorMessage
                         name="remark"
-                        component="div"
+                        component="small"
                         className="text-danger small"
                       />
                     </div>
@@ -427,7 +427,7 @@ function RoleComponent({ location }) {
                         </div>
                         <ErrorMessage
                           name="is_active"
-                          component="div"
+                          component="small"
                           className="text-danger small"
                         />
                       </div>

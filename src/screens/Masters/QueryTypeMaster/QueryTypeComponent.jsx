@@ -977,7 +977,7 @@ function QueryTypeComponent() {
                         />
                         <ErrorMessage
                           name="query_type_name"
-                          component="div"
+                          component="small"
                           className="text-danger"
                         />
                       </div>
@@ -1004,7 +1004,7 @@ function QueryTypeComponent() {
                         />
                         <ErrorMessage
                           name="form_id"
-                          component="div"
+                          component="small"
                           className="text-danger"
                         />
                       </div>
@@ -1029,7 +1029,7 @@ function QueryTypeComponent() {
                           />
                           <ErrorMessage
                             name="query_group_data"
-                            component="div"
+                            component="small"
                             className="text-danger"
                           />
                         </div>
@@ -1087,7 +1087,7 @@ function QueryTypeComponent() {
                         />
                         <ErrorMessage
                           name="remark"
-                          component="div"
+                          component="small"
                           className="text-danger"
                         />
                       </div>

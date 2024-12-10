@@ -320,7 +320,7 @@ function DepartmentComponent() {
                       />
                       <ErrorMessage
                         name="department"
-                        component="div"
+                        component="small"
                         className="text-danger small"
                       />
                     </div>
@@ -337,7 +337,7 @@ function DepartmentComponent() {
                       />
                       <ErrorMessage
                         name="remark"
-                        component="div"
+                        component="small"
                         className="text-danger small"
                       />
                     </div>
@@ -375,7 +375,7 @@ function DepartmentComponent() {
                         </div>
                         <ErrorMessage
                           name="is_active"
-                          component="div"
+                          component="small"
                           className="text-danger small"
                         />
                       </div>

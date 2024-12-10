@@ -298,7 +298,7 @@ export default function EditTenant() {
                     />
                     <ErrorMessage
                       name="company_name"
-                      component="div"
+                      component="small"
                       style={{ color: 'red' }}
                     />
                   </div>
@@ -321,7 +321,7 @@ export default function EditTenant() {
                     />
                     <ErrorMessage
                       name="series"
-                      component="div"
+                      component="small"
                       style={{ color: 'red' }}
                     />
                   </div>
@@ -361,7 +361,7 @@ export default function EditTenant() {
 
                         <ErrorMessage
                           name="company_type"
-                          component="div"
+                          component="small"
                           style={{ color: 'red' }}
                         />
                       </div>
@@ -419,7 +419,7 @@ export default function EditTenant() {
                     />
                     <ErrorMessage
                       name="contact_no"
-                      component="div"
+                      component="small"
                       style={{ color: 'red' }}
                     />
                   </div>
