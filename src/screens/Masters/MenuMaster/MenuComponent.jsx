@@ -1,8 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Accordion } from 'react-bootstrap';
 import PageHeader from '../../../components/Common/PageHeader';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { handleModalInStore } from '../../Dashboard/DashbordSlice';
 import EditMenu from './AddEditMenu';
 import DataTable from 'react-data-table-component';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
@@ -14,6 +12,9 @@ function MenuComponent() {
   const { menuMasterList, isLoading, notify } = useSelector(
     (state) => state?.menuMaster
   );
+  const [totalRows, setTotalRows] = useState(0);
+  const [perPage, setPerPage] = useState(10);
+  const [page, setPage] = useState(1);
 
   const [show, setShow] = useState(false);
   const [data, setData] = useState({
@@ -39,11 +40,19 @@ function MenuComponent() {
     handleSearch();
   }, [searchTerm]);
 
+  const getData = () => {
+    dispatch(getMenuMasterList({ page, per_page: perPage }));
+  };
   useEffect(() => {
-    dispatch(getMenuMasterList());
-  }, []);
+    getData();
+  }, [page, perPage]);
+
+  const handlePageChange = (page) => setPage(page);
+  const handlePerRowsChange = (newPerPage) => setPerPage(newPerPage);
+
   useEffect(() => {
     setFilterData(menuMasterList?.data?.data);
+    setTotalRows(menuMasterList?.data?.total);
   }, [menuMasterList]);
 
   const optionData = menuMasterList?.data?.data
@@ -55,19 +64,18 @@ function MenuComponent() {
       };
     });
 
-    const exportData = menuMasterList?.data?.data?.map((item,i)=> {
-      return {
-        "Sr" : i + 1,
-        "tenant_id" : item?.tenant_id,
-        "parent_name" : item?.name || "-",
-        "remark" : item?.remark || "-",
-       "is_active": item?.is_active === 1 ? "Active" : "Deactive",
-       "created_at" : item?.created_at || "-",
-       "created_by_name": item?.created_by_name || "-",
-       "updated_by_name" : item?.updated_by_name || "-"
-      }
-    })
-
+  const exportData = menuMasterList?.data?.data?.map((item, i) => {
+    return {
+      Sr: i + 1,
+      tenant_id: item?.tenant_id,
+      parent_name: item?.name || '-',
+      remark: item?.remark || '-',
+      is_active: item?.is_active === 1 ? 'Active' : 'Deactive',
+      created_at: item?.created_at || '-',
+      created_by_name: item?.created_by_name || '-',
+      updated_by_name: item?.updated_by_name || '-'
+    };
+  });
 
   const columns = [
     {
@@ -94,8 +102,7 @@ function MenuComponent() {
     },
     {
       name: 'Sr. No.',
-      selector: (row, index) => index + 1,
-      sortable: false,
+      selector: (_, index) => (page - 1) * perPage + index + 1,
       width: '70px'
     },
     {
@@ -108,18 +115,14 @@ function MenuComponent() {
       selector: (row) => row.is_active,
       sortable: true,
       cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
+        <span
+          className={`badge ${
+            row.is_active === 1 ? 'bg-primary' : 'bg-danger'
+          }`}
+          style={{ width: '4rem' }}
+        >
+          {row.is_active === 1 ? 'Active' : 'Deactive'}
+        </span>
       )
       // width: '100px'
     },
@@ -183,6 +186,10 @@ function MenuComponent() {
           data={filterData}
           // defaultSortField="role_id"
           pagination
+          paginationServer
+          paginationTotalRows={totalRows}
+          onChangePage={handlePageChange}
+          onChangeRowsPerPage={handlePerRowsChange}
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
@@ -192,14 +199,14 @@ function MenuComponent() {
         />
       </div>
 
-    {
-      show &&   <EditMenu
-      show={show}
-      onClose={() => setShow(false)}
-      data={data}
-      optionData={optionData}
-    />
-    }
+      {show && (
+        <EditMenu
+          show={show}
+          onClose={() => setShow(false)}
+          data={data}
+          optionData={optionData}
+        />
+      )}
     </>
   );
 }
