@@ -250,7 +250,7 @@ export default function CreateTenant() {
                   />
                   <ErrorMessage
                     name="company_name"
-                    component="div"
+                    component="small"
                     style={{ color: 'red' }}
                   />
                 </div>
@@ -271,7 +271,7 @@ export default function CreateTenant() {
                   />
                   <ErrorMessage
                     name="series"
-                    component="div"
+                    component="small"
                     style={{ color: 'red' }}
                   />
                 </div>
@@ -303,7 +303,7 @@ export default function CreateTenant() {
 
                       <ErrorMessage
                         name="company_type"
-                        component="div"
+                        component="small"
                         style={{ color: 'red' }}
                       />
                     </div>
@@ -337,7 +337,7 @@ export default function CreateTenant() {
                   />
                   <ErrorMessage
                     name="email_id"
-                    component="div"
+                    component="small"
                     style={{ color: 'red' }}
                   />
                 </div>
@@ -359,7 +359,7 @@ export default function CreateTenant() {
                   />
                   <ErrorMessage
                     name="contact_no"
-                    component="div"
+                    component="small"
                     style={{ color: 'red' }}
                   />
                 </div>
@@ -384,7 +384,7 @@ export default function CreateTenant() {
                     />
                     <ErrorMessage
                       name="address"
-                      component="div"
+                      component="small"
                       style={{ color: 'red' }}
                     />
                   </div>
@@ -405,7 +405,7 @@ export default function CreateTenant() {
                     />
                     <ErrorMessage
                       name="pincode"
-                      component="div"
+                      component="small"
                       style={{ color: 'red' }}
                     />
                   </div>
@@ -440,7 +440,7 @@ export default function CreateTenant() {
 
                     <ErrorMessage
                       name="country_id"
-                      component="div"
+                      component="small"
                       style={{ color: 'red' }}
                     />
                   </div>
@@ -480,7 +480,7 @@ export default function CreateTenant() {
 
                     <ErrorMessage
                       name="state_id"
-                      component="div"
+                      component="small"
                       style={{ color: 'red' }}
                     />
                   </div>
@@ -521,7 +521,7 @@ export default function CreateTenant() {
                     )}
                     <ErrorMessage
                       name="city_id"
-                      component="div"
+                      component="small"
                       style={{ color: 'red' }}
                     />
                   </div>

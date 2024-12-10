@@ -22,6 +22,8 @@ export default function CreateDropdownComponent() {
   const [data, setData] = useState([{ label: null, value: null }]);
 
   const [notify, setNotify] = useState(null);
+  const [message, setMessage] = useState(false)
+  const [display, setDisplay] = useState('')
 
   const dispatch = useDispatch();
 
@@ -31,6 +33,13 @@ export default function CreateDropdownComponent() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!message) {
+      setDisplay("Dropdown Name is Required");
+      return
+    } else {
+      setDisplay(""); // Clear error
+      console.log("Form Submitted with Dropdown Name:", message);
+    }
     const formData = new FormData(e.target);
 
     await new DynamicFormDropdownMasterService()
@@ -123,8 +132,13 @@ export default function CreateDropdownComponent() {
                     }}
                     name="dropdown_name"
                     id="dropdown_name"
-                    required
+                    // required
+                    onChange={(e) => {
+                      setMessage(e?.target?.value)
+                      setDisplay(false)
+                    }}
                   />
+                   {display && <div className="text-danger mt-1">{display}</div>}
                 </div>
               </div>
 
