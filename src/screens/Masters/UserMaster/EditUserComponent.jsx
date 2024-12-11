@@ -978,6 +978,8 @@ function EditUserComponent({ match }) {
     dispatch(getJobRoleMasterListThunk());
   }, []);
 
+  console.log('data', data?.account_for);
+
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Edit User" />
@@ -1041,16 +1043,16 @@ function EditUserComponent({ match }) {
                           </div>
                           {/* )} */}
 
-                          {/* {render === 'CUSTOMER' && ( */}
-                          <div className="form-group row mt-3">
-                            <label className="col-sm-2 col-form-label">
-                              <b>
-                                Select Customer:
-                                <span style={{ color: 'red' }}>*</span>
-                              </b>
-                            </label>
-                            <div className="col-sm-3">
-                              {/* <Field
+                          {data?.account_for === 'CUSTOMER' && (
+                            <div className="form-group row mt-3">
+                              <label className="col-sm-2 col-form-label">
+                                <b>
+                                  Select Customer:
+                                  <span style={{ color: 'red' }}>*</span>
+                                </b>
+                              </label>
+                              <div className="col-sm-3">
+                                {/* <Field
                                 name="customer_id"
                                 component={Select}
                                 // options={CustomerDrp}
@@ -1065,24 +1067,24 @@ function EditUserComponent({ match }) {
                                   );
                                 }}
                               /> */}
-                              <CustomerDropdown
-                                id="customer_id"
-                                name="customer_id"
-                                defaultValue={
-                                  data.customer_id ? data.customer_id : ''
-                                }
-                                readOnly={true}
-                                required={true}
-                              />
+                                <CustomerDropdown
+                                  id="customer_id"
+                                  name="customer_id"
+                                  defaultValue={
+                                    data.customer_id ? data.customer_id : ''
+                                  }
+                                  readOnly={true}
+                                  required={true}
+                                />
 
-                              <ErrorMessage
-                                name="customer_id"
-                                component="small"
-                                style={{ color: 'red' }}
-                              />
+                                <ErrorMessage
+                                  name="customer_id"
+                                  component="small"
+                                  style={{ color: 'red' }}
+                                />
+                              </div>
                             </div>
-                          </div>
-                          {/* )} */}
+                          )}
                           <div
                             className="form-group row mt-3"
                             style={{ position: 'relative', display: 'flex' }}

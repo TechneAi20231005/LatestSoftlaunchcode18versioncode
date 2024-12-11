@@ -53,6 +53,10 @@ function CreateUserComponent({ match }) {
 
   const [CustomerDrp, setCustomerDrp] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [deptID, setDeptID] = useState();
+  const [deptErr, setDeptErr] = useState('');
+  const [ticketTypeShow, setTicketTypeShow] = useState('');
+  const [ticketTypeShowErr, setTicketTypeShowErr] = useState('');
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -505,7 +509,18 @@ function CreateUserComponent({ match }) {
     rows.forEach((id) => {
       form?.append('is_default[]', id?.is_default);
     });
-
+    if (!deptID || deptID.length === 0) {
+      setDeptErr('Department is required');
+      return false; // Stop further execution
+    } else {
+      setDeptErr('');
+    }
+    if (!ticketTypeShow || ticketTypeShow.length === 0) {
+      setTicketTypeShowErr('Ticket Type Show is required');
+      return false; // Stop further execution
+    } else {
+      setTicketTypeShowErr('');
+    }
     dispatch(postUserData(form)).then((res) => {
       if (res?.payload?.status === 200) {
         if (res?.payload?.data?.status === 1) {
@@ -664,31 +679,71 @@ function CreateUserComponent({ match }) {
     }
   };
 
+  // const handleUserSelect = (selectedOptions, index) => {
+  //   const selectedDepartmentId = selectedOptions.value;
+  //   setDeptID(selectedDepartmentId);
+  //   console.log('selectedDepartmentId', selectedDepartmentId);
+  // s
+
+  //   const isDepartmentAlreadySelected = rows.some(
+  //     (row) => row.department_id === selectedDepartmentId
+  //   );
+  //   if (!deptID || deptID.length === 0) {
+  //     setDeptErr('Department is required');
+  //     return false; // Stop further execution
+  //   } else {
+  //     setDeptErr('');
+  //   }
+  //   if (isDepartmentAlreadySelected) {
+
+  //     alert(
+  //       'This Department is already selected. Please select another Department.'
+  //     );
+  //     return;
+  //   }
+
+  //   const updatedAssign = [...rows];
+  //   updatedAssign[index] = {
+  //     ...updatedAssign[index],
+  //     department_id: selectedDepartmentId
+  //   };
+  //   setRows(updatedAssign);
+  // };
+
   const handleUserSelect = (selectedOptions, index) => {
     const selectedDepartmentId = selectedOptions.value;
-    console.log('selectedDepartmentId', selectedDepartmentId);
-    // Check if the selected department is already present in the rows
+    setDeptID(selectedDepartmentId); // Update the department ID
+    console.log('Selected Department ID:', selectedDepartmentId);
+
+    // Validation: Check if a department is selected
+    if (!selectedDepartmentId) {
+      setDeptErr('Department is required');
+      return; // Stop further execution
+    } else {
+      setDeptErr(''); // Clear the error
+    }
+
+    // Check if the department is already selected in the rows
     const isDepartmentAlreadySelected = rows.some(
       (row) => row.department_id === selectedDepartmentId
     );
 
     if (isDepartmentAlreadySelected) {
-      // If the department is already selected, show an error message
-      // You can handle the error message display as per your UI design
+      // Show error message if department is already selected
       alert(
         'This Department is already selected. Please select another Department.'
       );
-      return;
+      return; // Stop further execution
     }
 
-    // Update the state with the selected department if it's not already selected
-    const updatedAssign = [...rows];
-    updatedAssign[index] = {
-      ...updatedAssign[index],
-      department_id: selectedDepartmentId
-    };
-    setRows(updatedAssign);
+    // Update the rows with the selected department
+    const updatedRows = rows.map((row, rowIndex) =>
+      rowIndex === index ? { ...row, department_id: selectedDepartmentId } : row
+    );
+
+    setRows(updatedRows); // Update the rows state
   };
+
   console.log('rows', rows);
   // const handleTicketTypeShow = (selectedTicketOption, index) => {
   //   const selectedTicketID = selectedTicketOption.value;
@@ -769,24 +824,82 @@ function CreateUserComponent({ match }) {
 
   const [departmentValue, setDepartmentValue] = useState(false);
   const departmentRef = useRef(null);
+  // const handleCheckInput = (e, id, type) => {
+  //   if (e.value) {
+  //     setDepartmentValue(true);
+  //   }
+  //   if (e.value === '') {
+  //     setInputState({ ...state, designationErr: 'Please Select Department' });
+  //   } else {
+  //     setInputState({ ...state, designationErr: '' });
+  //   }
+
+  //   let flag = 1;
+  //   if (type === 'DEPARTMENT') {
+  //     rows.forEach((d, i) => {
+  //       if (d.department_id === e.value) {
+  //         flag = 0;
+  //         alert(
+  //           ' Please select another Department.This Department already considered.'
+  //         );
+  //         departmentRef.current.clear();
+  //       }
+  //     });
+  //   }
+
+  //   if (flag === 1) {
+  //     let temp_state = [...rows];
+  //     let actualIndex = null;
+  //     temp_state.forEach((ele, index) => {
+  //       if (index === id) {
+  //         actualIndex = index;
+  //       }
+  //     });
+  //     let temp_element = { ...rows[actualIndex] };
+
+  //     if (type === 'DEPARTMENT') {
+  //       temp_element.department_id = e.value;
+  //     } else if (type === 'TICKET_SHOW') {
+  //       temp_element.ticket_show_type = e.value;
+  //     } else if (type === 'TICKET_PASSING_AUTHORITY') {
+  //       temp_element.ticket_passing_authority =
+  //         e.target.checked === true ? 1 : 0;
+  //     } else if (type === 'IS_DEFAULT') {
+  //       temp_element.is_default = e.target.checked === true ? 1 : 0;
+  //     }
+  //     temp_state[actualIndex] = temp_element;
+  //     setRows(temp_state);
+  //   }
+  //   setTicketTypeShow(e.value);
+  //   if (!ticketTypeShow || ticketTypeShow.length === 0) {
+  //     setTicketTypeShowErr('Ticket Type Show is required');
+  //     return false; // Stop further execution
+  //   } else {
+  //     setTicketTypeShowErr('');
+  //   }
+  // };
+
   const handleCheckInput = (e, id, type) => {
     if (e.value) {
-      setDepartmentValue(true);
+      setDepartmentValue(true); // Set department value if there is input
     }
+
     if (e.value === '') {
-      setInputState({ ...state, designationErr: 'Please Select Department' });
+      setInputState({ ...state, designationErr: 'Please Select Department' }); // Error if no value
     } else {
-      setInputState({ ...state, designationErr: '' });
+      setInputState({ ...state, designationErr: '' }); // Clear error
     }
+
     let flag = 1;
+
     if (type === 'DEPARTMENT') {
-      rows.forEach((d, i) => {
+      rows.forEach((d) => {
         if (d.department_id === e.value) {
           flag = 0;
           alert(
-            ' Please select another Department.This Department already considered.'
+            ' Please select another Department. This Department is already considered.'
           );
-          departmentRef.current.clear();
+          departmentRef.current.clear(); // Clear the dropdown if duplicate
         }
       });
     }
@@ -799,8 +912,10 @@ function CreateUserComponent({ match }) {
           actualIndex = index;
         }
       });
+
       let temp_element = { ...rows[actualIndex] };
 
+      // Update specific fields based on type
       if (type === 'DEPARTMENT') {
         temp_element.department_id = e.value;
       } else if (type === 'TICKET_SHOW') {
@@ -812,7 +927,18 @@ function CreateUserComponent({ match }) {
         temp_element.is_default = e.target.checked === true ? 1 : 0;
       }
       temp_state[actualIndex] = temp_element;
-      setRows(temp_state);
+      setRows(temp_state); // Update rows state
+    }
+
+    // Set ticket type show value
+    setTicketTypeShow(e.value);
+
+    // Validate ticket type show
+    if (!e.value || e.value.length === 0) {
+      setTicketTypeShowErr('Ticket Type Show is required');
+      return false; // Stop further execution
+    } else {
+      setTicketTypeShowErr(''); // Clear validation error
     }
   };
 
@@ -1642,6 +1768,7 @@ function CreateUserComponent({ match }) {
                                   handleUserSelect(selectedOption, idx)
                                 }
                               />
+                              <span style={{ color: 'red' }}>{deptErr}</span>
                             </td>
                             <td>
                               <Select
@@ -1658,6 +1785,9 @@ function CreateUserComponent({ match }) {
                                 )}
                                 // required
                               />
+                              <span style={{ color: 'red' }}>
+                                {ticketTypeShowErr}
+                              </span>
                             </td>
 
                             <td className="text-center">
@@ -1758,9 +1888,9 @@ function CreateUserComponent({ match }) {
                 //   Next
                 // </span>
                 <button
-                  // onClick={async () => {
-                  //   setTabKey('User_Settings');
-                  // }}
+                  onClick={async () => {
+                    setTabKey('User_Settings');
+                  }}
                   type="submit"
                   className="btn btn-primary"
                 >
