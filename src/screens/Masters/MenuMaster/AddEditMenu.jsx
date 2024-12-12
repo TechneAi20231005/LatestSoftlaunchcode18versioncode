@@ -15,8 +15,8 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
   const [icon, setIcon] = useState(false);
   const dispatch = useDispatch();
   let obj = {
-    label: data?.value?.name,
-    value: data?.value?.id
+    label: data?.value?.parent_name,
+    value: data?.value?.id || 0
 
   };
 
