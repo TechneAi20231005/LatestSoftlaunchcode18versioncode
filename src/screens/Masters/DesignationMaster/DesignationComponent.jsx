@@ -252,6 +252,7 @@ function DesignationComponent() {
         />
         <SearchBoxHeader
           setSearchTerm={setSearchTerm}
+          searchTerm={searchTerm}
           handleSearch={handleSearch}
           handleReset={handleReset}
           placeholder="Search by designation name...."

@@ -493,18 +493,17 @@ export default function CreateCustomer({ match }) {
                         <Field
                           as="textarea"
                           className="form-control form-control-sm"
-                          placeholder="Enter maximum 250 characters"
+                          placeholder="Enter maximum 1000 characters"
                           id="address"
                           name="address"
                           // required
-                          maxLength={250}
                           // onChange={onTestChange}
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
-                            } else {
-                              Validation.addressField(e);
-                            }
-                          }}
+                          // onKeyPress={(e) => {
+                          //   if (e.key === 'Enter') {
+                          //   } else {
+                          //     Validation.addressField(e);
+                          //   }
+                          // }}
                           rows="3"
                         />
                         <ErrorMessage

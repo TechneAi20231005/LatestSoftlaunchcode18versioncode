@@ -82,7 +82,7 @@ function SubModuleComponent() {
     {
       name: 'Status',
       selector: (row) => row.is_active,
-      sortable: false,
+      sortable: true,
       cell: (row) => (
         <div>
           {row.is_active === 1 && (
@@ -149,7 +149,7 @@ function SubModuleComponent() {
               sub_module_name: temp[key].sub_module_name,
               module_name: temp[key].module_name,
               project_name: temp[key].project_name,
-              is_active: temp[key].is_active === 1 ? 'Active' : 'Deactive',
+              Status: temp[key].is_active === 1 ? 'Active' : 'Deactive',
               remark: temp[key].remark,
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,
@@ -224,6 +224,7 @@ function SubModuleComponent() {
       />
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by submodule name...."

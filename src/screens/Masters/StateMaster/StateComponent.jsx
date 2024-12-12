@@ -219,6 +219,7 @@ function StateComponent() {
       name: 'state',
       label: 'State name',
       max: 100,
+      min: 3,
       required: true,
       alphaNumeric: true
     },
@@ -240,7 +241,7 @@ function StateComponent() {
   const initialValues = {
     country_id: valueof?.value || '',
     state: modal.modalData ? modal.modalData?.state : '',
-    remark: modal.modalData ? modal.modalData?.remark : '',
+    remark: modal.modalData?.remark || '',
     is_active:
       modal?.modalData?.is_active !== undefined
         ? String(modal?.modalData?.is_active)
@@ -279,6 +280,7 @@ function StateComponent() {
 
         <SearchBoxHeader
           setSearchTerm={setSearchTerm}
+          searchTerm={searchTerm}
           handleSearch={handleSearch}
           handleReset={handleReset}
           placeholder="Search by state name...."
@@ -368,18 +370,17 @@ function StateComponent() {
                         className="form-control form-control-sm"
                         id="state"
                         name="state"
-                        maxLength={25}
                         onKeyPress={(e) => {
                           Validation.CharacterWithSpace(e);
                         }}
-                        onPaste={(e) => {
-                          e.preventDefault();
-                          return false;
-                        }}
-                        onCopy={(e) => {
-                          e.preventDefault();
-                          return false;
-                        }}
+                        // onPaste={(e) => {
+                        //   e.preventDefault();
+                        //   return false;
+                        // }}
+                        // onCopy={(e) => {
+                        //   e.preventDefault();
+                        //   return false;
+                        // }}
                       />
                       <ErrorMessage
                         name="state"
@@ -396,7 +397,6 @@ function StateComponent() {
                         className="form-control form-control-sm"
                         id="remark"
                         name="remark"
-                        maxLength={50}
                       />
                       <ErrorMessage
                         name="remark"

@@ -249,6 +249,7 @@ function DepartmentComponent() {
 
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by department name...."
@@ -349,7 +350,7 @@ function DepartmentComponent() {
                         </label>
                         <div className="row">
                           <div className="col-md-2">
-                            <label className="form-check-label">
+                            <label className="form-check">
                               <Field
                                 type="radio"
                                 name="is_active"
@@ -361,7 +362,7 @@ function DepartmentComponent() {
                             </label>
                           </div>
                           <div className="col-md-2">
-                            <label className="form-check-label">
+                            <label className="form-check">
                               <Field
                                 type="radio"
                                 name="is_active"
