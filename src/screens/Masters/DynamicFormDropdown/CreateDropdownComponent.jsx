@@ -22,6 +22,8 @@ export default function CreateDropdownComponent() {
   const [data, setData] = useState([{ label: null, value: null }]);
 
   const [notify, setNotify] = useState(null);
+  const [message, setMessage] = useState(false)
+  const [display, setDisplay] = useState('')
 
   const dispatch = useDispatch();
 
@@ -31,6 +33,13 @@ export default function CreateDropdownComponent() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!message) {
+      setDisplay("Dropdown Name is Required");
+      return
+    } else {
+      setDisplay(""); // Clear error
+      console.log("Form Submitted with Dropdown Name:", message);
+    }
     const formData = new FormData(e.target);
 
     await new DynamicFormDropdownMasterService()
@@ -121,10 +130,17 @@ export default function CreateDropdownComponent() {
                     onKeyPress={(e) => {
                       Validation.CharactersNumbersOnly(e);
                     }}
+                    maxLength={100}
+                    minLength={3}
                     name="dropdown_name"
                     id="dropdown_name"
-                    required
+                    // required
+                    onChange={(e) => {
+                      setMessage(e?.target?.value)
+                      setDisplay(false)
+                    }}
                   />
+                   {display && <div className="text-danger mt-1">{display}</div>}
                 </div>
               </div>
 
@@ -151,7 +167,7 @@ export default function CreateDropdownComponent() {
                               type="text"
                               key={idx}
                               name="dropdown_values[]"
-                              required
+                              required={!message ? false : true}
                               id={`dropdown_values_${idx}`}
                               className="form-control form-control-sm"
                               onKeyPress={(e) => {

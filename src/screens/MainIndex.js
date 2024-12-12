@@ -181,6 +181,7 @@ import TestBankComponent from './TestCases/TestBank/TestBankComponent';
 import ProjectWiseModuleHistory from './ConsolidatedView/ProjectWiseModuleHistory';
 import PowerBidashboard from './Dashboard/PowerBidashboard';
 import JobRoleComponent from './Masters/JobRoleMaster/JobRoleComponent';
+import MenuComponent from './Masters/MenuMaster/MenuComponent';
 
 class MainIndex extends React.Component {
   render() {
@@ -943,6 +944,11 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/TestBank`}
               element={<TestBankComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/menuMaster`}
+              element={<MenuComponent />}
             />
           </Routes>
         </div>

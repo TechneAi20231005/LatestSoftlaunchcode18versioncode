@@ -3,7 +3,8 @@ import {
   REACT_APP_API_URL,
   REACT_APP_PIN_CODE_API_URL,
   REACT_APP_ATTACHMENT_URL,
-  REACT_APP_ROOT_URL
+  REACT_APP_ROOT_URL,
+  REACT_APP_API_REWAMP_BASE_URL
 } from '../config/envConfig';
 
 export const _ErrorMsg = 'Try After Some Time !!!';
@@ -12,10 +13,11 @@ export var dataFormat = { status: 0, message: null, data: null };
 
 export const _base = REACT_APP_ROOT_URL;
 export const _apiUrl = REACT_APP_API_URL;
+export const _rewampApiUrl = REACT_APP_API_REWAMP_BASE_URL;
 export const _attachmentUrl = REACT_APP_ATTACHMENT_URL;
 export const _pincodeUrl = REACT_APP_PIN_CODE_API_URL;
 
-export const loginURL = _apiUrl + 'login';
+export const loginURL = _rewampApiUrl + 'login';
 export const fpURL = _apiUrl + 'reset/forgetPasswordOtp';
 export const otpURL = _apiUrl + 'reset/sendOtp';
 export const rpURL = _apiUrl + 'reset/resetPassword';
@@ -69,18 +71,18 @@ export const menuUrl =
 export const masterURL = {
   user: _apiUrl + 'employeeMaster',
   tenant: _apiUrl + 'tenantMaster',
-  customer: _apiUrl + 'customerMaster',
-  employee: _apiUrl + 'employeeMaster',
-  country: _apiUrl + 'countryMaster',
-  state: _apiUrl + 'stateMaster',
-  city: _apiUrl + 'cityMaster',
-  role: _apiUrl + 'roleMaster',
-  department: _apiUrl + 'departmentMaster',
-  designation: _apiUrl + 'designationMaster',
-  status: _apiUrl + 'statusMaster',
-  dynamicForm: _apiUrl + 'dynamicFormMaster',
+  customer: _rewampApiUrl + 'customerMaster',
+  employee: _rewampApiUrl + 'employeeMaster',
+  country: _rewampApiUrl + 'countryMaster',
+  state: _rewampApiUrl + 'stateMaster',
+  city: _rewampApiUrl + 'cityMaster',
+  role: _rewampApiUrl + 'roleMaster',
+  department: _rewampApiUrl + 'departmentMaster',
+  designation: _rewampApiUrl + 'designationMaster',
+  status: _rewampApiUrl + 'statusMaster',
+  dynamicForm: _rewampApiUrl + 'dynamicFormMaster',
   template: _apiUrl + 'templateMaster',
-  customerType: _apiUrl + 'customerTypeMaster',
+  customerType: _rewampApiUrl + 'customerTypeMaster',
   queryType: _apiUrl + 'queryTypeMaster',
   departmentMapping: _apiUrl + 'departmentMapping',
   moduleSetting: _apiUrl + 'moduleSetting',
@@ -97,7 +99,7 @@ export const dynamicURL = {
   employee: _apiUrl + 'employeeMaster',
   country: _apiUrl + 'countryMaster',
   state: _apiUrl + 'stateMaster',
-  city: _apiUrl + 'cityMaster',
+  city: _apiUrl + 'cityMaster/getData',
   role: _apiUrl + 'roleMaster',
   department: _apiUrl + 'departmentMaster/',
   designation: _apiUrl + 'designationMaster',
