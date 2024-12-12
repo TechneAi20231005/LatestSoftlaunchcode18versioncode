@@ -23,7 +23,7 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
   const initialValues = {
     parent_id: data?.case === 'Edit' ? obj?.value : '',
     add_parent_menu: '',
-    name: '',
+    name:  data?.case === 'Edit' ? data?.value?.name :   '',
     remark: data?.value?.remark || '',
     is_active:
     data?.value?.is_active !== undefined
