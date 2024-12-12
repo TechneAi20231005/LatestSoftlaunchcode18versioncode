@@ -116,12 +116,15 @@ export const DashbordSlice = createSlice({
       const { payload } = action;
       state.isLoading.getCityDataList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let cityData = payload.data.data;
-        let FilterCity = payload.data.data.filter((d) => d.is_active === 1);
+        let cityData = payload.data.data?.data;
+        console.log('payload', payload?.data?.data?.data);
+        let FilterCity = payload.data?.data?.data?.filter(
+          (d) => d.is_active === 1
+        );
         state.FilterCity = FilterCity;
         state.status = 'succeded';
         state.showLoaderModal = false;
-        let sortedCityData = payload.data.data
+        let sortedCityData = payload.data.data.data
           .filter((d) => d.is_active === 1)
           .map((d) => ({
             value: d.id,
@@ -138,9 +141,9 @@ export const DashbordSlice = createSlice({
         for (const i in cityData) {
           exportCityData.push({
             Sr: cityData[i].counter,
-            Country: cityData[i].country,
-            State: cityData[i].state,
             City: cityData[i].city,
+            State: cityData[i].state,
+            Country: cityData[i].country,
 
             Status: cityData[i].is_active ? 'Active' : 'Deactive',
             Remark: cityData[i].remark,
@@ -227,7 +230,7 @@ export const DashbordSlice = createSlice({
       const { payload } = action;
       state.isLoading.CountyDataList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let countryData = payload.data.data;
+        let countryData = payload.data.data?.data;
         state.status = 'succeded';
         state.showLoaderModal = false;
         let count = 1;
@@ -269,14 +272,14 @@ export const DashbordSlice = createSlice({
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.status = 'succeded';
         state.showLoaderModal = false;
-
-        let filteredCountryData = payload.data.data
-          .filter((d) => d.is_active == 1)
+        let filteredCountryData = payload.data.data?.data
+          ?.filter((d) => d.is_active == 1)
           .map((i) => ({
             value: i.id,
             label: i.country
           }));
         state.filteredCountryData = filteredCountryData;
+        console.log('filteredCountryData', payload.data.data.data);
       }
     });
     builder.addCase(getCountryDataSort.rejected, (state) => {
@@ -356,9 +359,11 @@ export const DashbordSlice = createSlice({
       state.isLoading.stateDataList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let stateData = payload.data.data;
+        let stateData = payload.data.data?.data;
 
-        let FilterState = payload.data.data.filter((d) => d.is_active == 1);
+        let FilterState = payload.data.data?.data?.filter(
+          (d) => d.is_active == 1
+        );
         state.FilterState = FilterState;
 
         state.status = 'succeded';
@@ -402,8 +407,8 @@ export const DashbordSlice = createSlice({
       const { payload } = action;
       state.isLoading.stateDataList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let filteredStateData = payload.data.data
-          .filter((d) => d.is_active == 1)
+        let filteredStateData = payload.data.data?.data
+          ?.filter((d) => d.is_active == 1)
           .map((i) => ({
             value: i.id,
             label: i.state
@@ -411,15 +416,19 @@ export const DashbordSlice = createSlice({
 
         state.filteredStateData = filteredStateData;
 
-        let activeState = payload.data.data.filter((d) => d.is_active == 1);
+        let activeState = payload.data.data.data.filter(
+          (d) => d.is_active == 1
+        );
         state.activeState = activeState;
+        console.log('activeState', activeState);
 
-        state.states = payload.data.data.filter((d) => d.is_active === 1);
+        state.states = payload.data.data.data.filter((d) => d.is_active === 1);
         state.status = 'succeded';
 
         state.showLoaderModal = false;
 
         state.filteredStateData = filteredStateData;
+        console.log('filteredStateData', filteredStateData);
       }
     });
     builder.addCase(getStateDataSort.rejected, (state) => {
