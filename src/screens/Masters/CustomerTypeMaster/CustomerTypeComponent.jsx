@@ -294,6 +294,7 @@ function CustomerTypeComponent() {
 
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by customer type name...."
@@ -364,9 +365,9 @@ function CustomerTypeComponent() {
                         className="form-control form-control-sm"
                         id="type_name"
                         name="type_name"
-                        onKeyPress={(e) => Validation.CharactersNumbersOnly(e)}
-                        onPaste={(e) => e.preventDefault()}
-                        onCopy={(e) => e.preventDefault()}
+                        // onKeyPress={(e) => Validation.CharactersNumbersOnly(e)}
+                        // onPaste={(e) => e.preventDefault()}
+                        // onCopy={(e) => e.preventDefault()}
                       />
                       <ErrorMessage
                         name="type_name"
