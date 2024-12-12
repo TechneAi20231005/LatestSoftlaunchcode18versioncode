@@ -165,7 +165,7 @@ function ModuleComponent() {
 
               module_name: data[key].module_name,
               project_name: data[key].project_name,
-              is_active: data[key].is_active === 1 ? 'Active' : 'Deactive',
+              Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
               remark: data[key].remark,
               updated_at: data[key].updated_at,
               updated_by: data[key].updated_by,
@@ -245,6 +245,7 @@ function ModuleComponent() {
       />
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by module name...."

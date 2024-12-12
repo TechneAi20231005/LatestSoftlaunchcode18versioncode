@@ -12,6 +12,7 @@ const SearchBoxHeader = ({
   placeholder,
   showExportButton
 }) => {
+
   return (
     <Row className="row_gap_3">
       <Col xs={12} md={7} xxl={8}>

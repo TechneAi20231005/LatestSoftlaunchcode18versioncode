@@ -221,6 +221,7 @@ export default function DynamicFormDropdownComponent() {
         }}
       />
       <SearchBoxHeader
+        searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}

@@ -430,7 +430,7 @@ export const CharactersNumbersSpeicalOnly = (e) => {
 
   var key = String.fromCharCode(!e.charCode ? e.which : e.charCode);
 
-  if (e.target.value.length >= 50) {
+  if (e.target.value.length >= 100) {
     e.preventDefault();
     return false;
   }

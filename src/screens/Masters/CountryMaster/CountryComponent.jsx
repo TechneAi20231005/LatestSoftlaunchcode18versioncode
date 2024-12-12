@@ -262,6 +262,7 @@ function CountryComponent() {
       />
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by country name...."
@@ -340,14 +341,14 @@ function CountryComponent() {
                         onKeyPress={(e) => {
                           Validation.CharacterWithSpace(e);
                         }}
-                        onPaste={(e) => {
-                          e.preventDefault();
-                          return false;
-                        }}
-                        onCopy={(e) => {
-                          e.preventDefault();
-                          return false;
-                        }}
+                        // onPaste={(e) => {
+                        //   e.preventDefault();
+                        //   return false;
+                        // }}
+                        // onCopy={(e) => {
+                        //   e.preventDefault();
+                        //   return false;
+                        // }}
                       />
                       {errors.country && touched.country ? (
                         <div className="text-danger">{errors.country}</div>
@@ -373,7 +374,7 @@ function CountryComponent() {
                         </label>
                         <div className="row">
                           <div className="col-md-2">
-                            <label className="form-check-label">
+                            <label className="form-check">
                               <Field
                                 id="is_active_1"
                                 type="radio"
@@ -385,7 +386,7 @@ function CountryComponent() {
                             </label>
                           </div>
                           <div className="col-md-2">
-                            <label className="form-check-label">
+                            <label className="form-check">
                               <Field
                                 type="radio"
                                 name="is_active"

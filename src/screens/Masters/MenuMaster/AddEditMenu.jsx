@@ -15,15 +15,15 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
   const [icon, setIcon] = useState(false);
   const dispatch = useDispatch();
   let obj = {
-    label: data?.value?.name,
-    value: data?.value?.id
+    label: data?.value?.parent_name,
+    value: data?.value?.id || 0
 
   };
 
   const initialValues = {
     parent_id: data?.case === 'Edit' ? obj?.value : '',
     add_parent_menu: '',
-    name: '',
+    name:  data?.case === 'Edit' ? data?.value?.name :   '',
     remark: data?.value?.remark || '',
     is_active:
     data?.value?.is_active !== undefined

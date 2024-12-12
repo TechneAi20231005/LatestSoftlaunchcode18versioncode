@@ -79,7 +79,7 @@ function GeneralSettings() {
   // Function to handle reset button click
   const handleReset = () => {
     setSearchTerm('');
-    setFilteredData(data);
+    // setFilteredData(data);
   };
 
   //Data Table columns
@@ -360,6 +360,7 @@ function GeneralSettings() {
       />
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by setting name...."
@@ -490,7 +491,7 @@ function GeneralSettings() {
                     className="form-control form-control-sm"
                     id="remark"
                     name="remark"
-                    maxLength={50}
+                    maxLength={1000}
                     ref={useRemark}
                     defaultValue={modal.modalData ? modal.modalData.remark : ''}
                   />

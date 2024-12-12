@@ -130,6 +130,8 @@ export default function CreateDropdownComponent() {
                     onKeyPress={(e) => {
                       Validation.CharactersNumbersOnly(e);
                     }}
+                    maxLength={100}
+                    minLength={3}
                     name="dropdown_name"
                     id="dropdown_name"
                     // required
@@ -165,7 +167,7 @@ export default function CreateDropdownComponent() {
                               type="text"
                               key={idx}
                               name="dropdown_values[]"
-                              required
+                              required={!message ? false : true}
                               id={`dropdown_values_${idx}`}
                               className="form-control form-control-sm"
                               onKeyPress={(e) => {
