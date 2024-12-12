@@ -309,18 +309,6 @@ export default function HrDashboard(props) {
             justifyContent: 'space-around'
           }}
         >
-          <div>
-            <button
-              onClick={() => setRender(!render)}
-              class=" badge bg-primary p-2"
-              style={{
-                lineHeight: 'revert-layer',
-                marginLeft: '25%'
-              }}
-            >
-              {render ? 'Back to Dashboard' : ' Performance View'}
-            </button>
-          </div>
           <div style={{ position: 'relative' }}>
             {(historyModal.show || approveRequestModal.show) === false && (
               <Dropdown
@@ -845,54 +833,6 @@ export default function HrDashboard(props) {
               </div>
             </div>
           </div>{' '}
-          <div className="mt-4">
-            <Accordion>
-              <Accordion.Item eventKey="0">
-                <Accordion.Header
-                  className="accordion-header"
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    position: 'relative'
-                  }}
-                >
-                  <span style={{ fontWeight: 600, fontSize: '1rem' }}>
-                    Performance View
-                  </span>
-                  <i
-                    className="icofont-hand-drawn-right fs-2 text-primary custom-icon "
-                    style={{
-                      marginTop: '2px',
-                      marginLeft: '15px',
-
-                      // transform: isExpanded
-                      //   ? 'translateX(200px)'
-                      //   : 'translateX(0)',
-                      transition: 'transform 0.5s ease',
-                      position: 'relative'
-                    }}
-                  ></i>
-                </Accordion.Header>
-
-                <Accordion.Body>
-                  <div style={{ height: '85vh', overflow: 'hidden' }}>
-                    <iframe
-                      src="https://app.powerbi.com/view?r=eyJrIjoiNzY3NGE2Y2ItYzM4Yi00M2IxLTgzZGQtOTI3YmMxYzk3ZmVlIiwidCI6IjJhZTgyM2ViLTE3YTYtNDIyOS1iOGNiLTFiMGI0ZDJhNDM1MyJ9"
-                      title="View PowerBi Report"
-                      style={{
-                        width: '100%',
-                        height: '100%',
-                        border: 'none'
-                      }}
-                      allowFullScreen
-                    ></iframe>
-                  </div>
-                </Accordion.Body>
-              </Accordion.Item>
-            </Accordion>
-          </div>
           <div className="row g-3 mb-3 row-deck mt-2">
             <div className="col-md-12 col-lg-6 col-xl-6 col-xxl-6">
               <div className="card">

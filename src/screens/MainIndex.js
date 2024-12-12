@@ -230,7 +230,7 @@ class MainIndex extends React.Component {
             />
             <Route
               exact
-              path={`/${_base}/PowerBi`}
+              path={`/${_base}/SmartPerformance`}
               element={<PowerBidashboard />}
             />
             <Route
