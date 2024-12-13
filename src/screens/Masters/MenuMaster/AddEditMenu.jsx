@@ -64,7 +64,7 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
           onSuccessHandler: () => {
             dispatch(getMenuMasterList());
             // setIcon(false);
-            onClose();
+           icon ? setIcon(false) :  onClose();
           },
           onErrorHandler: () => {}
         })
@@ -123,7 +123,7 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
 
   useEffect(() => {
     setIcon(false);
-  }, [onClose]);
+  }, [show]);
   return (
     <CustomModal onClose={onClose} show={show} width="md">
       <Formik
