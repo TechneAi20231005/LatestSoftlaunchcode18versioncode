@@ -1,16 +1,16 @@
-import axios from "axios";
-import { userSessionData } from "../../settings/constants";
-import { masterURL } from "../../settings/constants";
+import axios from 'axios';
+import { userSessionData } from '../../settings/constants';
+import { masterURL } from '../../settings/constants';
 
 const _URL = masterURL.city;
 
-const _getAllCity = _URL + "/getAllCity";
+const _getAllCity = `${_URL}/getData?export=1`;
 
 // const _getAllCity = _URL + "/getAllCity/" + userSessionData.tenantId;
-const _getAllCitySort =_URL + "/getAllCity/" ;
-const _createCity = _URL + "/createCity";
-const _getCityById = _URL + "/getCityById/";
-const _updateCity = _URL + "/updateCity/";
+const _getAllCitySort = _URL + '/getAllCity/';
+const _createCity = _URL + '/createCity';
+const _getCityById = _URL + '/getCityById/';
+const _updateCity = _URL + '/createCity/';
 
 export function getDateTime() {
   var now = new Date();
@@ -22,42 +22,36 @@ export function getDateTime() {
   let min = now.getMinutes() >= 10 ? now.getMinutes() : `0${now.getMinutes()}`;
   let sec = now.getSeconds() >= 10 ? now.getSeconds() : `0${now.getSeconds()}`;
   var datetime =
-    year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec;
+    year + '-' + month + '-' + day + ' ' + hour + ':' + min + ':' + sec;
   return datetime;
 }
 
 export default class CityService {
-  
-  
   getCity() {
-    const token = localStorage.getItem("jwt_token");
-  
+    const token = localStorage.getItem('jwt_token');
+
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-  
+
     return axios.get(_getAllCity, config);
   }
-  
-
-
-  
 
   getgetCitySortCity() {
-    const token = localStorage.getItem("jwt_token");
-  
+    const token = localStorage.getItem('jwt_token');
+
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-  
+
     return axios.get(_getAllCitySort, config);
   }
 
@@ -66,55 +60,52 @@ export default class CityService {
   // }
 
   postCity(payload) {
-    payload.append("tenant_id", userSessionData.tenantId);
-    payload.append("created_by", userSessionData.userId);
-    payload.append("created_at", getDateTime());
+    payload.append('tenant_id', userSessionData.tenantId);
+    payload.append('created_by', userSessionData.userId);
+    payload.append('created_at', getDateTime());
 
-    const token = localStorage.getItem("jwt_token");
-  
+    const token = localStorage.getItem('jwt_token');
+
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.post(_createCity, payload, config);
   }
 
-
-
   getCityById(id) {
-    const token = localStorage.getItem("jwt_token");
-  
+    const token = localStorage.getItem('jwt_token');
+
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-    
-    return axios.get(_getCityById + id,config);
+
+    return axios.get(_getCityById + id, config);
   }
 
   updateCity(id, payload) {
-    payload.append("updated_by", userSessionData.userId);
-    payload.append("updated_at", getDateTime());
+    payload.append('updated_by', userSessionData.userId);
+    payload.append('updated_at', getDateTime());
     // return axios.post(_updateCity + id, payload);
 
-    const token = localStorage.getItem("jwt_token");
-  
+    const token = localStorage.getItem('jwt_token');
+
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
-    return axios.post(_updateCity+id, payload, config,id);
+    return axios.post(_updateCity + id, payload, config, id);
   }
-  }
-
+}

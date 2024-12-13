@@ -832,7 +832,7 @@ function CreateUserComponent({ match }) {
                           id="first_name"
                           name="first_name"
                           placeholder="Please enter first name"
-                          maxLength={30}
+                          maxLength={50}
                           onKeyPress={(e) => {
                             Validation.Characters(e);
                           }}
@@ -865,7 +865,7 @@ function CreateUserComponent({ match }) {
                           id="middle_name"
                           name="middle_name"
                           placeholder="Middle Name"
-                          maxLength={30}
+                          maxLength={50}
                           onKeyPress={(e) => {
                             Validation.Characters(e);
                           }}
@@ -898,7 +898,7 @@ function CreateUserComponent({ match }) {
                           id="last_name"
                           name="last_name"
                           placeholder="Last Name"
-                          maxLength={30}
+                          maxLength={50}
                           onKeyPress={(e) => {
                             Validation.Characters(e);
                           }}
