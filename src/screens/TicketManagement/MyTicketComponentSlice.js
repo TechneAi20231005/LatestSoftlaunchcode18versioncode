@@ -33,7 +33,7 @@ export const MyTicketComponentSlice = createSlice({
     builder.addCase(getStatusData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let statusData = payload.data.data;
+        let statusData = payload.data.data?.data;
         let extractedData = statusData.map((item) => ({
           value: item.id,
           label: item.status

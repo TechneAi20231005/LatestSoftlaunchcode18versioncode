@@ -187,32 +187,7 @@ function ProjectComponent() {
         </div>
       )
     },
-    {
-      name: 'created at',
-      width: '200px',
-      selector: (row) => row.created_at,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.created_at && (
-            <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.created_at && row.created_at.length < 20
-                    ? row.created_at
-                    : row.created_at.substring(0, 20) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
-    },
+
     {
       name: 'created By',
       width: '10%',
@@ -232,6 +207,32 @@ function ProjectComponent() {
                   {row.created_by && row.created_by.length < 20
                     ? row.created_by
                     : row.created_by.substring(0, 20) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
+    },
+    {
+      name: 'created at',
+      width: '200px',
+      selector: (row) => row.created_at,
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.created_at && (
+            <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.created_at && row.created_at.length < 20
+                    ? row.created_at
+                    : row.created_at.substring(0, 20) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -477,7 +478,7 @@ function ProjectDropdown({ field, form, ...props }) {
           className="form-control form-control-sm"
           id={props.id}
           name={field.name}
-          value={field.value || props.defaultValue || ""} // Controlled by Formik or defaultValue
+          value={field.value || props.defaultValue || ''} // Controlled by Formik or defaultValue
           onChange={handleChange}
           onBlur={field.onBlur}
         >

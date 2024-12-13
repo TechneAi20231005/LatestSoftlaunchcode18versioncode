@@ -5,14 +5,14 @@ export const _apiUrl = 'http://3.108.206.34/TSNewBackend/public/api';
 
 const _URL = masterURL.country;
 
-const _getAllCountry = _URL + '/getAllCountry';
-const _getAllCountrySort = _URL + '/getAllCountry/1/1';
+const _getAllCountry = `${_URL}/getData?export=1`;
+const _getAllCountrySort = `${_URL}/getData?type=1`;
 const _postCountry = _URL + '/createCountry';
 const _roleType = _apiUrl + '/billCheckingMaster/getDropdowns';
 const _salarySlip = _apiUrl + '/salarySlip';
 
 const _getCountryById = _URL + '/getCountryById/';
-const _updateCountry = _URL + '/updateCountry/';
+const _updateCountry = _URL + '/createCountry/';
 
 export function getDateTime() {
   var now = new Date();
@@ -23,7 +23,8 @@ export function getDateTime() {
   let hour = now.getHours() >= 10 ? now.getHours() : `0${now.getHours()}`;
   let min = now.getMinutes() >= 10 ? now.getMinutes() : `0${now.getMinutes()}`;
   let sec = now.getSeconds() >= 10 ? now.getSeconds() : `0${now.getSeconds()}`;
-  var datetime = year + '-' + month + '-' + day + ' ' + hour + ':' + min + ':' + sec;
+  var datetime =
+    year + '-' + month + '-' + day + ' ' + hour + ':' + min + ':' + sec;
   return datetime;
 }
 
@@ -39,8 +40,8 @@ export default class CountryService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.get(_getAllCountry, config);
@@ -53,8 +54,8 @@ export default class CountryService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.get(_getAllCountrySort, config);
@@ -67,8 +68,8 @@ export default class CountryService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     };
     const used_for = 'on_roll_type';
     return axios.post(_roleType, { used_for }, config);
@@ -87,8 +88,8 @@ export default class CountryService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.post(_salarySlip, payload, config);
@@ -111,8 +112,8 @@ export default class CountryService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.post(_postCountry, payload, config);
@@ -125,8 +126,8 @@ export default class CountryService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.get(_getCountryById + id, config);
@@ -143,8 +144,8 @@ export default class CountryService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.post(_updateCountry + id, payload, config, id);
