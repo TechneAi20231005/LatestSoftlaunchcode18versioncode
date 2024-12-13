@@ -165,28 +165,108 @@ function DesignationComponent() {
   const validationSchema = CustomValidation(fields);
   const loadData = async () => {};
 
+  // const handleForm = async (values, id) => {
+  //   const formData = new FormData();
+  //   formData.append('designation', values.designation);
+  //   formData.append('remark', values.remark);
+
+  //   const editformdata = new FormData();
+  //   editformdata.append('designation', values.designation);
+  //   editformdata.append('remark', values.remark);
+  //   editformdata.append('is_active', values.is_active);
+
+  //   if (!id) {
+  //     dispatch(postDesignationData(formData));
+  //     setTimeout(() => {
+  //       dispatch(
+  //         getDesignationDataListThunk(),
+  //         handleModalClose({
+  //           showModal: false,
+  //           modalData: null,
+  //           modalHeader: ''
+  //         })
+  //       );
+  //     }, 500);
+  //   } else {
+  //     dispatch(
+  //       updatedDesignationData({ id: id, payload: editformdata }),
+  //       handleModalClose({
+  //         showModal: false,
+  //         modalData: null,
+  //         modalHeader: ''
+  //       })
+  //     );
+
+  //     setTimeout(() => {
+  //       dispatch(getDesignationDataListThunk());
+  //     }, 500);
+  //   }
+  // };
+
+  // const handleForm = async (values, id) => {
+  //   const formData = new FormData();
+  //   formData.append('designation', values.designation);
+  //   formData.append('remark', values.remark);
+
+  //   const editformdata = new FormData();
+  //   editformdata.append('designation', values.designation);
+  //   editformdata.append('remark', values.remark);
+  //   editformdata.append('is_active', values.is_active);
+
+  //   dispatch(postDesignationData(formData));
+  //     setTimeout(() => {
+  //       dispatch(
+  //         getDesignationDataListThunk(),
+  //         handleModalClose({
+  //           showModal: false,
+  //           modalData: null,
+  //           modalHeader: ''
+  //         })
+  //       );
+  //     }, 500);
+  //   } else {
+  //     dispatch(
+  //       updatedDesignationData({ id: id, payload: editformdata }),
+  //       handleModalClose({
+  //         showModal: false,
+  //         modalData: null,
+  //         modalHeader: ''
+  //       })
+  //     );
+
+  //     setTimeout(() => {
+  //       dispatch(getDesignationDataListThunk());
+  //     }, 500);
+  //   }
+  // }}
+
   const handleForm = async (values, id) => {
     const formData = new FormData();
     formData.append('designation', values.designation);
     formData.append('remark', values.remark);
 
-    const editformdata = new FormData();
-    editformdata.append('designation', values.designation);
-    editformdata.append('remark', values.remark);
-    editformdata.append('is_active', values.is_active);
+    if (id) {
+      // If id exists, it means you are updating an existing entry
+      formData.append('is_active', values.is_active);
 
-    if (!id) {
-      dispatch(postDesignationData(formData));
-      setTimeout(() => {
-        dispatch(getDesignationDataListThunk());
-      }, 500);
+      // Dispatch update action
+      dispatch(updatedDesignationData({ id, payload: formData }));
     } else {
-      dispatch(updatedDesignationData({ id: id, payload: editformdata }));
-
-      setTimeout(() => {
-        dispatch(getDesignationDataListThunk());
-      }, 500);
+      // If id does not exist, it means you are creating a new entry
+      dispatch(postDesignationData(formData));
     }
+
+    // Close modal and refresh data list
+    handleModalClose({
+      showModal: false,
+      modalData: null,
+      modalHeader: ''
+    });
+
+    // Use a timeout to ensure data is refreshed after the action
+    setTimeout(() => {
+      dispatch(getDesignationDataListThunk());
+    }, 500);
   };
 
   useEffect(() => {
@@ -348,7 +428,7 @@ function DesignationComponent() {
                         </label>
                         <div className="row">
                           <div className="col-md-2">
-                            <label className="form-check-label">
+                            <label className="form-check">
                               <Field
                                 type="radio"
                                 name="is_active"
@@ -360,7 +440,7 @@ function DesignationComponent() {
                             </label>
                           </div>
                           <div className="col-md-2">
-                            <label className="form-check-label">
+                            <label className="form-check">
                               <Field
                                 type="radio"
                                 name="is_active"
@@ -399,7 +479,7 @@ function DesignationComponent() {
                     <button
                       type="submit"
                       className="btn btn-primary text-white"
-                      disabled={isSubmitting}
+                      // disabled={isSubmitting}
                     >
                       Update
                     </button>

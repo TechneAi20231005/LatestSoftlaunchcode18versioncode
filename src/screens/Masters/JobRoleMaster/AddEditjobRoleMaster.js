@@ -117,7 +117,7 @@ function AddEditJobRoleMaster({ show, close, type, currentJobRoleData }) {
                 <button
                   className="btn btn-primary px-3"
                   type="submit"
-                  disabled={!dirty}
+                  // disabled={!dirty}
                 >
                   {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>

@@ -1,13 +1,13 @@
-import axios from "axios";
-import { userSessionData } from "../../settings/constants";
-import { masterURL } from "../../settings/constants";
+import axios from 'axios';
+import { userSessionData } from '../../settings/constants';
+import { masterURL } from '../../settings/constants';
 
 const _URL = masterURL.department;
 
-const _allDepartment = _URL + "/getAllDepartment"
-const _createDepartment = _URL + "/createDepartment";
-const _updateDepartment = _URL + "/updateDepartment/";
-const _getDepartmentById = _URL + "/getDepartmentById/";
+const _allDepartment = `${_URL}/getData?export=1`;
+const _createDepartment = _URL + '/createDepartments';
+const _updateDepartment = _URL + '/createDepartments/';
+const _getDepartmentById = _URL + '/getDepartmentById/';
 
 export function getDateTime() {
   var now = new Date();
@@ -19,7 +19,7 @@ export function getDateTime() {
   let min = now.getMinutes() >= 10 ? now.getMinutes() : `0${now.getMinutes()}`;
   let sec = now.getSeconds() >= 10 ? now.getSeconds() : `0${now.getSeconds()}`;
   var datetime =
-    year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec;
+    year + '-' + month + '-' + day + ' ' + hour + ':' + min + ':' + sec;
   return datetime;
 }
 
@@ -29,33 +29,33 @@ export default class DepartmentService {
   // }
 
   getDepartment() {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.get(_allDepartment, config);
   }
 
   postDepartment(payload) {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
-    payload.append("tenant_id", userSessionData.tenantId);
-    payload.append("created_by", userSessionData.userId);
-    payload.append("created_at", getDateTime());
+    payload.append('tenant_id', userSessionData.tenantId);
+    payload.append('created_by', userSessionData.userId);
+    payload.append('created_at', getDateTime());
     // return axios.post(_createDepartment,payload)
 
     return axios.post(_createDepartment, payload, config);
@@ -66,31 +66,31 @@ export default class DepartmentService {
   // }
 
   getDepartmentById(id) {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.get(_getDepartmentById + id, config);
   }
 
   updateDepartment(id, payload) {
-    payload.append("updated_by", userSessionData.userId);
-    payload.append("updated_at", getDateTime());
+    payload.append('updated_by', userSessionData.userId);
+    payload.append('updated_at', getDateTime());
     // return axios.post(_updateDepartment+id,payload)
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.post(_updateDepartment + id, payload, config);

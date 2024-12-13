@@ -1,9 +1,12 @@
 import axios from 'axios';
-import { REACT_APP_API_URL } from '../../config/envConfig';
+import {
+  REACT_APP_API_REWAMP_BASE_URL,
+  REACT_APP_API_URL
+} from '../../config/envConfig';
 
 // Create a new Axios instance
 const customAxios = axios.create({
-  baseURL: REACT_APP_API_URL,
+  baseURL: REACT_APP_API_REWAMP_BASE_URL
   // timeout: 10000, // Set timeout for requests (in milliseconds)
 });
 
@@ -20,7 +23,7 @@ customAxios.interceptors.request.use(
   function (error) {
     // Handle request error
     return Promise.reject(error);
-  },
+  }
 );
 
 // Add a response interceptor
@@ -31,7 +34,7 @@ customAxios.interceptors.response.use(
   function (error) {
     // Handle response error
     return Promise.reject(error);
-  },
+  }
 );
 
 export default customAxios;

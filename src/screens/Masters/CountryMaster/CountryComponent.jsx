@@ -286,7 +286,7 @@ function CountryComponent() {
           />
         )}
       </div>
-
+      {console.log('modal', modal.modalData)}
       <Modal centered show={modal.showModal}>
         <Formik
           initialValues={{
@@ -294,9 +294,9 @@ function CountryComponent() {
             country: modal.modalData?.country || '',
             remark: modal.modalData?.remark || '',
             is_active:
-              modal.modalData?.is_active !== undefined
-                ? modal.modalData.is_active
-                : 1
+              modal?.modalData?.is_active !== undefined
+                ? String(modal?.modalData?.is_active)
+                : '1'
           }}
           validationSchema={validationSchema}
           onSubmit={(values) => {

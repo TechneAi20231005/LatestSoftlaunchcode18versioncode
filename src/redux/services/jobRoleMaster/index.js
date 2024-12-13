@@ -7,7 +7,7 @@ export const getJobRoleMasterListThunk = createAsyncThunk(
   'jobRoleMaster/getJobRoleMasterList',
   async () => {
     try {
-      const response = await customAxios.get(`jobRoleMaster/getJobRole`);
+      const response = await customAxios.get(`jobMaster/getData?export=1`);
 
       if (response?.status === 200 || response?.status === 201) {
         // if ([200, 201].includes(response.status)) {
@@ -30,7 +30,7 @@ export const addJobRoleMasterThunk = createAsyncThunk(
   async ({ formData, onSuccessHandler, onErrorHandler }) => {
     try {
       const response = await customAxios.post(
-        `/jobRoleMaster/postJobRole`,
+        `/jobMaster/createJobRole`,
         formData
       );
       if (response?.status === 200 || response?.status === 201) {
@@ -53,11 +53,11 @@ export const addJobRoleMasterThunk = createAsyncThunk(
 );
 
 export const editJobRoleMasterThunk = createAsyncThunk(
-  'jobRoleMaster/editJobRole',
+  'jobMaster/createJobRole',
   async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
     try {
       const response = await customAxios.post(
-        `/jobRoleMaster/postJobRole/${currentId}`,
+        `/jobMaster/createJobRole/${currentId}`,
         formData
       );
       if (response?.status === 200 || response?.status === 201) {

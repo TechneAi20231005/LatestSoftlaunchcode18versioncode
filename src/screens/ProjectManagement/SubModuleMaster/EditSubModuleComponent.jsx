@@ -86,7 +86,7 @@ export default function EditModuleComponent({ match }) {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setProjectdropdown(
-            res.data.data
+            res.data.data.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.project_name }))
           );
@@ -127,13 +127,11 @@ export default function EditModuleComponent({ match }) {
         if (res.status === 200) {
           if (res.data.status === 1) {
             setNotify({ type: 'success', message: res.data.message });
-          setTimeout(()=> {
-            history(
-              {
+            setTimeout(() => {
+              history({
                 pathname: `/${_base}/SubModule`
-              },
-            );
-          },1000)
+              });
+            }, 1000);
           } else {
             setNotify({ type: 'danger', message: res.data.message });
           }
@@ -356,7 +354,9 @@ export default function EditModuleComponent({ match }) {
                       {/* Status */}
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
-                          <b>Status : <Astrick color="red" size="13px" /> </b>
+                          <b>
+                            Status : <Astrick color="red" size="13px" />{' '}
+                          </b>
                         </label>
                         <div className="col-sm-10">
                           <div className="row">

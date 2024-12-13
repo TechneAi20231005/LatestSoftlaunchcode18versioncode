@@ -122,7 +122,7 @@ function SubModuleComponent() {
         if (res.status === 200) {
           let counter = 1;
           let count = 1;
-          const temp = res.data.data;
+          const temp = res.data.data.data;
           for (const key in temp) {
             data.push({
               counter: counter++,
