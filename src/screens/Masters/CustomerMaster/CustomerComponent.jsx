@@ -184,6 +184,7 @@ function CustomerComponent() {
 
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by customer name...."

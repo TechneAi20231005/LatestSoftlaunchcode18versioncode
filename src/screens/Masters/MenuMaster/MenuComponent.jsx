@@ -59,7 +59,8 @@ function MenuComponent() {
       return {
         "Sr" : i + 1,
         "tenant_id" : item?.tenant_id,
-        "parent_name" : item?.name || "-",
+        "parent_name" : item?.parent_name || "-",
+        "Child_name" : item?.name || "-",
         "remark" : item?.remark || "-",
        "is_active": item?.is_active === 1 ? "Active" : "Deactive",
        "created_at" : item?.created_at || "-",
@@ -101,7 +102,12 @@ function MenuComponent() {
     {
       name: 'Parent Name',
       sortable: false,
-      selector: (row) => row?.name || 'Primary'
+      selector: (row) => row?.parent_name || 'Primary'
+    },
+    {
+      name: 'Child Name',
+      sortable: false,
+      selector: (row) => row?.name
     },
     {
       name: 'Status',
