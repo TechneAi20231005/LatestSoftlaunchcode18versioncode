@@ -96,6 +96,7 @@ export const DashbordSlice = createSlice({
     },
     handleModalInStore: (state, action) => {
       state.modal = action.payload;
+      state.notify = null;
     },
     handleModalClose: (state, action) => {
       state.modal = action.payload;
