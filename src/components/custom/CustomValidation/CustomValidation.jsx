@@ -31,7 +31,7 @@ export const CustomValidation = (fields) => {
     .matches(/^[0-9]+$/, 'Only numbers are allowed')
     .test(
       'startsWithValidDigit',
-      'System not accepting 9 Consecutive Zeros here.',
+      'Mobile Number must start with digit in between 6 to 9',
       (value) => {
         return value ? ['6', '7', '8', '9'].includes(value.charAt(0)) : true;
       }

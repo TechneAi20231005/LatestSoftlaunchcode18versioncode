@@ -195,7 +195,7 @@ function CityComponent() {
       label: 'Remark',
       max: 1000,
       required: false,
-      alphaNumeric: false
+      alphaNumeric: true
     }
   ];
 
