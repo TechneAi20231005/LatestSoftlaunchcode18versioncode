@@ -284,7 +284,6 @@ export default function HrDashboard(props) {
 
   useEffect(() => {
     const account_for = localStorage.getItem('account_for');
-    console.log(account_for);
 
     if (account_for === 'CUSTOMER') {
       window.location.href = `${process.env.PUBLIC_URL}/Ticket`;
@@ -303,7 +302,6 @@ export default function HrDashboard(props) {
         }}
       >
         <PageHeader headerTitle="Dashboard" />
-<<<<<<< HEAD
         <div
           style={{
             display: 'flex',
@@ -314,32 +312,16 @@ export default function HrDashboard(props) {
           <div style={{ position: 'relative' }}>
             {(historyModal.show || approveRequestModal.show) === false && (
               <Dropdown
-                className="notifications"
-                style={{ zIndex: -200 }}
+                // className="notifications"
+                // style={{ zIndex: -200 }}
                 onClick={() => {
                   loadNotifcation();
                 }}
-=======
-
-        <div style={{ position: 'relative', marginTop: '-40px' }}>
-          {(historyModal.show || approveRequestModal.show) === false && (
-            <Dropdown
-              // className="notifications"
-              // style={{ zIndex: -200 }}
-              onClick={() => {
-                loadNotifcation();
-              }}
-            >
-              <Dropdown.Toggle
-                as="a"
-                className="nav-link dropdown-toggle pulse"
-                // style={{ zIndex: -200 }}
->>>>>>> ad8373b4e2bbfa4f9405d64a21494650c4d72af5
               >
                 <Dropdown.Toggle
                   as="a"
                   className="nav-link dropdown-toggle pulse"
-                  style={{ zIndex: -200 }}
+                  // style={{ zIndex: -200 }}
                 >
                   <div className=" me-3" style={{ marginLeft: '28%' }}>
                     <div>
