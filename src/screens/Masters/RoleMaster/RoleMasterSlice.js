@@ -57,8 +57,8 @@ export const rolemasterSlice = createSlice({
       state.isLoading.RoleList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let getRoleData = payload?.data?.data;
-        let filterRoleData = payload?.data?.data
+        let getRoleData = payload?.data?.data?.data;
+        let filterRoleData = payload?.data?.data?.data
           .filter((d) => d.is_active === 1)
           .map((d) => ({ value: d.id, label: d.role }));
 

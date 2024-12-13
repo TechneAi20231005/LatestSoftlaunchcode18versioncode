@@ -117,7 +117,7 @@ export default function CreateModuleComponent({ match }) {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setProjectdropdown(
-            res.data.data
+            res.data.data.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.project_name }))
           );
@@ -130,7 +130,7 @@ export default function CreateModuleComponent({ match }) {
     await new ModuleService().getModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          setModules(res.data.data.filter((d) => d.is_active === 1));
+          setModules(res.data.data.data.filter((d) => d.is_active === 1));
         }
       }
     });

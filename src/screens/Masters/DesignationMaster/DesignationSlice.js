@@ -46,7 +46,7 @@ export const desegnationSlice = createSlice({
       state.isLoading.DesignationList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let getDesignationData = payload.data.data;
+        let getDesignationData = payload.data.data.data;
 
         state.status = 'succeded';
         state.showLoaderModal = false;
@@ -69,7 +69,7 @@ export const desegnationSlice = createSlice({
           });
         }
 
-        const sortedDesignationData = payload.data?.data
+        const sortedDesignationData = payload.data?.data?.data
           ?.filter((d) => d.is_active === 1)
           .map((d) => ({
             value: d.id,

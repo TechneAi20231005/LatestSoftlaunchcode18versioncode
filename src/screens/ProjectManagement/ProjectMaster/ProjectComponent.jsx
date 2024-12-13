@@ -308,7 +308,8 @@ function ProjectComponent() {
 
           let counter = 0;
           console.log(counter++);
-          const temp = res.data.data;
+          const temp = res.data.data?.data;
+          console.log('res', res.data.data.data);
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -450,7 +451,7 @@ function ProjectDropdown({ field, form, ...props }) {
     new ProjectService().getProject().then((res) => {
       if (res.status === 200) {
         let counter = 1;
-        const activeData = res.data.data.filter((d) => d.is_active === 1);
+        const activeData = res.data.data.data.filter((d) => d.is_active === 1);
         for (const key in activeData) {
           tempData.push({
             counter: counter++,

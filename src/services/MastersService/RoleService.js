@@ -1,109 +1,98 @@
-import axios from "axios";
-import {userSessionData} from '../../settings/constants';
-import {masterURL} from '../../settings/constants';
+import axios from 'axios';
+import { userSessionData } from '../../settings/constants';
+import { masterURL } from '../../settings/constants';
 
-const _URL=masterURL.role;
+const _URL = masterURL.role;
 
-// const _allRole=_URL+"/getAllRole/"+userSessionData.tenantId;    
-const _allRole=_URL+"/getAllRole";
-const _postRole=_URL+"/createRole";    
-const _getRoleById=_URL+"/getRoleById/";    
-const _updateRole=_URL+"/updateRole/";    
+// const _allRole=_URL+"/getAllRole/"+userSessionData.tenantId;
+const _allRole = `${_URL}/getData?export=1`;
+const _postRole = _URL + '/createRole';
+const _getRoleById = _URL + '/getRoleById/';
+const _updateRole = _URL + '/createRole/';
 
-export function getDateTime(){
-    var now = new Date(); 
-    let year=now.getFullYear();
-    let month=now.getMonth()+1;
-        month= month  >= 10 ?  month : `0${month}`
-    let day=now.getDate() >= 10 ? now.getDate() : `0${now.getDate()}`
-    let hour=now.getHours() >= 10 ? now.getHours() : `0${now.getHours()}`
-    let min=now.getMinutes() >= 10 ? now.getMinutes() : `0${now.getMinutes()}`
-    let sec=now.getSeconds() >= 10 ? now.getSeconds() : `0${now.getSeconds()}`
-     var datetime = year+'-'+month+'-'+day+' '+hour+':'+min+':'+sec;
-     return datetime;
+export function getDateTime() {
+  var now = new Date();
+  let year = now.getFullYear();
+  let month = now.getMonth() + 1;
+  month = month >= 10 ? month : `0${month}`;
+  let day = now.getDate() >= 10 ? now.getDate() : `0${now.getDate()}`;
+  let hour = now.getHours() >= 10 ? now.getHours() : `0${now.getHours()}`;
+  let min = now.getMinutes() >= 10 ? now.getMinutes() : `0${now.getMinutes()}`;
+  let sec = now.getSeconds() >= 10 ? now.getSeconds() : `0${now.getSeconds()}`;
+  var datetime =
+    year + '-' + month + '-' + day + ' ' + hour + ':' + min + ':' + sec;
+  return datetime;
+}
+
+export default class RoleService {
+  //  getRole(){
+  //     return axios.get(_allRole);
+  // }
+
+  getRole() {
+    const token = localStorage.getItem('jwt_token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+
+    return axios.get(_allRole, config);
   }
 
-export default class RoleService{
+  postRole(payload) {
+    const token = localStorage.getItem('jwt_token');
 
-    //  getRole(){
-    //     return axios.get(_allRole);
-    // }
-
-    getRole() {
-        const token = localStorage.getItem("jwt_token");
-      
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
-      
-        return axios.get(_allRole, config);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
       }
-      
-    
-    
-     postRole(payload){
+    };
+    payload.append('tenant_id', userSessionData.tenantId);
+    payload.append('created_by', userSessionData.userId);
+    payload.append('created_at', getDateTime());
+    // return axios.post(_postRole,payload)
 
-        const token = localStorage.getItem("jwt_token");
-      
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
-        payload.append('tenant_id',userSessionData.tenantId);
-        payload.append('created_by',userSessionData.userId);
-        payload.append('created_at',getDateTime());  
-        // return axios.post(_postRole,payload)
+    return axios.post(_postRole, payload, config);
+  }
 
-       
-      
-        return axios.post(_postRole,payload, config);
+  //  getRoleById(id){
+  //     return axios.get(_getRoleById+id);
+  // }
+  getRoleById(id) {
+    const token = localStorage.getItem('jwt_token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
       }
-    
-    
-    //  getRoleById(id){
-    //     return axios.get(_getRoleById+id);
-    // }
-    getRoleById(id) {
-        const token = localStorage.getItem("jwt_token");
-      
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
-      
-        return axios.get(_getRoleById+id, config);
+    };
+
+    return axios.get(_getRoleById + id, config);
+  }
+
+  updateRole(id, payload) {
+    const token = localStorage.getItem('jwt_token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
       }
-      
-    
-     updateRole(id,payload){
+    };
 
-        const token = localStorage.getItem("jwt_token");
-      
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
-      
-        payload.append('updated_by',userSessionData.userId);
-        payload.append('updated_at',getDateTime());
-        // return axios.post(_updateRole+id,payload)
-        
-        return axios.post(_updateRole+id,payload, config);
-      }
-      
-    }
+    payload.append('updated_by', userSessionData.userId);
+    payload.append('updated_at', getDateTime());
+    // return axios.post(_updateRole+id,payload)
 
-
+    return axios.post(_updateRole + id, payload, config);
+  }
+}

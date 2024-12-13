@@ -46,7 +46,7 @@ export const departmentMasterSlice = createSlice({
       state.isLoading.departmentDataList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let departmentData = payload.data.data;
+        let departmentData = payload.data.data?.data;
         state.status = 'succeded';
         state.showLoaderModal = false;
         let count = 1;
@@ -56,7 +56,9 @@ export const departmentMasterSlice = createSlice({
         state.departmentData = [...departmentData];
         let exportDepartmentData = [];
 
-        let filterdata = payload.data.data.filter((d) => d.is_active === 1);
+        let filterdata = payload.data.data.data?.filter(
+          (d) => d.is_active === 1
+        );
         let sortDepartmentData = [];
         for (const key in filterdata) {
           if (filterdata[key].department) {
