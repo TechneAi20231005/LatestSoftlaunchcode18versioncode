@@ -6,7 +6,7 @@ import {
 
 // Create a new Axios instance
 const customAxios = axios.create({
-  baseURL: REACT_APP_API_REWAMP_BASE_URL
+  baseURL: REACT_APP_API_URL
   // timeout: 10000, // Set timeout for requests (in milliseconds)
 });
 

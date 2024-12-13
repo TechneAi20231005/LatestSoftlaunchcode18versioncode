@@ -23,7 +23,7 @@ function AddEditJobRoleMaster({ show, close, type, currentJobRoleData }) {
   const dispatch = useDispatch();
   const addEditJobRoleInitialValue = {
     job_role: type === 'EDIT' ? currentJobRoleData?.job_role : '',
-    remark: type === 'EDIT' ? currentJobRoleData?.remark : '',
+    remark: currentJobRoleData?.remark || '',
     is_active: type === 'EDIT' ? currentJobRoleData?.is_active?.toString() : 1
   };
 
