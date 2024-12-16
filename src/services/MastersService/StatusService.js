@@ -6,9 +6,9 @@ const _URL = masterURL.status;
 
 const _getAllStatus = `${_URL}/getData?export=1`;
 //  _URL + '/getData';
-const _postStatus = _URL + '/createStatus';
+const _postStatus = _URL + '/postData';
 const _getStatusById = _URL + '/getStatusById/';
-const _updateStatus = _URL + '/createStatus/';
+const _updateStatus = _URL + '/postData/';
 
 export function getDateTime() {
   var now = new Date();

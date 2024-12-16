@@ -6,8 +6,8 @@ const _URL = masterURL.designation;
 
 const _getAllDesignation = `${_URL}/getData?export=1`;
 // _URL + '/getAllDesignation/1';
-const _createDepartment = _URL + '/createDesignations';
-const _updateDesignation = _URL + '/createDesignations/';
+const _createDepartment = _URL + '/postData';
+const _updateDesignation = _URL + '/postData/';
 const _getDesignationById = _URL + '/getDesignationById/';
 
 export function getDateTime() {

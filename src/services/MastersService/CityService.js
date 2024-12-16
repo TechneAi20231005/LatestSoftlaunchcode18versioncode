@@ -8,9 +8,9 @@ const _getAllCity = `${_URL}/getData?export=1`;
 
 // const _getAllCity = _URL + "/getAllCity/" + userSessionData.tenantId;
 const _getAllCitySort = _URL + '/getAllCity/';
-const _createCity = _URL + '/createCity';
+const _createCity = _URL + '/postData';
 const _getCityById = _URL + '/getCityById/';
-const _updateCity = _URL + '/createCity/';
+const _updateCity = _URL + '/postData/';
 
 export function getDateTime() {
   var now = new Date();

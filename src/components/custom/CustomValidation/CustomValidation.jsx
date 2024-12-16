@@ -55,6 +55,7 @@ export const CustomValidation = (fields) => {
       }
 
       // Required field validation
+
       if (field.required) {
         validator = validator.required(`${field.label} is required`);
       }

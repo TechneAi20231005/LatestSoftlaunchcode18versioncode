@@ -5,8 +5,8 @@ import { masterURL } from '../../settings/constants';
 const _URL = masterURL.department;
 
 const _allDepartment = `${_URL}/getData?export=1`;
-const _createDepartment = _URL + '/createDepartments';
-const _updateDepartment = _URL + '/createDepartments/';
+const _createDepartment = _URL + '/postData';
+const _updateDepartment = _URL + '/postData/';
 const _getDepartmentById = _URL + '/getDepartmentById/';
 
 export function getDateTime() {

@@ -97,10 +97,10 @@ export default function EditModuleComponent({ match }) {
     await new ModuleService().getModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          setModules(res.data.data.filter((d) => d.is_active === 1));
+          setModules(res.data.data?.data.filter((d) => d.is_active === 1));
           setModulesDropdown(
             res.data.data &&
-              res.data.data
+              res.data.data?.data
                 .filter((d) => d.is_active === 1)
                 .map((d) => ({ value: d.id, label: d.module_name }))
           );

@@ -39,7 +39,7 @@ export default function EditProjectComponent({ match }) {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setCustomer(
-            res.data.data
+            res.data.data?.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.name }))
           );

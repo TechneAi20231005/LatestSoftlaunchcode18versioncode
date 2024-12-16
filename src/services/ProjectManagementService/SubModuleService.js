@@ -9,9 +9,9 @@ import { projectManagementUrl } from '../../settings/constants';
 const _URL = masterURL.subModuleMaster;
 
 const _getAllSubModule = `${_URL}/getData?export=1`;
-const _postSubModule = _URL + '/createSubModules';
+const _postSubModule = _URL + '/postData';
 const _getSubModuleById = _URL + '/getData/';
-const _updateSubModule = _URL + '/createSubModules/';
+const _updateSubModule = _URL + '/postData/';
 const _updateSubModuleDoc =
   consolidateViewUrl.consolidateViewUrl + '/createProjectsSubModules';
 const _getSubModuleDocumentById =
