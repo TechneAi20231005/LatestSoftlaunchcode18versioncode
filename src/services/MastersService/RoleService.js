@@ -6,9 +6,9 @@ const _URL = masterURL.role;
 
 // const _allRole=_URL+"/getAllRole/"+userSessionData.tenantId;
 const _allRole = `${_URL}/getData?export=1`;
-const _postRole = _URL + '/createRole';
+const _postRole = _URL + '/postData';
 const _getRoleById = _URL + '/getRoleById/';
-const _updateRole = _URL + '/createRole/';
+const _updateRole = _URL + '/postData/';
 
 export function getDateTime() {
   var now = new Date();

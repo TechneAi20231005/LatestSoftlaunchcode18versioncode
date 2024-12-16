@@ -5,9 +5,9 @@ import { projectManagementUrl } from '../../settings/constants';
 const _URL = masterURL.moduleMaster;
 
 const _getAllModule = `${_URL}/getData?export=1`;
-const _postModule = _URL + '/createModules';
+const _postModule = _URL + '/postData';
 const _getModuleById = _URL + '/getData/';
-const _updateModule = _URL + '/createModules/';
+const _updateModule = _URL + '/postData/';
 
 export default class ModuleService {
   getModule() {

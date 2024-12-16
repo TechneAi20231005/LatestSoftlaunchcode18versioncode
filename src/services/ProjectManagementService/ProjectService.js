@@ -6,9 +6,9 @@ import { projectManagementUrl } from '../../settings/constants';
 const _URL = masterURL.projectMaster;
 console.log('url', _URL);
 const _getAllProject = `${_URL}/getData?export=1`;
-const _postProject = _URL + '/createProject';
-const _getProjectById = _URL + '/getProjectById/';
-const _updateProject = _URL + '/updateProject/';
+const _postProject = _URL + '/postData';
+const _getProjectById = _URL + '/getData/';
+const _updateProject = _URL + '/postData/';
 
 export default class ProjectService {
   getProject() {

@@ -46,7 +46,7 @@ export const addJobRoleMasterThunk = createAsyncThunk(
     };
     try {
       const response = await axios.post(
-        `${REACT_APP_API_REWAMP_BASE_URL}jobMaster/createJobRole`,
+        `${REACT_APP_API_REWAMP_BASE_URL}jobMaster/postData`,
         formData,
         config
       );
@@ -80,7 +80,7 @@ export const editJobRoleMasterThunk = createAsyncThunk(
     };
     try {
       const response = await axios.post(
-        `${REACT_APP_API_REWAMP_BASE_URL}jobMaster/createJobRole/${currentId}`,
+        `${REACT_APP_API_REWAMP_BASE_URL}jobMaster/postData/${currentId}`,
         formData,
         config
       );
