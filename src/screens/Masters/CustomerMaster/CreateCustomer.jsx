@@ -294,7 +294,8 @@ export default function CreateCustomer({ match }) {
     pincode: '',
     country_id: '',
     state_id: '',
-    city_id: ''
+    city_id: '',
+    is_active: 1,
   };
   const fields = [
     {
