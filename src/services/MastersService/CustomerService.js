@@ -6,10 +6,10 @@ const _URL = masterURL.customer;
 
 // const _getAllCustomer=_URL+"/getAllCustomer/"+userSessionData.tenantId;
 // const _getAllCustomer = _URL + "/getAllCustomer";
-const _getAllCustomer = _URL + '/getData';
-const _createCustomer = _URL + '/createCustomer';
-const _updateCustomer = _URL + '/updateCustomer/';
-const _getCustomerById = _URL + '/getCustomerById/';
+const _getAllCustomer = _URL + '/getData?export=1';
+const _createCustomer = _URL + '/postData';
+const _updateCustomer = _URL + '/postData/';
+const _getCustomerById = _URL + '/getData/';
 
 export function getCurrentDate(separator = '-') {
   let newDate = new Date();

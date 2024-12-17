@@ -748,8 +748,8 @@ export const DashbordSlice = createSlice({
       state.isLoading.getCustomerList = false;
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let getAllCustomerData = payload.data.data;
-        let getCustomerData = payload.data.data
+        let getAllCustomerData = payload.data.data?.data;
+        let getCustomerData = payload.data.data?.data
           .filter((d) => d.is_active == 1)
           .map((d) => ({ value: d.id, label: d.name }));
         state.status = 'succeded';
@@ -796,7 +796,7 @@ export const DashbordSlice = createSlice({
     builder.addCase(getCustomerType.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let customerTypeData = payload.data.data
+        let customerTypeData = payload.data.data?.data
           .filter((d) => d.is_active == 1)
           .map((d) => ({ label: d.type_name, value: d.id }));
         state.status = 'succeded';
