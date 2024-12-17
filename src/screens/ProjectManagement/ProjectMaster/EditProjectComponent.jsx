@@ -222,7 +222,7 @@ export default function EditProjectComponent({ match }) {
   };
   const fields = [
     { name: 'customer_id', label: 'Customer Name', required: true },
-    { name: 'project_name', label: 'Project Name', required: true },
+    { name: 'project_name', label: 'Project Name', required: true, alphaNumeric: true, max: 100  },
     { name: 'project_owner', label: 'Project owner', isObject: true },
     {
       name: 'description',
