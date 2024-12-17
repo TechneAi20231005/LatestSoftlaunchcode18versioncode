@@ -73,7 +73,8 @@ function EditCustomer() {
 
     await new CustomerType().getCustomerType().then((res) => {
       if (res.status === 200) {
-        const data = res.data.data;
+        const data = res.data.data?.data;
+        console.log(data,"data>>>.")
         setCustomerType(
           data
             .filter((d) => d.is_active === 1)
@@ -87,7 +88,7 @@ function EditCustomer() {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setCountryDropdown(
-            res.data.data
+            res.data.data?.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.country }))
           );
@@ -98,9 +99,9 @@ function EditCustomer() {
     await new StateService().getStateSort().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          setState(res.data.data.filter((d) => d.is_active === 1));
+          setState(res.data.data?.data.filter((d) => d.is_active === 1));
           setStateDropdown(
-            res.data.data
+            res.data.data?.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({
                 value: d.id,
@@ -115,9 +116,9 @@ function EditCustomer() {
     await new CityService().getCity().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          setCity(res.data.data.filter((d) => d.is_active === 1));
+          setCity(res.data.data?.data.filter((d) => d.is_active === 1));
           setCityDropdown(
-            res.data.data
+            res.data.data?.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({
                 value: d.id,
@@ -358,7 +359,7 @@ function EditCustomer() {
     country_id: data?.country_id || '',
     state_id: data?.state_id || '',
     city_id: data?.city_id || '',
-    is_active: data?.is_active !== undefined ? data?.is_active.toString() : '1'
+    is_active: data?.is_active !== undefined ? String(data?.is_active) : '1'
   };
   const fields = [
     {

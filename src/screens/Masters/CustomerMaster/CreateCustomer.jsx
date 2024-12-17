@@ -189,6 +189,7 @@ export default function CreateCustomer({ match }) {
     formData.append('name', values.name);
     formData.append('pincode', values.pincode);
     formData.append('state_id', values.state_id);
+    formData.append('is_active', values.is_active);
 
     // Dispatch action with formData
     dispatch(postCustomerData(formData)).then((res) => {

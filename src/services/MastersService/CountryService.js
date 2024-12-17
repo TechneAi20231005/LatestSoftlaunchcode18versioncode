@@ -6,7 +6,7 @@ export const _apiUrl = 'http://3.108.206.34/TSNewBackend/public/api';
 const _URL = masterURL.country;
 
 const _getAllCountry = `${_URL}/getData?export=1`;
-const _getAllCountrySort = `${_URL}/getData?type=1`;
+const _getAllCountrySort = `${_URL}/getData?export=1`;
 const _postCountry = _URL + '/postData';
 const _roleType = _apiUrl + '/billCheckingMaster/getDropdowns';
 const _salarySlip = _apiUrl + '/salarySlip';

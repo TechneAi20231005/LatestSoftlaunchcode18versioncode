@@ -83,7 +83,7 @@ function CustomerComponent() {
       sortable: true,
       width: '150px'
     },
-    { name: 'Type', selector: (row) => row.type_name, sortable: true },
+    { name: 'Type', selector: (row) => row.customer_type, sortable: true },
     {
       name: 'Status',
       selector: (row) => row.is_active,
