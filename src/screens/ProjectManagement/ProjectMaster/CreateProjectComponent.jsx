@@ -220,9 +220,12 @@ export default function CreateProjectComponent({ match }) {
   };
   const fields = [
     { name: 'customer_id', label: 'Customer Name', required: true },
-    { name: 'project_name', label: 'Project Name', required: true },
+    { name: 'project_name', label: 'Project Name', required: true, alphaNumeric: true, max: 100  },
     { name: 'project_owner', label: 'Project owner', isObject: true },
     { name: 'description', label: 'Description', required: true, alphaNumeric: true, max: 1000 },
+    { name: 'git_url', label: 'git_url', required: false, alphaNumeric: true, max: 500 },
+    { name: 'api_document_link', label: 'api_document_link', required: false, alphaNumeric: true, max: 500 },
+    { name: 'remark', label: 'remark', required: false, alphaNumeric: true, max: 1000 },
     // { name: 'logo', label: 'logo', required: false }
   ];
   const validationSchema = CustomValidation(fields);
@@ -344,7 +347,16 @@ export default function CreateProjectComponent({ match }) {
                           accept=".png, .jpeg, .jpg" // Accept only specific image file formats
                           //  accept="image/*"
                           ref={fileInputRef}
-                          onChange={(event) => setFieldValue('logo', event?.target?.files[0])}
+                          onChange={(event) => {
+                            const file = event.target.files[0];
+                            if (file?.size > 2 * 1024 * 1024) {
+                              // File size exceeds 2MB, notify the user and clear the input field
+                              alert('File size must be less than 2MB.');
+                              event.target.value = null; // Clear the input field
+
+                            }
+                            setFieldValue('logo', event?.target?.files[0])
+                          }}
                           // onChange={handleFileChange}
                         />
                         <small style={{ color: '#2167d2' }}>
@@ -395,9 +407,9 @@ export default function CreateProjectComponent({ match }) {
                           name="description"
                           rows="6"
                           // required={true}
-                          onKeyPress={(e) => {
-                            Validation.addressFieldOnly(e);
-                          }}
+                          // onKeyPress={(e) => {
+                          //   Validation.addressFieldOnly(e);
+                          // }}
                         />
                            <ErrorMessage
                           name="description"
@@ -418,6 +430,11 @@ export default function CreateProjectComponent({ match }) {
                           id="git_url"
                           name="git_url"
                         />
+                          <ErrorMessage
+                          name="git_url"
+                          component="small"
+                          className="text-danger"
+                        />
                       </div>
                     </div>
 
@@ -432,6 +449,11 @@ export default function CreateProjectComponent({ match }) {
                           id="api_document_link"
                           name="api_document_link"
                         />
+                          <ErrorMessage
+                          name="api_document_link"
+                          component="small"
+                          className="text-danger"
+                        />
                       </div>
                     </div>
 
@@ -445,6 +467,11 @@ export default function CreateProjectComponent({ match }) {
                           className="form-control form-control-sm"
                           id="remark"
                           name="remark"
+                        />
+                           <ErrorMessage
+                          name="remark"
+                          component="small"
+                          className="text-danger"
                         />
                       </div>
                     </div>

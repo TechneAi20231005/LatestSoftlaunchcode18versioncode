@@ -230,7 +230,10 @@ export default function EditProjectComponent({ match }) {
       required: true,
       alphaNumeric: true,
       max: 1000
-    }
+    },
+    { name: 'git_url', label: 'git_url', required: false, alphaNumeric: true, max: 500 },
+    { name: 'api_document_link', label: 'api_document_link', required: false, alphaNumeric: true, max: 500 },
+    { name: 'remark', label: 'remark', required: false, alphaNumeric: true, max: 1000 },
     // { name: 'logo', label: 'logo', required: false }
   ];
   const validationSchema = CustomValidation(fields);
@@ -439,6 +442,11 @@ export default function EditProjectComponent({ match }) {
                             name="git_url"
                             // defaultValue={data ? data.git_url : null}
                           />
+                           <ErrorMessage
+                            name="git_url"
+                            component="small"
+                            className="text-danger"
+                          />
                         </div>
                       </div>
 
@@ -454,6 +462,11 @@ export default function EditProjectComponent({ match }) {
                             name="api_document_link"
                             // defaultValue={data ? data.api_document_link : null}
                           />
+                            <ErrorMessage
+                            name="api_document_link"
+                            component="small"
+                            className="text-danger"
+                          />
                         </div>
                       </div>
 
@@ -468,6 +481,11 @@ export default function EditProjectComponent({ match }) {
                             id="remark"
                             name="remark"
                             // defaultValue={data ? data.remark : null}
+                          />
+                            <ErrorMessage
+                            name="remark"
+                            component="small"
+                            className="text-danger"
                           />
                         </div>
                       </div>

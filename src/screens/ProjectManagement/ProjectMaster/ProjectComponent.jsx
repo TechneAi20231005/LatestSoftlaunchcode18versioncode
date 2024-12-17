@@ -189,7 +189,7 @@ function ProjectComponent() {
     },
 
     {
-      name: 'created By',
+      name: 'Created By',
       width: '10%',
       selector: (row) => row.created_by,
       sortable: true,
@@ -215,7 +215,7 @@ function ProjectComponent() {
       )
     },
     {
-      name: 'created at',
+      name: 'Created at',
       width: '200px',
       selector: (row) => row.created_at,
       sortable: true,
@@ -337,7 +337,7 @@ function ProjectComponent() {
 
               'Project Name': data[key].project_name,
               projectReviewer: data[key].projectReviewer,
-              is_active: data[key].is_active === 1 ? 'Active' : 'Deactive',
+              Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
               description: data[key].description,
               remark: data[key].remark,
               created_at: data[key].created_at,

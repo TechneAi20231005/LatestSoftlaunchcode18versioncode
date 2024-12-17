@@ -351,7 +351,7 @@ function CountryComponent() {
                         // }}
                       />
                       {errors.country && touched.country ? (
-                        <div className="text-danger">{errors.country}</div>
+                        <small className="text-danger">{errors.country}</small>
                       ) : null}
                     </div>
                     <div className="col-sm-12">
@@ -364,7 +364,7 @@ function CountryComponent() {
                         className="form-control form-control-sm"
                       />
                       {errors.remark && touched.remark ? (
-                        <div className="text-danger">{errors.remark}</div>
+                        <small className="text-danger">{errors.remark}</small>
                       ) : null}
                     </div>
                     {modal.modalData && (
