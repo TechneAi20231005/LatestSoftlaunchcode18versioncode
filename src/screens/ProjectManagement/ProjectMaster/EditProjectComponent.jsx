@@ -292,7 +292,7 @@ export default function EditProjectComponent({ match }) {
                           </b>
                         </label>
                         <div className="col-sm-4">
-                          <input
+                          <Field
                             type="text"
                             className="form-control form-control-sm"
                             id="project_name"
