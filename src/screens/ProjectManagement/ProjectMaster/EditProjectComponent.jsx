@@ -81,7 +81,6 @@ export default function EditProjectComponent({ match }) {
     await new ProjectService()
       .getProjectById(projectId)
       .then((res) => {
-        console.log(res, 'data>>>');
         if (res.status === 200) {
           const data = res.data.data;
 
@@ -118,7 +117,6 @@ export default function EditProjectComponent({ match }) {
   }, [dispatch, projectId]);
 
   const handleForm = async (values) => {
-    console.log(values, 'values');
     const formData = new FormData();
     formData.append('customer_id', values.customer_id);
     formData.append('project_name', values.project_name);
@@ -249,7 +247,6 @@ export default function EditProjectComponent({ match }) {
               initialValues={initialValues}
               validationSchema={validationSchema}
                onSubmit={(values) => {
-                console.log(values,"values")
                  handleForm(values)
                }}
             >
@@ -327,7 +324,6 @@ export default function EditProjectComponent({ match }) {
                               name="project_owner"
                               isMulti={true}
                               onChange={(options) => {
-                                console.log(options, 'options');
                                 setFieldValue('project_owner', options);
                               }}
                               // required={true}
@@ -394,7 +390,6 @@ export default function EditProjectComponent({ match }) {
                               isMulti={true}
                               // value={values.project_reviewer}
                               onChange={(options) => {
-                                console.log(options, 'options');
                                 setFieldValue('project_reviewer', options);
                               }}
                               defaultValue={data?.reviewers.map((d) => ({
