@@ -6,8 +6,8 @@ const _URL = masterURL.customerType;
 
 // const _getAllCustomerType=_URL+"/getAllCustomerType/"+userSessionData.tenantId;
 const _getAllCustomerType = _URL + '/getData?export=1';
-const _createCustomerType = _URL + '/createCustomerType';
-const _updateCustomerType = _URL + '/updateCustomerType/';
+const _createCustomerType = _URL + '/postData';
+const _updateCustomerType = _URL + '/postData/';
 const _getCustomerTypeById = _URL + '/getCustomerTypeById/';
 
 export function getDateTime() {

@@ -46,7 +46,7 @@ export const customerMasterSlice = createSlice({
       state.isLoading.customerTypeList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let getCustomerTypeData = payload.data.data;
+        let getCustomerTypeData = payload.data.data?.data;
         state.status = 'succeded';
         state.showLoaderModal = false;
         let count = 1;
