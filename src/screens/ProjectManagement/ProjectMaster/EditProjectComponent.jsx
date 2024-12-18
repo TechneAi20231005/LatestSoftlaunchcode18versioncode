@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { Formik, Form, Field, ErrorMessage, isObject } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import Spinner from 'react-bootstrap/Spinner';
 
 export default function EditProjectComponent({ match }) {
   const history = useNavigate();
@@ -245,7 +246,7 @@ export default function EditProjectComponent({ match }) {
 
       <div className="row clearfix g-3">
         <div className="col-sm-12">
-          {data && (
+          {data ? (
             <Formik
               initialValues={initialValues}
               validationSchema={validationSchema}
@@ -561,7 +562,24 @@ export default function EditProjectComponent({ match }) {
                 </Form>
               )}
             </Formik>
-          )}
+          ) :    <div
+          style={{
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: '100vh',
+            width: '100%',
+            position: 'absolute',
+            top: 0,
+            left: 40,
+            backgroundColor: 'rgba(255, 255, 255, 0.8)', // Optional overlay
+          }}
+        >
+          <Spinner animation="grow" variant="primary" />
+      <Spinner animation="grow" variant="secondary" />
+      <Spinner animation="grow" variant="success" />
+      <Spinner animation="grow" variant="info" />
+        </div>}
         </div>
       </div>
     </div>

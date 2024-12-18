@@ -430,6 +430,7 @@ function CityComponent() {
                         name="country_id"
                         isClearable={true}
                         onChange={(selectedOption) => {
+                          setFieldValue('state_id', null);
                           setFieldValue('country_id', selectedOption?.value);
                           handleCountryChange(selectedOption);
                         }}
@@ -468,6 +469,14 @@ function CityComponent() {
                                 (d) => modal.modalData.state_id === d.value
                               )
                             : ''
+                        }
+                        value={
+                          values.state_id
+                          ? stateDropdownData?.find(
+                              (item) =>
+                                item.value === Number(values.state_id)
+                            )
+                          : null // Bind to Formik's state_id
                         }
                         // value={values.state_id}
                       />
