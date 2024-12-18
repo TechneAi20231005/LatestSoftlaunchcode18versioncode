@@ -140,6 +140,7 @@ export default function EditProjectComponent({ match }) {
     formData.append('git_url', values.git_url);
     formData.append('api_document_link', values.api_document_link);
     formData.append('remark', values.remark);
+    formData.append('is_active:', values.is_active);
     // e.preventDefault();
     // const formData = new FormData(e.target);
 
@@ -206,10 +207,15 @@ export default function EditProjectComponent({ match }) {
       label: d.first_name + ' ' + d.last_name
     }))
 
+    let projectOwner =  data?.owners.map((d) => ({
+      value: d.user_id,
+      label: d.first_name + ' ' + d.last_name
+    }))
+
   const initialValues = {
     customer_id: customerId?.value || '',
     project_name: data?.project_name || '',
-    project_owner: [],
+    project_owner: projectOwner || [],
     logo: null,
     project_reviewer: projectReviewer || [],
     description: data?.description || '',
@@ -279,6 +285,9 @@ export default function EditProjectComponent({ match }) {
                                   )
                                 : ''
                             }
+                            onChange={(option) =>
+                              setFieldValue('customer_id', option?.value)
+                            }
                           />
                           <ErrorMessage
                             name="customer_id"
@@ -331,10 +340,10 @@ export default function EditProjectComponent({ match }) {
                                 setFieldValue('project_owner', options);
                               }}
                               // required={true}
-                              // defaultValue={data.projectOwners.map((d) => ({
-                              //   value: d.user_id,
-                              //   label: d.employee_name
-                              // }))}
+                              defaultValue={data?.owners?.map((d) => ({
+                                value: d.user_id,
+                                label: d.first_name + ' ' + d.last_name
+                              }))}
                             />
                           )}
                           <ErrorMessage
@@ -412,7 +421,8 @@ export default function EditProjectComponent({ match }) {
                           </b>
                         </label>
                         <div className="col-sm-10">
-                          <textarea
+                          <Field
+                          as="textarea"
                             className="form-control form-control-sm"
                             id="description"
                             name="description"
