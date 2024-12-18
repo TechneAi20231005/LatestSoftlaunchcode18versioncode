@@ -461,7 +461,7 @@ function CityComponent() {
                         id="state_id"
                         isClearable={true}
                         onChange={(selectedOption) =>
-                          setFieldValue('state_id', selectedOption?.value)
+                          setFieldValue('state_id', selectedOption?.value || null)
                         }
                         defaultValue={
                           modal.modalData
