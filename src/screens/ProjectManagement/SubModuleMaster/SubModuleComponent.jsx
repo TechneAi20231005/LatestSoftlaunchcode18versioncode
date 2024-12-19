@@ -13,6 +13,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import { customSearchHandler } from '../../../utils/customFunction';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { description } from 'platform';
 
 function SubModuleComponent() {
   //initial state
@@ -54,6 +55,7 @@ function SubModuleComponent() {
   const columns = [
     {
       name: 'Action',
+      width: '80px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -67,20 +69,23 @@ function SubModuleComponent() {
         </div>
       )
     },
-    { name: 'Sr', selector: (row) => row.counter, sortable: true },
+    { name: 'Sr',  width: '70px', selector: (row) => row.counter, sortable: true },
     {
       name: 'Sub Module Name',
+      width: '12%',
       selector: (row) => row.sub_module_name,
       sortable: true
     },
-    { name: 'Module Name', selector: (row) => row.module_name, sortable: true },
+    { name: 'Module Name',      width: '12%', selector: (row) => row.module_name, sortable: true },
     {
       name: 'Project Name',
+      width: '10%',
       selector: (row) => row.project_name,
       sortable: true
     },
     {
       name: 'Status',
+      width: '110px',
       selector: (row) => row.is_active,
       sortable: true,
       cell: (row) => (
@@ -94,10 +99,16 @@ function SubModuleComponent() {
         </div>
       )
     },
-    { name: 'Remark', selector: (row) => row.remark, sortable: true },
+    {
+      name: 'Description',
+      width: '120px',
+      selector: (row) => row.description,
+      sortable: true,
+    },
+    { name: 'Remark',       width: '120px', selector: (row) => row.remark, sortable: true },
     {
       name: 'Created At',
-      width: '10%',
+      width: '12%',
       selector: (row) => row.created_at,
       sortable: true
     },
@@ -107,9 +118,9 @@ function SubModuleComponent() {
       selector: (row) => row.created_by,
       sortable: true
     },
-    { name: 'Updated At', selector: (row) => row.updated_at, sortable: true },
+    { name: 'Updated At',      width: '12%', selector: (row) => row.updated_at, sortable: true },
 
-    { name: 'Updated By', selector: (row) => row.updated_by, sortable: true }
+    { name: 'Updated By',      width: '12%',  selector: (row) => row.updated_by, sortable: true }
   ];
 
   const loadData = useCallback(async () => {
@@ -131,6 +142,7 @@ function SubModuleComponent() {
               module_name: temp[key].module_name,
               project_name: temp[key].project_name,
               is_active: temp[key].is_active,
+              description: temp[key].description,
               remark: temp[key].remark,
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,
@@ -144,11 +156,12 @@ function SubModuleComponent() {
 
           for (const key in temp) {
             exportTempData.push({
-              count: count++,
+              SrNo: count++,
               // id: temp[key].id,
               sub_module_name: temp[key].sub_module_name,
               module_name: temp[key].module_name,
               project_name: temp[key].project_name,
+              description: temp[key].description,
               Status: temp[key].is_active === 1 ? 'Active' : 'Deactive',
               remark: temp[key].remark,
               created_at: temp[key].created_at,

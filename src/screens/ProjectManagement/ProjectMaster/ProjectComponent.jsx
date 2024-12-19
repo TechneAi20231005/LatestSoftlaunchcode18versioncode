@@ -337,8 +337,8 @@ function ProjectComponent() {
 
               'Project Name': data[key].project_name,
               projectReviewer: data[key].projectReviewer,
-              Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
               description: data[key].description,
+              Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
               remark: data[key].remark,
               created_at: data[key].created_at,
               created_by: data[key].created_by,

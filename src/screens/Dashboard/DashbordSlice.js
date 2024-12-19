@@ -761,7 +761,7 @@ export const DashbordSlice = createSlice({
           state.getCustomerData = [...getCustomerData];
         }
       }
-      let temp = payload.data.data;
+      let temp = payload.data.data?.data;
       let exportCustomerData = [];
       for (const i in temp) {
         exportCustomerData.push({
