@@ -383,7 +383,7 @@ function EditCustomer() {
     { name: 'country_id', label: 'Country Name', required: true },
     { name: 'state_id', label: 'State Name', required: true },
     { name: 'city_id', label: 'City Name', required: true },
-    { name: 'remark', label: 'Remark', alphaNumeric: true, required: false }
+    { name: 'remark', label: 'Remark', alphaNumeric: true, required: false, max: 1000, }
   ];
 
   const validationSchema = CustomValidation(fields);
@@ -563,7 +563,7 @@ function EditCustomer() {
                             id="remark"
                             name="remark"
                             // defaultValue={data && data.remark}
-                            maxLength={50}
+                            // maxLength={50}
                           />
                           <ErrorMessage
                             name="remark"

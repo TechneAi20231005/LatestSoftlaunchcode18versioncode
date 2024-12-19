@@ -528,11 +528,11 @@ export default function CreateCustomer({ match }) {
                           className="form-control form-control-sm"
                           id="pincode"
                           name="pincode"
-                          minLength={6}
+                          // minLength={6}
                           maxLength={6}
-                          onKeyPress={(e) => {
-                            Validation.pincodeWithOutSpace(e);
-                          }}
+                          // onKeyPress={(e) => {
+                          //   Validation.pincodeWithOutSpace(e);
+                          // }}
                           // required
                           autoComplete="off"
                         />

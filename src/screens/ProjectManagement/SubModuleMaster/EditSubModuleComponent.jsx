@@ -292,9 +292,9 @@ export default function EditModuleComponent({ match }) {
                             className="form-control form-control-sm"
                             id="sub_module_name"
                             name="sub_module_name"
-                            onKeyPress={(e) => {
-                              Validation.addressFieldOnly(e);
-                            }}
+                            // onKeyPress={(e) => {
+                            //   Validation.addressFieldOnly(e);
+                            // }}
                             defaultValue={data.sub_module_name}
                           />
                           <ErrorMessage
@@ -318,9 +318,9 @@ export default function EditModuleComponent({ match }) {
                             className="form-control form-control-sm"
                             name="description"
                             rows="6"
-                            onKeyPress={(e) => {
-                              Validation.addressFieldOnly(e);
-                            }}
+                            // onKeyPress={(e) => {
+                            //   Validation.addressFieldOnly(e);
+                            // }}
                             defaultValue={data.description}
                           />
                           <ErrorMessage
