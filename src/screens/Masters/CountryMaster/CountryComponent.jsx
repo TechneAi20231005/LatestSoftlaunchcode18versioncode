@@ -214,6 +214,7 @@ function CountryComponent() {
       name: 'country',
       label: 'Country name',
       max: 100,
+      min: 3,
       required: true,
       alphaNumeric: true
     },
@@ -333,8 +334,8 @@ function CountryComponent() {
                         type="text"
                         className="form-control form-control-sm"
                         id="country"
-                        maxLength={25}
-                        minLength={4}
+                        // maxLength={25}
+                        // minLength={4}
                         defaultValue={
                           modal.modalData ? modal.modalData.country : ''
                         }
