@@ -185,7 +185,7 @@ function CityComponent() {
     {
       name: 'city',
       label: 'City name',
-      max: 50,
+      max: 100,
       min: 3,
       required: true,
       alphaNumeric: true
@@ -410,13 +410,6 @@ function CityComponent() {
                 </Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                {console.log(
-                  modal.modalData
-                    ? filteredCountryData.find(
-                        (d) => modal.modalData.country_id === d.value
-                      )
-                    : ''
-                )}
                 <div className="deadline-form">
                   <div className="row g-3 mb-3">
                     {/* Select Country */}
@@ -430,6 +423,7 @@ function CityComponent() {
                         name="country_id"
                         isClearable={true}
                         onChange={(selectedOption) => {
+                          setFieldValue('state_id', null);
                           setFieldValue('country_id', selectedOption?.value);
                           handleCountryChange(selectedOption);
                         }}
@@ -460,7 +454,10 @@ function CityComponent() {
                         id="state_id"
                         isClearable={true}
                         onChange={(selectedOption) =>
-                          setFieldValue('state_id', selectedOption?.value)
+                          setFieldValue(
+                            'state_id',
+                            selectedOption?.value || null
+                          )
                         }
                         defaultValue={
                           modal.modalData
@@ -468,6 +465,13 @@ function CityComponent() {
                                 (d) => modal.modalData.state_id === d.value
                               )
                             : ''
+                        }
+                        value={
+                          values.state_id
+                            ? stateDropdownData?.find(
+                                (item) => item.value === Number(values.state_id)
+                              )
+                            : null // Bind to Formik's state_id
                         }
                         // value={values.state_id}
                       />

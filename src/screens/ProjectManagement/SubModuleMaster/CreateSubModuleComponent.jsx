@@ -78,14 +78,18 @@ export default function CreateModuleComponent({ match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            history(
-              {
-                pathname: `/${_base}/SubModule`
-              },
-              {
-                state: { alert: { type: 'success', message: res.data.message } }
-              }
-            );
+              setTimeout(() => {
+                history({pathname:`/${_base}/SubModule`})
+              }, 500);
+              setNotify({ type: 'success', message: res.data.message });
+            // history(
+            //   {
+            //     pathname: `/${_base}/SubModule`
+            //   },
+            //   {
+            //     state: { alert: { type: 'success', message: res.data.message } }
+            //   }
+            // );
           } else {
             setNotify({ type: 'danger', message: res.data.message });
           }
@@ -117,7 +121,7 @@ export default function CreateModuleComponent({ match }) {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setProjectdropdown(
-            res.data.data
+            res.data.data.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.project_name }))
           );
@@ -130,7 +134,7 @@ export default function CreateModuleComponent({ match }) {
     await new ModuleService().getModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          setModules(res.data.data.filter((d) => d.is_active === 1));
+          setModules(res.data.data.data.filter((d) => d.is_active === 1));
         }
       }
     });
@@ -253,9 +257,9 @@ export default function CreateModuleComponent({ match }) {
                           className="form-control form-control-sm"
                           id="sub_module_name"
                           name="sub_module_name"
-                          onKeyPress={(e) => {
-                            Validation.addressFieldOnly(e);
-                          }}
+                          // onKeyPress={(e) => {
+                          //   Validation.addressFieldOnly(e);
+                          // }}
                         />
                         <ErrorMessage
                           name="sub_module_name"
@@ -278,9 +282,9 @@ export default function CreateModuleComponent({ match }) {
                           id="description"
                           name="description"
                           rows="6"
-                          onKeyPress={(e) => {
-                            Validation.addressFieldOnly(e);
-                          }}
+                          // onKeyPress={(e) => {
+                          //   Validation.addressFieldOnly(e);
+                          // }}
                         />
                         <ErrorMessage
                           name="description"
@@ -315,12 +319,12 @@ export default function CreateModuleComponent({ match }) {
                   <button
                     type="submit"
                     className="btn btn-sm btn-primary"
-                    disabled={isSubmitting}
+                    // disabled={isSubmitting}
                   >
                     Submit
                   </button>
                   <Link
-                    to={`/${_base}/Module`}
+                    to={`/${_base}/SubModule`}
                     className="btn btn-sm btn-danger text-white"
                   >
                     Cancel

@@ -45,7 +45,7 @@ function ModuleComponent() {
   const columns = [
     {
       name: 'Action',
-      width: '5%',
+      width: '80px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -59,22 +59,22 @@ function ModuleComponent() {
         </div>
       )
     },
-    { name: 'Sr', width: '5%', selector: (row) => row.counter, sortable: true },
+    { name: 'Sr', width: '70px', selector: (row) => row.counter, sortable: true },
     {
       name: 'Module Name',
-      width: '15%',
+      width: '13%',
       selector: (row) => row.module_name,
       sortable: true
     },
     {
       name: 'Project Name',
-      width: '15%',
+      width: '13%',
       selector: (row) => row.project_name,
       sortable: true
     },
     {
       name: 'Status',
-      width: '10%',
+      width: '100px',
       selector: (row) => row.is_active,
       sortable: false,
       cell: (row) => (
@@ -90,13 +90,13 @@ function ModuleComponent() {
     },
     {
       name: 'Description',
-      width: '10%',
+      width: '120px',
       selector: (row) => row.description,
       sortable: true
     },
     {
       name: 'Remark',
-      width: '10%',
+      width: '120px',
       selector: (row) => row.remark,
       sortable: true
     },
@@ -136,7 +136,7 @@ function ModuleComponent() {
       .then((res) => {
         if (res.status === 200) {
           let counter = 1;
-          const temp = res.data.data;
+          const temp = res.data.data.data;
           for (const key in temp) {
             data.push({
               counter: counter++,

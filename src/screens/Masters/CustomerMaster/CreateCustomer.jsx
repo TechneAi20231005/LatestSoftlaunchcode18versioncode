@@ -189,6 +189,7 @@ export default function CreateCustomer({ match }) {
     formData.append('name', values.name);
     formData.append('pincode', values.pincode);
     formData.append('state_id', values.state_id);
+    formData.append('is_active', values.is_active);
 
     // Dispatch action with formData
     dispatch(postCustomerData(formData)).then((res) => {
@@ -293,7 +294,8 @@ export default function CreateCustomer({ match }) {
     pincode: '',
     country_id: '',
     state_id: '',
-    city_id: ''
+    city_id: '',
+    is_active: 1,
   };
   const fields = [
     {
@@ -359,11 +361,11 @@ export default function CreateCustomer({ match }) {
                           id="name"
                           name="name"
                           placeholder="Customer Name"
-                          maxLength={30}
-                          // required
-                          onKeyPress={(e) => {
-                            Validation.CharactersNumbersOnly(e);
-                          }}
+                          // maxLength={30}
+                          // // required
+                          // onKeyPress={(e) => {
+                          //   Validation.CharactersNumbersOnly(e);
+                          // }}
                         />
                         <ErrorMessage
                           name="name"
@@ -526,11 +528,11 @@ export default function CreateCustomer({ match }) {
                           className="form-control form-control-sm"
                           id="pincode"
                           name="pincode"
-                          minLength={6}
+                          // minLength={6}
                           maxLength={6}
-                          onKeyPress={(e) => {
-                            Validation.pincodeWithOutSpace(e);
-                          }}
+                          // onKeyPress={(e) => {
+                          //   Validation.pincodeWithOutSpace(e);
+                          // }}
                           // required
                           autoComplete="off"
                         />

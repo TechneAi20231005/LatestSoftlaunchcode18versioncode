@@ -88,14 +88,18 @@ export default function EditModuleComponent({ match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            history(
-              {
-                pathname: `/${_base}/Module`
-              },
-              {
-                state: { alert: { type: 'success', message: res.data.message } }
-              }
-            );
+                setTimeout(() => {
+                          history({pathname:`/${_base}/Module`})
+                        }, 500);
+                        setNotify({ type: 'success', message: res.data.message });
+            // history(
+            //   {
+            //     pathname: `/${_base}/Module`
+            //   },
+            //   {
+            //     state: { alert: { type: 'success', message: res.data.message } }
+            //   }
+            // );
           } else {
             setNotify({ type: 'danger', message: res.data.message });
           }

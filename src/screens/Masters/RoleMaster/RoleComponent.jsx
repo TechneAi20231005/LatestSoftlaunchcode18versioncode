@@ -194,7 +194,7 @@ function RoleComponent({ location }) {
     {
       name: 'role',
       label: 'Role name',
-      max: 100,
+      max: 25,
       required: true,
       alphaNumeric: true
     },
@@ -401,7 +401,7 @@ function RoleComponent({ location }) {
                         </label>
                         <div className="row">
                           <div className="col-md-2">
-                            <label className="form-check-label">
+                            <label className="form-check">
                               <Field
                                 type="radio"
                                 name="is_active"
@@ -413,7 +413,7 @@ function RoleComponent({ location }) {
                             </label>
                           </div>
                           <div className="col-md-2">
-                            <label className="form-check-label">
+                            <label className="form-check">
                               <Field
                                 type="radio"
                                 name="is_active"

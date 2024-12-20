@@ -341,6 +341,7 @@ function StateComponent() {
                       </label>
                       <Select
                         options={filteredCountryData}
+                        isClearable
                         id="country_id"
                         name="country_id"
                         defaultValue={
@@ -352,7 +353,7 @@ function StateComponent() {
                         }
                         // value={values.country_id}
                         onChange={(option) =>
-                          setFieldValue('country_id', option?.value)
+                          setFieldValue('country_id', option?.value || null)
                         }
                       />
                       <ErrorMessage

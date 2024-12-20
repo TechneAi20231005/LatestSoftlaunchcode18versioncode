@@ -189,7 +189,7 @@ function ProjectComponent() {
     },
 
     {
-      name: 'created By',
+      name: 'Created By',
       width: '10%',
       selector: (row) => row.created_by,
       sortable: true,
@@ -215,7 +215,7 @@ function ProjectComponent() {
       )
     },
     {
-      name: 'created at',
+      name: 'Created at',
       width: '200px',
       selector: (row) => row.created_at,
       sortable: true,
@@ -307,8 +307,7 @@ function ProjectComponent() {
           // setShowLoaderModal(false);
 
           let counter = 0;
-          console.log(counter++);
-          const temp = res.data.data;
+          const temp = res.data.data?.data;
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -336,8 +335,8 @@ function ProjectComponent() {
 
               'Project Name': data[key].project_name,
               projectReviewer: data[key].projectReviewer,
-              is_active: data[key].is_active === 1 ? 'Active' : 'Deactive',
               description: data[key].description,
+              Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
               remark: data[key].remark,
               created_at: data[key].created_at,
               created_by: data[key].created_by,
@@ -410,6 +409,7 @@ function ProjectComponent() {
 
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by project name...."
@@ -450,7 +450,7 @@ function ProjectDropdown({ field, form, ...props }) {
     new ProjectService().getProject().then((res) => {
       if (res.status === 200) {
         let counter = 1;
-        const activeData = res.data.data.filter((d) => d.is_active === 1);
+        const activeData = res.data.data.data.filter((d) => d.is_active === 1);
         for (const key in activeData) {
           tempData.push({
             counter: counter++,

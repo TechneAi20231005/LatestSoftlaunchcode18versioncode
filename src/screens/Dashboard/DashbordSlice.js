@@ -118,7 +118,6 @@ export const DashbordSlice = createSlice({
       state.isLoading.getCityDataList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let cityData = payload.data.data?.data;
-        console.log('payload', payload?.data?.data?.data);
         let FilterCity = payload.data?.data?.data?.filter(
           (d) => d.is_active === 1
         );
@@ -280,7 +279,6 @@ export const DashbordSlice = createSlice({
             label: i.country
           }));
         state.filteredCountryData = filteredCountryData;
-        console.log('filteredCountryData', payload.data.data.data);
       }
     });
     builder.addCase(getCountryDataSort.rejected, (state) => {
@@ -421,7 +419,6 @@ export const DashbordSlice = createSlice({
           (d) => d.is_active == 1
         );
         state.activeState = activeState;
-        console.log('activeState', activeState);
 
         state.states = payload.data.data.data.filter((d) => d.is_active === 1);
         state.status = 'succeded';
@@ -429,7 +426,6 @@ export const DashbordSlice = createSlice({
         state.showLoaderModal = false;
 
         state.filteredStateData = filteredStateData;
-        console.log('filteredStateData', filteredStateData);
       }
     });
     builder.addCase(getStateDataSort.rejected, (state) => {
@@ -748,8 +744,8 @@ export const DashbordSlice = createSlice({
       state.isLoading.getCustomerList = false;
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let getAllCustomerData = payload.data.data;
-        let getCustomerData = payload.data.data
+        let getAllCustomerData = payload.data.data?.data;
+        let getCustomerData = payload.data.data?.data
           .filter((d) => d.is_active == 1)
           .map((d) => ({ value: d.id, label: d.name }));
         state.status = 'succeded';
@@ -761,7 +757,7 @@ export const DashbordSlice = createSlice({
           state.getCustomerData = [...getCustomerData];
         }
       }
-      let temp = payload.data.data;
+      let temp = payload.data.data?.data;
       let exportCustomerData = [];
       for (const i in temp) {
         exportCustomerData.push({
@@ -796,7 +792,7 @@ export const DashbordSlice = createSlice({
     builder.addCase(getCustomerType.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let customerTypeData = payload.data.data
+        let customerTypeData = payload.data.data?.data
           .filter((d) => d.is_active == 1)
           .map((d) => ({ label: d.type_name, value: d.id }));
         state.status = 'succeded';

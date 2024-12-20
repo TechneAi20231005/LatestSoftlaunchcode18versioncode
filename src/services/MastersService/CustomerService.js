@@ -1,16 +1,17 @@
-import axios from "axios";
-import { userSessionData } from "../../settings/constants";
-import { masterURL } from "../../settings/constants";
+import axios from 'axios';
+import { userSessionData } from '../../settings/constants';
+import { masterURL } from '../../settings/constants';
 
 const _URL = masterURL.customer;
 
 // const _getAllCustomer=_URL+"/getAllCustomer/"+userSessionData.tenantId;
-const _getAllCustomer = _URL + "/getAllCustomer";
-const _createCustomer = _URL + "/createCustomer";
-const _updateCustomer = _URL + "/updateCustomer/";
-const _getCustomerById = _URL + "/getCustomerById/";
+// const _getAllCustomer = _URL + "/getAllCustomer";
+const _getAllCustomer = _URL + '/getData?export=1';
+const _createCustomer = _URL + '/postData';
+const _updateCustomer = _URL + '/postData/';
+const _getCustomerById = _URL + '/getData/';
 
-export function getCurrentDate(separator = "-") {
+export function getCurrentDate(separator = '-') {
   let newDate = new Date();
   let day = newDate.getDate();
   let month = newDate.getMonth() + 1;
@@ -26,12 +27,12 @@ export function getFormattedDate(date, format, separator) {
   let day = newDate.getDate();
   let month = newDate.getMonth() + 1;
   let year = newDate.getFullYear();
-  if (format === "dd-mm-yyyy") {
+  if (format === 'dd-mm-yyyy') {
     return `${day < 10 ? `0${day}` : `${day}`}${separator}${
       month < 10 ? `0${month}` : `${month}`
     }${separator}${year}`;
   }
-  if (format === "yyyy-mm-dd") {
+  if (format === 'yyyy-mm-dd') {
     return `${year}${separator}${
       month < 10 ? `0${month}` : `${month}`
     }${separator}${day < 10 ? `0${day}` : `${day}`}`;
@@ -48,7 +49,7 @@ export function getDateTime() {
   let min = now.getMinutes() >= 10 ? now.getMinutes() : `0${now.getMinutes()}`;
   let sec = now.getSeconds() >= 10 ? now.getSeconds() : `0${now.getSeconds()}`;
   var datetime =
-    year + "-" + month + "-" + day + " " + hour + ":" + min + ":" + sec;
+    year + '-' + month + '-' + day + ' ' + hour + ':' + min + ':' + sec;
   return datetime;
 }
 
@@ -61,7 +62,7 @@ export function getTime() {
   let hour = now.getHours() >= 10 ? now.getHours() : `0${now.getHours()}`;
   let min = now.getMinutes() >= 10 ? now.getMinutes() : `0${now.getMinutes()}`;
   let sec = now.getSeconds() >= 10 ? now.getSeconds() : `0${now.getSeconds()}`;
-  var datetime = hour + ":" + min + ":" + sec;
+  var datetime = hour + ':' + min + ':' + sec;
   return datetime;
 }
 
@@ -71,32 +72,32 @@ export default class CustomerService {
   // }
 
   getCustomer() {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.get(_getAllCustomer, config);
   }
 
   postCustomer(payload) {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-    payload.append("tenant_id", userSessionData.tenantId);
-    payload.append("created_by", userSessionData.userId);
-    payload.append("created_at", userSessionData.time);
+    payload.append('tenant_id', userSessionData.tenantId);
+    payload.append('created_by', userSessionData.userId);
+    payload.append('created_at', userSessionData.time);
     // return axios.post(_createCustomer,payload)
 
     return axios.post(_createCustomer, payload, config);
@@ -106,31 +107,31 @@ export default class CustomerService {
   //     return axios.get(_getCustomerById+id);
   // }
   getCustomerById(id) {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.get(_getCustomerById + id, config);
   }
 
   updateCustomer(id, payload) {
-    payload.append("updated_by", userSessionData.userId);
-    payload.append("updated_at", getDateTime());
+    payload.append('updated_by', userSessionData.userId);
+    payload.append('updated_at', getDateTime());
     // return axios.post(_updateCustomer+id,payload)
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.post(_updateCustomer + id, payload, config);

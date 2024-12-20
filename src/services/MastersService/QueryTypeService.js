@@ -184,15 +184,18 @@ import { userSessionData } from '../../settings/constants';
 import { masterURL } from '../../settings/constants';
 
 const _URL = masterURL.queryType;
+const _URLGetAllQueryType = masterURL.getAllQueryGroup;
 
-const _getAllQueryType = _URL + '/getAllQueryType1';
-const _getAllQueryGroup = _URL + '/getAllQueryGroup';
-const _postQueryType = _URL + '/createQueryType1';
-const _postQueryGroup = _URL + '/createQueryGroup';
+const _getAllQueryType = `${_URL}/getData?export=1`;
+// _URL + '/getAllQueryType1';
+const _getAllQueryGroup = `${_URLGetAllQueryType}/getData?export=1`;
+//  _URL + '/getAllQueryGroup';
+const _postQueryType = `${_URL}/postData`;
+const _postQueryGroup = `${_URLGetAllQueryType}/postData`;
 const _getQueryTypeById = _URL + '/getQueryTypeById/';
-const _updateQueryType = _URL + '/updateQueryType1/';
+const _updateQueryType = `${_URL}/postData/`;
 const _getQueryTypeForm = _URL + '/getQueryTypeForm';
-const _updateQueryGroup = _URL + '/updateQueryGroup/';
+const _updateQueryGroup = `${_URLGetAllQueryType}/postData/`;
 
 export function getDateTime() {
   var now = new Date();

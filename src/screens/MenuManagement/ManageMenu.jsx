@@ -353,7 +353,7 @@ const ManageMenu = ({ match }) => {
                 Submit
               </button>
               <Link
-                to={`/${_base}/MenuManage`}
+                to={`/${_base}/Role`}
                 className="btn btn-danger text-white"
               >
                 Cancel

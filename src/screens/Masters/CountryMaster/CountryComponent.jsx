@@ -11,7 +11,7 @@ import * as Validation from '../../../components/Utilities/Validation';
 import Alert from '../../../components/Common/Alert';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import {
   getCountryData,
   getRoles,
@@ -214,7 +214,10 @@ function CountryComponent() {
       name: 'country',
       label: 'Country name',
       max: 100,
+      min: 3,
       required: true,
+      min: 3,
+      max: 25,
       alphaNumeric: true
     },
     {
@@ -286,7 +289,6 @@ function CountryComponent() {
           />
         )}
       </div>
-
       <Modal centered show={modal.showModal}>
         <Formik
           initialValues={{
@@ -294,9 +296,9 @@ function CountryComponent() {
             country: modal.modalData?.country || '',
             remark: modal.modalData?.remark || '',
             is_active:
-              modal.modalData?.is_active !== undefined
-                ? modal.modalData.is_active
-                : 1
+              modal?.modalData?.is_active !== undefined
+                ? String(modal?.modalData?.is_active)
+                : '1'
           }}
           validationSchema={validationSchema}
           onSubmit={(values) => {
@@ -333,8 +335,8 @@ function CountryComponent() {
                         type="text"
                         className="form-control form-control-sm"
                         id="country"
-                        maxLength={25}
-                        minLength={4}
+                        // maxLength={25}
+                        // minLength={4}
                         defaultValue={
                           modal.modalData ? modal.modalData.country : ''
                         }
@@ -350,9 +352,14 @@ function CountryComponent() {
                         //   return false;
                         // }}
                       />
-                      {errors.country && touched.country ? (
-                        <div className="text-danger">{errors.country}</div>
-                      ) : null}
+                      {/* {errors.country && touched.country ? (
+                        <small className="text-danger">{errors.country}</small>
+                      ) : null} */}
+                      <ErrorMessage
+                        name="country"
+                        component="small"
+                        className="text-danger"
+                      />
                     </div>
                     <div className="col-sm-12">
                       <label className="form-label font-weight-bold">
@@ -364,7 +371,7 @@ function CountryComponent() {
                         className="form-control form-control-sm"
                       />
                       {errors.remark && touched.remark ? (
-                        <div className="text-danger">{errors.remark}</div>
+                        <small className="text-danger">{errors.remark}</small>
                       ) : null}
                     </div>
                     {modal.modalData && (
