@@ -48,9 +48,9 @@ function CustomerTypeComponent() {
   const modal = useSelector(
     (customerMasterSlice) => customerMasterSlice.customerTypeMaster.modal
   );
-  const notify = useSelector(
-    (customerMasterSlice) => customerMasterSlice.customerTypeMaster.notify
-  );
+  // const notify = useSelector(
+  //   (customerMasterSlice) => customerMasterSlice.customerTypeMaster.notify
+  // );
 
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 12)
@@ -262,7 +262,7 @@ function CustomerTypeComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
+      {/* {notify && <Alert alertData={notify} />} */}
       <PageHeader
         headerTitle="Customer Type Master"
         renderRight={() => {

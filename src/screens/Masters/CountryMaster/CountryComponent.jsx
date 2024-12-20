@@ -11,7 +11,7 @@ import * as Validation from '../../../components/Utilities/Validation';
 import Alert from '../../../components/Common/Alert';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { Formik, Form, Field } from 'formik';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import {
   getCountryData,
   getRoles,
@@ -215,6 +215,8 @@ function CountryComponent() {
       label: 'Country name',
       max: 100,
       required: true,
+      min: 3,
+      max: 25,
       alphaNumeric: true
     },
     {
@@ -286,7 +288,6 @@ function CountryComponent() {
           />
         )}
       </div>
-      {console.log('modal', modal.modalData)}
       <Modal centered show={modal.showModal}>
         <Formik
           initialValues={{
@@ -333,8 +334,8 @@ function CountryComponent() {
                         type="text"
                         className="form-control form-control-sm"
                         id="country"
-                        maxLength={25}
-                        minLength={4}
+                        // maxLength={25}
+                        // minLength={4}
                         defaultValue={
                           modal.modalData ? modal.modalData.country : ''
                         }
@@ -350,9 +351,14 @@ function CountryComponent() {
                         //   return false;
                         // }}
                       />
-                      {errors.country && touched.country ? (
+                      {/* {errors.country && touched.country ? (
                         <small className="text-danger">{errors.country}</small>
-                      ) : null}
+                      ) : null} */}
+                      <ErrorMessage
+                        name="country"
+                        component="small"
+                        className="text-danger"
+                      />
                     </div>
                     <div className="col-sm-12">
                       <label className="form-label font-weight-bold">
