@@ -31,6 +31,7 @@ export const SettingSlice = createSlice({
       state.showLoaderModal = action.payload;
     },
     handleGeneralModal: (state, action) => {
+      state.notify = null;
       state.modal = action.payload;
     },
     handleModalClose: (state, action) => {
