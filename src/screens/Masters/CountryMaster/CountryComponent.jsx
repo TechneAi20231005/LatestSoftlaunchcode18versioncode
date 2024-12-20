@@ -214,6 +214,7 @@ function CountryComponent() {
       name: 'country',
       label: 'Country name',
       max: 100,
+      min: 3,
       required: true,
       min: 3,
       max: 25,

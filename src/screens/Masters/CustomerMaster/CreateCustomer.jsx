@@ -361,11 +361,11 @@ export default function CreateCustomer({ match }) {
                           id="name"
                           name="name"
                           placeholder="Customer Name"
-                          maxLength={30}
-                          // required
-                          onKeyPress={(e) => {
-                            Validation.CharactersNumbersOnly(e);
-                          }}
+                          // maxLength={30}
+                          // // required
+                          // onKeyPress={(e) => {
+                          //   Validation.CharactersNumbersOnly(e);
+                          // }}
                         />
                         <ErrorMessage
                           name="name"

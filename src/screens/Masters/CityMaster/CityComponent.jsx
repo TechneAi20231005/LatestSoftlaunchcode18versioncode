@@ -185,7 +185,7 @@ function CityComponent() {
     {
       name: 'city',
       label: 'City name',
-      max: 50,
+      max: 100,
       min: 3,
       required: true,
       alphaNumeric: true
