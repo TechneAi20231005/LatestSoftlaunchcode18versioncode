@@ -97,6 +97,8 @@ export const customerMasterSlice = createSlice({
       state.isLoading.customerTypeList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
+        state.notify = null;
+
         state.notify = { type: 'success', message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
 
@@ -106,6 +108,8 @@ export const customerMasterSlice = createSlice({
         state.showLoaderModal = false;
         state.postCustomerData = postCustomerData;
       } else {
+        state.notify = null;
+
         state.notify = { type: 'danger', message: payload.data.message };
       }
     });
@@ -125,7 +129,10 @@ export const customerMasterSlice = createSlice({
       state.isLoading.customerTypeList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
+        state.notify = null;
+
         state.notify = { type: 'success', message: payload.data.message };
+
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
 
         let updateCustomerData = payload.data.data;
@@ -133,6 +140,8 @@ export const customerMasterSlice = createSlice({
         state.showLoaderModal = false;
         state.updateCustomerData = updateCustomerData;
       } else {
+        state.notify = null;
+
         state.notify = { type: 'danger', message: payload.data.message };
       }
     });

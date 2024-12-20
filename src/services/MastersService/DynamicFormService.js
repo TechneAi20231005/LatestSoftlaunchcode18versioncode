@@ -1,112 +1,96 @@
-import axios from "axios";
+import axios from 'axios';
 
-import {userSessionData} from '../../settings/constants';
-import {masterURL} from '../../settings/constants';
+import { userSessionData } from '../../settings/constants';
+import { masterURL } from '../../settings/constants';
 
+const _URL = masterURL.dynamicForm;
 
+const _getAllDynamicForm = `${_URL}/getData?export=1`;
+// _URL+"/getAllDynamicForm";
 
-const _URL=masterURL.dynamicForm;
+const _createDynamicForm = _URL + '/createDynamicForm';
+const _updateDynamicForm = _URL + '/updateDynamicForm/';
+const _getDynamicFormById = _URL + '/getDynamicFormById/';
 
-const _getAllDynamicForm=_URL+"/getAllDynamicForm";
+export default class DynamicFormService {
+  //     getDynamicForm(){
+  //        return axios.get(_getAllDynamicForm);
+  //    }
 
-const _createDynamicForm=_URL+"/createDynamicForm";
-const _updateDynamicForm=_URL+"/updateDynamicForm/";
-const _getDynamicFormById=_URL+"/getDynamicFormById/";
-
-
-
-
-export default class DynamicFormService{
-
-//     getDynamicForm(){
-//        return axios.get(_getAllDynamicForm);
-//    }
-
-getDynamicForm() {
-    const token = localStorage.getItem("jwt_token");
+  getDynamicForm() {
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.get(_getAllDynamicForm, config);
   }
 
+  postDynamicForm(payload) {
+    payload = {
+      ...payload,
+      tenant_id: userSessionData.tenantId,
+      created_by: userSessionData.userId,
+      created_at: userSessionData.time
+    };
 
+    // return axios.post(_createDynamicForm,payload,{ 'Content-Type':"application/json"  })
+    const token = localStorage.getItem('jwt_token');
 
-    postDynamicForm(payload){
-        payload={...payload,'tenant_id':userSessionData.tenantId,
-                    'created_by':userSessionData.userId,
-                    'created_at':userSessionData.time
-                }
-
-
-        // return axios.post(_createDynamicForm,payload,{ 'Content-Type':"application/json"  })
-        const token = localStorage.getItem("jwt_token");
-
-        const config = {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        };
-
-        return axios.post(_createDynamicForm,payload, config);
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
       }
+    };
 
+    return axios.post(_createDynamicForm, payload, config);
+  }
 
-//     getDynamicFormById(id){
-//        return axios.get(_getDynamicFormById+id);
-//    }
-getDynamicFormById(id) {
-    const token = localStorage.getItem("jwt_token");
+  //     getDynamicFormById(id){
+  //        return axios.get(_getDynamicFormById+id);
+  //    }
+  getDynamicFormById(id) {
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
-    return axios.get(_getDynamicFormById+id, config);
+    return axios.get(_getDynamicFormById + id, config);
   }
 
+  updateDynamicForm(id, payload) {
+    payload = {
+      ...payload,
+      updated_by: userSessionData.userId,
+      updated_at: userSessionData.time
+    };
+    // return axios.post(_updateDynamicForm+id,payload,{'Content-Type':"application/json"})
 
-
-
-
-
-
-
-
-
-    updateDynamicForm(id,payload){
-        payload={...payload,'updated_by':userSessionData.userId,'updated_at':userSessionData.time}
-        // return axios.post(_updateDynamicForm+id,payload,{'Content-Type':"application/json"})
-
-
-        const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
-    return axios.post(_updateDynamicForm+id,payload ,config);
+    return axios.post(_updateDynamicForm + id, payload, config);
   }
-
-   }
-
-
+}
 
 // export function getData(){
 //     return axios.get(_URL)

@@ -307,9 +307,7 @@ function ProjectComponent() {
           // setShowLoaderModal(false);
 
           let counter = 0;
-          console.log(counter++);
           const temp = res.data.data?.data;
-          console.log('res', res.data.data.data);
           for (const key in temp) {
             data.push({
               counter: counter++,

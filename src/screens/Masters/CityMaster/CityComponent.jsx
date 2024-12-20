@@ -410,13 +410,6 @@ function CityComponent() {
                 </Modal.Title>
               </Modal.Header>
               <Modal.Body>
-                {console.log(
-                  modal.modalData
-                    ? filteredCountryData.find(
-                        (d) => modal.modalData.country_id === d.value
-                      )
-                    : ''
-                )}
                 <div className="deadline-form">
                   <div className="row g-3 mb-3">
                     {/* Select Country */}
@@ -461,7 +454,10 @@ function CityComponent() {
                         id="state_id"
                         isClearable={true}
                         onChange={(selectedOption) =>
-                          setFieldValue('state_id', selectedOption?.value || null)
+                          setFieldValue(
+                            'state_id',
+                            selectedOption?.value || null
+                          )
                         }
                         defaultValue={
                           modal.modalData
@@ -472,11 +468,10 @@ function CityComponent() {
                         }
                         value={
                           values.state_id
-                          ? stateDropdownData?.find(
-                              (item) =>
-                                item.value === Number(values.state_id)
-                            )
-                          : null // Bind to Formik's state_id
+                            ? stateDropdownData?.find(
+                                (item) => item.value === Number(values.state_id)
+                              )
+                            : null // Bind to Formik's state_id
                         }
                         // value={values.state_id}
                       />

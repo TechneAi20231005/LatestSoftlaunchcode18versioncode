@@ -32,12 +32,6 @@ function JobRoleMasterComponent() {
 
   const columns = [
     {
-      name: 'Sr.No.',
-      selector: (row, index) => index + 1,
-      sortable: false,
-      width: '70px'
-    },
-    {
       name: 'action',
       selector: (row) => (
         <i
@@ -53,6 +47,20 @@ function JobRoleMasterComponent() {
       ),
       sortable: false,
       width: '70px'
+    },
+
+    {
+      name: 'Sr.No.',
+      selector: (row, index) => index + 1,
+      sortable: false,
+      width: '70px'
+    },
+
+    {
+      name: 'Job Role Title',
+      selector: (row) => row.job_role,
+      sortable: false,
+      width: '200px'
     },
     {
       name: 'Status',
@@ -73,12 +81,6 @@ function JobRoleMasterComponent() {
         </div>
       ),
       width: '100px'
-    },
-    {
-      name: 'Job Role Title',
-      selector: (row) => row.job_role,
-      sortable: false,
-      width: '200px'
     },
     {
       name: 'Created At',
