@@ -32,8 +32,6 @@ function GeneralSettings() {
   //initial  state
   const dispatch = useDispatch();
 
-  //redux state
-
   const getAllgeneralSettingData = useSelector(
     (SettingSlice) => SettingSlice.generalSetting.getAllgeneralSettingData
   );
@@ -53,7 +51,6 @@ function GeneralSettings() {
   );
 
   //local state
-  // const [data, setData] = useState(null);
   const data = null;
   const exportData = null;
   const [user, setUser] = useState(null);
@@ -78,10 +75,8 @@ function GeneralSettings() {
     setFilteredData(filteredList);
   }, [getAllgeneralSettingData, searchTerm]);
 
-  // Function to handle reset button click
   const handleReset = () => {
     setSearchTerm('');
-    // setFilteredData(data);
   };
 
   //Data Table columns
@@ -130,52 +125,6 @@ function GeneralSettings() {
     });
   }, [dispatch]);
 
-  // const handleForm = (id) => async (e) => {
-  // e.preventDefault();
-
-  // const userDet = userDetail?.current?.props?.value;
-  // const usersettingValue = userValue?.current?.value;
-
-  // const settingName = useSetting?.current?.value;
-  // const remark = useRemark?.current?.value;
-  // let array = [];
-
-  // // Add the value 0 to the array
-  // array.push(0);
-
-  // // Assign the array to form.user_id
-
-  // let arrayOfId = [];
-  // for (let i = 0; i < userDet?.length; i++) {
-  //   arrayOfId.push(userDet[i].value);
-  // }
-
-  // const form = {};
-
-  // if (
-  //   settingName === 'Time Regularization after task complete' &&
-  //   arrayOfId?.length === 0
-  // ) {
-  //   form.user_id = array;
-  // } else {
-  //   form.user_id = arrayOfId;
-  // }
-
-  // form.setting_name = settingName;
-  // form.remark = remark;
-  // form.value = usersettingValue;
-  // form.is_active = true;
-
-  //   if (!id) {
-  //     dispatch(postGeneralSettingData(form));
-  //   } else {
-  //     dispatch(updateGeneralSettingData({ id, payload: form })).then((res) => {
-  //       if (res?.payload?.data?.status === 1) {
-  //         dispatch(getGeneralSettingData());
-  //       }
-  //     });
-  //   }
-  // };
   //columns
   const columns = [
     {
@@ -224,7 +173,6 @@ function GeneralSettings() {
       width: '20%',
       cell: (row) => {
         let arr = [];
-        // eslint-disable-next-line array-callback-return
         User.filter((el) => {
           if (row.user_id.includes(el.value)) {
             arr.push(el.label);
@@ -311,13 +259,6 @@ function GeneralSettings() {
     }
   ];
 
-  // const handleKeyPress = (event) => {
-  //   // Prevent typing more than one character
-  //   if (event.target.value.length >= 1) {
-  //     event.preventDefault();
-  //   }
-  // };
-
   const fields = [
     {
       name: 'setting_name',
@@ -351,14 +292,6 @@ function GeneralSettings() {
 
   const validationSchema = CustomValidation(fields);
 
-  // let valueof = modal.modalData
-  //   ? filteredCountryData.find((d) => modal.modalData.country_id === d.value)
-  //   : '';
-
-  // let stateValue = modal.modalData
-  //   ? filteredStateData?.find((d) => modal.modalData.state_id === d.value)
-
-  //   : '';
   const userData =
     modal?.modalData?.user_id &&
     user?.filter((d) => modal?.modalData?.user_id?.includes(d.value));
@@ -470,29 +403,7 @@ function GeneralSettings() {
         )}
       </div>
 
-      {/* <Modal show={showLoaderModal} centered>
-        <Modal.Body className="text-center">
-          <Spinner animation="grow" variant="primary" />
-          <Spinner animation="grow" variant="secondary" />
-          <Spinner animation="grow" variant="success" />
-          <Spinner animation="grow" variant="danger" />
-          <Spinner animation="grow" variant="warning" />
-          <Spinner animation="grow" variant="info" />
-          <Spinner animation="grow" variant="dark" />
-        </Modal.Body>
-      </Modal> */}
-
-      <Modal
-        centered
-        show={modal.showModal}
-        // onHide={(e) => {
-        //   handleModal({
-        //     showModal: false,
-        //     modalData: "",
-        //     modalHeader: "",
-        //   });
-        // }}
-      >
+      <Modal centered show={modal.showModal}>
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
@@ -534,7 +445,7 @@ function GeneralSettings() {
                       />
                       <ErrorMessage
                         name="setting_name"
-                        component="div"
+                        component="small"
                         className="text-danger small"
                       />
                     </div>
@@ -551,7 +462,7 @@ function GeneralSettings() {
                       />
                       <ErrorMessage
                         name="value"
-                        component="div"
+                        component="small"
                         className="text-danger small"
                       />
                     </div>
@@ -578,7 +489,7 @@ function GeneralSettings() {
 
                         <ErrorMessage
                           name="user_id"
-                          component="div"
+                          component="small"
                           className="text-danger small"
                         />
                       </div>
@@ -596,7 +507,7 @@ function GeneralSettings() {
                       />
                       <ErrorMessage
                         name="remark"
-                        component="div"
+                        component="small"
                         className="text-danger small"
                       />
                     </div>
