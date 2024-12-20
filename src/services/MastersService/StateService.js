@@ -5,7 +5,7 @@ import { masterURL } from '../../settings/constants';
 const _URL = masterURL.state;
 
 const _allState = `${_URL}/getData?export=1`;
-const _allStateSort = `${_URL}/getData?type=1`;
+const _allStateSort = `${_URL}/getData?export=1`;
 
 const _postState = _URL + '/postData';
 const _getStateById = _URL + '/getStateById/';

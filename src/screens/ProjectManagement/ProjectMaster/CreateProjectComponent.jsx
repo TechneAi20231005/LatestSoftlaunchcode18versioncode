@@ -32,8 +32,6 @@ export default function CreateProjectComponent({ match }) {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 20)
   );
   const handleForm = async (values) => {
-
-    console.log(values,"values")
     const formData = new FormData();
     formData.append('customer_id', values.customer_id);
     formData.append('project_name', values.project_name);
@@ -41,9 +39,14 @@ export default function CreateProjectComponent({ match }) {
       formData?.append('project_owner[]', item?.value);
     });
     formData.append('logo', values.logo);
-    values?.project_reviewer.forEach((item) => {
-      formData?.append('project_reviewer[]', item?.value);
-    });
+    // if (values?.project_reviewer?.length > 0) {
+    //   values?.project_reviewer?.forEach((item) => {
+    //     formData.append('project_reviewer[]', item?.value || '');
+    //   });
+    // } else {
+    //   formData.append('project_reviewer[]', '');
+    // }
+
     formData.append('description', values.description);
     formData.append('git_url', values.git_url);
     formData.append('api_document_link', values.api_document_link);
@@ -84,52 +87,52 @@ export default function CreateProjectComponent({ match }) {
     // }
 
     // if (flag === 1) {
-      await new ProjectService()
-        .postProject(formData)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              history(
-                {
-                  pathname: `/${_base}/Project`
-                },
-                {
-                  state: {
-                    alert: { type: 'success', message: res.data.message }
-                  }
+    await new ProjectService()
+      .postProject(formData)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            history(
+              {
+                pathname: `/${_base}/Project`
+              },
+              {
+                state: {
+                  alert: { type: 'success', message: res.data.message }
                 }
-              );
-            } else {
-              setNotify({ type: 'danger', message: res.data.message });
-            }
-          } else {
-            setNotify({ type: 'danger', message: res.message });
-            new ErrorLogService().sendErrorLog(
-              'Module',
-              'Create_Module',
-              'INSERT',
-              res.message
-            );
-          }
-        })
-        .catch((error) => {
-          if (error.response) {
-            const { response } = error;
-            const { request, ...errorObject } = response || {};
-            setNotify({ type: 'danger', message: errorObject.data.message });
-            new ErrorLogService().sendErrorLog(
-              'Module',
-              'Create_Module',
-              'INSERT',
-              errorObject.data.message
+              }
             );
           } else {
-            console.error(
-              "Error object does not contain expected 'response' property:",
-              error
-            );
+            setNotify({ type: 'danger', message: res.data.message });
           }
-        });
+        } else {
+          setNotify({ type: 'danger', message: res.message });
+          new ErrorLogService().sendErrorLog(
+            'Module',
+            'Create_Module',
+            'INSERT',
+            res.message
+          );
+        }
+      })
+      .catch((error) => {
+        if (error.response) {
+          const { response } = error;
+          const { request, ...errorObject } = response || {};
+          setNotify({ type: 'danger', message: errorObject.data.message });
+          new ErrorLogService().sendErrorLog(
+            'Module',
+            'Create_Module',
+            'INSERT',
+            errorObject.data.message
+          );
+        } else {
+          console.error(
+            "Error object does not contain expected 'response' property:",
+            error
+          );
+        }
+      });
     // }
   };
 
@@ -140,7 +143,6 @@ export default function CreateProjectComponent({ match }) {
   const loadData = useCallback(async () => {
     await new CustomerService().getCustomer().then((res) => {
       if (res.status === 200) {
-        console.log(res?.data?.data);
         if (res.data.status === 1) {
           setCustomer(
             res.data.data?.data
@@ -220,12 +222,42 @@ export default function CreateProjectComponent({ match }) {
   };
   const fields = [
     { name: 'customer_id', label: 'Customer Name', required: true },
-    { name: 'project_name', label: 'Project Name', required: true, alphaNumeric: true, max: 100  },
+    {
+      name: 'project_name',
+      label: 'Project Name',
+      required: true,
+      alphaNumeric: true,
+      max: 100
+    },
     { name: 'project_owner', label: 'Project owner', isObject: true },
-    { name: 'description', label: 'Description', required: true, alphaNumeric: true, max: 1000 },
-    { name: 'git_url', label: 'git_url', required: false, alphaNumeric: true, max: 500 },
-    { name: 'api_document_link', label: 'api_document_link', required: false, alphaNumeric: true, max: 500 },
-    { name: 'remark', label: 'remark', required: false, alphaNumeric: true, max: 1000 },
+    {
+      name: 'description',
+      label: 'Description',
+      required: true,
+      alphaNumeric: true,
+      max: 1000
+    },
+    {
+      name: 'git_url',
+      label: 'git_url',
+      required: false,
+      alphaNumeric: true,
+      max: 500
+    },
+    {
+      name: 'api_document_link',
+      label: 'api_document_link',
+      required: false,
+      alphaNumeric: true,
+      max: 500
+    },
+    {
+      name: 'remark',
+      label: 'remark',
+      required: false,
+      alphaNumeric: true,
+      max: 1000
+    }
     // { name: 'logo', label: 'logo', required: false }
   ];
   const validationSchema = CustomValidation(fields);
@@ -242,7 +274,7 @@ export default function CreateProjectComponent({ match }) {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(values) => {
-              handleForm(values)
+              handleForm(values);
             }}
           >
             {({ setFieldValue, values }) => (
@@ -311,13 +343,11 @@ export default function CreateProjectComponent({ match }) {
                       <div className="col-sm-4">
                         {users && (
                           <Field
-                          component={Select}
+                            component={Select}
                             options={users}
                             id="project_owner"
                             name="project_owner"
-
                             onChange={(options) => {
-                              console.log(options, 'options');
                               setFieldValue('project_owner', options);
                             }}
                             // condition="CUSTOMER"
@@ -353,9 +383,8 @@ export default function CreateProjectComponent({ match }) {
                               // File size exceeds 2MB, notify the user and clear the input field
                               alert('File size must be less than 2MB.');
                               event.target.value = null; // Clear the input field
-
                             }
-                            setFieldValue('logo', event?.target?.files[0])
+                            setFieldValue('logo', event?.target?.files[0]);
                           }}
                           // onChange={handleFileChange}
                         />
@@ -379,12 +408,11 @@ export default function CreateProjectComponent({ match }) {
                       {ba && (
                         <div className="col-sm-4">
                           <Field
-                          component={Select}
+                            component={Select}
                             id="project_reviewer"
                             name="project_reviewer"
                             options={ba}
                             onChange={(options) => {
-                              console.log(options, 'options');
                               setFieldValue('project_reviewer', options);
                             }}
                             isMulti
@@ -401,7 +429,7 @@ export default function CreateProjectComponent({ match }) {
                       </label>
                       <div className="col-sm-10">
                         <Field
-                         as="textarea"
+                          as="textarea"
                           className="form-control form-control-sm"
                           id="description"
                           name="description"
@@ -411,7 +439,7 @@ export default function CreateProjectComponent({ match }) {
                           //   Validation.addressFieldOnly(e);
                           // }}
                         />
-                           <ErrorMessage
+                        <ErrorMessage
                           name="description"
                           component="small"
                           className="text-danger"
@@ -430,7 +458,7 @@ export default function CreateProjectComponent({ match }) {
                           id="git_url"
                           name="git_url"
                         />
-                          <ErrorMessage
+                        <ErrorMessage
                           name="git_url"
                           component="small"
                           className="text-danger"
@@ -449,7 +477,7 @@ export default function CreateProjectComponent({ match }) {
                           id="api_document_link"
                           name="api_document_link"
                         />
-                          <ErrorMessage
+                        <ErrorMessage
                           name="api_document_link"
                           component="small"
                           className="text-danger"
@@ -468,7 +496,7 @@ export default function CreateProjectComponent({ match }) {
                           id="remark"
                           name="remark"
                         />
-                           <ErrorMessage
+                        <ErrorMessage
                           name="remark"
                           component="small"
                           className="text-danger"

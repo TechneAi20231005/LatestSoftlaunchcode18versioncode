@@ -83,7 +83,9 @@ export const masterURL = {
   dynamicForm: _rewampApiUrl + 'dynamicFormMaster',
   template: _apiUrl + 'templateMaster',
   customerType: _rewampApiUrl + 'customerTypeMaster',
-  queryType: _apiUrl + 'queryTypeMaster',
+  queryType: _rewampApiUrl + 'queryTypeMaster/queryType',
+  getAllQueryGroup: _rewampApiUrl + 'queryTypeMaster/queryGroup',
+
   departmentMapping: _apiUrl + 'departmentMapping',
   moduleSetting: _apiUrl + 'moduleSetting',
   dynamicFormDropdownMaster: _apiUrl + 'dynamicFormDropdownMaster',

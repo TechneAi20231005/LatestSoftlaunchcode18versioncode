@@ -446,15 +446,14 @@ function QueryTypeComponent() {
       .then((res) => {
         if (res.data.status === 1) {
           setQueryGroupDropdown(
-            res.data.data
+            res.data.data.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.group_name }))
           );
         }
-
         if (res.status === 200) {
           let counter = 1;
-          const temp = res.data.data;
+          const temp = res.data.data.data;
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -664,7 +663,7 @@ function QueryTypeComponent() {
 
         // setDynamicForm(res.data.data.filter((d) => d.is_active === 1));
         setDynamicFormDropdown(
-          res.data.data
+          res.data.data.data
             .filter((d) => d.is_active === 1)
             .map((d) => ({ value: d.id, label: d.template_name }))
         );
@@ -693,7 +692,6 @@ function QueryTypeComponent() {
   };
 
   const handleForm = async (values, id) => {
-    console.log(values, id, 'formData');
     const formData = new FormData();
     formData.append('query_type_name', values.query_type_name);
     formData.append('form_id', values.form_id);
@@ -761,7 +759,7 @@ function QueryTypeComponent() {
           // }
         } else {
           formData.delete('is_active');
-          formData.append('is_active', isActive);
+          formData.append('is_active', values.is_active);
           const res = await new QueryTypeService().updateQueryType(
             id,
             formData
@@ -831,12 +829,10 @@ function QueryTypeComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-  console.log(modal.modalData, 'modal.modalData');
 
   let valueof = modal.modalData
     ? dynamicFormDropdown.find((d) => modal.modalData.form_id === d.value)
     : '';
-  console.log(valueof, 'valueof');
 
   const initialValues = {
     query_type_name: modal.modalData ? modal.modalData?.query_type_name : '',
@@ -848,9 +844,10 @@ function QueryTypeComponent() {
         }))
       : [],
     remark: modal.modalData ? modal.modalData?.remark : '',
+
     is_active:
-      modal.modalData?.is_active !== undefined
-        ? modal.modalData.is_active.toString()
+      modal?.modalData?.is_active !== undefined
+        ? String(modal?.modalData?.is_active)
         : '1'
   };
   const fields = [
@@ -862,14 +859,7 @@ function QueryTypeComponent() {
       max: 100
     },
     { name: 'form_id', label: 'Select Form', required: true },
-    { name: 'query_group_data', label: 'Query Group', isObject: true },
-    {
-      name: 'remark',
-      label: 'Remark',
-      max: 1000,
-      required: false,
-      alphaNumeric: true
-    }
+    { name: 'query_group_data', label: 'Query Group', isObject: true }
   ];
 
   const validationSchema = CustomValidation(fields);
@@ -1023,7 +1013,6 @@ function QueryTypeComponent() {
                             value={values.query_group_data}
                             // value={values.query_group_data}
                             onChange={(options) => {
-                              console.log(options, 'options');
                               setFieldValue('query_group_data', options);
                             }}
                           />
@@ -1083,7 +1072,7 @@ function QueryTypeComponent() {
                           className="form-control form-control-sm"
                           id="remark"
                           name="remark"
-                          maxLength={50}
+                          // maxLength={50}
                         />
                         <ErrorMessage
                           name="remark"
@@ -1098,7 +1087,7 @@ function QueryTypeComponent() {
                           <label className="form-label font-weight-bold">
                             Status: <Astrick color="red" size="13px" />
                           </label>
-                          <div className="row">
+                          {/* <div className="row">
                             <div className="col-md-2">
                               <div className="form-check">
                                 <Field
@@ -1123,6 +1112,50 @@ function QueryTypeComponent() {
                                   className="form-check-input"
                                   id="is_active_0"
                                   name="is_active"
+                                  value="0"
+                                />
+                                <label
+                                  className="form-check-label"
+                                  htmlFor="is_active_0"
+                                >
+                                  Deactive
+                                </label>
+                              </div>
+                            </div>
+                          </div> */}
+                          <div className="row">
+                            <div className="col-md-2">
+                              <div className="form-check">
+                                <Field
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="is_active"
+                                  id="is_active_1"
+                                  value="1"
+                                  defaultChecked={
+                                    modal.modalData &&
+                                    modal.modalData.is_active === 1
+                                      ? true
+                                      : !modal.modalData
+                                      ? true
+                                      : false
+                                  }
+                                />
+                                <label
+                                  className="form-check-label"
+                                  htmlFor="is_active_1"
+                                >
+                                  Active
+                                </label>
+                              </div>
+                            </div>
+                            <div className="col-md-2">
+                              <div className="form-check">
+                                <Field
+                                  className="form-check-input"
+                                  type="radio"
+                                  name="is_active"
+                                  id="is_active_0"
                                   value="0"
                                 />
                                 <label
