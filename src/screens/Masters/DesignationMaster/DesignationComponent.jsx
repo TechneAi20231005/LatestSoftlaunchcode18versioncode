@@ -293,9 +293,10 @@ function DesignationComponent() {
   const initialValues = {
     designation: modal.modalData?.designation || '',
     remark: modal.modalData?.remark || '',
-    is_active: modal.modalData?.is_active
-      ? String(modal.modalData.is_active)
-      : '1'
+    is_active:
+      modal.modalData?.is_active !== undefined
+        ? String(modal.modalData.is_active)
+        : '1'
   };
 
   return (
