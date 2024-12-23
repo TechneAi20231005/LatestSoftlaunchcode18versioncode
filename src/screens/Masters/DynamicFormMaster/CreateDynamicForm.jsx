@@ -36,8 +36,8 @@ import QueryTypeService from '../../../services/MastersService/QueryTypeService'
 
 function CreateDynamicForm() {
   const [notify, setNotify] = useState(null);
-  const [message, setMessage] = useState(false)
-  const [display, setDisplay] = useState('')
+  const [message, setMessage] = useState('');
+  const [display, setDisplay] = useState('');
 
   const mainJson = {
     inputWidth: 'col-sm-6',
@@ -435,10 +435,10 @@ function CreateDynamicForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!message.trim()) {
-      setDisplay("Form Name is Required");
-      return
+      setDisplay('Form Name is Required');
+      return;
     } else {
-      setDisplay(""); // Clear error
+      setDisplay(''); // Clear error
     }
     const data = {
       template_name: e.target.template_name.value,
@@ -550,15 +550,17 @@ function CreateDynamicForm() {
                           id="template_name"
                           // required
                           onChange={(e) => {
-                            console.log(e?.target?.value,"values")
-                            setMessage(e?.target?.value)
-                            setDisplay(false)
+                            console.log(e?.target?.value, 'values');
+                            setMessage(e?.target?.value);
+                            setDisplay(false);
                           }}
                           onKeyPress={(e) => {
                             Validation.CharactersNumbersOnly(e);
                           }}
                         />
-                          {display && <div className="text-danger mt-1">{display}</div>}
+                        {display && (
+                          <div className="text-danger mt-1">{display}</div>
+                        )}
                       </div>
                     </div>
 
@@ -640,7 +642,7 @@ function CreateDynamicForm() {
                                 <td>
                                   <select
                                     className="form-control form-control-sm"
-                                    required
+                                    required={message.trim()}
                                     key={idx}
                                     name="inputType"
                                     value={item.inputType}

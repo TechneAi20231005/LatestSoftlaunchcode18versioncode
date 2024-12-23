@@ -115,7 +115,7 @@ function GeneralSettings() {
     await new GeneralSettingService().getGeneralSetting().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          let data = [...res.data.data];
+          let data = [...res.data.data.data];
           let count = 1;
           for (let i = 0; i < data.length; i++) {
             data[i].counter = count++;
@@ -295,7 +295,6 @@ function GeneralSettings() {
   const userData =
     modal?.modalData?.user_id &&
     user?.filter((d) => modal?.modalData?.user_id?.includes(d.value));
-  console.log(userData, 'userdata');
 
   const initialValues = {
     setting_name: modal.modalData ? modal.modalData?.setting_name : '',

@@ -241,7 +241,7 @@ function DynamicFormDropdown(props) {
     new DynamicFormService().getDynamicForm().then((res) => {
       if (res.status === 200) {
         let counter = 1;
-        const data = res.data.data;
+        const data = res.data.data.data;
         for (const key in data) {
           tempData.push({
             counter: counter++,

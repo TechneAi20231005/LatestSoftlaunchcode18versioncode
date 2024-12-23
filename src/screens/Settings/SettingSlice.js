@@ -47,7 +47,7 @@ export const SettingSlice = createSlice({
       const { payload } = action;
       state.isLoading.getGeneralSettingList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let getAllgeneralSettingData = payload.data.data;
+        let getAllgeneralSettingData = payload.data.data.data;
 
         state.status = 'succeded';
         state.showLoaderModal = false;
