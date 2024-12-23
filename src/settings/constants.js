@@ -166,7 +166,7 @@ export const settingMasterUrl = {
   customerMapping: _apiUrl + 'customerMapping',
   moduleSetting: _apiUrl + 'moduleSetting',
   getModuleSetting: _apiUrl + 'module',
-  getGeneralSetting: _apiUrl + 'consolidatedView'
+  getGeneralSetting: _rewampApiUrl + 'consolidatedView'
 };
 
 export const connectorUrl = {

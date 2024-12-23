@@ -701,7 +701,7 @@ export const DashbordSlice = createSlice({
     builder.addCase(getAllRoles.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let getAllRoles = payload.data.data;
+        let getAllRoles = payload.data.data.data;
 
         state.status = 'succeded';
         state.showLoaderModal = false;

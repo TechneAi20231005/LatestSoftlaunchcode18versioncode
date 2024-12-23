@@ -8,9 +8,11 @@ const _URL = masterURL.dynamicForm;
 const _getAllDynamicForm = `${_URL}/getData?export=1`;
 // _URL+"/getAllDynamicForm";
 
-const _createDynamicForm = _URL + '/createDynamicForm';
-const _updateDynamicForm = _URL + '/updateDynamicForm/';
-const _getDynamicFormById = _URL + '/getDynamicFormById/';
+const _createDynamicForm = `${_URL}/postData`;
+// _URL + '/createDynamicForm';
+const _updateDynamicForm = `${_URL}/postData/`;
+const _getDynamicFormById = `${_URL}/getData/`;
+// _URL + '/getDynamicFormById/';
 
 export default class DynamicFormService {
   //     getDynamicForm(){

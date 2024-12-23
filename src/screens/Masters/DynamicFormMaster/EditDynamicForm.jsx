@@ -35,8 +35,8 @@ function EditDynamicForm() {
   const formId = id;
 
   const [data, setData] = useState();
-  const [message, setMessage] = useState("");
-  const [display, setDisplay] = useState("");
+  const [message, setMessage] = useState('');
+  const [display, setDisplay] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -409,10 +409,10 @@ function EditDynamicForm() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!message.trim()) {
-      setDisplay("Form Name is Required");
+      setDisplay('Form Name is Required');
       return;
     } else {
-      setDisplay(""); // Clear error
+      setDisplay(''); // Clear error
     }
     const data = {
       template_name: e.target.template_name.value,
@@ -463,8 +463,8 @@ function EditDynamicForm() {
     const res = await dynamicFormService.getDynamicFormById(formId);
     if (res?.status === 200 && res?.data?.status === 1) {
       setData(res?.data?.data);
-      setMessage(res?.data?.data?.template_name)
-      setRows(res?.data?.data?.data);
+      setMessage(res?.data?.data?.template_name);
+      setRows(res?.data?.data.data);
     }
   }, [dispatch, formId]);
 
@@ -546,13 +546,15 @@ function EditDynamicForm() {
                           // required
                           onChange={(e) => {
                             setMessage(e.target.value);
-                            setDisplay("");
+                            setDisplay('');
                           }}
                           value={message}
 
                           // defaultValue={data && data.template_name}
                         />
-                         {display && <div className="text-danger mt-1">{display}</div>}
+                        {display && (
+                          <div className="text-danger mt-1">{display}</div>
+                        )}
                       </div>
                     </div>
 
@@ -691,7 +693,7 @@ function EditDynamicForm() {
                         </thead>
                         <tbody>
                           {rows &&
-                            rows.map((item, idx) => (
+                            rows?.map((item, idx) => (
                               <tr id={`addr_${idx}`} key={idx}>
                                 <td>{idx + 1}</td>
                                 <td>
@@ -922,7 +924,6 @@ function EditDynamicForm() {
                                       </select>
                                     </span>
                                   )}
-                                  {console.log(rows[idx].inputType)}
 
                                   {rows[idx].inputType === 'select-master' && (
                                     <span>
