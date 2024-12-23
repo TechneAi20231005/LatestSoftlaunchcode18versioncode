@@ -22,7 +22,7 @@ export default function CreateDropdownComponent() {
   const [data, setData] = useState([{ label: null, value: null }]);
 
   const [notify, setNotify] = useState(null);
-  const [message, setMessage] = useState(false)
+  const [message, setMessage] = useState('')
   const [display, setDisplay] = useState('')
 
   const dispatch = useDispatch();
@@ -33,7 +33,7 @@ export default function CreateDropdownComponent() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!message) {
+    if (!message?.trim()) {
       setDisplay("Dropdown Name is Required");
       return
     } else {
@@ -131,7 +131,7 @@ export default function CreateDropdownComponent() {
                       Validation.CharactersNumbersOnly(e);
                     }}
                     maxLength={100}
-                    minLength={3}
+                    // minLength={3}
                     name="dropdown_name"
                     id="dropdown_name"
                     // required
@@ -167,7 +167,7 @@ export default function CreateDropdownComponent() {
                               type="text"
                               key={idx}
                               name="dropdown_values[]"
-                              required={!message ? false : true}
+                              required={message?.trim()}
                               id={`dropdown_values_${idx}`}
                               className="form-control form-control-sm"
                               onKeyPress={(e) => {

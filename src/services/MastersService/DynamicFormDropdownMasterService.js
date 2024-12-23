@@ -1,24 +1,21 @@
-import axios from "axios";
-import { masterURL } from "../../settings/constants";
-import { getDateTime } from "../../components/Utilities/Functions";
+import axios from 'axios';
+import { masterURL } from '../../settings/constants';
+import { getDateTime } from '../../components/Utilities/Functions';
 const _URL = masterURL.dynamicFormDropdownMaster;
 
 export default class DynamicFormDropdownMasterService {
   getAllDynamicFormDropdown() {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
-
-    return axios.get(
-      _URL + "/getAllDynamicFormDropdown" ,config
-    );
+    return axios.get(_URL + '/getData', config);
   }
 
   // getAllDynamicFormDropdown(){
@@ -37,90 +34,91 @@ export default class DynamicFormDropdownMasterService {
   // }
 
   getAllDynamicFormDropdownData(dropdown_id) {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.get(
-      _URL + "/getAllDynamicFormDropdownData/"+dropdown_id,config
+      _URL + '/getAllDynamicFormDropdownData/' + dropdown_id,
+      config
     );
   }
 
   getAllDropdown() {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
 
-    return axios.get(_URL + "/getAllDropdown", config);
+    return axios.get(_URL + '/getAllDropdown', config);
   }
 
   getDropdownByName(payload) {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.post(_URL + "/getDropdownByName", payload, config);
+    return axios.post(_URL + '/getDropdownByName', payload, config);
   }
   getDropdownById(dropdown_id) {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.get(_URL + "/getDropdownById/"+dropdown_id, config);
+    return axios.get(_URL + '/dropdownById/getData/' + dropdown_id, config);
   }
 
   updateDropdown(id, payload) {
-    payload.append("tenant_id", localStorage.getItem("tenant_id"));
-    payload.append("updated_by", localStorage.getItem("id"));
-    payload.append("updated_at", getDateTime());
-    const token = localStorage.getItem("jwt_token");
+    payload.append('tenant_id', localStorage.getItem('tenant_id'));
+    payload.append('updated_by', localStorage.getItem('id'));
+    payload.append('updated_at', getDateTime());
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.post(_URL + "/updateDropdown/"+id, payload, config);
+    return axios.post(_URL + '/postData/' + id, payload, config);
   }
 
   createDropdown(payload) {
-    payload.append("tenant_id", localStorage.getItem("tenant_id"));
-    payload.append("created_by", localStorage.getItem("id"));
-    payload.append("created_at", getDateTime());
-    const token = localStorage.getItem("jwt_token");
+    payload.append('tenant_id', localStorage.getItem('tenant_id'));
+    payload.append('created_by', localStorage.getItem('id'));
+    payload.append('created_at', getDateTime());
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.post(_URL + "/createDropdown", payload, config);
+    return axios.post(_URL + '/postData', payload, config);
   }
 
   // postUser(payload){
