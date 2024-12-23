@@ -88,7 +88,7 @@ export const masterURL = {
 
   departmentMapping: _apiUrl + 'departmentMapping',
   moduleSetting: _apiUrl + 'moduleSetting',
-  dynamicFormDropdownMaster: _apiUrl + 'dynamicFormDropdownMaster',
+  dynamicFormDropdownMaster: _rewampApiUrl + 'dynamicFormDropdownMaster',
   testingTypeMaster: _apiUrl + 'testingTypeMaster',
   taskTicketTypeMaster: _apiUrl + 'taskticketTypeMaster',
   sprintMaster: _apiUrl + 'sprintMaster',
