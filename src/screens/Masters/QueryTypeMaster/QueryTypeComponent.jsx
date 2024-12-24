@@ -846,10 +846,7 @@ function QueryTypeComponent() {
       : [],
     remark: modal.modalData ? modal.modalData?.remark : '',
 
-    is_active:
-      modal?.modalData?.is_active !== undefined
-        ? String(modal?.modalData?.is_active)
-        : '1'
+    is_active: String(modal.modalData.is_active) ?? '1'
   };
   const fields = [
     {

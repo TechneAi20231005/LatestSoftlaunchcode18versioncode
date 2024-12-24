@@ -242,10 +242,7 @@ function StateComponent() {
     country_id: valueof?.value || '',
     state: modal.modalData ? modal.modalData?.state : '',
     remark: modal.modalData?.remark || '',
-    is_active:
-      modal?.modalData?.is_active !== undefined
-        ? String(modal?.modalData?.is_active)
-        : '1'
+    is_active: String(modal?.modalData?.is_active) ?? '1'
   };
 
   return (
