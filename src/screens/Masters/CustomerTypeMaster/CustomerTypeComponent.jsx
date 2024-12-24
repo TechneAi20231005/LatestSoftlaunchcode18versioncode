@@ -236,10 +236,7 @@ function CustomerTypeComponent() {
   const initialValues = {
     type_name: modal.modalData?.type_name || '',
     remark: modal.modalData?.remark || '',
-    is_active:
-      modal.modalData?.is_active !== undefined
-        ? modal.modalData.is_active.toString()
-        : '1'
+    is_active: String(modal.modalData.is_active) ?? '1'
   };
   const fields = [
     {

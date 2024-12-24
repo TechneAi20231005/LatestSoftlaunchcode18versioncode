@@ -295,10 +295,7 @@ function CountryComponent() {
             id: modal.modalData?.id || '',
             country: modal.modalData?.country || '',
             remark: modal.modalData?.remark || '',
-            is_active:
-              modal?.modalData?.is_active !== undefined
-                ? String(modal?.modalData?.is_active)
-                : '1'
+            is_active: String(modal?.modalData?.is_active) ?? '1'
           }}
           validationSchema={validationSchema}
           onSubmit={(values) => {

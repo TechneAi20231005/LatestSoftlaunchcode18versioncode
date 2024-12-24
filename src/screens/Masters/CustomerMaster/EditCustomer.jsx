@@ -74,7 +74,6 @@ function EditCustomer() {
     await new CustomerType().getCustomerType().then((res) => {
       if (res.status === 200) {
         const data = res.data.data?.data;
-        console.log(data,"data>>>.")
         setCustomerType(
           data
             .filter((d) => d.is_active === 1)
@@ -359,7 +358,7 @@ function EditCustomer() {
     country_id: data?.country_id || '',
     state_id: data?.state_id || '',
     city_id: data?.city_id || '',
-    is_active: data?.is_active !== undefined ? String(data?.is_active) : '1'
+    is_active: String(data?.is_active) ?? '1'
   };
   const fields = [
     {
@@ -383,7 +382,13 @@ function EditCustomer() {
     { name: 'country_id', label: 'Country Name', required: true },
     { name: 'state_id', label: 'State Name', required: true },
     { name: 'city_id', label: 'City Name', required: true },
-    { name: 'remark', label: 'Remark', alphaNumeric: true, required: false, max: 1000, }
+    {
+      name: 'remark',
+      label: 'Remark',
+      alphaNumeric: true,
+      required: false,
+      max: 1000
+    }
   ];
 
   const validationSchema = CustomValidation(fields);

@@ -212,9 +212,7 @@ function RoleComponent({ location }) {
   const initialValues = {
     role: modal.modalData?.role || '',
     remark: modal.modalData?.remark || '',
-    is_active: modal.modalData?.is_active
-      ? String(modal.modalData.is_active)
-      : '1'
+    is_active: String(modal.modalData?.is_active) ?? '1'
   };
 
   const handleForm = async (values, id) => {
@@ -302,6 +300,7 @@ function RoleComponent({ location }) {
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
+        searchTerm={searchTerm}
         handleReset={handleReset}
         placeholder="Search by role...."
         exportFileName="Role Master Record"
