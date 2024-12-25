@@ -39,13 +39,13 @@ export default function CreateProjectComponent({ match }) {
       formData?.append('project_owner[]', item?.value);
     });
     formData.append('logo', values.logo);
-    // if (values?.project_reviewer?.length > 0) {
-    //   values?.project_reviewer?.forEach((item) => {
-    //     formData.append('project_reviewer[]', item?.value || '');
-    //   });
-    // } else {
-    //   formData.append('project_reviewer[]', '');
-    // }
+    if (values?.project_reviewer?.length > 0) {
+      values?.project_reviewer?.forEach((item) => {
+        formData.append('project_reviewer[]', item?.value || '');
+      });
+    } else {
+      formData.append('project_reviewer[]', '');
+    }
 
     formData.append('description', values.description);
     formData.append('git_url', values.git_url);
@@ -294,6 +294,7 @@ export default function CreateProjectComponent({ match }) {
                           // required
                           id="customer_id"
                           name="customer_id"
+                          isClearable={true}
                           onChange={(option) =>
                             setFieldValue('customer_id', option?.value)
                           }
