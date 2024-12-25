@@ -45,7 +45,7 @@ export const tenantmasterSlice = createSlice({
     builder.addCase(getAllTenant.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let getAllTenant = payload.data.data;
+        let getAllTenant = payload.data.data?.data;
         state.status = 'succeded';
         state.showLoaderModal = false;
         let count = 1;
@@ -90,7 +90,7 @@ export const tenantmasterSlice = createSlice({
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
-        let posttenantData = payload.data.data;
+        let posttenantData = payload.data.data?.data;
         state.status = 'succeded';
         state.showLoaderModal = false;
         state.posttenantData = posttenantData;
