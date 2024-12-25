@@ -82,7 +82,7 @@ export default function Header() {
     });
     new TenantService().getTenant().then((res) => {
       if (res.status === 200 && res.data.status === 1) {
-        const temp = res.data.data.filter((d) => d.is_active == 1);
+        const temp = res.data.data?.data?.filter((d) => d.is_active == 1);
         setTenantDropdown(
           temp.map((d) => ({ value: d.id, label: d.company_name }))
         );

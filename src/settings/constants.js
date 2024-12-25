@@ -70,7 +70,7 @@ export const menuUrl =
 
 export const masterURL = {
   user: _apiUrl + 'employeeMaster',
-  tenant: _apiUrl + 'tenantMaster',
+  tenant: _rewampApiUrl + 'tenantMaster',
   customer: _rewampApiUrl + 'customerMaster',
   employee: _rewampApiUrl + 'employeeMaster',
   country: _rewampApiUrl + 'countryMaster',
@@ -90,7 +90,7 @@ export const masterURL = {
   moduleSetting: _apiUrl + 'moduleSetting',
   dynamicFormDropdownMaster: _rewampApiUrl + 'dynamicFormDropdownMaster',
   testingTypeMaster: _apiUrl + 'testingTypeMaster',
-  taskTicketTypeMaster: _apiUrl + 'taskticketTypeMaster',
+  taskTicketTypeMaster: _rewampApiUrl + 'taskTicketTypeMaster',
   sprintMaster: _apiUrl + 'sprintMaster',
   projectMaster: _rewampApiUrl + 'projectMaster',
   moduleMaster: _rewampApiUrl + 'moduleMaster',
