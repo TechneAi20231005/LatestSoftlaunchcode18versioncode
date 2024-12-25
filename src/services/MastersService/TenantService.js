@@ -30,7 +30,7 @@ export default class TenantService {
         'Content-Type': 'application/json'
       }
     };
-    return axios.post(_URL + '/postData/', payload, config);
+    return axios.post(_URL + '/postData', payload, config);
   }
 
   getTenantById(id) {

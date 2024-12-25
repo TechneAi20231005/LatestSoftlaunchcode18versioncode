@@ -182,13 +182,13 @@ export default function CreateTenant() {
       if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
         navigate(`/${_base}/TenantMaster`);
         dispatch(getAllTenant());
-        // toast.success(res.payload.data.message, {
-        //   autoClose: 10000 // 10 seconds in milliseconds
-        // });
-        // } else {
-        //   toast.error(res.payload.data.message, {
-        //     autoClose: 10000 // 10 seconds in milliseconds
-        //   });
+        toast.success(res.payload.data.message, {
+          autoClose: 10000 // 10 seconds in milliseconds
+        });
+      } else {
+        toast.error(res.payload.data.message, {
+          autoClose: 10000 // 10 seconds in milliseconds
+        });
       }
     });
   };
