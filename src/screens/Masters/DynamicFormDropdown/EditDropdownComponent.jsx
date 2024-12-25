@@ -81,7 +81,7 @@ export default function EditDropdownComponent({ match }) {
               }
             );
 
-            dispatch(dynamicFormDropDownData());
+            // dispatch(dynamicFormDropDownData());
           } else {
             setNotify({ type: 'danger', message: res.data.message });
           }

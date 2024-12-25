@@ -129,7 +129,7 @@ export default function DynamicFormDropdownComponent() {
 
       if (res.status === 200) {
         let counter = 1;
-        const temp = res.data.data;
+        const temp = res.data.data?.data;
         const data = [];
         const exportTempData = [];
 
