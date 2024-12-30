@@ -59,7 +59,12 @@ function ModuleComponent() {
         </div>
       )
     },
-    { name: 'Sr', width: '70px', selector: (row) => row.counter, sortable: true },
+    {
+      name: 'Sr',
+      width: '70px',
+      selector: (row) => row.counter,
+      sortable: true
+    },
     {
       name: 'Module Name',
       width: '13%',
@@ -161,17 +166,16 @@ function ModuleComponent() {
           let exportData = [];
           for (const key in data) {
             exportData.push({
-              SrNo: exportData.length,
-
+              SrNo: exportData.length + 1,
+              Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
               module_name: data[key].module_name,
               project_name: data[key].project_name,
-              Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
+              description: data[key].description,
               remark: data[key].remark,
               updated_at: data[key].updated_at,
               updated_by: data[key].updated_by,
-              created_by: temp[key].created_by,
-
-              description: data[key].description
+              created_at: temp[key].created_at,
+              created_by: temp[key].created_by
             });
           }
           setExportData(exportData);

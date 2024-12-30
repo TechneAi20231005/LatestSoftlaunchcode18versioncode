@@ -214,10 +214,7 @@ function CityComponent() {
     state_id: stateValue?.value || '',
     city: modal.modalData?.city || '',
     remark: modal.modalData?.remark || '',
-    is_active:
-      modal.modalData?.is_active !== undefined
-        ? modal.modalData.is_active.toString()
-        : '1' // Default to "Active"
+    is_active: String(modal.modalData?.is_active) ?? '1'
   };
 
   const handleForm = async (values, id) => {
