@@ -344,6 +344,7 @@ const RequestModal = (props) => {
         onHide={props.hide}
         dialogClassName="modal-100w"
         size="xl"
+        backdrop="static"
         aria-labelledby="example-custom-modal-styling-title"
       >
         {notify && <Alert alertData={notify} />}

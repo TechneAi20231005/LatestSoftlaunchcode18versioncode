@@ -506,7 +506,7 @@ export default function TaskModal(props) {
   const assignUserRef = useRef();
   const handleForm = async (e) => {
     e.preventDefault();
-    setIsDisabled(true);
+    // setIsDisabled(true);
 
     // setLoading(true);
 
