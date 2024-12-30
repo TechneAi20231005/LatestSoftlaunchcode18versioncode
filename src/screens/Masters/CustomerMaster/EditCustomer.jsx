@@ -269,6 +269,7 @@ function EditCustomer() {
   };
 
   const handleCountryChange = (e) => {
+    if (!e || Object.entries(e).length === 0) return;
     setStateDropdown(
       state
         .filter((d) => d.country_id === e.value)
@@ -282,6 +283,7 @@ function EditCustomer() {
   };
 
   const handleStateChange = (e) => {
+    if (!e || Object.entries(e).length === 0) return;
     setCityDropdown(
       city
         .filter((d) => d.state_id === e.value)
@@ -345,7 +347,6 @@ function EditCustomer() {
   let customerdata =
     data &&
     customerType?.find((d) => d.value === Number(data.customer_type_id));
-  console.log(customerdata, 'customerdata');
 
   const initialValue = {
     name: data ? data?.name : '',
@@ -461,6 +462,7 @@ function EditCustomer() {
                               name="customer_type_id"
                               component={Select}
                               id="customer_type_id"
+                              isClearable={true}
                               onChange={(option) => {
                                 setFieldValue(
                                   'customer_type_id',
@@ -733,6 +735,7 @@ function EditCustomer() {
                                     option.value === Number(values.country_id)
                                 )
                               }
+                              isClearable={true}
                               onChange={(option) => {
                                 setFieldValue('state_id', null);
                                 setFieldValue('city_id', null);
@@ -779,7 +782,7 @@ function EditCustomer() {
                                     )
                                   : null // Ensure value is null if no match
                               }
-                              // defaultValue={}
+                              isClearable={true}
                               onChange={(option) => {
                                 console.log(option);
                                 setFieldValue('city_id', null);
@@ -831,6 +834,7 @@ function EditCustomer() {
                                     )
                                   : null // Ensure value is null if no match
                               }
+                              isClearable={true}
                               onChange={(option) => {
                                 setFieldValue('city_id', option?.value);
                               }}

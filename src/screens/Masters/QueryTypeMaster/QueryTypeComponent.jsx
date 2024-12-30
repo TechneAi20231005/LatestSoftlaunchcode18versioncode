@@ -995,9 +995,12 @@ function QueryTypeComponent() {
                                 )
                               : ''
                           }
-                          onChange={(option) =>
-                            setFieldValue('form_id', option?.value)
-                          }
+                          isClearable={true}
+                          onChange={(option) => {
+                            if (!option || Object.entries(option).length === 0)
+                              return;
+                            setFieldValue('form_id', option?.value);
+                          }}
                         />
                         <ErrorMessage
                           name="form_id"
@@ -1018,6 +1021,7 @@ function QueryTypeComponent() {
                             name="query_group_data"
                             isMulti
                             value={values.query_group_data}
+                            isClearable={true}
                             // value={values.query_group_data}
 
                             onChange={(options) => {

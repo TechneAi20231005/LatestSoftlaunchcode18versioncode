@@ -479,6 +479,7 @@ function CreateUserComponent({ match }) {
   }, [dispatch]);
 
   const handleDependentChange = (e, type) => {
+    if (!e || Object.entries(e).length === 0) return;
     if (type === 'COUNTRY') {
       setStateDropdownData(
         stateDropdown &&
@@ -1237,8 +1238,11 @@ function CreateUserComponent({ match }) {
                               ? orderedSelfRoleData
                               : orderedCustomerRoleData
                           }
+                          isClearable={true}
                           onChange={(e) => {
                             handleSelectRole(e);
+                            if (!e || Object.entries(e).length === 0) return;
+
                             if (e.value === '') {
                               setInputState({
                                 ...state,
@@ -1274,7 +1278,10 @@ function CreateUserComponent({ match }) {
                           id="designation_id"
                           name="designation_id"
                           options={sortDesignationDropdown}
+                          isClearable={true}
                           onChange={(event) => {
+                            if (!event || Object.entries(event).length === 0)
+                              return;
                             if (event.value === '') {
                               setInputState({
                                 ...state,
@@ -1314,8 +1321,10 @@ function CreateUserComponent({ match }) {
                           value={selectJobRole}
                           // options={filteredRoles}
                           options={jobRoleDropDown}
+                          isClearable={true}
                           onChange={(e) => {
                             handleSelectJobRole(e);
+                            if (!e || Object.entries(e).length === 0) return;
                             if (e.value === '') {
                               setInputState({
                                 ...state,
@@ -1415,6 +1424,7 @@ function CreateUserComponent({ match }) {
                           options={CountryData}
                           name="country_id"
                           id="country_id"
+                          isClearable={true}
                           onChange={(e) => handleDependentChange(e, 'COUNTRY')}
                         />
                       </div>
@@ -1430,7 +1440,7 @@ function CreateUserComponent({ match }) {
                           //     ? stateDropdown
                           //     : []
                           // }
-
+                          isClearable={true}
                           options={stateDropdownData}
                           name="state_id"
                           id="state_id"
@@ -1453,6 +1463,7 @@ function CreateUserComponent({ match }) {
                           options={cityDropdownData && cityDropdownData}
                           name="city_id"
                           id="city_id"
+                          isClearable={true}
                           onChange={(e) => setCityName(e)}
                           defaultValue={cityName ? cityName : ''}
                         />
@@ -1519,9 +1530,9 @@ function CreateUserComponent({ match }) {
                             )}
                             required
                             style={{ zIndex: '100' }}
-                            onChange={(selectedOption) =>
-                              handleUserSelect(selectedOption, idx)
-                            }
+                            onChange={(selectedOption) => {
+                              handleUserSelect(selectedOption, idx);
+                            }}
                           />
                         </td>
                         <td>
@@ -1529,9 +1540,9 @@ function CreateUserComponent({ match }) {
                             options={options}
                             id={`ticket_show_type_id_` + idx}
                             name="ticket_show_type[]"
-                            onChange={(e) =>
-                              handleCheckInput(e, idx, 'TICKET_SHOW')
-                            }
+                            onChange={(e) => {
+                              handleCheckInput(e, idx, 'TICKET_SHOW');
+                            }}
                             value={options.filter((d) =>
                               Array.isArray(item.ticket_show_type)
                                 ? item.ticket_show_type.includes(d.value)

@@ -36,6 +36,7 @@ const ModuleSettings = ({ match }) => {
   };
 
   const handleSubmoduleChange = (e) => {
+    if (!e || Object.entries(e).length === 0) return;
     setSelected((prev) => ({ ...prev, submodule_name: e.value }));
 
     const url = selected.module_name + '/' + e.value;
@@ -51,6 +52,7 @@ const ModuleSettings = ({ match }) => {
   };
 
   const handleModuleChange = (e) => {
+    if (!e || Object.entries(e).length === 0) return;
     const t = data.filter((d) => d.module_name === e.value);
 
     setSelected((prev) => ({ ...prev, module_name: e.value }));
@@ -115,6 +117,7 @@ const ModuleSettings = ({ match }) => {
                   <Select
                     options={module}
                     ref={moduleRef}
+                    isClearable={true}
                     onChange={handleModuleChange}
                     name="module_id"
                     id="module_id"
@@ -129,6 +132,7 @@ const ModuleSettings = ({ match }) => {
                 {submodule && (
                   <Select
                     options={submodule}
+                    isClearable={true}
                     onChange={handleSubmoduleChange}
                     name="submodule_id"
                     id="submodule_id"
