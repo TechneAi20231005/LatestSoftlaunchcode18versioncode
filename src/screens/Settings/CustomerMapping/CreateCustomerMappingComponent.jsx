@@ -25,6 +25,8 @@ import {
   getcustomerTypeData
 } from './Slices/CustomerMappingAction';
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
+import { ErrorMessage, Formik, Form, Field } from 'formik';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 
 export function getDateTime() {
   var now = new Date();
@@ -109,13 +111,69 @@ export default function CreateCustomerMappingComponent() {
     user_policy_label: []
   });
 
+  const fields = [
+    // { name: 'project_id', label: 'Project name', required: true },
+
+    {
+      name: 'query_type_id',
+      label: 'Query Type Type',
+      required: true
+    },
+    {
+      name: 'dynamic_form_id',
+      label: 'Dynamic Form'
+    },
+    {
+      name: 'priority',
+      label: 'Priority',
+      required: true
+    },
+    {
+      name: 'confirmation_required',
+      label: 'Confirmation Required',
+      required: true
+    },
+    {
+      name: 'approach',
+      label: 'approach',
+      required: true
+    },
+    {
+      name: 'department_id',
+      label: 'department_id',
+      required: true
+    }
+    // {
+    //   name: 'user_id',
+    //   label: 'user_id',
+    //   isArray: true
+    // }
+  ];
+
+  const validationSchema = CustomValidation(fields);
+  console.log(
+    'label',
+    userDropdown?.map((ele) => ele.label)
+  );
+  const initialValues = {
+    customer_type_id: [],
+    query_type_id: [],
+    dynamic_form_id: [],
+    template_id: [],
+    priority: [],
+    confirmation_required: '1',
+    approach: [],
+    department_id: []
+    // user_id: [],
+    // userData: userDropdown?.map((_, i) => userData[i]?.ratio || 0)
+  };
   const getDynamicForm = useCallback(async () => {
     try {
       const res = await new DynamicFormService().getDynamicForm();
       if (res?.status === 200) {
         if (res?.data?.status === 1) {
-          const data = res?.data?.data.filter((d) => d.is_active === 1);
-          const select = res?.data?.data
+          const data = res?.data?.data.data.filter((d) => d.is_active === 1);
+          const select = res?.data?.data.data
             .filter((d) => d.is_active === 1)
             .map((d) => ({ value: d.id, label: d.template_name }));
           setDynamicForm(data);
@@ -162,9 +220,10 @@ export default function CreateCustomerMappingComponent() {
   const getDepartment = async () => {
     await new DepartmentService().getDepartment().then((res) => {
       if (res?.status === 200) {
+        console.log('res===>', res.data);
         if (res?.data?.status === 1) {
           var defaultValue = [{ value: 0, label: 'Select Department' }];
-          var dropwdown = res?.data?.data
+          var dropwdown = res?.data?.data?.data
             .filter((d) => d.is_active === 1)
             .map((d) => ({ value: d.id, label: d.department }));
           defaultValue = [...defaultValue, ...dropwdown];
@@ -193,7 +252,8 @@ export default function CreateCustomerMappingComponent() {
   }, [dispatch]);
   //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
-    console.log('is clearable e', e);
+    console.log('is clearable e', nameField);
+
     if (!e || Object.entries(e).length === 0) return;
     if (type === 'Select2' && nameField === 'customer_type_id') {
       setSelectedCustomer(e?.length);
@@ -205,9 +265,10 @@ export default function CreateCustomerMappingComponent() {
         : e?.value
         ? e?.value
         : e?.target?.value;
-
+    console.log('value', value);
     if (nameField === 'approach' && value !== data.approach) {
       setDepartmentDropdown(null);
+      console.log('heyyyy');
       setUserDropdown(null);
       await getDepartment();
     }
@@ -220,6 +281,7 @@ export default function CreateCustomerMappingComponent() {
   };
 
   const handleGetDepartmentUsers = async (e) => {
+    console.log('ssdd', e);
     setUserDropdown(null);
 
     try {
@@ -229,6 +291,7 @@ export default function CreateCustomerMappingComponent() {
 
       if (res?.status === 200) {
         if (res?.data?.status === 1) {
+          console.log('res.data', res.data);
           const dropdown = res.data.data
 
             .filter(
@@ -273,12 +336,13 @@ export default function CreateCustomerMappingComponent() {
     e.preventDefault();
 
     const newValue = parseInt(e.target.value) || 0;
-
+    console.log('newValue', newValue);
     if (newValue > 100) {
       e.target.value = 0;
       toast.error('Cannot Enter More than 100 !!!');
     } else {
       const newData = [...userData];
+      console.log('new');
       newData[index] = {
         user_id: userDropdown[index]?.value,
         ratio: newValue || 0
@@ -294,6 +358,7 @@ export default function CreateCustomerMappingComponent() {
         toast.error('Ratio Total Must Be 100 !!!');
       } else {
         setUserData(newData);
+        console.log('newData', newData);
         setRatioTotal(sum);
       }
     }
@@ -309,8 +374,9 @@ export default function CreateCustomerMappingComponent() {
   const useridDetail = useRef();
   const statusDtail = useRef();
   const userRatioDetail = useRef();
-  const handleForm = async (e) => {
-    e.preventDefault();
+  const handleForm = async (values) => {
+    console.log('dddsds', values);
+    // e.preventDefault();
 
     let userIDs;
     if (Array.isArray(useridDetail?.current?.props?.value)) {
@@ -329,97 +395,104 @@ export default function CreateCustomerMappingComponent() {
 
     const RwuserID = getUserData();
 
-    const customerID = customerDetail?.current?.props?.value;
-    const queryTypeid = queryTypeDetail?.current?.props?.value?.value;
-    const dynamicFormid = dynamicDetail?.current?.props?.value[0]?.value || [];
-    const templateid = templateDetail?.current?.props?.value?.value;
-    const priorityID = priorityDetail?.current?.value;
-    const confirmationId = confirmationRequired;
-    const approachId = approachDetail?.current?.value;
-    const departmentId = departmentDropdownRef?.current?.props?.value[0]?.value
-      ? departmentDropdownRef?.current?.props?.value[0]?.value
-      : departmentDropdownRef?.current?.props?.value?.value;
+    // const customerID = customerDetail?.current?.props?.value;
+    // const queryTypeid = queryTypeDetail?.current?.props?.value?.value;
+    // const dynamicFormid = dynamicDetail?.current?.props?.value[0]?.value || [];
+    // const templateid = templateDetail?.current?.props?.value?.value;
+    // const priorityID = priorityDetail?.current?.value;
+    // const confirmationId = confirmationRequired;
+    // const approachId = approachDetail?.current?.value;
+    // const departmentId = departmentDropdownRef?.current?.props?.value[0]?.value
+    //   ? departmentDropdownRef?.current?.props?.value[0]?.value
+    //   : departmentDropdownRef?.current?.props?.value?.value;
+    // const userID = userIDs;
+
+    // const statusID = statusDtail?.current?.value;
+
+    // let arrayOfId = [];
+    // for (let i = 0; i < customerID?.length; i++) {
+    //   arrayOfId.push(customerID[i]?.value);
+    // }
+    // const form = {};
+
+    // form.customer_type_id = arrayOfId;
+    // form.query_type_id = queryTypeid;
+    // form.dynamic_form_id = dynamicFormid;
+    // form.template_id = templateid ? templateid : null;
+    // form.priority = priorityID;
+    // form.confirmation_required = confirmationId;
+    // form.approach = approachId;
+    // form.department_id = departmentId;
+    // if (data.approach === 'RW') {
+    //   form.user_id = RwuserID;
+    //   form.userData = userData;
+    // } else {
+    //   form.user_id = userID;
+    // }
+
+    // form.status = statusID;
+
     const userID = userIDs;
-
-    const statusID = statusDtail?.current?.value;
-
-    let arrayOfId = [];
-    for (let i = 0; i < customerID?.length; i++) {
-      arrayOfId.push(customerID[i]?.value);
-    }
-    const form = {};
-
-    form.customer_type_id = arrayOfId;
-    form.query_type_id = queryTypeid;
-    form.dynamic_form_id = dynamicFormid;
-    form.template_id = templateid ? templateid : null;
-    form.priority = priorityID;
-    form.confirmation_required = confirmationId;
-    form.approach = approachId;
-    form.department_id = departmentId;
-    if (data.approach === 'RW') {
-      form.user_id = RwuserID;
-      form.userData = userData;
+    console.log('data', data);
+    if (values.approach === 'RW') {
+      values.user_id = RwuserID;
+      values.userData = userData;
     } else {
-      form.user_id = userID;
+      values.user_id = userID;
     }
+    values.tenant_id = localStorage.getItem('tenant_id');
+    values.created_by = userSessionData.userId;
+    values.created_at = getDateTime();
+    // var flag = 1;
 
-    form.status = statusID;
+    // if (data.approach === 'RW') {
+    //   const completeUserData =
+    //     userDropdown.length > 0
+    //       ? userDropdown.map((user) => {
+    //           const existingUser = userData.find(
+    //             (u) => u.user_id === user.value
+    //           );
+    //           return existingUser || { user_id: user.value, ratio: 0 };
+    //         })
+    //       : [];
 
-    form.tenant_id = localStorage.getItem('tenant_id');
-    form.created_by = userSessionData.userId;
-    form.created_at = getDateTime();
+    //   form.user_id = RwuserID;
+    //   form.userData = completeUserData;
+    // } else {
+    //   form.user_id = userID;
+    // }
 
-    var flag = 1;
+    // if (data?.approach === 'RW') {
+    //   if (
+    //     (ratioTotal && ratioTotal > 100) ||
+    //     (ratioTotal && ratioTotal < 100)
+    //   ) {
+    //     alert('Sum Must Be 100');
+    //     flag = 0;
+    //   }
+    // }
 
-    if (data.approach === 'RW') {
-      const completeUserData =
-        userDropdown.length > 0
-          ? userDropdown.map((user) => {
-              const existingUser = userData.find(
-                (u) => u.user_id === user.value
-              );
-              return existingUser || { user_id: user.value, ratio: 0 };
-            })
-          : [];
+    // if (flag === 1) {
+    await new CustomerMappingService()
+      .postCustomerMapping(values)
+      .then((res) => {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            toast.success(res?.data?.message);
 
-      form.user_id = RwuserID;
-      form.userData = completeUserData;
-    } else {
-      form.user_id = userID;
-    }
-
-    if (data?.approach === 'RW') {
-      if (
-        (ratioTotal && ratioTotal > 100) ||
-        (ratioTotal && ratioTotal < 100)
-      ) {
-        alert('Sum Must Be 100');
-        flag = 0;
-      }
-    }
-
-    if (flag === 1) {
-      await new CustomerMappingService()
-        .postCustomerMapping(form)
-        .then((res) => {
-          if (res?.status === 200) {
-            if (res?.data?.status === 1) {
-              toast.success(res?.data?.message);
-
-              navigate(`/${_base}/CustomerMapping`);
-            } else {
-              toast.error(res?.data?.message);
-            }
+            navigate(`/${_base}/CustomerMapping`);
           } else {
             toast.error(res?.data?.message);
           }
-        })
-        .catch((res) => {
+        } else {
           toast.error(res?.data?.message);
-        });
-    } else {
-    }
+        }
+      })
+      .catch((res) => {
+        toast.error(res?.data?.message);
+      });
+    // } else {
+    // }
   };
 
   useEffect(() => {
@@ -451,357 +524,860 @@ export default function CreateCustomerMappingComponent() {
         <div className="col-sm-12">
           <div className="card mt-2">
             <div className="card-body">
-              <form
+              <Formik
+                initialValues={initialValues}
+                validationSchema={validationSchema}
+                onSubmit={(values) => {
+                  console.log('values', values);
+                  handleForm(values);
+                }}
+              >
+                {({
+                  setFieldValue,
+                  values,
+                  field,
+                  form,
+                  handleChange,
+                  handleBlur,
+                  touched,
+                  errors
+                }) => (
+                  <Form>
+                    {/* <form
                 method="post"
                 encType="multipart/form-data"
                 onSubmit={handleForm}
-              >
-                <div className="form-group row mt-3">
-                  <label className="col-sm-2 col-form-label">
-                    <b>Select Customer Type :</b>
-                  </label>
-                  <div className="col-sm-4">
-                    <Select
-                      id="customer_type_id[]"
-                      name="customer_type_id[]"
-                      options={customerTypeDropdown}
-                      isMulti
-                      ref={customerDetail}
-                      onChange={(e) => {
-                        handleAutoChanges(e, 'Select2', 'customer_type_id');
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group row mt-3">
-                  <label className="col-sm-2 col-form-label">
-                    <b>
-                      Select Query Type :<Astrick color="red" size="13px" />
-                    </b>
-                  </label>
-                  <div className="col-sm-4">
-                    <Select
-                      id="query_type_id"
-                      name="query_type_id"
-                      isClearable={true}
-                      ref={queryTypeDetail}
-                      options={queryTypeDropdown}
-                      onChange={(e) => {
-                        handleAutoChanges(e, 'Select2', 'query_type_id');
-                        handleQueryType(e);
-                      }}
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group row mt-3">
-                  <label className="col-sm-2 col-form-label">
-                    <b>Select Form :</b>
-                  </label>
-                  <div className="col-sm-4">
-                    {!selectedDynamicForm && dynamicFormDropdown && (
-                      <Select
-                        id="dynamic_form_id"
-                        name="dynamic_form_id"
-                        isClearable={true}
-                        options={dynamicFormDropdown}
-                        ref={dynamicDetail}
-                        onChange={(e) =>
-                          handleAutoChanges(e, 'Select2', 'dynamic_form_id')
-                        }
-                      />
-                    )}
-                    {selectedDynamicForm && dynamicFormDropdown && 'H' && (
-                      <Select
-                        id="dynamic_form_id"
-                        name="dynamic_form_id"
-                        isClearable={true}
-                        defaultValue={selectedDynamicForm}
-                        ref={dynamicDetail}
-                        options={dynamicFormDropdown ? dynamicFormDropdown : ''}
-                        onChange={(e) =>
-                          handleAutoChanges(e, 'Select2', 'dynamic_form_id')
-                        }
-                      />
-                    )}
-                  </div>
-                </div>
-
-                <div className="form-group row mt-3">
-                  <label className="col-sm-2 col-form-label">
-                    <b>Select Template :</b>
-                  </label>
-                  <div className="col-sm-4">
-                    <Select
-                      id="template_id"
-                      name="template_id"
-                      isClearable={true}
-                      ref={templateDetail}
-                      options={[
-                        { label: 'Select Template', value: '' },
-                        ...templateDropdown
-                      ]}
-                      onChange={(e) =>
-                        handleAutoChanges(e, 'Select2', 'template_id')
-                      }
-                    />
-                  </div>
-                </div>
-
-                <div className="form-group row mt-3">
-                  <label className="col-sm-2 col-form-label">
-                    <b>
-                      Priority :<Astrick color="red" size="13px" />
-                    </b>
-                  </label>
-                  <div className="col-sm-4">
-                    <select
-                      className="form-control form-control-sm"
-                      id="priority"
-                      name="priority"
-                      ref={priorityDetail}
-                      required={true}
-                      onChange={(e) =>
-                        handleAutoChanges(e, 'Select', 'priority')
-                      }
-                    >
-                      <option value="">Select Priority</option>
-                      <option value="Low">Low</option>
-                      <option value="Medium">Medium</option>
-                      <option value="High">High</option>
-                      <option value="Very High">Very High</option>
-                    </select>
-                  </div>
-                </div>
-
-                <div className="row mt-2">
-                  <div className="col-sm-2">
-                    <label className="col-form-label">
-                      <b>
-                        Confirmation Required :{' '}
-                        <Astrick color="red" size="13px" />
-                      </b>
-                    </label>
-                  </div>
-
-                  <div className="col-sm-1">
-                    <div className="form-group mt-2 text-left d-flex justify-content-between">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="confirmation_required"
-                          id="confirmation_required_yes"
-                          ref={confirmationRequiredDetail}
-                          onChange={handleConfirmationChange}
-                          required
-                          value="1"
-                          defaultChecked={
-                            data && data.confirmation_required !== '1'
-                          }
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="confirmation_required_yes"
-                        >
-                          Yes
-                        </label>
-                      </div>
-
-                      <div className="form-check mx-2">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="confirmation_required"
-                          id="confirmation_required_no"
-                          value="0"
-                          ref={confirmationRequiredDetail}
-                          required
-                          defaultChecked={
-                            data &&
-                            (data.confirmation_required === 1 ||
-                              data.confirmation_required === '0')
-                          }
-                          onChange={handleConfirmationChange}
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="confirmation_required_no"
-                        >
-                          No
-                        </label>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="form-group row mt-3">
-                  <label className="col-sm-2 col-form-label">
-                    <b>
-                      Approach :<Astrick color="red" size="13px" />
-                    </b>
-                  </label>
-                  <div className="col-sm-4">
-                    <select
-                      className="form-control form-control-sm"
-                      id="approach"
-                      name="approach"
-                      ref={approachDetail}
-                      required={true}
-                      onChange={(e) =>
-                        handleAutoChanges(e, 'Select', 'approach')
-                      }
-                    >
-                      <option value="">Select Approach</option>
-                      <option value="RR">Departmentwise Round Robin</option>
-                      <option value="HLT">User Having Less Ticket</option>
-                      <option value="SP">Single Person</option>
-                      <option value="RW">Ratio Wise</option>
-                      {selectedCustomer === 0 && (
-                        <option value="SELF">Self</option>
+              > */}
+                    <div className="form-group row mt-3">
+                      {console.log('vaaaa', values.approach === 'RW' ? 1 : 0)}
+                      <label className="col-sm-2 col-form-label">
+                        <b>Select Customer Type :</b>
+                      </label>
+                      {console.log(
+                        'customerTypeDropdown',
+                        customerTypeDropdown
                       )}
-                      <option value="AU">Assign to user</option>
-                    </select>
-                  </div>
-                </div>
-
-                {data.approach !== 'SELF' && data.approach !== 'AU' && (
-                  <div className="form-group row mt-3">
-                    <label className="col-sm-2 col-form-label">
-                      <b>
-                        Select Department :<Astrick color="red" size="13px" />
-                      </b>
-                    </label>
-                    <div className="col-sm-4">
-                      {departmentDropdown && (
-                        <Select
-                          ref={departmentDropdownRef}
-                          id="department_id"
-                          name="department_id"
-                          defaultValue={departmentDropdown[0]}
-                          options={departmentDropdown}
+                      <div className="col-sm-4">
+                        {/* <Select
+                          id="customer_type_id[]"
+                          name="customer_type_id[]"
+                          options={customerTypeDropdown}
+                          isMulti
+                          ref={customerDetail}
                           onChange={(e) => {
-                            handleAutoChanges(e, 'Select2', 'department_id');
-                            handleGetDepartmentUsers(e);
-                            setShowUserSelect(true);
+                            handleAutoChanges(e, 'Select2', 'customer_type_id');
                           }}
-                        />
-                      )}
-                    </div>
-                  </div>
-                )}
+                        /> */}
+                        <Field name="customer_type_id">
+                          {({ field, form }) => (
+                            <Select
+                              id="customer_type_id"
+                              name="customer_type_id"
+                              options={customerTypeDropdown}
+                              isMulti
+                              value={customerTypeDropdown?.filter((option) =>
+                                field.value?.includes(option.value)
+                              )} // Match Formik value with options
+                              onChange={(selectedOptions) => {
+                                const values = selectedOptions
+                                  ? selectedOptions.map(
+                                      (option) => option.value
+                                    ) // Extract values
+                                  : [];
 
-                {data.approach !== 'SELF' &&
-                  data.approach !== 'AU' &&
-                  userDropDownFilterData?.length > 0 &&
-                  userDropDownFilterData?.length > 0 && (
+                                form.setFieldValue('customer_type_id', values); // Update Formik field value
+
+                                handleAutoChanges(
+                                  selectedOptions,
+                                  'Select2',
+                                  'customer_type_id'
+                                ); // Pass the selected options directly
+                              }}
+                            />
+                          )}
+                        </Field>
+                        <ErrorMessage
+                          name="customer_type_id"
+                          component="small"
+                          className="text-danger"
+                        />
+                      </div>
+                    </div>
+
                     <div className="form-group row mt-3">
                       <label className="col-sm-2 col-form-label">
                         <b>
-                          Select User :<Astrick color="red" size="13px" />
+                          Select Query Type :<Astrick color="red" size="13px" />
                         </b>
                       </label>
-                      {showUserSelect && (
-                        <>
-                          {userDropdown && data.approach !== 'RW' && (
-                            <div className="col-sm-4">
-                              <Select
-                                isMulti={data.approach !== 'SP'}
-                                isSearchable={true}
-                                ref={useridDetail}
-                                name="user_id[]"
-                                className="basic-multi-select"
-                                classNamePrefix="select"
-                                options={userDropdown}
-                                required
-                              />
-                            </div>
-                          )}
-                        </>
-                      )}
+                      <div className="col-sm-4">
+                        {/* <Select
+                          id="query_type_id"
+                          name="query_type_id"
+                          isClearable={true}
+                          ref={queryTypeDetail}
+                          options={queryTypeDropdown}
+                          onChange={(e) => {
+                            handleAutoChanges(e, 'Select2', 'query_type_id');
+                            handleQueryType(e);
+                          }}
+                        /> */}
 
-                      {userDropdown && data.approach === 'RW' && (
-                        <div className="col-sm-6">
-                          <Table bordered className="mt-2" id="table">
-                            <thead>
-                              <tr className="text-center">
-                                <th>#</th>
-                                <th>Selected User</th>
-                                <th>Enter Ratio</th>
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {userDropdown.map((ele, i) => {
-                                return (
+                        <Field name="query_type_id">
+                          {({ field, form }) => (
+                            <Select
+                              id="query_type_id"
+                              name="query_type_id"
+                              options={queryTypeDropdown}
+                              isClearable
+                              value={
+                                queryTypeDropdown?.find(
+                                  (option) => option.value === field.value
+                                ) || null
+                              } // Match Formik value with options
+                              onChange={(selectedOption) => {
+                                console.log('selectedOption', selectedOption);
+                                const values = selectedOption
+                                  ? //   ? selectedOption?.map(
+                                    //       (option) => option.value
+                                    //     )
+                                    selectedOption.value
+                                  : [];
+                                form.setFieldValue('query_type_id', values); // Always set as an array
+                                handleAutoChanges(
+                                  selectedOption,
+                                  'Select2',
+                                  'query_type_id'
+                                ); // Pass the selected option
+                                handleQueryType(selectedOption);
+                              }}
+                            />
+                          )}
+                        </Field>
+                        <ErrorMessage
+                          name="query_type_id"
+                          component="small"
+                          className="text-danger"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group row mt-3">
+                      <label className="col-sm-2 col-form-label">
+                        <b>Select Form :</b>
+                      </label>
+                      <div className="col-sm-4">
+                        {!selectedDynamicForm && dynamicFormDropdown && (
+                          // <Select
+                          //   id="dynamic_form_id"
+                          //   name="dynamic_form_id"
+                          //   isClearable={true}
+                          //   options={dynamicFormDropdown}
+                          //   ref={dynamicDetail}
+                          //   onChange={(e) =>
+                          //     handleAutoChanges(e, 'Select2', 'dynamic_form_id')
+                          //   }
+                          // />
+                          <Field name="dynamic_form_id">
+                            {({ field, form }) => (
+                              <Select
+                                id="dynamic_form_id"
+                                name="dynamic_form_id"
+                                options={dynamicFormDropdown}
+                                isClearable
+                                value={
+                                  dynamicFormDropdown?.find(
+                                    (option) => option.value === field.value
+                                  ) || null
+                                } // Match Formik value with options
+                                onChange={(selectedOption) => {
+                                  const value = selectedOption
+                                    ? selectedOption.value
+                                    : ''; // Extract value or set to an empty string
+                                  form.setFieldValue('dynamic_form_id', value); // Update Formik field value
+                                  handleAutoChanges(
+                                    selectedOption,
+                                    'Select2',
+                                    'dynamic_form_id'
+                                  ); // Pass the selected option
+                                }}
+                              />
+                            )}
+                          </Field>
+                        )}
+                        {selectedDynamicForm && dynamicFormDropdown && 'H' && (
+                          // <Select
+                          //   id="dynamic_form_id"
+                          //   name="dynamic_form_id"
+                          //   isClearable={true}
+                          //   defaultValue={selectedDynamicForm}
+                          //   ref={dynamicDetail}
+                          //   options={
+                          //     dynamicFormDropdown ? dynamicFormDropdown : ''
+                          //   }
+                          //   onChange={(e) =>
+                          //     handleAutoChanges(e, 'Select2', 'dynamic_form_id')
+                          //   }
+                          // />
+                          <Field name="dynamic_form_id">
+                            {({ field, form }) => (
+                              <Select
+                                id="dynamic_form_id"
+                                name="dynamic_form_id"
+                                options={dynamicFormDropdown}
+                                // value={dynamicFormDropdown?.filter((option) =>
+                                //   field.value?.includes(option.value)
+                                // )} // Match Formik value with options
+                                // onChange={(selectedOptions) => {
+                                //   const values = selectedOptions
+                                //     ? selectedOptions.map(
+                                //         (option) => option.value
+                                //       ) // Extract values
+                                //     : [];
+
+                                //   form.setFieldValue('dynamic_form_id', values); // Update Formik field value
+
+                                //   handleAutoChanges(
+                                //     selectedOptions,
+                                //     'Select2',
+                                //     'dynamic_form_id'
+                                //   ); // Pass the selected options directly
+                                // }}
+
+                                isClearable
+                                value={
+                                  dynamicFormDropdown?.find(
+                                    (option) => option.value === field.value
+                                  ) || null
+                                } // Match Formik value with options
+                                onChange={(selectedOption) => {
+                                  const value = selectedOption
+                                    ? selectedOption.value
+                                    : ''; // Extract value or set to an empty string
+                                  form.setFieldValue('dynamic_form_id', value); // Update Formik field value
+                                  handleAutoChanges(
+                                    selectedOption,
+                                    'Select2',
+                                    'dynamic_form_id'
+                                  ); // Pass the selected option
+                                }}
+                              />
+                            )}
+                          </Field>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="form-group row mt-3">
+                      <label className="col-sm-2 col-form-label">
+                        <b>Select Template :</b>
+                      </label>
+                      <div className="col-sm-4">
+                        {/* <Select
+                          id="template_id"
+                          name="template_id"
+                          isClearable={true}
+                          ref={templateDetail}
+                          options={[
+                            { label: 'Select Template', value: '' },
+                            ...templateDropdown
+                          ]}
+                          onChange={(e) =>
+                            handleAutoChanges(e, 'Select2', 'template_id')
+                          }
+                        /> */}
+                        <Field name="template_id">
+                          {({ field, form }) => (
+                            <Select
+                              id="template_id"
+                              name="template_id"
+                              options={[
+                                { label: 'Select Template', value: '' },
+                                ...templateDropdown
+                              ]}
+                              isClearable
+                              onChange={(selectedOption) => {
+                                const value = selectedOption
+                                  ? selectedOption.value
+                                  : ''; // Extract value or set to an empty string
+                                form.setFieldValue('template_id', value); // Update Formik field value
+                                handleAutoChanges(
+                                  selectedOption,
+                                  'Select2',
+                                  'template_id'
+                                ); // Pass the selected option
+                              }}
+                              value={
+                                templateDropdown?.find(
+                                  (option) => option.value === field.value
+                                ) || null
+                              } // Match Formik value with options
+                            />
+                          )}
+                        </Field>
+                        <ErrorMessage
+                          name="template_id"
+                          component="small"
+                          className="text-danger"
+                        />{' '}
+                        {(selectedOption) => {
+                          const value = selectedOption
+                            ? selectedOption.value
+                            : ''; // Extract value or set to an empty string
+                          form.setFieldValue('template_id', value); // Update Formik field value
+                          handleAutoChanges(
+                            selectedOption,
+                            'Select2',
+                            'template_id'
+                          ); // Pass the selected option
+                        }}
+                      </div>
+                    </div>
+
+                    <div className="form-group row mt-3">
+                      <label className="col-sm-2 col-form-label">
+                        <b>
+                          Priority :<Astrick color="red" size="13px" />
+                        </b>
+                      </label>
+                      <div className="col-sm-4">
+                        {/* <select
+                          className="form-control form-control-sm"
+                          id="priority"
+                          name="priority"
+                          ref={priorityDetail}
+                          required={true}
+                          onChange={(e) =>
+                            handleAutoChanges(e, 'Select', 'priority')
+                          }
+                        >
+                          <option value="">Select Priority</option>
+                          <option value="Low">Low</option>
+                          <option value="Medium">Medium</option>
+                          <option value="High">High</option>
+                          <option value="Very High">Very High</option>
+                        </select> */}
+                        <Field name="priority">
+                          {({ field, form }) => (
+                            <Select
+                              id="priority"
+                              name="priority"
+                              isClearable
+                              options={[
+                                { value: '', label: 'Select Priority' },
+                                { value: 'Low', label: 'Low' },
+                                { value: 'Medium', label: 'Medium' },
+                                { value: 'High', label: 'High' },
+                                { value: 'Very High', label: 'Very High' }
+                              ]}
+                              // isClearable={true} // Allows clearing the selection
+                              value={
+                                field.value
+                                  ? { value: field.value, label: field.value }
+                                  : { value: '', label: 'Select Priority' }
+                              } // Match Formik value with Select options
+                              onChange={(option) =>
+                                form.setFieldValue(
+                                  'priority',
+                                  option ? option.value : ''
+                                )
+                              } // Update Formik's stat
+                            />
+                          )}
+                        </Field>
+
+                        {/* <Field name="priority">
+                          {({ field, form }) => (
+                            <Select
+                              className="form-control-sm"
+                              options={[
+                                { value: '', label: 'Select Priority' },
+                                { value: 'Low', label: 'Low' },
+                                { value: 'Medium', label: 'Medium' },
+                                { value: 'High', label: 'High' },
+                                { value: 'Very High', label: 'Very High' }
+                              ]}
+                              // isClearable={true} // Allows clearing the selection
+                              value={
+                                field.value
+                                  ? { value: field.value, label: field.value }
+                                  : { value: '', label: 'Select Priority' }
+                              } // Match Formik value with Select options
+                              onChange={(option) =>
+                                form.setFieldValue(
+                                  'priority',
+                                  option ? option.value : ''
+                                )
+                              } // Update Formik's state
+                            />
+                          )}
+                        </Field> */}
+                        <ErrorMessage
+                          name="priority"
+                          component="small"
+                          className="text-danger"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="row mt-2">
+                      <div className="col-sm-2">
+                        <label className="col-form-label">
+                          <b>
+                            Confirmation Required :{' '}
+                            <Astrick color="red" size="13px" />
+                          </b>
+                        </label>
+                      </div>
+
+                      {/* <div className="col-sm-1">
+                        <div className="form-group mt-2 text-left d-flex justify-content-between">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="confirmation_required"
+                              id="confirmation_required_yes"
+                              ref={confirmationRequiredDetail}
+                              onChange={handleConfirmationChange}
+                              required
+                              value="1"
+                              defaultChecked={
+                                data && data.confirmation_required !== '1'
+                              }
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="confirmation_required_yes"
+                            >
+                              Yes
+                            </label>
+                          </div>
+
+                          <div className="form-check mx-2">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="confirmation_required"
+                              id="confirmation_required_no"
+                              value="0"
+                              ref={confirmationRequiredDetail}
+                              required
+                              defaultChecked={
+                                data &&
+                                (data.confirmation_required === 1 ||
+                                  data.confirmation_required === '0')
+                              }
+                              onChange={handleConfirmationChange}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="confirmation_required_no"
+                            >
+                              No
+                            </label>
+                          </div>
+                        </div>
+                      </div> */}
+                      <div className="col-sm-1">
+                        <div className="form-group mt-2 text-left d-flex justify-content-between">
+                          <div className="form-check">
+                            <Field
+                              type="radio"
+                              name="confirmation_required"
+                              id="confirmation_required_yes"
+                              className="form-check-input"
+                              value="1"
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              checked={values.confirmation_required === '1'}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="confirmation_required_yes"
+                            >
+                              Yes
+                            </label>
+                          </div>
+
+                          <div className="form-check mx-2">
+                            <Field
+                              type="radio"
+                              name="confirmation_required"
+                              id="confirmation_required_no"
+                              className="form-check-input"
+                              value="0"
+                              onChange={handleChange}
+                              onBlur={handleBlur}
+                              checked={values.confirmation_required === '0'}
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="confirmation_required_no"
+                            >
+                              No
+                            </label>
+                          </div>
+                          {touched.confirmation_required &&
+                            errors.confirmation_required && (
+                              <small className="text-danger">
+                                {errors.confirmation_required}
+                              </small>
+                            )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="form-group row mt-3">
+                      <label className="col-sm-2 col-form-label">
+                        <b>
+                          Approach :<Astrick color="red" size="13px" />
+                        </b>
+                      </label>
+                      <div className="col-sm-4">
+                        {/* <select
+                          className="form-control form-control-sm"
+                          id="approach"
+                          name="approach"
+                          ref={approachDetail}
+                          required={true}
+                          onChange={(e) =>
+                            handleAutoChanges(e, 'Select', 'approach')
+                          }
+                        >
+                          <option value="">Select Approach</option>
+                          <option value="RR">Departmentwise Round Robin</option>
+                          <option value="HLT">User Having Less Ticket</option>
+                          <option value="SP">Single Person</option>
+                          <option value="RW">Ratio Wise</option>
+                          {selectedCustomer === 0 && (
+                            <option value="SELF">Self</option>
+                          )}
+                          <option value="AU">Assign to user</option>
+                        </select> */}
+
+                        <Field name="approach">
+                          {({ field, form }) => (
+                            <Select
+                              id="approach"
+                              name="approach"
+                              isClearable
+                              // options={[
+                              //   { value: '', label: 'Select Priority' },
+                              //   { value: 'Low', label: 'Low' },
+                              //   { value: 'Medium', label: 'Medium' },
+                              //   { value: 'High', label: 'High' },
+                              //   { value: 'Very High', label: 'Very High' }
+                              // ]}
+                              options={[
+                                { value: '', label: 'Select Approach' },
+                                {
+                                  value: 'RR',
+                                  label: 'Departmentwise Round Robin'
+                                },
+                                {
+                                  value: 'HLT',
+                                  label: 'User Having Less Ticket'
+                                },
+                                { value: 'SP', label: 'Single Person' },
+                                { value: 'RW', label: 'Ratio Wise' },
+                                ...(selectedCustomer === 0
+                                  ? [{ value: 'SELF', label: 'Self' }]
+                                  : []),
+                                { value: 'AU', label: 'Assign to user' }
+                              ]}
+                              // isClearable={true} // Allows clearing the selection
+                              value={
+                                field.value
+                                  ? { value: field.value, label: field.value }
+                                  : { value: '', label: 'Select approach' }
+                              } // Match Formik value with Select options
+                              onChange={(option) => {
+                                form.setFieldValue(
+                                  'approach',
+                                  option ? option.value : ''
+                                );
+                                handleAutoChanges(
+                                  option,
+                                  'Select2',
+                                  'approach'
+                                ); // Pass the selected option
+                              }}
+                              // Update Formik's stat
+                            />
+                          )}
+                        </Field>
+                        <ErrorMessage
+                          name="approach"
+                          component="small"
+                          className="text-danger"
+                        />
+                      </div>
+                    </div>
+                    {console.log('departmentDropdown', departmentDropdown)}
+
+                    {data.approach !== 'SELF' && data.approach !== 'AU' && (
+                      <div className="form-group row mt-3">
+                        <label className="col-sm-2 col-form-label">
+                          <b>
+                            Select Department :
+                            <Astrick color="red" size="13px" />
+                          </b>
+                        </label>
+                        <div className="col-sm-4">
+                          {departmentDropdown && (
+                            <Field name="department_id">
+                              {({ field, form }) => (
+                                <Select
+                                  id="department_id"
+                                  name="department_id"
+                                  options={departmentDropdown}
+                                  isClearable
+                                  value={
+                                    departmentDropdown?.find(
+                                      (option) => option.value === field.value
+                                    ) || null
+                                  } // Match Formik value with options
+                                  onChange={(selectedOption) => {
+                                    console.log(
+                                      'selectedOption',
+                                      selectedOption
+                                    );
+                                    const values = selectedOption
+                                      ? //   ? selectedOption?.map(
+                                        //       (option) => option.value
+                                        //     )
+                                        selectedOption.value
+                                      : [];
+                                    form.setFieldValue('department_id', values); // Always set as an array
+                                    handleAutoChanges(
+                                      selectedOption,
+                                      'Select2',
+                                      'department_id'
+                                    ); // Pass the selected option
+                                    handleGetDepartmentUsers(selectedOption);
+                                    setShowUserSelect(true);
+                                  }}
+                                />
+                              )}
+                            </Field>
+                          )}
+                          <ErrorMessage
+                            name="department_id"
+                            component="small"
+                            className="text-danger"
+                          />
+                        </div>
+                      </div>
+                    )}
+
+                    {data.approach !== 'SELF' &&
+                      data.approach !== 'AU' &&
+                      userDropDownFilterData?.length > 0 &&
+                      userDropDownFilterData?.length > 0 && (
+                        <div className="form-group row mt-3">
+                          <label className="col-sm-2 col-form-label">
+                            <b>
+                              Select User :<Astrick color="red" size="13px" />
+                            </b>
+                          </label>
+                          {showUserSelect && (
+                            <>
+                              {userDropdown && data.approach !== 'RW' && (
+                                <div className="col-sm-4">
+                                  {/* <Select
+                                    isMulti={data.approach !== 'SP'}
+                                    isSearchable={true}
+                                    ref={useridDetail}
+                                    name="user_id[]"
+                                    className="basic-multi-select"
+                                    classNamePrefix="select"
+                                    options={userDropdown}
+                                    required
+                                  /> */}
+
+                                  <Field name="user_id">
+                                    {({ field, form }) => (
+                                      <Select
+                                        id="user_id"
+                                        name="user_id"
+                                        options={userDropdown}
+                                        isMulti
+                                        value={userDropdown?.filter((option) =>
+                                          field.value?.includes(option.value)
+                                        )} // Match Formik value with options
+                                        onChange={(selectedOptions) => {
+                                          const values = selectedOptions
+                                            ? selectedOptions.map(
+                                                (option) => option.value
+                                              ) // Extract values
+                                            : [];
+
+                                          form.setFieldValue('user_id', values); // Update Formik field value
+
+                                          handleAutoChanges(
+                                            selectedOptions,
+                                            'Select2',
+                                            'user_id'
+                                          ); // Pass the selected options directly
+                                        }}
+                                      />
+                                    )}
+                                  </Field>
+
+                                  <ErrorMessage
+                                    name="user_id"
+                                    component="small"
+                                    className="text-danger"
+                                  />
+                                </div>
+                              )}
+                            </>
+                          )}
+
+                          {userDropdown && data.approach === 'RW' && (
+                            <div className="col-sm-6">
+                              {/* <Table bordered className="mt-2" id="table">
+                                <thead>
+                                  <tr className="text-center">
+                                    <th>#</th>
+                                    <th>Selected User</th>
+                                    <th>Enter Ratio</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {userDropdown.map((ele, i) => {
+                                    return (
+                                      <tr>
+                                        <td>{i + 1}</td>
+                                        <td>
+                                          <input
+                                            type="hidden"
+                                            className="form-control form-control-sm"
+                                            id={`index_` + Math.random()}
+                                            name="user_id[]"
+                                            value={ele.value}
+                                            readOnly
+                                          />
+                                          <input
+                                            type="text"
+                                            className="form-control form-control-sm"
+                                            id={`index_` + Math.random()}
+                                            name="user_name[]"
+                                            value={ele.label}
+                                            readOnly
+                                          />
+                                        </td>
+
+                                        <td>
+                                          <input
+                                            type="text"
+                                            className="form-control col-sm-2"
+                                            name="ratio[]"
+                                            defaultValue={
+                                              userData[i]?.ratio || 0
+                                            }
+                                            ref={userRatioDetail}
+                                            onInput={handleRatioInput(i)}
+                                          />
+                                        </td>
+                                      </tr>
+                                    );
+                                  })}
                                   <tr>
-                                    <td>{i + 1}</td>
-                                    <td>
-                                      <input
-                                        type="hidden"
-                                        className="form-control form-control-sm"
-                                        id={`index_` + Math.random()}
-                                        name="user_id[]"
-                                        value={ele.value}
-                                        readOnly
-                                      />
-                                      <input
-                                        type="text"
-                                        className="form-control form-control-sm"
-                                        id={`index_` + Math.random()}
-                                        name="user_name[]"
-                                        value={ele.label}
-                                        readOnly
-                                      />
+                                    <td colSpan={2} className="text-right">
+                                      <b>TOTAL</b>
                                     </td>
 
                                     <td>
                                       <input
                                         type="text"
                                         className="form-control col-sm-2"
-                                        name="ratio[]"
-                                        defaultValue={userData[i]?.ratio || 0}
-                                        ref={userRatioDetail}
-                                        onInput={handleRatioInput(i)}
+                                        id={`index_` + Math.random()}
+                                        value={ratioTotal}
                                       />
                                     </td>
                                   </tr>
-                                );
-                              })}
-                              <tr>
-                                <td colSpan={2} className="text-right">
-                                  <b>TOTAL</b>
-                                </td>
-
-                                <td>
-                                  <input
-                                    type="text"
-                                    className="form-control col-sm-2"
-                                    id={`index_` + Math.random()}
-                                    value={ratioTotal}
-                                  />
-                                </td>
-                              </tr>
-                            </tbody>
-                          </Table>
+                                </tbody>
+                              </Table> */}
+                              <Table bordered className="mt-2" id="table">
+                                <thead>
+                                  <tr className="text-center">
+                                    <th>#</th>
+                                    <th>Selected User</th>
+                                    <th>Enter Ratio</th>
+                                  </tr>
+                                </thead>
+                                <tbody>
+                                  {userDropdown.map((ele, i) => (
+                                    <tr key={ele.value}>
+                                      <td>{i + 1}</td>
+                                      <td>
+                                        <input
+                                          type="hidden"
+                                          name={`user_id[${i}]`}
+                                          value={ele.value}
+                                          // value={form?.values?.user_id[i]}
+                                          readOnly
+                                        />
+                                        <input
+                                          type="text"
+                                          name={`user_name[${i}]`}
+                                          // value={form?.values?.user_name[i]}
+                                          value={ele.label}
+                                          readOnly
+                                          className="form-control form-control-sm"
+                                        />
+                                      </td>
+                                      <td>
+                                        <input
+                                          type="number"
+                                          className="form-control col-sm-2"
+                                          name={`ratio[${i}]`}
+                                          defaultValue={userData[i]?.ratio || 0}
+                                          onChange={handleRatioInput(i)}
+                                        />
+                                      </td>
+                                    </tr>
+                                  ))}
+                                  <tr>
+                                    <td colSpan={2} className="text-right">
+                                      <b>TOTAL</b>
+                                    </td>
+                                    <td>
+                                      <input
+                                        type="text"
+                                        className="form-control col-sm-2"
+                                        name="ratioTotal"
+                                        // value={form?.values?.ratioTotal}
+                                        value={ratioTotal}
+                                        readOnly
+                                      />
+                                    </td>
+                                  </tr>
+                                </tbody>
+                              </Table>
+                            </div>
+                          )}
                         </div>
                       )}
+
+                    <div className="mt-3 d-flex justify-content-end">
+                      <button type="submit" className="btn btn-primary btn-sm">
+                        Submit
+                      </button>
+
+                      <Link
+                        to={`/${_base}/CustomerMapping`}
+                        className="btn btn-danger btn-sm text-white"
+                      >
+                        Cancel
+                      </Link>
                     </div>
-                  )}
-
-                <div className="mt-3 d-flex justify-content-end">
-                  <button type="submit" className="btn btn-primary btn-sm">
-                    Submit
-                  </button>
-
-                  <Link
-                    to={`/${_base}/CustomerMapping`}
-                    className="btn btn-danger btn-sm text-white"
-                  >
-                    Cancel
-                  </Link>
-                </div>
-              </form>
+                    {/* </form> */}
+                  </Form>
+                )}
+              </Formik>
             </div>
           </div>
         </div>
