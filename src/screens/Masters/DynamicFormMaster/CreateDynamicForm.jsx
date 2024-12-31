@@ -455,7 +455,7 @@ function CreateDynamicForm() {
             navigate(`/${_base}/DynamicForm`, {
               state: { alert: { type: 'success', message: res.data.message } }
             });
-          }, 3000);
+          }, 1000);
         } else {
           setNotify({ type: 'danger', message: res.data.message });
         }
