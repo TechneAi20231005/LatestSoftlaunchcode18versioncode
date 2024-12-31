@@ -72,7 +72,11 @@ export default class BasketService {
       }
     };
 
-    return axios.post(_URL2 + '/updateBasket/' + id, payload, config);
+    return axios.post(
+      _URL2 + '/createBasket/updateBasket/' + id,
+      payload,
+      config
+    );
   }
 
   pushForward(payload) {

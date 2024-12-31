@@ -65,9 +65,9 @@ const CreateTemplateComponent = () => {
   const [taskData, setTaskData] = useState([]);
 
   const loadData = async () => {
-    await new TaskTicketTypeService()?.getTaskType()?.then((res) => {
+    await new TaskTicketTypeService()?.getChildrenData("TASK")?.then((res) => {
       if (res?.status === 200) {
-        setTaskData(res?.data?.data);
+        setTaskData(res?.data?.data?.data);
       }
     });
   };
@@ -486,9 +486,9 @@ const CreateTemplateComponent = () => {
 
   useEffect(() => {
     loadData();
-    if (!parent.length) {
-      dispatch(getParentData());
-    }
+    // if (!parent.length) {
+    //   dispatch(getParentData());
+    // }
     if (!userData.length) {
       const inputRequired =
         'id,employee_id,first_name,last_name,middle_name,is_active';

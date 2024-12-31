@@ -81,7 +81,7 @@ export const masterURL = {
   designation: _rewampApiUrl + 'designationMaster',
   status: _rewampApiUrl + 'statusMaster',
   dynamicForm: _rewampApiUrl + 'dynamicFormMaster',
-  template: _apiUrl + 'templateMaster',
+  template: _rewampApiUrl + 'templateMaster',
   customerType: _rewampApiUrl + 'customerTypeMaster',
   queryType: _rewampApiUrl + 'queryTypeMaster/queryType',
   getAllQueryGroup: _rewampApiUrl + 'queryTypeMaster/queryGroup',

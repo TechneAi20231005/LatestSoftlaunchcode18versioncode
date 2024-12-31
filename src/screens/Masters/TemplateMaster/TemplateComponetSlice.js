@@ -90,7 +90,7 @@ export const templateSlice = createSlice({
       state.isLoading.templateDataList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let templateData = payload.data.data;
+        let templateData = payload.data.data?.data;
 
         state.status = 'succeded';
         state.showLoaderModal = false;
@@ -117,7 +117,7 @@ export const templateSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let exportTempateData = payload.data.data;
+        let exportTempateData = payload.data.data?.data;
         state.isLoading.templateDataList = false;
 
         state.status = 'succeded';

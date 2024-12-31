@@ -224,9 +224,9 @@ export default function TaskComponent(props) {
   };
 
   const loadData = async () => {
-    await new TaskTicketTypeService()?.getTaskType()?.then((res) => {
+    await new TaskTicketTypeService().getChildrenData("TASK")?.then((res) => {
       if (res?.status === 200) {
-        setTaskData(res?.data?.data);
+        setTaskData(res?.data?.data?.data);
       }
     });
   };
@@ -256,22 +256,22 @@ export default function TaskComponent(props) {
 
   useEffect(() => {
     loadData();
-    new TaskTicketTypeService().getParent().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          if (res.status === 200) {
-          } else {
-          }
-        }
-      }
-    });
+    // new TaskTicketTypeService().getParent().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status === 1) {
+    //       if (res.status === 200) {
+    //       } else {
+    //       }
+    //     }
+    //   }
+    // });
 
-    new TaskTicketTypeService().getAllType().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-        }
-      }
-    });
+    // new TaskTicketTypeService().getAllType().then((res) => {
+    //   if (res.status === 200) {
+    //     if (res.data.status === 1) {
+    //     }
+    //   }
+    // });
     dispatch(templateData());
   }, [dispatch]);
 

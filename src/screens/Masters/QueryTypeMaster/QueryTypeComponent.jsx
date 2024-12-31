@@ -846,7 +846,7 @@ function QueryTypeComponent() {
       : [],
     remark: modal.modalData ? modal.modalData?.remark : '',
 
-    is_active: String(modal.modalData.is_active) ?? '1'
+    is_active: String(modal?.modalData?.is_active) ?? '1'
   };
   const fields = [
     {
@@ -1144,14 +1144,6 @@ function QueryTypeComponent() {
                                   name="is_active"
                                   id="is_active_1"
                                   value="1"
-                                  defaultChecked={
-                                    modal.modalData &&
-                                    modal.modalData.is_active === 1
-                                      ? true
-                                      : !modal.modalData
-                                      ? true
-                                      : false
-                                  }
                                 />
                                 <label
                                   className="form-check-label"
