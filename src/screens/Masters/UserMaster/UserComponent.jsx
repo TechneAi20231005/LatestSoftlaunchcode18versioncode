@@ -158,7 +158,7 @@ function UserComponent() {
 
     await new UserService().getExportTicket().then((res) => {
       if (res.status === 200) {
-        const temp = res.data.data;
+        const temp = res.data.data?.data;
 
         for (const i in temp) {
           exportTempData.push({
