@@ -55,7 +55,7 @@ export const CustomerMappingSlice = createSlice({
         state.status = 'succeded';
 
         let counter = 1;
-        const data = payload.data.data;
+        const data = payload.data.data.data;
         let customerMappingData = [];
         for (const key in data) {
           customerMappingData.push({
@@ -122,7 +122,7 @@ export const CustomerMappingSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let exportTempateData = payload.data.data;
+        let exportTempateData = payload.data.data.data;
         state.isLoading.customerMappingList = false;
 
         state.status = 'succeded';
