@@ -22,7 +22,7 @@ export default class ConsolidatedService {
       }
     };
     return axios.get(
-      consolidateViewUrl.consolidateViewUrl + '/getProjects',
+      consolidateViewUrl.consolidateViewUrl + '/projects/getData',
       config
     );
   }
@@ -39,10 +39,12 @@ export default class ConsolidatedService {
     };
     return axios.get(
       consolidateViewUrl.consolidateViewUrl +
-        '/getProjectsModules/' +
-        project_id +
-        '/' +
-        module_id,
+        // '/getProjectsModules/' +
+        // project_id +
+        // '/' +
+        // module_id,
+        '/projectModules/getData/' +
+        project_id,
       config
     );
   }
