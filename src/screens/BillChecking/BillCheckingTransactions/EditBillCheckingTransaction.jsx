@@ -837,41 +837,84 @@ export default function CreateBillCheckingTransaction({ match }) {
     return () => {};
   }, []);
 
-  // Get the current date
+  // // Get the current date
+  // const currentDatee = new Date();
+
+  // // Calculate the start date of the current financial year (April 1 of the current year)
+  // //  const startFinancialYear = new Date(currentDatee.getFullYear() -1, 3, 1); // Month is zero-based (3 for April)
+
+  // // Calculate the end date of the current financial year (March 31 of the next year)
+  // const endFinancialYear = new Date(currentDatee.getFullYear(), 2, 31); // Month is zero-based (2 for March)
+
+  // // const startFinancialYear = new Date(currentDate.getFullYear() - 1, 3, 1);
+  // const currentYear = currentDate.getFullYear();
+  // const startFinancialYear = new Date(currentYear, 3, 1); // April 1 of the current year
+  // const startPastYear = startFinancialYear.getFullYear() - 1;
+  // const startYear = startFinancialYear.getFullYear();
+
+  // const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
+  // const startDay = String(startFinancialYear.getDate()).padStart(2, '0');
+
+  // const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
+  // const formattedStartPastDate = `${startPastYear}-${startMonth}-${startDay}`;
+
+  // const endYear = endFinancialYear.getFullYear();
+  // const endMonth = String(endFinancialYear.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
+  // const endDay = String(endFinancialYear.getDate()).padStart(2, '0');
+
+  // // const formattedEndDate = endFinancialYear.toISOString().split('T')[0];
+  // const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
+  // const year = currentDate.getFullYear();
+  // const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  // const day = String(currentDate.getDate()).padStart(2, '0');
+  // const formattedDate = `${year}-${month}-${day}`;
+
   const currentDatee = new Date();
 
-  // Calculate the start date of the current financial year (April 1 of the current year)
-  //  const startFinancialYear = new Date(currentDatee.getFullYear() -1, 3, 1); // Month is zero-based (3 for April)
+  const year = currentDatee.getFullYear();
 
-  // Calculate the end date of the current financial year (March 31 of the next year)
-  const endFinancialYear = new Date(currentDatee.getFullYear(), 2, 31); // Month is zero-based (2 for March)
+  const month = String(currentDatee.getMonth() + 1).padStart(2, '0');
 
-  // const startFinancialYear = new Date(currentDate.getFullYear() - 1, 3, 1);
-  const currentYear = currentDate.getFullYear();
-  const startFinancialYear = new Date(currentYear, 3, 1); // April 1 of the current year
+  const day = String(currentDatee.getDate()).padStart(2, '0');
+
+  // Determine the start of the financial year
+
+  let startFinancialYear;
+
+  if (month >= 3) {
+    // April or later
+
+    startFinancialYear = new Date(year, 3, 1); // April 1 of the current year
+  } else {
+    startFinancialYear = new Date(year - 1, 3, 1); // April 1 of the previous year
+  }
+
+  // Determine the end of the financial year
   const startPastYear = startFinancialYear.getFullYear() - 1;
+
+  const endFinancialYear = new Date(
+    startFinancialYear.getFullYear() + 1,
+
+    2,
+
+    31
+  ); // March 31 of the next year
+
+  // Format dates
+
   const startYear = startFinancialYear.getFullYear();
 
-  const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
+  const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, '0');
+
   const startDay = String(startFinancialYear.getDate()).padStart(2, '0');
 
   const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
-  const formattedStartPastDate = `${startPastYear}-${startMonth}-${startDay}`;
 
-  const endYear = endFinancialYear.getFullYear();
-  const endMonth = String(endFinancialYear.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
-  const endDay = String(endFinancialYear.getDate()).padStart(2, '0');
-
-  // const formattedEndDate = endFinancialYear.toISOString().split('T')[0];
-  const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
-
-  const year = currentDate.getFullYear();
-  const month = String(currentDate.getMonth() + 1).padStart(2, '0');
-  const day = String(currentDate.getDate()).padStart(2, '0');
   const formattedDate = `${year}-${month}-${day}`;
 
+  const formattedStartPastDate = `${startPastYear}-${startMonth}-${startDay}`;
+
   let recordRoom = userDropdown && userDropdown.filter((d) => d.value === 692);
-  console.log('rrr', recordRoom);
 
   return (
     <div className="container-xxl">
@@ -1042,7 +1085,6 @@ export default function CreateBillCheckingTransaction({ match }) {
                         defaultValue={data.vendor_bill_no}
                       />
                     </div>
-
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
                         <b>
