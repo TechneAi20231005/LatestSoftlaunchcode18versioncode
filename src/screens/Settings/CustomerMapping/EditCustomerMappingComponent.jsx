@@ -249,7 +249,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     await new TemplateService().getTemplate().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const select = res.data.data.map((d) => ({
+          const select = res.data.data.data.map((d) => ({
             value: d.id,
             label: d.template_name
           }));

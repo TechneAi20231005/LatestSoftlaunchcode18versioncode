@@ -226,7 +226,7 @@ export const CustomerMappingSlice = createSlice({
       state.isLoading.customerMappingList = false;
       state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        const activeTemplate = payload.data.data.filter(
+        const activeTemplate = payload.data.data.data.filter(
           (d) => d.is_active == 1
         );
 
