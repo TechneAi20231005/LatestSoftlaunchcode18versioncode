@@ -163,7 +163,7 @@ export const dashboardUrl = _apiUrl + 'dashboard';
 export const notificationUrl = _apiUrl + 'notification';
 
 export const settingMasterUrl = {
-  customerMapping: _apiUrl + 'customerMapping',
+  customerMapping: _rewampApiUrl + 'customerMapping',
   moduleSetting: _apiUrl + 'moduleSetting',
   getModuleSetting: _apiUrl + 'module',
   getGeneralSetting: _rewampApiUrl + 'consolidatedView'

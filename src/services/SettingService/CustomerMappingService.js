@@ -5,13 +5,18 @@ import { settingMasterUrl } from '../../settings/constants';
 
 const _URL = settingMasterUrl.customerMapping;
 
-const _getAllCustomerMapping = _URL + '/getAllCustomerMapping';
+const _getAllCustomerMapping = `${_URL}/getData?export=1`;
+// _URL + '/getAllCustomerMapping';
 const _getExportData = _URL + '/getExportCustomerMapping';
-const _createCustomerMapping = _URL + '/createCustomerMapping';
-const _getCustomerMappingById = _URL + '/getCustomerMappingById';
-const _updateCustomerMapping = _URL + '/updateCustomerMapping/';
+const _createCustomerMapping = `${_URL}/postData`;
+// _URL + '/createCustomerMapping';
+const _getCustomerMappingById = `${_URL}/getData`;
+// _URL + '/getCustomerMappingById';
+const _updateCustomerMapping = `${_URL}/postData/`;
+// _URL + '/updateCustomerMapping/';
 const _priorityDropdown = _URL + '/priorityDropdown';
-const _exportCustomerMapping = _URL + '/getExportCustomerMapping';
+const _exportCustomerMapping = `${_URL}/getData?export=1`;
+//  _URL + '/getExportCustomerMapping';
 
 export function getDateTime() {
   var now = new Date();
