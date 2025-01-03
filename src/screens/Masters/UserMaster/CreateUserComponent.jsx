@@ -466,7 +466,7 @@ function CreateUserComponent({ match }) {
       if (res?.status === 200) {
         if (res?.data?.status === 1) {
           setCustomerDrp(
-            res?.data.data
+            res?.data.data?.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({
                 value: d.id,
@@ -1539,7 +1539,7 @@ function CreateUserComponent({ match }) {
                           <Select
                             options={options}
                             id={`ticket_show_type_id_` + idx}
-                            name="ticket_show_type[]"
+                            name="ticket_show_type_id[]"
                             onChange={(e) => {
                               handleCheckInput(e, idx, 'TICKET_SHOW');
                             }}

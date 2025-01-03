@@ -502,8 +502,8 @@ export const DashbordSlice = createSlice({
       state.isLoading.employeeDataList = false;
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let employeeData = payload.data.data;
-        state.getAllTesterDataList = payload?.data?.data
+        let employeeData = payload.data.data?.data;
+        state.getAllTesterDataList = payload?.data?.data?.data
           .filter((d) => d?.role === 'Tester' || d?.role === 'Sr Tester')
           .map((i) => ({
             value: i.id,

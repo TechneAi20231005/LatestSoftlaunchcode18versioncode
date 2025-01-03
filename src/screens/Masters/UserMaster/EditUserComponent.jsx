@@ -328,6 +328,7 @@ function EditUserComponent({ match }) {
   const handleForm = async (e) => {
     e.preventDefault();
     const form = new FormData(e.target);
+    form.append('account_for', data?.account_for);
     if (isReadOnly) {
       form.append('check1', 1);
     } else {
@@ -471,10 +472,10 @@ function EditUserComponent({ match }) {
     await new StateService().getState().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          setState(res.data.data.filter((d) => d.is_active === 1));
+          setState(res.data.data?.data?.filter((d) => d.is_active === 1));
 
           setStateDropdown(
-            res.data.data
+            res.data.data?.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({
                 value: d.id,
@@ -490,9 +491,9 @@ function EditUserComponent({ match }) {
     await new CityService().getCity().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          setCity(res.data.data.filter((d) => d.is_active === 1));
+          setCity(res.data.data?.data?.filter((d) => d.is_active === 1));
           setCityDropdown(
-            res.data.data
+            res.data.data?.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({
                 value: d.id,
@@ -508,7 +509,7 @@ function EditUserComponent({ match }) {
       if (res?.status === 200) {
         if (res?.data?.status === 1) {
           setDepartmentDropdown(
-            res.data.data
+            res.data.data?.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.department }))
           );
@@ -520,7 +521,7 @@ function EditUserComponent({ match }) {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setDesignationDropdown(
-            res.data.data
+            res.data.data?.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.designation }))
           );
@@ -761,7 +762,7 @@ function EditUserComponent({ match }) {
       try {
         const res = await new RoleService().getRole();
         if (res.status === 200 && res.data.status === 1) {
-          const data = res.data.data.filter((d) => d.is_active === 1);
+          const data = res.data.data?.data?.filter((d) => d.is_active === 1);
           const dropdownData = data.map((d) => ({
             value: d.id,
             label: d.role

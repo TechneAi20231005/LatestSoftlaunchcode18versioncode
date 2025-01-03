@@ -1,7 +1,16 @@
 import axios from 'axios';
 import { masterURL, userSessionData } from '../../settings/constants';
 import { getDateTime } from '../../components/Utilities/Functions';
+import {
+  REACT_APP_API_URL,
+  REACT_APP_PIN_CODE_API_URL,
+  REACT_APP_ATTACHMENT_URL,
+  REACT_APP_ROOT_URL,
+  REACT_APP_API_REWAMP_BASE_URL
+} from '../../config/envConfig';
 const _URL = masterURL.user;
+
+const _rewampApiUrl = REACT_APP_API_REWAMP_BASE_URL;
 
 export default class UserService {
   // getUser(){
@@ -18,7 +27,10 @@ export default class UserService {
       }
     };
 
-    return axios.get(_URL, config);
+    return axios.get(
+      _rewampApiUrl + 'employeeMaster' + '/getData?export=1',
+      config
+    );
   }
 
   // getExportTicket() {
@@ -51,7 +63,10 @@ export default class UserService {
 
     // const url = `${_URL}?type=EXPORT`
 
-    return axios.get(_URL + '/export' + '/getData', config);
+    return axios.get(
+      _rewampApiUrl + 'employeeMaster' + '/getData?export=1',
+      config
+    );
   }
 
   getUserForMyTickets(queryParams) {
@@ -120,7 +135,11 @@ export default class UserService {
       }
     };
 
-    return axios.post(_URL, payload, config);
+    return axios.post(
+      _rewampApiUrl + 'employeeMaster' + '/postData',
+      payload,
+      config
+    );
   }
 
   //   getUserById(id) {
@@ -136,7 +155,10 @@ export default class UserService {
         'Content-Type': 'application/json'
       }
     };
-    return axios.get(_URL + '/' + id, config);
+    return axios.get(
+      _rewampApiUrl + 'employeeMaster' + '/getData/' + id,
+      config
+    );
   }
 
   updateUser(id, payload) {
@@ -155,7 +177,11 @@ export default class UserService {
       }
     };
 
-    return axios.post(_URL + '/' + id, payload, config);
+    return axios.post(
+      _rewampApiUrl + 'employeeMaster' + '/postData' + '/' + id,
+      payload,
+      config
+    );
   }
 
   updateAccountDetails(id, payload) {
@@ -173,7 +199,11 @@ export default class UserService {
       }
     };
 
-    return axios.post(_URL + '/updateAccountDetails/' + id, payload, config);
+    return axios.post(
+      _rewampApiUrl + 'employeeMaster' + '/postData/' + id,
+      payload,
+      config
+    );
   }
 
   updatePasswordDetails(id, payload) {
