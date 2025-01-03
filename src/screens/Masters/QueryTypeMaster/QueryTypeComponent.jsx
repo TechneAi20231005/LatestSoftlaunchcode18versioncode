@@ -65,7 +65,6 @@ function QueryTypeComponent() {
 
   // ***************************** Edit & View Popup*************************************
   const [queryGroupData, setQueryGroupData] = useState(null);
-
   const [modalEditPopup, setModalEditPopup] = useState({
     showModalEditPopup: false,
     modalDataEditPopup: '',
@@ -108,6 +107,7 @@ function QueryTypeComponent() {
         exportTemporaryData.push({
           Sr: temp[i].counter,
           group_name: temp[i].group_name,
+          form_name: temp[i].form_name,
           Status: temp[i].is_active ? 'Active' : 'Deactive',
           created_at: temp[i].created_at,
           created_by: temp[i].created_by,
@@ -392,7 +392,7 @@ function QueryTypeComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          <button
+          {/* <button
             href="#"
             onClick={(e) => {
               handleFormQueryGroup({
@@ -401,20 +401,20 @@ function QueryTypeComponent() {
                 modalHeaderQueryGroup: ''
               });
             }}
-          >
-            {row.created_at && (
-              <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
-                <div>
-                  <span className="ms-1">
-                    {' '}
-                    {row.created_at && row.created_at.length < 123
-                      ? row.created_at
-                      : row.created_at.substring(0, 123) + '....'}
-                  </span>
-                </div>
-              </OverlayTrigger>
-            )}
-          </button>
+          > */}
+          {row.created_at && (
+            <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.created_at && row.created_at.length < 123
+                    ? row.created_at
+                    : row.created_at.substring(0, 123) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+          {/* </button> */}
         </div>
       )
     },
@@ -633,6 +633,7 @@ function QueryTypeComponent() {
               Sr: data[i].counter,
               Query_Type_Name: data[i].query_type_name,
               query_group_name: temp[i].query_group_name,
+              form_name: temp[i].form_name,
               Status: data[i].is_active ? 'Active' : 'Deactive',
               Remark: data[i].remark,
               created_at: data[i].created_at,
@@ -845,10 +846,7 @@ function QueryTypeComponent() {
       : [],
     remark: modal.modalData ? modal.modalData?.remark : '',
 
-    is_active:
-      modal?.modalData?.is_active !== undefined
-        ? String(modal?.modalData?.is_active)
-        : '1'
+    is_active: String(modal?.modalData?.is_active) ?? '1'
   };
   const fields = [
     {
@@ -856,10 +854,18 @@ function QueryTypeComponent() {
       label: 'Query Type name',
       required: true,
       alphaNumeric: true,
-      max: 100
+      max: 100,
+      min: 3
     },
     { name: 'form_id', label: 'Select Form', required: true },
-    { name: 'query_group_data', label: 'Query Group', isObject: true }
+    { name: 'query_group_data', label: 'Query Group', isObject: true },
+    {
+      name: 'remark',
+      label: 'remark',
+      required: false,
+      alphaNumeric: true,
+      max: 1000
+    }
   ];
 
   const validationSchema = CustomValidation(fields);
@@ -896,6 +902,7 @@ function QueryTypeComponent() {
         />
         <SearchBoxHeader
           setSearchTerm={setSearchTerm}
+          searchTerm={searchTerm}
           handleSearch={handleSearch}
           handleReset={handleReset}
           placeholder="Search by query name...."
@@ -959,11 +966,11 @@ function QueryTypeComponent() {
                           className="form-control form-control-sm"
                           id="query_type_name"
                           name="query_type_name"
-                          placeholder="Please start with string"
-                          maxLength={50}
-                          onKeyPress={(e) =>
-                            Validation.CharactersNumbersOnly(e)
-                          }
+                          placeholder="Enter query type"
+                          // maxLength={50}
+                          // onKeyPress={(e) =>
+                          //   Validation.CharactersNumbersOnly(e)
+                          // }
                         />
                         <ErrorMessage
                           name="query_type_name"
@@ -988,9 +995,12 @@ function QueryTypeComponent() {
                                 )
                               : ''
                           }
-                          onChange={(option) =>
-                            setFieldValue('form_id', option?.value)
-                          }
+                          isClearable={true}
+                          onChange={(option) => {
+                            if (!option || Object.entries(option).length === 0)
+                              return;
+                            setFieldValue('form_id', option?.value);
+                          }}
                         />
                         <ErrorMessage
                           name="form_id"
@@ -1011,7 +1021,9 @@ function QueryTypeComponent() {
                             name="query_group_data"
                             isMulti
                             value={values.query_group_data}
+                            isClearable={true}
                             // value={values.query_group_data}
+
                             onChange={(options) => {
                               setFieldValue('query_group_data', options);
                             }}
@@ -1132,14 +1144,6 @@ function QueryTypeComponent() {
                                   name="is_active"
                                   id="is_active_1"
                                   value="1"
-                                  defaultChecked={
-                                    modal.modalData &&
-                                    modal.modalData.is_active === 1
-                                      ? true
-                                      : !modal.modalData
-                                      ? true
-                                      : false
-                                  }
                                 />
                                 <label
                                   className="form-check-label"

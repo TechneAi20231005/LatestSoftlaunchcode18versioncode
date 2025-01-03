@@ -148,10 +148,7 @@ function StatusComponent() {
   const initialValues = {
     status: modal.modalData ? modal.modalData.status : '',
     remark: modal.modalData ? modal.modalData.remark : '',
-    is_active:
-      modal?.modalData?.is_active !== undefined
-        ? String(modal?.modalData?.is_active)
-        : '1'
+    is_active: String(modal?.modalData?.is_active) ?? '1'
   };
 
   const fields = [
@@ -173,10 +170,8 @@ function StatusComponent() {
 
   const validationSchema = CustomValidation(fields);
   const loadData = async () => {};
-  // console.log(modal.modalData, 'modalData');
 
   const handleForm = async (values, id) => {
-    console.log(id, values, 'formDatas');
     const formData = new FormData();
     formData.append('status', values.status);
     formData.append('remark', values.remark);

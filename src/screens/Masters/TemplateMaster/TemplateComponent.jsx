@@ -33,6 +33,7 @@ function TemplateComponent() {
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.exportData
   );
 
+
   const notify = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
   );
@@ -199,6 +200,7 @@ function TemplateComponent() {
 
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by template name...."

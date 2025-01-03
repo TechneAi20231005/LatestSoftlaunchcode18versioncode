@@ -216,6 +216,7 @@ export default function CreateCustomer({ match }) {
   };
 
   const handleCountryChange = (e) => {
+    if (!e || Object.entries(e).length === 0) return;
     setStateDropdownData(
       stateDropdown
         .filter((filterState) => filterState.country_id === e.value)
@@ -229,6 +230,7 @@ export default function CreateCustomer({ match }) {
   };
 
   const handleStateChange = (e) => {
+    if (!e || Object.entries(e).length === 0) return;
     setCityDropdownData(
       AllcityDropDownData.filter(
         (filterState) => filterState.state_id === e.value
@@ -295,7 +297,7 @@ export default function CreateCustomer({ match }) {
     country_id: '',
     state_id: '',
     city_id: '',
-    is_active: 1,
+    is_active: 1
   };
   const fields = [
     {
@@ -387,6 +389,7 @@ export default function CreateCustomer({ match }) {
                             options={customerType}
                             name="customer_type_id"
                             id="customer_type_id"
+                            isClearable={true}
                             onChange={(option) => {
                               setFieldValue('customer_type_id', option?.value);
                             }}
@@ -556,6 +559,7 @@ export default function CreateCustomer({ match }) {
                           options={countryDropdown}
                           id="country_id"
                           name="country_id"
+                          isClearable={true}
                           onChange={(option) => {
                             setFieldValue('state_id', null);
                             setFieldValue('city_id', null);
@@ -595,6 +599,7 @@ export default function CreateCustomer({ match }) {
                                 )
                               : null // Ensure value is null if no match
                           }
+                          isClearable={true}
                           onChange={(option) => {
                             console.log(option);
                             setFieldValue('city_id', null);
@@ -631,6 +636,7 @@ export default function CreateCustomer({ match }) {
                           }
                           id="city_id"
                           name="city_id"
+                          isClearable={true}
                           value={
                             values.city_id
                               ? cityDropdownData?.find(

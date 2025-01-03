@@ -493,7 +493,7 @@ function TaskAndTicketTypeMaster(props) {
                     : temp[i].parent_name,
 
                 remark: temp[i].remark,
-                is_active: temp[i].is_active === 1 ? 'Active' : 'Deactive',
+                status: temp[i].is_active === 1 ? 'Active' : 'Deactive',
                 created_at: temp[i].created_at,
                 created_by: temp[i].created_by,
                 updated_at: temp[i].updated_at,
@@ -673,7 +673,7 @@ function TaskAndTicketTypeMaster(props) {
                 parent_name: temp[i].parent_name,
                 type_name: temp[i].type_name,
                 remark: temp[i].remark,
-                is_active: temp[i].is_active,
+                active: temp[i].is_active,
                 created_at: temp[i].created_at,
                 created_by: temp[i].created_by,
                 updated_at: temp[i].updated_at,
@@ -967,12 +967,13 @@ function TaskAndTicketTypeMaster(props) {
       name: 'type_name',
       label: 'Type name',
       required: true,
-      alphaNumeric: false
+      alphaNumeric: true,
+      max: 100
     },
     {
       name: 'remark',
       label: 'Remark',
-      max: 1000,
+      max: 255,
       required: false,
       alphaNumeric: true
     }
@@ -1024,6 +1025,7 @@ function TaskAndTicketTypeMaster(props) {
 
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by task and ticket type name...."

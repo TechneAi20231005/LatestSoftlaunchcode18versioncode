@@ -824,6 +824,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         // className="form-control form-control"
                         options={billTypeDropdown}
                         // onChange={(e) => handleAssignToPerson(e)}
+                        isClearable={true}
                         onChange={(e) => {
                           handleAssignToPerson(e);
                           handleBillTypeChange(e); // Call the function to clear the assign to field
@@ -851,6 +852,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         name="assign_to"
                         placeholder="Assign To"
                         required
+                        isClearable={true}
                       />
                       {/* )} */}
                     </div>
@@ -869,6 +871,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         name="vendor_name"
                         options={vendorDropdown}
                         required
+                        isClearable={true}
                       />
                     )}
                   </div>

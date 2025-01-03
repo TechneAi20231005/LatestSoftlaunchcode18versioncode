@@ -264,12 +264,12 @@ const EditTemplateComponent = ({ match, props }) => {
       }
     });
 
-    await new TaskTicketTypeService()?.getTaskType()?.then((res) => {
+    await new TaskTicketTypeService().getChildrenData("TASK")?.then((res) => {
       if (res?.status === 200) {
-        setTaskData(res?.data?.data);
+        setTaskData(res?.data?.data?.data);
       }
     });
-    dispatch(getAllTypeData());
+    // dispatch(getAllTypeData());
 
     dispatch(getRoles());
 
@@ -362,7 +362,9 @@ const EditTemplateComponent = ({ match, props }) => {
     }
     if (flag === 1) {
       dispatch(basketinEditData({ id: templateId, payload: formData }));
-      loadData();
+      setTimeout(() => {
+        loadData();
+      }, 1000);
     }
   };
 
@@ -401,7 +403,7 @@ const EditTemplateComponent = ({ match, props }) => {
 
     dispatch(
       addTaskinBasketData({
-        templateId: templateId,
+        // templateId: templateId,
         basketId: basketId,
         payload: formData
       })
