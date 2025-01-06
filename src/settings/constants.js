@@ -144,7 +144,7 @@ export const errorLogUrl = {
 };
 
 export const consolidateViewUrl = {
-  consolidateViewUrl: _apiUrl + 'consolidatedView'
+  consolidateViewUrl: _rewampApiUrl + 'consolidatedView'
 };
 
 export const projectManagementUrl = {

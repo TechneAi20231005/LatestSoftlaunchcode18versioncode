@@ -133,6 +133,7 @@ export default function CurrentClientProject(props) {
             </button>
             <h6 className=" fw-bold p-2">View Module</h6>
           </div>
+
           {props.data.project_modules
             .filter((d) => d.is_active === 1)
             .map((e, i) => {

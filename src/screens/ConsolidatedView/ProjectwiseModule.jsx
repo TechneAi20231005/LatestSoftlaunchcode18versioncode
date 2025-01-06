@@ -89,7 +89,7 @@ export default function ProjectwiseModule() {
             setData(null);
             setData(res.data.data);
             setId(res.data.data.id);
-            setIsProjectActive(res?.data?.data?.is_project_active);
+            setIsProjectActive(res?.data?.data?.project?.is_project_active);
           }
         }
       });
@@ -97,7 +97,7 @@ export default function ProjectwiseModule() {
     await new ModuleService().getModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const temp = res?.data?.data;
+          const temp = res?.data?.data.data;
           // const a = res.data.data.filter((d) => d.module_id);
 
           const findModuleActivity = temp.filter(
@@ -122,9 +122,10 @@ export default function ProjectwiseModule() {
     await new SubModuleService().getSubModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const temp = res.data.data;
+          const temp = res.data.data.data;
+
           // const a = res.data.data.filter((d) => d.module_id);
-          setSubmoduleData(res.data.data);
+          setSubmoduleData(res.data.data.data);
           const findSubModuleActivity = temp.filter(
             (subModule) => subModule.id == subModuleValue
           );
@@ -1130,6 +1131,7 @@ export default function ProjectwiseModule() {
                   </div>
                 </div>
               </div>
+
               <div
                 className={
                   isProjectActive === 1
