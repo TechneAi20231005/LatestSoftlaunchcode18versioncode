@@ -89,7 +89,7 @@ export default function ProjectwiseModule() {
             setData(null);
             setData(res.data.data);
             setId(res.data.data.id);
-            setIsProjectActive(res?.data?.project?.is_project_active);
+            setIsProjectActive(res?.data?.data?.project?.is_project_active);
           }
         }
       });
@@ -123,8 +123,9 @@ export default function ProjectwiseModule() {
       if (res.status === 200) {
         if (res.data.status == 1) {
           const temp = res.data.data.data;
+
           // const a = res.data.data.filter((d) => d.module_id);
-          setSubmoduleData(res.data.data);
+          setSubmoduleData(res.data.data.data);
           const findSubModuleActivity = temp.filter(
             (subModule) => subModule.id == subModuleValue
           );
@@ -1130,12 +1131,6 @@ export default function ProjectwiseModule() {
                   </div>
                 </div>
               </div>
-              {console.log('isProjectActive', isProjectActive)}
-              {console.log('isReviewer', isReviewer)}
-              {console.log('isProjectOwner', isProjectOwner)}
-
-              {console.log('checkDelete', checkDelete)}
-              {console.log('showbtn', showbtn)}
 
               <div
                 className={
@@ -1144,27 +1139,27 @@ export default function ProjectwiseModule() {
                     : 'd-none col-4 text-center'
                 }
               >
-                {/* {showbtn === true &&
+                {showbtn === true &&
                   docList &&
                   selectedRows?.length > 0 &&
                   (checkDelete === true ||
                     isProjectOwner === 1 ||
-                    isReviewer === 1) && ( */}
-                <button
-                  type="button"
-                  // disabled={
-                  //   isProjectOwner === 1 ||
-                  //   isReviewer === 1 ||
-                  //   checkDelete === true
-                  //     ? false
-                  //     : true
-                  // }
-                  className="btn btn-danger"
-                  onClick={deleteRestoreDoc}
-                >
-                  Delete File
-                </button>
-                {/* )} */}
+                    isReviewer === 1) && (
+                    <button
+                      type="button"
+                      disabled={
+                        isProjectOwner === 1 ||
+                        isReviewer === 1 ||
+                        checkDelete === true
+                          ? false
+                          : true
+                      }
+                      className="btn btn-danger"
+                      onClick={deleteRestoreDoc}
+                    >
+                      Delete File
+                    </button>
+                  )}
                 {showbtn === false && docList && selectedRows?.length > 0 && (
                   <button
                     type="button"
