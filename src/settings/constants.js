@@ -120,7 +120,7 @@ export const dynamicURL = {
 };
 
 export const ticketUrl = {
-  ticket: _apiUrl + 'ticketMaster',
+  ticket: _rewampApiUrl + 'ticketMaster',
   dynamicForm: _apiUrl + 'createForm',
   basket: _apiUrl + 'ticketBasket',
   task: _apiUrl + 'ticketTask',
