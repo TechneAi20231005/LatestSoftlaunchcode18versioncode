@@ -84,7 +84,6 @@ export default function BasketDetails(props) {
 
   const handleForm = async (values) => {
     // e.preventDefault();
-    console.log('values', values);
     const formData = new FormData();
     formData.append('basket_name[]', values.basket_name);
     formData.append('basket_owner[]', values.basket_owner);
@@ -95,7 +94,11 @@ export default function BasketDetails(props) {
     formData.append('source', 'AFTER_TICKET_INSERT');
     if (formData.get('id')) {
       await new BasketService()
-        .updateBasket(formData.get('id'), formData)
+        .updateBasket(
+          props.data.id,
+          // formData.get('id'),
+          formData
+        )
 
         .then((res) => {
           if (res.status === 200) {

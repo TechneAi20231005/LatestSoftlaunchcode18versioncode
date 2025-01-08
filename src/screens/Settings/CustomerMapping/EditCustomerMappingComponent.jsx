@@ -138,12 +138,12 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       name: 'approach',
       label: 'approach',
       required: true
-    },
-    {
-      name: 'department_id',
-      label: 'department_id',
-      required: true
     }
+    // {
+    //   name: 'department_id',
+    //   label: 'department_id',
+    //   required: true
+    // }
   ];
 
   const validationSchema = CustomValidation(fields);
@@ -491,7 +491,21 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   };
 
   const handleForm = async (values) => {
-    const userIds = values?.user_id?.map((user) => user.user_id) || [];
+    let userIds;
+
+    if (Array?.isArray(values?.user_id)) {
+      // Check if the first item is an object
+      if (
+        values?.user_id.length > 0 &&
+        typeof values?.user_id[0] === 'object'
+      ) {
+        userIds = values?.user_id.map((user) => user?.user_id); // Extract user_id from objects
+      } else {
+        userIds = values?.user_id; // Already an array of IDs
+      }
+    } else {
+      userIds = []; // Default to an empty array if values.user_id is not an array
+    }
 
     let userIDs;
     if (Array.isArray(useridDetail?.current?.props?.value)) {
@@ -503,7 +517,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
     const getUserData = () => {
       const userIds = userDropdown?.map((ele) => ele?.value);
-
       return userIds;
     };
 
@@ -515,7 +528,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     } else {
       values.user_id = userIds;
     }
-
+    if (values.approach != 'AU') {
+      values.department_id = values?.department_id;
+    }
     values.tenant_id = localStorage.getItem('tenant_id');
     values.created_by = userSessionData.userId;
     values.created_at = getDateTime();
@@ -589,29 +604,72 @@ export default function EditCustomerMappingComponentBackup({ match }) {
             {data && (
               <Formik
                 enableReinitialize
-                initialValues={{
-                  customer_type_id: data.customer_type_id
-                    ? data.customer_type_id
-                    : [],
-                  query_type_id: data.query_type_id ? data.query_type_id : '',
-                  dynamic_form_id: data.dynamic_form_id
-                    ? data.dynamic_form_id
-                    : '',
-                  template_id: data.template_id ? data.template_id : '',
-                  priority: data?.priority ? data.priority : '',
-                  confirmation_required:
-                    data?.confirmation_required !== undefined
-                      ? String(data?.confirmation_required)
-                      : '1',
-                  approach: data.approach ? data.approach : '',
-                  department_id: data.department_id ? data.department_id : '',
-                  user_id: data.user_policy ? data.user_policy : [],
-                  is_active:
-                    data?.is_active !== undefined
-                      ? String(data?.is_active)
-                      : '1'
+                initialValues={
+                  data?.approach !== 'AU'
+                    ? {
+                        customer_type_id: data.customer_type_id
+                          ? data.customer_type_id
+                          : [],
+                        query_type_id: data.query_type_id
+                          ? data.query_type_id
+                          : '',
+                        dynamic_form_id: data.dynamic_form_id
+                          ? data.dynamic_form_id
+                          : '',
+                        template_id: data.template_id ? data.template_id : '',
+                        priority: data?.priority ? data.priority : '',
+                        confirmation_required:
+                          data?.confirmation_required !== undefined
+                            ? String(data?.confirmation_required)
+                            : '1',
+                        approach: data.approach ? data.approach : '',
+                        department_id: data.department_id
+                          ? data.department_id
+                          : '',
+                        user_id: data.user_policy ? data.user_policy : [],
+                        is_active:
+                          data?.is_active !== undefined
+                            ? String(data?.is_active)
+                            : '1'
+                      }
+                    : {
+                        customer_type_id: data.customer_type_id
+                          ? data.customer_type_id
+                          : [],
+                        query_type_id: data.query_type_id
+                          ? data.query_type_id
+                          : '',
+                        dynamic_form_id: data.dynamic_form_id
+                          ? data.dynamic_form_id
+                          : '',
+                        template_id: data.template_id ? data.template_id : '',
+                        priority: data?.priority ? data.priority : '',
+                        confirmation_required:
+                          data?.confirmation_required !== undefined
+                            ? String(data?.confirmation_required)
+                            : '1',
+                        approach: data.approach ? data.approach : '',
+                        // department_id: data.department_id ? data.department_id : '',
+                        // user_id: data.user_policy ? data.user_policy : [],
+                        is_active:
+                          data?.is_active !== undefined
+                            ? String(data?.is_active)
+                            : '1'
+                      }
+                }
+                // validationSchema={validationSchema}
+                validationSchema={(values) => {
+                  if (data?.approach !== 'AU') {
+                    fields.push({
+                      name: 'department_id',
+                      label: 'Department ID',
+                      required: true
+                    });
+                  }
+
+                  // Generate validation schema dynamically
+                  return CustomValidation(fields);
                 }}
-                validationSchema={validationSchema}
                 onSubmit={(values) => {
                   handleForm(values);
                 }}
@@ -1166,7 +1224,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                       />
                                     )}
                                   </Field>
-
                                   <ErrorMessage
                                     name="user_id"
                                     component="small"
