@@ -12,6 +12,8 @@ import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 import { getRoles } from '../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { CustomValidation } from '../../components/custom/CustomValidation/CustomValidation';
 
 export default function ResourcePlanningReportComponent() {
   const dispatch = useDispatch();
@@ -32,7 +34,7 @@ export default function ResourcePlanningReportComponent() {
     { name: 'Ticket Id', selector: (row) => row.ticket_id, sortable: true },
     {
       name: 'Job Role',
-      selector: (row) => row.job_role || "-",
+      selector: (row) => row.job_role || '-',
       sortable: true,
       width: '150px'
     },
@@ -44,11 +46,10 @@ export default function ResourcePlanningReportComponent() {
     },
     {
       name: 'Sprint Name',
-      selector: (row) => row.sprint_name || "-",
+      selector: (row) => row.sprint_name || '-',
       sortable: true,
       width: '150px'
     },
-
 
     {
       name: 'Task Name',
@@ -223,6 +224,7 @@ export default function ResourcePlanningReportComponent() {
   }, [dispatch]);
 
   const handleFromDate = (e) => {
+    console.log(e.target.value, 'e.target.value');
     const gettodatevalue = e.target.value;
     const setdateformat = gettodatevalue.split('-');
     const settoyear = setdateformat[0];
@@ -245,14 +247,21 @@ export default function ResourcePlanningReportComponent() {
     setFromdateformat(setfromformatdate);
   };
 
-  const handleForm = async (e) => {
+  const handleForm = async (values) => {
     setShowLoaderModal(true);
-    e.preventDefault();
-    const formData = new FormData(e.target);
+    // e.preventDefault();
+    const formData = new FormData();
+    formData.append('from_date', values.from_date);
+    formData.append('to_date', values.to_date);
+    values?.user_id?.forEach((item) => {
+      formData?.append('user_id[]', item?.value);
+    });
+    // const formData = new FormData(e.target);
     const tempData = [];
     const exportTempData = [];
 
     if (todateformat > fromdateformat) {
+      setShowLoaderModal(false);
       alert('Please select Date After From date');
     } else {
       await new ReportService()
@@ -291,11 +300,11 @@ export default function ResourcePlanningReportComponent() {
                   exportTempData.push({
                     sr: count++,
                     ticket_id: data[key].ticket_id,
-                    job_role: data[key].job_role || "-",
+                    job_role: data[key].job_role || '-',
                     task_owner: data[key].task_owner,
-                    sprint_name: data[key].sprint_name || "-",
-                    sprint_start_date: data[key].sprint_start_date || "-",
-                    sprint_end_date: data[key].sprint_end_date || "-",
+                    sprint_name: data[key].sprint_name || '-',
+                    sprint_start_date: data[key].sprint_start_date || '-',
+                    sprint_end_date: data[key].sprint_end_date || '-',
                     task_name: data[key].task_name,
                     type_name: data[key].type_name,
                     task_start_Date: data[key].task_start_Date,
@@ -352,96 +361,163 @@ export default function ResourcePlanningReportComponent() {
     }
   }, [checkRole]);
 
+  const fields = [
+    {
+      name: 'from_date',
+      label: 'From Date',
+      required: true,
+      alphaNumeric: false
+    },
+    {
+      name: 'to_date',
+      label: 'To Date',
+      required: true,
+      alphaNumeric: false
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
+
+  const initialValues = {
+    user_id: [],
+    from_date: '',
+    to_date: ''
+  };
+
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Variance Report" />
 
       <div className="card mt-2" style={{ zIndex: 10 }}>
         <div className="card-body">
-          <form onSubmit={handleForm}>
-            <div className="row">
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>Select User :</b>
-                </label>
-                {userData && (
-                  <Select
-                    isMulti
-                    isSearchable={true}
-                    name="user_id[]"
-                    className="basic-multi-select"
-                    classNamePrefix="select"
-                    options={userData && userData}
-                  />
-                )}
-              </div>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(values) => {
+              // console.log(values, 'values');
+              handleForm(values);
+            }}
+          >
+            {({ setFieldValue, values }) => (
+              <Form>
+                {/* <form onSubmit={handleForm}> */}
+                <div className="row">
+                  <div className="col-md-3">
+                    <label htmlFor="" className="">
+                      <b>Select User :</b>
+                    </label>
+                    {userData && (
+                      <Select
+                        isMulti
+                        isSearchable={true}
+                        name="user_id"
+                        className="basic-multi-select"
+                        classNamePrefix="select"
+                        options={userData && userData}
+                        onChange={(option) =>
+                          // console.log(option, "option")
+                          setFieldValue('user_id', option || null)
+                        }
+                      />
+                    )}
+                  </div>
 
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>
-                    From Date : <Astrick color="red" size="13px" />
-                  </b>
-                </label>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  onChange={handleFromDate}
-                  name="from_date"
-                  required
-                />
-              </div>
+                  <div className="col-md-3">
+                    <label htmlFor="" className="">
+                      <b>
+                        From Date : <Astrick color="red" size="13px" />
+                      </b>
+                    </label>
+                    <Field
+                      type="date"
+                      className="form-control form-control-sm"
+                      // onChange={handleFromDate}
+                      onChange={(option) => {
+                        handleFromDate(option);
+                        setFieldValue(
+                          'from_date',
+                          option?.target?.value || null
+                        );
+                      }}
 
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>
-                    To Date : <Astrick color="red" size="13px" />
-                  </b>
-                </label>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  onChange={handleToDate}
-                  name="to_date"
-                  required
-                />
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-md-2">
-                <button
-                  className="btn btn-sm btn-warning text-white"
-                  type="submit"
-                  style={{ marginTop: '20px', fontWeight: '600' }}
-                >
-                  <i className="icofont-search-1 "></i> Search
-                </button>
-                <button
-                  className="btn btn-sm btn-info text-white"
-                  type="button"
-                  onClick={() => window.location.reload(false)}
-                  style={{ marginTop: '20px', fontWeight: '600' }}
-                >
-                  <i className="icofont-refresh text-white"></i> Reset
-                </button>
-              </div>
-              {data && data.length > 0 && (
-                <div
-                  className="col-md-10"
-                  style={{
-                    textAlign: 'right',
-                    marginTop: '20px',
-                    fontWeight: '600'
-                  }}
-                >
-                  <ExportToExcel
-                    className="btn btn-sm btn-danger"
-                    apiData={exportData && exportData}
-                    fileName="Variance Report"
-                  />
+                      name="from_date"
+                      // required
+                    />
+                    <ErrorMessage
+                      name="from_date"
+                      component="small"
+                      className="text-danger"
+                    />
+                  </div>
+
+                  <div className="col-md-3">
+                    <label htmlFor="" className="">
+                      <b>
+                        To Date : <Astrick color="red" size="13px" />
+                      </b>
+                    </label>
+                    <Field
+                      type="date"
+                      className="form-control form-control-sm"
+                      // onChange={handleToDate}
+                      onChange={(option) => {
+                        handleToDate(option);
+                        setFieldValue(
+                          'to_date',
+                          option?.target?.value || null
+                        );
+                      }}
+
+                      name="to_date"
+
+                      // required
+                    />
+                    <ErrorMessage
+                      name="to_date"
+                      component="small"
+                      className="text-danger"
+                    />
+                  </div>
                 </div>
-              )}
-            </div>
-          </form>
+                <div className="row">
+                  <div className="col-md-2">
+                    <button
+                      className="btn btn-sm btn-warning text-white"
+                      type="submit"
+                      style={{ marginTop: '20px', fontWeight: '600' }}
+                    >
+                      <i className="icofont-search-1 "></i> Search
+                    </button>
+                    <button
+                      className="btn btn-sm btn-info text-white"
+                      type="button"
+                      onClick={() => window.location.reload(false)}
+                      style={{ marginTop: '20px', fontWeight: '600' }}
+                    >
+                      <i className="icofont-refresh text-white"></i> Reset
+                    </button>
+                  </div>
+                  {data && data.length > 0 && (
+                    <div
+                      className="col-md-10"
+                      style={{
+                        textAlign: 'right',
+                        marginTop: '20px',
+                        fontWeight: '600'
+                      }}
+                    >
+                      <ExportToExcel
+                        className="btn btn-sm btn-danger"
+                        apiData={exportData && exportData}
+                        fileName="Variance Report"
+                      />
+                    </div>
+                  )}
+                </div>
+                {/* </form> */}
+              </Form>
+            )}
+          </Formik>
         </div>
       </div>
 
