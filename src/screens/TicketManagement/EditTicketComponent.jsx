@@ -516,7 +516,9 @@ export default function EditTicketComponent({ match }) {
           setEmailData(getUserData.filter((d) => d.is_active === 1));
           emilData?.filter((d) => d.id === data?.created_by);
 
-          setUserDropdown(select);
+
+            setUserDropdown(select);
+
           setUserdrp(select);
         }
       }
@@ -641,8 +643,8 @@ export default function EditTicketComponent({ match }) {
     await new DepartmentService().getDepartment().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const data = res.data.data.filter((d) => d.is_active === 1);
-          const select = res.data.data
+          const data = res.data.data?.data?.filter((d) => d.is_active === 1);
+          const select = res.data.data?.data
             .filter((d) => d.is_active === 1)
             .map((d) => ({ value: d.id, label: d.department }));
           setDepartment(data);
@@ -654,7 +656,7 @@ export default function EditTicketComponent({ match }) {
     await new ProjectService().getProject().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const temp = res.data.data.filter((d) => d.is_active === 1);
+          const temp = res.data.data?.data?.filter((d) => d.is_active === 1);
           setProjectData(temp);
           setProjectDropdown(
             temp.map((d) => ({ value: d.id, label: d.project_name }))
@@ -666,7 +668,7 @@ export default function EditTicketComponent({ match }) {
     await new ModuleService().getModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const temp = res.data.data.filter((d) => d.is_active === 1);
+          const temp = res.data.data?.data?.filter((d) => d.is_active === 1);
 
           setModuleData(temp);
           setModuleDropdown(
@@ -679,7 +681,7 @@ export default function EditTicketComponent({ match }) {
     await new SubModuleService().getSubModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const temp = res?.data?.data?.filter((d) => d.is_active === 1);
+          const temp = res?.data?.data?.data?.filter((d) => d.is_active === 1);
           setSubModuleData(temp);
           setSubModuleDropdown(
             temp?.map((d) => ({ value: d.id, label: d.sub_module_name }))
@@ -691,7 +693,7 @@ export default function EditTicketComponent({ match }) {
     await new StatusService().getStatus().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const temp = res.data.data.filter((d) => d.is_active === 1);
+          const temp = res.data.data?.data?.filter((d) => d.is_active === 1);
           setStatusValue(temp);
           const select = temp.map((d) => ({ value: d.id, label: d.status }));
           setStatusData(select);
@@ -699,9 +701,9 @@ export default function EditTicketComponent({ match }) {
       }
     });
 
-    await new TaskTicketTypeService()?.getTicketType()?.then((res) => {
+    await new TaskTicketTypeService().getChildrenData("TASK")?.then((res) => {
       if (res?.status === 200) {
-        setTicketsData(res?.data?.data);
+        setTicketsData(res?.data?.data?.data);
       }
     });
 
@@ -820,13 +822,13 @@ export default function EditTicketComponent({ match }) {
         .filter((d) => d.project_id == e.value)
         .map((d) => ({ value: d.id, label: d.module_name }))
     );
-    await new ProjectService().getReviewersByProject(e.value).then((res) => {
+    await new ProjectService().getProjectById(e.value).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setReviewerData(
-            res.data.data.map((d) => ({
+            res.data.data?.reviewers?.map((d) => ({
               value: d.user_id,
-              label: d.employee_name
+              label: d.first_name + ' ' + d.last_name
             }))
           );
         }
@@ -1331,7 +1333,8 @@ export default function EditTicketComponent({ match }) {
                             Assign to User : <Astrick color="red" size="13px" />
                           </b>
                         </label>
-                        {userDropdown && (
+
+                        {userDropdown && userDrp && (
                           <Select
                             id="assign_to_user_id"
                             name="assign_to_user_id"
@@ -1342,13 +1345,13 @@ export default function EditTicketComponent({ match }) {
                               }
                             }}
                             defaultValue={
-                              userDropdown &&
-                              data.assign_to_user_id &&
+                              // userDropdown &&
+                              // data.assign_to_user_id &&
                               userDropdown.filter(
                                 (d) => d.value == data.assign_to_user_id
                               )
                             }
-                            ref={userDepRef}
+                            // ref={userDepRef}
                             isDisabled={isSolved}
                           />
                         )}

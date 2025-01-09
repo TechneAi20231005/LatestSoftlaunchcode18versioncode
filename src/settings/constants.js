@@ -84,6 +84,8 @@ export const masterURL = {
   template: _rewampApiUrl + 'templateMaster',
   customerType: _rewampApiUrl + 'customerTypeMaster',
   queryType: _rewampApiUrl + 'queryTypeMaster/queryType',
+  queryTypeMapped: _rewampApiUrl + 'queryTypeMaster',
+
   getAllQueryGroup: _rewampApiUrl + 'queryTypeMaster/queryGroup',
 
   departmentMapping: _apiUrl + 'departmentMapping',
@@ -120,7 +122,7 @@ export const dynamicURL = {
 };
 
 export const ticketUrl = {
-  ticket: _apiUrl + 'ticketMaster',
+  ticket: _rewampApiUrl + 'ticketMaster',
   dynamicForm: _apiUrl + 'createForm',
   basket: _apiUrl + 'ticketBasket',
   task: _apiUrl + 'ticketTask',

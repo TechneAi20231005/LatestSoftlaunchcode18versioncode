@@ -88,7 +88,7 @@ export default class TaskTicketTypeService {
     return axios.get(_getTaskType, config);
   }
 
-  getTicketType(payload) {
+  getTicketType(type) {
     const token = localStorage.getItem('jwt_token');
 
     const config = {
@@ -99,7 +99,11 @@ export default class TaskTicketTypeService {
       }
     };
 
-    return axios.get(_getTicketType, config);
+    return axios.get(
+      _getTaskTicketType + type + '&grid=1&export=0',
+      config
+      // _getTicketType, config
+    );
   }
 
   getParent() {
