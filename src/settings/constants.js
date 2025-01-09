@@ -84,6 +84,8 @@ export const masterURL = {
   template: _rewampApiUrl + 'templateMaster',
   customerType: _rewampApiUrl + 'customerTypeMaster',
   queryType: _rewampApiUrl + 'queryTypeMaster/queryType',
+  queryTypeMapped: _rewampApiUrl + 'queryTypeMaster',
+
   getAllQueryGroup: _rewampApiUrl + 'queryTypeMaster/queryGroup',
 
   departmentMapping: _apiUrl + 'departmentMapping',

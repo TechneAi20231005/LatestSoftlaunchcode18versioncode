@@ -7,7 +7,7 @@ const _getAllTicket = _URL + '/getAllTicket/' + userSessionData.userId;
 const _getAllTicketTest = _URL + '/getAllTicketTest';
 const _getAllTicketNew = _URL + '/getAllTicketNew';
 
-const _createTicket = _URL + '/createTicket';
+const _createTicket = _URL + '/postData';
 const _updateTicket = _URL + '/updateTicket/';
 const _getTicketById = _URL + '/getTicketById/';
 const _createComment = _URL + '/comment/createComment';
