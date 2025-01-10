@@ -135,13 +135,15 @@ export default function CreateCustomerMappingComponent() {
       name: 'approach',
       label: 'approach',
       required: true
-    },
-    {
-      name: 'department_id',
-      label: 'department_id',
-      required: true
     }
+    // {
+    //   name: 'department_id',
+    //   label: 'department_id',
+    //   required: true
+    // }
   ];
+
+  // Conditionally add 'department_id' field based on approach
 
   const validationSchema = CustomValidation(fields);
 
@@ -153,9 +155,17 @@ export default function CreateCustomerMappingComponent() {
     priority: '',
     confirmation_required: '1',
     approach: '',
-    department_id: '',
+    // department_id: '',
     user_id: []
   };
+
+  if (initialValues.approach !== 'AU') {
+    fields.push({
+      name: 'department_id',
+      label: 'Department ID',
+      required: true
+    });
+  }
   const getDynamicForm = useCallback(async () => {
     try {
       const res = await new DynamicFormService().getDynamicForm();
@@ -352,8 +362,9 @@ export default function CreateCustomerMappingComponent() {
   const useridDetail = useRef();
 
   const handleForm = async (values) => {
+    // const userIds = values?.user_id?.map((user) => user.user_id) || [];
     let userIDs;
-    if (Array.isArray(useridDetail?.current?.props?.value)) {
+    if (Array?.isArray(useridDetail?.current?.props?.value)) {
       userIDs = useridDetail?.current?.props?.value?.map((item) => item.value);
     } else {
       const value = useridDetail?.current?.props?.value?.value;
@@ -378,6 +389,10 @@ export default function CreateCustomerMappingComponent() {
     values.tenant_id = localStorage.getItem('tenant_id');
     values.created_by = userSessionData.userId;
     values.created_at = getDateTime();
+
+    if (values.approach != 'AU') {
+      values.department_id = values?.department_id;
+    }
 
     let flag = 1;
     if (values?.approach === 'RW') {
@@ -874,7 +889,6 @@ export default function CreateCustomerMappingComponent() {
                         </div>
                       </div>
                     )}
-
                     {data.approach !== 'SELF' &&
                       data.approach !== 'AU' &&
                       userDropDownFilterData?.length > 0 &&

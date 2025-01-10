@@ -523,7 +523,7 @@ export default function CreateTicketComponent() {
     await new QueryTypeService().getAllQueryGroup(status).then((res) => {
       if (res.data.status === 1) {
         setQueryGroupDropdown(
-          res.data.data
+          res.data.data.data
             .filter((d) => d.is_active === 1)
             .map((d) => ({ value: d.id, label: d.group_name }))
         );
@@ -534,7 +534,7 @@ export default function CreateTicketComponent() {
       if (res.status === 200) {
         if (res.data.status === 1) {
           var defaultValue = [{ value: 0, label: 'Select Department' }];
-          var dropwdown = res.data.data
+          var dropwdown = res.data.data.data
             .filter((d) => d.is_active === 1)
             .map((d) => ({ value: d.id, label: d.department }));
           defaultValue = [...defaultValue, ...dropwdown];
@@ -543,9 +543,9 @@ export default function CreateTicketComponent() {
       }
     });
 
-    await new TaskTicketTypeService()?.getTicketType()?.then((res) => {
+    await new TaskTicketTypeService()?.getTicketType('TICKET')?.then((res) => {
       if (res?.status === 200) {
-        setTicketsData(res?.data?.data);
+        setTicketsData(res?.data?.data?.data);
       }
     });
 

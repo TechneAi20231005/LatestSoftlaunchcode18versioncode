@@ -184,6 +184,8 @@ import { userSessionData } from '../../settings/constants';
 import { masterURL } from '../../settings/constants';
 
 const _URL = masterURL.queryType;
+const _URLQueryTypeMapped = masterURL.queryTypeMapped;
+
 const _URLGetAllQueryType = masterURL.getAllQueryGroup;
 
 const _getAllQueryType = `${_URL}/getData?export=1`;
@@ -255,7 +257,10 @@ export default class QueryTypeService {
       }
     };
 
-    return axios.get(_URL + '/getQueryTypeMappedData/' + id, config);
+    return axios.get(
+      _URLQueryTypeMapped + '/getQueryTypeMappedData/' + id,
+      config
+    );
   }
 
   postQueryType(payload) {

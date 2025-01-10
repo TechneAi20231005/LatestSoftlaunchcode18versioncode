@@ -158,9 +158,9 @@ export default function CreateProjectComponent({ match }) {
     await new UserService().getUser().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const user = res.data.data.filter((d) => d.is_active === 1);
+          const user = res.data.data?.data?.filter((d) => d.is_active === 1);
           setBa(
-            res.data.data
+            res.data.data?.data
               .filter((d) => d.is_active === 1 && d.account_for === 'SELF')
               .map((d) => ({
                 value: d.id,
@@ -174,7 +174,7 @@ export default function CreateProjectComponent({ match }) {
             return 0;
           });
           setUsers(
-            res.data.data
+            res.data.data?.data
               .filter((d) => d.is_active === 1 && d.account_for === 'SELF')
               .map((d) => ({
                 value: d.id,
