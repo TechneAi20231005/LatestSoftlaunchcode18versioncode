@@ -633,7 +633,7 @@ function QueryTypeComponent() {
               Sr: data[i].counter,
               Query_Type_Name: data[i].query_type_name,
               query_group_name: temp[i].query_group_name,
-              form_name: temp[i].form_name,
+              form_name: data[i].form_id_name,
               Status: data[i].is_active ? 'Active' : 'Deactive',
               Remark: data[i].remark,
               created_at: data[i].created_at,
@@ -1262,7 +1262,7 @@ function QueryTypeComponent() {
                           ? modalQueryGroup.modalDataQueryGroup.group_name
                           : ''
                       }
-                      maxLength={50}
+                      maxLength={100}
                       required
                       onKeyPress={(e) => {
                         Validation.CharactersNumbersOnly(e);
@@ -1277,7 +1277,7 @@ function QueryTypeComponent() {
                       id="group_name"
                       name="group_name"
                       placeholder=""
-                      maxLength={50}
+                      maxLength={100}
                       required
                       onKeyPress={(e) => {
                         Validation.CharactersNumbersOnly(e);

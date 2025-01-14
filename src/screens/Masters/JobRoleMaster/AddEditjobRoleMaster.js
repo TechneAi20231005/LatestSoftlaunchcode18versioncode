@@ -75,7 +75,7 @@ function AddEditJobRoleMaster({ show, close, type, currentJobRoleData }) {
                   <Field
                     component={CustomInput}
                     name="job_role"
-                    label="Job Role Title"
+                    label={<span className="fw-bold">Job Role Title</span>}
                     placeholder="Enter Job Role Title"
                     requiredField
                   />
@@ -84,7 +84,7 @@ function AddEditJobRoleMaster({ show, close, type, currentJobRoleData }) {
                   <Field
                     component={CustomInput}
                     name="remark"
-                    label="Remark"
+                    label={<span className="fw-bold">Remark</span>}
                     placeholder="Enter Remark"
                   />
                 </Col>

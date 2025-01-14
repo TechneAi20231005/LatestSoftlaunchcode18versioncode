@@ -172,10 +172,10 @@ function ModuleComponent() {
               project_name: data[key].project_name,
               description: data[key].description,
               remark: data[key].remark,
-              updated_at: data[key].updated_at,
-              updated_by: data[key].updated_by,
+              created_by: temp[key].created_by,
               created_at: temp[key].created_at,
-              created_by: temp[key].created_by
+              updated_by: data[key].updated_by,
+              updated_at: data[key].updated_at
             });
           }
           setExportData(exportData);
