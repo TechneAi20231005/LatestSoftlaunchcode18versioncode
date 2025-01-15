@@ -69,7 +69,7 @@ export const menuUrl =
   _apiUrl + 'getMenuByRoleId/' + localStorage.getItem('role_id');
 
 export const masterURL = {
-  user: _apiUrl + 'employeeMaster',
+  user: _rewampApiUrl + 'employeeMaster/getData',
   tenant: _rewampApiUrl + 'tenantMaster',
   customer: _rewampApiUrl + 'customerMaster',
   employee: _rewampApiUrl + 'employeeMaster',
@@ -133,8 +133,10 @@ export const ticketUrl = {
 };
 
 export const reportUrl = {
-  ticketReport: _apiUrl + 'report/ticketReport',
+
+  ticketReport: _rewampApiUrl + 'ticketMaster/ticketReport',
   userTaskReport: _rewampApiUrl + 'report/userTaskReport',
+
   ticketTimelineReport: _apiUrl + 'report/ticketTimelineReport',
   resourcePlanningReport: _rewampApiUrl + 'report/resourcePlanning',
   variantsReport: _rewampApiUrl + 'report/variantsReport'

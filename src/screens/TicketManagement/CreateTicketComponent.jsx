@@ -362,8 +362,10 @@ export default function CreateTicketComponent() {
                   return;
                 }
                 toast.success(res?.data?.message);
-
-                let url = `${_attachmentUrl}` + res.data.data;
+                console.log('error', res.data.data);
+                let url =
+                  `http://103.97.105.81:89/TicketingUat/` + res.data.data;
+                console.log('url', url);
                 window.open(url, '_blank').focus();
                 setIsSubmitted(false);
               }
@@ -405,9 +407,10 @@ export default function CreateTicketComponent() {
         );
         setQueryGroupTypeData(null);
       } else {
-        var dynamicForm = data[0]?.dynamic_form;
+        var dynamicForm = data[0]?.dynamic_form_data;
+        console.log('dynamicForm', dynamicForm);
 
-        const filteredArray = dynamicForm.filter(
+        const filteredArray = dynamicForm?.filter(
           (formInstance) =>
             formInstance?.inputType === 'select' &&
             formInstance?.inputAddOn?.inputDataSource
@@ -480,7 +483,7 @@ export default function CreateTicketComponent() {
             //SET ALL CUSTOMER MAPPING DATA IN A STATE
             setCustomerMapping(null);
             setCustomerMapping(res.data.data);
-
+            console.log('res---', res.data.data);
             res.data.data.forEach((query) => {
               if (query.query_type_id) {
                 if (!queryTypeTemp.includes(query.query_type_id)) {
@@ -505,7 +508,7 @@ export default function CreateTicketComponent() {
     var queryType = [];
     await new QueryTypeService().getQueryType().then((resp) => {
       if (resp.data.status === 1) {
-        resp.data.data
+        resp.data.data.data
           .filter((q) => q.is_active === 1)
           .filter((q) => queryTypeTemp.includes(q.id))
           .forEach((q) => {
@@ -1459,7 +1462,7 @@ export default function CreateTicketComponent() {
               className="btn btn-sm btn-primary"
               disabled={isFileGenerated ? false : true}
             >
-              Submit
+              Submitfff
             </button>
           )}
           <Link

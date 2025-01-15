@@ -602,7 +602,8 @@ function QueryTypeComponent() {
           // setShowLoaderModal(false);
 
           let counter = 1;
-          const temp = res.data.data;
+          const temp = res.data.data.data;
+          console.log('data', res.data.data);
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -632,7 +633,7 @@ function QueryTypeComponent() {
             exportTempData.push({
               Sr: data[i].counter,
               Query_Type_Name: data[i].query_type_name,
-              query_group_name: temp[i].query_group_name,
+              query_group_name: temp[i].group_name,
               form_name: temp[i].form_name,
               Status: data[i].is_active ? 'Active' : 'Deactive',
               Remark: data[i].remark,
@@ -648,14 +649,15 @@ function QueryTypeComponent() {
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'QueryType',
-          'Get_QueryType',
-          'INSERT',
-          errorObject.data.message
-        );
+        console.log('error', error);
+        // const { response } = error;
+        // const { request, ...errorObject } = response;
+        // new ErrorLogService().sendErrorLog(
+        //   'QueryType',
+        //   'Get_QueryType',
+        //   'INSERT',
+        //   errorObject.data.message
+        // );
       });
 
     await new DynamicFormService().getDynamicForm().then((res) => {
@@ -1450,7 +1452,7 @@ function QueryTypeComponent() {
                 />
               </div>
             </div>
-
+            {console.log('queryGroupData', queryGroupData)}
             <div className="card mt-2">
               <div className="card-body">
                 <div className="row clearfix g-3">

@@ -95,6 +95,9 @@ export default function MyTicketComponent() {
   const [departmentWiseData, setDepartmentWiseData] = useState();
   const [yourTaskData, setYourTaskData] = useState();
   const [unpassedData, setUnpassedData] = useState();
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState([]);
 
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedRowss, setSelectedRowss] = useState([]);
@@ -1658,14 +1661,14 @@ export default function MyTicketComponent() {
   const loadData = useCallback(async () => {
     setIsLoading(true);
     const inputRequired =
-      'id,employee_id,first_name,last_name,middle_name,is_active';
+      'id,employee_id,first_name,last_name,middle_name,is_active,department_id';
 
     await new UserService()
       .getUserForMyTickets(inputRequired)
       .then((res) => {
         if (res.status === 200) {
           const tempData = [];
-          const temp = res.data.data.filter((d) => d.is_active === 1);
+          const temp = res.data.data.data.filter((d) => d.is_active === 1);
           if (res.data.status === 1) {
             // const data = res.data.data.filter(
             //   (d) => d.is_active == 1 && d.account_for === 'SELF'
@@ -1678,21 +1681,21 @@ export default function MyTicketComponent() {
               label: temp[key].first_name + ' ' + temp[key].last_name
             });
           }
-          const select = res.data.data
+          const select = res.data.data.data
             .filter((d) => d.is_active === 1 && d.account_for === 'SELF')
             .map((d) => ({
               value: d.id,
               label: d.first_name + ' ' + d.last_name
             }));
 
-          const select1 = res.data.data
+          const select1 = res.data.data.data
             .filter((d) => d.is_active === 1)
             .map((d) => ({
               value: d.id,
               label: d.first_name + ' ' + d.last_name
             }));
 
-          const select2 = res.data.data
+          const select2 = res.data.data.data
             .filter((d) => d.is_active === 1 && d.account_for === 'CUSTOMER')
             .map((d) => ({
               value: d.id,
@@ -1704,6 +1707,7 @@ export default function MyTicketComponent() {
             return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
           });
           setUserData(aa);
+
           setAssignUserDropdown(select);
           setUserDropdown(select1);
           setCustomerUserDropdown(select2);
@@ -1711,19 +1715,19 @@ export default function MyTicketComponent() {
       })
       .catch((error) => {
         const { response } = error;
-        const { ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'Status',
-          'Get_Status',
-          'INSERT',
-          errorObject.data.message
-        );
+        // const { ...errorObject } = response;
+        // new ErrorLogService().sendErrorLog(
+        //   'Status',
+        //   'Get_Status',
+        //   'INSERT',
+        //   errorObject.data.message
+        // );
       });
 
     await new DepartmentService().getDepartment().then((res) => {
       if (res.status === 200) {
         const tempData = [];
-        const temp = res.data.data;
+        const temp = res.data.data.data;
         for (const key in temp) {
           if (temp[key].department) {
             tempData.push({
@@ -1740,7 +1744,7 @@ export default function MyTicketComponent() {
     await new StatusService().getStatus().then((res) => {
       if (res.status === 200) {
         const tempData = [];
-        const temp = res.data.data;
+        const temp = res.data.data.data;
 
         for (const key in temp) {
           if (temp[key].id) {
@@ -1786,60 +1790,62 @@ export default function MyTicketComponent() {
         }
       });
 
-    await new MyTicketService().getUserTicketsTest().then((res) => {
-      if (res.status === 200) {
-        if (res?.data?.status === 1) {
-          setAssignedToMeData(res.data.data);
-          setAssignedToMe(
-            res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
-          );
-          const dataAssignToMe = res.data.data.data;
+    await new MyTicketService()
+      .getUserTicketsTestWithoutTypeOf()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+            setAssignedToMeData(res.data.data);
+            setAssignedToMe(
+              res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
+            );
+            const dataAssignToMe = res.data.data.data;
 
-          var counter = 1;
-          var tempAssignToMeExport = [];
-          for (const key in dataAssignToMe) {
-            tempAssignToMeExport.push({
-              Sr: counter++,
-              TICKET_ID: dataAssignToMe[key].ticket_id,
-              TICKET_DATE: dataAssignToMe[key].ticket_date,
-              EXPECTED_SOLVE_DATE: dataAssignToMe[key].expected_solve_date,
-              ASSIGN_TO_DEPARTMENT: dataAssignToMe[key].assign_to_department,
-              ASSIGN_TO_USER: dataAssignToMe[key].assign_to_user,
-              QUERY_TYPE_NAME: dataAssignToMe[key].query_type_name,
-              PRIORITY: dataAssignToMe[key].priority,
-              STATUS: dataAssignToMe[key].status_name,
-              DESCRIPTION: dataAssignToMe[key].description,
-              CREATED_BY: dataAssignToMe[key].created_by_name,
+            var counter = 1;
+            var tempAssignToMeExport = [];
+            for (const key in dataAssignToMe) {
+              tempAssignToMeExport.push({
+                Sr: counter++,
+                TICKET_ID: dataAssignToMe[key].ticket_id,
+                TICKET_DATE: dataAssignToMe[key].ticket_date,
+                EXPECTED_SOLVE_DATE: dataAssignToMe[key].expected_solve_date,
+                ASSIGN_TO_DEPARTMENT: dataAssignToMe[key].assign_to_department,
+                ASSIGN_TO_USER: dataAssignToMe[key].assign_to_user,
+                QUERY_TYPE_NAME: dataAssignToMe[key].query_type_name,
+                PRIORITY: dataAssignToMe[key].priority,
+                STATUS: dataAssignToMe[key].status_name,
+                DESCRIPTION: dataAssignToMe[key].description,
+                CREATED_BY: dataAssignToMe[key].created_by_name,
 
-              Basket_Configured: dataAssignToMe[key].basket_configured,
-              Confirmation_Required: dataAssignToMe[key].confirmation_required
-                ? 'YES'
-                : 'NO',
-              Ref_id: dataAssignToMe[key].cuid,
-              from_department_name: dataAssignToMe[key].from_department_name,
-              id: dataAssignToMe[key].id,
-              Status: dataAssignToMe[key].is_active ? 'Active' : 'Deactive',
-              module_name: dataAssignToMe[key].module_name,
-              Passed_Status: dataAssignToMe[key].passed_status,
-              Passed_Status_Changed_At:
-                dataAssignToMe[key].passed_status_changed_at,
-              Passed_Status_Changed_By_Name:
-                dataAssignToMe[key].passed_status_changed_by_name,
-              Passed_Status_Remark: dataAssignToMe[key].passed_status_remark,
-              project_name: dataAssignToMe[key].project_name,
-              Status_name: dataAssignToMe[key].status_name,
-              sub_module_name: dataAssignToMe[key].sub_module_name,
-              Template_id: dataAssignToMe[key].template_id,
-              Tenant_id: dataAssignToMe[key].tenant_id,
-              ticket_solved_date: dataAssignToMe[key].ticket_solved_date,
-              ticket_solved_by: dataAssignToMe[key].ticket_solved_by
-            });
+                Basket_Configured: dataAssignToMe[key].basket_configured,
+                Confirmation_Required: dataAssignToMe[key].confirmation_required
+                  ? 'YES'
+                  : 'NO',
+                Ref_id: dataAssignToMe[key].cuid,
+                from_department_name: dataAssignToMe[key].from_department_name,
+                id: dataAssignToMe[key].id,
+                Status: dataAssignToMe[key].is_active ? 'Active' : 'Deactive',
+                module_name: dataAssignToMe[key].module_name,
+                Passed_Status: dataAssignToMe[key].passed_status,
+                Passed_Status_Changed_At:
+                  dataAssignToMe[key].passed_status_changed_at,
+                Passed_Status_Changed_By_Name:
+                  dataAssignToMe[key].passed_status_changed_by_name,
+                Passed_Status_Remark: dataAssignToMe[key].passed_status_remark,
+                project_name: dataAssignToMe[key].project_name,
+                Status_name: dataAssignToMe[key].status_name,
+                sub_module_name: dataAssignToMe[key].sub_module_name,
+                Template_id: dataAssignToMe[key].template_id,
+                Tenant_id: dataAssignToMe[key].tenant_id,
+                ticket_solved_date: dataAssignToMe[key].ticket_solved_date,
+                ticket_solved_by: dataAssignToMe[key].ticket_solved_by
+              });
+            }
+
+            setIsLoading(false);
           }
-
-          setIsLoading(false);
         }
-      }
-    });
+      });
     dispatch(getRoles());
   }, [dispatch]);
 
@@ -1901,7 +1907,13 @@ export default function MyTicketComponent() {
   const handleForm = async (e) => {
     setIsLoading(null);
     setIsLoading(true);
-
+    const payload = {
+      assign_to_user_id: selectedUsers.map((user) => user.value),
+      department_id: selectedDepartment.map((user) => user.value),
+      status_id: selectedStatus.map((status) => status.value),
+      ticket_id: ticketId
+      // Add other form data here
+    };
     try {
       if (e) {
         e.preventDefault();
@@ -1932,8 +1944,9 @@ export default function MyTicketComponent() {
         const form = document.getElementById('your_form_id');
         const formData = new FormData(form);
         setSearchData(formData);
+
         await new ReportService()
-          .getTicketReport(formData)
+          .getTicketReport(payload)
           .then((res) => {
             if (res.status === 200) {
               if (res.data.status === 1) {
@@ -1945,55 +1958,13 @@ export default function MyTicketComponent() {
                 setKey('Search_Result');
                 setIsLoading(false);
 
-                const temp = res?.data?.data?.data;
-                var counter = 1;
-                var searchResultExport = [];
-                // for (let key in temp) {
-                //   searchResultExport.push({
-                //     Sr: counter++,
-                //     TICKET_ID: temp[key].ticket_id,
-                //     TICKET_DATE: temp[key].ticket_date,
-                //     EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
-                //     ASSIGN_TO_DEPARTMENT: temp[key].assign_to_department,
-                //     ASSIGN_TO_USER: temp[key].assign_to_user,
-                //     QUERY_TYPE_NAME: temp[key].query_type_name,
-                //     PRIORITY: temp[key].priority,
-                //     STATUS: temp[key].status_name,
-                //     DESCRIPTION: temp[key].description,
-                //     CREATED_BY: temp[key].created_by_name,
-
-                //     Basket_Configured: temp[key].basket_configured,
-                //     Confirmation_Required: temp[key].confirmation_required
-                //       ? 'YES'
-                //       : 'NO',
-                //     Ref_id: temp[key].cuid,
-                //     from_department_name: temp[key].from_department_name,
-                //     id: temp[key].id,
-                //     Status: temp[key].is_active ? 'Active' : 'Deactive',
-                //     module_name: temp[key].module_name,
-                //     Passed_Status: temp[key].passed_status,
-                //     Passed_Status_Changed_At:
-                //       temp[key].passed_status_changed_at,
-                //     Passed_Status_Changed_By_Name:
-                //       temp[key].passed_status_changed_by_name,
-                //     Passed_Status_Remark: temp[key].passed_status_remark,
-                //     project_name: temp[key].project_name,
-                //     Status_name: temp[key].status_name,
-                //     sub_module_name: temp[key].sub_module_name,
-                //     Template_id: temp[key].template_id,
-                //     Tenant_id: temp[key].tenant_id,
-                //     ticket_solved_date: temp[key].ticket_solved_date,
-                //     ticket_solved_by: temp[key].ticket_solved_by
-                //   });
-                // }
-
                 setKey('Search_Result');
 
                 // setSearchResultExport(searchResultExport);
               } else {
                 setIsLoading(false);
 
-                alert('No Data Found');
+                // alert('No Data Found');
               }
             } else {
               new ErrorLogService().sendErrorLog(
@@ -2015,21 +1986,26 @@ export default function MyTicketComponent() {
             );
             setIsLoading(false);
           });
-
         // searched export data
-        const exportFormData = new FormData(form);
-        exportFormData.append('export', 'export');
+        // const exportFormData = new FormData(form);
+        // const exportFormData = payload;
+
+        // exportFormData.append('export', 'export');
+        const exportFormData = {
+          assign_to_user_id: selectedUsers.map((user) => user.value),
+          department_id: selectedDepartment.map((user) => user.value),
+          status_id: selectedStatus.map((status) => status.value),
+          ticket_id: ticketId,
+          export: 'export'
+          // Add other form data here
+        };
+
         await new ReportService()
           .getTicketReport(exportFormData)
           .then((res) => {
             if (res.status === 200) {
               if (res.data.status === 1) {
-                // setSearchResult(null);
-                // setSearchResult(res.data.data.data);
-                // setSearchResultData(res.data.data);
-                // setKey('Search_Result');
-                // setIsLoading(false);
-                const temp = res?.data?.data?.data;
+                const temp = res?.data?.data;
                 var counter = 1;
                 var searchResultExport = [];
                 for (let key in temp) {
@@ -2070,9 +2046,7 @@ export default function MyTicketComponent() {
                   });
                   setSearchResultExport(searchResultExport);
                 }
-                // setKey('Search_Result');
               } else {
-                // alert('No Data Found');
               }
             } else {
               new ErrorLogService().sendErrorLog(
@@ -2158,6 +2132,20 @@ export default function MyTicketComponent() {
     e.preventDefault();
     setIsLoading(null);
     setIsLoading(true);
+    const payload = {
+      from_date: startDate,
+      to_date: toDate,
+      assign_to_user_id:
+        assignedDepartmentValue?.length > 0
+          ? assignedDepartmentValue?.map((user) => user.value)
+          : [],
+      department_id: entryDepartment?.map((user) => user.value),
+      status_id:
+        statusValue?.length > 0 ? statusValue?.map((user) => user.value) : [],
+      user_id:
+        entryUser?.length > 0 ? entryUser?.map((user) => user.value) : [],
+      ticket_id: ticket
+    };
 
     const formData = new FormData(e.target);
     setSearchData(formData);
@@ -2182,7 +2170,7 @@ export default function MyTicketComponent() {
     } else {
       onClosePopup();
       await new ReportService()
-        .getTicketReport(formData)
+        .getTicketReport(payload)
         .then((res) => {
           if (res?.status === 200) {
             if (res?.data?.status === 1) {
@@ -2293,7 +2281,6 @@ export default function MyTicketComponent() {
     setAssignUserDropdown(deptAssignedUser);
     setAssignedDepartment(e);
   };
-
   const handleAssignedToMeTab = async (k, e) => {
     setCurrentPage(null);
     setItemsPerPage(null);
@@ -2357,7 +2344,6 @@ export default function MyTicketComponent() {
         typeOf: 'YouTask',
         page: 1
       };
-
       await new MyTicketService().getUserTicketsTest(forms).then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
@@ -2886,6 +2872,9 @@ export default function MyTicketComponent() {
                     isMulti={true}
                     id="assign_to_user_id[]"
                     name="assign_to_user_id[]"
+                    onChange={(selectedOptions) => {
+                      setSelectedUsers(selectedOptions);
+                    }}
                   />
                 )}
               </div>
@@ -2901,6 +2890,9 @@ export default function MyTicketComponent() {
                         isMulti={true}
                         id="assign_to_department_id[]"
                         name="assign_to_department_id[]"
+                        onChange={(selectedOptions) => {
+                          setSelectedDepartment(selectedOptions);
+                        }}
                       />
                     )}
                   </div>
@@ -2917,6 +2909,9 @@ export default function MyTicketComponent() {
                     isMulti={true}
                     id="status_id[]"
                     name="status_id[]"
+                    onChange={(selectedOptions) => {
+                      setSelectedStatus(selectedOptions);
+                    }}
                   />
                 )}
               </div>
@@ -3690,7 +3685,7 @@ export default function MyTicketComponent() {
           {confirmationModal &&
             confirmationModal &&
             confirmationModal.modalsData && (
-              <form onSubmit={handleSolveTicketModal} method="POST">
+              <form onSubmit={handleSolveTicketModal}>
                 <Modal.Body>
                   <input
                     type="hidden"
@@ -3794,7 +3789,7 @@ export default function MyTicketComponent() {
             {remarkModal.status === 'PASS' ? 'PASS TICKET ' : 'REJECT TICKET'}
           </Modal.Title>
         </Modal.Header>
-        <form onSubmit={handlePassTicketForm} method="post">
+        <form onSubmit={handlePassTicketForm}>
           <Modal.Body>
             <div className="deadline-form">
               <input

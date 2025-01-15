@@ -503,7 +503,7 @@ export default function EditTicketComponent({ match }) {
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
       if (res?.payload?.status === 200) {
         if (res?.payload?.data?.status === 1) {
-          const getUserData = res?.payload?.data?.data;
+          const getUserData = res?.payload?.data?.data?.data;
           const data = getUserData.filter((d) => d.is_active === 1);
           const select = getUserData
             .filter((d) => d.is_active === 1)
@@ -516,8 +516,7 @@ export default function EditTicketComponent({ match }) {
           setEmailData(getUserData.filter((d) => d.is_active === 1));
           emilData?.filter((d) => d.id === data?.created_by);
 
-
-            setUserDropdown(select);
+          setUserDropdown(select);
 
           setUserdrp(select);
         }
@@ -631,7 +630,7 @@ export default function EditTicketComponent({ match }) {
     new QueryTypeService().getQueryType().then((resp) => {
       if (resp.data.status === 1) {
         var queryType = [];
-        resp.data.data.forEach((q) => {
+        resp.data.data.data.forEach((q) => {
           if (q.query_type_name) {
             queryType.push({ value: q.id, label: q.query_type_name });
           }
@@ -701,7 +700,7 @@ export default function EditTicketComponent({ match }) {
       }
     });
 
-    await new TaskTicketTypeService().getChildrenData("TASK")?.then((res) => {
+    await new TaskTicketTypeService().getChildrenData('TASK')?.then((res) => {
       if (res?.status === 200) {
         setTicketsData(res?.data?.data?.data);
       }
@@ -2000,10 +1999,7 @@ export default function EditTicketComponent({ match }) {
                   </button>
                 )}
                 <span>
-                  <button
-                    type="submit"
-                    className="btn btn-primary text-white"
-                  >
+                  <button type="submit" className="btn btn-primary text-white">
                     Submit
                   </button>
                   <button
