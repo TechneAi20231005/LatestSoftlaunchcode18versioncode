@@ -398,7 +398,7 @@ export default function ResourcePlanningReportComponent() {
               handleForm(values);
             }}
           >
-            {({ setFieldValue, values }) => (
+            {({ setFieldValue, values }) =>  (
               <Form>
                 {/* <form onSubmit={handleForm}> */}
                 <div className="row">
@@ -411,12 +411,13 @@ export default function ResourcePlanningReportComponent() {
                         isMulti
                         isSearchable={true}
                         name="user_id"
+                        value={values.user_id}
                         className="basic-multi-select"
                         classNamePrefix="select"
                         options={userData && userData}
                         onChange={(option) =>
                           // console.log(option, "option")
-                          setFieldValue('user_id', option || null)
+                          setFieldValue('user_id', option || [])
                         }
                       />
                     )}
@@ -491,7 +492,12 @@ export default function ResourcePlanningReportComponent() {
                     <button
                       className="btn btn-sm btn-info text-white"
                       type="button"
-                      onClick={() => window.location.reload(false)}
+                      onClick={() => {
+                        setFieldValue('user_id', []);
+                        setFieldValue('task_name', '');
+                        setFieldValue('from_date', '');
+                        setFieldValue('to_date', '');
+                      }}
                       style={{ marginTop: '20px', fontWeight: '600' }}
                     >
                       <i className="icofont-refresh text-white"></i> Reset
