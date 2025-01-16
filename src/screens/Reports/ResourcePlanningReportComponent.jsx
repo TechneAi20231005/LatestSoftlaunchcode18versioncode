@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../Dashboard/DashboardAction';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { CustomValidation } from '../../components/custom/CustomValidation/CustomValidation';
+import errorHandler from '../../utils/errorHandler'
 
 export default function ResourcePlanningReportComponent() {
   const [userData, setUserData] = useState(null);
@@ -199,6 +200,7 @@ export default function ResourcePlanningReportComponent() {
               }
             } else {
               setData(null);
+
             }
           } else {
             new ErrorLogService().sendErrorLog(
@@ -207,6 +209,7 @@ export default function ResourcePlanningReportComponent() {
               'INSERT',
               res.message
             );
+            setShowLoaderModal(null);
           }
         } catch (error) {
           if (error.response && error.response.data) {
@@ -216,6 +219,9 @@ export default function ResourcePlanningReportComponent() {
               'INSERT',
               error.response.data.message
             );
+            errorHandler(error?.response)
+            setShowLoaderModal(null);
+
           } else {
             new ErrorLogService().sendErrorLog(
               'ResourcePlanning',
@@ -284,13 +290,15 @@ export default function ResourcePlanningReportComponent() {
       name: 'from_date',
       label: 'From Date',
       required: true,
-      alphaNumeric: false
+      alphaNumeric: false,
+      dateRange: { startDate: 'from_date', endDate: 'to_date', startLabel: 'From Date' },
     },
     {
       name: 'to_date',
       label: 'To Date',
       required: true,
-      alphaNumeric: false
+      alphaNumeric: false,
+      dateRange: { startDate: 'from_date', endDate: 'to_date', startLabel: 'From Date' },
     }
   ];
 

@@ -224,19 +224,21 @@ function UserTaskReportComponent() {
       name: 'from_date',
       label: 'From Date',
       required: false,
-      alphaNumeric: false
+      alphaNumeric: false,
+      dateRange: { startDate: 'from_date', endDate: 'to_date', startLabel: 'From Date' },
     },
     {
       name: 'to_date',
       label: 'To Date',
       required: false,
-      alphaNumeric: false
+      alphaNumeric: false,
+      dateRange: { startDate: 'from_date', endDate: 'to_date', startLabel: 'From Date' },
     },
     {
       name: 'task_name',
       label: 'Task Name',
       required: false,
-      alphaNumeric: true
+      alphaNumeric: true,
     }
   ];
 

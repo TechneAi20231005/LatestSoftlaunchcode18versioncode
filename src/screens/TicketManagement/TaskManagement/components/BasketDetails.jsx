@@ -50,13 +50,15 @@ export default function BasketDetails(props) {
     {
       name: 'start_date',
       label: 'Start date',
-      required: true
+      required: true,
+      dateRange: { startDate: 'start_date', endDate: 'end_date', startLabel: 'Start Date' },
     },
     {
       name: 'end_date',
       label: 'End date',
-      max: 100,
-      required: true
+      // max: 100,
+      required: true,
+      dateRange: { startDate: 'start_date', endDate: 'end_date', startLabel: 'Start Date' },
     }
   ];
 
@@ -85,14 +87,14 @@ export default function BasketDetails(props) {
   const handleForm = async (values) => {
     // e.preventDefault();
     const formData = new FormData();
-    formData.append('basket_name[]', values.basket_name);
-    formData.append('basket_owner[]', values.basket_owner);
-    formData.append('start_date[]', values.start_date);
-    formData.append('end_date[]', values.end_date);
+    formData.append('basket_name', values.basket_name);
+    formData.append('basket_owner', values.basket_owner);
+    formData.append('start_date', values.start_date);
+    formData.append('end_date', values.end_date);
     formData.append('ticket_id', props?.ticketId);
 
     formData.append('source', 'AFTER_TICKET_INSERT');
-    if (formData.get('id')) {
+    if (props?.data?.id) {
       await new BasketService()
         .updateBasket(
           props.data.id,
@@ -171,7 +173,7 @@ export default function BasketDetails(props) {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const tempData = res.data.data
+          const tempData = res.data.data?.data
             .filter((d) => d.is_active === 1 && d.account_for === 'SELF')
             .map((d) => ({
               value: d.id,

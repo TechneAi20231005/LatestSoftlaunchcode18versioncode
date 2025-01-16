@@ -126,14 +126,13 @@ export const ticketUrl = {
   dynamicForm: _apiUrl + 'createForm',
   basket: _apiUrl + 'ticketBasket',
   task: _apiUrl + 'ticketTask',
-  subtask: _apiUrl + 'ticketSubtask',
+  subtask: _rewampApiUrl + 'ticketSubtask',
   timerData: _apiUrl + 'timerData',
   postTimerDataGroupActivity: _apiUrl + 'postTimerDataGroupActivity',
   stopTimerDataGroupActivity: _apiUrl + 'stopTimerDataGroupActivity'
 };
 
 export const reportUrl = {
-
   ticketReport: _rewampApiUrl + 'ticketMaster/ticketReport',
   userTaskReport: _rewampApiUrl + 'report/userTaskReport',
 
