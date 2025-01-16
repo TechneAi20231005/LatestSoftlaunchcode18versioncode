@@ -1904,6 +1904,13 @@ export default function MyTicketComponent() {
 
   const [searchData, setSearchData] = useState([]);
 
+  const handleClearSearchedData = () => {
+    setSelectedUsers([]); // Clear the selected users (empty array for multi-select)
+    setSelectedDepartment([]); // Clear the selected department
+    setSelectedStatus([]); // Clear the selected status
+    setTicketId(''); // Clear the ticket ID (empty string for text input)
+  };
+
   const handleForm = async (e) => {
     setIsLoading(null);
     setIsLoading(true);
@@ -2927,7 +2934,8 @@ export default function MyTicketComponent() {
                 <button
                   className="btn btn-sm btn-info text-white"
                   type="button"
-                  onClick={() => window.location.reload(false)}
+                  // onClick={() => window.location.reload(false)}
+                  onClick={handleClearSearchedData}
                   style={{ marginTop: '20px', fontWeight: '600' }}
                 >
                   <i className="icofont-refresh text-white"></i> Reset

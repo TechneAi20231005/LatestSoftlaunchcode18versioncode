@@ -249,7 +249,9 @@ export default function HrDashboard(props) {
     await new getRegularizationTime(id).then((res) => {
       if (res.status === 200) {
         setIsLoading(false);
+        console.log('res', res);
         const temp = res?.data?.data
+
           ?.filter((d) => d.status_remark === 'PENDING')
           .map((d) => ({
             id: d.id,

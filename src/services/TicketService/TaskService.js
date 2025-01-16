@@ -3,6 +3,7 @@ import { ticketUrl, userSessionData, _apiUrl } from '../../settings/constants';
 import { getDateTime } from '../../components/Utilities/Functions';
 
 const _URL = ticketUrl.task;
+const _URLRegularization = ticketUrl.regularization;
 
 export function getTask() {
   const token = localStorage.getItem('jwt_token');
@@ -202,7 +203,11 @@ export function requestRegularizationTime(payload) {
       'Content-Type': 'application/json'
     }
   };
-  return axios.post(_URL + '/requestRegularizationTime', payload, config);
+  return axios.post(
+    _URLRegularization + '/requestRegularizationTime',
+    payload,
+    config
+  );
 }
 
 export function taskRequestRegularizationTime(payload) {
@@ -305,7 +310,11 @@ export function changeStatusRegularizationTime(payload) {
     }
   };
 
-  return axios.post(_URL + '/changeStatusRegularizationTime', payload, config);
+  return axios.post(
+    _URLRegularization + '/changeStatusRegularizationTime',
+    payload,
+    config
+  );
 }
 
 export function changeTaskStatusRegularizationTime(payload) {
