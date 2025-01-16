@@ -65,7 +65,7 @@ export default function ResourcePlanningReportComponent() {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         setShowLoaderModal(false);
-        const data = res.data.data.filter(
+        const data = res.data.data?.data?.filter(
           (d) => d.is_active === 1 && d.account_for === 'SELF'
         );
         for (const key in data) {
@@ -328,6 +328,7 @@ export default function ResourcePlanningReportComponent() {
                       isMulti
                       isSearchable={true}
                       name="user_id"
+                      value={values.user_id}
                       className="basic-multi-select"
                       classNamePrefix="select"
                       options={userData}
@@ -400,7 +401,12 @@ export default function ResourcePlanningReportComponent() {
                     <button
                       className="btn btn-sm btn-info text-white"
                       type="button"
-                      onClick={() => window.location.reload(false)}
+                      onClick={() => {
+                        setFieldValue('user_id', []);
+                        setFieldValue('task_name', '');
+                        setFieldValue('from_date', '');
+                        setFieldValue('to_date', '');
+                      }}
                       style={{ marginTop: '20px', fontWeight: '600' }}
                     >
                       <i className="icofont-refresh text-white"></i> Reset

@@ -134,12 +134,13 @@ export const ticketUrl = {
 };
 
 export const reportUrl = {
+
   ticketReport: _rewampApiUrl + 'ticketMaster/ticketReport',
-  // 'report/ticketReport',
-  userTaskReport: _apiUrl + 'report/userTaskReport',
+  userTaskReport: _rewampApiUrl + 'report/userTaskReport',
+
   ticketTimelineReport: _apiUrl + 'report/ticketTimelineReport',
-  resourcePlanningReport: _apiUrl + 'report/resourcePlanning',
-  variantsReport: _apiUrl + 'report/variantsReport'
+  resourcePlanningReport: _rewampApiUrl + 'report/resourcePlanning',
+  variantsReport: _rewampApiUrl + 'report/variantsReport'
   // hoursWiseTaskRecord:_apiUrl + "hoursWiseTaskRecord",  //Asmita - New api for timeline report chart
 };
 
