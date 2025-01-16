@@ -2213,7 +2213,7 @@ export default function MyTicketComponent() {
                 });
               }
               setKey('Search_Result');
-              setSearchResultExport(searchResultExport);
+              // setSearchResultExport(searchResultExport);
               setIsLoading(false);
 
               for (const key in temp) {
@@ -2254,7 +2254,7 @@ export default function MyTicketComponent() {
                 });
               }
               setKey('Search_Result');
-              setSearchResultExport(filterExport);
+              // setSearchResultExport(filterExport);
             }
           } else {
             new ErrorLogService().sendErrorLog(
@@ -2274,6 +2274,84 @@ export default function MyTicketComponent() {
             'INSERT',
             errorObject.data.message
           );
+        });
+
+      // const exportFormData = new FormData(formData);
+      // exportFormData.append('export', 'export');
+      formData.append('export', 'export');
+      await new ReportService()
+        .getTicketReport(formData)
+        .then((res) => {
+          if (res.status === 200) {
+            if (res.data.status === 1) {
+              // setSearchResult(null);
+              // setSearchResult(res.data.data.data);
+              // setSearchResultData(res.data.data);
+              // setKey('Search_Result');
+              // setIsLoading(false);
+              const temp = res?.data?.data?.data;
+              var counter = 1;
+              var searchResultExport = [];
+              for (let key in temp) {
+                searchResultExport.push({
+                  Sr: counter++,
+                  TICKET_ID: temp[key].ticket_id,
+                  TICKET_DATE: temp[key].ticket_date,
+                  EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
+                  ASSIGN_TO_DEPARTMENT: temp[key].assign_to_department,
+                  ASSIGN_TO_USER: temp[key].assign_to_user,
+                  QUERY_TYPE_NAME: temp[key].query_type_name,
+                  PRIORITY: temp[key].priority,
+                  STATUS: temp[key].status_name,
+                  DESCRIPTION: temp[key].description,
+                  CREATED_BY: temp[key].created_by_name,
+                  Basket_Configured: temp[key].basket_configured,
+                  Confirmation_Required: temp[key].confirmation_required
+                    ? 'YES'
+                    : 'NO',
+                  Ref_id: temp[key].cuid,
+                  from_department_name: temp[key].from_department_name,
+                  id: temp[key].id,
+                  Status: temp[key].is_active ? 'Active' : 'Deactive',
+                  module_name: temp[key].module_name,
+                  Passed_Status: temp[key].passed_status,
+                  Passed_Status_Changed_At: temp[key].passed_status_changed_at,
+                  Passed_Status_Changed_By_Name:
+                    temp[key].passed_status_changed_by_name,
+                  Passed_Status_Remark: temp[key].passed_status_remark,
+                  project_name: temp[key].project_name,
+                  Status_name: temp[key].status_name,
+                  sub_module_name: temp[key].sub_module_name,
+                  Template_id: temp[key].template_id,
+                  Tenant_id: temp[key].tenant_id,
+                  ticket_solved_date: temp[key].ticket_solved_date,
+                  ticket_solved_by: temp[key].ticket_solved_by
+                });
+                setSearchResultExport(searchResultExport);
+              }
+              // setKey('Search_Result');
+            } else {
+              // alert('No Data Found');
+            }
+          } else {
+            new ErrorLogService().sendErrorLog(
+              'UserTask',
+              'Get_UserTask',
+              'INSERT',
+              res.message
+            );
+          }
+        })
+        .catch((error) => {
+          const { response } = error;
+          const { request, ...errorObject } = response;
+          new ErrorLogService().sendErrorLog(
+            'UserTask',
+            'Get_UserTask',
+            'INSERT',
+            errorObject.data.message
+          );
+          setIsLoading(false);
         });
     }
   };
