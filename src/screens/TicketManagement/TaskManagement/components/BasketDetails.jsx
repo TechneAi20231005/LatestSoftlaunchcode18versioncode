@@ -171,7 +171,7 @@ export default function BasketDetails(props) {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const tempData = res.data.data
+          const tempData = res.data.data.data
             .filter((d) => d.is_active === 1 && d.account_for === 'SELF')
             .map((d) => ({
               value: d.id,
