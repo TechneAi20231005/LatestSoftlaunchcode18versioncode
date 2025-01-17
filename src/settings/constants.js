@@ -125,7 +125,7 @@ export const ticketUrl = {
   ticket: _rewampApiUrl + 'ticketMaster',
   dynamicForm: _apiUrl + 'createForm',
   basket: _apiUrl + 'ticketBasket',
-  task: _apiUrl + 'ticketTask',
+  task: _rewampApiUrl + 'ticketTask',
   regularization: _rewampApiUrl + 'ticketTask',
   subtask: _apiUrl + 'ticketSubtask',
   timerData: _apiUrl + 'timerData',
@@ -134,7 +134,6 @@ export const ticketUrl = {
 };
 
 export const reportUrl = {
-
   ticketReport: _rewampApiUrl + 'ticketMaster/ticketReport',
   userTaskReport: _rewampApiUrl + 'report/userTaskReport',
 

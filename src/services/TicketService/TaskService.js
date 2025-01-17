@@ -48,7 +48,7 @@ export function postTask(payload) {
     }
   };
 
-  return axios.post(_URL, payload, config);
+  return axios.post(_URL + '/addTask', payload, config);
 }
 
 export function updateTask(id, payload) {

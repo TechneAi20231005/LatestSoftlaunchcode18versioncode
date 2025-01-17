@@ -242,7 +242,7 @@ export default function CreateCustomerMappingComponent() {
     dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
       if (res?.payload?.status === 200) {
         if (res?.payload?.data?.status === 1) {
-          var dropwdown = res?.payload?.data?.data
+          var dropwdown = res?.payload?.data?.data.data
             .filter((d) => d.is_active === 1)
             .map((d) => ({
               value: d.id,

@@ -199,8 +199,10 @@ export const CustomerMappingSlice = createSlice({
       const { payload } = action;
       state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        const queryTypeData = payload.data.data.filter((d) => d.is_active == 1);
-        const queryTypeDropDownData = payload.data.data
+        const queryTypeData = payload.data.data.data.filter(
+          (d) => d.is_active == 1
+        );
+        const queryTypeDropDownData = payload.data.data.data
           .filter((d) => d.is_active === 1)
           .map((d) => ({ value: d.id, label: d.query_type_name }));
         state.queryTypeData = queryTypeData;

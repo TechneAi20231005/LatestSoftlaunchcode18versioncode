@@ -21,6 +21,7 @@ import TaskTicketTypeService from '../../../../services/MastersService/TaskTicke
 import { Astrick } from '../../../../components/Utilities/Style';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { CustomValidation } from '../../../../components/custom/CustomValidation/CustomValidation';
+import { toast } from 'react-toastify';
 
 export default function TaskModal(props) {
   const [notify, setNotify] = useState();
@@ -89,18 +90,25 @@ export default function TaskModal(props) {
       label: 'assign_to_user',
       required: true
     }
+    // {
+    //   name: 'dependent_task',
+    //   label: 'dependent_task',
+    //   required: true
+    // }
   ];
 
   const validationSchema = CustomValidation(fields);
-
   const initialValues = {
     task_name: '',
     start_date: '',
     end_date: '',
-    task_hours: '',
-    priority: '',
-    dependent_task: '',
-    assign_to_user: ''
+    task_hours: '00:00',
+    priority: props.data.priority ? props.data.priority : '',
+    // dependent_task: '',
+    assign_to_user: props.data.assign_to_user ? props.data.assign_to_user : '',
+    // description: '',
+    type: props.data?.type || 'TASK',
+    status: props?.data?.status || 'TO_DO'
   };
 
   const handleSelect = (label, ID) => {
@@ -556,16 +564,15 @@ export default function TaskModal(props) {
   const assignUserRef = useRef();
   const handleForm = async (values) => {
     // e.preventDefault();
-    console.log('values', values);
     // setIsDisabled(true);
 
     // setLoading(true);
-    const selectedOptions = assignUserRef.current?.getValue() || [];
-    const selectedValues = selectedOptions.map((option) => option.value);
+    // const selectedOptions = assignUserRef.current?.getValue() || [];
+    // const selectedValues = selectedOptions.map((option) => option.value);
     const formData = new FormData();
     formData.append('ticket_id', props.data.ticket_id);
     formData.append('ticket_basket_id', props.data.ticket_basket_id);
-    formData.append('type', props.data.type);
+    formData.append('type', values.type);
     formData.append('task_name', values.task_name);
     formData.append('start_date', values.start_date);
     formData.append('end_date', values.end_date);
@@ -573,9 +580,17 @@ export default function TaskModal(props) {
     formData.append('priority', values.priority);
     formData.append('status', values.status);
     formData.append('task_desc', values.task_desc);
-    formData.append('assign_to_user', selectedValues);
-    formData.append('dependent_task', values.dependent_task);
-    // formData.append('parent_id', values.country_id);
+    formData.append('assign_to_user[]', values.assign_to_user);
+    formData.append('dependent_task[]', values.dependent_task);
+    // formData.append('parent_id', selectedOption);
+    selectedFile.forEach((fileObj, index) => {
+      // formData.append(`attachment`, fileObj.file);
+      // formData.append(`show_to_customer_${index}`, fileObj.show_to_customer);
+      // formData.append(
+      //   `show_to_project_owner_${index}`,
+      //   fileObj.show_to_project_owner
+      // );
+    });
     // formData.append('tenant_id', values.country_id);
     // formData.append('created_by', values.country_id);
     // formData.append('created_at', values.country_id);
@@ -723,19 +738,22 @@ export default function TaskModal(props) {
             await postTask(formData).then((res) => {
               if (res.status === 200) {
                 if (res.data.status === 1) {
-                  setNotify({ type: 'success', message: res.data.message });
+                  // setNotify({ type: 'success', message: res.data.message });
+                  toast.success(res?.data?.message);
                   // setLoading(false);
 
                   handleClose();
                   props.loadBasket();
                 } else {
                   // setLoading(false);
-                  setNotify({ type: 'danger', message: res.data.message });
+                  // setNotify({ type: 'danger', message: res.data.message });
+                  toast.error(res?.data?.message);
                 }
               } else {
                 setIsDisabled(false);
                 // setLoading(false);
-                setNotify({ type: 'danger', message: res.data.message });
+                // setNotify({ type: 'danger', message: res.data.message });
+                toast.error(res?.data?.message);
                 new ErrorLogService().sendErrorLog(
                   'Ticket',
                   'Edit_Task',
@@ -1438,7 +1456,6 @@ export default function TaskModal(props) {
         >
           {({ setFieldValue, values }) => (
             <Form>
-              {console.log('values==>', values)}
               <Modal.Header closeButton>
                 <Modal.Title id="example-custom-modal-styling-title">
                   <strong>Task Details</strong>
@@ -1490,7 +1507,7 @@ export default function TaskModal(props) {
                         <div className="row">
                           <div className="col-md-4">
                             <div className="form-check">
-                              <input
+                              {/* <input
                                 className="form-check-input"
                                 type="radio"
                                 name="type"
@@ -1505,12 +1522,25 @@ export default function TaskModal(props) {
                                 htmlFor="status_type"
                               >
                                 Task
+                              </label> */}
+                              <Field
+                                type="radio"
+                                className="form-check-input"
+                                name="type"
+                                id="task_type_type"
+                                value="TASK"
+                              />
+                              <label
+                                className="form-check-label"
+                                htmlFor="task_type_type"
+                              >
+                                Task
                               </label>
                             </div>
                           </div>
                           <div className="col-md-8">
                             <div className="form-check">
-                              <input
+                              {/* <input
                                 className="form-check-input"
                                 type="radio"
                                 name="type"
@@ -1524,6 +1554,20 @@ export default function TaskModal(props) {
                               <label
                                 className="form-check-label"
                                 htmlFor="status_group_activity"
+                              >
+                                Group Activity
+                              </label> */}
+
+                              <Field
+                                type="radio"
+                                className="form-check-input"
+                                name="type"
+                                id="task_type_group_activity"
+                                value="GROUP_ACTIVITY"
+                              />
+                              <label
+                                className="form-check-label"
+                                htmlFor="task_type_group_activity"
                               >
                                 Group Activity
                               </label>
@@ -1748,8 +1792,10 @@ export default function TaskModal(props) {
                       <Field
                         type="text"
                         className="form-control form-control-sm"
-                        id="task_hours"
                         name="task_hours"
+                        placeholder="00:00"
+                        required
+                        defaultValue={undefined} // Remove this line, as Formik manages the value
                       />
                     ) : (
                       <input
@@ -1805,7 +1851,6 @@ export default function TaskModal(props) {
                         }
                       })}
                     </select> */}
-                    {console.log('pppp', priority)}
                     <Select
                       options={priority}
                       isClearable
@@ -1828,7 +1873,7 @@ export default function TaskModal(props) {
                     <div className="row">
                       <div className="col-md-3">
                         <div className="form-check">
-                          <input
+                          {/* <input
                             className="form-check-input"
                             type="radio"
                             name="status"
@@ -1841,6 +1886,20 @@ export default function TaskModal(props) {
                           />
                           <label
                             className="form-check-label "
+                            htmlFor="status_to_do"
+                          >
+                            TO DO
+                          </label> */}
+                          <Field
+                            type="radio"
+                            className="form-check-input"
+                            name="status"
+                            id="status_to_do"
+                            value="TO_DO"
+                            disabled={props?.data?.status === 'COMPLETED'}
+                          />
+                          <label
+                            className="form-check-label"
                             htmlFor="status_to_do"
                           >
                             TO DO
@@ -1910,7 +1969,7 @@ export default function TaskModal(props) {
                     <label className="form-label">
                       <b>Description :</b>
                     </label>
-                    <textarea
+                    {/* <textarea
                       className="form-control"
                       id="description"
                       name="task_desc"
@@ -1918,6 +1977,13 @@ export default function TaskModal(props) {
                       readOnly={
                         props.data.status === 'COMPLETED' ? true : false
                       }
+                    /> */}
+                    <Field
+                      as="textarea"
+                      className="form-control"
+                      id="description"
+                      name="task_desc"
+                      readOnly={props.data.status === 'COMPLETED'}
                     />
                   </div>
                 </div>
@@ -1931,42 +1997,105 @@ export default function TaskModal(props) {
                     </label>
 
                     {defaultUserData?.length > 0 && userData && (
+                      // <Select
+                      //   defaultValue={defaultUserData}
+                      //   isMulti
+                      //   isSearchable={true}
+                      //   ref={assignUserRef}
+                      //   id="assign_to_user[]"
+                      //   name="assign_to_user[]"
+                      //   className="basic-multi-select"
+                      //   classNamePrefix="select"
+                      //   options={userData}
+                      //   required
+                      //   isDisabled={
+                      //     props.data.status === 'COMPLETED' ? true : false
+                      //   }
+                      // />
+
                       <Select
-                        defaultValue={defaultUserData}
-                        isMulti
-                        isSearchable={true}
-                        ref={assignUserRef}
+                        options={userData}
+                        isClearable
+                        isMulti // Add this if you want multi-selection
                         id="assign_to_user[]"
                         name="assign_to_user[]"
-                        className="basic-multi-select"
-                        classNamePrefix="select"
-                        options={userData}
-                        required
-                        isDisabled={
-                          props.data.status === 'COMPLETED' ? true : false
+                        value={userData.filter((option) =>
+                          values.assign_to_user?.includes(option.value)
+                        )}
+                        onChange={(selectedOptions) =>
+                          setFieldValue(
+                            'assign_to_user',
+                            Array.isArray(selectedOptions)
+                              ? selectedOptions.map((option) => option.value)
+                              : []
+                          )
                         }
+                        // value={userData?.find(
+                        //   (option) => option.value === values.assign_to_user
+                        // )}
+                        // onChange={(option) =>
+                        //   setFieldValue(
+                        //     'assign_to_user',
+                        //     option ? option.value : ''
+                        //   )
+                        // }
                       />
                     )}
+
                     {defaultUserData?.length === 0 && userData && (
+                      // <Select
+                      //   isMulti
+                      //   isSearchable={true}
+                      //   name="assign_to_user[]"
+                      //   className="basic-multi-select"
+                      //   classNamePrefix="select"
+                      //   options={userData}
+                      //   ref={assignUserRef}
+                      //   required
+                      //   defaultValue={
+                      //     userData &&
+                      //     userData
+                      //       .map((d) => ({ value: d.value, label: d.label }))
+                      //       .filter(
+                      //         (d) =>
+                      //           d.value === Number(localStorage.getItem('id'))
+                      //       )
+                      //   }
+                      //   isClearable
+                      // />
                       <Select
-                        isMulti
-                        isSearchable={true}
-                        name="assign_to_user[]"
-                        className="basic-multi-select"
-                        classNamePrefix="select"
                         options={userData}
-                        ref={assignUserRef}
-                        required
-                        defaultValue={
-                          userData &&
-                          userData
-                            .map((d) => ({ value: d.value, label: d.label }))
-                            .filter(
-                              (d) =>
-                                d.value === Number(localStorage.getItem('id'))
-                            )
-                        }
                         isClearable
+                        id="assign_to_user[]"
+                        name="assign_to_user[]"
+                        // value={userData.filter((option) =>
+                        //   values.assign_to_user?.includes(option.value)
+                        // )}
+                        value={userData.filter(
+                          (option) =>
+                            Array.isArray(values.assign_to_user)
+                              ? values.assign_to_user.includes(option.value) // Check for array
+                              : values.assign_to_user === option.value // Check for scalar
+                        )}
+                        // onChange={(selectedOptions) =>
+                        //   setFieldValue(
+                        //     'assign_to_user',
+                        //     selectedOptions
+                        //       ? selectedOptions.map((option) => option.value)
+                        //       : []
+                        //   )
+                        // }
+                        onChange={(selectedOptions) =>
+                          setFieldValue(
+                            'assign_to_user',
+                            Array.isArray(selectedOptions)
+                              ? selectedOptions.length === 1
+                                ? selectedOptions[0].value // Single value: pass as scalar
+                                : selectedOptions.map((option) => option.value) // Multiple values: pass as array
+                              : []
+                          )
+                        }
+                        isMulti
                       />
                     )}
                   </div>
@@ -1976,32 +2105,102 @@ export default function TaskModal(props) {
                       <b>Dependent Task :</b>
                     </label>
                     {props.data.id != null && props.taskDropdown && (
+                      // <Select
+                      //   isMulti
+                      //   isSearchable={true}
+                      //   name="dependent_task[]"
+                      //   options={
+                      //     filteredOptions && filteredOptions
+                      //       ? filteredOptions
+                      //       : ''
+                      //   }
+                      //   defaultValue={
+                      //     props.data &&
+                      //     props.taskDropdown.filter((d) =>
+                      //       props.data.dependentTaskId.includes(d.value)
+                      //     )
+                      //   }
+                      // />
+
                       <Select
-                        isMulti
-                        isSearchable={true}
-                        name="dependent_task[]"
                         options={
                           filteredOptions && filteredOptions
                             ? filteredOptions
                             : ''
                         }
-                        defaultValue={
-                          props.data &&
-                          props.taskDropdown.filter((d) =>
-                            props.data.dependentTaskId.includes(d.value)
+                        isClearable
+                        isMulti
+                        id="dependent_task[]"
+                        name="dependent_task[]"
+                        // value={filteredOptions?.filter((option) =>
+                        //   props.data.dependent_task?.includes(option.value)
+                        // )}
+                        value={filteredOptions?.find(
+                          (option) => option.value === values.dependent_task
+                        )}
+                        onChange={(option) =>
+                          setFieldValue(
+                            'dependent_task',
+                            option ? option.value : ''
                           )
                         }
+                        // onChange={(selectedOptions) =>
+                        //   setFieldValue(
+                        //     'dependent_task',
+                        //     selectedOptions
+                        //       ? selectedOptions.map((option) => option.value)
+                        //       : []
+                        //   )
+                        // }
                       />
                     )}
                     {props.data.id == null && props.taskDropdown && (
+                      // <Select
+                      //   isMulti
+                      //   isSearchable={true}
+                      //   name="dependent_task[]"
+                      //   options={filteredOptions && filteredOptions}
+                      //   onChange={(option) =>
+                      //     setFieldValue('dependent_task', option?.value || null)
+                      //   }
+                      // />
                       <Select
-                        isMulti
-                        isSearchable={true}
-                        name="dependent_task[]"
-                        options={filteredOptions && filteredOptions}
-                        onChange={(option) =>
-                          setFieldValue('dependent_task', option?.value || null)
+                        options={
+                          filteredOptions && filteredOptions
+                            ? filteredOptions
+                            : ''
                         }
+                        isClearable
+                        id="dependent_task[]"
+                        name="dependent_task[]"
+                        // value={filteredOptions?.filter((option) =>
+                        //   values.dependent_task?.includes(option.value)
+                        // )}
+                        value={filteredOptions?.filter(
+                          (option) =>
+                            Array.isArray(values.dependent_task)
+                              ? values.dependent_task.includes(option.value) // Check for array
+                              : values.dependent_task === option.value // Check for scalar
+                        )}
+                        // onChange={(selectedOptions) =>
+                        //   setFieldValue(
+                        //     'dependent_task',
+                        //     selectedOptions
+                        //       ? selectedOptions.map((option) => option.value)
+                        //       : []
+                        //   )
+                        // }
+                        onChange={(selectedOptions) =>
+                          setFieldValue(
+                            'dependent_task',
+                            Array.isArray(selectedOptions)
+                              ? selectedOptions.length === 1
+                                ? selectedOptions[0].value // Single value: pass as scalar
+                                : selectedOptions.map((option) => option.value) // Multiple values: pass as array
+                              : []
+                          )
+                        }
+                        isMulti
                       />
                     )}
                   </div>
