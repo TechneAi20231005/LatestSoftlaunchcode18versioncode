@@ -87,10 +87,10 @@ export default function BasketDetails(props) {
   const handleForm = async (values) => {
     // e.preventDefault();
     const formData = new FormData();
-    formData.append('basket_name', values.basket_name);
-    formData.append('basket_owner', values.basket_owner);
-    formData.append('start_date', values.start_date);
-    formData.append('end_date', values.end_date);
+    formData.append('basket_name[]', values.basket_name);
+    formData.append('basket_owner[]', values.basket_owner);
+    formData.append('start_date[]', values.start_date);
+    formData.append('end_date[]', values.end_date);
     formData.append('ticket_id', props?.ticketId);
 
     formData.append('source', 'AFTER_TICKET_INSERT');
