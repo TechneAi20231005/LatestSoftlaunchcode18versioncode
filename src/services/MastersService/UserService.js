@@ -113,10 +113,17 @@ export default class UserService {
     };
     if (departmentId) {
       return axios.get(
-        _URL + '/getUserWithMultipleDepartment/' + departmentId,
+        _rewampApiUrl +
+          'employeeMaster/' +
+          'getEmployeeWithMultipleDepartment/' +
+          departmentId,
         config
       );
-    } else return axios.get(_URL + '/getUserWithMultipleDepartment', config);
+    } else
+      return axios.get(
+        _rewampApiUrl + 'employeeMaster/' + 'getEmployeeWithMultipleDepartment',
+        config
+      );
   }
 
   postUser(payload) {

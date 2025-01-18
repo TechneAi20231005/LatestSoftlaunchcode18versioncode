@@ -146,7 +146,7 @@ export const DynamicFormDropDownSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.status = 'succeded';
-        let dropDownData = payload.data.data.map((d) => ({
+        let dropDownData = payload.data.data?.data?.map((d) => ({
           label: d.dropdown_name,
           value: d.id
         }));
