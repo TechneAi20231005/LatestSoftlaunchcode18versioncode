@@ -1093,12 +1093,12 @@ export default function HrDashboard(props) {
                               >
                                 <h6
                                   className="fw-bold mb-0 small-14"
-                                  title={ele.task_name}
+                                  title={ele?.task_name}
                                 >
                                   {index + 1}. {ele.main_ticket_id}-
-                                  {ele.task_name.length < 20
-                                    ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + '....'}
+                                  {ele?.task_name?.length < 20
+                                    ? ele?.task_name
+                                    : ele?.task_name?.substring(0, 20) + '....'}
                                 </h6>
                               </Link>
                             </div>
@@ -1237,12 +1237,12 @@ export default function HrDashboard(props) {
                               >
                                 <h6
                                   className="fw-bold mb-0 small-14"
-                                  title={ele.task_name}
+                                  title={ele?.task_name}
                                 >
                                   {index + 1}. {ele.main_ticket_id}-
-                                  {ele.task_name.length < 20
-                                    ? ele.task_name
-                                    : ele.task_name.substring(0, 20) + '....'}
+                                  {ele?.task_name?.length < 20
+                                    ? ele?.task_name
+                                    : ele?.task_name?.substring(0, 20) + '....'}
                                 </h6>
                               </Link>
                             </div>

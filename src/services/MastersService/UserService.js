@@ -98,7 +98,7 @@ export default class UserService {
       }
     };
 
-    return axios.get(_URL + '/except/' + id, config);
+    return axios.get(_URL + '/' + id, config);
   }
 
   getUserWithMultipleDepartment(departmentId) {

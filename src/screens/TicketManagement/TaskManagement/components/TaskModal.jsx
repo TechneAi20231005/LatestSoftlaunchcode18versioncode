@@ -85,11 +85,11 @@ export default function TaskModal(props) {
       label: 'priority',
       required: true
     },
-    {
-      name: 'assign_to_user',
-      label: 'assign_to_user',
-      required: true
-    }
+    // {
+    //   name: 'assign_to_user',
+    //   label: 'assign_to_user',
+    //   required: false,
+    // }
     // {
     //   name: 'dependent_task',
     //   label: 'dependent_task',
@@ -99,14 +99,14 @@ export default function TaskModal(props) {
 
   const validationSchema = CustomValidation(fields);
   const initialValues = {
-    task_name: '',
-    start_date: '',
-    end_date: '',
-    task_hours: '00:00',
+    task_name: props?.data?.task_name || '',
+    start_date: props?.data?.start_date || '',
+    end_date: props?.data?.end_date || '',
+    task_hours: props?.data?.task_hours || '00:00',
     priority: props.data.priority ? props.data.priority : '',
-    // dependent_task: '',
+    dependent_task: props.data.dependentTaskId ? props.data.dependentTaskId : '',
     assign_to_user: props.data.assign_to_user ? props.data.assign_to_user : '',
-    // description: '',
+    task_desc: props?.data?.task_desc || '',
     type: props.data?.type || 'TASK',
     status: props?.data?.status || 'TO_DO'
   };
@@ -563,6 +563,7 @@ export default function TaskModal(props) {
 
   const assignUserRef = useRef();
   const handleForm = async (values) => {
+    console.log(values,"values")
     // e.preventDefault();
     // setIsDisabled(true);
 
@@ -596,7 +597,7 @@ export default function TaskModal(props) {
     // formData.append('created_at', values.country_id);
 
     // const formData = new FormData(e.target);
-    if (!selectedOption && !formData.get('id')) {
+    if (!selectedOption && !props?.data?.id) {
       setParentTaskName('Please select a parent task type.');
     } else {
       setParentTaskName(''); // Clear the error message if present
@@ -653,14 +654,14 @@ export default function TaskModal(props) {
         if (todateformat > fromdateformat) {
           alert('Please select End Date Greater than Start date');
         } else {
-          if (formData.get('id')) {
+          if (props.data.id) {
             // const taskTypeId = typeRef?.current?.props?.value.map((d) => {
             //   return d.value;
             // });
 
             if (
               !selectedOption &&
-              formData.get('id') &&
+              props?.data?.id &&
               !props?.data?.parent_name
             ) {
               setParentTaskName('Please select a parent task type.');
@@ -683,16 +684,19 @@ export default function TaskModal(props) {
                 );
               }
               // formData.append("task_type_id", taskTypeId);
-              await updateTask(formData.get('id'), formData)
+              await updateTask(props?.data?.id, formData)
                 .then((res) => {
                   if (res.status === 200) {
                     if (res.data.status === 1) {
                       // props.loadBasket();
+                      console.log(res.data.message,"res.data.message")
                       setNotify({ type: 'success', message: res.data.message });
                       // setLoading(false);
 
+                     setTimeout(() => {
                       handleClose();
                       props.loadBasket();
+                     }, 1000);
                     } else {
                       // setLoading(false);
                       setNotify({ type: 'danger', message: res.data.message });
@@ -1454,7 +1458,8 @@ export default function TaskModal(props) {
             handleForm(values);
           }}
         >
-          {({ setFieldValue, values }) => (
+          {({ setFieldValue, values }) =>   (
+
             <Form>
               <Modal.Header closeButton>
                 <Modal.Title id="example-custom-modal-styling-title">
@@ -1600,7 +1605,7 @@ export default function TaskModal(props) {
                         name="task_name"
                       />
                     ) : (
-                      <input
+                      <Field
                         type="text"
                         className="form-control form-control-sm"
                         name="task_name"
@@ -1702,7 +1707,7 @@ export default function TaskModal(props) {
                         min={props.ticketStartDate}
                       />
                     ) : (
-                      <input
+                      <Field
                         type="date"
                         className="form-control form-control-sm"
                         id="start_date"
@@ -1750,7 +1755,7 @@ export default function TaskModal(props) {
                         }
                       />
                     ) : (
-                      <input
+                      <Field
                         type="date"
                         className="form-control form-control-sm"
                         name="end_date"
@@ -1865,6 +1870,11 @@ export default function TaskModal(props) {
                         setFieldValue('priority', option ? option.value : '')
                       }
                     />
+                     <ErrorMessage
+                      name="priority"
+                      component="small"
+                      className="text-danger"
+                    />
                   </div>
                   <div className="col-md-6">
                     <label className="form-label">
@@ -1910,7 +1920,7 @@ export default function TaskModal(props) {
                       {props.data.id && (
                         <div className="col-md-5">
                           <div className="form-check">
-                            <input
+                            <Field
                               className="form-check-input"
                               type="radio"
                               name="status"
@@ -1937,7 +1947,7 @@ export default function TaskModal(props) {
                       {props.data.id && (
                         <div className="col-md-4">
                           <div className="form-check">
-                            <input
+                            <Field
                               className="form-check-input"
                               type="radio"
                               name="status"
@@ -2133,25 +2143,22 @@ export default function TaskModal(props) {
                         id="dependent_task[]"
                         name="dependent_task[]"
                         // value={filteredOptions?.filter((option) =>
-                        //   props.data.dependent_task?.includes(option.value)
+                        //   props.data.dependentTaskId?.includes(option.value)
                         // )}
-                        value={filteredOptions?.find(
+                        value={filteredOptions?.filter(
                           (option) => option.value === values.dependent_task
                         )}
-                        onChange={(option) =>
+                        onChange={(selectedOptions) =>
                           setFieldValue(
                             'dependent_task',
-                            option ? option.value : ''
+                            Array.isArray(selectedOptions)
+                              ? selectedOptions.length === 1
+                                ? selectedOptions[0].value // Single value: pass as scalar
+                                : selectedOptions.map((option) => option.value) // Multiple values: pass as array
+                              : []
                           )
                         }
-                        // onChange={(selectedOptions) =>
-                        //   setFieldValue(
-                        //     'dependent_task',
-                        //     selectedOptions
-                        //       ? selectedOptions.map((option) => option.value)
-                        //       : []
-                        //   )
-                        // }
+
                       />
                     )}
                     {props.data.id == null && props.taskDropdown && (
@@ -2293,7 +2300,7 @@ export default function TaskModal(props) {
                   style={{ overflowX: 'auto' }}
                 >
                   {props?.data?.attachment &&
-                    props?.data?.attachment.map((attach, index) => {
+                    props?.data?.attachment?.attachments?.map((attach, index) => {
                       return (
                         <div
                           className="justify-content-start"
@@ -2309,12 +2316,12 @@ export default function TaskModal(props) {
                           >
                             <div className="card-header">
                               <p style={{ fontSize: '12px' }}>
-                                <b>{attach.fileName}</b>
+                                <b>{attach.name}</b>
                               </p>
                               <div className="d-flex justify-content-end p-0">
                                 <a
                                   href={`${
-                                    _attachmentUrl + '/' + attach.filePath
+                                    _attachmentUrl + attach.path
                                   }`}
                                   target="_blank"
                                   className="btn btn-warning btn-sm p-0 px-1"

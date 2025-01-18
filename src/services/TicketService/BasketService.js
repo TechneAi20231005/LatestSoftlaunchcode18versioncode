@@ -114,7 +114,7 @@ export default class BasketService {
     };
     const userId = localStorage.getItem('id');
     return axios.get(
-      `${_URL}/${id}/${userId}?sprint_id=${sprint_id}${
+      `${URL}/${id}/${userId}?sprint_id=${sprint_id}${
         task_status !== 'all' ? `&taskType=${task_status}` : ''
       }`,
       config

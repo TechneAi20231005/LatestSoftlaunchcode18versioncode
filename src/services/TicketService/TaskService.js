@@ -64,7 +64,7 @@ export function updateTask(id, payload) {
       'Content-Type': 'multipart/form-data'
     }
   };
-  return axios.post(_URL + '/' + id, payload, config);
+  return axios.post(_URL + '/updateTask/' + id, payload, config);
 }
 
 export function deleteTask(taskId) {
@@ -90,7 +90,7 @@ export function getTaskData(taskId) {
       'Content-Type': 'application/json'
     }
   };
-  return axios.get(_URL + '/' + taskId, config);
+  return axios.get(_URL + '/getTaskById' + '/' + taskId, config);
 }
 
 export function postTimerData(payload) {
