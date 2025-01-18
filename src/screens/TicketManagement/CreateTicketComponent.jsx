@@ -364,7 +364,7 @@ export default function CreateTicketComponent() {
                 toast.success(res?.data?.message);
                 console.log('error', res.data.data);
                 let url =
-                  `http://103.97.105.81:89/TicketingUat/` + res.data.data;
+                  `http://103.97.105.81:89/TicketingDev/` + res.data.data;
                 console.log('url', url);
                 window.open(url, '_blank').focus();
                 setIsSubmitted(false);
@@ -1462,7 +1462,7 @@ export default function CreateTicketComponent() {
               className="btn btn-sm btn-primary"
               disabled={isFileGenerated ? false : true}
             >
-              Submitfff
+              Submit
             </button>
           )}
           <Link

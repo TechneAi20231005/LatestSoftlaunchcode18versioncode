@@ -96,13 +96,13 @@ export default function TaskComponent() {
       .catch((error) => {
         const { response } = error;
 
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'Task',
-          'Get_Ticket',
-          'INSERT',
-          errorObject.data.message
-        );
+        // const { request, ...errorObject } = response;
+        // new ErrorLogService().sendErrorLog(
+        //   'Task',
+        //   'Get_Ticket',
+        //   'INSERT',
+        //   errorObject.data.message
+        // );
       });
   }, [ticketId]);
 
@@ -836,10 +836,7 @@ export default function TaskComponent() {
     if (value) {
       const startDate = new Date(value);
       startDate.setDate(startDate.getDate() + 1);
-      console.log(
-        'startDate.toISOString()',
-        startDate.toISOString().split('T')
-      );
+
       const formattedMinDate = startDate.toISOString().split('T')[0];
       setMinEndDate(formattedMinDate);
       return formattedMinDate;
