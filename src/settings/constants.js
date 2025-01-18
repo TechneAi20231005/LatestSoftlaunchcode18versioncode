@@ -125,10 +125,12 @@ export const ticketUrl = {
   ticket: _rewampApiUrl + 'ticketMaster',
   dynamicForm: _apiUrl + 'createForm',
   basket: _apiUrl + 'ticketBasket',
+  // task: _apiUrl + 'ticketTask',
+  subtask: _rewampApiUrl + 'ticketSubtask',
   task: _rewampApiUrl + 'ticketTask',
   regularization: _rewampApiUrl + 'ticketTask',
-  subtask: _apiUrl + 'ticketSubtask',
-  timerData: _apiUrl + 'timerData',
+  // subtask: _apiUrl + 'ticketSubtask',
+  timerData: _rewampApiUrl + 'timerData',
   postTimerDataGroupActivity: _apiUrl + 'postTimerDataGroupActivity',
   stopTimerDataGroupActivity: _apiUrl + 'stopTimerDataGroupActivity'
 };
@@ -162,7 +164,7 @@ export const menuManagementUrl = {
   menusUrl: _apiUrl + 'menuManagement'
 };
 
-export const dashboardUrl = _apiUrl + 'dashboard';
+export const dashboardUrl = _rewampApiUrl + 'dashboard';
 
 export const notificationUrl = _apiUrl + 'notification';
 

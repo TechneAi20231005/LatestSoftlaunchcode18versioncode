@@ -366,13 +366,15 @@ export default function ResourcePlanningReportComponent() {
       name: 'from_date',
       label: 'From Date',
       required: true,
-      alphaNumeric: false
+      alphaNumeric: false,
+      dateRange: { startDate: 'from_date', endDate: 'to_date', startLabel: 'From Date' },
     },
     {
       name: 'to_date',
       label: 'To Date',
       required: true,
-      alphaNumeric: false
+      alphaNumeric: false,
+      dateRange: { startDate: 'from_date', endDate: 'to_date', startLabel: 'From Date' },
     }
   ];
 
