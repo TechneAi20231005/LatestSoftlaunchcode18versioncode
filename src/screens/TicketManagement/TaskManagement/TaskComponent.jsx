@@ -402,11 +402,11 @@ export default function TaskComponent() {
 
     await new SprintService().getSprintByTicketId(ticketId).then((res) => {
       if (res?.data?.status === 1) {
-        const { data } = res?.data;
+        const { data } = res?.data?.data;
         const { first_sprint_start_date, last_sprint_end_date } =
           res?.data?.sprint_date;
         setSprintdata(data);
-        let temp = res?.data?.data?.map((data) => ({
+        let temp = res?.data?.data?.data?.map((data) => ({
           label: data.name,
           value: data.id
         }));
@@ -497,7 +497,7 @@ export default function TaskComponent() {
         );
         if (sprintRes?.data?.status) {
           setSprintdata(sprintRes?.data?.data);
-          const temp = sprintRes?.data?.data?.map((data) => ({
+          const temp = sprintRes?.data?.data?.data?.map((data) => ({
             label: data.name,
             value: data.id
           }));
@@ -693,12 +693,12 @@ export default function TaskComponent() {
             .then((res) => {
               if (res?.data?.status) {
                 setSprintdata(res?.data?.data);
-                let temp = res?.data?.data?.map((data) => ({
+                let temp = res?.data?.data?.data?.map((data) => ({
                   label: data.name,
                   value: data.id
                 }));
                 setSprintDropDown(temp);
-                let showUpdatedData = res?.data?.data?.filter(
+                let showUpdatedData = res?.data?.data?.data?.filter(
                   (sprint) => sprint.id === sprint_id
                 );
                 setSprintCardData(showUpdatedData);

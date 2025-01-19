@@ -143,12 +143,12 @@ const SprintCalendar = () => {
           if (res?.data?.status && res?.data?.data) {
             // setCalendarData(res?.data?.data);
 
-            setFirstStarDate(res?.data?.data[0]?.first_sprint_date);
-            setLasteEndDate(res?.data?.data[0]?.last_sprint_date);
+            setFirstStarDate(res?.data?.data?.data[0]?.first_sprint_date);
+            setLasteEndDate(res?.data?.data?.data[0]?.last_sprint_date);
             if (selectedOption === 'week') {
               const weeklyRange = getWeekRange(
-                res?.data?.data[0]?.first_sprint_date,
-                res?.data?.data[0]?.last_sprint_date
+                res?.data?.data?.data[0]?.first_sprint_date,
+                res?.data?.data?.data[0]?.last_sprint_date
               );
               if (weeklyRange) {
                 setCurrentDateRange(weeklyRange);

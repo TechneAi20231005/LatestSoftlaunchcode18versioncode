@@ -93,7 +93,7 @@ export const masterURL = {
   dynamicFormDropdownMaster: _rewampApiUrl + 'dynamicFormDropdownMaster',
   testingTypeMaster: _apiUrl + 'testingTypeMaster',
   taskTicketTypeMaster: _rewampApiUrl + 'taskTicketTypeMaster',
-  sprintMaster: _apiUrl + 'sprintMaster',
+  sprintMaster: _rewampApiUrl + 'sprintMaster',
   projectMaster: _rewampApiUrl + 'projectMaster',
   moduleMaster: _rewampApiUrl + 'moduleMaster',
   subModuleMaster: _rewampApiUrl + 'subModuleMaster'
