@@ -16,6 +16,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../Dashboard/DashboardAction';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { CustomValidation } from '../../components/custom/CustomValidation/CustomValidation';
+import errorHandler from '../../utils/errorHandler'
 
 export default function ResourcePlanningReportComponent() {
   const [userData, setUserData] = useState(null);
@@ -65,7 +66,7 @@ export default function ResourcePlanningReportComponent() {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         setShowLoaderModal(false);
-        const data = res.data.data.filter(
+        const data = res.data.data?.data?.filter(
           (d) => d.is_active === 1 && d.account_for === 'SELF'
         );
         for (const key in data) {
@@ -199,6 +200,7 @@ export default function ResourcePlanningReportComponent() {
               }
             } else {
               setData(null);
+
             }
           } else {
             new ErrorLogService().sendErrorLog(
@@ -207,6 +209,7 @@ export default function ResourcePlanningReportComponent() {
               'INSERT',
               res.message
             );
+            setShowLoaderModal(null);
           }
         } catch (error) {
           if (error.response && error.response.data) {
@@ -216,6 +219,9 @@ export default function ResourcePlanningReportComponent() {
               'INSERT',
               error.response.data.message
             );
+            errorHandler(error?.response)
+            setShowLoaderModal(null);
+
           } else {
             new ErrorLogService().sendErrorLog(
               'ResourcePlanning',
@@ -284,13 +290,15 @@ export default function ResourcePlanningReportComponent() {
       name: 'from_date',
       label: 'From Date',
       required: true,
-      alphaNumeric: false
+      alphaNumeric: false,
+      dateRange: { startDate: 'from_date', endDate: 'to_date', startLabel: 'From Date' },
     },
     {
       name: 'to_date',
       label: 'To Date',
       required: true,
-      alphaNumeric: false
+      alphaNumeric: false,
+      dateRange: { startDate: 'from_date', endDate: 'to_date', startLabel: 'From Date' },
     }
   ];
 
@@ -328,6 +336,7 @@ export default function ResourcePlanningReportComponent() {
                       isMulti
                       isSearchable={true}
                       name="user_id"
+                      value={values.user_id}
                       className="basic-multi-select"
                       classNamePrefix="select"
                       options={userData}
@@ -400,7 +409,12 @@ export default function ResourcePlanningReportComponent() {
                     <button
                       className="btn btn-sm btn-info text-white"
                       type="button"
-                      onClick={() => window.location.reload(false)}
+                      onClick={() => {
+                        setFieldValue('user_id', []);
+                        setFieldValue('task_name', '');
+                        setFieldValue('from_date', '');
+                        setFieldValue('to_date', '');
+                      }}
                       style={{ marginTop: '20px', fontWeight: '600' }}
                     >
                       <i className="icofont-refresh text-white"></i> Reset

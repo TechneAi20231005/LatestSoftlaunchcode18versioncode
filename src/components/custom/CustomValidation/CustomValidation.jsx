@@ -7,27 +7,27 @@ export const CustomValidation = (fields) => {
     fields.reduce((acc, field) => {
       let validator = Yup.string();
 
-      if (field.name === 'from_date' || field.name === 'to_date') {
+      if (field.dateRange) {
         validator = Yup.date()
           .typeError(`${field.label} must be a valid date`)
           .nullable()
           .test('validDate', `${field.label} must be a valid date`, (value) => {
             return value ? !isNaN(new Date(value).getTime()) : true;
           });
-      }
 
-      if (field.name === 'to_date') {
-        validator = validator.test(
-          'isAfterFromDate',
-          'Please select Date After From date',
-          function (value) {
-            const { from_date } = this.parent;
-            if (value && from_date) {
-              return new Date(value) >= new Date(from_date);
+        if (field.name === field.dateRange.endDate) {
+          validator = validator.test(
+            'isAfterStartDate',
+            `Please select Date After ${field.dateRange.startLabel}`,
+            function (value) {
+              const startDate = this.parent[field.dateRange.startDate];
+              if (value && startDate) {
+                return new Date(value) >= new Date(startDate);
+              }
+              return true;
             }
-            return true;
-          }
-        );
+          );
+        }
       }
 
       if (field.isArray) {

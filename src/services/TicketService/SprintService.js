@@ -10,8 +10,8 @@ export default class SprintService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     };
     return axios.get(`${_URL}/getSprint/${sprint_id}`, config);
   }
@@ -22,8 +22,8 @@ export default class SprintService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     };
     return axios.get(`${_URL}/getSprint/${ticket_id}/${sprint_id}`, config);
   }
@@ -34,10 +34,10 @@ export default class SprintService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.get(`${_URL}/getSprint/${ticketid}`, config);
+    return axios.get(`${_URL}/getData/${ticketid}`, config);
   }
 
   postSprintForTicket(payload) {
@@ -46,10 +46,10 @@ export default class SprintService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.post(`${_URL}/createSprint`, payload, config);
+    return axios.post(`${_URL}/postData`, payload, config);
   }
 
   getSprintReportById(ticket_id, sprint_id) {
@@ -58,10 +58,13 @@ export default class SprintService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.get(`${_URL}/getSprintReport/${ticket_id}/${sprint_id}`, config);
+    return axios.get(
+      `${_URL}/getSprintReport/${ticket_id}/${sprint_id}`,
+      config
+    );
   }
   updateSprintDetail(payload, sprint_id) {
     const token = localStorage.getItem('jwt_token');
@@ -69,10 +72,10 @@ export default class SprintService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.post(`${_URL}/createSprint/${sprint_id}`, payload, config);
+    return axios.post(`${_URL}/postData/${sprint_id}`, payload, config);
   }
 
   getSprintCalendar(ticket_id) {
@@ -81,8 +84,8 @@ export default class SprintService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     };
     // http://3.108.206.34/2_Testing/TSNewBackend/public/api/sprintMaster/getGraphCalenderData/
 
@@ -95,13 +98,13 @@ export default class SprintService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.get(
       `${_URL}/getCalenderData/${ticket_id}?from_date=${from_date}&to_date=${to_date}`,
-      config,
+      config
     );
   }
 
@@ -111,13 +114,13 @@ export default class SprintService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
+        'Content-Type': 'application/json'
+      }
     };
 
     return axios.get(
       `${_URL}/getGraphData/${ticket_id}?from_date=${from_date}&to_date=${to_date}`,
-      config,
+      config
     );
   }
   // ?from_date=${from_date}&to_date=${to_date}

@@ -70,7 +70,7 @@ export const MyTicketComponentSlice = createSlice({
     builder.addCase(getUserForMyTicketsData.fulfilled, (state, action) => {
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let getUserForMyTicket = payload.data.data;
+        let getUserForMyTicket = payload.data.data.data;
 
         let sortAssigntoSelfUser = getUserForMyTicket
           .filter((d) => d.account_for === 'SELF')
@@ -80,7 +80,7 @@ export const MyTicketComponentSlice = createSlice({
           }));
 
         state.sortAssigntoSelfUser = sortAssigntoSelfUser;
-        let user = payload.data.data;
+        let user = payload.data.data.data;
         let sortedData = getUserForMyTicket
           .filter((d) => d.is_active === 1)
           .map((i) => ({

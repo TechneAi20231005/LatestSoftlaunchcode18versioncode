@@ -602,7 +602,8 @@ function QueryTypeComponent() {
           // setShowLoaderModal(false);
 
           let counter = 1;
-          const temp = res.data.data;
+          const temp = res.data.data.data;
+          console.log('data', res.data.data);
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -632,7 +633,7 @@ function QueryTypeComponent() {
             exportTempData.push({
               Sr: data[i].counter,
               Query_Type_Name: data[i].query_type_name,
-              query_group_name: temp[i].query_group_name,
+              query_group_name: temp[i].group_name,
               form_name: temp[i].form_name,
               Status: data[i].is_active ? 'Active' : 'Deactive',
               Remark: data[i].remark,
@@ -648,25 +649,25 @@ function QueryTypeComponent() {
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'QueryType',
-          'Get_QueryType',
-          'INSERT',
-          errorObject.data.message
-        );
+        console.log('error', error);
+        // const { response } = error;
+        // const { request, ...errorObject } = response;
+        // new ErrorLogService().sendErrorLog(
+        //   'QueryType',
+        //   'Get_QueryType',
+        //   'INSERT',
+        //   errorObject.data.message
+        // );
       });
 
     await new DynamicFormService().getDynamicForm().then((res) => {
       if (res.data.status === 1) {
         // setShowLoaderModal(false);
-
         // setDynamicForm(res.data.data.filter((d) => d.is_active === 1));
         setDynamicFormDropdown(
           res.data.data.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({ value: d.id, label: d.template_name }))
+            ?.filter((d) => d.is_active === 1)
+            ?.map((d) => ({ value: d.id, label: d.template_name }))
         );
       }
     });
@@ -832,7 +833,7 @@ function QueryTypeComponent() {
   }, [checkRole]);
 
   let valueof = modal.modalData
-    ? dynamicFormDropdown.find((d) => modal.modalData.form_id === d.value)
+    ? dynamicFormDropdown?.find((d) => modal.modalData.form_id === d.value)
     : '';
 
   const initialValues = {
@@ -984,24 +985,26 @@ function QueryTypeComponent() {
                         <label className="form-label font-weight-bold">
                           Select Form: <Astrick color="red" size="13px" />
                         </label>
-                        <Select
-                          options={dynamicFormDropdown}
-                          id="form_id"
-                          name="form_id"
-                          defaultValue={
-                            modal.modalData
-                              ? dynamicFormDropdown.find(
-                                  (d) => modal.modalData.form_id === d.value
-                                )
-                              : ''
-                          }
-                          isClearable={true}
-                          onChange={(option) => {
-                            if (!option || Object.entries(option).length === 0)
-                              return;
-                            setFieldValue('form_id', option?.value);
-                          }}
-                        />
+                       {
+                        dynamicFormDropdown &&  <Select
+                        options={dynamicFormDropdown}
+                        id="form_id"
+                        name="form_id"
+                        defaultValue={
+                          modal.modalData
+                            ? dynamicFormDropdown?.find(
+                                (d) => modal.modalData.form_id === d.value
+                              )
+                            : ''
+                        }
+                        isClearable={true}
+                        onChange={(option) => {
+                          if (!option || Object.entries(option).length === 0)
+                            return;
+                          setFieldValue('form_id', option?.value);
+                        }}
+                      />
+                       }
                         <ErrorMessage
                           name="form_id"
                           component="small"
@@ -1450,7 +1453,7 @@ function QueryTypeComponent() {
                 />
               </div>
             </div>
-
+            {console.log('queryGroupData', queryGroupData)}
             <div className="card mt-2">
               <div className="card-body">
                 <div className="row clearfix g-3">

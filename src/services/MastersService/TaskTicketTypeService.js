@@ -12,7 +12,7 @@ const _getTaskTicketType = `${_URL}/getData?ticketTask=`;
 const _postType = _URL + '/postData';
 const _getTypeById = _URL + '/getTaskTicketType/';
 const _updateType = _URL + '/postData/';
-const _getParent = `${_URL}/parent/getData`;
+const _getParent = `${_URL}/taskType/getData?export=1`;
 // _URL + "/getParent";
 const _getTaskType = _URL + '/taskType/getData?export=1';
 const _getTicketType = _URL + '/ticketType/getData?export=1';
@@ -74,7 +74,7 @@ export default class TaskTicketTypeService {
     return axios.get(_getTaskTicketType + type, config);
   }
   // taskTicketTypeMaster/taskType/getData?ticketTask=TASK&grid=1&export=0
-  getTaskType() {
+  getTaskType(type) {
     const token = localStorage.getItem('jwt_token');
 
     const config = {
@@ -85,7 +85,7 @@ export default class TaskTicketTypeService {
       }
     };
 
-    return axios.get(_getTaskType, config);
+    return axios.get(_getTaskTicketType + type + '&grid=1&export=0', config);
   }
 
   getTicketType(type) {

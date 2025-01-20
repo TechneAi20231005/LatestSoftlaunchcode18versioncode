@@ -69,7 +69,7 @@ function UserTaskReportComponent() {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         setShowLoaderModal(false);
-        const data = res.data.data.filter(
+        const data = res.data.data?.data?.filter(
           (d) => d.is_active === 1 && d.account_for === 'SELF'
         );
         for (const key in data) {
@@ -224,19 +224,21 @@ function UserTaskReportComponent() {
       name: 'from_date',
       label: 'From Date',
       required: false,
-      alphaNumeric: false
+      alphaNumeric: false,
+      dateRange: { startDate: 'from_date', endDate: 'to_date', startLabel: 'From Date' },
     },
     {
       name: 'to_date',
       label: 'To Date',
       required: false,
-      alphaNumeric: false
+      alphaNumeric: false,
+      dateRange: { startDate: 'from_date', endDate: 'to_date', startLabel: 'From Date' },
     },
     {
       name: 'task_name',
       label: 'Task Name',
       required: false,
-      alphaNumeric: true
+      alphaNumeric: true,
     }
   ];
 
