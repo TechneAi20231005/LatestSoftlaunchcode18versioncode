@@ -4,7 +4,8 @@ import {
   REACT_APP_PIN_CODE_API_URL,
   REACT_APP_ATTACHMENT_URL,
   REACT_APP_ROOT_URL,
-  REACT_APP_API_REWAMP_BASE_URL
+  REACT_APP_API_REWAMP_BASE_URL,
+  REACT_APP_API_REWAMP_ATTACHMENT_URL
 } from '../config/envConfig';
 
 export const _ErrorMsg = 'Try After Some Time !!!';
@@ -15,6 +16,7 @@ export const _base = REACT_APP_ROOT_URL;
 export const _apiUrl = REACT_APP_API_URL;
 export const _rewampApiUrl = REACT_APP_API_REWAMP_BASE_URL;
 export const _attachmentUrl = REACT_APP_ATTACHMENT_URL;
+export const _rewampAttachmentUrl = REACT_APP_API_REWAMP_ATTACHMENT_URL;
 export const _pincodeUrl = REACT_APP_PIN_CODE_API_URL;
 
 export const loginURL = _rewampApiUrl + 'login';
