@@ -140,7 +140,7 @@ export default function BasketComponent({ match }) {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         const tempData = [];
-        const temp = res.data.data.filter(
+        const temp = res.data.data?.data?.filter(
           (d) => d.is_active === 1 && d.account_for === 'SELF'
         );
         temp.sort((a, b) => {
