@@ -232,11 +232,11 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     await new QueryTypeService().getQueryType().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const data = res.data.data.filter((d) => d.is_active === 1);
+          const data = res.data.data.data.filter((d) => d.is_active === 1);
 
           setQueryType(data);
           setQueryTypeDropdown(
-            res.data.data
+            res.data.data.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.query_type_name }))
           );
