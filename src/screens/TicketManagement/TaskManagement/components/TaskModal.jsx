@@ -84,7 +84,7 @@ export default function TaskModal(props) {
       name: 'priority',
       label: 'priority',
       required: true
-    },
+    }
     // {
     //   name: 'assign_to_user',
     //   label: 'assign_to_user',
@@ -104,7 +104,9 @@ export default function TaskModal(props) {
     end_date: props?.data?.end_date || '',
     task_hours: props?.data?.task_hours || '00:00',
     priority: props.data.priority ? props.data.priority : '',
-    dependent_task: props.data.dependentTaskId ? props.data.dependentTaskId : '',
+    dependent_task: props.data.dependentTaskId
+      ? props.data.dependentTaskId
+      : '',
     assign_to_user: props.data.assign_to_user ? props.data.assign_to_user : '',
     task_desc: props?.data?.task_desc || '',
     type: props.data?.type || 'TASK',
@@ -563,7 +565,6 @@ export default function TaskModal(props) {
 
   const assignUserRef = useRef();
   const handleForm = async (values) => {
-    console.log(values,"values")
     // e.preventDefault();
     // setIsDisabled(true);
 
@@ -581,8 +582,18 @@ export default function TaskModal(props) {
     formData.append('priority', values.priority);
     formData.append('status', values.status);
     formData.append('task_desc', values.task_desc);
-    formData.append('assign_to_user[]', values.assign_to_user);
-    formData.append('dependent_task[]', values.dependent_task);
+    // formData.append('assign_to_user[]', values.assign_to_user);
+    if (Array.isArray(values.assign_to_user)) {
+      values.assign_to_user.forEach((userId) => {
+        formData.append('assign_to_user[]', userId);
+      });
+    }
+    if (Array.isArray(values.dependent_task)) {
+      values.dependent_task.forEach((userId) => {
+        formData.append('dependent_task[]', userId);
+      });
+    }
+    // formData.append('dependent_task[]', values.dependent_task);
     // formData.append('parent_id', selectedOption);
     selectedFile.forEach((fileObj, index) => {
       // formData.append(`attachment`, fileObj.file);
@@ -689,14 +700,13 @@ export default function TaskModal(props) {
                   if (res.status === 200) {
                     if (res.data.status === 1) {
                       // props.loadBasket();
-                      console.log(res.data.message,"res.data.message")
                       setNotify({ type: 'success', message: res.data.message });
                       // setLoading(false);
 
-                     setTimeout(() => {
-                      handleClose();
-                      props.loadBasket();
-                     }, 1000);
+                      setTimeout(() => {
+                        handleClose();
+                        props.loadBasket();
+                      }, 1000);
                     } else {
                       // setLoading(false);
                       setNotify({ type: 'danger', message: res.data.message });
@@ -1458,8 +1468,7 @@ export default function TaskModal(props) {
             handleForm(values);
           }}
         >
-          {({ setFieldValue, values }) =>   (
-
+          {({ setFieldValue, values }) => (
             <Form>
               <Modal.Header closeButton>
                 <Modal.Title id="example-custom-modal-styling-title">
@@ -1870,7 +1879,7 @@ export default function TaskModal(props) {
                         setFieldValue('priority', option ? option.value : '')
                       }
                     />
-                     <ErrorMessage
+                    <ErrorMessage
                       name="priority"
                       component="small"
                       className="text-danger"
@@ -2078,33 +2087,36 @@ export default function TaskModal(props) {
                         isClearable
                         id="assign_to_user[]"
                         name="assign_to_user[]"
-                        // value={userData.filter((option) =>
-                        //   values.assign_to_user?.includes(option.value)
+                        // value={userData.filter(
+                        //   (option) =>
+                        //     Array.isArray(values.assign_to_user)
+                        //       ? values.assign_to_user.includes(option.value) // Check for array
+                        //       : values.assign_to_user === option.value // Check for scalar
                         // )}
+
+                        // onChange={(selectedOptions) =>
+                        //   setFieldValue(
+                        //     'assign_to_user',
+                        //     Array.isArray(selectedOptions)
+                        //       ? selectedOptions.length === 1
+                        //         ? selectedOptions[0].value // Single value: pass as scalar
+                        //         : selectedOptions.map((option) => option.value) // Multiple values: pass as array
+                        //       : []
+                        //   )
+                        // }
+                        // isMulti
                         value={userData.filter(
                           (option) =>
                             Array.isArray(values.assign_to_user)
                               ? values.assign_to_user.includes(option.value) // Check for array
                               : values.assign_to_user === option.value // Check for scalar
                         )}
-                        // onChange={(selectedOptions) =>
-                        //   setFieldValue(
-                        //     'assign_to_user',
-                        //     selectedOptions
-                        //       ? selectedOptions.map((option) => option.value)
-                        //       : []
-                        //   )
-                        // }
-                        onChange={(selectedOptions) =>
-                          setFieldValue(
-                            'assign_to_user',
-                            Array.isArray(selectedOptions)
-                              ? selectedOptions.length === 1
-                                ? selectedOptions[0].value // Single value: pass as scalar
-                                : selectedOptions.map((option) => option.value) // Multiple values: pass as array
-                              : []
-                          )
-                        }
+                        onChange={(selectedOptions) => {
+                          const selectedValues = Array.isArray(selectedOptions)
+                            ? selectedOptions.map((option) => option.value) // Map selected options to their values
+                            : [];
+                          setFieldValue('assign_to_user', selectedValues); // Update the form value
+                        }}
                         isMulti
                       />
                     )}
@@ -2145,20 +2157,30 @@ export default function TaskModal(props) {
                         // value={filteredOptions?.filter((option) =>
                         //   props.data.dependentTaskId?.includes(option.value)
                         // )}
-                        value={filteredOptions?.filter(
-                          (option) => option.value === values.dependent_task
+                        // value={filteredOptions?.filter(
+                        //   (option) => option.value === values.dependent_task
+                        // )}
+                        // onChange={(selectedOptions) =>
+                        //   setFieldValue(
+                        //     'dependent_task',
+                        //     Array.isArray(selectedOptions)
+                        //       ? selectedOptions.length === 1
+                        //         ? selectedOptions[0].value // Single value: pass as scalar
+                        //         : selectedOptions.map((option) => option.value) // Multiple values: pass as array
+                        //       : []
+                        //   )
+                        // }
+                        value={filteredOptions?.filter((option) =>
+                          values.dependent_task?.includes(option.value)
                         )}
                         onChange={(selectedOptions) =>
                           setFieldValue(
                             'dependent_task',
                             Array.isArray(selectedOptions)
-                              ? selectedOptions.length === 1
-                                ? selectedOptions[0].value // Single value: pass as scalar
-                                : selectedOptions.map((option) => option.value) // Multiple values: pass as array
+                              ? selectedOptions.map((option) => option.value)
                               : []
                           )
                         }
-
                       />
                     )}
                     {props.data.id == null && props.taskDropdown && (
@@ -2300,56 +2322,59 @@ export default function TaskModal(props) {
                   style={{ overflowX: 'auto' }}
                 >
                   {props?.data?.attachment &&
-                    props?.data?.attachment?.attachments?.map((attach, index) => {
-                      return (
-                        <div
-                          className="justify-content-start"
-                          style={{
-                            marginRight: '5px',
-                            padding: '0px',
-                            width: '200px'
-                          }}
-                        >
+                    props?.data?.attachment?.attachments?.map(
+                      (attach, index) => {
+                        return (
                           <div
-                            className="card"
-                            style={{ backgroundColor: '#EBF5FB' }}
+                            className="justify-content-start"
+                            style={{
+                              marginRight: '5px',
+                              padding: '0px',
+                              width: '200px'
+                            }}
                           >
-                            <div className="card-header">
-                              <p style={{ fontSize: '12px' }}>
-                                <b>{attach.name}</b>
-                              </p>
-                              <div className="d-flex justify-content-end p-0">
-                                <a
-                                  href={`${
-                                    _attachmentUrl + attach.path
-                                  }`}
-                                  target="_blank"
-                                  className="btn btn-warning btn-sm p-0 px-1"
-                                  rel="noreferrer"
-                                >
-                                  <i
-                                    className="icofont-download"
-                                    style={{ fontSize: '12px', height: '15px' }}
-                                  ></i>
-                                </a>
-                                <button
-                                  className="btn btn-danger text-white btn-sm p-0 px-1"
-                                  type="button"
-                                  onClick={(e) => {
-                                    handleDeleteAttachment(e, attach.id);
-                                  }}
-                                >
-                                  <i
-                                    className="icofont-ui-delete"
-                                    style={{ fontSize: '12px' }}
-                                  ></i>
-                                </button>
+                            <div
+                              className="card"
+                              style={{ backgroundColor: '#EBF5FB' }}
+                            >
+                              <div className="card-header">
+                                <p style={{ fontSize: '12px' }}>
+                                  <b>{attach.name}</b>
+                                </p>
+                                <div className="d-flex justify-content-end p-0">
+                                  <a
+                                    href={`${_attachmentUrl + attach.path}`}
+                                    target="_blank"
+                                    className="btn btn-warning btn-sm p-0 px-1"
+                                    rel="noreferrer"
+                                  >
+                                    <i
+                                      className="icofont-download"
+                                      style={{
+                                        fontSize: '12px',
+                                        height: '15px'
+                                      }}
+                                    ></i>
+                                  </a>
+                                  <button
+                                    className="btn btn-danger text-white btn-sm p-0 px-1"
+                                    type="button"
+                                    onClick={(e) => {
+                                      handleDeleteAttachment(e, attach.id);
+                                    }}
+                                  >
+                                    <i
+                                      className="icofont-ui-delete"
+                                      style={{ fontSize: '12px' }}
+                                    ></i>
+                                  </button>
+                                </div>
                               </div>
                             </div>
                           </div>
-                        </div>
-                      );
-                    })}
+                        );
+                      }
+                    )}
                 </div>
               </Modal.Body>
               <Modal.Footer>
