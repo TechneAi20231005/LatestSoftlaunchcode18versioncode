@@ -585,7 +585,7 @@ export default function CreateTicketComponent() {
     await new MyTicketService().getBulkFormat().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          let url = `${_rewampAttachmentUrl}` + res.data.data;
+          let url = `${_attachmentUrl}` + res.data.data;
           window.open(url, '_blank')?.focus();
           setIsFileGenerated(res.data.data);
         } else {
