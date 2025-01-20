@@ -663,12 +663,11 @@ function QueryTypeComponent() {
     await new DynamicFormService().getDynamicForm().then((res) => {
       if (res.data.status === 1) {
         // setShowLoaderModal(false);
-
         // setDynamicForm(res.data.data.filter((d) => d.is_active === 1));
         setDynamicFormDropdown(
           res.data.data.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({ value: d.id, label: d.template_name }))
+            ?.filter((d) => d.is_active === 1)
+            ?.map((d) => ({ value: d.id, label: d.template_name }))
         );
       }
     });
@@ -834,7 +833,7 @@ function QueryTypeComponent() {
   }, [checkRole]);
 
   let valueof = modal.modalData
-    ? dynamicFormDropdown.find((d) => modal.modalData.form_id === d.value)
+    ? dynamicFormDropdown?.find((d) => modal.modalData.form_id === d.value)
     : '';
 
   const initialValues = {
@@ -986,24 +985,26 @@ function QueryTypeComponent() {
                         <label className="form-label font-weight-bold">
                           Select Form: <Astrick color="red" size="13px" />
                         </label>
-                        <Select
-                          options={dynamicFormDropdown}
-                          id="form_id"
-                          name="form_id"
-                          defaultValue={
-                            modal.modalData
-                              ? dynamicFormDropdown.find(
-                                  (d) => modal.modalData.form_id === d.value
-                                )
-                              : ''
-                          }
-                          isClearable={true}
-                          onChange={(option) => {
-                            if (!option || Object.entries(option).length === 0)
-                              return;
-                            setFieldValue('form_id', option?.value);
-                          }}
-                        />
+                       {
+                        dynamicFormDropdown &&  <Select
+                        options={dynamicFormDropdown}
+                        id="form_id"
+                        name="form_id"
+                        defaultValue={
+                          modal.modalData
+                            ? dynamicFormDropdown?.find(
+                                (d) => modal.modalData.form_id === d.value
+                              )
+                            : ''
+                        }
+                        isClearable={true}
+                        onChange={(option) => {
+                          if (!option || Object.entries(option).length === 0)
+                            return;
+                          setFieldValue('form_id', option?.value);
+                        }}
+                      />
+                       }
                         <ErrorMessage
                           name="form_id"
                           component="small"

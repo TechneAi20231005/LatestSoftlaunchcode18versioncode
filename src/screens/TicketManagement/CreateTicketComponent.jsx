@@ -6,7 +6,7 @@ import Alert from '../../components/Common/Alert';
 import { _base, userSessionData } from '../../settings/constants';
 
 import MyTicketService from '../../services/TicketService/MyTicketService';
-import { _attachmentUrl } from '../../settings/constants';
+import { _attachmentUrl , _rewampAttachmentUrl} from '../../settings/constants';
 
 import PageHeader from '../../components/Common/PageHeader';
 import UserService from '../../services/MastersService/UserService';
@@ -92,6 +92,7 @@ export default function CreateTicketComponent() {
   const [departmentDropdown, setDepartmentDropdown] = useState();
   const [userDropdown, setUserDropdown] = useState();
   const [customerID, setCustomerId] = useState();
+
 
   // const [expectedSolveDate, setExpectedSolveDate] = useState(null);
 
@@ -296,6 +297,8 @@ export default function CreateTicketComponent() {
     }
   };
 
+
+
   const handleForm = async (e) => {
     e.preventDefault();
     if (e.target.name === 'CHECKBOX' && selectedCheckBoxValue?.length <= 0) {
@@ -364,7 +367,7 @@ export default function CreateTicketComponent() {
                 toast.success(res?.data?.message);
                 console.log('error', res.data.data);
                 let url =
-                  `http://103.97.105.81:89/TicketingDev/` + res.data.data;
+                  `${_rewampAttachmentUrl}` + res.data.data;
                 console.log('url', url);
                 window.open(url, '_blank').focus();
                 setIsSubmitted(false);
