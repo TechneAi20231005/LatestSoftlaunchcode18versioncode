@@ -17,90 +17,13 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
   const isUserProjectOwner = false;
   console.log('My ticket hamburger rendered');
 
-  // {
-  //   //search results
-
-  //   {
-  //     data.created_by === localStorage.getItem('id') ||
-  //       data.assign_to_user_id === localStorage.getItem('id') ||
-  //       (data.status_name !== 'Solved' &&
-  //         data.passed_status !== 'REJECT' &&
-  //         localStorage.getItem('account_for' === 'SELF')) ||
-  //       (data?.projectowner?.filter(
-  //         (d) => d.user_id === localStorage.getItem('id')
-  //       ) && (
-  //         <li>
-  //           <Link
-  //             to={`/${_base}/Ticket/Edit/` + data.id}
-  //             className="btn btn-sm btn-warning text-white"
-  //             style={{ width: '100%', zIndex: '100' }}
-  //           >
-  //             <i className="icofont-ui-edit"></i> Edit
-  //           </Link>
-  //         </li>
-  //       ));
-  //   }
-
-  //   //assigned to me
-  //   <li>
-  //     <Link
-  //       to={`/${_base}/Ticket/Edit/` + data.id}
-  //       className="btn btn-sm btn-warning text-white"
-  //       style={{ width: '100%', zIndex: '100' }}
-  //     >
-  //       <i className="icofont-ui-edit"></i> Edit
-  //     </Link>
-  //   </li>;
-
-  //   ///Your task
-
-  //   {
-  //     data.created_by === localStorage.getItem('id') ||
-  //       (data.assign_to_user_id === localStorage.getItem('id') && (
-  //         <li>
-  //           <Link
-  //             to={`/${_base}/Ticket/Edit/` + data.id}
-  //             className="btn btn-sm btn-warning text-white"
-  //             style={{ width: '100%', zIndex: '100' }}
-  //           >
-  //             <i className="icofont-ui-edit"></i> Edit
-  //           </Link>
-  //         </li>
-  //       ));
-  //   }
-
-  //   //createdbye me
-  //   //No edit button
-
-  //   //Unpassed ticket
-  //   {
-  //     data.created_by === localStorage.getItem('id') ||
-  //       (data.assign_to_user_id === localStorage.getItem('id') && (
-  //         <li>
-  //           <Link
-  //             to={`/${_base}/Ticket/Edit/` + data.id}
-  //             className="btn btn-sm btn-warning text-white"
-  //             style={{ width: '100%', zIndex: 100 }}
-  //           >
-  //             <i className="icofont-ui-edit"></i> Edit
-  //           </Link>
-  //         </li>
-  //       ));
-  //   }
-  // }
-
-  //'CreatedByMe'
-  //'UnPassed'
-  //'YouTask'
-  //'DepartmentWise'
-
   const menuBtns = [
     {
       id: 1,
       label: 'Edit',
       type: type,
       conditions: (type) => {
-        if (type === "AssignToMe'") {
+        if (type === 'AssignToMe') {
           return (
             currentUser === ticketCreatedBy ||
             currentUser === tickedtAssignedto ||
@@ -118,7 +41,89 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
         }
       }
     },
-    {}
+    {
+      id: 2,
+      label: 'View',
+      type: type,
+      conditions: (type) => {
+        if (type === 'AssignToMe') {
+          return true;
+        } else if (type === 'YouTask') {
+          return true;
+        } else if (type === 'DepartmentWise') {
+          return false;
+        } else if (type === 'CreatedByMe') {
+          return true;
+        }
+      }
+    },
+    {
+      id: 3,
+      label: 'Task',
+      type: type,
+      conditions: (type) => {
+        if (type === 'AssignToMe') {
+          return (
+            ((ticketCreatedBy !== currentUser && data.basket_configured > 0) ||
+              (tickedtAssignedto === currentUser &&
+                data.basket_configured > 0)) &&
+            userAccountFor === 'SELF'
+          );
+        } else if (type === 'YouTask') {
+          return (
+            ticketCreatedBy !== currentUser &&
+            userAccountFor === 'SELF' &&
+            data.basket_configured > 0
+          );
+        } else if (type === 'DepartmentWise') {
+          return true;
+        } else if (type === 'CreatedByMe') {
+          return (
+            ticketCreatedBy !== currentUser &&
+            userAccountFor === 'SELF' &&
+            data.basket_configured > 0
+          );
+        }
+      }
+    },
+    {
+      id: 4,
+      label: 'Basket',
+      type: type,
+      conditions: (type) => {
+        if (type === 'AssignToMe') {
+          return (
+            ((ticketCreatedBy !== currentUser &&
+              data.basket_configured === 0) ||
+              (tickedtAssignedto === currentUser &&
+                data.basket_configured === 0)) &&
+            userAccountFor === 'SELF'
+          );
+        } else if (type === 'YouTask') {
+          return false;
+        } else if (type === 'DepartmentWise') {
+          return false;
+        } else if (type === 'CreatedByMe') {
+          return false;
+        }
+      }
+    },
+    {
+      id: 5,
+      label: 'History',
+      type: type,
+      conditions: (type) => {
+        if (type === 'AssignToMe') {
+          return true;
+        } else if (type === 'YouTask') {
+          return false;
+        } else if (type === 'DepartmentWise') {
+          return true;
+        } else if (type === 'CreatedByMe') {
+          return true;
+        }
+      }
+    }
   ];
 
   return (
@@ -132,23 +137,13 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
           <i className="icofont-listine-dots"></i>
         </Dropdown.Toggle>
         <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-          {/* <RenderIf render={}>
-          <li>Edit</li>
-          </RenderIf> */}
-
-          <li>
-            <i className="icofont-external-link "></i> View
-          </li>
-
-          <li>
-            <i className="icofont-bucket2"></i>Basket
-          </li>
-
-          <li>
-            <i className="icofont-tasks"></i> Task
-          </li>
-
-          <li>History</li>
+          {menuBtns.map((menuBtn, idx) => {
+            return (
+              <RenderIf render={menuBtn.conditions(menuBtn.type)}>
+                <li>{menuBtn.label}</li>
+              </RenderIf>
+            );
+          })}
         </Dropdown.Menu>
       </Dropdown>
     </>
