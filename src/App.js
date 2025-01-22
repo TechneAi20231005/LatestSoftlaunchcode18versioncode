@@ -7,6 +7,7 @@ import AuthIndex from './screens/AuthIndex';
 import MainIndex from './screens/MainIndex';
 
 import useOnlineStatus from './components/Utilities/useOnlineStatus';
+// import whyDidYouRender from '@welldone-software/why-did-you-render';
 
 import './App.css';
 
@@ -34,6 +35,8 @@ const App = () => {
       setCheckUrl(true);
     }
   };
+
+  // whyDidYouRender(React);
   // useEffect hook to check token expiration on component mount
   useEffect(() => {
     checkBaseUrl();

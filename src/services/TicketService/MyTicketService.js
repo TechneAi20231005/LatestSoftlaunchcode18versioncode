@@ -4,7 +4,7 @@ import { ticketUrl, _apiUrl } from '../../settings/constants';
 
 const _URL = ticketUrl.ticket;
 const _getAllTicket = _URL + '/getAllTicket/' + userSessionData.userId;
-const _getAllTicketTest = _URL + '/getAllTicketTest';
+const _getAllTicketTest = _URL + '/getAllTicket';
 const _getAllTicketNew = _URL + '/getAllTicketNew';
 
 const _createTicket = _URL + '/postData';

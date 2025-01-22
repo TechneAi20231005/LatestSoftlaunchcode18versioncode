@@ -181,6 +181,7 @@ import TestBankComponent from './TestCases/TestBank/TestBankComponent';
 import ProjectWiseModuleHistory from './ConsolidatedView/ProjectWiseModuleHistory';
 import JobRoleComponent from './Masters/JobRoleMaster/JobRoleComponent';
 import MenuComponent from './Masters/MenuMaster/MenuComponent';
+import MyTicketRefactored from './TicketManagement/MyTicket/MyTicketRefactored';
 
 class MainIndex extends React.Component {
   render() {
@@ -407,7 +408,7 @@ class MainIndex extends React.Component {
             <Route
               exact
               path={`/${_base}/Ticket`}
-              element={<MyTicketComponent />}
+              element={<MyTicketRefactored />}
             />
             <Route
               exact

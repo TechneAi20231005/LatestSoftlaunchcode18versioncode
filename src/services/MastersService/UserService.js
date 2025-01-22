@@ -78,7 +78,7 @@ export default class UserService {
         'Content-Type': 'application/json'
       }
     };
-    const url = `${_URL}?input_required=${queryParams}`;
+    const url = `${_rewampApiUrl}employeeMaster/getData?input_required=${queryParams}`;
 
     return axios.get(url, config);
   }
