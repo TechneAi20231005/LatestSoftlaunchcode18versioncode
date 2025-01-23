@@ -1,6 +1,6 @@
 import React from 'react';
-import Button from 'react-bootstrap/Button';
-import Modal from 'react-bootstrap/Modal';
+import { Button, Modal } from 'react-bootstrap';
+import { Field, Form, Formik } from 'formik';
 import { RenderIf } from '../../../utils';
 import Select from 'react-select';
 import animatedComponents from 'react-select/animated';
@@ -13,63 +13,104 @@ const FilterModal = ({
   allDepartmentData,
   setAllUsersData
 }) => {
-  const onChangeHandler = (e, type) => {
+  const onChangeHandler = (selectedOptions, setFieldValue, type) => {
     try {
-      const departmentId = e[e.length - 1].value;
-      const assignedUsersAsPerAsDepartment = allUsersData.data
-        .filter((item) =>
-          item.departments.find((item) => item.id === departmentId)
-        )
-        .map((item) => ({
-          value: item.id,
-          label: `${item.first_name} ${item.middle_name} ${item.last_name}`
-        }));
-      setAllUsersData({
-        ...allUsersData,
-        assignedUsersAsPerAsDepartment: assignedUsersAsPerAsDepartment
-      });
+      const departmentId = selectedOptions[selectedOptions.length - 1].value;
 
-      console.log('all data user chnage', allUsersData);
-      if (type === 'department') {
+      // Filter assigned users for Assigned Department
+      if (type === 'assign_to_department_id') {
+        const assignedUsersAsPerDepartment = allUsersData.data
+          .filter((user) =>
+            user.departments.find(
+              (department) => department.id === departmentId
+            )
+          )
+          .map((user) => ({
+            value: user.id,
+            label: `${user.first_name} ${user.middle_name} ${user.last_name}`
+          }));
+
+        setAllUsersData((prevState) => ({
+          ...prevState,
+          assignedUsersAsPerDepartment
+        }));
+
+        setFieldValue('assign_to_user_id', []); // Reset "Assigned User" on department change
       }
-    } catch (error) {}
+
+      // Filter entry users for Entry Department
+      if (type === 'department_id') {
+        const entryUsersAsPerDepartment = allUsersData.data
+          .filter((user) =>
+            user.departments.find(
+              (department) => department.id === departmentId
+            )
+          )
+          .map((user) => ({
+            value: user.id,
+            label: `${user.first_name} ${user.middle_name} ${user.last_name}`
+          }));
+
+        setAllUsersData((prevState) => ({
+          ...prevState,
+          entryUsersAsPerDepartment
+        }));
+
+        setFieldValue('user_id', []); // Reset "Entry User" on department change
+      }
+    } catch (error) {
+      console.error(error);
+    }
   };
+
   const inputDataList = [
     { id: 1, name: 'From Date', type: 'date', placeholder: 'Enter From Date' },
-    {
-      id: 2,
-      name: 'To Date',
-      type: 'date',
-      placeholder: 'Select To Date'
-    },
+    { id: 2, name: 'To Date', type: 'date', placeholder: 'Select To Date' },
     {
       id: 3,
       name: 'Assigned Department',
       type: 'dropdown',
       placeholder: 'Select Assigned Department',
       options: allDepartmentData.selectData,
-      onChange: onChangeHandler
+      onChange: (selectedOptions, setFieldValue) =>
+        onChangeHandler(
+          selectedOptions,
+          setFieldValue,
+          'assign_to_department_id'
+        )
     },
     {
       id: 4,
       name: 'Assigned User',
       type: 'dropdown',
       placeholder: 'Select Assigned User',
-      options: allUsersData.assignedUsersAsPerAsDepartment
+      options:
+        allUsersData.assignedUsersAsPerDepartment ||
+        allUsersData?.data?.map((user) => ({
+          value: user.id,
+          label: `${user.first_name} ${user.middle_name} ${user.last_name}`
+        }))
     },
     {
       id: 5,
       name: 'Entry Department',
       type: 'dropdown',
       placeholder: 'Select Entry Department',
-      options: allDepartmentData.selectData
+      options: allDepartmentData.selectData,
+      onChange: (selectedOptions, setFieldValue) =>
+        onChangeHandler(selectedOptions, setFieldValue, 'department_id')
     },
     {
       id: 6,
       name: 'Entry User',
       type: 'dropdown',
-      placeholder: 'Select Entry Use'
-      //   options: allStatusData.selectData
+      placeholder: 'Select Entry User',
+      options:
+        allUsersData.entryUsersAsPerDepartment ||
+        allUsersData?.data?.map((user) => ({
+          value: user.id,
+          label: `${user.first_name} ${user.middle_name} ${user.last_name}`
+        }))
     },
     {
       id: 7,
@@ -82,74 +123,112 @@ const FilterModal = ({
       id: 8,
       name: 'Ticket Id',
       type: 'input',
-      placeholder: 'Select Entry Use'
-      //   options: allStatusData.selectData
+      placeholder: 'Enter Ticket Id'
     }
   ];
+
+  const initialValues = {
+    from_date: '',
+    to_date: '',
+    assign_to_department_id: [],
+    assign_to_user_id: [],
+    user_id: [],
+    status_id: [],
+    ticket_id: '',
+    export: ''
+  };
+
+  const onSubmit = (values) => {
+    console.log(values);
+    const formData = new FormData();
+    formData.append('from_date', values.from_date);
+    formData.append('to_date', values.to_date);
+
+    // Submit the form values
+  };
+
   return (
-    <Modal
-      show={showModal}
-      onHide={() => setShowModal(false)}
-      size="lg"
-      aria-labelledby="contained-modal-title-vcenter"
-      centered
+    <Formik
+      initialValues={initialValues}
+      onSubmit={onSubmit}
+      // enableReinitialize
     >
-      <Modal.Header closeButton>
-        <Modal.Title id="contained-modal-title-vcenter">
-          Filter Ticket
-        </Modal.Title>
-      </Modal.Header>
-      <Modal.Body>
-        <div className="row align-items-center">
-          {inputDataList.map((item) => {
-            return (
-              <div key={item.id} className="col-lg-6">
-                <RenderIf render={item.type === 'date'}>
-                  <label className="form-label fw-bold mb-2">
-                    {item.name}:
-                  </label>
-                  <input
-                    type="date"
-                    className="form-control  mb-4"
-                    name="to_date"
-                    id="to_date"
-                  />
-                </RenderIf>
-                <RenderIf render={item.type === 'input'}>
-                  <label className="form-label fw-bold mb-2">
-                    {item.name}:
-                  </label>
-                  <input
-                    type={item.type}
-                    className="form-control mb-4"
-                    placeholder={item.placeholder}
-                  />
-                </RenderIf>
-                <RenderIf render={item.type === 'dropdown'}>
-                  <label className="form-label fw-bold mb-2">
-                    {item.name}:
-                  </label>
-                  <Select
-                    options={item.options}
-                    className="mb-4"
-                    components={animatedComponents}
-                    isMulti
-                    onChange={(e) => item.onChange(e, item.name)}
-                    placeholder={item.placeholder}
-                  />
-                </RenderIf>
+      {({ setFieldValue }) => (
+        <Modal
+          show={showModal}
+          onHide={() => setShowModal(false)}
+          size="lg"
+          aria-labelledby="contained-modal-title-vcenter"
+          centered
+        >
+          <Modal.Header closeButton>
+            <Modal.Title id="contained-modal-title-vcenter">
+              Filter Ticket
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Form>
+              <div className="row align-items-center">
+                {inputDataList.map((item) => (
+                  <div key={item.id} className="col-lg-6">
+                    <RenderIf render={item.type === 'date'}>
+                      <label className="form-label fw-bold mb-2">
+                        {item.name}:
+                      </label>
+                      <Field
+                        type="date"
+                        className="form-control mb-4"
+                        name={item.name.replace(' ', '_').toLowerCase()}
+                      />
+                    </RenderIf>
+                    <RenderIf render={item.type === 'input'}>
+                      <label className="form-label fw-bold mb-2">
+                        {item.name}:
+                      </label>
+                      <Field
+                        type="text"
+                        className="form-control mb-4"
+                        placeholder={item.placeholder}
+                        name={item.name.replace(' ', '_').toLowerCase()}
+                      />
+                    </RenderIf>
+                    <RenderIf render={item.type === 'dropdown'}>
+                      <label className="form-label fw-bold mb-2">
+                        {item.name}:
+                      </label>
+                      <Select
+                        options={item.options}
+                        className="mb-4"
+                        components={animatedComponents}
+                        isMulti
+                        onChange={(selectedOptions) => {
+                          setFieldValue(
+                            item.name.replace(' ', '_').toLowerCase(),
+                            selectedOptions
+                              ? selectedOptions.map((option) => option.value)
+                              : []
+                          );
+                          if (item.onChange) {
+                            item.onChange(selectedOptions, setFieldValue);
+                          }
+                        }}
+                        placeholder={item.placeholder}
+                      />
+                    </RenderIf>
+                  </div>
+                ))}
               </div>
-            );
-          })}
-        </div>
-      </Modal.Body>
-      <Modal.Footer>
-        <Button variant="warning" className="text-white">
-          Save
-        </Button>
-        <Button onClick={() => setShowModal(false)}>Close</Button>
-      </Modal.Footer>
-    </Modal>
+              <Modal.Footer>
+                <Button variant="warning" className="text-white" type="submit">
+                  Save
+                </Button>
+                <Button onClick={() => setShowModal(false)}>Close</Button>
+              </Modal.Footer>
+            </Form>
+          </Modal.Body>
+        </Modal>
+      )}
+    </Formik>
   );
 };
 

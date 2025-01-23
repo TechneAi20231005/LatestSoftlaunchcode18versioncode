@@ -2,6 +2,8 @@ import React from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { RenderIf } from '../../../utils';
+import { _base } from '../../../settings/constants';
+import { Link, useLocation } from 'react-router-dom';
 
 const MyTicketDropdown = React.memo(({ type, data }) => {
   // Edit Button
@@ -22,6 +24,8 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
       id: 1,
       label: 'Edit',
       type: type,
+      className: 'btn btn-sm btn-warning text-white',
+      icon: <i className="icofont-ui-edit"></i>,
       conditions: (type) => {
         if (type === 'AssignToMe') {
           return (
@@ -45,6 +49,8 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
       id: 2,
       label: 'View',
       type: type,
+      className: 'btn btn-sm btn-info text-white',
+      icon: <i className="icofont-external-link "></i>,
       conditions: (type) => {
         if (type === 'AssignToMe') {
           return true;
@@ -61,6 +67,8 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
       id: 3,
       label: 'Task',
       type: type,
+      className: 'btn btn-sm btn-outline-primary',
+      icon: <i className="icofont-tasks"></i>,
       conditions: (type) => {
         if (type === 'AssignToMe') {
           return (
@@ -90,6 +98,8 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
       id: 4,
       label: 'Basket',
       type: type,
+      className: 'btn btn-sm btn-primary text-white',
+      icon: <i className="icofont-bucket2"></i>,
       conditions: (type) => {
         if (type === 'AssignToMe') {
           return (
@@ -111,6 +121,8 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
     {
       id: 5,
       label: 'History',
+      className: 'btn btn-sm btn-primary text-white',
+      icon: <i className="icofont-history"></i>,
       type: type,
       conditions: (type) => {
         if (type === 'AssignToMe') {
@@ -140,7 +152,18 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
           {menuBtns.map((menuBtn, idx) => {
             return (
               <RenderIf render={menuBtn.conditions(menuBtn.type)}>
-                <li>{menuBtn.label}</li>
+                <li>
+                  <Link
+                    // to={`/${_base}/TicketHistory/` + data.id}
+                    className={`d-flex justify-content-center align-items-center ${menuBtn.className}`}
+                    style={{ width: '100%', zIndex: 100 }}
+                  >
+                    <span className="d-flex align-items-center gap-2">
+                      {menuBtn?.icon}
+                      {menuBtn.label}
+                    </span>
+                  </Link>
+                </li>
               </RenderIf>
             );
           })}

@@ -5,6 +5,10 @@ import { ticketUrl, _apiUrl } from '../../settings/constants';
 const _URL = ticketUrl.ticket;
 const _getAllTicket = _URL + '/getAllTicket/' + userSessionData.userId;
 const _getAllTicketTest = _URL + '/getAllTicket';
+// const _getAllTicketTest = `${_URL}/getAllTicket`;
+
+const _getAllTicketTestWithoutTypeOF = _URL + '/getAllTicket';
+
 const _getAllTicketNew = _URL + '/getAllTicketNew';
 
 const _createTicket = _URL + '/postData';
@@ -41,9 +45,22 @@ export default class MyTicketService {
         'Content-Type': 'application/json'
       }
     };
-    return axios.post(_getAllTicketTest, payload, config);
+
+    return axios.post(`${_URL}/getAllTicket`, payload, config);
   }
 
+  getUserTicketsTestWithoutTypeOf(payload) {
+    const token = localStorage.getItem('jwt_token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+    return axios.post(_getAllTicketTestWithoutTypeOF, payload, config);
+  }
   getExpectedSolveDate(cuMappingId) {
     const token = localStorage.getItem('jwt_token');
 
@@ -99,7 +116,6 @@ export default class MyTicketService {
         'Content-Type': 'application/json'
       }
     };
-    console.log('_getTicketById', _getTicketById);
     return axios.get(_getTicketById + id, config);
   }
 

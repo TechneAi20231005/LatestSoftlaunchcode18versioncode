@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { Formik, Form, Field } from 'formik';
 import Select from 'react-select';
 import makeAnimated from 'react-select/animated';
 import { errorHandler, RenderIf } from '../../../utils';
@@ -6,6 +7,7 @@ import UserService from '../../../services/MastersService/UserService';
 import { fetchData } from '../../../utils/fetchData';
 import DepartmentService from '../../../services/MastersService/DepartmentService';
 import StatusService from '../../../services/MastersService/StatusService';
+import ReportService from '../../../services/ReportService/ReportService';
 
 const MyTicketFilters = ({
   setShowModal,
@@ -16,7 +18,14 @@ const MyTicketFilters = ({
   setAllDepartmentData,
   setAllStatusData,
   setAllUsersData,
-  setIsLoading
+  setIsLoading,
+  setActiveTabAndData,
+  setIsFormSubmitted,
+  setAllTicketsData,
+  allTicketsData,
+  activeTabAndData,
+  setTotalRows,
+  handleSubmit,
 }) => {
   const animatedComponents = makeAnimated();
 
@@ -87,27 +96,36 @@ const MyTicketFilters = ({
   };
 
   const inputDataList = [
-    { id: 1, name: 'Ticket Id', type: 'input', placeholder: 'Enter Ticket Id' },
+    {
+      id: 1,
+      name: 'Ticket Id',
+      type: 'input',
+      placeholder: 'Enter Ticket Id',
+      key: 'ticket_id'
+    },
     {
       id: 2,
       name: 'Select User',
       type: 'dropdown',
       placeholder: 'Select User',
-      options: allUsersData.selectData
+      options: allUsersData.selectData,
+      key: 'assign_to_user_id'
     },
     {
       id: 3,
       name: 'Select Department',
       type: 'dropdown',
       placeholder: 'Select Department',
-      options: allDepartmentData.selectData
+      options: allDepartmentData.selectData,
+      key: 'department_id'
     },
     {
       id: 4,
       name: 'Select Status',
       type: 'dropdown',
       placeholder: 'Select Status',
-      options: allStatusData.selectData
+      options: allStatusData.selectData,
+      key: 'status_id'
     }
   ];
 
@@ -115,47 +133,119 @@ const MyTicketFilters = ({
     fetchDataList();
   }, []);
 
+  // const handleSubmit = async (values) => {
+  //   console.log('Submitted Values:', values);
+  //   const formData = new FormData();
+  //   formData.append('ticket_id', values.ticket_id);
+  //   // formData.append('assign_to_user_id', values.assign_to_user_id);
+  //   values?.assign_to_user_id.forEach((user) => {
+  //     formData?.append('assign_to_user_id[]', user);
+  //   });
+  //   values?.department_id.forEach((department) => {
+  //     formData?.append('department_id[]', department);
+  //   });
+  //   values?.status_id.forEach((status) => {
+  //     formData?.append('status_id[]', status);
+  //   });
+  //    const response = await new ReportService().getTicketReport(formData);
+  //    if(response?.status === 200){
+  //     const { status } = response?.data;
+  //     if(status === 1){
+  //       console.log(status, "status")
+  //       const {
+  //         data: { data = [] }
+  //       } = response;
+  //       setAllTicketsData((prev) => ({
+  //         ...prev,
+  //         SearchResult: data?.data || []
+  //       }));
+  //       setTotalRows(data?.total);
+  //       setIsFormSubmitted(true);
+  //       setActiveTabAndData('SearchResult')
+  //       console.log(data,"data")
+  //     }else{
+  //       setAllTicketsData((prev) => ({
+  //         ...prev,
+  //         SearchResult: []
+  //       }));
+  //     }
+  //    }
+  //   // You can handle API submission here
+  // };
+
   return (
     <>
       <div className="row align-items-center">
         <div className="col-lg-12">
           <div className="card">
             <div className="card-body">
-              <div className="row align-items-center">
-                {inputDataList.map((item) => (
-                  <div className="col-lg-3 col-md-6">
-                    <div className="mb-3">
-                      <label className="form-label fw-bold">{item.name}:</label>
-                      <RenderIf render={item.type === 'input'}>
-                        <input
-                          type={item.type}
-                          className="form-control"
-                          placeholder={item.placeholder}
-                        />
-                      </RenderIf>
-                      <RenderIf render={item.type === 'dropdown'}>
-                        <Select
-                          options={item.options}
-                          components={animatedComponents}
-                          isMulti
-                          placeholder={item.placeholder}
-                        />
-                      </RenderIf>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <Formik
 
-              <div className="text-end mt-2">
-                {myTicketButtons.map((item) => (
-                  <button
-                    className={`btn btn-${item.btn} text-white`}
-                    onClick={() => (item.setState ? item.setState(true) : null)}
-                  >
-                    {item.name}
-                  </button>
-                ))}
-              </div>
+                initialValues={{
+                  ticket_id: '',
+                  assign_to_user_id: [],
+                  department_id: [],
+                  status_id: []
+                }}
+                onSubmit={(values) => handleSubmit(values)}
+                enableReinitialize
+              >
+                {({ setFieldValue }) => (
+                  <Form>
+                    <div className="row align-items-center">
+                      {inputDataList.map((item) => (
+                        <div className="col-lg-3 col-md-6" key={item.id}>
+                          <div className="mb-3">
+                            <label className="form-label fw-bold">
+                              {item.name}:
+                            </label>
+                            <RenderIf render={item.type === 'input'}>
+                              <Field
+                                type="text"
+                                name={item.key}
+                                className="form-control"
+                                placeholder={item.placeholder}
+                              />
+                            </RenderIf>
+                            <RenderIf render={item.type === 'dropdown'}>
+                              <Select
+                                options={item.options}
+                                components={animatedComponents}
+                                isMulti
+                                placeholder={item.placeholder}
+                                onChange={(selectedOptions) => {
+                                  const values = selectedOptions
+                                    ? selectedOptions.map(
+                                        (option) => option.value
+                                      )
+                                    : [];
+                                  setFieldValue(item.key, values);
+                                }}
+                              />
+                            </RenderIf>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="text-end mt-2">
+                      {myTicketButtons.map((item) => (
+                        <button
+                          type={item.name === 'Search' ? 'submit' : 'button'}
+                          className={`btn btn-${item.btn} text-white`}
+                          onClick={() => {
+                            if (item.name !== 'Search' && item.setState) {
+                              item.setState(true);
+                            }
+                          }}
+                        >
+                          {item.name}
+                        </button>
+                      ))}
+                    </div>
+                  </Form>
+                )}
+              </Formik>
             </div>
           </div>
         </div>

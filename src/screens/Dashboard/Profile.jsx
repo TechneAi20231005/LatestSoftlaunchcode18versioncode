@@ -212,7 +212,7 @@ function Profile() {
         if (res.data.status == 1) {
           res.data.data.profile_picture =
             "http://3.108.206.34/TSNewBackend/" + res.data.data.profile_picture;
-          setData(res.data.data);
+          setData(res.data.data?.data);
         }
       }
     });
@@ -364,9 +364,10 @@ function Profile() {
                     </tr>
                   </thead>
                   <tbody>
+                    {console.log(data?.department,"data")}
                     {data &&
-                      data.department.length > 0 &&
-                      data.department.map((d, i) => (
+                      data?.data?.department.length > 0 &&
+                      data?.data?.department.map((d, i) => (
                         <tr key={i}>
                           <td className="text-center">{i + 1}</td>{" "}
                           {/* Center align Sr column */}

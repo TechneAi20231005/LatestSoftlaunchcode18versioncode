@@ -550,7 +550,7 @@ function EditUserComponent({ match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            const temp = res.data.data;
+            const temp = res.data.data.data;
             setSelctRole(
               roleDropdown &&
                 roleDropdown.filter((d) => d.value === temp?.role_id)

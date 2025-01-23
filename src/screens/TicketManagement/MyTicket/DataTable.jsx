@@ -3,9 +3,12 @@ import React, { useMemo } from 'react';
 import DataTable from 'react-data-table-component';
 import MyTicketDropdown from './MyTicketDropdown';
 import NoDataComponent from './NoDataComponent';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 
-const DataTableCustom = React.memo(({ allTicketsData = [], type }) => {
+const DataTableCustom = React.memo(({ allTicketsData = [], type, isLoading = false, setPage, setPerPage, totalRows }) => {
   console.log('Myticket data table rendered');
+
+  console.log(allTicketsData, 'allTicketsData');
 
   const columns = useMemo(() => {
     return [
@@ -131,15 +134,31 @@ const DataTableCustom = React.memo(({ allTicketsData = [], type }) => {
         ];
   }, [allTicketsData]);
 
-  return (
+  const handlePageChange = (page) => setPage(page);
+  const handlePerRowsChange = (newPerPage, page) => {
+    setPage(page)
+    setPerPage(newPerPage)
+
+  };
+  console.log(filledData?.length, 'filledData');
+
+  return filledData.length === 0 ? (
+    <NoDataComponent />
+  ) : (
     <DataTable
       columns={columns}
       data={filledData}
-      noDataComponent={<NoDataComponent />}
+      progressPending={isLoading}
+      progressComponent={<TableLoadingSkelton />}
       pagination
+      paginationServer
+      paginationTotalRows={totalRows}
+      onChangePage={handlePageChange}
+      onChangeRowsPerPage={handlePerRowsChange}
       dense
     />
   );
+
 });
 
 export default DataTableCustom;

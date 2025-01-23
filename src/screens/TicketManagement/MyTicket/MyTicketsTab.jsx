@@ -11,6 +11,7 @@ import StatusService from '../../../services/MastersService/StatusService';
 import { errorHandler } from '../../../utils';
 import { fetchData } from '../../../utils/fetchData';
 import MyTicketService from '../../../services/TicketService/MyTicketService';
+import ReportService from '../../../services/ReportService/ReportService';
 
 const MyTicketsTab = () => {
   const [showModal, setShowModal] = useState(false);
@@ -20,12 +21,19 @@ const MyTicketsTab = () => {
   const [allDepartmentData, setAllDepartmentData] = useState({});
   const [allStatusData, setAllStatusData] = useState({});
   const [allTicketsData, setAllTicketsData] = useState({
+    SearchResult: [],
     AssignToMe: [],
     CreatedByMe: [],
     DepartmentWise: [],
     YouTask: [],
     UnPassed: []
   });
+  const INITIAL_PAGE = 1;
+  const INITIAL_PER_PAGE = 10;
+  const [totalRows, setTotalRows] = useState(0);
+  const [perPage, setPerPage] = useState(10);
+  const [page, setPage] = useState(1);
+  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
 
   const myTicketButtons = [
     {
@@ -93,86 +101,142 @@ const MyTicketsTab = () => {
     }
   };
 
-  // const getTicketsForUser = async (type) => {
-  //   const payload = {
-  //     typeOf: activeTabAndData,
-  //     limit: 10,
-  //     page: 1,
-  //     filter: ''
-  //   };
-  // };
 
-  const handleTabChange = async (key) => {
-    // console.log('key', key);
-    setActiveTabAndData(key);
-    const payload = {
-      typeOf: key,
-      limit: 10,
-      page: 1,
-      filter: ''
-    };
+  const handleTabChange = async (key, values = null) => {
+    setIsLoading(true);
+   !values && setActiveTabAndData(key);
+    if (key === 'SearchResult' && values) {
+      // Handle form submission logic
+      const formData = new FormData();
+      formData.append('ticket_id', values.ticket_id);
+      values?.assign_to_user_id.forEach((user) => {
+        formData?.append('assign_to_user_id[]', user);
+      });
+      values?.department_id.forEach((department) => {
+        formData?.append('department_id[]', department);
+      });
+      values?.status_id.forEach((status) => {
+        formData?.append('status_id[]', status);
+      });
 
-    const response = await new MyTicketService().getUserTicketsTest(payload);
+      const response = await new ReportService().getTicketReport(formData);
+      if (response?.status === 200) {
+        const { status } = response?.data;
+        if (status === 1) {
+          const {
+            data: { data = [] }
+          } = response;
+          setAllTicketsData((prev) => ({
+            ...prev,
+            SearchResult: data?.data || []
+          }));
+          setTotalRows(data?.total);
+          setIsFormSubmitted(true);
+          setActiveTabAndData('SearchResult');
+        } else {
+          setAllTicketsData((prev) => ({
+            ...prev,
+            SearchResult: []
+          }));
+        }
+      }
+    } else {
 
-    if (response?.status === 200 && response?.statusText === 'OK') {
-      console.log('response of tickets data', response?.data);
-      const { status } = response?.data;
+      const payload = {
+        typeOf: key,
+        limit: perPage,
+        page: page,
+        filter: ''
+      };
 
-      if (status === 1) {
-        const {
-          data: { data = [] }
-        } = response;
+      const response = await new MyTicketService().getUserTicketsTest(payload);
 
-        setAllTicketsData({ ...allTicketsData, [key]: data.data });
+      if (response?.status === 200 && response?.statusText === 'OK') {
+        const { status } = response?.data;
+
+        if (status === 1) {
+          const {
+            data: { data = [] }
+          } = response;
+          setTotalRows(data?.total);
+          setAllTicketsData((prev) => ({
+            ...prev,
+            [key]: data?.data || []
+          }));
+        } else {
+          errorHandler(response);
+        }
       } else {
         errorHandler(response);
       }
-    } else {
-      errorHandler(response);
     }
+
+    setIsLoading(false);
   };
+
 
   const tabList = useMemo(
     () => [
       {
         id: 1,
+        name: 'SearchResult',
+        tabColor: 'bg-primary',
+        data: allTicketsData?.SearchResult || [],
+        condition: isFormSubmitted
+      },
+      {
+        id: 2,
         name: 'AssignToMe',
         tabColor: 'bg-primary',
-        data: allTicketsData?.AssignToMe || []
+        data: allTicketsData?.AssignToMe || [],
+        condition: true
       },
 
       {
-        id: 2,
+        id: 3,
         name: 'CreatedByMe',
         tabColor: 'bg-secondary',
-        data: allTicketsData?.CreatedByMe || []
-      },
-      {
-        id: 3,
-        name: 'DepartmentWise',
-        tabColor: 'bg-success',
-        data: allTicketsData?.DepartmentWise || []
+        data: allTicketsData?.CreatedByMe || [],
+        condition: true
       },
       {
         id: 4,
-        name: 'YouTask',
-        tabColor: 'bg-danger',
-        data: allTicketsData?.YouTask || []
+        name: 'DepartmentWise',
+        tabColor: 'bg-success',
+        data: allTicketsData?.DepartmentWise || [],
+        condition: true
       },
       {
         id: 5,
+        name: 'YouTask',
+        tabColor: 'bg-danger',
+        data: allTicketsData?.YouTask || [],
+        condition: true
+      },
+      {
+        id: 6,
         name: 'UnPassed',
         tabColor: 'bg-warning',
-        data: allTicketsData?.UnPassed || []
+        data: allTicketsData?.UnPassed || [],
+        condition: true
       }
     ],
-    [allTicketsData]
+    [allTicketsData, isFormSubmitted]
   );
 
   useEffect(() => {
     fetchDataList();
-    handleTabChange('AssignToMe');
+    // handleTabChange('AssignToMe');
   }, []);
+
+  useEffect(() => {
+    handleTabChange('AssignToMe',null);
+  },[page, perPage])
+
+  const handleSubmit = async (values) => {
+    handleTabChange('SearchResult', values);
+  }
+
 
   return (
     <div className="">
@@ -186,6 +250,13 @@ const MyTicketsTab = () => {
         setAllUsersData={setAllUsersData}
         setAllStatusData={setAllStatusData}
         setIsLoading={setIsLoading}
+        setActiveTabAndData={setActiveTabAndData}
+        setIsFormSubmitted={setIsFormSubmitted}
+        setAllTicketsData={setAllTicketsData}
+        allTicketsData={allTicketsData}
+        activeTabAndData={activeTabAndData}
+        setTotalRows={setTotalRows}
+        handleSubmit={handleSubmit}
       />
       <FilterModal
         showModal={showModal}
@@ -200,19 +271,32 @@ const MyTicketsTab = () => {
         id="noanim-tab-example1"
         className="tab-body-header my-3  rounded d-inline-flex  nav nav-tabs"
         activeKey={activeTabAndData}
+        defaultActiveKey="SearchResult"
         style={{ width: 'auto' }}
         onSelect={(key) => handleTabChange(key)}
       >
-        {tabList.map((item, index) => (
+        {tabList?.filter((tab) => tab?.condition !== false).map((item, index) => (
           <Tab
             key={index}
             eventKey={item.name}
-            title={<span className={``}>{item.name}</span>}
+            title={
+              <span>
+                {item?.name}
+                <i
+                  style={{ marginLeft: '4px' }}
+                  class="icofont-tasks-alt fs-6"
+                ></i>
+              </span>
+            }
           >
             <div>
               <DataTableCustom
                 allTicketsData={item.data}
                 type={activeTabAndData}
+                isLoading={isLoading}
+                setPage={setPage}
+                setPerPage={setPerPage}
+                totalRows={totalRows}
               />
             </div>
           </Tab>

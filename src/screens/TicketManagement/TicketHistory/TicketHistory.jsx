@@ -508,7 +508,8 @@ const TicketHistory = ({ match }) => {
         if (res.data.status === 1) {
           let counter = 1;
           const tempData = [];
-          const temp = res.data.data;
+          const temp = res.data.data.data;
+          console.log('data', temp);
           for (const key in temp) {
             tempData.push({
               counter: counter++,
