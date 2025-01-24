@@ -5,7 +5,7 @@ import Alert from '../../components/Common/Alert';
 import { _base } from '../../settings/constants';
 
 import * as Validation from '../../components/Utilities/Validation';
-import { _attachmentUrl } from '../../settings/constants';
+import { _attachmentUrl, _rewampAttachmentUrl } from '../../settings/constants';
 import {
   getAttachment,
   deleteAttachment
@@ -1862,7 +1862,7 @@ export default function EditTicketComponent({ match }) {
                           </p>
                           <div className="d-flex justify-content-end p-0">
                             <a
-                              href={`${_attachmentUrl + '/' + attach.path}`}
+                              href={`${_rewampAttachmentUrl  + attach.path}`}
                               target="_blank"
                               className="btn btn-warning btn-sm p-0 px-1"
                             >

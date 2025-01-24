@@ -97,7 +97,7 @@ function GeneralSettings() {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const data = res.data.data.sort((a, b) => {
+          const data = res.data.data?.data?.sort((a, b) => {
             if (a.first_name && b.first_name) {
               return a.first_name.localeCompare(b.first_name);
             }
@@ -298,7 +298,7 @@ function GeneralSettings() {
 
   const initialValues = {
     setting_name: modal.modalData ? modal.modalData?.setting_name : '',
-    value: modal.modalData ? modal.modalData?.value : '',
+    value:  modal?.modalData?.value || '',
     user_id: modal.modalData ? userData?.map((item) => item) : '',
     remark: modal.modalData?.remark || '',
     is_active: String(modal?.modalData?.is_active) ?? "1"

@@ -15,7 +15,7 @@ export default class TenantService {
         'Content-Type': 'application/json'
       }
     };
-    return axios.get(_URL + '/getData', config);
+    return axios.get(_URL + '/getData?export=1', config);
   }
 
   postTenant(payload) {

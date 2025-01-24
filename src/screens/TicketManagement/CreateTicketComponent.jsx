@@ -1371,7 +1371,7 @@ export default function CreateTicketComponent() {
                       name="description"
                       required
                       rows="4"
-                      maxLength={1000}
+                      maxLength={100}
                     />
                   </div>
                 </div>

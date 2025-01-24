@@ -393,8 +393,13 @@ export default function EditTenant() {
                       name="email_id"
                       placeholder="Email Address"
                       required
-                      onKeyPress={(e) => Validation.emailOnly(e)}
+                      // onKeyPress={(e) => Validation.emailOnly(e)}
                     />
+                     <ErrorMessage
+                          name="email_id"
+                          component="small"
+                          style={{ color: 'red' }}
+                        />
                   </div>
                 </div>
 
@@ -442,6 +447,11 @@ export default function EditTenant() {
                         id="address"
                         name="address"
                       />
+                        <ErrorMessage
+                      name="address"
+                      component="small"
+                      style={{ color: 'red' }}
+                    />
                     </div>
                   </div>
 
@@ -477,6 +487,8 @@ export default function EditTenant() {
                             (option) => option.value === values.country_id
                           )}
                           onChange={(selectedOption) => {
+                            setFieldValue('state_id', '');
+                            setFieldValue('city_id', '');
                             setFieldValue(
                               'country_id',
                               selectedOption ? selectedOption.value : ''
@@ -561,13 +573,13 @@ export default function EditTenant() {
               </div>
 
               <div className="mt-3" style={{ textAlign: 'right' }}>
-                {checkRole && checkRole[0]?.can_update === 1 ? (
+                {/* {checkRole && checkRole[0]?.can_update === 1 ? ( */}
                   <button type="submit" className="btn btn-primary">
                     Update
                   </button>
-                ) : (
+                 {/* ) : (
                   ''
-                )}
+                )} */}
                 <Link
                   to={`/${_base}/TenantMaster`}
                   className="btn btn-danger text-white"
