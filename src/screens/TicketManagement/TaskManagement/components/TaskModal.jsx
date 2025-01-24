@@ -9,10 +9,10 @@ import {
   updateTask
   // getTaskUser
 } from '../../../../services/TicketService/TaskService';
-// import {
-//   getAttachment,
-//   deleteAttachment
-// } from '../../../../services/OtherService/AttachmentService';
+import {
+  getAttachment,
+  deleteAttachment
+} from '../../../../services/OtherService/AttachmentService';
 import Alert from '../../../../components/Common/Alert';
 // import * as Validation from '../../../../components/Utilities/Validation';
 import UserService from '../../../../services/MastersService/UserService';
@@ -37,7 +37,7 @@ export default function TaskModal(props) {
   // const [allTask, setAllTask] = useState();
   const [userData, setUserData] = useState();
   const [defaultUserData, setDefaultUserData] = useState();
-  const attachment = [];
+  // const attachment = [];
   const [selectedFile, setSelectedFile] = useState([]);
 
   const fileInputRef = useRef(null);
@@ -46,6 +46,7 @@ export default function TaskModal(props) {
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [taskData, setTaskData] = useState([]);
+  const [attachment, setAttachment] = useState([]);
 
   // const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
@@ -431,19 +432,19 @@ export default function TaskModal(props) {
     });
   }, [props.data, props?.taskDropdown]);
 
-  // const loadAttachment = async () => {
-  //   setNotify(null);
-  //   if (props.data.id) {
-  //     await getAttachment(props.data.id, "TASK").then((res) => {
-  //       if (res.status === 200) {
-  //         setAttachment(null);
-  //         setAttachment(res.data.data);
-  //       }
-  //     });
-  //   } else {
-  //     setAttachment(null);
-  //   }
-  // };
+  const loadAttachment = async () => {
+    setNotify(null);
+    if (props.data.id) {
+      await getAttachment(props.data.id, 'TASK').then((res) => {
+        if (res.status === 200) {
+          setAttachment(null);
+          setAttachment(res.data.data);
+        }
+      });
+    } else {
+      setAttachment(null);
+    }
+  };
 
   // function transformData(taskData, hasPrimaryLabel = false) {
   //   // const primaryLabel = "Primary";
@@ -561,7 +562,12 @@ export default function TaskModal(props) {
       alert('Invalid Option');
     }
   };
-  const handleDeleteAttachment = (e, id) => {};
+  // const handleDeleteAttachment = (e, id) => {};
+  const handleDeleteAttachment = (e, id) => {
+    deleteAttachment(id).then((res) => {
+      loadAttachment();
+    });
+  };
 
   const assignUserRef = useRef();
   const handleForm = async (values) => {

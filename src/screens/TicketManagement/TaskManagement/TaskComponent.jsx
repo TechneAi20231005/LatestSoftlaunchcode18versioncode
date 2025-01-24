@@ -540,7 +540,7 @@ export default function TaskComponent() {
       }
       setSprintCardData((prevState) => {
         let filteredArray = prevState?.filter(
-          (sprint) => sprint.id === selectedOption?.value
+          (sprint) => sprint?.id === selectedOption?.value
         );
         return filteredArray;
       });
@@ -554,7 +554,7 @@ export default function TaskComponent() {
     // setDisableNextBtn(false);
     // setDisablePrevBtn(false);
     let currentSprintCard = [...sprintCardData];
-    let currentIndex = sprintData.findIndex(
+    let currentIndex = sprintData?.findIndex(
       (sprint) => sprint.id === currentSprintCard[0].id
     );
 

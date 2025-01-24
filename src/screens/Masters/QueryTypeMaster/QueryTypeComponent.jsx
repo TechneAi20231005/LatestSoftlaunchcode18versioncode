@@ -559,7 +559,7 @@ function QueryTypeComponent() {
       await new QueryTypeService().updateQueryGroup(id, form).then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            setNotifyy({ type: 'success', message: res.data.message });
+            toast.success(res.data.message);
             setModalQueryGroup({
               showModalQueryGroup: false,
               modalDataQueryGroup: '',
@@ -568,10 +568,10 @@ function QueryTypeComponent() {
             loadData();
             loadDataEditPopup();
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message);
           }
         } else {
-          setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message);
           new ErrorLogService().sendErrorLog(
             'QueryType',
             'Update_QueryType',
@@ -873,8 +873,8 @@ function QueryTypeComponent() {
 
   return (
     <>
+      {notify && <Alert alertData={notify ? notify : notifyy} />}
       <div className="container-xxl">
-        {notify && <Alert alertData={notify ? notify : notifyy} />}
         <PageHeader
           headerTitle="Query Master"
           renderRight={() => {
@@ -985,26 +985,29 @@ function QueryTypeComponent() {
                         <label className="form-label font-weight-bold">
                           Select Form: <Astrick color="red" size="13px" />
                         </label>
-                       {
-                        dynamicFormDropdown &&  <Select
-                        options={dynamicFormDropdown}
-                        id="form_id"
-                        name="form_id"
-                        defaultValue={
-                          modal.modalData
-                            ? dynamicFormDropdown?.find(
-                                (d) => modal.modalData.form_id === d.value
+                        {dynamicFormDropdown && (
+                          <Select
+                            options={dynamicFormDropdown}
+                            id="form_id"
+                            name="form_id"
+                            defaultValue={
+                              modal.modalData
+                                ? dynamicFormDropdown?.find(
+                                    (d) => modal.modalData.form_id === d.value
+                                  )
+                                : ''
+                            }
+                            isClearable={true}
+                            onChange={(option) => {
+                              if (
+                                !option ||
+                                Object.entries(option).length === 0
                               )
-                            : ''
-                        }
-                        isClearable={true}
-                        onChange={(option) => {
-                          if (!option || Object.entries(option).length === 0)
-                            return;
-                          setFieldValue('form_id', option?.value);
-                        }}
-                      />
-                       }
+                                return;
+                              setFieldValue('form_id', option?.value);
+                            }}
+                          />
+                        )}
                         <ErrorMessage
                           name="form_id"
                           component="small"
@@ -1265,7 +1268,7 @@ function QueryTypeComponent() {
                           ? modalQueryGroup.modalDataQueryGroup.group_name
                           : ''
                       }
-                      maxLength={50}
+                      maxLength={100}
                       required
                       onKeyPress={(e) => {
                         Validation.CharactersNumbersOnly(e);
