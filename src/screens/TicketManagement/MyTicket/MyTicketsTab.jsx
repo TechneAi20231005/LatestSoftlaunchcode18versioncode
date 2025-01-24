@@ -12,6 +12,8 @@ import { errorHandler } from '../../../utils';
 import { fetchData } from '../../../utils/fetchData';
 import MyTicketService from '../../../services/TicketService/MyTicketService';
 import ReportService from '../../../services/ReportService/ReportService';
+import { ExportAllTicketsToExcel } from '../../../components/Utilities/Table/ExportAllTicketsToExcel';
+import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
 const MyTicketsTab = () => {
   const [showModal, setShowModal] = useState(false);
@@ -28,8 +30,7 @@ const MyTicketsTab = () => {
     YouTask: [],
     UnPassed: []
   });
-  const INITIAL_PAGE = 1;
-  const INITIAL_PER_PAGE = 10;
+
   const [totalRows, setTotalRows] = useState(0);
   const [perPage, setPerPage] = useState(10);
   const [page, setPage] = useState(1);
@@ -101,80 +102,85 @@ const MyTicketsTab = () => {
     }
   };
 
-
-  const handleTabChange = async (key, values = null) => {
+  const handleTabChange = async (key, values = null, filterMode = '') => {
+    console.log(values, 'values');
     setIsLoading(true);
-   !values && setActiveTabAndData(key);
-    if (key === 'SearchResult' && values) {
-      // Handle form submission logic
+
+    if (!values) {
+      setActiveTabAndData(key);
+    }
+
+    const prepareFormData = (fields) => {
       const formData = new FormData();
-      formData.append('ticket_id', values.ticket_id);
-      values?.assign_to_user_id.forEach((user) => {
-        formData?.append('assign_to_user_id[]', user);
-      });
-      values?.department_id.forEach((department) => {
-        formData?.append('department_id[]', department);
-      });
-      values?.status_id.forEach((status) => {
-        formData?.append('status_id[]', status);
-      });
-
-      const response = await new ReportService().getTicketReport(formData);
-      if (response?.status === 200) {
-        const { status } = response?.data;
-        if (status === 1) {
-          const {
-            data: { data = [] }
-          } = response;
-          setAllTicketsData((prev) => ({
-            ...prev,
-            SearchResult: data?.data || []
-          }));
-          setTotalRows(data?.total);
-          setIsFormSubmitted(true);
-          setActiveTabAndData('SearchResult');
+      Object.entries(fields).forEach(([field, value]) => {
+        if (Array.isArray(value)) {
+          value.forEach((item) => formData.append(`${field}[]`, item));
         } else {
-          setAllTicketsData((prev) => ({
-            ...prev,
-            SearchResult: []
-          }));
+          formData.append(field, value);
         }
-      }
-    } else {
+      });
+      return formData;
+    };
 
-      const payload = {
-        typeOf: key,
-        limit: perPage,
-        page: page,
-        filter: ''
-      };
-
-      const response = await new MyTicketService().getUserTicketsTest(payload);
-
-      if (response?.status === 200 && response?.statusText === 'OK') {
-        const { status } = response?.data;
-
-        if (status === 1) {
-          const {
-            data: { data = [] }
-          } = response;
-          setTotalRows(data?.total);
+    const processResponse = (response, tabKey) => {
+      if (response?.status === 200) {
+        const { status, data } = response?.data || {};
+        if (status === 1 && data) {
+          const { data: items = [], total = 0 } = data;
           setAllTicketsData((prev) => ({
             ...prev,
-            [key]: data?.data || []
+            [tabKey]: items
           }));
+          setTotalRows(total);
+          tabKey === 'SearchResult' && setIsFormSubmitted(true);
+          setActiveTabAndData(tabKey);
         } else {
-          errorHandler(response);
+          tabKey === 'SearchResult' && setIsFormSubmitted(true);
+          setActiveTabAndData(tabKey);
+          setAllTicketsData((prev) => ({
+            ...prev,
+            [tabKey]: []
+          }));
         }
       } else {
         errorHandler(response);
       }
-    }
+    };
 
+    if (filterMode === 'search') {
+      const formData = prepareFormData({
+        ticket_id: values.ticket_id,
+        assign_to_user_id: values?.assign_to_user_id,
+        department_id: values?.department_id,
+        status_id: values?.status_id
+      });
+
+      const response = await new ReportService().getTicketReport(formData);
+      processResponse(response, 'SearchResult');
+    } else if (filterMode === 'filter') {
+      const formData = prepareFormData({
+        from_date: values.from_date,
+        to_date: values.to_date,
+        status_id: values?.status_id,
+        ticket_id: values?.ticket_id
+      });
+
+      const response = await new ReportService().getTicketReport(formData);
+      processResponse(response, 'SearchResult');
+      setShowModal(false);
+    } else {
+      const payload = {
+        typeOf: key,
+        limit: perPage,
+        page,
+        filter: ''
+      };
+
+      const response = await new MyTicketService().getUserTicketsTest(payload);
+      processResponse(response, key);
+    }
     setIsLoading(false);
   };
-
-
   const tabList = useMemo(
     () => [
       {
@@ -230,13 +236,18 @@ const MyTicketsTab = () => {
   }, []);
 
   useEffect(() => {
-    handleTabChange('AssignToMe',null);
-  },[page, perPage])
+    handleTabChange(activeTabAndData, null, '');
+  }, [page, perPage]);
 
-  const handleSubmit = async (values) => {
-    handleTabChange('SearchResult', values);
-  }
-
+  const handleSearch = async (values) => {
+    let filterMode = 'search';
+    handleTabChange('SearchResult', values, filterMode);
+  };
+  const onFilter = async (values) => {
+    // console.log('values', values);
+    let filterMode = 'filter';
+    handleTabChange('SearchResult', values, filterMode);
+  };
 
   return (
     <div className="">
@@ -256,7 +267,7 @@ const MyTicketsTab = () => {
         allTicketsData={allTicketsData}
         activeTabAndData={activeTabAndData}
         setTotalRows={setTotalRows}
-        handleSubmit={handleSubmit}
+        handleSubmit={handleSearch}
       />
       <FilterModal
         showModal={showModal}
@@ -265,6 +276,7 @@ const MyTicketsTab = () => {
         allDepartmentData={allDepartmentData}
         allStatusData={allStatusData}
         setAllUsersData={setAllUsersData}
+        onSubmit={onFilter}
       />
       <Tabs
         transition={true}
@@ -275,32 +287,48 @@ const MyTicketsTab = () => {
         style={{ width: 'auto' }}
         onSelect={(key) => handleTabChange(key)}
       >
-        {tabList?.filter((tab) => tab?.condition !== false).map((item, index) => (
-          <Tab
-            key={index}
-            eventKey={item.name}
-            title={
-              <span>
-                {item?.name}
-                <i
-                  style={{ marginLeft: '4px' }}
-                  class="icofont-tasks-alt fs-6"
-                ></i>
-              </span>
-            }
-          >
-            <div>
-              <DataTableCustom
-                allTicketsData={item.data}
-                type={activeTabAndData}
-                isLoading={isLoading}
-                setPage={setPage}
-                setPerPage={setPerPage}
-                totalRows={totalRows}
-              />
-            </div>
-          </Tab>
-        ))}
+        {tabList
+          ?.filter((tab) => tab?.condition !== false)
+          .map((item, index) => (
+            <Tab
+              key={index}
+              eventKey={item.name}
+              title={
+                <span>
+                  {item?.name}
+                  <i
+                    style={{ marginLeft: '4px' }}
+                    class="icofont-tasks-alt fs-6"
+                  ></i>
+                </span>
+              }
+            >
+              {item.name === 'SearchResult' ? (
+                <ExportToExcel
+                  className="btn btn-sm btn-danger mt-3"
+                  apiData={item?.data}
+                  typeOf="SearchResult"
+                  fileName={`Export Filter Result`}
+                />
+              ) : (
+                <ExportAllTicketsToExcel
+                  className="btn btn-sm btn-danger mt-3"
+                  fileName={item.name}
+                  typeOf={item.name}
+                />
+              )}
+              <div>
+                <DataTableCustom
+                  allTicketsData={item.data}
+                  type={activeTabAndData}
+                  isLoading={isLoading}
+                  setPage={setPage}
+                  setPerPage={setPerPage}
+                  totalRows={totalRows}
+                />
+              </div>
+            </Tab>
+          ))}
       </Tabs>
     </div>
   );

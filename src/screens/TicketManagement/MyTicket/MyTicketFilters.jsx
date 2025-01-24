@@ -25,7 +25,7 @@ const MyTicketFilters = ({
   allTicketsData,
   activeTabAndData,
   setTotalRows,
-  handleSubmit,
+  handleSubmit
 }) => {
   const animatedComponents = makeAnimated();
 
@@ -133,46 +133,6 @@ const MyTicketFilters = ({
     fetchDataList();
   }, []);
 
-  // const handleSubmit = async (values) => {
-  //   console.log('Submitted Values:', values);
-  //   const formData = new FormData();
-  //   formData.append('ticket_id', values.ticket_id);
-  //   // formData.append('assign_to_user_id', values.assign_to_user_id);
-  //   values?.assign_to_user_id.forEach((user) => {
-  //     formData?.append('assign_to_user_id[]', user);
-  //   });
-  //   values?.department_id.forEach((department) => {
-  //     formData?.append('department_id[]', department);
-  //   });
-  //   values?.status_id.forEach((status) => {
-  //     formData?.append('status_id[]', status);
-  //   });
-  //    const response = await new ReportService().getTicketReport(formData);
-  //    if(response?.status === 200){
-  //     const { status } = response?.data;
-  //     if(status === 1){
-  //       console.log(status, "status")
-  //       const {
-  //         data: { data = [] }
-  //       } = response;
-  //       setAllTicketsData((prev) => ({
-  //         ...prev,
-  //         SearchResult: data?.data || []
-  //       }));
-  //       setTotalRows(data?.total);
-  //       setIsFormSubmitted(true);
-  //       setActiveTabAndData('SearchResult')
-  //       console.log(data,"data")
-  //     }else{
-  //       setAllTicketsData((prev) => ({
-  //         ...prev,
-  //         SearchResult: []
-  //       }));
-  //     }
-  //    }
-  //   // You can handle API submission here
-  // };
-
   return (
     <>
       <div className="row align-items-center">
@@ -180,7 +140,6 @@ const MyTicketFilters = ({
           <div className="card">
             <div className="card-body">
               <Formik
-
                 initialValues={{
                   ticket_id: '',
                   assign_to_user_id: [],
@@ -188,9 +147,9 @@ const MyTicketFilters = ({
                   status_id: []
                 }}
                 onSubmit={(values) => handleSubmit(values)}
-                enableReinitialize
+                enableReinitialize={true}
               >
-                {({ setFieldValue }) => (
+                {({ values, setFieldValue, resetForm }) => (
                   <Form>
                     <div className="row align-items-center">
                       {inputDataList.map((item) => (
@@ -213,6 +172,9 @@ const MyTicketFilters = ({
                                 components={animatedComponents}
                                 isMulti
                                 placeholder={item.placeholder}
+                                value={item?.options?.filter((option) =>
+                                  values[item.key]?.includes(option.value)
+                                )}
                                 onChange={(selectedOptions) => {
                                   const values = selectedOptions
                                     ? selectedOptions.map(
@@ -234,6 +196,11 @@ const MyTicketFilters = ({
                           type={item.name === 'Search' ? 'submit' : 'button'}
                           className={`btn btn-${item.btn} text-white`}
                           onClick={() => {
+                            if (item?.name === 'Reset Filter') {
+                              setIsFormSubmitted(false)
+                              setActiveTabAndData('AssignToMe')
+                              resetForm();
+                            }
                             if (item.name !== 'Search' && item.setState) {
                               item.setState(true);
                             }
