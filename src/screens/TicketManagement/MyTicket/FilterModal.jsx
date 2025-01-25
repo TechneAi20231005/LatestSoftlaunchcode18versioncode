@@ -11,7 +11,8 @@ const FilterModal = ({
   allUsersData,
   allStatusData,
   allDepartmentData,
-  setAllUsersData
+  setAllUsersData,
+  onSubmit
 }) => {
   const onChangeHandler = (selectedOptions, setFieldValue, type) => {
     try {
@@ -30,12 +31,14 @@ const FilterModal = ({
             label: `${user.first_name} ${user.middle_name} ${user.last_name}`
           }));
 
+          console.log(assignedUsersAsPerDepartment,"assignedUsersAsPerDepartment")
+
         setAllUsersData((prevState) => ({
           ...prevState,
           assignedUsersAsPerDepartment
         }));
 
-        setFieldValue('assign_to_user_id', []); // Reset "Assigned User" on department change
+        setFieldValue('assigned_user', []); // Reset "Assigned User" on department change
       }
 
       // Filter entry users for Entry Department
@@ -56,7 +59,7 @@ const FilterModal = ({
           entryUsersAsPerDepartment
         }));
 
-        setFieldValue('user_id', []); // Reset "Entry User" on department change
+        setFieldValue('entry_user', []); // Reset "Entry User" on department change
       }
     } catch (error) {
       console.error(error);
@@ -130,30 +133,25 @@ const FilterModal = ({
   const initialValues = {
     from_date: '',
     to_date: '',
-    assign_to_department_id: [],
-    assign_to_user_id: [],
-    user_id: [],
+    assigned_department: [],
+    assigned_user: [],
+    entry_department: [],
+    entry_user: [],
+    // assign_to_department_id: [],
+    // assign_to_user_id: [],
+    // user_id: [],
     status_id: [],
     ticket_id: '',
     export: ''
   };
 
-  const onSubmit = (values) => {
-    console.log(values);
-    const formData = new FormData();
-    formData.append('from_date', values.from_date);
-    formData.append('to_date', values.to_date);
-
-    // Submit the form values
-  };
-
   return (
     <Formik
       initialValues={initialValues}
-      onSubmit={onSubmit}
+      onSubmit={(values) => onSubmit(values)}
       // enableReinitialize
     >
-      {({ setFieldValue }) => (
+      {({ values, setFieldValue }) => (
         <Modal
           show={showModal}
           onHide={() => setShowModal(false)}
@@ -201,11 +199,19 @@ const FilterModal = ({
                         className="mb-4"
                         components={animatedComponents}
                         isMulti
+                        value={
+                          Array.isArray(values[item.name.replace(' ', '_').toLowerCase()])
+                            ? values[item.name.replace(' ', '_').toLowerCase()].map((id) =>
+                                item.options.find((option) => option.value === id)
+                              )
+                            : []
+                        }
                         onChange={(selectedOptions) => {
+                          console.log(selectedOptions, 'selectedOptions');
                           setFieldValue(
-                            item.name.replace(' ', '_').toLowerCase(),
+                            item?.name?.replace(' ', '_')?.toLowerCase(),
                             selectedOptions
-                              ? selectedOptions.map((option) => option.value)
+                              ? selectedOptions?.map((option) => option?.value)
                               : []
                           );
                           if (item.onChange) {
