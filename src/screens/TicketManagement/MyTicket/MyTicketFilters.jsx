@@ -25,7 +25,7 @@ const MyTicketFilters = ({
   allTicketsData,
   activeTabAndData,
   setTotalRows,
-  handleSubmit,
+  handleSubmit
 }) => {
   const animatedComponents = makeAnimated();
 
@@ -180,7 +180,6 @@ const MyTicketFilters = ({
           <div className="card">
             <div className="card-body">
               <Formik
-
                 initialValues={{
                   ticket_id: '',
                   assign_to_user_id: [],
@@ -228,7 +227,7 @@ const MyTicketFilters = ({
                       ))}
                     </div>
 
-                    <div className="text-end mt-2">
+                    <div className="text-end mt-0">
                       {myTicketButtons.map((item) => (
                         <button
                           type={item.name === 'Search' ? 'submit' : 'button'}

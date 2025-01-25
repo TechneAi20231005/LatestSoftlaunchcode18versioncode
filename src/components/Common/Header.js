@@ -73,7 +73,7 @@ export default function Header() {
     new UserService().getUserById(localStorage.getItem('id')).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          setTenantId(res.data.data.tenant_id);
+          setTenantId(res?.data?.data?.data?.tenant_id);
           res.data.data.profile_picture =
             'http://3.108.206.34/TSNewBackend/' + res.data.data.profile_picture;
           setData(res.data.data);
