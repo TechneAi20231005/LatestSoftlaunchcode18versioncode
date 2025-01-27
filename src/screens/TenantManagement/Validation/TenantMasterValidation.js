@@ -1,6 +1,10 @@
 import * as Yup from 'yup';
+import { ALPHA_NUMERIC_REGEX } from '../../../utils/regexPool';
 export const TenantValidation = Yup.object({
-  company_name: Yup.string().required('Company Name is required'),
+  company_name: Yup.string()
+    .required('Company Name is required')
+    .matches(ALPHA_NUMERIC_REGEX, 'Company name must be alphanumeric')
+    .max(100, 'Company Name must be at most 100 characters'),
   series: Yup.string()
     .required('Ticket ID Series is required')
     .matches(/^[A-Z]+$/, 'Only capital letters are allowed'),
@@ -25,7 +29,7 @@ export const TenantValidation = Yup.object({
     .matches(/^[0-9]+$/, 'Only numbers are allowed')
     .test(
       'startsWithValidDigit',
-      'System not accepting 9 Consecutive Zeros here.',
+      'Mobile Number must start with digit in between 6 to 9',
       (value) => {
         return value ? ['6', '7', '8', '9'].includes(value.charAt(0)) : true;
       }
@@ -37,7 +41,10 @@ export const TenantValidation = Yup.object({
         return value ? !value.includes('000000000') : true;
       }
     ),
-  address: Yup.string(),
+  address: Yup.string().matches(
+    ALPHA_NUMERIC_REGEX,
+    'Address must be alphanumeric'
+  ),
   pincode: Yup.string()
     .length(6, 'Pincode must be 6 digits')
     .matches(

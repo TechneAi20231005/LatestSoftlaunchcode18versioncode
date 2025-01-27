@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { userSessionData } from '../../settings/constants';
 import { Spinner, Modal } from 'react-bootstrap';
 
-import { _attachmentUrl } from '../../settings/constants';
+import { _attachmentUrl, _rewampAttachmentUrl } from '../../settings/constants';
 import { getAttachment } from '../../services/OtherService/AttachmentService';
 import MyTicketService from '../../services/TicketService/MyTicketService';
 import ReportService from '../../services/ReportService/ReportService';
@@ -545,7 +545,7 @@ export default function ViewTicketComponent({ match }) {
                           </div>
                           <div className="mr-1">
                             <a
-                              href={`${_attachmentUrl}${attachment?.path}`}
+                              href={`${_rewampAttachmentUrl}${attachment?.path}`}
                               target="_blank"
                               download
                               className="btn btn-primary btn-sm"
