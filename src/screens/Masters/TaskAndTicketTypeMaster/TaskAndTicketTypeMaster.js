@@ -910,7 +910,6 @@ function TaskAndTicketTypeMaster(props) {
         }
 
         form.append('type', selectedType);
-        console.log('form', form);
         await new TaskTicketTypeService()._updateType(id, form).then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
@@ -953,7 +952,6 @@ function TaskAndTicketTypeMaster(props) {
 
   // Assuming your data is stored in a variable called `data`
   // const labelsAndParentIDs = extractLabelsAndParentIDs(taskData);
-  console.log('modal', modal.modalData);
   const initialValues = {
     type_name: modal.modalData?.type_name || '',
     remark: modal.modalData?.remark || '',
@@ -1118,7 +1116,6 @@ function TaskAndTicketTypeMaster(props) {
                                 width: '100%'
                               }}
                             >
-                              {console.log('selectedOption', selectedOption)}
                               <div
                                 className="form-control form-control-sm"
                                 onClick={(e) => handleSelectOptionClick(e)}

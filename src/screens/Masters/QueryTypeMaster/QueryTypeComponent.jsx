@@ -603,7 +603,6 @@ function QueryTypeComponent() {
 
           let counter = 1;
           const temp = res.data.data.data;
-          console.log('data', res.data.data);
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -649,7 +648,6 @@ function QueryTypeComponent() {
         }
       })
       .catch((error) => {
-        console.log('error', error);
         // const { response } = error;
         // const { request, ...errorObject } = response;
         // new ErrorLogService().sendErrorLog(
@@ -1456,7 +1454,6 @@ function QueryTypeComponent() {
                 />
               </div>
             </div>
-            {console.log('queryGroupData', queryGroupData)}
             <div className="card mt-2">
               <div className="card-body">
                 <div className="row clearfix g-3">

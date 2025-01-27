@@ -163,7 +163,7 @@ export const projectManagementUrl = {
 };
 
 export const menuManagementUrl = {
-  menusUrl: _apiUrl + 'menuManagement'
+  menusUrl: _rewampApiUrl + 'roleMaster'
 };
 
 export const dashboardUrl = _rewampApiUrl + 'dashboard';

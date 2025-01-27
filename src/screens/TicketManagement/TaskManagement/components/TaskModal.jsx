@@ -1764,8 +1764,8 @@ export default function TaskModal(props) {
                         id="end_date"
                         name="end_date"
                         min={
-                          fromdate?.length > 0
-                            ? fromdate
+                          values.start_date?.length > 0
+                            ? values.start_date
                             : props.data.start_date
                         }
                       />
