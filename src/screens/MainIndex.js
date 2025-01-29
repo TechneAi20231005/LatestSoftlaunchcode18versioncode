@@ -181,6 +181,7 @@ import TestBankComponent from './TestCases/TestBank/TestBankComponent';
 import ProjectWiseModuleHistory from './ConsolidatedView/ProjectWiseModuleHistory';
 import PowerBidashboard from './Dashboard/PowerBidashboard';
 import JobRoleComponent from './Masters/JobRoleMaster/JobRoleComponent';
+import DeleteRequisition from './PO/deleteRequisition/DeleteRequisition';
 
 class MainIndex extends React.Component {
   render() {
@@ -883,6 +884,11 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/POOrderQuanitityReport`}
               element={<OrderQuantityReport />}
+            />
+            <Route
+              exact
+              path={`/${_base}/PODeleteRequisition`}
+              element={<DeleteRequisition />}
             />
             <Route
               exact

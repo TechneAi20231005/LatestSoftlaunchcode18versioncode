@@ -1,29 +1,33 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
+  deleteItemCategoryListThunk,
   getItemCategoryListThunk,
   getKaragirKnockOffWtSizeRangeFilterListThunk,
-  getVenderListThunk,
+  getVenderListThunk
 } from '../../../services/po/common';
 
 const initialState = {
   venderList: [],
   itemCategoryList: [],
+
+  filterItemCategoryList: [],
+  filterCategoryList: [],
   karagirKnockOffWtSizeRangeFilterData: [],
   isLoading: {
     getVenderList: false,
     getItemCategoryList: false,
-    getKaragirKnockOffWtSizeRangeFilterData: false,
+    getKaragirKnockOffWtSizeRangeFilterData: false
   },
   errorMsg: {
     getVenderList: '',
     getItemCategoryList: '',
-    getKaragirKnockOffWtSizeRangeFilterData: '',
+    getKaragirKnockOffWtSizeRangeFilterData: ''
   },
   successMsg: {
     getVenderList: '',
     getItemCategoryList: '',
-    getKaragirKnockOffWtSizeRangeFilterData: '',
-  },
+    getKaragirKnockOffWtSizeRangeFilterData: ''
+  }
 };
 const poCommonSlice = createSlice({
   name: 'PO Common Filter',
@@ -54,6 +58,24 @@ const poCommonSlice = createSlice({
       .addCase(getItemCategoryListThunk.fulfilled, (state, action) => {
         state.isLoading.getItemCategoryList = false;
         state.itemCategoryList = action.payload.data;
+        console.log('payload', action.payload.data);
+        // state.filterItemCategoryList = action.payload.data.map((i) => ({
+        //   value: i.id,
+        //   label: i.item
+        // }));
+        state.filterItemCategoryList = Array.from(
+          new Map(
+            action.payload.data.map((i) => [
+              i.item,
+              { value: i.id, label: i.item }
+            ])
+          ).values()
+        );
+        state.filterCategoryList = action.payload.data.map((i) => ({
+          value: i.id,
+          label: i.category
+        }));
+
         state.successMsg.getItemCategoryList = action.payload.msg;
       })
       .addCase(getItemCategoryListThunk.rejected, (state, action) => {
@@ -63,20 +85,49 @@ const poCommonSlice = createSlice({
       })
 
       // // getKaragirKnockOffWtSizeRangeFilterData
-      .addCase(getKaragirKnockOffWtSizeRangeFilterListThunk.pending, (state, action) => {
-        state.isLoading.getKaragirKnockOffWtSizeRangeFilterData = true;
+      .addCase(
+        getKaragirKnockOffWtSizeRangeFilterListThunk.pending,
+        (state, action) => {
+          state.isLoading.getKaragirKnockOffWtSizeRangeFilterData = true;
+        }
+      )
+      .addCase(
+        getKaragirKnockOffWtSizeRangeFilterListThunk.fulfilled,
+        (state, action) => {
+          state.isLoading.getKaragirKnockOffWtSizeRangeFilterData = false;
+          state.karagirKnockOffWtSizeRangeFilterData = action.payload.data;
+          state.successMsg.getKaragirKnockOffWtSizeRangeFilterData =
+            action.payload.msg;
+        }
+      )
+      .addCase(
+        getKaragirKnockOffWtSizeRangeFilterListThunk.rejected,
+        (state, action) => {
+          state.isLoading.getKaragirKnockOffWtSizeRangeFilterData = false;
+          state.karagirKnockOffWtSizeRangeFilterData = [];
+          state.errorMsg.getKaragirKnockOffWtSizeRangeFilterData =
+            action.error.message;
+        }
+      )
+
+      //// delete requisition
+
+      .addCase(deleteItemCategoryListThunk.pending, (state, action) => {
+        // state.isLoading.getKaragirKnockOffWtSizeRangeFilterData = true;
       })
-      .addCase(getKaragirKnockOffWtSizeRangeFilterListThunk.fulfilled, (state, action) => {
-        state.isLoading.getKaragirKnockOffWtSizeRangeFilterData = false;
-        state.karagirKnockOffWtSizeRangeFilterData = action.payload.data;
-        state.successMsg.getKaragirKnockOffWtSizeRangeFilterData = action.payload.msg;
+      .addCase(deleteItemCategoryListThunk.fulfilled, (state, action) => {
+        // state.isLoading.getKaragirKnockOffWtSizeRangeFilterData = false;
+        // state.karagirKnockOffWtSizeRangeFilterData = action.payload.data;
+        // state.successMsg.getKaragirKnockOffWtSizeRangeFilterData =
+        //   action.payload.msg;
       })
-      .addCase(getKaragirKnockOffWtSizeRangeFilterListThunk.rejected, (state, action) => {
-        state.isLoading.getKaragirKnockOffWtSizeRangeFilterData = false;
-        state.karagirKnockOffWtSizeRangeFilterData = [];
-        state.errorMsg.getKaragirKnockOffWtSizeRangeFilterData = action.error.message;
+      .addCase(deleteItemCategoryListThunk.rejected, (state, action) => {
+        // state.isLoading.getKaragirKnockOffWtSizeRangeFilterData = false;
+        // state.karagirKnockOffWtSizeRangeFilterData = [];
+        // state.errorMsg.getKaragirKnockOffWtSizeRangeFilterData =
+        //   action.error.message;
       });
-  },
+  }
 });
 
 export default poCommonSlice.reducer;

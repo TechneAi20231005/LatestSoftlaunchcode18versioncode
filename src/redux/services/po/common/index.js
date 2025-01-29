@@ -42,6 +42,30 @@ export const getItemCategoryListThunk = createAsyncThunk(
   }
 );
 
+// delete requisition
+
+export const deleteItemCategoryListThunk = createAsyncThunk(
+  'po/deleteItemCategoryRecords',
+  async (formData) => {
+    try {
+      const response = await customAxios.post(
+        `poRequisition/deletePoReqRecords`,
+        formData
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          return { data: response?.data?.data, msg: response?.data?.message };
+        } else {
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
+);
+
 export const getKaragirKnockOffWtSizeRangeFilterListThunk = createAsyncThunk(
   'po/getKaragirKnockOffWtSizeRangeList',
   async ({ categoryName, itemName, type }) => {
