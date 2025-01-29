@@ -259,6 +259,7 @@ export default function Header() {
                   alt="profile"
                 />
               </Dropdown.Toggle>
+
               <Dropdown.Menu className="shadow border-0 dropdown-animation mt-5">
                 <div className="card border-0 w280">
                   <div className="card-body pb-0">

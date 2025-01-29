@@ -97,7 +97,7 @@ function GeneralSettings() {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const data = res.data.data.sort((a, b) => {
+          const data = res.data.data?.data?.sort((a, b) => {
             if (a.first_name && b.first_name) {
               return a.first_name.localeCompare(b.first_name);
             }
@@ -298,10 +298,10 @@ function GeneralSettings() {
 
   const initialValues = {
     setting_name: modal.modalData ? modal.modalData?.setting_name : '',
-    value: modal.modalData ? modal.modalData?.value : '',
+    value: modal?.modalData?.value || '',
     user_id: modal.modalData ? userData?.map((item) => item) : '',
     remark: modal.modalData?.remark || '',
-    is_active: String(modal?.modalData?.is_active) ?? "1"
+    is_active: String(modal?.modalData?.is_active) ?? '1'
   };
 
   const handleForm = async (values, id) => {
@@ -510,40 +510,39 @@ function GeneralSettings() {
                         className="text-danger small"
                       />
                     </div>
-                        {modal.modalData && (
-                                          <div className="col-sm-12">
-                                            <label className="form-label font-weight-bold">
-                                              Status :<Astrick color="red" size="13px" />
-                                            </label>
-                                            <div className="row">
-                                              <div className="col-md-2">
-                                                <label className="form-check">
-                                                  <Field
-                                                    id="is_active_1"
-                                                    type="radio"
-                                                    name="is_active"
-                                                    value="1"
-                                                    className="form-check-input"
-                                                  />
-                                                  Active
-                                                </label>
-                                              </div>
-                                              <div className="col-md-2">
-                                                <label className="form-check">
-                                                  <Field
-                                                    type="radio"
-                                                    name="is_active"
-                                                    value="0"
-                                                    id="is_active_0"
-                                                    className="form-check-input"
-                                                  />
-                                                  Deactive
-                                                </label>
-                                              </div>
-                                            </div>
-
-                                          </div>
-                                        )}
+                    {modal.modalData && (
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Status :<Astrick color="red" size="13px" />
+                        </label>
+                        <div className="row">
+                          <div className="col-md-2">
+                            <label className="form-check">
+                              <Field
+                                id="is_active_1"
+                                type="radio"
+                                name="is_active"
+                                value="1"
+                                className="form-check-input"
+                              />
+                              Active
+                            </label>
+                          </div>
+                          <div className="col-md-2">
+                            <label className="form-check">
+                              <Field
+                                type="radio"
+                                name="is_active"
+                                value="0"
+                                id="is_active_0"
+                                className="form-check-input"
+                              />
+                              Deactive
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Modal.Body>

@@ -36,16 +36,14 @@ export default function BasketDetails(props) {
     {
       name: 'basket_name',
       label: 'Basket name',
-      max: 100,
+      max: 50,
       required: true,
-      alphaNumeric: false
+      alphaNumeric: true
     },
     {
       name: 'basket_owner',
       label: 'Basket Owner',
-      max: 100,
       required: true,
-      alphaNumeric: false
     },
     {
       name: 'start_date',
@@ -56,7 +54,6 @@ export default function BasketDetails(props) {
     {
       name: 'end_date',
       label: 'End date',
-      // max: 100,
       required: true,
       dateRange: { startDate: 'start_date', endDate: 'end_date', startLabel: 'Start Date' },
     }

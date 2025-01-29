@@ -1745,9 +1745,10 @@ export default function MyTicketComponent() {
       if (res.status === 200) {
         const tempData = [];
         const temp = res.data.data.data;
+        console.log(temp,"temp")
 
         for (const key in temp) {
-          if (temp[key].id) {
+          if (temp[key].id && temp[key].is_active === 1) {
             tempData.push({
               value: temp[key].id,
               label: temp[key].status,

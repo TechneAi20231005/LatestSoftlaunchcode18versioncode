@@ -109,6 +109,7 @@ function CreateDynamicForm() {
     (DynamicFormDropDownSlice) =>
       DynamicFormDropDownSlice.dynamicFormDropDown.sortDropDown
   );
+  console.log('dropdown', dropdown);
 
   const statusData = useSelector((statusMasterSlice) =>
     statusMasterSlice.statusMaster.filterStatusData

@@ -68,7 +68,7 @@ function ProjectComponent() {
         </div>
       )
     },
-    { name: 'Sr', width: '5%', selector: (row) => row.counter, sortable: true },
+    { name: 'Sr', width: '5%', selector: (row) => row.counter + 1, sortable: true },
     {
       name: 'Project Name',
       width: '10%',
