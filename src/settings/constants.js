@@ -68,7 +68,7 @@ export const userSessionData = {
 };
 
 export const menuUrl =
-  _apiUrl + 'getMenuByRoleId/' + localStorage.getItem('role_id');
+  _rewampApiUrl + 'getMenuByRoleId/' + localStorage.getItem('role_id');
 
 export const masterURL = {
   user: _rewampApiUrl + 'employeeMaster/getData',
