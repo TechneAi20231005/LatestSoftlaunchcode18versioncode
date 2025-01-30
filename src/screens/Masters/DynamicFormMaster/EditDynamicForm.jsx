@@ -753,6 +753,8 @@ function EditDynamicForm() {
                                     onKeyPress={(e) => {
                                       Validation.CharactersNumbersOnly(e);
                                     }}
+                                    minLength={3}
+                                    maxLength={100}
                                   />
                                   {labelErr && (
                                     <p

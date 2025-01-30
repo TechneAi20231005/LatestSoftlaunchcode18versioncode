@@ -65,7 +65,7 @@ const CreateTemplateComponent = () => {
   const [taskData, setTaskData] = useState([]);
 
   const loadData = async () => {
-    await new TaskTicketTypeService()?.getChildrenData("TASK")?.then((res) => {
+    await new TaskTicketTypeService()?.getChildrenData('TASK')?.then((res) => {
       if (res?.status === 200) {
         setTaskData(res?.data?.data?.data);
       }
@@ -527,6 +527,7 @@ const CreateTemplateComponent = () => {
                       id="template_name"
                       name="template_name"
                       required
+                      maxLength={100}
                       onChange={(e) => {
                         handleChange(e, name, 'select1');
                       }}
@@ -671,6 +672,7 @@ const CreateTemplateComponent = () => {
                         onClick={(e) => {
                           showHandler();
                           setSelectedBasket(null);
+                          setSelectedOptions(null);
                           setSelectedBasket(basketIndex);
                         }}
                       >
@@ -728,11 +730,12 @@ const CreateTemplateComponent = () => {
                         </p> */}
                         <p className="p-0 m-0">
                           <b>Task Type Name : </b>
-                          {
-                            taskTypeDropdown.find(
+                          {/* {
+                            task.find(
                               (item) => item.value === task.task_type_id
-                            )?.label
-                          }
+                            )?.task_type_id
+                          } */}
+                          {task.task_type_id}
                         </p>
 
                         <p className="p-0 m-0">
@@ -831,47 +834,47 @@ const CreateTemplateComponent = () => {
                                           (d) =>
                                             d.value ==
                                             editTaskModal?.modalData?.parent_id
-                                        )
-                                      }
-                                    />
-                                  </div> */}
+                                           )
+                                           }
+                                           />
+                                           </div> */}
 
                                   {/* <div className="col-sm-12 mt-2">
                                     <label>
-                                      <b>
-                                        Task Type Name:
+                                    <b>
+                                    Task Type Name:
 
 
-                                      </b>
+                                    </b>
                                     </label>
                                     <Select
-                                      id="task_type_id"
-                                      name="task_type_id"
-                                      ref={typeRef}
-                                      onChange={(e, option) => {
-                                        handleEditTaskData(
-                                          option,
-                                          editTaskModal.basketIndex,
-                                          editTaskModal.taskIndex,
-                                          "select2",
-                                          e
+                                    id="task_type_id"
+                                    name="task_type_id"
+                                    ref={typeRef}
+                                    onChange={(e, option) => {
+                                      handleEditTaskData(
+                                        option,
+                                        editTaskModal.basketIndex,
+                                        editTaskModal.taskIndex,
+                                        "select2",
+                                        e
                                         );
-                                      }}
-                                      className=" form-control-sm mt-2"
-                                      options={
-                                        taskTypeDropdown && taskTypeDropdown
-                                      }
-                                      defaultValue={
-                                        taskTypeDropdown &&
-                                        taskTypeDropdown.filter(
-                                          (d) =>
-                                            d.value ==
-                                            editTaskModal?.modalData
+                                        }}
+                                        className=" form-control-sm mt-2"
+                                        options={
+                                          taskTypeDropdown && taskTypeDropdown
+                                          }
+                                          defaultValue={
+                                            taskTypeDropdown &&
+                                            taskTypeDropdown.filter(
+                                              (d) =>
+                                                d.value ==
+                                              editTaskModal?.modalData
                                               ?.task_type_id
-                                        )
-                                      }
-                                    />
-                                  </div> */}
+                                              )
+                                              }
+                                              />
+                                              </div> */}
 
                                   <label>
                                     <b>
@@ -897,9 +900,13 @@ const CreateTemplateComponent = () => {
                                         handleSelectOptionClick(e)
                                       }
                                     >
+                                      {/* {task.task_type_id} */}
+                                      {/* {editTaskModal?.modalData
+                                        ? editTaskModal?.modalData?.task_type_id
+                                        : task.task_type_id} */}
                                       {selectedOptions
-                                        ? selectedOptions
-                                        : 'Select an option'}
+                                        ? editTaskModal.modalData.task_type_id
+                                        : task.task_type_id}
                                     </div>
                                     {isMenuOpen && (
                                       <div

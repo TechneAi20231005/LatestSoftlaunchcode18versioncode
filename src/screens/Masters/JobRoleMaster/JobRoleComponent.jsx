@@ -32,7 +32,7 @@ function JobRoleMasterComponent() {
 
   const columns = [
     {
-      name: 'action',
+      name: 'Action',
       selector: (row) => (
         <i
           className="icofont-edit text-primary cp"

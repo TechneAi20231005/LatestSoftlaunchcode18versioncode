@@ -377,9 +377,8 @@ export const DashbordSlice = createSlice({
         for (const i in stateData) {
           exportData.push({
             Sr: stateData[i].counter,
-            Country: stateData[i].country,
             State: stateData[i].state,
-
+            Country: stateData[i].country,
             Status: stateData[i].is_active ? 'Active' : 'Deactive',
             Remark: stateData[i].remark,
             created_at: stateData[i].created_at,

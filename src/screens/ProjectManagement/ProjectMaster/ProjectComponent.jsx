@@ -68,7 +68,12 @@ function ProjectComponent() {
         </div>
       )
     },
-    { name: 'Sr', width: '5%', selector: (row) => row.counter + 1, sortable: true },
+    {
+      name: 'Sr',
+      width: '5%',
+      selector: (row) => row.counter + 1,
+      sortable: true
+    },
     {
       name: 'Project Name',
       width: '10%',
@@ -215,7 +220,7 @@ function ProjectComponent() {
       )
     },
     {
-      name: 'Created at',
+      name: 'Created At',
       width: '200px',
       selector: (row) => row.created_at,
       sortable: true,
@@ -338,8 +343,8 @@ function ProjectComponent() {
               description: data[key].description,
               Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
               remark: data[key].remark,
-              created_at: data[key].created_at,
               created_by: data[key].created_by,
+              created_at: data[key].created_at,
               updated_at: data[key].updated_at,
               updated_by: data[key].updated_by
             });

@@ -1199,7 +1199,7 @@ function TaskAndTicketTypeMaster(props) {
                               className="form-control form-control-sm"
                               id="remark"
                               name="remark"
-                              maxLength={100}
+                              maxLength={255}
                               defaultValue={
                                 modal.modalData && modal.modalData.remark
                               }
@@ -1307,7 +1307,7 @@ function TaskAndTicketTypeMaster(props) {
                             as="textarea"
                             type="text"
                             rows={4}
-                            // maxLength={100}
+                            maxLength={255}
                             className="form-control form-control-sm"
                             id="remark"
                             name="remark"

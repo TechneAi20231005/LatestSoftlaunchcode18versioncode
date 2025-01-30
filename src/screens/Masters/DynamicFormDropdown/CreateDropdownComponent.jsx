@@ -22,8 +22,8 @@ export default function CreateDropdownComponent() {
   const [data, setData] = useState([{ label: null, value: null }]);
 
   const [notify, setNotify] = useState(null);
-  const [message, setMessage] = useState('')
-  const [display, setDisplay] = useState('')
+  const [message, setMessage] = useState('');
+  const [display, setDisplay] = useState('');
 
   const dispatch = useDispatch();
 
@@ -34,11 +34,11 @@ export default function CreateDropdownComponent() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!message?.trim()) {
-      setDisplay("Dropdown Name is Required");
-      return
+      setDisplay('Dropdown Name is Required');
+      return;
     } else {
-      setDisplay(""); // Clear error
-      console.log("Form Submitted with Dropdown Name:", message);
+      setDisplay(''); // Clear error
+      console.log('Form Submitted with Dropdown Name:', message);
     }
     const formData = new FormData(e.target);
 
@@ -131,16 +131,16 @@ export default function CreateDropdownComponent() {
                       Validation.CharactersNumbersOnly(e);
                     }}
                     maxLength={100}
-                    // minLength={3}
+                    minLength={3}
                     name="dropdown_name"
                     id="dropdown_name"
                     // required
                     onChange={(e) => {
-                      setMessage(e?.target?.value)
-                      setDisplay(false)
+                      setMessage(e?.target?.value);
+                      setDisplay(false);
                     }}
                   />
-                   {display && <div className="text-danger mt-1">{display}</div>}
+                  {display && <div className="text-danger mt-1">{display}</div>}
                 </div>
               </div>
 
@@ -171,8 +171,10 @@ export default function CreateDropdownComponent() {
                               id={`dropdown_values_${idx}`}
                               className="form-control form-control-sm"
                               onKeyPress={(e) => {
-                                Validation.CharactersNumbersSpeicalOnly(e);
+                                Validation.CharactersNumbersOnly(e);
                               }}
+                              maxLength={100}
+                              minLength={3}
                               value={item.value} // Bind the input value to the row's data
                               onChange={(e) => {
                                 const updatedData = [...data];
