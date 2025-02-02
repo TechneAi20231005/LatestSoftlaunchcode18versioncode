@@ -393,6 +393,7 @@ export default function CreateTicketComponent() {
       setRows(null);
 
       var data = customerMapping.filter((val) => val.query_type_id === e.value);
+
       setApproch(data[0]?.approach);
       const cmId = data?.length > 0 ? data[0].id : null;
       if (cmId) {
@@ -406,13 +407,14 @@ export default function CreateTicketComponent() {
       }
 
       setRows(null);
+
       if (data && data?.length === 0) {
         alert(
           'Dynamic Form is not mapped against this Query Type, Please Map Form first'
         );
         setQueryGroupTypeData(null);
       } else {
-        var dynamicForm = data[0]?.dynamic_form_data;
+        var dynamicForm = data[0]?.dynamic_form;
         console.log('dynamicForm', dynamicForm);
 
         const filteredArray = dynamicForm?.filter(
@@ -1093,7 +1095,7 @@ export default function CreateTicketComponent() {
             </div>
           </>
         )}
-
+          {console.log(rows,"rows")}
         {data.ticket_uploading === 'REGULAR' && rows && rows?.length > 0 && (
           <div className="card mt-2">
             <div className="card-body">

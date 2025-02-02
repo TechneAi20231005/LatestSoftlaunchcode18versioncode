@@ -157,6 +157,7 @@ function UserComponent() {
     const exportTempData = [];
 
     await new UserService().getExportTicket().then((res) => {
+
       if (res.status === 200) {
         const temp = res.data.data?.data;
 
@@ -184,7 +185,7 @@ function UserComponent() {
             Country: temp[i].country,
             State: temp[i].state,
             City: temp[i].city,
-            Department: temp[i].department,
+            Department: temp[i].department?.map((d) => d.department_name)?.join(','),
             Ticket_Show_Type:
               temp[i].ticket_show_type === 'MY_TICKETS'
                 ? 'My Tickets'
