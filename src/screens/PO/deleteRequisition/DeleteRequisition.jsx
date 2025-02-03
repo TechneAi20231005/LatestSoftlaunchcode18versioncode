@@ -13,6 +13,7 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 import DataTable from 'react-data-table-component';
 import { toast } from 'react-toastify';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+import { Astrick } from '../../../components/Utilities/Style';
 
 export default function DeleteRequisition() {
   const dispatch = useDispatch();
@@ -149,45 +150,45 @@ export default function DeleteRequisition() {
     },
     {
       name: 'Karagir Weight Range',
-      selector: (row) => row?.karagir_wt_range,
+      selector: (row) => row?.karagir_wt_range ?? '---',
       sortable: true,
       width: '175px'
     },
     {
       name: 'Karagir Off Weight Range',
-      selector: (row) => row?.knockoff_wt_range,
+      selector: (row) => row?.knockoff_wt_range ?? '---',
       sortable: true,
       width: '175px'
     },
 
     {
       name: 'Karagir Size Range',
-      selector: (row) => row?.karagir_size_range,
+      selector: (row) => row?.karagir_size_range ?? '---',
       sortable: true,
       width: '175px'
     },
 
     {
       name: 'Created At',
-      selector: (row) => row.created_at,
+      selector: (row) => row.created_at ?? '---',
       sortable: true,
       width: '175px'
     },
     {
       name: 'Created By',
-      selector: (row) => row.created_by,
+      selector: (row) => row.created_by_name ?? '---',
       sortable: true,
       width: '150px'
     },
     {
       name: 'Updated At',
-      selector: (row) => row.updated_at,
+      selector: (row) => row.updated_at ?? '---',
       sortable: true,
       width: '175px'
     },
     {
       name: 'Updated By',
-      selector: (row) => row.updated_by,
+      selector: (row) => row.updated_by_name ?? '---',
       sortable: true,
       width: '150px'
     }
@@ -195,7 +196,7 @@ export default function DeleteRequisition() {
 
   useEffect(() => {
     loadData();
-  }, [dispatch]);
+  }, [dispatch, paginationData]);
 
   return (
     <Container fluid className="po_vender_export_container">
@@ -242,7 +243,7 @@ export default function DeleteRequisition() {
 
             {DeleteRecordsList?.data?.length > 0 && (
               <ExportToExcel
-                className="btn btn-sm btn-danger mt-3 w-25 me-2 mx-2"
+                className="btn btn-sm btn-info mt-3 w-25 me-2 mx-2"
                 apiData={exportDeletedRecordsList}
                 fileName="Delete Requisition Records"
               />
@@ -256,7 +257,9 @@ export default function DeleteRequisition() {
           </Modal.Header>
           <Modal.Body>
             <div className="col-sm-12">
-              <label className="form-label font-weight-bold">Remark:</label>
+              <label className="form-label font-weight-bold">
+                Remark <Astrick color="red" />:
+              </label>
               <input
                 type="text"
                 className="form-control form-control-sm"
