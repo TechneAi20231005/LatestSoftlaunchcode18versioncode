@@ -347,7 +347,7 @@ export default function BasketDetails(props) {
                     className="form-control form-control-sm"
                     id="start_date"
                     name="start_date"
-                    min={new Date().toISOString().slice(0, 10)}
+                    // min={new Date().toISOString().slice(0, 10)}
                   />
                   <ErrorMessage
                     name="start_date"
@@ -379,7 +379,7 @@ export default function BasketDetails(props) {
                     className="form-control form-control-sm"
                     id="end_date"
                     name="end_date"
-                    min={todate}
+                    // min={todate}
                   />
                   <ErrorMessage
                     name="end_date"

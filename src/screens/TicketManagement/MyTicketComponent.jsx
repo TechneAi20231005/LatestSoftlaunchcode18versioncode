@@ -1970,6 +1970,8 @@ export default function MyTicketComponent() {
 
                 // setSearchResultExport(searchResultExport);
               } else {
+                setSearchResult([]);
+                setSearchResultData([]);
                 setIsLoading(false);
 
                 // alert('No Data Found');
