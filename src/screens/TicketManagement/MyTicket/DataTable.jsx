@@ -163,9 +163,9 @@ const DataTableCustom = React.memo(
       setPage(page);
       setPerPage(newPerPage);
     };
-    console.log(filledData?.length, 'filledData');
 
-    return filledData.length === 0 ? (
+    return Object.values(filledData[0]).length === 0 &&
+      Object.values(filledData[1]).length === 0 ? (
       <NoDataComponent />
     ) : (
       <DataTable

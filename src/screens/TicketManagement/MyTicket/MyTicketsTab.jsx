@@ -305,14 +305,14 @@ const MyTicketsTab = () => {
             >
               {item.name === 'SearchResult' ? (
                 <ExportToExcel
-                  className="btn btn-sm btn-danger mt-3"
+                  className="btn btn-sm btn-danger mx-0"
                   apiData={item?.data}
                   typeOf="SearchResult"
                   fileName={`Export Filter Result`}
                 />
               ) : (
                 <ExportAllTicketsToExcel
-                  className="btn btn-sm btn-danger mt-3"
+                  className="btn btn-sm btn-danger mx-0"
                   fileName={item.name}
                   typeOf={item.name}
                 />
