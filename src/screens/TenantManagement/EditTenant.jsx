@@ -395,15 +395,15 @@ export default function EditTenant() {
                       required
                       // onKeyPress={(e) => Validation.emailOnly(e)}
                     />
-                     <ErrorMessage
-                          name="email_id"
-                          component="small"
-                          style={{ color: 'red' }}
-                        />
+                    <ErrorMessage
+                      name="email_id"
+                      component="small"
+                      style={{ color: 'red' }}
+                    />
                   </div>
                 </div>
 
-                <div className="form-group row mt-2">
+                <div className="form-group row mt-3">
                   <label className="col-sm-2 col-form-label">
                     <b>
                       Contact Number :<Astrick color="red" />
@@ -429,6 +429,57 @@ export default function EditTenant() {
                     />
                   </div>
                 </div>
+                <div className="form-group row mt-3">
+                  <label className="col-sm-2 col-form-label">
+                    <b>
+                      Status :<Astrick color="red" />
+                    </b>
+                  </label>
+                  <div className="col-sm-4 mt-1">
+                    <div className="d-flex justify-content-start align-items-center gap-3">
+                      <div className="form-check">
+                        <Field
+                          className="form-check-input"
+                          type="radio"
+                          name="status"
+                          id="is_active_1"
+                          value="active"
+                          checked={values.status === 'active'}
+                          onChange={() => {
+                            setFieldValue('status', 'active');
+                            setToggleRadio(true);
+                          }}
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor="is_active_1"
+                        >
+                          Active
+                        </label>
+                      </div>
+                      <div className="form-check">
+                        <Field
+                          className="form-check-input"
+                          type="radio"
+                          name="status"
+                          id="is_active_0"
+                          value="deactive"
+                          checked={values.status === 'deactive'}
+                          onChange={() => {
+                            setFieldValue('status', 'deactive');
+                            setToggleRadio(false);
+                          }}
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor="is_active_0"
+                        >
+                          Deactive
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div className="card">
@@ -447,11 +498,11 @@ export default function EditTenant() {
                         id="address"
                         name="address"
                       />
-                        <ErrorMessage
-                      name="address"
-                      component="small"
-                      style={{ color: 'red' }}
-                    />
+                      <ErrorMessage
+                        name="address"
+                        component="small"
+                        style={{ color: 'red' }}
+                      />
                     </div>
                   </div>
 
@@ -574,10 +625,10 @@ export default function EditTenant() {
 
               <div className="mt-3" style={{ textAlign: 'right' }}>
                 {/* {checkRole && checkRole[0]?.can_update === 1 ? ( */}
-                  <button type="submit" className="btn btn-primary">
-                    Update
-                  </button>
-                 {/* ) : (
+                <button type="submit" className="btn btn-primary">
+                  Update
+                </button>
+                {/* ) : (
                   ''
                 )} */}
                 <Link
