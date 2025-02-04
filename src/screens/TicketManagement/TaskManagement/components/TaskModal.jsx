@@ -64,7 +64,9 @@ export default function TaskModal(props) {
     {
       name: 'task_name',
       label: 'task_name',
-      required: true
+      required: true,
+      max: 100,
+      alphaNumeric: true
     },
     {
       name: 'start_date',
@@ -85,6 +87,13 @@ export default function TaskModal(props) {
       name: 'priority',
       label: 'priority',
       required: true
+    },
+    {
+      name: 'task_desc',
+      label: 'Description',
+      required: false,
+      max: 1000,
+
     }
     // {
     //   name: 'assign_to_user',
@@ -1727,10 +1736,10 @@ export default function TaskModal(props) {
                         className="form-control form-control-sm"
                         id="start_date"
                         name="start_date"
-                        onChange={handleFromDate}
+                        // onChange={handleFromDate}
                         min={props.ticketStartDate}
                         defaultValue={props.data.start_date}
-                        required
+                        // required
                       />
                     )}
                     <ErrorMessage

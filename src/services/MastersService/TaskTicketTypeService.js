@@ -85,7 +85,10 @@ export default class TaskTicketTypeService {
       }
     };
 
-    return axios.get(_getTaskTicketType + type + '&grid=1&export=0', config);
+    return axios.get(
+      _getTaskTicketType + type + '&type=1' + '&grid=1&export=0',
+      config
+    );
   }
 
   getTicketType(type) {

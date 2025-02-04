@@ -729,9 +729,10 @@ const CreateTemplateComponent = () => {
                         <p className="p-0 m-0">
                           <b>Task Type Name : </b>
                           {
-                            taskTypeDropdown.find(
-                              (item) => item.value === task.task_type_id
-                            )?.label
+                            task?.task_type_id
+                            // taskTypeDropdown.find(
+                            //   (item) => item.value === task.task_type_id
+                            // )?.label
                           }
                         </p>
 
@@ -897,8 +898,8 @@ const CreateTemplateComponent = () => {
                                         handleSelectOptionClick(e)
                                       }
                                     >
-                                      {selectedOptions
-                                        ? selectedOptions
+                                      {editTaskModal?.modalData?.task_type_id
+                                        ? editTaskModal?.modalData?.task_type_id
                                         : 'Select an option'}
                                     </div>
                                     {isMenuOpen && (
