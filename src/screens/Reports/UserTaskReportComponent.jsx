@@ -390,7 +390,7 @@ function UserTaskReportComponent() {
         </div>
       </div>
 
-      {data && data.length > 0 && (
+      {data && data.length > 0 ? (
         <div className="card mt-2">
           <div className="card-body">
             <div className="row clearfix g-3">
@@ -408,7 +408,9 @@ function UserTaskReportComponent() {
             </div>
           </div>
         </div>
-      )}
+      ) :   <div className="text-center mt-4">
+      <p>No data found</p>
+    </div>}
       <Modal show={showLoaderModal} centered>
         <Modal.Body className="text-center">
           <Spinner animation="grow" variant="primary" />

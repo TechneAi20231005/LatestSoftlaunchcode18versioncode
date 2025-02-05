@@ -2145,10 +2145,15 @@ export default function MyTicketComponent() {
     const payload = {
       from_date: startDate,
       to_date: toDate,
-      assign_to_user_id:
-        assignedDepartmentValue?.length > 0
+      assign_to_department_id:
+             assignedDepartmentValue?.length > 0
           ? assignedDepartmentValue?.map((user) => user.value)
           : [],
+      assign_to_user_id: assignedUser?.length > 0 ? assignedUser?.map((user) => user.value) : [],
+      // assign_to_user_id:
+      //   assignedDepartmentValue?.length > 0
+      //     ? assignedDepartmentValue?.map((user) => user.value)
+      //     : [],
       department_id: entryDepartment?.map((user) => user.value),
       status_id:
         statusValue?.length > 0 ? statusValue?.map((user) => user.value) : [],
@@ -2253,8 +2258,14 @@ export default function MyTicketComponent() {
               }
               setKey('Search_Result');
               setSearchResultExport(filterExport);
+            }else{
+              setIsLoading(false);
+              setSearchResult([]);
+              setSearchResultData([]);
+
             }
           } else {
+            setIsLoading(false);
             new ErrorLogService().sendErrorLog(
               'UserTask',
               'Get_UserTask',

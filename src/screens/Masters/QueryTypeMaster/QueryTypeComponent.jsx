@@ -633,7 +633,7 @@ function QueryTypeComponent() {
               Sr: data[i].counter,
               Query_Type_Name: data[i].query_type_name,
               query_group_name: temp[i].group_name,
-              form_name: temp[i].form_name,
+              form_name: temp[i].form_id_name,
               Status: data[i].is_active ? 'Active' : 'Deactive',
               Remark: data[i].remark,
               created_at: data[i].created_at,

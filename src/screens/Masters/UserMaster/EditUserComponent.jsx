@@ -1297,6 +1297,17 @@ function EditUserComponent({ match }) {
                               onKeyPress={(e) => {
                                 Validation.password(e);
                               }}
+                              onChange={(event) => {
+                                if (event.target.value === '') {
+                                  setInputState({
+                                    ...state,
+                                    passwordErr: 'Please enter Password'
+                                  });
+                                } else {
+                                  setInputState({ ...state, passwordErr: '' });
+                                }
+                              }}
+
                               onPaste={(e) => {
                                 e.preventDefault();
                                 return false;
@@ -1305,7 +1316,9 @@ function EditUserComponent({ match }) {
                                 e.preventDefault();
                                 return false;
                               }}
+
                             />
+
 
                             <InputGroup.Text>
                               <i

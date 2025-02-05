@@ -446,7 +446,7 @@ export default function ResourcePlanningReportComponent() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data && (
+              {data ?(
                 <DataTable
                   columns={columns}
                   data={data}
@@ -458,7 +458,9 @@ export default function ResourcePlanningReportComponent() {
                   expandableRows
                   expandableRowsComponent={ExpandedComponent}
                 />
-              )}
+              ) :   <div className="text-center mt-4">
+              <p>No data found</p>
+            </div>}
             </div>
           </div>
         </div>

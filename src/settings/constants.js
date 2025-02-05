@@ -20,8 +20,8 @@ export const _rewampAttachmentUrl = REACT_APP_API_REWAMP_ATTACHMENT_URL;
 export const _pincodeUrl = REACT_APP_PIN_CODE_API_URL;
 
 export const loginURL = _rewampApiUrl + 'login';
-export const fpURL = _apiUrl + 'reset/forgetPasswordOtp';
-export const otpURL = _apiUrl + 'reset/sendOtp';
+export const fpURL = _rewampApiUrl + 'reset/forgetPasswordOtp';
+export const otpURL = _rewampApiUrl + 'reset/sendOtp';
 export const rpURL = _apiUrl + 'reset/resetPassword';
 
 export const attachmentUrl = _apiUrl + 'attachment';

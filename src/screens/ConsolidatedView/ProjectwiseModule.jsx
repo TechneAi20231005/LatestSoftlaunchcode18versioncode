@@ -963,11 +963,11 @@ export default function ProjectwiseModule() {
               </div>
               {!isNaN(parseInt(moduleId)) ? (
                 <span className="small text-muted project_name fw-bold text-center">
-                  {data && data?.project_name}
+                  {data && data?.project?.project_name}
                 </span>
               ) : (
                 <h6 className="mb-0 fw-bold  fs-6  mb-2">
-                  {data && data?.project_name}
+                  {data && data?.project?.project_name}
                 </h6>
               )}
               <h6 className="mb-0 fw-bold  fs-6  mb-2">
