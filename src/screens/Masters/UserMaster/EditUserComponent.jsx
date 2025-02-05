@@ -41,6 +41,7 @@ import {
   editJobRoleMasterThunk,
   getJobRoleMasterListThunk
 } from '../../../redux/services/jobRoleMaster';
+import CustomerService from '../../../services/MastersService/CustomerService';
 function EditUserComponent({ match }) {
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState('All_Tickets');
@@ -105,6 +106,8 @@ function EditUserComponent({ match }) {
   const [updateStatus, setUpdateStatus] = useState({});
 
   const [passwordShown, setPasswordShown] = useState(false);
+  const [customerData, setCustomerData] = useState(false);
+
   const togglePasswordVisiblity = () => {
     setPasswordShown(passwordShown ? false : true);
   };
@@ -616,6 +619,21 @@ function EditUserComponent({ match }) {
           setRows([mappingData]);
         }
       });
+
+    new CustomerService().getCustomer().then((res) => {
+      const tempData = [];
+      if (res.status === 200) {
+        var data = res?.data?.data?.data;
+        // var data = data.filter((d) => d.is_active === 1);
+        for (const key in data) {
+          tempData.push({
+            value: data[key].id,
+            label: data[key].name
+          });
+        }
+      }
+      setCustomerData(tempData);
+    });
   }, [mappingData, roleDropdown, userId]);
   const handleDependentChange = (e, type) => {
     if (type === 'COUNTRY') {
@@ -893,7 +911,24 @@ function EditUserComponent({ match }) {
                             </b>
                           </label>
                           <div className="col-sm-3">
-                            <CustomerDropdown
+                            {customerData && (
+                              <Select
+                                id="customer_id"
+                                name="customer_id"
+                                options={customerData}
+                                defaultValue={
+                                  data &&
+                                  customerData &&
+                                  customerData.filter(
+                                    (d) => d?.value === data?.customer_id
+                                  )
+                                }
+                                readOnly={true}
+                                required={true}
+                              />
+                            )}
+
+                            {/* <CustomerDropdown
                               id="customer_id"
                               name="customer_id"
                               defaultValue={
@@ -901,7 +936,7 @@ function EditUserComponent({ match }) {
                               }
                               readOnly={true}
                               required={true}
-                            />
+                            /> */}
                           </div>
                         </div>
                       )}
