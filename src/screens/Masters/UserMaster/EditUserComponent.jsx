@@ -338,7 +338,7 @@ function EditUserComponent({ match }) {
       form.append('check1', 0);
     }
 
-    var flag = 1;
+     flag = 1;
     // setNotify(null);
 
     const formValidation = checkingValidation(form);
@@ -346,7 +346,7 @@ function EditUserComponent({ match }) {
       return false;
     }
 
-    var selectDepartment = form.getAll('department_id[]');
+     selectDepartment = form.getAll('department_id[]');
     if (selectDepartment === '') {
       setInputState({ ...state, departmentErr: ' Please Select Department' });
       return false;
@@ -623,7 +623,7 @@ function EditUserComponent({ match }) {
     new CustomerService().getCustomer().then((res) => {
       const tempData = [];
       if (res.status === 200) {
-        var data = res?.data?.data?.data;
+        let data = res?.data?.data?.data;
         // var data = data.filter((d) => d.is_active === 1);
         for (const key in data) {
           tempData.push({
