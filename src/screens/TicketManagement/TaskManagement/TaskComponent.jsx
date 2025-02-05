@@ -1305,8 +1305,22 @@ export default function TaskComponent() {
                 </span>
 
                 <button
+                  onClick={() => {
+                      setSprintInput({
+                        sprintName: sprintCardData[0]?.name,
+                        sprintDescription: sprintCardData[0]?.description,
+                        startDate: sprintCardData[0]?.start_date,
+                        endDate: sprintCardData[0]?.end_date
+                      });
+                      setSprintModal({
+                        showModal: true,
+                        modalData: sprintCardData[0],
+                        modalHeader: 'Update'
+                      });
+                    }}
+
                   className="border-0 p-0 ms-1"
-                  disabled={ownership !== 'PROJECT'}
+                  disabled={ownership !== 'PROJECT'  ? true : false}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

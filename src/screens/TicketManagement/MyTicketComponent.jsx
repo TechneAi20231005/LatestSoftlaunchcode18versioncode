@@ -1972,6 +1972,8 @@ export default function MyTicketComponent() {
               } else {
                 setSearchResult([]);
                 setSearchResultData([]);
+                setKey('Search_Result');
+
                 setIsLoading(false);
 
                 // alert('No Data Found');
@@ -2261,7 +2263,9 @@ export default function MyTicketComponent() {
             }else{
               setIsLoading(false);
               setSearchResult([]);
+              setKey('Search_Result');
               setSearchResultData([]);
+              setSearchResultExport([]);
 
             }
           } else {
