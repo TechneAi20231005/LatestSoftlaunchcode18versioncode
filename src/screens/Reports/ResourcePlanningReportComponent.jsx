@@ -16,11 +16,12 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../Dashboard/DashboardAction';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { CustomValidation } from '../../components/custom/CustomValidation/CustomValidation';
-import errorHandler from '../../utils/errorHandler'
+import errorHandler from '../../utils/errorHandler';
+import NotFound from '../../components/NotFound';
 
 export default function ResourcePlanningReportComponent() {
   const [userData, setUserData] = useState(null);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [exportData, setExportData] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
 
@@ -154,21 +155,8 @@ export default function ResourcePlanningReportComponent() {
                     tasks: data[key].tasks
                   });
                 }
-                setData(null);
+                setData([]);
                 setData(tempData);
-
-                // Export data
-                // const exportTempData = [];
-                // for (const i in data) {
-                //     const tasks = Array.isArray(data[i].tasks) ? data[i].tasks.map(task => task.task_name).join(", ") : "";
-                //     exportTempData.push({
-                //         Sr: data[i].counter,
-                //         date: data[i].date,
-                //         user_name: data[i].user_name,
-                //         task_name: tasks,
-                //         task_hours: data[i].hours,
-                //       });
-                // }
 
                 const exportTempData = [];
 
@@ -196,11 +184,10 @@ export default function ResourcePlanningReportComponent() {
 
                 setExportData(exportTempData);
               } else {
-                setData(null);
+                setData([]);
               }
             } else {
-              setData(null);
-
+              setData([]);
             }
           } else {
             new ErrorLogService().sendErrorLog(
@@ -219,9 +206,8 @@ export default function ResourcePlanningReportComponent() {
               'INSERT',
               error.response.data.message
             );
-            errorHandler(error?.response)
+            errorHandler(error?.response);
             setShowLoaderModal(null);
-
           } else {
             new ErrorLogService().sendErrorLog(
               'ResourcePlanning',
@@ -291,14 +277,22 @@ export default function ResourcePlanningReportComponent() {
       label: 'From Date',
       required: true,
       alphaNumeric: false,
-      dateRange: { startDate: 'from_date', endDate: 'to_date', startLabel: 'From Date' },
+      dateRange: {
+        startDate: 'from_date',
+        endDate: 'to_date',
+        startLabel: 'From Date'
+      }
     },
     {
       name: 'to_date',
       label: 'To Date',
       required: true,
       alphaNumeric: false,
-      dateRange: { startDate: 'from_date', endDate: 'to_date', startLabel: 'From Date' },
+      dateRange: {
+        startDate: 'from_date',
+        endDate: 'to_date',
+        startLabel: 'From Date'
+      }
     }
   ];
 
@@ -320,15 +314,13 @@ export default function ResourcePlanningReportComponent() {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(values) => {
-              // console.log(values, 'values');
               handleForm(values);
             }}
           >
             {({ setFieldValue, values }) => (
               <Form>
-                {/* <form onSubmit={handleForm}> */}
                 <div className="row">
-                  <div className="col-md-3">
+                  <div className="col-md-4">
                     <label htmlFor="" className="">
                       <b>Select User :</b>
                     </label>
@@ -342,13 +334,12 @@ export default function ResourcePlanningReportComponent() {
                       options={userData}
                       style={{ zIndex: '100' }}
                       onChange={(option) =>
-                        // console.log(option, "option")
                         setFieldValue('user_id', option || null)
                       }
                     />
                   </div>
 
-                  <div className="col-md-3">
+                  <div className="col-md-4">
                     <label htmlFor="" className="">
                       <b>
                         From Date :<Astrick color="red" size="13px" />
@@ -365,7 +356,6 @@ export default function ResourcePlanningReportComponent() {
                           option?.target?.value || null
                         );
                       }}
-                      // required
                     />
                     <ErrorMessage
                       name="from_date"
@@ -374,7 +364,7 @@ export default function ResourcePlanningReportComponent() {
                     />
                   </div>
 
-                  <div className="col-md-3">
+                  <div className="col-md-4">
                     <label htmlFor="" className="">
                       <b>
                         To Date :<Astrick color="red" size="13px" />
@@ -388,7 +378,6 @@ export default function ResourcePlanningReportComponent() {
                         handleToDate(option);
                         setFieldValue('to_date', option?.target?.value || null);
                       }}
-                      // required
                     />
                     <ErrorMessage
                       name="to_date"
@@ -397,17 +386,17 @@ export default function ResourcePlanningReportComponent() {
                     />
                   </div>
                 </div>
-                <div className="row">
-                  <div className="col-md-2">
+                <div className="d-flex mt-3">
+                  <div className="d-flex  ms-md-auto">
                     <button
-                      className="btn btn-sm btn-warning text-white"
+                      className="btn  btn-warning text-white"
                       type="submit"
-                      style={{ marginTop: '20px', fontWeight: '600' }}
+                      style={{ fontWeight: '600' }}
                     >
                       <i className="icofont-search-1 "></i> Search
                     </button>
                     <button
-                      className="btn btn-sm btn-info text-white"
+                      className="btn  btn-info text-white"
                       type="button"
                       onClick={() => {
                         setFieldValue('user_id', []);
@@ -415,27 +404,20 @@ export default function ResourcePlanningReportComponent() {
                         setFieldValue('from_date', '');
                         setFieldValue('to_date', '');
                       }}
-                      style={{ marginTop: '20px', fontWeight: '600' }}
+                      style={{ fontWeight: '600' }}
                     >
                       <i className="icofont-refresh text-white"></i> Reset
                     </button>
                   </div>
-                  <div
-                    className="col-md-10"
-                    style={{
-                      textAlign: 'right',
-                      marginTop: '20px',
-                      fontWeight: '600'
-                    }}
-                  >
+
+                  {exportData && (
                     <ExportToExcel
                       className="btn btn-sm btn-danger"
                       apiData={exportData}
                       fileName="Planning Report"
                     />
-                  </div>
+                  )}
                 </div>
-                {/* </form> */}
               </Form>
             )}
           </Formik>
@@ -446,21 +428,20 @@ export default function ResourcePlanningReportComponent() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data ?(
+              {data && (
                 <DataTable
                   columns={columns}
                   data={data}
                   defaultSortField="title"
                   pagination
+                  noDataComponent={<NotFound topMargin={0} />}
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                   expandableRows
                   expandableRowsComponent={ExpandedComponent}
                 />
-              ) :   <div className="text-center mt-4">
-              <p>No data found</p>
-            </div>}
+              )}
             </div>
           </div>
         </div>
