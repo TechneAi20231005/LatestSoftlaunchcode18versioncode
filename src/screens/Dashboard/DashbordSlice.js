@@ -763,7 +763,7 @@ export const DashbordSlice = createSlice({
         exportCustomerData.push({
           SrNo: temp[i].counter,
           Name: temp[i].name,
-          Customer_Type: temp[i].type_name,
+          Customer_Type: temp[i].customer_type,
           Email: temp[i].email_id,
           Contact_Number: temp[i].contact_no,
           Address: temp[i].address,
