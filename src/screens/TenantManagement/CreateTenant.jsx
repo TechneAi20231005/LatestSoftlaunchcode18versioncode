@@ -52,7 +52,7 @@ export default function CreateTenant() {
   const isMasterAdmin = localStorage.getItem('role_name');
   const companyType = [
     { label: 'Private Limited Company', value: 'Private Limited Company' },
-    { label: 'Public limited company', value: 'Public limited company' },
+    { label: 'Public Limited Company', value: 'Public Limited Company' },
     {
       label: 'Limited liability partnership ',
       value: 'Limited liability partnership '
