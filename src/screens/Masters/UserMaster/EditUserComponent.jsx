@@ -338,7 +338,7 @@ function EditUserComponent({ match }) {
       form.append('check1', 0);
     }
 
-     flag = 1;
+    var flag = 1;
     // setNotify(null);
 
     const formValidation = checkingValidation(form);
@@ -346,7 +346,7 @@ function EditUserComponent({ match }) {
       return false;
     }
 
-     selectDepartment = form.getAll('department_id[]');
+    const selectDepartment = form.getAll('department_id[]');
     if (selectDepartment === '') {
       setInputState({ ...state, departmentErr: ' Please Select Department' });
       return false;
@@ -1307,7 +1307,6 @@ function EditUserComponent({ match }) {
                                   setInputState({ ...state, passwordErr: '' });
                                 }
                               }}
-
                               onPaste={(e) => {
                                 e.preventDefault();
                                 return false;
@@ -1316,9 +1315,7 @@ function EditUserComponent({ match }) {
                                 e.preventDefault();
                                 return false;
                               }}
-
                             />
-
 
                             <InputGroup.Text>
                               <i
