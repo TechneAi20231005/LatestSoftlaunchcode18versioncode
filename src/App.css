@@ -37,6 +37,11 @@
   }
 }
 
+/* this class is use to break the word. so excess line will shift to bottom or next-line */
+.wb-bw{
+  word-break: break-all;
+}
+
 .cp {
   cursor: pointer;
 }

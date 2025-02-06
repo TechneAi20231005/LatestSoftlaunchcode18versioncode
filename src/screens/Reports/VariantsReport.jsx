@@ -32,7 +32,7 @@ export default function ResourcePlanningReportComponent() {
     { name: 'Ticket Id', selector: (row) => row.ticket_id, sortable: true },
     {
       name: 'Job Role',
-      selector: (row) => row.job_role || "-",
+      selector: (row) => row.job_role || '-',
       sortable: true,
       width: '150px'
     },
@@ -44,11 +44,10 @@ export default function ResourcePlanningReportComponent() {
     },
     {
       name: 'Sprint Name',
-      selector: (row) => row.sprint_name || "-",
+      selector: (row) => row.sprint_name || '-',
       sortable: true,
       width: '150px'
     },
-
 
     {
       name: 'Task Name',
@@ -291,11 +290,11 @@ export default function ResourcePlanningReportComponent() {
                   exportTempData.push({
                     sr: count++,
                     ticket_id: data[key].ticket_id,
-                    job_role: data[key].job_role || "-",
+                    job_role: data[key].job_role || '-',
                     task_owner: data[key].task_owner,
-                    sprint_name: data[key].sprint_name || "-",
-                    sprint_start_date: data[key].sprint_start_date || "-",
-                    sprint_end_date: data[key].sprint_end_date || "-",
+                    sprint_name: data[key].sprint_name || '-',
+                    sprint_start_date: data[key].sprint_start_date || '-',
+                    sprint_end_date: data[key].sprint_end_date || '-',
                     task_name: data[key].task_name,
                     type_name: data[key].type_name,
                     task_start_Date: data[key].task_start_Date,
@@ -309,7 +308,7 @@ export default function ResourcePlanningReportComponent() {
                     task_completed_at: data[key].task_completed_at
                   });
                 }
-
+                console.log('data', exportTempData);
                 setExportData(null);
                 setExportData(exportTempData);
               } else {
@@ -360,7 +359,7 @@ export default function ResourcePlanningReportComponent() {
         <div className="card-body">
           <form onSubmit={handleForm}>
             <div className="row">
-              <div className="col-md-3">
+              <div className="col-md-4">
                 <label htmlFor="" className="">
                   <b>Select User :</b>
                 </label>
@@ -376,7 +375,7 @@ export default function ResourcePlanningReportComponent() {
                 )}
               </div>
 
-              <div className="col-md-3">
+              <div className="col-md-4">
                 <label htmlFor="" className="">
                   <b>
                     From Date : <Astrick color="red" size="13px" />
@@ -391,7 +390,7 @@ export default function ResourcePlanningReportComponent() {
                 />
               </div>
 
-              <div className="col-md-3">
+              <div className="col-md-4">
                 <label htmlFor="" className="">
                   <b>
                     To Date : <Astrick color="red" size="13px" />
@@ -405,41 +404,38 @@ export default function ResourcePlanningReportComponent() {
                   required
                 />
               </div>
-            </div>
-            <div className="row">
-              <div className="col-md-2">
-                <button
-                  className="btn btn-sm btn-warning text-white"
-                  type="submit"
-                  style={{ marginTop: '20px', fontWeight: '600' }}
-                >
-                  <i className="icofont-search-1 "></i> Search
-                </button>
-                <button
-                  className="btn btn-sm btn-info text-white"
-                  type="button"
-                  onClick={() => window.location.reload(false)}
-                  style={{ marginTop: '20px', fontWeight: '600' }}
-                >
-                  <i className="icofont-refresh text-white"></i> Reset
-                </button>
-              </div>
-              {data && data.length > 0 && (
-                <div
-                  className="col-md-10"
-                  style={{
-                    textAlign: 'right',
-                    marginTop: '20px',
-                    fontWeight: '600'
-                  }}
-                >
-                  <ExportToExcel
-                    className="btn btn-sm btn-danger"
-                    apiData={exportData && exportData}
-                    fileName="Variance Report"
-                  />
+              <div className="d-flex mt-4">
+                <div className="d-flex  ms-md-auto">
+                  <button
+                    className="btn btn-sm btn-warning text-white"
+                    type="submit"
+                    style={{ fontWeight: '600' }}
+                  >
+                    <i className="icofont-search-1 "></i> Search
+                  </button>
+                  <button
+                    className="btn btn-sm btn-info text-white"
+                    type="button"
+                    onClick={() => window.location.reload(false)}
+                    style={{ fontWeight: '600' }}
+                  >
+                    <i className=" text-white"></i> Reset
+                  </button>
+                  {data && data.length > 0 && (
+                    <span
+                      style={{
+                        fontWeight: '600'
+                      }}
+                    >
+                      <ExportToExcel
+                        className="btn btn-sm btn-danger"
+                        apiData={exportData && exportData}
+                        fileName="Variance Report"
+                      />
+                    </span>
+                  )}
                 </div>
-              )}
+              </div>
             </div>
           </form>
         </div>

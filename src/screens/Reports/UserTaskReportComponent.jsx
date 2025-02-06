@@ -268,41 +268,41 @@ function UserTaskReportComponent() {
                 />
               </div>
 
-              <div className="col-md-2">
-                <button
-                  className="btn btn-sm btn-warning text-white"
-                  type="submit"
-                  style={{ marginTop: '20px', fontWeight: '600' }}
-                >
-                  <i className="icofont-search-1 "></i> Search
-                </button>
-                <button
-                  className="btn btn-sm btn-info text-white"
-                  type="button"
-                  onClick={() => window.location.reload(false)}
-                  style={{ marginTop: '20px', fontWeight: '600' }}
-                >
-                  <i className="icofont-refresh text-white"></i> Reset
-                </button>
+              <div className="d-flex mt-4">
+                <div className="d-flex  ms-md-auto">
+                  <button
+                    className="btn btn-warning text-white"
+                    type="submit"
+                    style={{ fontWeight: '600' }}
+                  >
+                    <i className="icofont-search-1 "></i> Search
+                  </button>
+                  <button
+                    className="btn btn-info text-white"
+                    type="button"
+                    onClick={() => window.location.reload(false)}
+                    style={{ fontWeight: '600' }}
+                  >
+                    <i className="text-white"></i> Reset
+                  </button>
+                </div>
+
+                {data && data.length > 0 && (
+                  <div
+                    style={{
+                      fontWeight: '600'
+                    }}
+                  >
+                    <ExportToExcel
+                      className="btn btn-danger"
+                      apiData={exportData}
+                      fileName="User Task Report"
+                    />
+                  </div>
+                )}
               </div>
             </div>
           </form>
-          {data && data.length > 0 && (
-            <div
-              className="col"
-              style={{
-                textAlign: 'right',
-                marginTop: '20px',
-                fontWeight: '600'
-              }}
-            >
-              <ExportToExcel
-                className="btn btn-sm btn-danger"
-                apiData={exportData}
-                fileName="User Task Report"
-              />
-            </div>
-          )}
         </div>
       </div>
 
