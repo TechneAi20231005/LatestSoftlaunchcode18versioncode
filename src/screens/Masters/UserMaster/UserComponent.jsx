@@ -15,6 +15,7 @@ import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import NotFound from '../../../components/NotFound';
 
 function UserComponent() {
   //initial state
@@ -264,13 +265,14 @@ function UserComponent() {
         showExportButton={true}
       />
       <div className="card mt-2 px-0">
-        {employeeData && (
+        {filteredData && (
           <DataTable
             columns={columns}
             data={filteredData}
             defaultSortField="title"
             pagination
             selectableRows={false}
+            noDataComponent={<NotFound />}
             progressPending={isLoding}
             progressComponent={<TableLoadingSkelton />}
             className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"

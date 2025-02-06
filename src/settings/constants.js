@@ -22,7 +22,7 @@ export const _pincodeUrl = REACT_APP_PIN_CODE_API_URL;
 export const loginURL = _rewampApiUrl + 'login';
 export const fpURL = _rewampApiUrl + 'reset/forgetPasswordOtp';
 export const otpURL = _rewampApiUrl + 'reset/sendOtp';
-export const rpURL = _apiUrl + 'reset/resetPassword';
+export const rpURL = _rewampApiUrl + 'reset/resetPassword';
 
 export const attachmentUrl = _apiUrl + 'attachment';
 
