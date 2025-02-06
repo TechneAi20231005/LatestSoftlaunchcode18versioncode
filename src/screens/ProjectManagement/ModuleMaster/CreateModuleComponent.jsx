@@ -189,9 +189,9 @@ export default function CreateModuleComponent({ match }) {
                           id="description"
                           name="description"
                           rows="6"
-                          onKeyPress={(e) => {
-                            Validation.addressFieldOnly(e);
-                          }}
+                          // onKeyPress={(e) => {
+                          //   Validation.addressFieldOnly(e);
+                          // }}
                         />
                         <ErrorMessage
                           name="description"

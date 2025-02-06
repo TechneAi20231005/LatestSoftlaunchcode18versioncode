@@ -14,6 +14,7 @@ import { getRoles } from '../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { CustomValidation } from '../../components/custom/CustomValidation/CustomValidation';
+import NotFound from '../../components/NotFound';
 
 export default function ResourcePlanningReportComponent() {
   const dispatch = useDispatch();
@@ -21,7 +22,7 @@ export default function ResourcePlanningReportComponent() {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 38)
   );
   const [userData, setUserData] = useState(null);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [exportData, setExportData] = useState(null);
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
@@ -293,7 +294,7 @@ export default function ResourcePlanningReportComponent() {
                     task_completed_at: data[key].task_completed_at
                   });
                 }
-                setData(null);
+                setData([]);
                 setData(tempData);
                 let count = 1;
                 for (const key in data) {
@@ -322,10 +323,10 @@ export default function ResourcePlanningReportComponent() {
                 setExportData(null);
                 setExportData(exportTempData);
               } else {
-                setData(null);
+                setData([]);
               }
             } else {
-              setData(null);
+              setData([]);
             }
           } else {
             new ErrorLogService().sendErrorLog(
@@ -346,6 +347,7 @@ export default function ResourcePlanningReportComponent() {
             errorObject.data.message
           );
         });
+      setShowLoaderModal(false);
     }
   };
 
@@ -367,14 +369,22 @@ export default function ResourcePlanningReportComponent() {
       label: 'From Date',
       required: true,
       alphaNumeric: false,
-      dateRange: { startDate: 'from_date', endDate: 'to_date', startLabel: 'From Date' },
+      dateRange: {
+        startDate: 'from_date',
+        endDate: 'to_date',
+        startLabel: 'From Date'
+      }
     },
     {
       name: 'to_date',
       label: 'To Date',
       required: true,
       alphaNumeric: false,
-      dateRange: { startDate: 'from_date', endDate: 'to_date', startLabel: 'From Date' },
+      dateRange: {
+        startDate: 'from_date',
+        endDate: 'to_date',
+        startLabel: 'From Date'
+      }
     }
   ];
 
@@ -400,32 +410,31 @@ export default function ResourcePlanningReportComponent() {
               handleForm(values);
             }}
           >
-            {({ setFieldValue, values }) =>  (
+            {({ setFieldValue, values }) => (
               <Form>
                 {/* <form onSubmit={handleForm}> */}
                 <div className="row">
-                  <div className="col-md-3">
+                  <div className="col-md-4">
                     <label htmlFor="" className="">
                       <b>Select User :</b>
                     </label>
-                    {userData && (
-                      <Select
-                        isMulti
-                        isSearchable={true}
-                        name="user_id"
-                        value={values.user_id}
-                        className="basic-multi-select"
-                        classNamePrefix="select"
-                        options={userData && userData}
-                        onChange={(option) =>
-                          // console.log(option, "option")
-                          setFieldValue('user_id', option || [])
-                        }
-                      />
-                    )}
+
+                    <Select
+                      isMulti
+                      isSearchable={true}
+                      name="user_id"
+                      value={values.user_id}
+                      className="basic-multi-select"
+                      classNamePrefix="select"
+                      options={userData && userData}
+                      onChange={(option) =>
+                        // console.log(option, "option")
+                        setFieldValue('user_id', option || [])
+                      }
+                    />
                   </div>
 
-                  <div className="col-md-3">
+                  <div className="col-md-4">
                     <label htmlFor="" className="">
                       <b>
                         From Date : <Astrick color="red" size="13px" />
@@ -442,7 +451,6 @@ export default function ResourcePlanningReportComponent() {
                           option?.target?.value || null
                         );
                       }}
-
                       name="from_date"
                       // required
                     />
@@ -453,7 +461,7 @@ export default function ResourcePlanningReportComponent() {
                     />
                   </div>
 
-                  <div className="col-md-3">
+                  <div className="col-md-4">
                     <label htmlFor="" className="">
                       <b>
                         To Date : <Astrick color="red" size="13px" />
@@ -465,12 +473,8 @@ export default function ResourcePlanningReportComponent() {
                       // onChange={handleToDate}
                       onChange={(option) => {
                         handleToDate(option);
-                        setFieldValue(
-                          'to_date',
-                          option?.target?.value || null
-                        );
+                        setFieldValue('to_date', option?.target?.value || null);
                       }}
-
                       name="to_date"
 
                       // required
@@ -482,17 +486,17 @@ export default function ResourcePlanningReportComponent() {
                     />
                   </div>
                 </div>
-                <div className="row">
-                  <div className="col-md-2">
+                <div className="d-flex mt-3">
+                  <div className="d-flex  ms-md-auto">
                     <button
-                      className="btn btn-sm btn-warning text-white"
+                      className="btn  btn-warning text-white"
                       type="submit"
-                      style={{ marginTop: '20px', fontWeight: '600' }}
+                      style={{ fontWeight: '600' }}
                     >
                       <i className="icofont-search-1 "></i> Search
                     </button>
                     <button
-                      className="btn btn-sm btn-info text-white"
+                      className="btn btn-info text-white"
                       type="button"
                       onClick={() => {
                         setFieldValue('user_id', []);
@@ -500,26 +504,17 @@ export default function ResourcePlanningReportComponent() {
                         setFieldValue('from_date', '');
                         setFieldValue('to_date', '');
                       }}
-                      style={{ marginTop: '20px', fontWeight: '600' }}
+                      style={{ fontWeight: '600' }}
                     >
                       <i className="icofont-refresh text-white"></i> Reset
                     </button>
                   </div>
                   {data && data.length > 0 && (
-                    <div
-                      className="col-md-10"
-                      style={{
-                        textAlign: 'right',
-                        marginTop: '20px',
-                        fontWeight: '600'
-                      }}
-                    >
-                      <ExportToExcel
-                        className="btn btn-sm btn-danger"
-                        apiData={exportData && exportData}
-                        fileName="Variance Report"
-                      />
-                    </div>
+                    <ExportToExcel
+                      className="btn btn-danger"
+                      apiData={exportData && exportData}
+                      fileName="Variance Report"
+                    />
                   )}
                 </div>
                 {/* </form> */}
@@ -533,21 +528,20 @@ export default function ResourcePlanningReportComponent() {
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {data ? (
+              {data && (
                 <DataTable
                   columns={columns}
                   data={data}
                   defaultSortField="title"
                   pagination
+                  noDataComponent={<NotFound topMargin={0} />}
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                   // expandableRows
                   // expandableRowsComponent={ExpandedComponent}
                 />
-              ) :   <div className="text-center mt-4">
-              <p>No data found</p>
-            </div>}
+              )}
             </div>
           </div>
         </div>
