@@ -120,9 +120,9 @@ function EditUserComponent({ match }) {
   // const [stateName, setStateName] = useState(null);
   const [cityName, setCityName] = useState(null);
 
-  // const [password, setPassword] = useState(null);
-  // const [confirmPasswordError, setConfirmPasswordError] = useState(false);
-  const confirmPasswordError = false;
+  const [password, setPassword] = useState(null);
+  const [confirmPasswordError, setConfirmPasswordError] = useState(false);
+  // const confirmPasswordError = false;
 
   // const roleId = sessionStorage.getItem('role_id');
 
@@ -140,37 +140,37 @@ function EditUserComponent({ match }) {
   //   (jobRoleSlice) => jobRoleSlice.dashboard.filterJobRoleData
   // );
 
-  // const [passwordError, setPasswordError] = useState(null);
-  // const [passwordValid, setPasswordValid] = useState(false);
+  const [passwordError, setPasswordError] = useState(null);
+  const [passwordValid, setPasswordValid] = useState(false);
 
-  // const handlePasswordValidation = (e) => {
-  //   if (e.target.value === '') {
-  //     setInputState({ ...state, passwordErr: 'Please enter Password' });
-  //   } else {
-  //     setInputState({ ...state, passwordErr: '' });
-  //   }
-  //   setPassword(e.target.value);
-  //   const passwordValidation = e.target.value;
-  //   if (passwordValidation.length > 20) {
-  //     setPasswordError('Enter Password min. 6 & max. 20');
-  //     setPasswordValid(true);
-  //   } else if (passwordValidation.length < 6) {
-  //     setPasswordError('Enter Password min. 6 & max. 20');
-  //     setPasswordValid(true);
-  //   } else {
-  //     setPasswordError('');
-  //     setPasswordValid(false);
-  //   }
+  const handlePasswordValidation = (e) => {
+    if (e.target.value === '') {
+      setInputState({ ...state, passwordErr: 'Please enter Password' });
+    } else {
+      setInputState({ ...state, passwordErr: '' });
+    }
+    setPassword(e.target.value);
+    const passwordValidation = e.target.value;
+    if (passwordValidation.length > 20) {
+      setPasswordError('Enter Password min. 6 & max. 20');
+      setPasswordValid(true);
+    } else if (passwordValidation.length < 6) {
+      setPasswordError('Enter Password min. 6 & max. 20');
+      setPasswordValid(true);
+    } else {
+      setPasswordError('');
+      setPasswordValid(false);
+    }
 
-  //   if (
-  //     confirmedPasswordRef.current.value !== '' &&
-  //     confirmedPasswordRef.current.value !== passwordValidation
-  //   ) {
-  //     setConfirmPasswordError(true);
-  //   } else {
-  //     setConfirmPasswordError(false);
-  //   }
-  // };
+    if (
+      confirmedPasswordRef.current.value !== '' &&
+      confirmedPasswordRef.current.value !== passwordValidation
+    ) {
+      setConfirmPasswordError(true);
+    } else {
+      setConfirmPasswordError(false);
+    }
+  };
 
   const [inputState, setInputState] = useState({
     firstNameErr: '',
@@ -197,11 +197,12 @@ function EditUserComponent({ match }) {
     var selectEmail = form.getAll('email_id')[0];
     var selectUserName = form.getAll('user_name')[0];
     var selectContactNo = form.getAll('contact_no')[0];
-    // var selectPassword = form.getAll('password')[0];
+    var selectPassword = form.getAll('password')[0];
     // var selectWhatsapp = form.getAll('whats_app_contact_no')[0];
     var selectRole = form.getAll('role_id')[0];
     var selectJobRole = form.getAll('job_role')[0];
     var selectDesignation = form.getAll('designation_id')[0];
+    var confirm_password = form.getAll('confirm_password')[0];
 
     let flag = 0;
     if (selectFirstName === '') {
@@ -248,6 +249,21 @@ function EditUserComponent({ match }) {
     } else if (mailError === true) {
       alert('Invalid Email');
       flag = 1;
+    }else if (selectPassword === '') {
+      setInputState({ ...state, passwordErr: 'Please enter Password' });
+      flag = 1;
+    }else if (confirmedPasswordRef.current.value === '') {
+      setInputState({
+        ...state,
+        confirmed_PassErr: ' Please Enter Confirmed password'
+      });
+      flag = 1;
+    } else if (confirm_password !== selectPassword) {
+      // setInputState({
+      //   ...state,
+      //   confirmed_PassErr: 'Password Not matched'
+      // });
+      flag = 1;
     }
     return flag;
   }
@@ -276,6 +292,22 @@ function EditUserComponent({ match }) {
   // };
 
   // const [contactNumber, setContactNumber] = useState(null);
+
+  const handleConfirmedPassword = (event) => {
+    if (event.target.value === '') {
+      setInputState({
+        ...state,
+        confirmed_PassErr: 'Please Enter Confirmed password'
+      });
+    } else {
+      setInputState({ ...state, confirmed_PassErr: '' });
+    }
+    if (event.target.value === password) {
+      setConfirmPasswordError(false);
+    } else {
+      setConfirmPasswordError(true);
+    }
+  };
 
   const [contactValid, setContactValid] = useState(false);
   const handleContactValidation = (e) => {
@@ -1297,16 +1329,18 @@ function EditUserComponent({ match }) {
                               onKeyPress={(e) => {
                                 Validation.password(e);
                               }}
-                              onChange={(event) => {
-                                if (event.target.value === '') {
-                                  setInputState({
-                                    ...state,
-                                    passwordErr: 'Please enter Password'
-                                  });
-                                } else {
-                                  setInputState({ ...state, passwordErr: '' });
-                                }
-                              }}
+                              onChange={handlePasswordValidation}
+
+                              // onChange={(event) => {
+                              //   if (event.target.value === '') {
+                              //     setInputState({
+                              //       ...state,
+                              //       passwordErr: 'Please enter Password'
+                              //     });
+                              //   } else {
+                              //     setInputState({ ...state, passwordErr: '' });
+                              //   }
+                              // }}
                               onPaste={(e) => {
                                 e.preventDefault();
                                 return false;
@@ -1354,7 +1388,7 @@ function EditUserComponent({ match }) {
                               name="confirm_password"
                               id="confirm_password"
                               ref={confirmedPasswordRef}
-                              // onChange={handleConfirmedPassword}
+                              onChange={handleConfirmedPassword}
                               type={passwordShown1 ? 'text' : 'Password'}
                               onPaste={(e) => {
                                 e.preventDefault();
@@ -1373,7 +1407,7 @@ function EditUserComponent({ match }) {
                             </InputGroup.Text>
                           </InputGroup>
 
-                          {inputState && (
+                          {inputState.confirmed_PassErr && (
                             <small
                               style={{
                                 color: 'red',
@@ -1385,7 +1419,7 @@ function EditUserComponent({ match }) {
                             </small>
                           )}
                         </div>
-                        {confirmPasswordError && (
+                        {!inputState.confirmed_PassErr && confirmPasswordError && (
                           <span
                             style={{
                               color: 'red',
