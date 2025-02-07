@@ -227,6 +227,14 @@ function Profile() {
     let b = a.lastIndexOf('.');
     let imageFile = a.substring(b);
     if (imageFile == '.jpg' || imageFile == '.png' || imageFile == '.jpeg') {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setData((prevData) => ({
+          ...prevData,
+          upload_Picture: reader.result
+        }));
+      };
+      reader.readAsDataURL(e.target.files[0]);
     } else {
       alert('Please Upload jpg, jepg and png Image');
       document.getElementById('profile_picture').value = '';
@@ -245,9 +253,10 @@ function Profile() {
     loadData();
   }, [whatsapp]);
 
+
   return (
     <div className="container-xxl">
-      <PageHeader headerTitle="User Profile" />
+      <PageHeader headerTitle="User Profile" showBackBtn  />
 
       {notify && <Alert alertData={notify} />}
       <div className="row">
@@ -266,7 +275,7 @@ function Profile() {
               ></div>
               <img
                 className="avatar lg rounded-circle img-thumbnail"
-                src={data && data.profile_picture}
+                src={  data?.upload_Picture ? data?.upload_Picture  :  _attachmentUrl + data?.profile_picture }
                 alt="profile"
                 style={{
                   height: '11.375rem',
@@ -306,7 +315,6 @@ function Profile() {
               </div>
             </div>
           </div>
-          {console.log('data', data)}
           {/* <div className="card shadow mt-2">
             <div className="card-header bg-primary text-white">
               <h5 style={{ textAlign: "center" }}>Your Departments</h5>
@@ -364,7 +372,6 @@ function Profile() {
                     </tr>
                   </thead>
                   <tbody>
-                    {console.log(data?.department, 'data')}
                     {data &&
                       data?.department.length > 0 &&
                       data?.department.map((d, i) => (
