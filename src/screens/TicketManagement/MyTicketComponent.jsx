@@ -1906,6 +1906,7 @@ export default function MyTicketComponent() {
   const [searchData, setSearchData] = useState([]);
 
   const handleClearSearchedData = () => {
+    // document.getElementById("ticket_idd").reset();
     setSelectedUsers([]); // Clear the selected users (empty array for multi-select)
     setSelectedDepartment([]); // Clear the selected department
     setSelectedStatus([]); // Clear the selected status
@@ -2878,6 +2879,7 @@ export default function MyTicketComponent() {
                   className="form-control form-control-sm"
                   id="ticket_idd"
                   name="ticket_id"
+                  value={ticketId}
                   onChange={(e) => {
                     setTicketId(e.target.value);
                   }}
@@ -2896,6 +2898,7 @@ export default function MyTicketComponent() {
                     options={userData}
                     isMulti={true}
                     id="assign_to_user_id[]"
+                    value={selectedUsers}
                     name="assign_to_user_id[]"
                     onChange={(selectedOptions) => {
                       setSelectedUsers(selectedOptions);
@@ -2913,6 +2916,7 @@ export default function MyTicketComponent() {
                       <Select
                         options={departmentData}
                         isMulti={true}
+                        value={selectedDepartment}
                         id="assign_to_department_id[]"
                         name="assign_to_department_id[]"
                         onChange={(selectedOptions) => {
@@ -2932,6 +2936,7 @@ export default function MyTicketComponent() {
                   <Select
                     options={statusData}
                     isMulti={true}
+                    value={selectedStatus}
                     id="status_id[]"
                     name="status_id[]"
                     onChange={(selectedOptions) => {

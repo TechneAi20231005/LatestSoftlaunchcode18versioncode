@@ -39,6 +39,10 @@ function CustomerTypeComponent() {
     (CustomerTypeComponentSlice) =>
       CustomerTypeComponentSlice.customerTypeMaster.isLoading.customerTypeList
   );
+  const notify = useSelector(
+    (CustomerTypeComponentSlice) => CustomerTypeComponentSlice.customerTypeMaster.notify
+  );
+
 
   const exportData = useSelector(
     (CustomerTypeComponentSlice) =>
@@ -259,7 +263,7 @@ function CustomerTypeComponent() {
 
   return (
     <div className="container-xxl">
-      {/* {notify && <Alert alertData={notify} />} */}
+      {notify && <Alert alertData={notify} />}
       <PageHeader
         headerTitle="Customer Type Master"
         renderRight={() => {

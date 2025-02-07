@@ -843,7 +843,7 @@ function QueryTypeComponent() {
           label: d.group_name
         }))
       : [],
-    remark: modal.modalData ? modal.modalData?.remark : '',
+    remark: modal.modalData?.remark || '',
 
     is_active: String(modal?.modalData?.is_active) ?? '1'
   };
