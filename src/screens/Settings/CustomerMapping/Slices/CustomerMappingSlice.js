@@ -143,17 +143,16 @@ export const CustomerMappingSlice = createSlice({
             Priority: exportTempateData[i].priority,
             Approach: exportTempateData[i].approach,
             remark: exportTempateData[i].remark,
-            is_active:
-              exportTempateData[i].is_active == 1 ? 'Active' : 'Deactive',
-            created_at: exportTempateData[i].created_at,
-            created_by: exportTempateData[i].created_by,
-            updated_at: exportTempateData[i].updated_at,
-            updated_by: exportTempateData[i].updated_by,
+            Status: exportTempateData[i].is_active == 1 ? 'Active' : 'Deactive',
+            'Created At': exportTempateData[i].created_at,
+            'Created By': exportTempateData[i].created_by,
+            'Updated At': exportTempateData[i].updated_at,
+            'Updated By': exportTempateData[i].updated_by,
             // confirmation_required:[i].confirmation_required,
-            dynamic_form_name: exportTempateData[i].dynamic_form_name,
-            customer_type_name: exportTempateData[i].customer_type_name,
+            'Dynamic Form Name': exportTempateData[i].dynamic_form_name,
+            'Customer Type Name': exportTempateData[i].customer_type_name,
             'Assign User': exportTempateData[i].mapped_user,
-            confirmation_required:
+            'Confirmation Required':
               exportTempateData[i].confirmation_required == 1 ? 'Yes' : 'no'
           });
           state.exportData = exportData;
