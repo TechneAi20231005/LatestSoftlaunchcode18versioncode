@@ -92,8 +92,7 @@ export default function TaskModal(props) {
       name: 'task_desc',
       label: 'Description',
       required: false,
-      max: 1000,
-
+      max: 1000
     }
     // {
     //   name: 'assign_to_user',
@@ -436,7 +435,11 @@ export default function TaskModal(props) {
 
     await new TaskTicketTypeService()?.getTaskType('Task')?.then((res) => {
       if (res?.status === 200) {
-        setTaskData(res?.data?.data.data);
+        console.log(res?.data?.data?.data, '>>>>>>');
+        let filterData = res?.data?.data.data?.filter(
+          (item) => item?.is_active === 1
+        );
+        setTaskData(filterData);
       }
     });
   }, [props.data, props?.taskDropdown]);
@@ -2018,6 +2021,11 @@ export default function TaskModal(props) {
                       id="description"
                       name="task_desc"
                       readOnly={props.data.status === 'COMPLETED'}
+                    />
+                    <ErrorMessage
+                      name="task_desc"
+                      component="small"
+                      className="text-danger"
                     />
                   </div>
                 </div>

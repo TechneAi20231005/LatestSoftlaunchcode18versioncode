@@ -530,6 +530,26 @@ export default function CreateTicketComponent() {
       if (res.payload.status === 200) {
       }
     });
+    new DepartmentMappingService()
+      .getDepartmentMappingByEmployeeId(userSessionData.userId)
+      .then((resp) => {
+        if (resp.data.status === 1) {
+          setisMultipleDepartment(resp.data.data);
+          setUserDepartments(
+            resp.data.data.map((d) => ({
+              value: d.department_id,
+              label: d.department
+            }))
+          );
+          if (resp?.data?.data?.length > 0) {
+            setData((prev) => {
+              const newPrev = { ...prev };
+              newPrev['from_department_id'] = resp.data.data[0].department_id;
+              return newPrev;
+            });
+          }
+        }
+      });
     await new QueryTypeService().getAllQueryGroup(status).then((res) => {
       if (res.data.status === 1) {
         setQueryGroupDropdown(
@@ -559,26 +579,26 @@ export default function CreateTicketComponent() {
       }
     });
 
-    new DepartmentMappingService()
-      .getDepartmentMappingByEmployeeId(userSessionData.userId)
-      .then((resp) => {
-        if (resp.data.status === 1) {
-          setisMultipleDepartment(resp.data.data);
-          setUserDepartments(
-            resp.data.data.map((d) => ({
-              value: d.department_id,
-              label: d.department
-            }))
-          );
-          if (resp?.data?.data?.length > 0) {
-            setData((prev) => {
-              const newPrev = { ...prev };
-              newPrev['from_department_id'] = resp.data.data[0].department_id;
-              return newPrev;
-            });
-          }
-        }
-      });
+    // new DepartmentMappingService()
+    //   .getDepartmentMappingByEmployeeId(userSessionData.userId)
+    //   .then((resp) => {
+    //     if (resp.data.status === 1) {
+    //       setisMultipleDepartment(resp.data.data);
+    //       setUserDepartments(
+    //         resp.data.data.map((d) => ({
+    //           value: d.department_id,
+    //           label: d.department
+    //         }))
+    //       );
+    //       if (resp?.data?.data?.length > 0) {
+    //         setData((prev) => {
+    //           const newPrev = { ...prev };
+    //           newPrev['from_department_id'] = resp.data.data[0].department_id;
+    //           return newPrev;
+    //         });
+    //       }
+    //     }
+    //   });
 
     dispatch(getRoles());
   }, [dispatch]);
@@ -1095,7 +1115,7 @@ export default function CreateTicketComponent() {
             </div>
           </>
         )}
-          {console.log(rows,"rows")}
+        {console.log(rows, 'rows')}
         {data.ticket_uploading === 'REGULAR' && rows && rows?.length > 0 && (
           <div className="card mt-2">
             <div className="card-body">
