@@ -167,10 +167,10 @@ function ModuleComponent() {
           for (const key in data) {
             exportData.push({
               SrNo: exportData.length + 1,
-              Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
               module_name: data[key].module_name,
               project_name: data[key].project_name,
               description: data[key].description,
+              Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
               remark: data[key].remark,
               updated_at: data[key].updated_at,
               updated_by: data[key].updated_by,
