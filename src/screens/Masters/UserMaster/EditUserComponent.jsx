@@ -1123,7 +1123,7 @@ function EditUserComponent({ match }) {
                                 color: 'red'
                               }}
                             >
-                              {emailError}
+                              {inputState.emailErr}
                             </small>
                           )}
                         </div>

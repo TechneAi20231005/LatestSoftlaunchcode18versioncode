@@ -3215,7 +3215,7 @@ export default function MyTicketComponent() {
                   >
                     <div className="card mb-3 mt-3">
                       <div className="card-body">
-                        {searchResultExport && (
+                        { searchResult?.length > 0 && searchResultExport?.length > 0 && (
                           <ExportToExcel
                             className="btn btn-sm btn-danger mt-3"
                             apiData={searchResultExport}
@@ -3235,7 +3235,7 @@ export default function MyTicketComponent() {
                                 defaultSortField="title"
                                 paginations
                                 fixedHeader={true}
-                                noDataComponent={<NotFound topMargin={0} />}
+                                noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
                                 // fixedHeaderScrollHeight={'500px'}
                                 selectableRows={false}
                                 className="table msyDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
@@ -3297,7 +3297,7 @@ export default function MyTicketComponent() {
                   <Tab eventKey="Assigned_To_Me" title="Assigned To me">
                     <div className="card mb-3 mt-3">
                       <div className="card-body">
-                        {assignedToMe && (
+                        {assignedToMe?.length > 0 && (
                           <ExportAllTicketsToExcel
                             className="btn btn-sm btn-danger mt-3"
                             fileName="Assign To Me"
@@ -3318,7 +3318,7 @@ export default function MyTicketComponent() {
                               data={assignedToMe}
                               defaultSortField="title"
                               fixedHeader={true}
-                              noDataComponent={<NotFound topMargin={0} />}
+                              noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
                               // fixedHeaderScrollHeight={'500px'}
                               selectableRows={false}
                               highlightOnHover={true}
@@ -3380,7 +3380,7 @@ export default function MyTicketComponent() {
                 <Tab eventKey="created_by_me" title="Created By Me">
                   <div className="card mb-3 mt-3">
                     <div className="card-body">
-                      {createdByMe && (
+                      {createdByMe?.length > 0 && (
                         <ExportAllTicketsToExcel
                           className="btn btn-sm btn-danger mt-3"
                           fileName="Created By Me"
@@ -3398,7 +3398,7 @@ export default function MyTicketComponent() {
                               data={createdByMe}
                               defaultSortField="title"
                               fixedHeader={true}
-                              noDataComponent={<NotFound topMargin={0} />}
+                              noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
                               // fixedHeaderScrollHeight={'500px'}
                               selectableRows={false}
                               highlightOnHover={true}
@@ -3460,7 +3460,7 @@ export default function MyTicketComponent() {
                   >
                     <div className="card mb-3 mt-3">
                       <div className="card-body">
-                        {departmentwiseTicket && (
+                        {departmentwiseTicket?.length > 0 && (
                           <ExportAllTicketsToExcel
                             className="btn btn-sm btn-danger mt-3"
                             fileName="Departmentwise Ticket"
@@ -3476,7 +3476,7 @@ export default function MyTicketComponent() {
                               // customStyles={customStyles}
                               data={departmentwiseTicket}
                               defaultSortField="title"
-                              noDataComponent={<NotFound topMargin={0} />}
+                              noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
                               fixedHeader={true}
                               // fixedHeaderScrollHeight={'500px'}
                               selectableRows={false}
@@ -3538,7 +3538,7 @@ export default function MyTicketComponent() {
                   <Tab eventKey="your_task" title="Your Task">
                     <div className="card mb-3 mt-3">
                       <div className="card-body">
-                        {yourTask && (
+                        {yourTask?.length > 0 && (
                           <ExportAllTicketsToExcel
                             className="btn btn-sm btn-danger mt-3"
                             fileName="Your Task"
@@ -3556,7 +3556,7 @@ export default function MyTicketComponent() {
                                 // customStyles={customStyles}
                                 defaultSortField="title"
                                 fixedHeader={true}
-                                noDataComponent={<NotFound topMargin={0} />}
+                                noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
                                 // fixedHeaderScrollHeight={'500px'}
                                 selectableRows={false}
                                 highlightOnHover={true}
@@ -3618,7 +3618,7 @@ export default function MyTicketComponent() {
                       <div className="row">
                         <div className="row">
                           <div className="col-md-6 mb-1">
-                            {unpassedTickets && (
+                            {unpassedTickets?.length > 0 && (
                               <ExportAllTicketsToExcel
                                 className="btn btn-danger btn-block"
                                 fileName="Unpassed Ticket"
@@ -3689,7 +3689,7 @@ export default function MyTicketComponent() {
                             data={unpassedTickets}
                             // customStyles={customStyles}
                             defaultSortField="title"
-                            noDataComponent={<NotFound topMargin={0} />}
+                            noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
                             fixedHeader={true}
                             // fixedHeaderScrollHeight={'500px'}
                             selectableRows={false}
