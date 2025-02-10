@@ -782,7 +782,7 @@ export default function EditTicketComponent({ match }) {
           value: d.id,
           label: d.first_name + ' ' + d.last_name + '(' + d.id + ')'
         }));
-
+      console.log('selete', user);
       setUserDropdown(select);
       setUserName(null);
     }
@@ -1219,7 +1219,7 @@ export default function EditTicketComponent({ match }) {
                           Project : <Astrick color="red" size="13px" />
                         </b>
                       </label>
-
+                      {console.log('project', projectDropdown)}
                       {projectDropdown && data && (
                         <Select
                           id="project_id"
@@ -1332,7 +1332,8 @@ export default function EditTicketComponent({ match }) {
                             Assign to User : <Astrick color="red" size="13px" />
                           </b>
                         </label>
-
+                        {console.log('userDropdown', userDropdown)}
+                        {console.log('userDrp', userDrp)}
                         {userDropdown && userDrp && (
                           <Select
                             id="assign_to_user_id"
@@ -1862,7 +1863,7 @@ export default function EditTicketComponent({ match }) {
                           </p>
                           <div className="d-flex justify-content-end p-0">
                             <a
-                              href={`${_rewampAttachmentUrl  + attach.path}`}
+                              href={`${_rewampAttachmentUrl + attach.path}`}
                               target="_blank"
                               className="btn btn-warning btn-sm p-0 px-1"
                             >

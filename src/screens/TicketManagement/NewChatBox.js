@@ -35,11 +35,10 @@ const Chatbox = (props) => {
     const fetchData = async () => {
       try {
         const inputRequired =
-          'id,employee_id,first_name,last_name,middle_name,is_active';
+          'id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id';
         const res = await new UserService().getUserForMyTickets(inputRequired);
 
         if (res.status === 200 && res.data.status === 1) {
-          console.log('res', res);
           const data = res.data.data?.data?.filter(
             (d) => d.is_active === 1 && d.account_for
           );

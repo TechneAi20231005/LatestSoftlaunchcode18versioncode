@@ -1746,7 +1746,6 @@ export default function MyTicketComponent() {
       if (res.status === 200) {
         const tempData = [];
         const temp = res.data.data.data;
-        console.log(temp, 'temp');
 
         for (const key in temp) {
           if (temp[key].id && temp[key].is_active === 1) {
@@ -3208,7 +3207,7 @@ export default function MyTicketComponent() {
                 }}
                 className=" tab-body-header rounded d-inline-flex"
               >
-                { key === "Search_Result" && searchResult && (
+                {key === 'Search_Result' && searchResult && (
                   <Tab
                     eventKey="Search_Result"
                     title="Search Result"
