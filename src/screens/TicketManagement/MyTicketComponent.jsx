@@ -28,6 +28,7 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { getRoles } from '../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../components/custom/loader/TableLoadingSkelton';
+import NotFound from '../../components/NotFound';
 
 export default function MyTicketComponent() {
   const [notify, setNotify] = useState(null);
@@ -41,20 +42,20 @@ export default function MyTicketComponent() {
   const [userData, setUserData] = useState(null);
   const [departmentData, setDepartmentData] = useState(null);
 
-  const [searchResult, setSearchResult] = useState();
+  const [searchResult, setSearchResult] = useState([]);
   const [searchResultData, setSearchResultData] = useState();
 
   const [searchResultExport, setSearchResultExport] = useState();
 
-  const [unpassedTickets, setUnpassedTickets] = useState(null);
+  const [unpassedTickets, setUnpassedTickets] = useState([]);
 
-  const [assignedToMe, setAssignedToMe] = useState(null);
+  const [assignedToMe, setAssignedToMe] = useState([]);
 
-  const [yourTask, setYourTask] = useState(null);
+  const [yourTask, setYourTask] = useState([]);
 
-  const [createdByMe, setCreatedByMe] = useState(null);
+  const [createdByMe, setCreatedByMe] = useState([]);
 
-  const [departmentwiseTicket, setDepartmentwiseTicket] = useState(null);
+  const [departmentwiseTicket, setDepartmentwiseTicket] = useState([]);
 
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
@@ -1745,7 +1746,7 @@ export default function MyTicketComponent() {
       if (res.status === 200) {
         const tempData = [];
         const temp = res.data.data.data;
-        console.log(temp,"temp")
+        console.log(temp, 'temp');
 
         for (const key in temp) {
           if (temp[key].id && temp[key].is_active === 1) {
@@ -1906,6 +1907,7 @@ export default function MyTicketComponent() {
   const [searchData, setSearchData] = useState([]);
 
   const handleClearSearchedData = () => {
+    // document.getElementById("ticket_idd").reset();
     setSelectedUsers([]); // Clear the selected users (empty array for multi-select)
     setSelectedDepartment([]); // Clear the selected department
     setSelectedStatus([]); // Clear the selected status
@@ -1940,6 +1942,7 @@ export default function MyTicketComponent() {
         // If no field is filled, show an alert
         if (!isAnyFieldFilled) {
           alert('Please fill at least one field.');
+          setIsLoading(false);
           return; // Exit the function early
         }
 
@@ -2148,10 +2151,11 @@ export default function MyTicketComponent() {
       from_date: startDate,
       to_date: toDate,
       assign_to_department_id:
-             assignedDepartmentValue?.length > 0
+        assignedDepartmentValue?.length > 0
           ? assignedDepartmentValue?.map((user) => user.value)
           : [],
-      assign_to_user_id: assignedUser?.length > 0 ? assignedUser?.map((user) => user.value) : [],
+      assign_to_user_id:
+        assignedUser?.length > 0 ? assignedUser?.map((user) => user.value) : [],
       // assign_to_user_id:
       //   assignedDepartmentValue?.length > 0
       //     ? assignedDepartmentValue?.map((user) => user.value)
@@ -2260,13 +2264,12 @@ export default function MyTicketComponent() {
               }
               setKey('Search_Result');
               setSearchResultExport(filterExport);
-            }else{
+            } else {
               setIsLoading(false);
               setSearchResult([]);
               setKey('Search_Result');
               setSearchResultData([]);
               setSearchResultExport([]);
-
             }
           } else {
             setIsLoading(false);
@@ -2396,6 +2399,8 @@ export default function MyTicketComponent() {
             setUnpassedData(res?.data?.data);
 
             setUnpassedTickets(res?.data?.data?.data);
+          } else {
+            setUnpassedTickets([]);
           }
         }
       });
@@ -2488,6 +2493,7 @@ export default function MyTicketComponent() {
 
   const handleSearchChanged = async (e, type) => {
     e.preventDefault();
+    setIsLoading(true);
 
     var form;
     const searchDataEntries = Object?.fromEntries(searchData?.entries());
@@ -2585,10 +2591,12 @@ export default function MyTicketComponent() {
         }
       }
     });
+    setIsLoading(false);
   };
 
   const handleCreatedByMeRowChanged = async (e, type) => {
     e.preventDefault();
+    setIsLoading(true);
     var form;
     if (type === 'LIMIT') {
       const limit = parseInt(e.target.value);
@@ -2642,10 +2650,12 @@ export default function MyTicketComponent() {
         }
       }
     });
+    setIsLoading(false);
   };
 
   const handleDepartmentWiseRowChanged = async (e, type) => {
     e.preventDefault();
+    setIsLoading(true);
     var form;
     if (type === 'LIMIT') {
       const limit = parseInt(e.target.value);
@@ -2695,11 +2705,13 @@ export default function MyTicketComponent() {
         }
       }
     });
+    setIsLoading(false);
   };
 
   const handleYourTaskRowChanged = async (e, type) => {
     e.preventDefault();
     var form;
+    setIsLoading(true);
     if (type === 'LIMIT') {
       const limit = parseInt(e.target.value);
       form = {
@@ -2750,10 +2762,12 @@ export default function MyTicketComponent() {
         }
       }
     });
+    setIsLoading(false);
   };
 
   const handleUnpassedRowChanged = async (e, type) => {
     e.preventDefault();
+    setIsLoading(true);
     var form;
     if (type === 'LIMIT') {
       const limit = parseInt(e.target.value);
@@ -2810,6 +2824,7 @@ export default function MyTicketComponent() {
         }
       }
     });
+    setIsLoading(false);
   };
 
   const customStyles = {
@@ -2878,6 +2893,7 @@ export default function MyTicketComponent() {
                   className="form-control form-control-sm"
                   id="ticket_idd"
                   name="ticket_id"
+                  value={ticketId}
                   onChange={(e) => {
                     setTicketId(e.target.value);
                   }}
@@ -2896,6 +2912,7 @@ export default function MyTicketComponent() {
                     options={userData}
                     isMulti={true}
                     id="assign_to_user_id[]"
+                    value={selectedUsers}
                     name="assign_to_user_id[]"
                     onChange={(selectedOptions) => {
                       setSelectedUsers(selectedOptions);
@@ -2913,6 +2930,7 @@ export default function MyTicketComponent() {
                       <Select
                         options={departmentData}
                         isMulti={true}
+                        value={selectedDepartment}
                         id="assign_to_department_id[]"
                         name="assign_to_department_id[]"
                         onChange={(selectedOptions) => {
@@ -2932,6 +2950,7 @@ export default function MyTicketComponent() {
                   <Select
                     options={statusData}
                     isMulti={true}
+                    value={selectedStatus}
                     id="status_id[]"
                     name="status_id[]"
                     onChange={(selectedOptions) => {
@@ -3189,7 +3208,7 @@ export default function MyTicketComponent() {
                 }}
                 className=" tab-body-header rounded d-inline-flex"
               >
-                {searchResult && (
+                { key === "Search_Result" && searchResult && (
                   <Tab
                     eventKey="Search_Result"
                     title="Search Result"
@@ -3197,7 +3216,7 @@ export default function MyTicketComponent() {
                   >
                     <div className="card mb-3 mt-3">
                       <div className="card-body">
-                        {searchResultExport && (
+                        { searchResult?.length > 0 && searchResultExport?.length > 0 && (
                           <ExportToExcel
                             className="btn btn-sm btn-danger mt-3"
                             apiData={searchResultExport}
@@ -3205,110 +3224,39 @@ export default function MyTicketComponent() {
                             fileName={`Export Filter Result ${formattedDate} ${formattedTimeString}`}
                           />
                         )}
-                        {isLoading ? (
-                          <TableLoadingSkelton />
-                        ) : searchResult && searchResult?.length > 0 ? (
-                          <DataTable
-                            columns={searchResultColumns}
-                            data={searchResult}
-                            // customStyles={customStyles}
-                            defaultSortField="title"
-                            paginations
-                            fixedHeader={true}
-                            // fixedHeaderScrollHeight={'500px'}
-                            selectableRows={false}
-                            className="table msyDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                            highlightOnHover={true}
-                          />
-                        ) : (
-                          <div className="text-center mt-4">
-                            <p>No data found</p>
-                          </div>
-                        )}
-                      </div>
-                      <div className="back-to-top pull-right mt-2 mx-2 d-flex justify-content-end">
-                        <label className="mx-2">rows per page</label>
-                        <select
-                          onChange={(e) => {
-                            handleSearchChanged(e, 'LIMIT');
-                          }}
-                          className="mx-2"
-                        >
-                          <option value="10">10</option>
-                          <option value="20">20</option>
-                          <option value="30">30</option>
-                          <option value="40">40</option>
-                        </select>
-                        {searchResultData && (
-                          <small>
-                            {searchResultData.from}-{searchResultData.to} of{' '}
-                            {searchResultData.total}
-                          </small>
-                        )}
-                        <button
-                          onClick={(e) => {
-                            handleSearchChanged(e, 'MINUS');
-                          }}
-                          disabled={searchResultData?.from === 1 ? true : false}
-                          className="mx-2"
-                        >
-                          <i className="icofont-arrow-left"></i>
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            handleSearchChanged(e, 'PLUS');
-                          }}
-                        >
-                          <i className="icofont-arrow-right"></i>
-                        </button>
-                      </div>
-                    </div>
-                  </Tab>
-                )}
-                {localStorage.getItem('account_for') === 'SELF' && (
-                  <Tab eventKey="Assigned_To_Me" title="Assigned To me">
-                    <div className="card mb-3 mt-3">
-                      <div className="card-body">
-                        {assignedToMe && (
-                          <ExportAllTicketsToExcel
-                            className="btn btn-sm btn-danger mt-3"
-                            fileName="Assign To Me"
-                            typeOf="AssignToMe"
-                          />
-                        )}
-                        {isLoading && <TableLoadingSkelton />}
-
-                        {!isLoading &&
-                        assignedToMe &&
-                        assignedToMe?.length > 0 ? (
-                          <DataTable
-                            // customStyles={customStyles}
-                            columns={assignedToMeColumns}
-                            onChangeRowsPerPage={(newPerPage, page) => {
-                              setItemsPerPage(newPerPage); // Update items per page
-                              setCurrentPage(page); // Reset current page state when items per page changes
-                            }}
-                            data={assignedToMe}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            // fixedHeaderScrollHeight={'500px'}
-                            selectableRows={false}
-                            highlightOnHover={true}
-                            responsive={true}
-                          />
-                        ) : (
-                          !isLoading && (
-                            <div className="text-center mt-4">
-                              <p>No data found</p>
-                            </div>
+                        {
+                          isLoading ? (
+                            <TableLoadingSkelton />
+                          ) : (
+                            searchResult && (
+                              <DataTable
+                                columns={searchResultColumns}
+                                data={searchResult}
+                                // customStyles={customStyles}
+                                defaultSortField="title"
+                                paginations
+                                fixedHeader={true}
+                                noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
+                                // fixedHeaderScrollHeight={'500px'}
+                                selectableRows={false}
+                                className="table msyDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                                highlightOnHover={true}
+                              />
+                            )
                           )
-                        )}
-
-                        <div className="back-to-top pull-right mt-2 mx-2">
+                          //  : (
+                          //   <div className="text-center mt-4">
+                          //     <p>No data found</p>
+                          //   </div>
+                          // )
+                        }
+                      </div>
+                      {searchResult && searchResult?.length > 0 && (
+                        <div className="back-to-top pull-right mt-2 mx-2 d-flex justify-content-end">
                           <label className="mx-2">rows per page</label>
                           <select
                             onChange={(e) => {
-                              handleAssignedToMeRowChanged(e, 'LIMIT');
+                              handleSearchChanged(e, 'LIMIT');
                             }}
                             className="mx-2"
                           >
@@ -3317,28 +3265,114 @@ export default function MyTicketComponent() {
                             <option value="30">30</option>
                             <option value="40">40</option>
                           </select>
-                          {assignedToMeData && (
+                          {searchResultData && (
                             <small>
-                              {assignedToMeData.from}-{assignedToMeData.to} of{' '}
-                              {assignedToMeData.total}
+                              {searchResultData.from}-{searchResultData.to} of{' '}
+                              {searchResultData.total}
                             </small>
                           )}
                           <button
                             onClick={(e) => {
-                              handleAssignedToMeRowChanged(e, 'MINUS');
+                              handleSearchChanged(e, 'MINUS');
                             }}
+                            disabled={
+                              searchResultData?.from === 1 ? true : false
+                            }
                             className="mx-2"
                           >
                             <i className="icofont-arrow-left"></i>
                           </button>
                           <button
                             onClick={(e) => {
-                              handleAssignedToMeRowChanged(e, 'PLUS');
+                              handleSearchChanged(e, 'PLUS');
                             }}
                           >
                             <i className="icofont-arrow-right"></i>
                           </button>
                         </div>
+                      )}
+                    </div>
+                  </Tab>
+                )}
+                {localStorage.getItem('account_for') === 'SELF' && (
+                  <Tab eventKey="Assigned_To_Me" title="Assigned To me">
+                    <div className="card mb-3 mt-3">
+                      <div className="card-body">
+                        {assignedToMe?.length > 0 && (
+                          <ExportAllTicketsToExcel
+                            className="btn btn-sm btn-danger mt-3"
+                            fileName="Assign To Me"
+                            typeOf="AssignToMe"
+                          />
+                        )}
+                        {isLoading && <TableLoadingSkelton />}
+
+                        {
+                          !isLoading && assignedToMe && (
+                            <DataTable
+                              // customStyles={customStyles}
+                              columns={assignedToMeColumns}
+                              onChangeRowsPerPage={(newPerPage, page) => {
+                                setItemsPerPage(newPerPage); // Update items per page
+                                setCurrentPage(page); // Reset current page state when items per page changes
+                              }}
+                              data={assignedToMe}
+                              defaultSortField="title"
+                              fixedHeader={true}
+                              noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
+                              // fixedHeaderScrollHeight={'500px'}
+                              selectableRows={false}
+                              highlightOnHover={true}
+                              responsive={true}
+                            />
+                          )
+                          //  : (
+                          // (
+                          //   !isLoading && (
+                          //     <div className="text-center mt-4">
+                          //       <p>No data found</p>
+                          //     </div>
+                          //   )
+                          // )
+                        }
+
+                        {assignedToMe && assignedToMe?.length > 0 && (
+                          <div className="back-to-top pull-right mt-2 mx-2">
+                            <label className="mx-2">rows per page</label>
+                            <select
+                              onChange={(e) => {
+                                handleAssignedToMeRowChanged(e, 'LIMIT');
+                              }}
+                              className="mx-2"
+                            >
+                              <option value="10">10</option>
+                              <option value="20">20</option>
+                              <option value="30">30</option>
+                              <option value="40">40</option>
+                            </select>
+                            {assignedToMeData && (
+                              <small>
+                                {assignedToMeData.from}-{assignedToMeData.to} of{' '}
+                                {assignedToMeData.total}
+                              </small>
+                            )}
+                            <button
+                              onClick={(e) => {
+                                handleAssignedToMeRowChanged(e, 'MINUS');
+                              }}
+                              className="mx-2"
+                            >
+                              <i className="icofont-arrow-left"></i>
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                handleAssignedToMeRowChanged(e, 'PLUS');
+                              }}
+                            >
+                              <i className="icofont-arrow-right"></i>
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </Tab>
@@ -3347,68 +3381,76 @@ export default function MyTicketComponent() {
                 <Tab eventKey="created_by_me" title="Created By Me">
                   <div className="card mb-3 mt-3">
                     <div className="card-body">
-                      {createdByMe && (
+                      {createdByMe?.length > 0 && (
                         <ExportAllTicketsToExcel
                           className="btn btn-sm btn-danger mt-3"
                           fileName="Created By Me"
                           typeOf="CreatedByMe"
                         />
                       )}
-                      {isLoading ? (
-                        <TableLoadingSkelton />
-                      ) : createdByMe && createdByMe?.length > 0 ? (
-                        <DataTable
-                          // customStyles={customStyles}
-                          columns={createdByMeColumns}
-                          data={createdByMe}
-                          defaultSortField="title"
-                          fixedHeader={true}
-                          // fixedHeaderScrollHeight={'500px'}
-                          selectableRows={false}
-                          highlightOnHover={true}
-                          responsive={true}
-                        />
-                      ) : (
-                        <div className="text-center">
-                          <p>No data found</p>
+                      {
+                        isLoading ? (
+                          <TableLoadingSkelton />
+                        ) : (
+                          createdByMe && (
+                            <DataTable
+                              // customStyles={customStyles}
+                              columns={createdByMeColumns}
+                              data={createdByMe}
+                              defaultSortField="title"
+                              fixedHeader={true}
+                              noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
+                              // fixedHeaderScrollHeight={'500px'}
+                              selectableRows={false}
+                              highlightOnHover={true}
+                              responsive={true}
+                            />
+                          )
+                        )
+                        //  : (
+                        //   <div className="text-center">
+                        //     <p>No data found</p>
+                        //   </div>
+                        // )
+                      }
+
+                      {createdByMe && createdByMe?.length > 0 && (
+                        <div className="back-to-top pull-right mt-6 mx-2">
+                          <label className="mx-2">rows per page</label>
+                          <select
+                            onChange={(e) => {
+                              handleCreatedByMeRowChanged(e, 'LIMIT');
+                            }}
+                            className="mx-2"
+                          >
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                          </select>
+                          {createdByMeData && (
+                            <small>
+                              {createdByMeData.from}-{createdByMeData.to} of{' '}
+                              {createdByMeData.total}
+                            </small>
+                          )}
+                          <button
+                            onClick={(e) => {
+                              handleCreatedByMeRowChanged(e, 'MINUS');
+                            }}
+                            className="mx-2"
+                          >
+                            <i className="icofont-arrow-left"></i>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              handleCreatedByMeRowChanged(e, 'PLUS');
+                            }}
+                          >
+                            <i className="icofont-arrow-right"></i>
+                          </button>
                         </div>
                       )}
-
-                      <div className="back-to-top pull-right mt-6 mx-2">
-                        <label className="mx-2">rows per page</label>
-                        <select
-                          onChange={(e) => {
-                            handleCreatedByMeRowChanged(e, 'LIMIT');
-                          }}
-                          className="mx-2"
-                        >
-                          <option value="10">10</option>
-                          <option value="20">20</option>
-                          <option value="30">30</option>
-                          <option value="40">40</option>
-                        </select>
-                        {createdByMeData && (
-                          <small>
-                            {createdByMeData.from}-{createdByMeData.to} of{' '}
-                            {createdByMeData.total}
-                          </small>
-                        )}
-                        <button
-                          onClick={(e) => {
-                            handleCreatedByMeRowChanged(e, 'MINUS');
-                          }}
-                          className="mx-2"
-                        >
-                          <i className="icofont-arrow-left"></i>
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            handleCreatedByMeRowChanged(e, 'PLUS');
-                          }}
-                        >
-                          <i className="icofont-arrow-right"></i>
-                        </button>
-                      </div>
                     </div>
                   </div>
                 </Tab>
@@ -3419,7 +3461,7 @@ export default function MyTicketComponent() {
                   >
                     <div className="card mb-3 mt-3">
                       <div className="card-body">
-                        {departmentwiseTicket && (
+                        {departmentwiseTicket?.length > 0 && (
                           <ExportAllTicketsToExcel
                             className="btn btn-sm btn-danger mt-3"
                             fileName="Departmentwise Ticket"
@@ -3428,59 +3470,66 @@ export default function MyTicketComponent() {
                         )}
                         {isLoading ? (
                           <TableLoadingSkelton />
-                        ) : departmentwiseTicket &&
-                          departmentwiseTicket?.length > 0 ? (
-                          <DataTable
-                            columns={departmentwisetTicketColumns}
-                            // customStyles={customStyles}
-                            data={departmentwiseTicket}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            // fixedHeaderScrollHeight={'500px'}
-                            selectableRows={false}
-                            highlightOnHover={true}
-                          />
                         ) : (
-                          <div className="text-center">
-                            <p>No data found</p>
-                          </div>
+                          departmentwiseTicket && (
+                            <DataTable
+                              columns={departmentwisetTicketColumns}
+                              // customStyles={customStyles}
+                              data={departmentwiseTicket}
+                              defaultSortField="title"
+                              noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
+                              fixedHeader={true}
+                              // fixedHeaderScrollHeight={'500px'}
+                              selectableRows={false}
+                              highlightOnHover={true}
+                            />
+                          )
                         )}
+                        {/* // : (
+                        //   <div className="text-center">
+                        //     <p>No data found</p>
+                        //   </div>
+                        // ) */}
 
-                        <div className="back-to-top pull-right mt-2 mx-2">
-                          <label className="mx-2">rows per page</label>
-                          <select
-                            onChange={(e) => {
-                              handleDepartmentWiseRowChanged(e, 'LIMIT');
-                            }}
-                            className="mx-2"
-                          >
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="40">40</option>
-                          </select>
-                          {departmentWiseData && (
-                            <small>
-                              {departmentWiseData.from}-{departmentWiseData.to}{' '}
-                              of {departmentWiseData.total}
-                            </small>
+                        {departmentwiseTicket &&
+                          departmentwiseTicket?.length > 0 && (
+                            <div className="back-to-top pull-right mt-2 mx-2">
+                              <label className="mx-2">rows per page</label>
+                              <select
+                                onChange={(e) => {
+                                  handleDepartmentWiseRowChanged(e, 'LIMIT');
+                                }}
+                                className="mx-2"
+                              >
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                                <option value="40">40</option>
+                              </select>
+                              {departmentWiseData && (
+                                <small>
+                                  {departmentWiseData.from}-
+                                  {departmentWiseData.to} of{' '}
+                                  {departmentWiseData.total}
+                                </small>
+                              )}
+                              <button
+                                onClick={(e) => {
+                                  handleDepartmentWiseRowChanged(e, 'MINUS');
+                                }}
+                                className="mx-2"
+                              >
+                                <i className="icofont-arrow-left"></i>
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  handleDepartmentWiseRowChanged(e, 'PLUS');
+                                }}
+                              >
+                                <i className="icofont-arrow-right"></i>
+                              </button>
+                            </div>
                           )}
-                          <button
-                            onClick={(e) => {
-                              handleDepartmentWiseRowChanged(e, 'MINUS');
-                            }}
-                            className="mx-2"
-                          >
-                            <i className="icofont-arrow-left"></i>
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              handleDepartmentWiseRowChanged(e, 'PLUS');
-                            }}
-                          >
-                            <i className="icofont-arrow-right"></i>
-                          </button>
-                        </div>
                       </div>
                     </div>
                   </Tab>
@@ -3490,67 +3539,75 @@ export default function MyTicketComponent() {
                   <Tab eventKey="your_task" title="Your Task">
                     <div className="card mb-3 mt-3">
                       <div className="card-body">
-                        {yourTask && (
+                        {yourTask?.length > 0 && (
                           <ExportAllTicketsToExcel
                             className="btn btn-sm btn-danger mt-3"
                             fileName="Your Task"
                             typeOf="YouTask"
                           />
                         )}
-                        {isLoading ? (
-                          <TableLoadingSkelton />
-                        ) : yourTask && yourTask.length > 0 ? (
-                          <DataTable
-                            columns={yourTaskColumns}
-                            data={yourTask}
-                            // customStyles={customStyles}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            // fixedHeaderScrollHeight={'500px'}
-                            selectableRows={false}
-                            highlightOnHover={true}
-                          />
-                        ) : (
-                          <div className="text-center">
-                            <p>No data found</p>
+                        {
+                          isLoading ? (
+                            <TableLoadingSkelton />
+                          ) : (
+                            yourTask && (
+                              <DataTable
+                                columns={yourTaskColumns}
+                                data={yourTask}
+                                // customStyles={customStyles}
+                                defaultSortField="title"
+                                fixedHeader={true}
+                                noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
+                                // fixedHeaderScrollHeight={'500px'}
+                                selectableRows={false}
+                                highlightOnHover={true}
+                              />
+                            )
+                          )
+                          // : (
+                          //   <div className="text-center">
+                          //     <p>No data found</p>
+                          //   </div>
+                          // )
+                        }
+
+                        {yourTask && yourTask?.length > 0 && (
+                          <div className="back-to-top pull-right mt-2 mx-2">
+                            <label className="mx-2">rows per page</label>
+                            <select
+                              onChange={(e) => {
+                                handleYourTaskRowChanged(e, 'LIMIT');
+                              }}
+                              className="mx-2"
+                            >
+                              <option value="10">10</option>
+                              <option value="20">20</option>
+                              <option value="30">30</option>
+                              <option value="40">40</option>
+                            </select>
+                            {yourTaskData && (
+                              <small>
+                                {yourTaskData.from}-{yourTaskData.to} of{' '}
+                                {yourTaskData.total}
+                              </small>
+                            )}
+                            <button
+                              onClick={(e) => {
+                                handleYourTaskRowChanged(e, 'MINUS');
+                              }}
+                              className="mx-2"
+                            >
+                              <i className="icofont-arrow-left"></i>
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                handleYourTaskRowChanged(e, 'PLUS');
+                              }}
+                            >
+                              <i className="icofont-arrow-right"></i>
+                            </button>
                           </div>
                         )}
-
-                        <div className="back-to-top pull-right mt-2 mx-2">
-                          <label className="mx-2">rows per page</label>
-                          <select
-                            onChange={(e) => {
-                              handleYourTaskRowChanged(e, 'LIMIT');
-                            }}
-                            className="mx-2"
-                          >
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="40">40</option>
-                          </select>
-                          {yourTaskData && (
-                            <small>
-                              {yourTaskData.from}-{yourTaskData.to} of{' '}
-                              {yourTaskData.total}
-                            </small>
-                          )}
-                          <button
-                            onClick={(e) => {
-                              handleYourTaskRowChanged(e, 'MINUS');
-                            }}
-                            className="mx-2"
-                          >
-                            <i className="icofont-arrow-left"></i>
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              handleYourTaskRowChanged(e, 'PLUS');
-                            }}
-                          >
-                            <i className="icofont-arrow-right"></i>
-                          </button>
-                        </div>
                       </div>
                     </div>
                   </Tab>
@@ -3562,7 +3619,7 @@ export default function MyTicketComponent() {
                       <div className="row">
                         <div className="row">
                           <div className="col-md-6 mb-1">
-                            {unpassedTickets && (
+                            {unpassedTickets?.length > 0 && (
                               <ExportAllTicketsToExcel
                                 className="btn btn-danger btn-block"
                                 fileName="Unpassed Ticket"
@@ -3626,58 +3683,64 @@ export default function MyTicketComponent() {
 
                       {isLoading ? (
                         <TableLoadingSkelton />
-                      ) : unpassedTickets && unpassedTickets?.length > 0 ? (
-                        <DataTable
-                          columns={unpassedColumns}
-                          data={unpassedTickets}
-                          // customStyles={customStyles}
-                          defaultSortField="title"
-                          fixedHeader={true}
-                          // fixedHeaderScrollHeight={'500px'}
-                          selectableRows={false}
-                          highlightOnHover={true}
-                        />
                       ) : (
-                        <div className="text-center mt-4">
-                          <p>No data found</p>
+                        unpassedTickets && (
+                          <DataTable
+                            columns={unpassedColumns}
+                            data={unpassedTickets}
+                            // customStyles={customStyles}
+                            defaultSortField="title"
+                            noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
+                            fixedHeader={true}
+                            // fixedHeaderScrollHeight={'500px'}
+                            selectableRows={false}
+                            highlightOnHover={true}
+                          />
+                        )
+                      )}
+                      {/* // : (
+                      //   <div className="text-center mt-4">
+                      //     <p>No data found</p>
+                      //   </div>
+                      // ) */}
+
+                      {unpassedTickets && unpassedTickets?.length > 0 && (
+                        <div className="back-to-top pull-right mt-2 mx-2">
+                          <label className="mx-2">rows per page</label>
+                          <select
+                            onChange={(e) => {
+                              handleUnpassedRowChanged(e, 'LIMIT');
+                            }}
+                            className="mx-2"
+                          >
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                          </select>
+                          {unpassedData && (
+                            <small>
+                              {unpassedData.from}-{unpassedData.to} of{' '}
+                              {unpassedData.total}
+                            </small>
+                          )}
+                          <button
+                            onClick={(e) => {
+                              handleUnpassedRowChanged(e, 'MINUS');
+                            }}
+                            className="mx-2"
+                          >
+                            <i className="icofont-arrow-left"></i>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              handleUnpassedRowChanged(e, 'PLUS');
+                            }}
+                          >
+                            <i className="icofont-arrow-right"></i>
+                          </button>
                         </div>
                       )}
-
-                      <div className="back-to-top pull-right mt-2 mx-2">
-                        <label className="mx-2">rows per page</label>
-                        <select
-                          onChange={(e) => {
-                            handleUnpassedRowChanged(e, 'LIMIT');
-                          }}
-                          className="mx-2"
-                        >
-                          <option value="10">10</option>
-                          <option value="20">20</option>
-                          <option value="30">30</option>
-                          <option value="40">40</option>
-                        </select>
-                        {unpassedData && (
-                          <small>
-                            {unpassedData.from}-{unpassedData.to} of{' '}
-                            {unpassedData.total}
-                          </small>
-                        )}
-                        <button
-                          onClick={(e) => {
-                            handleUnpassedRowChanged(e, 'MINUS');
-                          }}
-                          className="mx-2"
-                        >
-                          <i className="icofont-arrow-left"></i>
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            handleUnpassedRowChanged(e, 'PLUS');
-                          }}
-                        >
-                          <i className="icofont-arrow-right"></i>
-                        </button>
-                      </div>
                     </div>
                   </div>
                 </Tab>

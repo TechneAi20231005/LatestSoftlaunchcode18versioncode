@@ -4,7 +4,11 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Select from 'react-select';
 
 // // staic import
-import { _base, userSessionData } from '../../settings/constants';
+import {
+  _base,
+  userSessionData,
+  _attachmentUrl
+} from '../../settings/constants';
 import Alert from './Alert';
 import UserService from '../../services/MastersService/UserService';
 import {
@@ -255,7 +259,10 @@ export default function Header() {
               >
                 <img
                   className="avatar lg rounded-circle img-thumbnail"
-                  src={data?.profile_picture || DemoProfileImg}
+                  src={
+                    _attachmentUrl + data?.data?.profile_picture ||
+                    DemoProfileImg
+                  }
                   alt="profile"
                 />
               </Dropdown.Toggle>
@@ -280,7 +287,9 @@ export default function Header() {
                     <div className="d-flex gap-2">
                       <img
                         className="avatar rounded-circle"
-                        src={data?.profile_picture}
+                        src={
+                          data && _attachmentUrl + data?.data?.profile_picture
+                        }
                         alt="profile"
                       />
                       <div className="flex-fill">

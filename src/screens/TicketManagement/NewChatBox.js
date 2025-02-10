@@ -40,7 +40,7 @@ const Chatbox = (props) => {
 
         if (res.status === 200 && res.data.status === 1) {
           console.log('res', res);
-          const data = res.data.data.filter(
+          const data = res.data.data?.data?.filter(
             (d) => d.is_active === 1 && d.account_for
           );
           const select = data.map((d) => ({

@@ -26,6 +26,7 @@ export const customerMasterSlice = createSlice({
   initialState,
   reducers: {
     loaderModal: (state, action) => {
+      state.notify = null;
       state.showLoaderModal = action.payload;
     },
     handleModalOpen: (state, action) => {
@@ -33,6 +34,7 @@ export const customerMasterSlice = createSlice({
       state.modal = action.payload;
     },
     handleModalClose: (state, action) => {
+      state.notify = null;
       state.modal = action.payload;
     }
   },
