@@ -258,6 +258,10 @@ export default function Header() {
                 className="nav-link dropdown-toggle pulse p-0"
               >
                 <img
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = DemoProfileImg;
+                  }}
                   className="avatar lg rounded-circle img-thumbnail"
                   src={
                     _attachmentUrl + data?.data?.profile_picture ||
@@ -287,6 +291,10 @@ export default function Header() {
                     <div className="d-flex gap-2">
                       <img
                         className="avatar rounded-circle"
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = DemoProfileImg;
+                        }}
                         src={
                           data && _attachmentUrl + data?.data?.profile_picture
                         }
