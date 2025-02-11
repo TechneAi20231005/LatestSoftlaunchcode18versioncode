@@ -139,21 +139,22 @@ export const CustomerMappingSlice = createSlice({
             Sr: exportTempateData[i].counter,
             Query: exportTempateData[i].query_type_name,
             Template: exportTempateData[i].template_name,
+            'Dynamic Form Name': exportTempateData[i].dynamic_form_name,
+
             Department: exportTempateData[i].department_name,
             Priority: exportTempateData[i].priority,
             Approach: exportTempateData[i].approach,
             remark: exportTempateData[i].remark,
+            'Customer Type Name': exportTempateData[i].customer_type_name,
+            'Assign User': exportTempateData[i].mapped_user,
+            'Confirmation Required':
+              exportTempateData[i].confirmation_required == 1 ? 'Yes' : 'no',
             Status: exportTempateData[i].is_active == 1 ? 'Active' : 'Deactive',
             'Created At': exportTempateData[i].created_at,
             'Created By': exportTempateData[i].created_by,
             'Updated At': exportTempateData[i].updated_at,
-            'Updated By': exportTempateData[i].updated_by,
+            'Updated By': exportTempateData[i].updated_by
             // confirmation_required:[i].confirmation_required,
-            'Dynamic Form Name': exportTempateData[i].dynamic_form_name,
-            'Customer Type Name': exportTempateData[i].customer_type_name,
-            'Assign User': exportTempateData[i].mapped_user,
-            'Confirmation Required':
-              exportTempateData[i].confirmation_required == 1 ? 'Yes' : 'no'
           });
           state.exportData = exportData;
         }
@@ -173,7 +174,6 @@ export const CustomerMappingSlice = createSlice({
       state.isLoading.customerMappingList = false;
       state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        console.log('data==', payload.data.data.data);
         const select = payload.data.data.data
 
           .filter((d) => d.is_active)

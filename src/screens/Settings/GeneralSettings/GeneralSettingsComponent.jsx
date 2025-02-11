@@ -97,16 +97,19 @@ function GeneralSettings() {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const data = res.data.data?.data?.sort((a, b) => {
-            if (a.first_name && b.first_name) {
-              return a.first_name.localeCompare(b.first_name);
-            }
-            return 0;
-          });
+          const data = res.data.data?.data
+            ?.filter((i) => i.is_active === 1)
+            ?.sort((a, b) => {
+              if (a.first_name && b.first_name) {
+                return a.first_name.localeCompare(b.first_name);
+              }
+              return 0;
+            });
           setUser(
             data.map((d) => ({
               value: d.id,
-              label: d.first_name + ' ' + d.last_name
+              // label: d.first_name + ' ' + d.last_name
+              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
             }))
           );
         }

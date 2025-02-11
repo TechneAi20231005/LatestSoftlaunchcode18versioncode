@@ -259,7 +259,6 @@ export default function CreateTicketComponent() {
   };
 
   const uploadAttachmentHandler = (e, type, id = null) => {
-    console.log('type', type);
     if (type === 'UPLOAD') {
       // const files = e.target.files;
       const fileInput = e.target;
@@ -267,7 +266,6 @@ export default function CreateTicketComponent() {
       const uploadedFiles = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-        console.log('file.size', file.size);
         // Check if file size exceeds 5MB (5 * 1024 * 1024 bytes)
         if (file.size > 5 * 1024 * 1024) {
           alert(
@@ -368,9 +366,7 @@ export default function CreateTicketComponent() {
                   return;
                 }
                 toast.success(res?.data?.message);
-                console.log('error', res.data.data);
                 let url = `${_rewampAttachmentUrl}` + res.data.data;
-                console.log('url', url);
                 window.open(url, '_blank').focus();
                 setIsSubmitted(false);
               }
@@ -415,7 +411,6 @@ export default function CreateTicketComponent() {
         setQueryGroupTypeData(null);
       } else {
         var dynamicForm = data[0]?.dynamic_form;
-        console.log('dynamicForm', dynamicForm);
 
         const filteredArray = dynamicForm?.filter(
           (formInstance) =>
@@ -490,7 +485,6 @@ export default function CreateTicketComponent() {
             //SET ALL CUSTOMER MAPPING DATA IN A STATE
             setCustomerMapping(null);
             setCustomerMapping(res.data.data);
-            console.log('res---', res.data.data);
             res.data.data.forEach((query) => {
               if (query.query_type_id) {
                 if (!queryTypeTemp.includes(query.query_type_id)) {
@@ -505,7 +499,7 @@ export default function CreateTicketComponent() {
     await new UserService()
       .getUserById(localStorage.getItem('id'))
       .then((res) => {
-        const { data } = res?.data;
+        const { data } = res?.data?.data;
 
         if (res?.data?.status === 1 && data) {
           setCustomerId(data?.customer_type_id);
@@ -530,26 +524,6 @@ export default function CreateTicketComponent() {
       if (res.payload.status === 200) {
       }
     });
-    new DepartmentMappingService()
-      .getDepartmentMappingByEmployeeId(userSessionData.userId)
-      .then((resp) => {
-        if (resp.data.status === 1) {
-          setisMultipleDepartment(resp.data.data);
-          setUserDepartments(
-            resp.data.data.map((d) => ({
-              value: d.department_id,
-              label: d.department
-            }))
-          );
-          if (resp?.data?.data?.length > 0) {
-            setData((prev) => {
-              const newPrev = { ...prev };
-              newPrev['from_department_id'] = resp.data.data[0].department_id;
-              return newPrev;
-            });
-          }
-        }
-      });
     await new QueryTypeService().getAllQueryGroup(status).then((res) => {
       if (res.data.status === 1) {
         setQueryGroupDropdown(
@@ -579,26 +553,26 @@ export default function CreateTicketComponent() {
       }
     });
 
-    // new DepartmentMappingService()
-    //   .getDepartmentMappingByEmployeeId(userSessionData.userId)
-    //   .then((resp) => {
-    //     if (resp.data.status === 1) {
-    //       setisMultipleDepartment(resp.data.data);
-    //       setUserDepartments(
-    //         resp.data.data.map((d) => ({
-    //           value: d.department_id,
-    //           label: d.department
-    //         }))
-    //       );
-    //       if (resp?.data?.data?.length > 0) {
-    //         setData((prev) => {
-    //           const newPrev = { ...prev };
-    //           newPrev['from_department_id'] = resp.data.data[0].department_id;
-    //           return newPrev;
-    //         });
-    //       }
-    //     }
-    //   });
+    new DepartmentMappingService()
+      .getDepartmentMappingByEmployeeId(userSessionData.userId)
+      .then((resp) => {
+        if (resp.data.status === 1) {
+          setisMultipleDepartment(resp.data.data);
+          setUserDepartments(
+            resp.data.data.map((d) => ({
+              value: d.department_id,
+              label: d.department
+            }))
+          );
+          if (resp?.data?.data?.length > 0) {
+            setData((prev) => {
+              const newPrev = { ...prev };
+              newPrev['from_department_id'] = resp.data.data[0].department_id;
+              return newPrev;
+            });
+          }
+        }
+      });
 
     dispatch(getRoles());
   }, [dispatch]);
@@ -632,9 +606,6 @@ export default function CreateTicketComponent() {
       const res = await new QueryTypeService().getQueryTypeMapped(e?.value);
 
       if (res.data.status === 1) {
-        console.log('res==>', res.data.data);
-        console.log('res==>', e.value);
-
         const activeData = res?.data?.data
           .filter((d) => d.is_active === 1)
           .map((d) => ({ value: d.id, label: d.query_type_name }));
@@ -716,8 +687,9 @@ export default function CreateTicketComponent() {
           const customerMapping = filteredItems.filter(
             (item) => Number(item.customer_type_id) === Number(customerID)
           );
+
           const mappingId = filteredItems.map((item) =>
-            accountFor === 'SELF' ? item.id : customerMapping[0].id
+            accountFor === 'SELF' ? item?.id : customerMapping[0]?.id
           );
 
           setData((prev) => {
@@ -1115,7 +1087,7 @@ export default function CreateTicketComponent() {
             </div>
           </>
         )}
-        {console.log(rows, 'rows')}
+
         {data.ticket_uploading === 'REGULAR' && rows && rows?.length > 0 && (
           <div className="card mt-2">
             <div className="card-body">
