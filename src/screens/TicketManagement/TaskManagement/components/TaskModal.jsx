@@ -435,7 +435,6 @@ export default function TaskModal(props) {
 
     await new TaskTicketTypeService()?.getTaskType('Task')?.then((res) => {
       if (res?.status === 200) {
-        console.log(res?.data?.data?.data, '>>>>>>');
         let filterData = res?.data?.data.data?.filter(
           (item) => item?.is_active === 1
         );
@@ -560,7 +559,8 @@ export default function TaskModal(props) {
         fileInputRef.current.value = '';
       }
     } else if (type === 'DELETE') {
-      let filteredFileArray = selectedFile.filter((index) => id !== index);
+      // let filteredFileArray = selectedFile.filter((index) => id !== index);
+      let filteredFileArray = selectedFile.filter((_, index) => id !== index);
       setSelectedFile(filteredFileArray);
     } else if (type === 'CUSTOMER') {
       file = selectedFile;
@@ -1830,14 +1830,14 @@ export default function TaskModal(props) {
                         defaultValue={undefined} // Remove this line, as Formik manages the value
                       />
                     ) : (
-                      <input
+                      <Field
                         type="text"
                         className="form-control form-control-sm"
                         name="task_hours"
                         defaultValue={
                           props.data.task_hours
                             ? props.data.task_hours
-                            : '00:00'
+                            : values.task_hours
                         }
                         required
                       />
@@ -2324,6 +2324,7 @@ export default function TaskModal(props) {
                                 className="btn btn-danger text-white btn-sm p-0 px-1 mt-0"
                                 type="button"
                                 onClick={(e) => {
+                                  // handleDeleteAttachment((e, 'DELETE', i));
                                   uploadAttachmentHandler(e, 'DELETE', i);
                                 }}
                               >

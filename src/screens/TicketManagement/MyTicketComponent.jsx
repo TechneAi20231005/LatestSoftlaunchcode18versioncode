@@ -111,7 +111,9 @@ export default function MyTicketComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const [assignedDepartmentValue, setAssignedDepartment] = useState('');
   const [entryDepartment, setEntryDepartment] = useState();
-  const [key, setKey] = useState('Assigned_To_Me');
+  const [key, setKey] = useState(
+    account_for === 'SELF' ? 'Assigned_To_Me' : 'created_by_me'
+  );
   const selectInputRef = useRef();
   const selectAssignUserRef = useRef();
   const selectEntryDeptRef = useRef();
@@ -1847,6 +1849,26 @@ export default function MyTicketComponent() {
           }
         }
       });
+
+    if (account_for === 'CUSTOMER') {
+      const forms = {
+        limit: 10,
+        typeOf: 'CreatedByMe',
+        page: 1
+      };
+      await new MyTicketService()
+        .getUserTicketsTestWithoutTypeOf(forms)
+        .then((res) => {
+          if (res.status === 200) {
+            setCreatedByMeData(res.data.data);
+
+            setCreatedByMe(
+              res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
+            );
+          }
+        });
+    }
+
     dispatch(getRoles());
   }, [dispatch]);
 
@@ -3215,14 +3237,15 @@ export default function MyTicketComponent() {
                   >
                     <div className="card mb-3 mt-3">
                       <div className="card-body">
-                        { searchResult?.length > 0 && searchResultExport?.length > 0 && (
-                          <ExportToExcel
-                            className="btn btn-sm btn-danger mt-3"
-                            apiData={searchResultExport}
-                            typeOf="SearchResult"
-                            fileName={`Export Filter Result ${formattedDate} ${formattedTimeString}`}
-                          />
-                        )}
+                        {searchResult?.length > 0 &&
+                          searchResultExport?.length > 0 && (
+                            <ExportToExcel
+                              className="btn btn-sm btn-danger mt-3"
+                              apiData={searchResultExport}
+                              typeOf="SearchResult"
+                              fileName={`Export Filter Result ${formattedDate} ${formattedTimeString}`}
+                            />
+                          )}
                         {
                           isLoading ? (
                             <TableLoadingSkelton />
@@ -3235,7 +3258,9 @@ export default function MyTicketComponent() {
                                 defaultSortField="title"
                                 paginations
                                 fixedHeader={true}
-                                noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
+                                noDataComponent={
+                                  <NotFound topMargin={0} maxHeight={250} />
+                                }
                                 // fixedHeaderScrollHeight={'500px'}
                                 selectableRows={false}
                                 className="table msyDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
@@ -3318,7 +3343,9 @@ export default function MyTicketComponent() {
                               data={assignedToMe}
                               defaultSortField="title"
                               fixedHeader={true}
-                              noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
+                              noDataComponent={
+                                <NotFound topMargin={0} maxHeight={250} />
+                              }
                               // fixedHeaderScrollHeight={'500px'}
                               selectableRows={false}
                               highlightOnHover={true}
@@ -3398,7 +3425,9 @@ export default function MyTicketComponent() {
                               data={createdByMe}
                               defaultSortField="title"
                               fixedHeader={true}
-                              noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
+                              noDataComponent={
+                                <NotFound topMargin={0} maxHeight={250} />
+                              }
                               // fixedHeaderScrollHeight={'500px'}
                               selectableRows={false}
                               highlightOnHover={true}
@@ -3476,7 +3505,9 @@ export default function MyTicketComponent() {
                               // customStyles={customStyles}
                               data={departmentwiseTicket}
                               defaultSortField="title"
-                              noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
+                              noDataComponent={
+                                <NotFound topMargin={0} maxHeight={250} />
+                              }
                               fixedHeader={true}
                               // fixedHeaderScrollHeight={'500px'}
                               selectableRows={false}
@@ -3556,7 +3587,9 @@ export default function MyTicketComponent() {
                                 // customStyles={customStyles}
                                 defaultSortField="title"
                                 fixedHeader={true}
-                                noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
+                                noDataComponent={
+                                  <NotFound topMargin={0} maxHeight={250} />
+                                }
                                 // fixedHeaderScrollHeight={'500px'}
                                 selectableRows={false}
                                 highlightOnHover={true}
@@ -3689,7 +3722,9 @@ export default function MyTicketComponent() {
                             data={unpassedTickets}
                             // customStyles={customStyles}
                             defaultSortField="title"
-                            noDataComponent={<NotFound topMargin={0} maxHeight={250} />}
+                            noDataComponent={
+                              <NotFound topMargin={0} maxHeight={250} />
+                            }
                             fixedHeader={true}
                             // fixedHeaderScrollHeight={'500px'}
                             selectableRows={false}
