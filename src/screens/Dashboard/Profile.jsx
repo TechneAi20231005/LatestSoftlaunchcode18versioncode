@@ -8,9 +8,15 @@ import ProfileImg from '../../assets/images/profile_av.png';
 import UserService from '../../services/MastersService/UserService';
 import * as Validation from '../../components/Utilities/Validation';
 import InputGroup from 'react-bootstrap/InputGroup';
+import AvatarEditor from 'react-avatar-edit';
+import { Button } from 'react-bootstrap';
+import DemoProfileImg from '../../assets/images/profile_av.png';
 
 function Profile() {
   const [state, setState] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
 
   const [inputState, setInputState] = useState({
     firstNameErr: '',
@@ -218,27 +224,45 @@ function Profile() {
     });
   };
   const fileChangedHandler = (e) => {
-    let file_size = e.target.files[0].size;
+    let file_size = e?.target?.files[0]?.size;
     if (file_size > 2000000) {
       alert('Please select file size less than 2 MB');
       document.getElementById('profile_picture').value = '';
     }
-    let a = e.target.files[0].name;
-    let b = a.lastIndexOf('.');
-    let imageFile = a.substring(b);
+    let a = e?.target?.files[0]?.name;
+    let b = a?.lastIndexOf('.');
+    let imageFile = a?.substring(b);
     if (imageFile == '.jpg' || imageFile == '.png' || imageFile == '.jpeg') {
       const reader = new FileReader();
       reader.onloadend = () => {
-        setData((prevData) => ({
-          ...prevData,
-          upload_Picture: reader.result
-        }));
+        setImage(reader.result);
+        setShowModal(true);
+        // setData((prevData) => ({
+        //   ...prevData,
+        //   upload_Picture: reader.result
+        // }));
       };
-      reader.readAsDataURL(e.target.files[0]);
+      reader.readAsDataURL(e?.target?.files[0]);
     } else {
       alert('Please Upload jpg, jepg and png Image');
       document.getElementById('profile_picture').value = '';
     }
+  };
+
+  const handleCrop = (previewUrl) => {
+     setData((prevData) => ({
+          ...prevData,
+          upload_Picture: previewUrl
+        }));
+    // setPreview(previewUrl);
+  };
+
+  // Save the cropped image
+  const handleSave = () => {
+    // if (preview) {
+    //   console.log("Saving avatar:", preview);
+    // }
+    setShowModal(false);
   };
 
   const handlePreferredComm = (e) => {
@@ -277,6 +301,10 @@ function Profile() {
                 className="avatar lg rounded-circle img-thumbnail"
                 src={  data?.upload_Picture ? data?.upload_Picture  :  _attachmentUrl + data?.profile_picture }
                 alt="profile"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = DemoProfileImg;
+                }}
                 style={{
                   height: '11.375rem',
                   width: '9.375rem',
@@ -393,6 +421,32 @@ function Profile() {
             </div>
           </div>
         </div>
+
+        <Modal  className="custom-modal"  show={showModal}  onHide={() => setShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit Avatar</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <AvatarEditor
+            width={300}
+            height={300}
+            border={50}
+            borderRadius={150}
+            scale={1.2}
+            onCrop={handleCrop}
+            onClose={() => setImage(null)}
+            src={image}
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={() => setShowModal(false)}>
+            Cancel
+          </Button>
+          <Button variant="primary" onClick={handleSave}>
+            Save Avatar
+          </Button>
+        </Modal.Footer>
+      </Modal>
 
         <div className="col-8">
           <div className="card shadow">
