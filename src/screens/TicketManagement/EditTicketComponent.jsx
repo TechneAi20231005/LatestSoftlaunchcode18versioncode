@@ -782,7 +782,6 @@ export default function EditTicketComponent({ match }) {
           value: d.id,
           label: d.first_name + ' ' + d.last_name + '(' + d.id + ')'
         }));
-      console.log('selete', user);
       setUserDropdown(select);
       setUserName(null);
     }
@@ -1160,8 +1159,8 @@ export default function EditTicketComponent({ match }) {
                           >
                             {selectedOption
                               ? selectedOption
-                              : data?.parent_name !== null
-                              ? data?.parent_name
+                              : data?.type_name !== null
+                              ? data?.type_name
                               : 'Primary'}
                           </div>
                           {isMenuOpen && (
@@ -1192,7 +1191,7 @@ export default function EditTicketComponent({ match }) {
                       </div>
                     </div>
 
-                    <div className="col-sm-4">
+                    {/* <div className="col-sm-4">
                       <label className="col-form-label">
                         <b>Ticket Type : </b>
                       </label>
@@ -1204,7 +1203,7 @@ export default function EditTicketComponent({ match }) {
                         readOnly
                         name="ticket_type_id"
                       />
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
@@ -1219,7 +1218,6 @@ export default function EditTicketComponent({ match }) {
                           Project : <Astrick color="red" size="13px" />
                         </b>
                       </label>
-                      {console.log('project', projectDropdown)}
                       {projectDropdown && data && (
                         <Select
                           id="project_id"
@@ -1332,8 +1330,6 @@ export default function EditTicketComponent({ match }) {
                             Assign to User : <Astrick color="red" size="13px" />
                           </b>
                         </label>
-                        {console.log('userDropdown', userDropdown)}
-                        {console.log('userDrp', userDrp)}
                         {userDropdown && userDrp && (
                           <Select
                             id="assign_to_user_id"

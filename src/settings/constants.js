@@ -24,7 +24,7 @@ export const fpURL = _rewampApiUrl + 'reset/forgetPasswordOtp';
 export const otpURL = _rewampApiUrl + 'reset/sendOtp';
 export const rpURL = _rewampApiUrl + 'reset/resetPassword';
 
-export const attachmentUrl = _apiUrl + 'attachment';
+export const attachmentUrl = _rewampApiUrl + 'attachment';
 
 export const userSessionData = {
   tenantId: localStorage.getItem('tenant_id'),
