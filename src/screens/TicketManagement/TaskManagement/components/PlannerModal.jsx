@@ -399,7 +399,6 @@ function PlannerModal(props) {
       (sumHoras[1] < 10 ? '0' + sumHoras[1] : sumHoras[1]);
     setTotalHours(t);
   };
-  console.log('hhhh', props);
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
