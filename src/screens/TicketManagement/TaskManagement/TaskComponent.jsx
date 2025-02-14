@@ -600,7 +600,7 @@ export default function TaskComponent() {
       .getSprintReportById(ticketId, sprintId)
       .then((res) => {
         if (res?.data?.status) {
-          let temp = res?.data?.data;
+          let temp = res?.data?.data?.data;
           setSprintReport(temp);
           setShowSprintReport(true);
           let exportSprintReport = [];
@@ -750,7 +750,7 @@ export default function TaskComponent() {
     },
     {
       name: 'Task Start Date',
-      selector: (row) => row?.task_start_Date,
+      selector: (row) => row?.task_start_date,
       sortable: true,
       width: '150px'
     },
@@ -769,7 +769,7 @@ export default function TaskComponent() {
     },
     {
       name: 'Task schedule hours',
-      selector: (row) => row?.task_scheduled_Hours,
+      selector: (row) => row?.task_scheduled_hours,
       sortable: true,
       width: '150px'
     },
@@ -787,7 +787,7 @@ export default function TaskComponent() {
     },
     {
       name: 'Task actual status',
-      selector: (row) => row?.task_actual_status,
+      selector: (row) => row?.actual_status,
       sortable: true,
       width: '150px'
     }
