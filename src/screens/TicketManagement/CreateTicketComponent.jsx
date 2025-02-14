@@ -26,6 +26,7 @@ import { getCustomerMappingData } from '../Settings/CustomerMapping/Slices/Custo
 import { getEmployeeDataById, getRoles } from '../Dashboard/DashboardAction';
 import { getUserForMyTicketsData } from './MyTicketComponentAction';
 import { toast } from 'react-toastify';
+import { errorHandler } from '../../utils';
 
 export default function CreateTicketComponent() {
   const navigate = useNavigate();
@@ -572,6 +573,9 @@ export default function CreateTicketComponent() {
             });
           }
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
 
     dispatch(getRoles());

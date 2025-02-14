@@ -214,8 +214,6 @@ function DepartmentComponent() {
 
   return (
     <div className="container-xxl">
-      {Notify && <Alert alertData={Notify} />}
-
       <PageHeader
         headerTitle="Department Master"
         renderRight={() => {

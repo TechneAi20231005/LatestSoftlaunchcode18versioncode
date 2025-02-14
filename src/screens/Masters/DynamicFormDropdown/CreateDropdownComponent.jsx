@@ -7,7 +7,6 @@ import ErrorLogService from '../../../services/ErrorLogService';
 import DynamicFormDropdownMasterService from '../../../services/MastersService/DynamicFormDropdownMasterService';
 import PageHeader from '../../../components/Common/PageHeader';
 
-import Alert from '../../../components/Common/Alert';
 import * as Validation from '../../../components/Utilities/Validation';
 
 import 'react-data-table-component-extensions/dist/index.css';
@@ -15,6 +14,8 @@ import { Astrick } from '../../../components/Utilities/Style';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
+import { errorHandler } from '../../../utils';
+import { toast } from 'react-toastify';
 
 export default function CreateDropdownComponent() {
   const history = useNavigate();
@@ -22,8 +23,8 @@ export default function CreateDropdownComponent() {
   const [data, setData] = useState([{ label: null, value: null }]);
 
   const [notify, setNotify] = useState(null);
-  const [message, setMessage] = useState('')
-  const [display, setDisplay] = useState('')
+  const [message, setMessage] = useState('');
+  const [display, setDisplay] = useState('');
 
   const dispatch = useDispatch();
 
@@ -34,11 +35,11 @@ export default function CreateDropdownComponent() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!message?.trim()) {
-      setDisplay("Dropdown Name is Required");
-      return
+      setDisplay('Dropdown Name is Required');
+      return;
     } else {
-      setDisplay(""); // Clear error
-      console.log("Form Submitted with Dropdown Name:", message);
+      setDisplay(''); // Clear error
+      console.log('Form Submitted with Dropdown Name:', message);
     }
     const formData = new FormData(e.target);
 
@@ -53,32 +54,19 @@ export default function CreateDropdownComponent() {
               },
               {
                 state: {
-                  alert: { type: 'success', message: res.data.message }
+                  alert: toast.success(res.data.message)
                 }
               }
             );
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message);
           }
         } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'User',
-            'Create_User',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.message);
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'Status',
-          'Get_Status',
-          'INSERT',
-          errorObject.data.message
-        );
+        errorHandler(error);
       });
   };
 
@@ -108,7 +96,6 @@ export default function CreateDropdownComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Create Dropdown" />
 
       <div className="card mt-2">
@@ -136,11 +123,11 @@ export default function CreateDropdownComponent() {
                     id="dropdown_name"
                     // required
                     onChange={(e) => {
-                      setMessage(e?.target?.value)
-                      setDisplay(false)
+                      setMessage(e?.target?.value);
+                      setDisplay(false);
                     }}
                   />
-                   {display && <div className="text-danger mt-1">{display}</div>}
+                  {display && <div className="text-danger mt-1">{display}</div>}
                 </div>
               </div>
 

@@ -325,7 +325,6 @@ function CityComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader
         headerTitle="City Master"
         renderRight={() => {

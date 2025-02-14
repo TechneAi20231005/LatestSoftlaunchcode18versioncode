@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import SubModuleService from '../../../services/ProjectManagementService/SubModuleService';
 import Select from 'react-select';
 import 'react-select-plus/dist/react-select-plus.css';
+import { errorHandler } from '../../../utils';
 
 export default class SubModuleDropdown extends Component {
   constructor(props) {
@@ -18,40 +19,45 @@ export default class SubModuleDropdown extends Component {
   }
 
   async getData() {
-    new SubModuleService().getSubModule().then((res) => {
-      const data = [];
-      const defaultValue = [];
+    new SubModuleService()
+      .getSubModule()
+      .then((res) => {
+        const data = [];
+        const defaultValue = [];
 
-      if (res.status === 200) {
-        const temp = res.data.data;
-        for (const key in temp) {
-          data.push({
-            value: temp[key].id.toString(),
-            label: temp[key].sub_module_name
-          });
+        if (res.status === 200) {
+          const temp = res.data.data;
+          for (const key in temp) {
+            data.push({
+              value: temp[key].id.toString(),
+              label: temp[key].sub_module_name
+            });
 
-          if (this.props.defaultValue && this.props.defaultValue != '') {
-            if (Array.isArray(this.props.defaultValue)) {
-              if (this.props.defaultValue.includes(temp[key].id.toString())) {
-                defaultValue.push({
-                  value: temp[key].id.toString(),
-                  label: temp[key].sub_module_name
-                });
-              }
-            } else {
-              if (this.props.defaultValue == temp[key].id) {
-                defaultValue.push({
-                  value: temp[key].id.toString(),
-                  label: temp[key].sub_module_name
-                });
+            if (this.props.defaultValue && this.props.defaultValue != '') {
+              if (Array.isArray(this.props.defaultValue)) {
+                if (this.props.defaultValue.includes(temp[key].id.toString())) {
+                  defaultValue.push({
+                    value: temp[key].id.toString(),
+                    label: temp[key].sub_module_name
+                  });
+                }
+              } else {
+                if (this.props.defaultValue == temp[key].id) {
+                  defaultValue.push({
+                    value: temp[key].id.toString(),
+                    label: temp[key].sub_module_name
+                  });
+                }
               }
             }
           }
+          this.setState({ defaultValue: defaultValue });
+          this.setState({ data: data });
         }
-        this.setState({ defaultValue: defaultValue });
-        this.setState({ data: data });
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }
 
   render() {

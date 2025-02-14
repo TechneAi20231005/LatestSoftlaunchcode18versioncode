@@ -16,6 +16,7 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import { errorHandler } from '../../../utils';
 
 function ProjectComponent() {
   //initial state
@@ -68,7 +69,12 @@ function ProjectComponent() {
         </div>
       )
     },
-    { name: 'Sr', width: '5%', selector: (row) => row.counter + 1, sortable: true },
+    {
+      name: 'Sr',
+      width: '5%',
+      selector: (row) => row.counter + 1,
+      sortable: true
+    },
     {
       name: 'Project Name',
       width: '10%',
@@ -348,14 +354,7 @@ function ProjectComponent() {
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'Project Master',
-          'Get_Project',
-          'INSERT',
-          errorObject.data.message
-        );
+        errorHandler(error);
       });
 
     dispatch(getRoles());
@@ -385,8 +384,6 @@ function ProjectComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader
         headerTitle="Project Master"
         renderRight={() => {

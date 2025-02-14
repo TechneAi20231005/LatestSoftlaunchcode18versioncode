@@ -25,6 +25,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 export default function CreateBillCheckingTransaction({ match }) {
   const { id } = useParams();
@@ -294,6 +295,9 @@ export default function CreateBillCheckingTransaction({ match }) {
             SetAuthorities(res.data.data);
           }
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
 
     // await new ManageMenuService().getRole(roleId).then((res) => {

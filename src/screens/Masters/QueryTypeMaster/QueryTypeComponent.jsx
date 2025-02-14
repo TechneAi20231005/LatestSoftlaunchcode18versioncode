@@ -27,6 +27,7 @@ import { customSearchHandler } from '../../../utils/customFunction';
 import { toast } from 'react-toastify';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { Field, Form, Formik, ErrorMessage } from 'formik';
+import { errorHandler } from '../../../utils';
 
 function QueryTypeComponent() {
   //initial state
@@ -525,33 +526,18 @@ function QueryTypeComponent() {
                 modalHeaderQueryGroup: ''
               });
 
-              setNotify({ type: 'success', message: res.data.message });
+              toast.success(res.data.message);
               loadData();
               loadDataEditPopup();
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message);
             }
           } else {
-            setNotify({ type: 'danger', message: res.message });
-            new ErrorLogService().sendErrorLog(
-              'QueryType',
-              'Create_QueryType',
-              'INSERT',
-              res.message
-            );
+            toast.error(res.data.message);
           }
         })
         .catch((error) => {
-          setNotify({ type: 'danger', message: 'Connection Error !!!' });
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          setNotify({ type: 'danger', message: 'Remark Error !!!' });
-          new ErrorLogService().sendErrorLog(
-            'QueryType',
-            'Create_QueryType',
-            'INSERT',
-            errorObject.data.message
-          );
+          errorHandler(error);
         });
     } else {
       form.delete('is_active');
@@ -648,14 +634,7 @@ function QueryTypeComponent() {
         }
       })
       .catch((error) => {
-        // const { response } = error;
-        // const { request, ...errorObject } = response;
-        // new ErrorLogService().sendErrorLog(
-        //   'QueryType',
-        //   'Get_QueryType',
-        //   'INSERT',
-        //   errorObject.data.message
-        // );
+        errorHandler(error);
       });
 
     await new DynamicFormService().getDynamicForm().then((res) => {
@@ -769,14 +748,15 @@ function QueryTypeComponent() {
             setIsSubmitting(false);
             if (res.data.status === 1) {
               setModal({ showModal: false, modalData: '', modalHeader: '' });
-              setNotify({ type: 'success', message: res.data.message });
+              toast.success(res.data.message);
               loadData();
               setIsActive(1);
             } else {
               setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message);
             }
           } else {
-            setNotify({ type: 'danger', message: res.message });
+            toast.error(res.data.message);
             new ErrorLogService().sendErrorLog(
               'QueryType',
               'Edit_QueryType',
@@ -788,7 +768,7 @@ function QueryTypeComponent() {
       } catch (error) {
         const { response } = error;
         const { request, ...errorObject } = response;
-        setNotify({ type: 'danger', message: 'Remark Error !!!' });
+        errorHandler(error?.response);
         new ErrorLogService().sendErrorLog(
           'QueryType',
           'Create_QueryType',
@@ -871,7 +851,6 @@ function QueryTypeComponent() {
 
   return (
     <>
-      {notify && <Alert alertData={notify ? notify : notifyy} />}
       <div className="container-xxl">
         <PageHeader
           headerTitle="Query Master"
@@ -1418,7 +1397,6 @@ function QueryTypeComponent() {
         </Modal.Header>
         <Modal.Body>
           <div className="container-xxl">
-            {notify && <Alert alertData={notify} />}
             <div className="row">
               <div className="col-sm-6">
                 <input

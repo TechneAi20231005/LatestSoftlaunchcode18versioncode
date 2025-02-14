@@ -22,6 +22,7 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../../src/components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
 function RoleComponent({ location }) {
   //initial state
   const dispatch = useDispatch();
@@ -268,7 +269,6 @@ function RoleComponent({ location }) {
 
   return (
     <div className="container-xxl">
-      {Notify && <Alert alertData={Notify} />}
       <PageHeader
         headerTitle="Role Master"
         renderRight={() => {
@@ -485,20 +485,25 @@ function RoleDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new RoleService().getRole().then((res) => {
-      if (res.status === 200) {
-        const data = res.data.data;
-        let counter = 1;
-        for (const key in data) {
-          tempData.push({
-            counter: counter++,
-            id: data[key].id,
-            role: data[key].role
-          });
+    new RoleService()
+      .getRole()
+      .then((res) => {
+        if (res.status === 200) {
+          const data = res.data.data;
+          let counter = 1;
+          for (const key in data) {
+            tempData.push({
+              counter: counter++,
+              id: data[key].id,
+              role: data[key].role
+            });
+          }
+          setData(tempData);
         }
-        setData(tempData);
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }, []);
 
   return (

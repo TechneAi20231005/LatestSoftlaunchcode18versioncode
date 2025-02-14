@@ -11,6 +11,7 @@ import DynamicFormService from '../../services/MastersService/DynamicFormService
 import CustomerService from '../../services/MastersService/CustomerService';
 import RoleService from '../../services/MastersService/RoleService';
 import CustomerTypeService from '../../services/MastersService/CustomerTypeService';
+import { errorHandler } from '../../utils';
 
 export const getCityData = createAsyncThunk(
   'getCityData',
@@ -20,7 +21,7 @@ export const getCityData = createAsyncThunk(
       const response = await service.getCity();
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -31,9 +32,10 @@ export const postCityData = createAsyncThunk(
     try {
       const service = new CityService();
       const response = await service.postCity(config);
+      console.log(response, 'responce');
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -46,7 +48,7 @@ export const updateCityData = createAsyncThunk(
       const response = await service.updateCity(config.id, config.payload);
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -60,7 +62,7 @@ export const getCountryData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -73,7 +75,7 @@ export const getCountryDataSort = createAsyncThunk(
       const response = await service.getCountrySort();
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -87,7 +89,7 @@ export const postCountryData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -100,7 +102,7 @@ export const updateCountryData = createAsyncThunk(
       const response = await service.updateCountry(config.id, config.payload);
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -114,7 +116,7 @@ export const getStateData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -128,7 +130,7 @@ export const postStateData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -142,7 +144,7 @@ export const updateStateData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -156,7 +158,7 @@ export const getStateDataSort = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -170,7 +172,7 @@ export const getEmployeeData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -184,7 +186,7 @@ export const getEmployeeDataById = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -198,7 +200,7 @@ export const postUserData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -212,7 +214,7 @@ export const updateUserData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -224,7 +226,7 @@ export const getNotifications = createAsyncThunk(
       const response = await getNotification();
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -236,7 +238,7 @@ export const getAllDashboardData = createAsyncThunk(
       const response = await getData();
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -251,7 +253,7 @@ export const getRoles = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -266,7 +268,7 @@ export const getAllRoles = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -280,7 +282,7 @@ export const getDesignationData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -294,7 +296,7 @@ export const getDynamiucFormData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -308,7 +310,7 @@ export const getCustomerData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -322,7 +324,7 @@ export const getCustomerType = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -336,7 +338,7 @@ export const postCustomerData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -350,7 +352,7 @@ export const getCustomerByIdData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -363,7 +365,7 @@ export const updateCustomerData = createAsyncThunk(
       const response = await service.updateCustomer(config.id, config.payload);
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -377,7 +379,7 @@ export const getAllUserById = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );

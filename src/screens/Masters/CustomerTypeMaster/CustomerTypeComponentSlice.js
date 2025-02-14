@@ -101,7 +101,6 @@ export const customerMasterSlice = createSlice({
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = null;
 
-        state.notify = { type: 'success', message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
 
         let postCustomerData = payload.data.data;
@@ -111,8 +110,6 @@ export const customerMasterSlice = createSlice({
         state.postCustomerData = postCustomerData;
       } else {
         state.notify = null;
-
-        state.notify = { type: 'danger', message: payload.data.message };
       }
     });
     builder.addCase(postCustomerData.rejected, (state) => {
@@ -133,8 +130,6 @@ export const customerMasterSlice = createSlice({
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.notify = null;
 
-        state.notify = { type: 'success', message: payload.data.message };
-
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
 
         let updateCustomerData = payload.data.data;
@@ -143,8 +138,6 @@ export const customerMasterSlice = createSlice({
         state.updateCustomerData = updateCustomerData;
       } else {
         state.notify = null;
-
-        state.notify = { type: 'danger', message: payload.data.message };
       }
     });
     builder.addCase(updateCustomerData.rejected, (state) => {

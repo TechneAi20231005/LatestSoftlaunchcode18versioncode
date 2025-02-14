@@ -431,7 +431,7 @@ function CreateUserComponent({ match }) {
             if (res?.payload?.data?.status === 1) {
               // Success case
               toast.success(res?.payload?.data?.message, {
-                autoClose: 10000 // 10 seconds in milliseconds
+                autoClose: 5000 // 10 seconds in milliseconds
               });
               navigate(`/${_base}/User`);
               dispatch(getEmployeeData());
@@ -443,13 +443,13 @@ function CreateUserComponent({ match }) {
             } else {
               // Error case when status is not 1
               toast.error(res?.payload?.data?.message, {
-                autoClose: 10000 // 10 seconds in milliseconds
+                autoClose: 5000 // 10 seconds in milliseconds
               });
             }
           } else {
             // Error case when status code is not 200
             toast.error('An unexpected error occurred. Please try again.', {
-              autoClose: 10000 // 10 seconds in milliseconds
+              autoClose: 5000 // 10 seconds in milliseconds
             });
           }
           setLoading(false);
@@ -757,7 +757,6 @@ function CreateUserComponent({ match }) {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Create User" />
-      {Notify && <Alert alertData={Notify} />}
 
       <form onSubmit={handleForm} ref={userForm} method="post">
         <Tabs
