@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { ALPHA_NUMERIC_REGEX } from '../../../../../../../../../../settings/constants';
+import { ALPHA_NUMERIC_REGEX } from '../../../../../../../../../../utils/regexPool';
 
 export const jobOfferValidation = ({ isSeniorHr, isOnlyReject }) => {
   return isOnlyReject
@@ -15,7 +15,7 @@ export const jobOfferValidation = ({ isSeniorHr, isOnlyReject }) => {
           })
           .matches(ALPHA_NUMERIC_REGEX, 'Specify other remark name must be alphanumeric')
           .min(2, 'Specify other remarks must be at least 2 characters')
-          .max(1000, 'Specify other remarks must be at most 1000 characters'),
+          .max(1000, 'Specify other remarks must be at most 1000 characters')
       })
     : Yup.object().shape({
         designation_id: Yup.string().required('Role is required'),
@@ -53,6 +53,6 @@ export const jobOfferValidation = ({ isSeniorHr, isOnlyReject }) => {
           })
           .matches(ALPHA_NUMERIC_REGEX, 'Specify other name must be alphanumeric')
           .min(2, 'Specify other remarks must be at least 2 characters')
-          .max(1000, 'Specify other remarks must be at most 1000 characters'),
+          .max(1000, 'Specify other remarks must be at most 1000 characters')
       });
 };

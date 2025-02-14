@@ -1,17 +1,17 @@
-import React, { useState, useEffect } from "react";
-import PageHeader from "../../components/Common/PageHeader";
+import React, { useState, useEffect } from 'react';
+import PageHeader from '../../components/Common/PageHeader';
 import {
   getAllNotification,
-  markedReadNotification,
-} from "../../services/NotificationService/NotificationService";
-import { Link } from "react-router-dom";
-import { _base, userSessionData } from "../../settings/constants";
+  markedReadNotification
+} from '../../services/NotificationService/NotificationService';
+import { Link } from 'react-router-dom';
+import { _base } from '../../settings/constants';
 
 export default function NotificationComponent() {
   const [notifications, setNotifications] = useState();
 
   const getNotifications = () => {
-    getAllNotification(localStorage.getItem("id")).then((res) => {
+    getAllNotification(localStorage.getItem('id')).then((res) => {
       if (res.status === 200) {
         setNotifications(null);
         setNotifications(res.data.data);
@@ -38,12 +38,12 @@ export default function NotificationComponent() {
         <div className="card-body">
           {notifications &&
             notifications.map((ele, i) => {
-              const date = ele.created_at.split(" ")[0];
-              const time = ele.created_at.split(" ")[1];
+              const date = ele.created_at.split(' ')[0];
+              const time = ele.created_at.split(' ')[1];
               return (
                 <div
                   className="row d-flex justify-content-center"
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: 'pointer' }}
                 >
                   <div className="col-md-6">
                     <div

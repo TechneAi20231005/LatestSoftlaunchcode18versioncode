@@ -1,73 +1,63 @@
-import { settingMasterUrl } from "../../settings/constants"
-import axios from "axios";
+import { settingMasterUrl } from '../../settings/constants';
+import axios from 'axios';
 
+const URL = settingMasterUrl.getGeneralSetting;
+const createSetting = `${URL}/createGeneralSetting/postData`;
+//  URL + '/createGeneralSetting';
+const getGeneralSetting = `${URL}/generalSetting/getData?export=1`;
+// URL + "/getGeneralSetting"
 
-
-const URL = settingMasterUrl.getGeneralSetting
-const createSetting = URL + "/createGeneralSetting"
-const getGeneralSetting = URL + "/getGeneralSetting"
-
-
-
-const getAuthorityCheck = URL + "/getCheckSettingAuthority";
-
-
-
-
+const getAuthorityCheck = URL + '/getCheckSettingAuthority';
 
 export default class GeneralSettingService {
-
   createGeneralSetting(payload) {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.post(createSetting, payload, config)
+    return axios.post(createSetting, payload, config);
   }
   updateGeneralSetting(id, payload) {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.post(createSetting + "/" + id, payload, config)
+    return axios.post(createSetting + '/' + id, payload, config);
   }
 
   getGeneralSetting() {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
-    return axios.get(getGeneralSetting, config)
-
+    return axios.get(getGeneralSetting, config);
   }
 
   getAuthorityCheck(userId, projectId) {
-    const token = localStorage.getItem("jwt_token");
+    const token = localStorage.getItem('jwt_token');
 
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      },
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
     };
     return axios.get(`${getAuthorityCheck}/${userId}/${projectId}`, config);
   }
 }
-
-

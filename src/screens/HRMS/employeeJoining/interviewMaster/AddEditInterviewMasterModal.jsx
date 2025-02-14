@@ -9,85 +9,119 @@ import {
   CustomDropdown,
   CustomInput,
   CustomRadioButton,
+  CustomReactSelect
 } from '../../../../components/custom/inputs/CustomInputs';
 import { RenderIf } from '../../../../utils';
 import addEditInterviewMaster from './validation/addEditInterviewMaster';
 import CustomAlertModal from '../../../../components/custom/modal/CustomAlertModal';
-import { departmentData } from '../../../Masters/DepartmentMaster/DepartmentMasterAction';
-import { getDesignationData, getEmployeeData } from '../../../Dashboard/DashboardAction';
+import { getEmployeeData } from '../../../Dashboard/DashboardAction';
 import {
   addInterviewMasterThunk,
   editInterviewMasterThunk,
-  getInterviewMasterListThunk,
+  getInterviewMasterListThunk
 } from '../../../../redux/services/hrms/employeeJoining/interviewListMaster';
 import { experienceLevel } from '../../../../settings/constants';
+import useDropdownData from '../../../../hooks/useDropdownData';
 
-function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }) {
+function AddEditInterviewMasterModal({
+  show,
+  close,
+  type,
+  currentInterviewData
+}) {
   // // initial state
   const dispatch = useDispatch();
   const addInterviewInitialValue = {
     department_id:
-      type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.department_id?.toString() : '',
+      type === 'EDIT' || type === 'VIEW'
+        ? currentInterviewData?.department_id
+        : '',
     designation_id:
-      type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.designation_id?.toString() : '',
+      type === 'EDIT' || type === 'VIEW'
+        ? currentInterviewData?.designation_id
+        : '',
     experience_level:
-      type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.experience_level : '',
+      type === 'EDIT' || type === 'VIEW'
+        ? currentInterviewData?.experience_level
+        : '',
     step_details:
       type === 'EDIT' || type === 'VIEW'
-        ? currentInterviewData?.details?.map(detail => ({
+        ? currentInterviewData?.details?.map((detail) => ({
             step_title: detail.step_title || '',
-            designation_id: detail.designation_id?.toString() || '',
-            employee_id: detail.employee_id?.toString() || '',
-            employee_email: detail.employee_email || '',
+            designation_id: detail.designation_id || '',
+            employee_id: detail.employee_id || '',
+            employee_email: detail.employee_email || ''
           }))
         : [
             {
               step_title: '',
               designation_id: '',
               employee_id: '',
-              employee_email: '',
-            },
+              employee_email: ''
+            }
           ],
-    remark: type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.remark || '' : '',
+    remark:
+      type === 'EDIT' || type === 'VIEW'
+        ? currentInterviewData?.remark || ''
+        : '',
     is_active:
-      type === 'EDIT' || type === 'VIEW' ? currentInterviewData?.is_active?.toString() : '1',
+      type === 'EDIT' || type === 'VIEW'
+        ? currentInterviewData?.is_active?.toString()
+        : '1'
   };
 
   // // redux state
-  const { departmentData: departmentDataList, status: isDepartmentDataListLoading } = useSelector(
-    state => state?.department,
-  );
-  const { getDesignationData: designationMasterList, status: isDesignationMasterList } =
-    useSelector(DesignationSlice => DesignationSlice.designationMaster);
   const { employeeData, status: isEmployeeMasterList } = useSelector(
-    dashboardSlice => dashboardSlice.dashboard,
+    (dashboardSlice) => dashboardSlice.dashboard
   );
-  const { isLoading } = useSelector(state => state?.interviewMaster);
+  const { isLoading } = useSelector((state) => state?.interviewMaster);
 
   // // local state
-  const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
+  const [openConfirmModal, setOpenConfirmModal] = useState({
+    open: false,
+    formData: ''
+  });
+
+  const [employeesName, setEmployeesName] = useState({});
+
+
+  const [selectedDesignationData, setSelectedDesignationData] = useState({
+    id: '',
+    designationFor: ''
+  });
 
   // // dropdown data
-  const departmentType = departmentDataList
-    ?.filter(item => item?.is_active === 1)
-    ?.map(item => ({
-      label: item?.department,
-      value: item?.id,
-    }));
+  const {
+    preferredDesignationDropdown,
+    preferredDesignationDropdownLoading,
+    preferredDepartmentDropdown,
+    preferredDepartmentDropdownLoading
+  } = useDropdownData({ render: show });
 
-  const designationType = designationMasterList
-    ?.filter(item => item?.is_active === 1)
-    ?.map(item => ({
-      label: item?.designation,
-      value: item?.id,
-    }));
-
-  const employeeName = employeeData
-    ?.filter(item => item?.is_active === 1)
-    ?.map(item => ({
-      label: `${item?.first_name} ${item?.middle_name} ${item?.last_name}`,
-      value: item?.id,
-    }));
+  useEffect(() => {
+    const filterData = [
+      { label: 'Select', value: '', isDisabled: true },
+      ...(employeeData
+        ?.filter(
+          (item) =>
+            item?.is_active === 1 &&
+            (selectedDesignationData?.id
+              ? Number(item?.designation_id) === +selectedDesignationData?.id
+              : true)
+        )
+        ?.map((item) => ({
+          label: `${item?.first_name} ${item?.middle_name} ${item?.last_name}`,
+          value: item?.id
+        }))
+        ?.sort((a, b) => a.label.localeCompare(b.label)) || [])
+    ];
+    if (selectedDesignationData?.id) {
+      setEmployeesName({
+        ...employeesName,
+        [selectedDesignationData?.designationFor]: filterData
+      });
+    }
+  }, [selectedDesignationData?.id, employeeData]);
 
   // // function
   const handelAddEditInterview = () => {
@@ -102,8 +136,8 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
           },
           onErrorHandler: () => {
             setOpenConfirmModal({ open: false });
-          },
-        }),
+          }
+        })
       );
     } else if (type === 'EDIT') {
       dispatch(
@@ -117,31 +151,60 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
           },
           onErrorHandler: () => {
             setOpenConfirmModal({ open: false });
-          },
-        }),
+          }
+        })
       );
     }
   };
 
   useEffect(() => {
     if (show) {
-      if (!departmentDataList?.length) {
-        dispatch(departmentData());
-      }
-      if (!designationMasterList?.length) {
-        dispatch(getDesignationData());
-      }
       if (!employeeData?.length) {
         dispatch(getEmployeeData());
       }
+
+      if (type !== 'ADD') {
+        // Function to transform details into step_details structure
+        const transformedEmployeeData = currentInterviewData?.details?.reduce(
+          (result, detail, index) => {
+            const stepKey = `step_details[${index}]`;
+            const filteredEmployees = employeeData?.filter(
+              (emp) => emp.designation_id === detail.designation_id
+            );
+            if (filteredEmployees.length > 0) {
+              result[stepKey] = filteredEmployees?.map((employee) => ({
+                label: `${employee.first_name} ${employee.middle_name} ${employee.last_name}`,
+                value: employee.id
+              }));
+            } else {
+              result[stepKey] = [
+                {
+                  label: 'Select',
+                  value: '',
+                  isDisabled: true
+                }
+              ];
+            }
+            return result;
+          },
+          {}
+        );
+        setEmployeesName(transformedEmployeeData);
+      }
+
+    } else {
+      setSelectedDesignationData({ id: '', designationFor: '' });
+      setEmployeesName({});
     }
-  }, [show]);
+  }, [show, type]);
 
   return (
     <>
       <CustomModal
         show={show}
-        title={`${type === 'ADD' ? 'Add' : type === 'VIEW' ? 'View' : 'Edit'} Interview Steps`}
+        title={`${
+          type === 'ADD' ? 'Add' : type === 'VIEW' ? 'View' : 'Edit'
+        } Interview Steps`}
         width="xl"
       >
         <h6 className="text_primary fs-6 mb-0">Opening Details:</h6>
@@ -150,11 +213,14 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
           initialValues={addInterviewInitialValue}
           enableReinitialize
           validationSchema={addEditInterviewMaster}
-          onSubmit={(values, errors) => {
+          onSubmit={(values) => {
             if (type === 'ADD' || type === 'EDIT') {
               setOpenConfirmModal({
                 open: true,
-                formData: { ...values, steps_count: values?.step_details?.length },
+                formData: {
+                  ...values,
+                  steps_count: values?.step_details?.length
+                }
               });
             }
           }}
@@ -164,12 +230,15 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
               <Row className="">
                 <Col md={4} lg={4}>
                   <Field
-                    data={departmentType}
-                    component={CustomDropdown}
+                    options={preferredDepartmentDropdown}
+                    component={CustomReactSelect}
                     name="department_id"
                     label="Department"
+                    id="interview_department"
                     placeholder={
-                      isDepartmentDataListLoading === 'loading' ? 'Loading...' : 'Select'
+                      preferredDepartmentDropdownLoading === 'loading'
+                        ? 'Loading...'
+                        : 'Select'
                     }
                     requiredField
                     disabled={type === 'VIEW'}
@@ -177,11 +246,16 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
-                    data={designationType}
-                    component={CustomDropdown}
+                    options={preferredDesignationDropdown}
+                    component={CustomReactSelect}
                     name="designation_id"
                     label="Designation"
-                    placeholder={isDesignationMasterList === 'loading' ? 'Loading...' : 'Select'}
+                    id="interview_designation"
+                    placeholder={
+                      preferredDesignationDropdownLoading
+                        ? 'Loading...'
+                        : 'Select'
+                    }
                     requiredField
                     disabled={type === 'VIEW'}
                   />
@@ -192,6 +266,7 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                     component={CustomDropdown}
                     name="experience_level"
                     label="Experience Level"
+                    id="interview_experience"
                     placeholder="Select"
                     requiredField
                     disabled={type === 'VIEW'}
@@ -206,9 +281,15 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                     <>
                       <Row key={index}>
                         <div className="d-flex justify-content-between align-items-center mb-1">
-                          <p className="text_primary mb-0">Step {index + 1}. Interviewer Details</p>
+                          <p className="text_primary mb-0">
+                            Step {index + 1}. Interviewer Details
+                          </p>
                           <RenderIf render={type !== 'VIEW'}>
-                            <RenderIf render={values.step_details.length === 1 && index === 0}>
+                            <RenderIf
+                              render={
+                                values.step_details.length === 1 && index === 0
+                              }
+                            >
                               <div className="d-flex justify-content-end">
                                 <button
                                   type="button"
@@ -218,11 +299,11 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                                       step_title: '',
                                       designation_id: '',
                                       employee_id: '',
-                                      employee_email: '',
+                                      employee_email: ''
                                     })
                                   }
                                 >
-                                  <i class="icofont-plus" />
+                                  <i className="icofont-plus" />
                                 </button>
                               </div>
                             </RenderIf>
@@ -233,9 +314,13 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                                   className="btn btn-sm btn-danger text-white"
                                   onClick={() => remove(index)}
                                 >
-                                  <i class="icofont-ui-remove" />
+                                  <i className="icofont-ui-remove" />
                                 </button>
-                                <RenderIf render={index === values.step_details.length - 1}>
+                                <RenderIf
+                                  render={
+                                    index === values.step_details.length - 1
+                                  }
+                                >
                                   <button
                                     type="button"
                                     className="btn btn-sm btn-dark"
@@ -245,11 +330,11 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                                         step_title: '',
                                         designation_id: '',
                                         employee_id: '',
-                                        employee_email: '',
+                                        employee_email: ''
                                       })
                                     }
                                   >
-                                    <i class="icofont-plus" />
+                                    <i className="icofont-plus" />
                                   </button>
                                 </RenderIf>
                               </div>
@@ -261,6 +346,7 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                             component={CustomInput}
                             name={`step_details[${index}].step_title`}
                             label="Enter Step Title"
+                            id="interview_steptitle"
                             placeholder="Step Title"
                             requiredField
                             disabled={type === 'VIEW'}
@@ -268,37 +354,56 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                         </Col>
                         <Col sm={6} md={6} lg={3}>
                           <Field
-                            data={designationType}
-                            component={CustomDropdown}
+                            options={preferredDesignationDropdown}
+                            component={CustomReactSelect}
                             name={`step_details[${index}].designation_id`}
                             label="Designation"
+                            id="interview_designation"
                             placeholder={
-                              isDesignationMasterList === 'loading' ? 'Loading...' : 'Select'
+                              preferredDesignationDropdownLoading
+                                ? 'Loading...'
+                                : 'Select'
                             }
                             requiredField
                             disabled={type === 'VIEW'}
+                            handleChange={(e) =>
+                              setSelectedDesignationData({
+                                id: e?.value,
+                                // designationFor: e?.target?.name?.split('.')?.[0]
+                                designationFor: `step_details[${index}]`
+                              })
+                            }
                           />
                         </Col>
                         <Col sm={6} md={6} lg={3}>
                           <Field
-                            data={employeeName}
-                            component={CustomDropdown}
+                            options={employeesName?.[`step_details[${index}]`]}
+                            component={CustomReactSelect}
                             name={`step_details[${index}].employee_id`}
                             label="Name"
+                            id="interview_name"
                             placeholder={
-                              isEmployeeMasterList === 'loading' ? 'Loading...' : 'Select'
+                              isEmployeeMasterList === 'loading'
+                                ? 'Loading...'
+                                : 'Select'
                             }
                             requiredField
-                            disabled={type === 'VIEW'}
-                            handleChange={selectedOption => {
+                            disabled={
+                              type === 'VIEW' ||
+                              !values?.step_details[index].designation_id
+                            }
+                            handleChange={(selectedOption) => {
                               const selectedEmployee = employeeData.find(
-                                employee =>
-                                  Number(employee.id) === Number(selectedOption?.target?.value),
+                                (employee) =>
+                                  Number(employee.id) ===
+                                  Number(selectedOption?.value)
                               );
                               const emailFieldName = `step_details[${index}].employee_email`;
                               setFieldValue(
                                 emailFieldName,
-                                selectedEmployee ? selectedEmployee.email_id : '',
+                                selectedEmployee
+                                  ? selectedEmployee.email_id
+                                  : ''
                               );
                             }}
                           />
@@ -309,6 +414,7 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                             type="email"
                             name={`step_details[${index}].employee_email`}
                             label="Email"
+                            id="interview_email"
                             placeholder="Enter Email Address"
                             requiredField
                             disabled
@@ -325,6 +431,7 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                   component={CustomInput}
                   name="remark"
                   label="Remark"
+                  id="interview_remark"
                   placeholder="Enter Remark"
                   disabled={type === 'VIEW'}
                 />
@@ -339,6 +446,7 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                     type="radio"
                     name="is_active"
                     label="Active"
+                    id="interview_active"
                     value="1"
                     inputClassName="me-1"
                     disabled={type === 'VIEW'}
@@ -348,6 +456,7 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
                     type="radio"
                     name="is_active"
                     label="Deactive"
+                     id="interview_deactive"
                     value="0"
                     inputClassName="me-1"
                     disabled={type === 'VIEW'}
@@ -356,15 +465,27 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
               </RenderIf>
               <div className="d-flex justify-content-end mt-3 gap-2">
                 {type === 'VIEW' ? (
-                  <button onClick={close} className="btn btn-dark px-4" type="button">
+                  <button
+                    onClick={close}
+                    className="btn btn-dark px-4"
+                    type="button"
+                  >
                     Ok
                   </button>
                 ) : (
                   <>
-                    <button className="btn btn-dark px-4" type="submit" disabled={!dirty}>
-                      {type === 'ADD' ? 'Save' : 'Update'}
+                    <button
+                      className="btn btn-primary px-4"
+                      type="submit"
+                      disabled={!dirty}
+                    >
+                      {type === 'ADD' ? 'Submit' : 'Update'}
                     </button>
-                    <button onClick={close} className="btn btn-shadow-light px-3" type="button">
+                    <button
+                      onClick={close}
+                      className="btn btn-danger px-3"
+                      type="button"
+                    >
                       Cancel
                     </button>
                   </>
@@ -378,11 +499,15 @@ function AddEditInterviewMasterModal({ show, close, type, currentInterviewData }
       {/* Add edit interview steps confirmation modal */}
       <CustomAlertModal
         show={openConfirmModal.open}
-        message={`Do you want to ${type === 'ADD' ? 'Add' : 'update'} this record?`}
+        message={`Do you want to ${
+          type === 'ADD' ? 'Add' : 'update'
+        } this record?`}
         type="success"
         onSuccess={handelAddEditInterview}
         onClose={() => setOpenConfirmModal({ open: false })}
-        isLoading={isLoading?.addInterviewMaster || isLoading?.editInterviewMaster}
+        isLoading={
+          isLoading?.addInterviewMaster || isLoading?.editInterviewMaster
+        }
       />
     </>
   );

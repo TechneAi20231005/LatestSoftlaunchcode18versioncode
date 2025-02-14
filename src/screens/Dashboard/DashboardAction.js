@@ -13,8 +13,9 @@ import RoleService from "../../services/MastersService/RoleService";
 import CustomerTypeService from "../../services/MastersService/CustomerTypeService";
 import { errorHandler } from "../../utils";
 
+
 export const getCityData = createAsyncThunk(
-  "getCityData",
+  'getCityData',
   async (config, thunkapi) => {
     try {
       const service = new CityService();
@@ -35,7 +36,7 @@ export const getCityData = createAsyncThunk(
 );
 
 export const postCityData = createAsyncThunk(
-  "postCityData",
+  'postCityData',
   async (config, thunkapi) => {
     try {
       const service = new CityService();
@@ -55,7 +56,7 @@ export const postCityData = createAsyncThunk(
 );
 
 export const updateCityData = createAsyncThunk(
-  "updateCityData",
+  'updateCityData',
   async (config, thunkapi) => {
     try {
       const service = new CityService();
@@ -75,7 +76,7 @@ export const updateCityData = createAsyncThunk(
 );
 
 export const getCountryData = createAsyncThunk(
-  "getCountryData",
+  'getCountryData',
   async (config, thunkapi) => {
     try {
       const service = new CountryService();
@@ -96,7 +97,7 @@ export const getCountryData = createAsyncThunk(
 );
 
 export const getCountryDataSort = createAsyncThunk(
-  "getCountryDataSort",
+  'getCountryDataSort',
   async (config, thunkapi) => {
     try {
       const service = new CountryService();
@@ -116,7 +117,7 @@ export const getCountryDataSort = createAsyncThunk(
 );
 
 export const postCountryData = createAsyncThunk(
-  "postCountryData",
+  'postCountryData',
   async (config, thunkapi) => {
     try {
       const service = new CountryService();
@@ -136,7 +137,7 @@ export const postCountryData = createAsyncThunk(
 );
 
 export const updateCountryData = createAsyncThunk(
-  "updateCountryData",
+  'updateCountryData',
   async (config, thunkapi) => {
     try {
       const service = new CountryService();
@@ -155,7 +156,7 @@ export const updateCountryData = createAsyncThunk(
 );
 
 export const getStateData = createAsyncThunk(
-  "getStateData",
+  'getStateData',
   async (config, thunkapi) => {
     try {
       const service = new StateService();
@@ -175,7 +176,7 @@ export const getStateData = createAsyncThunk(
 );
 
 export const postStateData = createAsyncThunk(
-  "postStateData",
+  'postStateData',
   async (config, thunkapi) => {
     try {
       const service = new StateService();
@@ -195,7 +196,7 @@ export const postStateData = createAsyncThunk(
 );
 
 export const updateStateData = createAsyncThunk(
-  "updateStateData",
+  'updateStateData',
   async (config, thunkapi) => {
     try {
       const service = new StateService();
@@ -215,7 +216,7 @@ export const updateStateData = createAsyncThunk(
 );
 
 export const getStateDataSort = createAsyncThunk(
-  "getStateDataSort",
+  'getStateDataSort',
   async (config, thunkapi) => {
     try {
       const service = new StateService();
@@ -235,7 +236,7 @@ export const getStateDataSort = createAsyncThunk(
 );
 
 export const getEmployeeData = createAsyncThunk(
-  "getEmployeeData",
+  'getEmployeeData',
   async (config, thunkapi) => {
     try {
       const service = new UserService();
@@ -255,7 +256,7 @@ export const getEmployeeData = createAsyncThunk(
 );
 
 export const getEmployeeDataById = createAsyncThunk(
-  "getEmployeeDataById",
+  'getEmployeeDataById',
   async (id, thunkapi) => {
     try {
       const service = new UserService();
@@ -275,7 +276,7 @@ export const getEmployeeDataById = createAsyncThunk(
 );
 
 export const postUserData = createAsyncThunk(
-  "postUserData",
+  'postUserData',
   async (config, thunkapi) => {
     try {
       const service = new UserService();
@@ -295,7 +296,7 @@ export const postUserData = createAsyncThunk(
 );
 
 export const updateUserData = createAsyncThunk(
-  "updateUserData",
+  'updateUserData',
   async (config, thunkapi) => {
     try {
       const service = new UserService();
@@ -315,7 +316,7 @@ export const updateUserData = createAsyncThunk(
 );
 
 export const getNotifications = createAsyncThunk(
-  "getNotifications",
+  'getNotifications',
   async (config, thunkapi) => {
     try {
       const response = await getNotification();
@@ -334,7 +335,7 @@ export const getNotifications = createAsyncThunk(
 );
 
 export const getAllDashboardData = createAsyncThunk(
-  "getAllDashboardData",
+  'getAllDashboardData',
   async (config, thunkapi) => {
     try {
       const response = await getData();
@@ -352,10 +353,10 @@ export const getAllDashboardData = createAsyncThunk(
 );
 
 export const getRoles = createAsyncThunk(
-  "getRoles",
+  'getRoles',
   async (config, thunkapi) => {
     try {
-      const roleId = sessionStorage.getItem("role_id");
+      const roleId = localStorage.getItem('role_id');
       const service = new ManageMenuService();
       const response = await service.getRole(roleId);
       if (response?.data?.data?.status === 1) {
@@ -373,10 +374,10 @@ export const getRoles = createAsyncThunk(
 );
 
 export const getAllRoles = createAsyncThunk(
-  "getAllRoles",
+  'getAllRoles',
   async (config, thunkapi) => {
     try {
-      const roleId = sessionStorage.getItem("role_id");
+      const roleId = localStorage.getItem('role_id');
       const service = new RoleService();
       const response = await service.getRole(roleId);
       if (response?.data?.data?.status === 1) {
@@ -394,7 +395,7 @@ export const getAllRoles = createAsyncThunk(
 );
 
 export const getDesignationData = createAsyncThunk(
-  "getDesignationData",
+  'getDesignationData',
   async (config, thunkapi) => {
     try {
       const service = new DesignationService();
@@ -414,7 +415,7 @@ export const getDesignationData = createAsyncThunk(
 );
 
 export const getDynamiucFormData = createAsyncThunk(
-  "getDynamiucFormData",
+  'getDynamiucFormData',
   async (config, thunkapi) => {
     try {
       const service = new DynamicFormService();
@@ -434,7 +435,7 @@ export const getDynamiucFormData = createAsyncThunk(
 );
 
 export const getCustomerData = createAsyncThunk(
-  "getCustomerData",
+  'getCustomerData',
   async (config, thunkapi) => {
     try {
       const service = new CustomerService();
@@ -454,7 +455,7 @@ export const getCustomerData = createAsyncThunk(
 );
 
 export const getCustomerType = createAsyncThunk(
-  "getCustomerType",
+  'getCustomerType',
   async (config, thunkapi) => {
     try {
       const service = new CustomerTypeService();
@@ -468,7 +469,7 @@ export const getCustomerType = createAsyncThunk(
 );
 
 export const postCustomerData = createAsyncThunk(
-  "postCustomerData",
+  'postCustomerData',
   async (config, thunkapi) => {
     try {
       const service = new CustomerService();
@@ -482,7 +483,7 @@ export const postCustomerData = createAsyncThunk(
 );
 
 export const getCustomerByIdData = createAsyncThunk(
-  "getCustomerByIdData",
+  'getCustomerByIdData',
   async (config, thunkapi) => {
     try {
       const service = new CustomerService();
@@ -496,7 +497,7 @@ export const getCustomerByIdData = createAsyncThunk(
 );
 
 export const updateCustomerData = createAsyncThunk(
-  "updateCustomerData",
+  'updateCustomerData',
   async (config, thunkapi) => {
     try {
       const service = new CustomerService();
@@ -509,7 +510,7 @@ export const updateCustomerData = createAsyncThunk(
 );
 
 export const getAllUserById = createAsyncThunk(
-  "getAllUserById",
+  'getAllUserById',
   async (config, thunkapi) => {
     try {
       const service = new UserService();

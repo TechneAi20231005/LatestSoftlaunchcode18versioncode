@@ -1,5 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { postTesting, testingData, updateTesting } from './TestingTypeComponentAction';
+import {
+  postTesting,
+  testingData,
+  updateTesting
+} from './TestingTypeComponentAction';
 
 const initialState = {
   status: '',
@@ -7,14 +11,14 @@ const initialState = {
   testingData: [],
   notify: '',
   isLoading: {
-    testingDataList: false,
+    testingDataList: false
   },
   exportTestingData: [],
   modal: {
     showModal: false,
     modalData: '',
-    modalHeader: '',
-  },
+    modalHeader: ''
+  }
 };
 
 export const testingtypeSlice = createSlice({
@@ -29,10 +33,10 @@ export const testingtypeSlice = createSlice({
     },
     handleModalClose: (state, action) => {
       state.modal = action.payload;
-    },
+    }
   },
-  extraReducers: builder => {
-    builder.addCase(testingData.pending, state => {
+  extraReducers: (builder) => {
+    builder.addCase(testingData.pending, (state) => {
       state.status = 'loading';
       state.isLoading.testingDataList = true;
       state.notify = null;
@@ -62,20 +66,20 @@ export const testingtypeSlice = createSlice({
             created_at: testingData[i].created_at,
             created_by: testingData[i].created_by,
             updated_at: testingData[i].updated_at,
-            updated_by: testingData[i].updated_by,
+            updated_by: testingData[i].updated_by
           });
         }
 
         state.exportTestingData = exportTestingData;
       }
     });
-    builder.addCase(testingData.rejected, state => {
+    builder.addCase(testingData.rejected, (state) => {
       state.status = 'rejected';
       state.isLoading.testingDataList = false;
     });
     //_________________________________PostTesing___________
 
-    builder.addCase(postTesting.pending, state => {
+    builder.addCase(postTesting.pending, (state) => {
       state.status = 'loading';
       state.isLoading.testingDataList = true;
       state.notify = null;
@@ -97,14 +101,14 @@ export const testingtypeSlice = createSlice({
         state.notify = { type: 'danger', message: payload.data.message };
       }
     });
-    builder.addCase(postTesting.rejected, state => {
+    builder.addCase(postTesting.rejected, (state) => {
       state.status = 'rejected';
       state.isLoading.testingDataList = false;
     });
 
     //_____________________________updateTesing_____________________
 
-    builder.addCase(updateTesting.pending, state => {
+    builder.addCase(updateTesting.pending, (state) => {
       state.status = 'loading';
       state.isLoading.testingDataList = true;
       state.notify = null;
@@ -126,11 +130,11 @@ export const testingtypeSlice = createSlice({
         state.notify = { type: 'danger', message: payload.data.message };
       }
     });
-    builder.addCase(updateTesting.rejected, state => {
+    builder.addCase(updateTesting.rejected, (state) => {
       state.status = 'rejected';
       state.isLoading.testingDataList = false;
     });
-  },
+  }
 });
 export const { handleModalClose, handleModalOpen } = testingtypeSlice.actions;
 

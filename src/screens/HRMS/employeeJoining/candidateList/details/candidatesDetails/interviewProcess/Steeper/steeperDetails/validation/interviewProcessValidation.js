@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { ALPHA_NUMERIC_REGEX } from '../../../../../../../../../../settings/constants';
+import { ALPHA_NUMERIC_REGEX } from '../../../../../../../../../../utils/regexPool';
 
 export const interViewProcessValidation = Yup.object().shape({
   remark_id: Yup.string().required('Remark is required'),
@@ -13,7 +13,7 @@ export const interViewProcessValidation = Yup.object().shape({
     })
     .matches(ALPHA_NUMERIC_REGEX, 'Specify other remark name must be alphanumeric')
     .min(2, 'Specify other remarks must be at least 2 characters')
-    .max(1000, 'Specify other remarks must be at most 1000 characters'),
+    .max(1000, 'Specify other remarks must be at most 1000 characters')
 });
 
 export const interviewScheduleRescheduleValidation = Yup.object().shape({
@@ -44,5 +44,5 @@ export const interviewScheduleRescheduleValidation = Yup.object().shape({
       }
       return true;
     })
-    .required('Interview slot time is required'),
+    .required('Interview slot time is required')
 });

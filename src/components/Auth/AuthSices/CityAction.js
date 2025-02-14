@@ -1,11 +1,12 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import CityService from "../../../services/MastersService/CityService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import CityService from '../../../services/MastersService/CityService';
+import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 
 const cityService = new CityService();
-const manageMenuService=new ManageMenuService()
-export const postCityComponent = createAsyncThunk("postCityComponet",async (payload, thunkapi) => {
+const manageMenuService = new ManageMenuService();
+export const postCityComponent = createAsyncThunk(
+  'postCityComponet',
+  async (payload, thunkapi) => {
     try {
       const res = await cityService.postCity(payload);
       if (res?.status === 200 && res?.data?.status === 1) {
@@ -21,7 +22,8 @@ export const postCityComponent = createAsyncThunk("postCityComponet",async (payl
   }
 );
 
-export const getCity = createAsyncThunk( "getCityComponet",
+export const getCity = createAsyncThunk(
+  'getCityComponet',
   async (payload, thunkapi) => {
     try {
       const res = await cityService.getCity();
@@ -34,7 +36,7 @@ export const getCity = createAsyncThunk( "getCityComponet",
 );
 
 export const getRole = createAsyncThunk(
-  "getRoleComponet",
+  'getRoleComponet',
   async (payload, thunkapi) => {
     try {
       const res = await manageMenuService.getRole();

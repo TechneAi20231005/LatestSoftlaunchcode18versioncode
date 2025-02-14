@@ -1,169 +1,200 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
 import StatusService from '../../../services/MastersService/StatusService';
 import PageHeader from '../../../components/Common/PageHeader';
-
-import { Astrick } from '../../../components/Utilities/Style';
-import * as Validation from '../../../components/Utilities/Validation';
 import Alert from '../../../components/Common/Alert';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
-
-import { Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
-import { getStatusData, postStatusData, updateStatusData } from './StatusComponentAction';
-import { statusMasterSlice } from './StatusComponentSlice';
+import {
+  getStatusData,
+  postStatusData,
+  updateStatusData
+} from './StatusComponentAction';
+
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { handleModalClose, handleModalOpen } from './StatusComponentSlice';
-import { DashbordSlice } from '../../Dashboard/DashbordSlice';
+
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { customSearchHandler } from '../../../utils/customFunction';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 
 function StatusComponent() {
   const dispatch = useDispatch();
   const statusData = useSelector(
-    statusMasterSlice => statusMasterSlice.statusMaster.filterStatusData,
+    (statusMasterSlice) => statusMasterSlice.statusMaster.filterStatusData
   );
   const isLoading = useSelector(
-    statusMasterSlice => statusMasterSlice.statusMaster.isLoading.statusData,
+    (statusMasterSlice) => statusMasterSlice.statusMaster.isLoading.statusData
   );
 
   const exportData = useSelector(
-    statusMasterSlice => statusMasterSlice.statusMaster.exportStatusData,
+    (statusMasterSlice) => statusMasterSlice.statusMaster.exportStatusData
   );
-  const checkRole = useSelector(DashbordSlice =>
-    DashbordSlice.dashboard.getRoles.filter(d => d.menu_id == 11),
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 11)
   );
-  const modal = useSelector(statusMasterSlice => statusMasterSlice.statusMaster.modal);
-  const notify = useSelector(statusMasterSlice => statusMasterSlice.statusMaster.notify);
-
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
-
-  const roleId = sessionStorage.getItem('role_id');
-
-  const searchRef = useRef();
-
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter(d => {
-      for (const key in d) {
-        if (typeof d[key] === 'string' && d[key].toLowerCase().includes(lowercaseSearch)) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  const modal = useSelector(
+    (statusMasterSlice) => statusMasterSlice.statusMaster.modal
+  );
+  const notify = useSelector(
+    (statusMasterSlice) => statusMasterSlice.statusMaster.notify
+  );
 
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleSearch = value => {};
+  const [filteredData, setFilteredData] = useState([]);
+
+  //search function
+
+  const handleSearch = useCallback(() => {
+    const filteredList = customSearchHandler(statusData, searchTerm);
+    setFilteredData(filteredList);
+  }, [statusData, searchTerm]);
+
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(statusData);
+  };
 
   const columns = [
     {
       name: 'Action',
-      selector: row => {},
+      selector: (row) => {},
       sortable: false,
       width: '80px',
-      cell: row => (
+      cell: (row) => (
         <div className="btn-group" role="group">
           <button
             type="button"
             className="btn btn-outline-secondary"
             data-bs-toggle="modal"
             data-bs-target="#edit"
-            onClick={e => {
+            onClick={(e) => {
               dispatch(
                 handleModalOpen({
                   showModal: true,
                   modalData: row,
-                  modalHeader: 'Edit Status',
-                }),
+                  modalHeader: 'Edit Status'
+                })
               );
             }}
           >
-            <i className="icofont-edit text-success"></i>
+            <i className="icofont-edit text-success" />
           </button>
         </div>
-      ),
+      )
     },
     {
       name: 'Sr',
-      selector: row => row.counter,
+      selector: (row) => row.counter,
       sortable: true,
-      width: '60px',
+      width: '60px'
     },
     {
       name: 'Status Name',
-      selector: row => row.status,
+      selector: (row) => row.status,
       sortable: true,
-      width: '150px',
+      width: '150px'
     },
     {
       name: 'Status',
-      selector: row => row.is_active,
+      selector: (row) => row.is_active,
       sortable: true,
       width: '150px',
-      cell: row => (
+      cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
           )}
         </div>
-      ),
+      )
     },
     {
       name: 'Created At',
-      selector: row => row.created_at,
+      selector: (row) => row.created_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Created By',
-      selector: row => row.created_by,
+      selector: (row) => row.created_by,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated At',
-      selector: row => row.updated_at,
+      selector: (row) => row.updated_at,
       sortable: true,
-      width: '175px',
+      width: '175px'
     },
     {
       name: 'Updated By',
-      selector: row => row.updated_by,
+      selector: (row) => row.updated_by,
       sortable: true,
-      width: '175px',
-    },
-  ];
-
-  const loadData = async () => {};
-
-  const handleForm = id => async e => {
-    e.preventDefault();
-    // setNotify(null);
-    const form = new FormData(e.target);
-    if (!id) {
-      dispatch(postStatusData(form));
-      dispatch(getStatusData());
-    } else {
-      dispatch(updateStatusData({ id: id, payload: form }));
-      dispatch(getStatusData());
+      width: '175px'
     }
+  ];
+  const initialValues = {
+    status: modal.modalData ? modal.modalData.status : '',
+    remark: modal.modalData ? modal.modalData.remark : '',
+    is_active: String(modal?.modalData?.is_active) ?? '1'
   };
 
-  const handleKeyDown = event => {
-    if (event.key === 'Enter') {
-      handleSearch();
+  const fields = [
+    {
+      name: 'status',
+      label: 'Status name',
+      max: 100,
+      required: true,
+      alphaNumeric: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 1000,
+      required: false,
+      alphaNumeric: true
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
+  const loadData = async () => {};
+
+  const handleForm = async (values, id) => {
+    const formData = new FormData();
+    formData.append('status', values.status);
+    formData.append('remark', values.remark);
+
+    const editformdata = new FormData();
+    editformdata.append('status', values.status);
+    editformdata.append('remark', values.remark);
+    editformdata.append('is_active', values.is_active);
+
+    // e.preventDefault();
+    // setNotify(null);
+    // const form = new FormData(values);
+    if (!id) {
+      dispatch(postStatusData(formData));
+      setTimeout(() => {
+        dispatch(getStatusData());
+      }, 500);
+    } else {
+      dispatch(updateStatusData({ id: id, payload: editformdata }));
+
+      setTimeout(() => {
+        dispatch(getStatusData());
+      }, 500);
     }
   };
 
@@ -180,7 +211,14 @@ function StatusComponent() {
     if (!statusData.length) {
       dispatch(getRoles());
     }
-  }, []);
+  }, [dispatch, statusData.length]);
+  useEffect(() => {
+    setFilteredData(statusData);
+  }, [statusData]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -198,8 +236,8 @@ function StatusComponent() {
                       handleModalOpen({
                         showModal: true,
                         modalData: null,
-                        modalHeader: 'Add Status',
-                      }),
+                        modalHeader: 'Add Status'
+                      })
                     );
                   }}
                 >
@@ -212,44 +250,16 @@ function StatusComponent() {
           );
         }}
       />
-
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search By Status Name...."
-              ref={searchRef}
-              onChange={e => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              value={searchTerm}
-              onClick={() => handleSearch(searchTerm)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Status master Records"
-            />
-          </div>
-        </div>
-      </div>
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by status name...."
+        exportFileName="status Master Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
 
       <div className="card mt-2">
         <div className="card-body">
@@ -258,22 +268,7 @@ function StatusComponent() {
               {statusData && (
                 <DataTable
                   columns={columns}
-                  // data={statusData}
-
-                  data={statusData.filter(customer => {
-                    if (typeof searchTerm === 'string') {
-                      if (typeof customer === 'string') {
-                        return customer.toLowerCase().includes(searchTerm.toLowerCase());
-                      } else if (typeof customer === 'object') {
-                        return Object.values(customer).some(
-                          value =>
-                            typeof value === 'string' &&
-                            value.toLowerCase().includes(searchTerm.toLowerCase()),
-                        );
-                      }
-                    }
-                    return false;
-                  })}
+                  data={filteredData}
                   defaultSortField="title"
                   pagination
                   selectableRows={false}
@@ -291,17 +286,148 @@ function StatusComponent() {
       <Modal
         centered
         show={modal.showModal}
-        onHide={e => {
+        onHide={(e) => {
           dispatch(
             handleModalClose({
               showModal: false,
               modalData: '',
-              modalHeader: '',
-            }),
+              modalHeader: ''
+            })
           );
         }}
       >
-        <form method="post" onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={(values) => {
+            handleForm(values, modal.modalData ? modal.modalData.id : '');
+          }}
+        >
+          {({}) => (
+            <Form>
+              <Modal.Header closeButton>
+                <Modal.Title className="fw-bold">
+                  {modal.modalHeader}
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="deadline-form">
+                  <div className="row g-3 mb-3">
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Status Name :<span style={{ color: 'red' }}>*</span>
+                      </label>
+                      <Field
+                        type="text"
+                        className="form-control form-control-sm"
+                        name="status"
+                      />
+                      <ErrorMessage
+                        name="status"
+                        component="small"
+                        className="text-danger"
+                      />
+                    </div>
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Remark :
+                      </label>
+                      <Field
+                        type="text"
+                        className="form-control form-control-sm"
+                        name="remark"
+                      />
+                      <ErrorMessage
+                        name="remark"
+                        component="small"
+                        className="text-danger"
+                      />
+                    </div>
+                    {modal.modalData && (
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Status :<span style={{ color: 'red' }}>*</span>
+                        </label>
+                        <div className="row">
+                          <div className="col-md-2">
+                            <div className="form-check">
+                              <Field
+                                className="form-check-input"
+                                type="radio"
+                                name="is_active"
+                                value="1"
+                              />
+                              <label className="form-check-label">Active</label>
+                            </div>
+                          </div>
+                          <div className="col-md-1">
+                            <div className="form-check">
+                              <Field
+                                className="form-check-input"
+                                type="radio"
+                                name="is_active"
+                                value="0"
+                                disabled={!modal.modalData}
+                              />
+                              <label className="form-check-label">
+                                Deactive
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                {!modal.modalData ? (
+                  <button
+                    type="submit"
+                    className="btn btn-primary text-white"
+                    style={{
+                      backgroundColor: '#484C7F',
+                      width: '80px',
+                      padding: '8px'
+                    }}
+                  >
+                    Add
+                  </button>
+                ) : (
+                  checkRole &&
+                  checkRole[0]?.can_update === 1 && (
+                    <button
+                      type="submit"
+                      className="btn btn-primary text-white"
+                      style={{ backgroundColor: '#484C7F' }}
+                    >
+                      Update
+                    </button>
+                  )
+                )}
+                <button
+                  type="button"
+                  className="btn btn-danger text-white"
+                  onClick={() =>
+                    dispatch(
+                      handleModalClose({
+                        showModal: false,
+                        modalData: '',
+                        modalHeader: ''
+                      })
+                    )
+                  }
+                >
+                  Cancel
+                </button>
+              </Modal.Footer>
+            </Form>
+          )}
+        </Formik>
+        {/* <form
+          method="post"
+          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+        >
           <Modal.Header closeButton>
             <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
           </Modal.Header>
@@ -320,21 +446,23 @@ function StatusComponent() {
                     required
                     maxLength={30}
                     defaultValue={modal.modalData ? modal.modalData.status : ''}
-                    onKeyPress={e => {
+                    onKeyPress={(e) => {
                       Validation.CharacterWithSpace(e);
                     }}
-                    onPaste={e => {
+                    onPaste={(e) => {
                       e.preventDefault();
                       return false;
                     }}
-                    onCopy={e => {
+                    onCopy={(e) => {
                       e.preventDefault();
                       return false;
                     }}
                   />
                 </div>
                 <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">Remark :</label>
+                  <label className="form-label font-weight-bold">
+                    Remark :
+                  </label>
                   <input
                     type="text"
                     className="form-control form-control-sm"
@@ -366,7 +494,10 @@ function StatusComponent() {
                                 : false
                             }
                           />
-                          <label className="form-check-label" htmlFor="is_active_1">
+                          <label
+                            className="form-check-label"
+                            htmlFor="is_active_1"
+                          >
                             Active
                           </label>
                         </div>
@@ -381,10 +512,15 @@ function StatusComponent() {
                             value="0"
                             readOnly={modal.modalData ? false : true}
                             defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0 ? true : false
+                              modal.modalData && modal.modalData.is_active === 0
+                                ? true
+                                : false
                             }
                           />
-                          <label className="form-check-label" htmlFor="is_active_0">
+                          <label
+                            className="form-check-label"
+                            htmlFor="is_active_0"
+                          >
                             Deactive
                           </label>
                         </div>
@@ -400,20 +536,15 @@ function StatusComponent() {
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{
-                  backgroundColor: '#484C7F',
-                  width: '80px',
-                  padding: '8px',
-                }}
+
               >
-                Add
+                Submit
               </button>
             )}
             {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
               <button
                 type="submit"
                 className="btn btn-primary text-white"
-                style={{ backgroundColor: '#484C7F' }}
               >
                 Update
               </button>
@@ -428,15 +559,15 @@ function StatusComponent() {
                   handleModalClose({
                     showModal: false,
                     modalData: '',
-                    modalHeader: '',
-                  }),
+                    modalHeader: ''
+                  })
                 );
               }}
             >
               Cancel
             </button>
           </Modal.Footer>
-        </form>
+        </form> */}
       </Modal>
     </div>
   );
@@ -446,16 +577,16 @@ function StatusDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new StatusService().getStatus().then(res => {
-      if (res.status == 200) {
+    new StatusService().getStatus().then((res) => {
+      if (res.status === 200) {
         const data = res.data.data;
         let counter = 1;
         for (const key in data) {
-          if (data[key].is_active == 1) {
+          if (data[key].is_active === 1) {
             tempData.push({
               counter: counter++,
               id: data[key].id,
-              status: data[key].status,
+              status: data[key].status
             });
           }
         }

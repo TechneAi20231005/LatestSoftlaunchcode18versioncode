@@ -1,19 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect } from 'react';
 
-import Modal from "react-bootstrap/Modal";
-import { useNavigate } from "react-router-dom";
+import Modal from 'react-bootstrap/Modal';
+import { useNavigate } from 'react-router-dom';
 
-import { _base } from "../../../settings/constants";
-import ErrorLogService from "../../../services/ErrorLogService";
+import { _base } from '../../../settings/constants';
+import ErrorLogService from '../../../services/ErrorLogService';
 
-import DynamicFormService from "../../../services/MastersService/DynamicFormService";
-import DynamicFormDropdownMasterService from "../../../services/MastersService/DynamicFormDropdownMasterService";
+import DynamicFormService from '../../../services/MastersService/DynamicFormService';
+import DynamicFormDropdownMasterService from '../../../services/MastersService/DynamicFormDropdownMasterService';
 
-import Alert from "../../../components/Common/Alert";
-import { Astrick } from "../../../components/Utilities/Style";
-import Select from "react-select";
+import Alert from '../../../components/Common/Alert';
+import { Astrick } from '../../../components/Utilities/Style';
+import Select from 'react-select';
 
-import * as Validation from "../../../components/Utilities/Validation";
+import * as Validation from '../../../components/Utilities/Validation';
 
 function CreateDynamicForm({ match }) {
   const [notify, setNotify] = useState(null);
@@ -21,7 +21,18 @@ function CreateDynamicForm({ match }) {
   const [data, setData] = useState(null);
   const inputData = [
     {
-      type: "text",
+      type: 'text',
+      label: null,
+      id: null,
+      name: null,
+      value: null,
+      placeholder: null,
+      required: null,
+      readonly: false,
+      disabled: false
+    },
+    {
+      type: 'textarea',
       label: null,
       id: null,
       name: null,
@@ -30,9 +41,10 @@ function CreateDynamicForm({ match }) {
       required: null,
       readonly: false,
       disabled: false,
+      cols: 3
     },
     {
-      type: "textarea",
+      type: 'number',
       label: null,
       id: null,
       name: null,
@@ -41,10 +53,41 @@ function CreateDynamicForm({ match }) {
       required: null,
       readonly: false,
       disabled: false,
-      cols: 3,
+      minlength: null,
+      maxlength: null,
+      min: null,
+      max: null
     },
     {
-      type: "number",
+      type: 'date',
+      label: null,
+      id: null,
+      name: null,
+      value: null,
+      placeholder: null,
+      required: null,
+      readonly: false,
+      disabled: false,
+      min: null,
+      max: null,
+      format: null
+    },
+    {
+      type: 'datetime',
+      label: null,
+      id: null,
+      name: null,
+      value: null,
+      placeholder: null,
+      required: null,
+      readonly: false,
+      disabled: false,
+      min: null,
+      max: null,
+      format: null
+    },
+    {
+      type: 'time',
       label: null,
       id: null,
       name: null,
@@ -57,53 +100,10 @@ function CreateDynamicForm({ match }) {
       maxlength: null,
       min: null,
       max: null,
+      format: null
     },
     {
-      type: "date",
-      label: null,
-      id: null,
-      name: null,
-      value: null,
-      placeholder: null,
-      required: null,
-      readonly: false,
-      disabled: false,
-      min: null,
-      max: null,
-      format: null,
-    },
-    {
-      type: "datetime",
-      label: null,
-      id: null,
-      name: null,
-      value: null,
-      placeholder: null,
-      required: null,
-      readonly: false,
-      disabled: false,
-      min: null,
-      max: null,
-      format: null,
-    },
-    {
-      type: "time",
-      label: null,
-      id: null,
-      name: null,
-      value: null,
-      placeholder: null,
-      required: null,
-      readonly: false,
-      disabled: false,
-      minlength: null,
-      maxlength: null,
-      min: null,
-      max: null,
-      format: null,
-    },
-    {
-      type: "select",
+      type: 'select',
       label: null,
       id: null,
       name: null,
@@ -114,8 +114,8 @@ function CreateDynamicForm({ match }) {
       disabled: false,
       dropdownSourceName: null,
       dropdownSourceData: [],
-      whomToChange: null,
-    },
+      whomToChange: null
+    }
   ];
   const [dynamicForm, setDynamicForm] = useState([]);
   const [currentForm, setCurrentForm] = useState();
@@ -143,7 +143,7 @@ function CreateDynamicForm({ match }) {
             setDropdown(
               res.data.data.map((d) => ({
                 label: d.dropdown_name,
-                value: d.id,
+                value: d.id
               }))
             );
           }
@@ -154,7 +154,7 @@ function CreateDynamicForm({ match }) {
   const [showDynamicFormModal, setShowDynamicFormModal] = useState({
     display: false,
     index: null,
-    data: null,
+    data: null
   });
 
   const handleDynamicModal = (e, display, index = null, data = null) => {
@@ -186,7 +186,7 @@ function CreateDynamicForm({ match }) {
 
     setCurrentForm(null);
     if (currentForm.label === null) {
-      alert("Please enter the label name");
+      alert('Please enter the label name');
     } else {
       setDynamicForm((prev) => [...prev, currentForm]);
       setCurrentForm();
@@ -204,9 +204,9 @@ function CreateDynamicForm({ match }) {
     const { name, value } = e.target;
     setCurrentForm({
       ...currentForm,
-      [name]: value,
+      [name]: value
     });
-    if (value && name == "dropdownSourceName") {
+    if (value && name == 'dropdownSourceName') {
       await new DynamicFormDropdownMasterService()
         .getDropdownById(value)
         .then((res) => {
@@ -214,12 +214,12 @@ function CreateDynamicForm({ match }) {
             if (res.data.status == 1) {
               const options = res.data.data.dropdown.map((d) => ({
                 value: d.id,
-                label: d.label,
+                label: d.label
               }));
               currentForm.dropdownSourceData = options;
               setCurrentForm((prevForm) => ({
                 ...prevForm,
-                dropdownSourceData: options,
+                dropdownSourceData: options
               }));
             }
           }
@@ -232,7 +232,7 @@ function CreateDynamicForm({ match }) {
     e.preventDefault();
     const data = {
       template_name: e.target.template_name.value,
-      dynamicForm: dynamicForm,
+      dynamicForm: dynamicForm
     };
     if (match.params.id) {
       alert(match.params.id);
@@ -243,23 +243,23 @@ function CreateDynamicForm({ match }) {
             if (res.data.status === 1) {
               history(
                 {
-                  pathname: `/${_base}/DynamicForm`,
+                  pathname: `/${_base}/DynamicForm`
                 },
                 {
                   state: {
-                    alert: { type: "success", message: res.data.message },
-                  },
+                    alert: { type: 'success', message: res.data.message }
+                  }
                 }
               );
             } else {
-              setNotify({ type: "danger", message: res.data.message });
+              setNotify({ type: 'danger', message: res.data.message });
             }
           } else {
-            setNotify({ type: "danger", message: res.message });
+            setNotify({ type: 'danger', message: res.message });
             new ErrorLogService().sendErrorLog(
-              "User",
-              "Create_User",
-              "INSERT",
+              'User',
+              'Create_User',
+              'INSERT',
               res.message
             );
           }
@@ -270,23 +270,23 @@ function CreateDynamicForm({ match }) {
           if (res.data.status === 1) {
             history(
               {
-                pathname: `/${_base}/DynamicForm`,
+                pathname: `/${_base}/DynamicForm`
               },
               {
                 state: {
-                  alert: { type: "success", message: res.data.message },
-                },
+                  alert: { type: 'success', message: res.data.message }
+                }
               }
             );
           } else {
-            setNotify({ type: "danger", message: res.data.message });
+            setNotify({ type: 'danger', message: res.data.message });
           }
         } else {
-          setNotify({ type: "danger", message: res.message });
+          setNotify({ type: 'danger', message: res.message });
           new ErrorLogService().sendErrorLog(
-            "User",
-            "Create_User",
-            "INSERT",
+            'User',
+            'Create_User',
+            'INSERT',
             res.message
           );
         }
@@ -328,7 +328,7 @@ function CreateDynamicForm({ match }) {
               >
                 <Modal.Header closeButton>
                   <Modal.Title>
-                    {showDynamicFormModal.data ? "Edit Field" : "Add New Field"}
+                    {showDynamicFormModal.data ? 'Edit Field' : 'Add New Field'}
                   </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
@@ -338,7 +338,7 @@ function CreateDynamicForm({ match }) {
                     defaultValue={
                       showDynamicFormModal.data
                         ? showDynamicFormModal.data.type
-                        : ""
+                        : ''
                     }
                   >
                     <option>Select Type</option>
@@ -351,11 +351,11 @@ function CreateDynamicForm({ match }) {
 
                   {currentForm && (
                     <div className="row">
-                      {currentForm.hasOwnProperty("label") && (
+                      {currentForm.hasOwnProperty('label') && (
                         <div className="col-md-3">
                           <label>
                             <b>
-                              Enter Label Name :{" "}
+                              Enter Label Name :{' '}
                               <Astrick color="red" size="13px" />
                             </b>
                           </label>
@@ -373,7 +373,7 @@ function CreateDynamicForm({ match }) {
                         </div>
                       )}
 
-                      {currentForm.hasOwnProperty("value") && (
+                      {currentForm.hasOwnProperty('value') && (
                         <div className="col-md-3">
                           <label>
                             <b>Enter Default Value :</b>
@@ -391,7 +391,7 @@ function CreateDynamicForm({ match }) {
                         </div>
                       )}
 
-                      {currentForm.hasOwnProperty("placeholder") && (
+                      {currentForm.hasOwnProperty('placeholder') && (
                         <div className="col-md-3">
                           <label>
                             <b>Enter Placeholder :</b>
@@ -408,7 +408,7 @@ function CreateDynamicForm({ match }) {
                           />
                         </div>
                       )}
-                      {currentForm.hasOwnProperty("required") && (
+                      {currentForm.hasOwnProperty('required') && (
                         <div className="col-md-3">
                           <label>
                             <b>Required :</b>
@@ -425,7 +425,7 @@ function CreateDynamicForm({ match }) {
                           </select>
                         </div>
                       )}
-                      {currentForm.hasOwnProperty("readonly") && (
+                      {currentForm.hasOwnProperty('readonly') && (
                         <div className="col-md-3">
                           <label>
                             <b>Readonly :</b>
@@ -443,7 +443,7 @@ function CreateDynamicForm({ match }) {
                         </div>
                       )}
 
-                      {currentForm.hasOwnProperty("disabled") && (
+                      {currentForm.hasOwnProperty('disabled') && (
                         <div className="col-md-3">
                           <label>
                             <b>Disabled :</b>
@@ -460,7 +460,7 @@ function CreateDynamicForm({ match }) {
                           </select>
                         </div>
                       )}
-                      {currentForm.hasOwnProperty("cols") && (
+                      {currentForm.hasOwnProperty('cols') && (
                         <div className="col-md-3">
                           <label>
                             <b>Enter Cols :</b>
@@ -478,7 +478,7 @@ function CreateDynamicForm({ match }) {
                           />
                         </div>
                       )}
-                      {currentForm.hasOwnProperty("minlength") && (
+                      {currentForm.hasOwnProperty('minlength') && (
                         <div className="col-md-3">
                           <label>
                             <b>Enter Min Length :</b>
@@ -495,7 +495,7 @@ function CreateDynamicForm({ match }) {
                           />
                         </div>
                       )}
-                      {currentForm.hasOwnProperty("maxlength") && (
+                      {currentForm.hasOwnProperty('maxlength') && (
                         <div className="col-md-3">
                           <label>
                             <b>Enter Max Length :</b>
@@ -512,7 +512,7 @@ function CreateDynamicForm({ match }) {
                           />
                         </div>
                       )}
-                      {currentForm.hasOwnProperty("min") && (
+                      {currentForm.hasOwnProperty('min') && (
                         <div className="col-md-3">
                           <label>
                             <b>Enter Min Value :</b>
@@ -529,7 +529,7 @@ function CreateDynamicForm({ match }) {
                           />
                         </div>
                       )}
-                      {currentForm.hasOwnProperty("max") && (
+                      {currentForm.hasOwnProperty('max') && (
                         <div className="col-md-3">
                           <label>
                             <b>Enter Max Value :</b>
@@ -547,7 +547,7 @@ function CreateDynamicForm({ match }) {
                         </div>
                       )}
 
-                      {currentForm.hasOwnProperty("format") && (
+                      {currentForm.hasOwnProperty('format') && (
                         <div className="col-md-3">
                           <label>
                             <b>Enter Format :</b>
@@ -561,7 +561,7 @@ function CreateDynamicForm({ match }) {
                           />
                         </div>
                       )}
-                      {currentForm.hasOwnProperty("dropdownSourceName") &&
+                      {currentForm.hasOwnProperty('dropdownSourceName') &&
                         dropdown && (
                           <div className="col-md-3">
                             <label>
@@ -589,7 +589,7 @@ function CreateDynamicForm({ match }) {
                       {/* {currentForm.hasOwnProperty('dropdownSourceData') &&
                                                 <div className='col-md-3'>
                                                 <label><b>Dropdown Source Data:</b></label>
-                                                <select className="form-control form-control-sm"                                                      
+                                                <select className="form-control form-control-sm"
                                                     name="dropdownSourceData"
                                                     defaultValue={currentForm.dropdownSourceData}
                                                     onChange={e=>handleInputChange(e)}
@@ -598,7 +598,7 @@ function CreateDynamicForm({ match }) {
                                             </div>
                                             } */}
 
-                      {currentForm.hasOwnProperty("whomToChange") && (
+                      {currentForm.hasOwnProperty('whomToChange') && (
                         <div className="col-md-3">
                           <label>
                             <b>Make Change In :</b>
@@ -675,7 +675,7 @@ function CreateDynamicForm({ match }) {
                           className="form-control form-control-sm"
                           name="template_name"
                           id="template_name"
-                          defaultValue={data ? data.template_name : ""}
+                          defaultValue={data ? data.template_name : ''}
                           required
                           onKeyPress={(e) => {
                             Validation.CharactersNumbersOnly(e);
@@ -687,7 +687,7 @@ function CreateDynamicForm({ match }) {
                     <div className="row">
                       <div
                         className="col-md-12 text-right"
-                        style={{ textAlign: "right" }}
+                        style={{ textAlign: 'right' }}
                       >
                         <button
                           type="button"
@@ -706,7 +706,7 @@ function CreateDynamicForm({ match }) {
                     <div class="row">
                       {dynamicForm &&
                         dynamicForm.map((d, i) => {
-                          if (d.type == "text") {
+                          if (d.type == 'text') {
                             return (
                               <div class="col-md-4" key={Math.random()}>
                                 <label>
@@ -716,10 +716,10 @@ function CreateDynamicForm({ match }) {
                                   type="text"
                                   className="form-control"
                                   id={d.id}
-                                  name={d.label.replace(" ", "_").toLowerCase()}
+                                  name={d.label.replace(' ', '_').toLowerCase()}
                                   defaultValue={d.defalutValue}
                                   // readOnly={(d.readonly) ? false : true}
-                                  readOnly={d.readonly == "TRUE"}
+                                  readOnly={d.readonly == 'TRUE'}
                                   placeholder={d.placeholder}
                                   // required={d.required}
                                   // readonly={d.readonly}
@@ -728,7 +728,7 @@ function CreateDynamicForm({ match }) {
 
                                 <button
                                   type="button"
-                                  style={{ width: "17%" }}
+                                  style={{ width: '17%' }}
                                   className="btn btn-sm btn-primary mt-3"
                                   onClick={(e) =>
                                     handleDynamicModal(e, true, i, d)
@@ -738,7 +738,7 @@ function CreateDynamicForm({ match }) {
                                 </button>
                                 <button
                                   type="button"
-                                  style={{ width: "17%" }}
+                                  style={{ width: '17%' }}
                                   className="btn btn-sm btn-primary mt-3"
                                   onClick={() => handleDelete(i)}
                                 >
@@ -747,7 +747,7 @@ function CreateDynamicForm({ match }) {
                               </div>
                             );
                           }
-                          if (d.type == "textarea") {
+                          if (d.type == 'textarea') {
                             return (
                               <div class="col-md-4">
                                 <label>
@@ -763,7 +763,7 @@ function CreateDynamicForm({ match }) {
                                 />
                                 <button
                                   type="button"
-                                  style={{ width: "17%" }}
+                                  style={{ width: '17%' }}
                                   className="btn btn-sm btn-primary mt-3"
                                   onClick={(e) =>
                                     handleDynamicModal(e, true, i, d)
@@ -773,7 +773,7 @@ function CreateDynamicForm({ match }) {
                                 </button>
                                 <button
                                   type="button"
-                                  style={{ width: "17%" }}
+                                  style={{ width: '17%' }}
                                   className="btn btn-sm btn-primary mt-3"
                                   onClick={() => handleDelete(i)}
                                 >
@@ -782,7 +782,7 @@ function CreateDynamicForm({ match }) {
                               </div>
                             );
                           }
-                          if (d.type == "number") {
+                          if (d.type == 'number') {
                             return (
                               <div class="col-md-4">
                                 <label>
@@ -812,7 +812,7 @@ function CreateDynamicForm({ match }) {
                               </div>
                             );
                           }
-                          if (d.type == "date") {
+                          if (d.type == 'date') {
                             return (
                               <div class="col-md-4">
                                 <label>
@@ -830,7 +830,7 @@ function CreateDynamicForm({ match }) {
                                 />
                                 <button
                                   type="button"
-                                  style={{ width: "17%" }}
+                                  style={{ width: '17%' }}
                                   className="btn btn-sm btn-primary mt-3"
                                   onClick={(e) =>
                                     handleDynamicModal(e, true, i, d)
@@ -841,7 +841,7 @@ function CreateDynamicForm({ match }) {
                               </div>
                             );
                           }
-                          if (d.type == "datetime") {
+                          if (d.type == 'datetime') {
                             return (
                               <div class="col-md-4">
                                 <label>
@@ -860,7 +860,7 @@ function CreateDynamicForm({ match }) {
                                 />
                                 <button
                                   type="button"
-                                  style={{ width: "17%" }}
+                                  style={{ width: '17%' }}
                                   className="btn btn-sm btn-primary mt-3"
                                   onClick={(e) =>
                                     handleDynamicModal(e, true, i, d)
@@ -871,7 +871,7 @@ function CreateDynamicForm({ match }) {
                               </div>
                             );
                           }
-                          if (d.type == "time") {
+                          if (d.type == 'time') {
                             return (
                               <div class="col-md-4">
                                 <label>
@@ -891,7 +891,7 @@ function CreateDynamicForm({ match }) {
                               </div>
                             );
                           }
-                          if (d.type == "select") {
+                          if (d.type == 'select') {
                             return (
                               <div class="col-md-4">
                                 <label>
@@ -938,12 +938,12 @@ function CreateDynamicForm({ match }) {
                       </div>
                     )}
                   </form>
-                </div>{" "}
+                </div>{' '}
                 {/* Card Body */}
               </div>
               {/* Card */}
             </div>
-          </div>{" "}
+          </div>{' '}
           {/*ROW*/}
         </div>
         {/*CONTAINER*/}

@@ -1,12 +1,8 @@
-import React, { useState, useEffect } from "react";
-import PageHeader from "../../components/Common/PageHeader";
-import {
-  getAllNotification,
-  getNotification,
-  markedReadNotification,
-} from "../../services/NotificationService/NotificationService";
-import { Link } from "react-router-dom";
-import { _base, userSessionData } from "../../settings/constants";
+import React, { useState, useEffect } from 'react';
+import PageHeader from '../../components/Common/PageHeader';
+import { getNotification } from '../../services/NotificationService/NotificationService';
+import { Link } from 'react-router-dom';
+import { _base } from '../../settings/constants';
 
 export default function ApprovedNotificationComponent() {
   const [notifications, setNotifications] = useState();
@@ -17,13 +13,11 @@ export default function ApprovedNotificationComponent() {
         setNotifications(null);
         if (res.data.data.for_me) {
           var length = res.data.data.for_me.length;
-          var height = 0;
+
           setNotifications(res.data.data.for_me);
           if (parseInt(length) > 0 && parseInt(length) <= 5) {
-            height = 100;
           }
           if (parseInt(length) > 5) {
-            height = 250;
           }
         }
       }
@@ -45,12 +39,12 @@ export default function ApprovedNotificationComponent() {
         <div className="card-body">
           {notifications &&
             notifications.map((ele, i) => {
-              const date = ele.created_at.split(" ")[0];
-              const time = ele.created_at.split(" ")[1];
+              const date = ele.created_at.split(' ')[0];
+              const time = ele.created_at.split(' ')[1];
               return (
                 <div
                   className="row d-flex justify-content-center"
-                  style={{ cursor: "pointer" }}
+                  style={{ cursor: 'pointer' }}
                 >
                   <div className="col-md-6">
                     <div className="card mt-2">

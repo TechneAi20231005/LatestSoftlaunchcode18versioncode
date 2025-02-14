@@ -1,5 +1,9 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { departmentData, postdepartment, updateDepartment } from './DepartmentMasterAction';
+import {
+  departmentData,
+  postdepartment,
+  updateDepartment
+} from './DepartmentMasterAction';
 
 const initialState = {
   status: '',
@@ -10,11 +14,11 @@ const initialState = {
   modal: {
     showModal: false,
     modalData: '',
-    modalHeader: '',
+    modalHeader: ''
   },
   isLoading: {
-    departmentDataList: false,
-  },
+    departmentDataList: false
+  }
 };
 
 export const departmentMasterSlice = createSlice({
@@ -29,10 +33,10 @@ export const departmentMasterSlice = createSlice({
     },
     handleModalClose: (state, action) => {
       state.modal = action.payload;
-    },
+    }
   },
-  extraReducers: builder => {
-    builder.addCase(departmentData.pending, state => {
+  extraReducers: (builder) => {
+    builder.addCase(departmentData.pending, (state) => {
       state.status = 'loading';
       state.isLoading.departmentDataList = true;
       state.notify = null;
@@ -42,7 +46,7 @@ export const departmentMasterSlice = createSlice({
       state.isLoading.departmentDataList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let departmentData = payload.data.data;
+        let departmentData = payload.data.data?.data;
         state.status = 'succeded';
         state.showLoaderModal = false;
         let count = 1;
@@ -52,13 +56,15 @@ export const departmentMasterSlice = createSlice({
         state.departmentData = [...departmentData];
         let exportDepartmentData = [];
 
-        let filterdata = payload.data.data.filter(d => d.is_active == 1);
+        let filterdata = payload.data.data.data?.filter(
+          (d) => d.is_active === 1
+        );
         let sortDepartmentData = [];
         for (const key in filterdata) {
           if (filterdata[key].department) {
             sortDepartmentData.push({
               value: filterdata[key].id,
-              label: filterdata[key].department,
+              label: filterdata[key].department
             });
           }
         }
@@ -74,20 +80,20 @@ export const departmentMasterSlice = createSlice({
             created_at: departmentData[i].created_at,
             created_by: departmentData[i].created_by,
             updated_at: departmentData[i].updated_at,
-            updated_by: departmentData[i].updated_by,
+            updated_by: departmentData[i].updated_by
           });
         }
         state.exportDepartmentData = exportDepartmentData;
       }
     });
-    builder.addCase(departmentData.rejected, state => {
+    builder.addCase(departmentData.rejected, (state) => {
       state.status = 'rejected';
       state.isLoading.departmentDataList = false;
     });
 
     //__________________________post____________________________
 
-    builder.addCase(postdepartment.pending, state => {
+    builder.addCase(postdepartment.pending, (state) => {
       state.status = 'loading';
       state.isLoading.departmentDataList = true;
       state.notify = null;
@@ -112,13 +118,13 @@ export const departmentMasterSlice = createSlice({
         state.notify = notify;
       }
     });
-    builder.addCase(postdepartment.rejected, state => {
+    builder.addCase(postdepartment.rejected, (state) => {
       state.status = 'rejected';
       state.isLoading.departmentDataList = false;
     });
 
     //_____________________________updateData______________________________
-    builder.addCase(updateDepartment.pending, state => {
+    builder.addCase(updateDepartment.pending, (state) => {
       state.status = 'loading';
       state.notify = null;
       state.isLoading.departmentDataList = true;
@@ -142,13 +148,14 @@ export const departmentMasterSlice = createSlice({
         state.notify = { type: 'danger', message: payload.data.message };
       }
     });
-    builder.addCase(updateDepartment.rejected, state => {
+    builder.addCase(updateDepartment.rejected, (state) => {
       state.status = 'rejected';
       state.isLoading.departmentDataList = false;
     });
-  },
+  }
 });
 
-export const { handleModalOpen, handleModalClose } = departmentMasterSlice.actions;
+export const { handleModalOpen, handleModalClose } =
+  departmentMasterSlice.actions;
 
 export default departmentMasterSlice.reducer;

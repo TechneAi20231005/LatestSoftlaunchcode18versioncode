@@ -13,7 +13,7 @@ function FollowUpHistory() {
   const { currentCandidateId } = location.state;
 
   // // redux state
-  const { followUpList, isLoading } = useSelector(state => state?.candidatesFollowUp);
+  const { followUpList, isLoading } = useSelector((state) => state?.candidatesFollowUp);
 
   // // life cycle
   useEffect(() => {
@@ -30,7 +30,7 @@ function FollowUpHistory() {
         [...new Array(2)].map((_, index) => (
           <div key={index}>
             <div className="skeleton" />
-            <div className="remark_history d-flex justify-content-between mt-3 gap-3">
+            <div className="d-flex justify-content-between mt-3 gap-3">
               <div className="skeleton w-100" />
               <div className="skeleton w-100" />
               <div className="skeleton mt-5 w-100" />
@@ -41,30 +41,34 @@ function FollowUpHistory() {
       ) : followUpList?.length ? (
         followUpList?.map((followUp, index) => (
           <div key={index}>
-            <p>{followUp?.title || 'N/A'}</p>
-            <div className="remark_history d-flex justify-content-between">
-              <div>
-                <h5>Next Follow-up Date & Time</h5>
-                <p>{followUp?.next_date || 'N/A'}</p>
+            <div className="d-flex flex-column flex-md-row justify-content-between">
+              <div className="col-md-6">
+                <h5>Follow Up Message</h5>
+                <p className="mb-md-0">{followUp?.title || 'N/A'}</p>
               </div>
-              <div>
+              <div className="col-md-3">
+                <h5>Next Follow-up Date & Time</h5>
+                <p className="mb-md-0">{followUp?.next_date || 'N/A'}</p>
+              </div>
+              <div className="col-md-3">
                 <h5>Attachment</h5>
                 {followUp?.attachment_file ? (
                   <a
                     href={`${REACT_APP_ATTACHMENT_URL}${followUp?.attachment_file}`}
                     target="_blank"
+                    className="link_underline_primary"
                   >
-                    Attachment
+                    {followUp?.attachment_file?.split('/')?.pop()}
                   </a>
                 ) : (
                   'N/A'
                 )}
               </div>
-              <p className="mt-5 opacity-50">{`${followUp?.created_by || 'N/A'}, ${
-                followUp?.created_at || 'N/A'
-              }`}</p>
             </div>
-            <hr className="mt-0" />
+            <hr className="mb-1" />
+            <p className="opacity-50 text-end">{`${followUp?.created_by || 'N/A'}, ${
+              followUp?.created_at || 'N/A'
+            }`}</p>
           </div>
         ))
       ) : (

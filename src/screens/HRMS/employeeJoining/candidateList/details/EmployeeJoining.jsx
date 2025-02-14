@@ -40,7 +40,7 @@ function EmployeeJoining() {
 
   return (
     <Container fluid>
-      <PageHeader headerTitle="Employee Joining" />
+      <PageHeader headerTitle="Employee Joining" showBackBtn />
       <div className="mt-3">
         <CustomTab tabsData={tabsLabel} currentTab={currentTab} setCurrentTab={setCurrentTab} />
       </div>

@@ -1,19 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from 'react';
 
 export default function CommentsData(props) {
   const [data, setData] = useState();
-  const content = "Hey my number is 555-555-5555.";
-  const [string, setString] = useState();
-  const loadData = async () => {
+
+
+
+
+  const loadData = useCallback( async () => {
     const deta = props.data;
     setData(deta);
-  };
+  },[props.data]);
 
   useEffect(() => {
     loadData();
-  }, [data]);
+  }, [data, loadData]);
 
-  
   return (
     <>
       <div
@@ -21,7 +22,7 @@ export default function CommentsData(props) {
           __html: props.data.replace(
             /@(\w+\s\w+)/g,
             '<span style="color: blue;">@$1</span>'
-          ),
+          )
         }}
       ></div>
     </>

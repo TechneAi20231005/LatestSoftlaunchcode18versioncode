@@ -3,6 +3,12 @@
     h3 {
       font-size: 14px;
     }
+    .btn_container {
+      flex-wrap: wrap;
+      button {
+        margin-left: 0;
+      }
+    }
     .rdt_TableHeadRow {
       .rdt_TableCol {
         max-width: 19% !important;

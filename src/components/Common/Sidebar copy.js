@@ -11,7 +11,7 @@ class Sidebar extends React.Component {
       isOpenMenu2: false,
       menuData: [...menu],
       darkLightMode: 'light',
-      updateRtl: false,
+      updateRtl: false
     };
   }
 
@@ -26,7 +26,10 @@ class Sidebar extends React.Component {
         if (otherTabs[i].id !== id) {
           otherTabs[i].className = otherTabs[i].className.replace(' show', '');
           if (otherTabs[i].parentElement.children.length > 1) {
-            otherTabs[i].parentElement.children[0].setAttribute('aria-expanded', 'false');
+            otherTabs[i].parentElement.children[0].setAttribute(
+              'aria-expanded',
+              'false'
+            );
           }
         }
       }
@@ -36,12 +39,18 @@ class Sidebar extends React.Component {
       if (menutab.classList.contains('show')) {
         menutab.classList.remove('show');
         if (menutab.parentElement.children.length > 1) {
-          menutab.parentElement.children[0].setAttribute('aria-expanded', 'false');
+          menutab.parentElement.children[0].setAttribute(
+            'aria-expanded',
+            'false'
+          );
         }
       } else {
         menutab.classList.add('show');
         if (menutab.parentElement.children.length > 1) {
-          menutab.parentElement.children[0].setAttribute('aria-expanded', 'true');
+          menutab.parentElement.children[0].setAttribute(
+            'aria-expanded',
+            'true'
+          );
         }
       }
     }
@@ -67,7 +76,10 @@ class Sidebar extends React.Component {
       for (var i = 0; i < otherTabs.length; i++) {
         otherTabs[i].className = otherTabs[i].className.replace(' show', '');
         if (otherTabs[i].parentElement.children.length > 1) {
-          otherTabs[i].parentElement.children[0].setAttribute('aria-expanded', 'false');
+          otherTabs[i].parentElement.children[0].setAttribute(
+            'aria-expanded',
+            'false'
+          );
         }
       }
     }
@@ -85,12 +97,12 @@ class Sidebar extends React.Component {
     if (window.document.children[0].getAttribute('data-theme') === 'light') {
       window.document.children[0].setAttribute('data-theme', 'dark');
       this.setState({
-        darkLightMode: 'dark',
+        darkLightMode: 'dark'
       });
     } else {
       window.document.children[0].setAttribute('data-theme', 'light');
       this.setState({
-        darkLightMode: 'light',
+        darkLightMode: 'light'
       });
     }
   }
@@ -109,7 +121,9 @@ class Sidebar extends React.Component {
     return (
       <div
         id="mainSideMenu"
-        className={`sidebar px-4 py-4 py-md-5 me-0 ${isSidebarMini ? 'sidebar-mini' : ''}`}
+        className={`sidebar px-4 py-4 py-md-5 me-0 ${
+          isSidebarMini ? 'sidebar-mini' : ''
+        }`}
       >
         <div className="d-flex flex-column h-100">
           <a href="hr-dashboard" className="mb-0 brand-icon">
@@ -139,7 +153,7 @@ class Sidebar extends React.Component {
                     <a
                       className={`m-link `}
                       href="#!"
-                      onClick={e => {
+                      onClick={(e) => {
                         e.preventDefault();
                         this.GotoChangeMenu(d.name);
                       }}
@@ -155,7 +169,9 @@ class Sidebar extends React.Component {
                   <li key={'dsfshsdg' + i} className=" collapsed">
                     <Link
                       to={process.env.PUBLIC_URL + '/' + d.routerLink[0]}
-                      className={`m-link ${d.routerLink[0] === activekey ? 'active' : ''}`}
+                      className={`m-link ${
+                        d.routerLink[0] === activekey ? 'active' : ''
+                      }`}
                     >
                       <i className={d.iconClass}></i>
                       <span>{d.name}</span>
@@ -168,12 +184,14 @@ class Sidebar extends React.Component {
                 <li key={'shsdg' + i} className=" collapsed">
                   <a
                     className={`m-link ${
-                      d.children.filter(d => '/' + d.routerLink[0] === activekey).length > 0
+                      d.children.filter(
+                        (d) => '/' + d.routerLink[0] === activekey
+                      ).length > 0
                         ? 'active'
                         : ''
                     }`}
                     href="#!"
-                    onClick={e => {
+                    onClick={(e) => {
                       e.preventDefault();
                       this.openChildren('menu-Pages' + i);
                     }}
@@ -183,7 +201,10 @@ class Sidebar extends React.Component {
                     <span className="arrow icofont-dotted-down ms-auto text-end fs-5"></span>
                   </a>
                   {d.children.length > 0 ? (
-                    <ul className="sub-menu collapse has-children" id={'menu-Pages' + i}>
+                    <ul
+                      className="sub-menu collapse has-children"
+                      id={'menu-Pages' + i}
+                    >
                       {d.children.map((data, ind) => {
                         if (d.children.length > 0) {
                           if (activekey === '/' + data.routerLink[0]) {
@@ -200,7 +221,11 @@ class Sidebar extends React.Component {
                                   ? 'ms-link active'
                                   : 'ms-link'
                               }
-                              to={process.env.PUBLIC_URL + '/' + data.routerLink[0]}
+                              to={
+                                process.env.PUBLIC_URL +
+                                '/' +
+                                data.routerLink[0]
+                              }
                             >
                               {' '}
                               <span>{data.name}</span>

@@ -14,20 +14,12 @@ function StatusBadge({ status }) {
 export default StatusBadge;
 
 export const ApplicationStatusBadge = ({ type, name }) => {
+  const style = {
+    minWidth: '100px'
+  };
   return (
     <>
-      <Badge
-        bg={
-          type === 'primary'
-            ? 'primary'
-            : type === 'success'
-            ? 'success'
-            : type === 'warning'
-            ? 'warning'
-            : 'danger'
-        }
-        className="px-3 py-1"
-      >
+      <Badge bg={type} className="px-3 py-1" style={style}>
         {name}
       </Badge>
     </>

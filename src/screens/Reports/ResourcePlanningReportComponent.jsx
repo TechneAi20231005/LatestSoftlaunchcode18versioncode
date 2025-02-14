@@ -1,81 +1,85 @@
-import React, { useEffect, useState } from "react";
-import DataTable from "react-data-table-component";
-import { Table } from "react-bootstrap";
-import ErrorLogService from "../../services/ErrorLogService";
-import UserService from "../../services/MastersService/UserService";
-import ReportService from "../../services/ReportService/ReportService";
-import PageHeader from "../../components/Common/PageHeader";
-import Select from "react-select";
-import { Astrick } from "../../components/Utilities/Style";
-import { ExportToExcel } from "../../components/Utilities/Table/ExportToExcel";
-import { Spinner, Modal } from "react-bootstrap";
-import { Link } from "react-router-dom";
-import { _base, userSessionData } from "../../settings/constants";
-import ManageMenuService from '../../services/MenuManagementService/ManageMenuService'
-import { useDispatch, useSelector } from "react-redux";
-import { getRoles } from "../Dashboard/DashboardAction";
+import React, { useCallback, useEffect, useState } from 'react';
+import DataTable from 'react-data-table-component';
+import { Table } from 'react-bootstrap';
+import ErrorLogService from '../../services/ErrorLogService';
+import UserService from '../../services/MastersService/UserService';
+import ReportService from '../../services/ReportService/ReportService';
+import PageHeader from '../../components/Common/PageHeader';
+import Select from 'react-select';
+import { Astrick } from '../../components/Utilities/Style';
+import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
+import { Spinner, Modal } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+import { _base } from '../../settings/constants';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { getRoles } from '../Dashboard/DashboardAction';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { CustomValidation } from '../../components/custom/CustomValidation/CustomValidation';
+import errorHandler from '../../utils/errorHandler';
+import NotFound from '../../components/NotFound';
 
 export default function ResourcePlanningReportComponent() {
-
-
   const [userData, setUserData] = useState(null);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
   const [exportData, setExportData] = useState(null);
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const roleId = sessionStorage.getItem("role_id")
-  // const [checkRole, setCheckRole] = useState(null)
+
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==25)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 25)
   );
 
-  const [todate, setTodate] = useState([]);
-  const [fromdate, setFromdate] = useState([]);
+  // const [todate, setTodate] = useState([]);
+  // const [fromdate, setFromdate] = useState([]);
 
-  const [todateformat, setTodateformat] = useState("");
-  const [fromdateformat, setFromdateformat] = useState("");
+  const [todateformat, setTodateformat] = useState('');
+  const [fromdateformat, setFromdateformat] = useState('');
 
   const columns = [
-    { name: "Sr", selector: (row) => row.sr, sortable: false, width: "70px" },
+    { name: 'Sr', selector: (row) => row.sr, sortable: false, width: '70px' },
     {
-      name: "Date",
+      name: 'Date',
       selector: (row) => row.date,
       sortable: true,
-      width: "150px",
+      width: '150px'
     },
     {
-      name: "User Name",
+      name: 'User Name',
       selector: (row) => row.user_name,
       sortable: true,
-      width: "150px",
+      width: '150px'
     },
     {
-      name: "Hours",
+      name: 'Hours',
       selector: (row) => row.hours,
       sortable: true,
-      width: "100px",
-    },
+      width: '100px'
+    }
   ];
 
-  const loadData = async () => {
+  const loadData = useCallback(async () => {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
     const tempUserData = [];
-    const inputRequired = 'id,employee_id,first_name,last_name,middle_name,is_active';
+    const inputRequired =
+      'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         setShowLoaderModal(false);
-        const data = res.data.data.filter((d) => d.is_active === 1 && d.account_for === "SELF");
+        const data = res.data.data?.data?.filter(
+          (d) => d.is_active === 1 && d.account_for === 'SELF'
+        );
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,
             label:
               data[key].first_name +
-              " " +
+              ' ' +
               data[key].last_name +
-              " (" +
+              ' (' +
               data[key].id +
-              ")",
+              ')'
           });
         }
         const aa = tempUserData.sort(function (a, b) {
@@ -85,56 +89,48 @@ export default function ResourcePlanningReportComponent() {
       }
     });
 
+    dispatch(getRoles());
+  }, [dispatch]);
 
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter(d => d.role_id == getRoleId))
-    //     }
-    //   }
-    // })
-    dispatch(getRoles())
-
-    const data = [];
-    const exportData = [];
-  };
-
-  const [startDate, setStartDate] = useState(null);
   const handleFromDate = (e) => {
     const gettodatevalue = e.target.value;
-    const setdateformat = gettodatevalue.split("-");
+    const setdateformat = gettodatevalue.split('-');
     const settoyear = setdateformat[0];
     const settomonth = setdateformat[1];
     const settodate = setdateformat[2];
-    const settodateformat = settoyear + "" + settomonth + "" + settodate;
-    setTodate(gettodatevalue);
+    const settodateformat = settoyear + '' + settomonth + '' + settodate;
+
     setTodateformat(settodateformat);
   };
 
   const handleToDate = (e) => {
     const getfromdatevalue = e.target.value;
-    const setfromformat = getfromdatevalue.split("-");
+    const setfromformat = getfromdatevalue.split('-');
     const setfromyear = setfromformat[0];
     const setfrommonth = setfromformat[1];
     const setfromdate = setfromformat[2];
     const setfromformatdate =
-      setfromyear + "" + setfrommonth + "" + setfromdate;
-    setFromdate(getfromdatevalue);
+      setfromyear + '' + setfrommonth + '' + setfromdate;
+
     setFromdateformat(setfromformatdate);
   };
 
-  const handleForm = async (e) => {
+  const handleForm = async (values) => {
     setShowLoaderModal(null);
     setShowLoaderModal(true);
-    e.preventDefault();
-    const formData = new FormData(e.target);
+    // e.preventDefault();
+    // const formData = new FormData(e.target);
+    const formData = new FormData();
+    formData.append('from_date', values.from_date);
+    formData.append('to_date', values.to_date);
+    values?.user_id?.forEach((item) => {
+      formData?.append('user_id[]', item?.value);
+    });
     const tempData = [];
     var flag = 1;
 
     if (todateformat > fromdateformat) {
-      alert("Please select End Date Greater than Start date");
+      alert('Please select End Date Greater than Start date');
     } else {
       if (flag === 1) {
         try {
@@ -147,7 +143,7 @@ export default function ResourcePlanningReportComponent() {
               setShowLoaderModal(false);
               let sr = 1;
               const data = res.data.data;
-         
+
               if (data && data.length > 0) {
                 for (const key in data) {
                   tempData.push({
@@ -156,69 +152,67 @@ export default function ResourcePlanningReportComponent() {
                     hours: data[key].hours,
                     user_id: data[key].user_id,
                     user_name: data[key].user_name,
-                    tasks: data[key].tasks,
+                    tasks: data[key].tasks
                   });
                 }
-                setData(null);
+                setData([]);
                 setData(tempData);
 
-                // Export data
-                // const exportTempData = [];
-                // for (const i in data) {
-                //     const tasks = Array.isArray(data[i].tasks) ? data[i].tasks.map(task => task.task_name).join(", ") : "";
-                //     exportTempData.push({
-                //         Sr: data[i].counter,
-                //         date: data[i].date,
-                //         user_name: data[i].user_name,
-                //         task_name: tasks,
-                //         task_hours: data[i].hours,
-                //       });
-                // }
-
                 const exportTempData = [];
+
                 for (const i in data) {
-                  const tasks = Array.isArray(data[i].tasks) ? data[i].tasks : [];
+                  const tasks = Array.isArray(data[i].tasks)
+                    ? data[i].tasks
+                    : [];
                   let counter = 1;
                   for (const task of tasks) {
                     exportTempData.push({
                       sr: counter++,
                       ticket_id: task.ticket_id,
+                      job_role: data[i].job_role || '-',
+                      sprint_name: task.sprint_name || '-',
+                      sprint_start_date: task.sprint_start_date || '-',
+                      sprint_end_date: task.sprint_end_date || '-',
                       date: data[i].date,
                       user_name: data[i].user_name,
+                      type_name: task.type_name || '-',
                       task_name: task.task_name,
-                      total_hours: task.total_hours,
+                      total_hours: task.total_hours
                     });
                   }
                 }
 
                 setExportData(exportTempData);
               } else {
-                setData(null);
+                setData([]);
               }
             } else {
-              setData(null);
+              setData([]);
             }
           } else {
             new ErrorLogService().sendErrorLog(
-              "ResourcePlanning",
-              "Get_ResourcePlanning",
-              "INSERT",
+              'ResourcePlanning',
+              'Get_ResourcePlanning',
+              'INSERT',
               res.message
             );
+            setShowLoaderModal(null);
           }
         } catch (error) {
           if (error.response && error.response.data) {
             new ErrorLogService().sendErrorLog(
-              "ResourcePlanning",
-              "Get_ResourcePlanning",
-              "INSERT",
+              'ResourcePlanning',
+              'Get_ResourcePlanning',
+              'INSERT',
               error.response.data.message
             );
+            errorHandler(error?.response);
+            setShowLoaderModal(null);
           } else {
             new ErrorLogService().sendErrorLog(
-              "ResourcePlanning",
-              "Get_ResourcePlanning",
-              "INSERT",
+              'ResourcePlanning',
+              'Get_ResourcePlanning',
+              'INSERT',
               error.message
             );
           }
@@ -234,6 +228,7 @@ export default function ResourcePlanningReportComponent() {
           <tr>
             <th>Sr</th>
             <th>Task Name</th>
+            <th>Sprint Name</th>
             <th>Task Hour</th>
           </tr>
         </thead>
@@ -245,13 +240,16 @@ export default function ResourcePlanningReportComponent() {
                 <tr>
                   <td>{key + 1}</td>
                   {/*        // Updated by Asmita Margaje */}
-                  <td >
+                  <td>
                     <Link to={`/${_base}/Ticket/Task/${task.id}`}>
-                      <span style={{ fontWeight: 'bold' }}> {task.ticket_id} </span>
-
+                      <span style={{ fontWeight: 'bold' }}>
+                        {' '}
+                        {task.ticket_id}{' '}
+                      </span>
                     </Link>
                     - {task.task_name}
                   </td>
+                  <td>{task.sprint_name || '-'}</td>
                   <td>{task.total_hours}</td>
                 </tr>
               );
@@ -263,7 +261,7 @@ export default function ResourcePlanningReportComponent() {
 
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -271,7 +269,40 @@ export default function ResourcePlanningReportComponent() {
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, [])
+  }, [checkRole]);
+
+  const fields = [
+    {
+      name: 'from_date',
+      label: 'From Date',
+      required: true,
+      alphaNumeric: false,
+      dateRange: {
+        startDate: 'from_date',
+        endDate: 'to_date',
+        startLabel: 'From Date'
+      }
+    },
+    {
+      name: 'to_date',
+      label: 'To Date',
+      required: true,
+      alphaNumeric: false,
+      dateRange: {
+        startDate: 'from_date',
+        endDate: 'to_date',
+        startLabel: 'From Date'
+      }
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
+
+  const initialValues = {
+    user_id: [],
+    from_date: '',
+    to_date: ''
+  };
 
   return (
     <div className="container-xxl">
@@ -279,88 +310,117 @@ export default function ResourcePlanningReportComponent() {
 
       <div className="card mt-2" style={{ zIndex: 10 }}>
         <div className="card-body">
-          <form onSubmit={handleForm}>
-            <div className="row">
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>Select User :</b>
-                </label>
-                <Select
-                  isMulti
-                  isSearchable={true}
-                  name="user_id[]"
-                  className="basic-multi-select"
-                  classNamePrefix="select"
-                  options={userData}
-                  required
-                  style={{ zIndex: "100" }}
-                />
-              </div>
+          <Formik
+            initialValues={initialValues}
+            validationSchema={validationSchema}
+            onSubmit={(values) => {
+              handleForm(values);
+            }}
+          >
+            {({ setFieldValue, values }) => (
+              <Form>
+                <div className="row">
+                  <div className="col-md-4">
+                    <label htmlFor="" className="">
+                      <b>Select User :</b>
+                    </label>
+                    <Select
+                      isMulti
+                      isSearchable={true}
+                      name="user_id"
+                      value={values.user_id}
+                      className="basic-multi-select"
+                      classNamePrefix="select"
+                      options={userData}
+                      style={{ zIndex: '100' }}
+                      onChange={(option) =>
+                        setFieldValue('user_id', option || null)
+                      }
+                    />
+                  </div>
 
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>
-                    From Date :<Astrick color="red" size="13px" />
-                  </b>
-                </label>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  name="from_date"
-                  onChange={handleFromDate}
-                  required
-                />
-              </div>
+                  <div className="col-md-4">
+                    <label htmlFor="" className="">
+                      <b>
+                        From Date :<Astrick color="red" size="13px" />
+                      </b>
+                    </label>
+                    <Field
+                      type="date"
+                      className="form-control form-control-sm"
+                      name="from_date"
+                      onChange={(option) => {
+                        handleFromDate(option);
+                        setFieldValue(
+                          'from_date',
+                          option?.target?.value || null
+                        );
+                      }}
+                    />
+                    <ErrorMessage
+                      name="from_date"
+                      component="small"
+                      className="text-danger"
+                    />
+                  </div>
 
-              <div className="col-md-3">
-                <label htmlFor="" className="">
-                  <b>
-                    To Date :<Astrick color="red" size="13px" />
-                  </b>
-                </label>
-                <input
-                  type="date"
-                  className="form-control form-control-sm"
-                  name="to_date"
-                  onChange={handleToDate}
-                  required
-                />
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-md-2">
-                <button
-                  className="btn btn-sm btn-warning text-white"
-                  type="submit"
-                  style={{ marginTop: "20px", fontWeight: "600" }}
-                >
-                  <i className="icofont-search-1 "></i> Search
-                </button>
-                <button
-                  className="btn btn-sm btn-info text-white"
-                  type="button"
-                  onClick={() => window.location.reload(false)}
-                  style={{ marginTop: "20px", fontWeight: "600" }}
-                >
-                  <i className="icofont-refresh text-white"></i> Reset
-                </button>
-              </div>
-              <div
-                className="col-md-10"
-                style={{
-                  textAlign: "right",
-                  marginTop: "20px",
-                  fontWeight: "600",
-                }}
-              >
-                <ExportToExcel
-                  className="btn btn-sm btn-danger"
-                  apiData={exportData}
-                  fileName="Planning Report"
-                />
-              </div>
-            </div>
-          </form>
+                  <div className="col-md-4">
+                    <label htmlFor="" className="">
+                      <b>
+                        To Date :<Astrick color="red" size="13px" />
+                      </b>
+                    </label>
+                    <Field
+                      type="date"
+                      className="form-control form-control-sm"
+                      name="to_date"
+                      onChange={(option) => {
+                        handleToDate(option);
+                        setFieldValue('to_date', option?.target?.value || null);
+                      }}
+                    />
+                    <ErrorMessage
+                      name="to_date"
+                      component="small"
+                      className="text-danger"
+                    />
+                  </div>
+                </div>
+                <div className="d-flex mt-3">
+                  <div className="d-flex  ms-md-auto">
+                    <button
+                      className="btn  btn-warning text-white"
+                      type="submit"
+                      style={{ fontWeight: '600' }}
+                    >
+                      <i className="icofont-search-1 "></i> Search
+                    </button>
+                    <button
+                      className="btn  btn-info text-white"
+                      type="button"
+                      onClick={() => {
+                        setFieldValue('user_id', []);
+                        setFieldValue('task_name', '');
+                        setFieldValue('from_date', '');
+                        setFieldValue('to_date', '');
+                      }}
+                      style={{ fontWeight: '600' }}
+                    >
+                      <i className="icofont-refresh text-white"></i> Reset
+                    </button>
+                  </div>
+
+                  {exportData && (
+                    <ExportToExcel
+                      className="btn btn-sm btn-danger"
+                      apiData={exportData}
+                      fileName="Planning Report"
+                    />
+                  )}
+                </div>
+              </Form>
+            )}
+          </Formik>
         </div>
       </div>
 
@@ -374,6 +434,7 @@ export default function ResourcePlanningReportComponent() {
                   data={data}
                   defaultSortField="title"
                   pagination
+                  noDataComponent={<NotFound topMargin={0} />}
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}

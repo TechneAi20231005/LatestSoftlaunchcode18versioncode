@@ -1,68 +1,61 @@
+import React, { useCallback, useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
+import DataTable from 'react-data-table-component';
+import { _base } from '../../../settings/constants';
+import ErrorLogService from '../../../services/ErrorLogService';
+import SubModuleService from '../../../services/ProjectManagementService/SubModuleService';
 
+import PageHeader from '../../../components/Common/PageHeader';
+import Alert from '../../../components/Common/Alert';
 
-import React, { useEffect, useState, useRef } from "react";
-import { Link, useLocation } from "react-router-dom";
-import DataTable from "react-data-table-component";
-import { _base } from "../../../settings/constants";
-import ErrorLogService from "../../../services/ErrorLogService";
-import SubModuleService from "../../../services/ProjectManagementService/SubModuleService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import PageHeader from "../../../components/Common/PageHeader";
-import Alert from "../../../components/Common/Alert";
-import { Modal } from "react-bootstrap";
-import { Spinner } from "react-bootstrap";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import { getRoles } from "../../Dashboard/DashboardAction";
-import { useDispatch, useSelector } from "react-redux";
+import { getRoles } from '../../Dashboard/DashboardAction';
+import { useDispatch, useSelector } from 'react-redux';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { customSearchHandler } from '../../../utils/customFunction';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { description } from 'platform';
 
 function SubModuleComponent() {
-  const location = useLocation();
-
-  const [notify, setNotify] = useState(null);
-  const [data, setData] = useState(null);
-
-  const roleId = sessionStorage.getItem("role_id");
-  // const [checkRole, setCheckRole] = useState(null);
+  //initial state
   const dispatch = useDispatch();
+
+  //redux state
+
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id==22)
+    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 22)
   );
+
+  //local state
+
+  const notify = null;
+
+  const [data, setData] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
+
   const [exportData, setExportData] = useState(null);
 
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
-  const searchRef = useRef();
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
+  //search function
 
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === "string" &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  const handleSearch = useCallback(() => {
+    const filteredList = customSearchHandler(data, searchTerm);
+    setFilteredData(filteredList);
+  }, [data, searchTerm]);
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+  // Function to handle reset button click
+  const handleReset = () => {
+    setSearchTerm('');
+    setFilteredData(data);
   };
 
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
-  };
+  //Data Table columns
 
   const columns = [
     {
-      name: "Action",
+      name: 'Action',
+      width: '80px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -74,71 +67,73 @@ function SubModuleComponent() {
             <i className="icofont-edit text-success"></i>
           </Link>
         </div>
-      ),
+      )
     },
-    { name: "Sr", selector: (row) => row.counter, sortable: true },
+    { name: 'Sr',  width: '70px', selector: (row) => row.counter, sortable: true },
     {
-      name: "Sub Module Name",
+      name: 'Sub Module Name',
+      width: '12%',
       selector: (row) => row.sub_module_name,
-      sortable: true,
+      sortable: true
     },
-    { name: "Module Name", selector: (row) => row.module_name, sortable: true },
+    { name: 'Module Name',      width: '12%', selector: (row) => row.module_name, sortable: true },
     {
-      name: "Project Name",
+      name: 'Project Name',
+      width: '10%',
       selector: (row) => row.project_name,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Status",
+      name: 'Status',
+      width: '110px',
       selector: (row) => row.is_active,
-      sortable: false,
+      sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
+          {row.is_active === 1 && (
             <span className="badge bg-primary">Active</span>
           )}
-          {row.is_active == 0 && (
+          {row.is_active === 0 && (
             <span className="badge bg-danger">Deactive</span>
           )}
         </div>
-      ),
+      )
     },
-    { name: "Remark", selector: (row) => row.remark, sortable: true },
     {
-      name: "Created At",
-      width: "10%",
+      name: 'Description',
+      width: '120px',
+      selector: (row) => row.description,
+      sortable: true,
+    },
+    { name: 'Remark',       width: '120px', selector: (row) => row.remark, sortable: true },
+    {
+      name: 'Created At',
+      width: '12%',
       selector: (row) => row.created_at,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Created By",
-      width: "10%",
+      name: 'Created By',
+      width: '10%',
       selector: (row) => row.created_by,
-      sortable: true,
+      sortable: true
     },
-    { name: "Updated At", selector: (row) => row.updated_at, sortable: true },
+    { name: 'Updated At',      width: '12%', selector: (row) => row.updated_at, sortable: true },
 
-    { name: "Updated By", selector: (row) => row.updated_by, sortable: true },
-    
-    
-
-
+    { name: 'Updated By',      width: '12%',  selector: (row) => row.updated_by, sortable: true }
   ];
 
-  const loadData = async () => {
-    setShowLoaderModal(null);
-    setShowLoaderModal(true);
+  const loadData = useCallback(async () => {
+    setIsLoading(true);
     const data = [];
     const exportTempData = [];
     await new SubModuleService()
       .getSubModule()
       .then((res) => {
         if (res.status === 200) {
-          setShowLoaderModal(false);
-
           let counter = 1;
           let count = 1;
-          const temp = res.data.data;
+          const temp = res.data.data.data;
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -147,38 +142,41 @@ function SubModuleComponent() {
               module_name: temp[key].module_name,
               project_name: temp[key].project_name,
               is_active: temp[key].is_active,
+              description: temp[key].description,
               remark: temp[key].remark,
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,
               updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
+              updated_by: temp[key].updated_by
             });
           }
           setData(null);
           setData(data);
+          setIsLoading(false);
 
           for (const key in temp) {
             exportTempData.push({
-              count: count++,
+              SrNo: count++,
               // id: temp[key].id,
               sub_module_name: temp[key].sub_module_name,
               module_name: temp[key].module_name,
               project_name: temp[key].project_name,
-              is_active: temp[key].is_active==1?"Active":"Deactive",
+              description: temp[key].description,
+              Status: temp[key].is_active === 1 ? 'Active' : 'Deactive',
               remark: temp[key].remark,
               created_at: temp[key].created_at,
               created_by: temp[key].created_by,
               updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
+              updated_by: temp[key].updated_by
             });
           }
 
           setExportData(exportTempData);
         } else {
           new ErrorLogService().sendErrorLog(
-            "SubModule Master",
-            "Get_SubModule",
-            "INSERT",
+            'SubModule Master',
+            'Get_SubModule',
+            'INSERT',
             res.message
           );
         }
@@ -187,39 +185,31 @@ function SubModuleComponent() {
         const { response } = error;
         const { request, ...errorObject } = response;
         new ErrorLogService().sendErrorLog(
-          "SubModule Master",
-          "Get_SubModule",
-          "INSERT",
+          'SubModule Master',
+          'Get_SubModule',
+          'INSERT',
           errorObject.data.message
         );
       });
-      dispatch(getRoles())
-
-    // await new ManageMenuService().getRole(roleId).then((res) => {
-    //   if (res.status === 200) {
-    //     setShowLoaderModal(false);
-
-    //     if (res.data.status == 1) {
-    //       const getRoleId = sessionStorage.getItem("role_id");
-    //       setCheckRole(res.data.data.filter((d) => d.role_id == getRoleId));
-    //     }
-    //   }
-    // });
-  };
+    dispatch(getRoles());
+  }, [dispatch]);
 
   useEffect(() => {
     loadData();
-   
-  }, []);
+  }, [loadData]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-     
-      
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, []);
+  }, [checkRole]);
+  useEffect(() => {
+    setFilteredData(data);
+  }, [data]);
+
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -239,56 +229,30 @@ function SubModuleComponent() {
                   Sub-Module
                 </Link>
               ) : (
-                ""
+                ''
               )}
             </div>
           );
         }}
       />
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by submodule name...."
+        exportFileName="submodule Master Record"
+        exportData={exportData}
+        showExportButton={true}
+      />
 
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search...."
-              ref={searchRef}
-              onKeyDown={handleKeyDown}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              onClick={handleSearch}
-              style={{ marginTop: "0px", fontWeight: "600" }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="Module master Records"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="row clearfix g-3">
+      <div className="mt-2">
         <div className="col-sm-12">
-          {data && (
+          {isLoading && <TableLoadingSkelton />}
+          {!isLoading && data && (
             <DataTable
               columns={columns}
-              data={data}
+              data={filteredData}
               defaultSortField="title"
               pagination
               selectableRows={false}
@@ -297,17 +261,6 @@ function SubModuleComponent() {
             />
           )}
         </div>
-        <Modal show={showLoaderModal} centered>
-          <Modal.Body className="text-center">
-            <Spinner animation="grow" variant="primary" />
-            <Spinner animation="grow" variant="secondary" />
-            <Spinner animation="grow" variant="success" />
-            <Spinner animation="grow" variant="danger" />
-            <Spinner animation="grow" variant="warning" />
-            <Spinner animation="grow" variant="info" />
-            <Spinner animation="grow" variant="dark" />
-          </Modal.Body>
-        </Modal>
       </div>
     </div>
   );
@@ -315,11 +268,10 @@ function SubModuleComponent() {
 
 function SubModuleDropdown(props) {
   const [data, setData] = useState(null);
-  useEffect(
-     () => {
+  useEffect(() => {
     const tempData = [];
-    
-     new SubModuleService().getSubModule().then((res) => {
+
+    new SubModuleService().getSubModule().then((res) => {
       if (res.status === 200) {
         let counter = 1;
         const data = res.data.data;
@@ -327,7 +279,7 @@ function SubModuleDropdown(props) {
           tempData.push({
             counter: counter++,
             id: data[key].id,
-            sub_module_name: data[key].sub_module_name,
+            sub_module_name: data[key].sub_module_name
           });
         }
         setData(null);
@@ -346,16 +298,16 @@ function SubModuleDropdown(props) {
           onChange={props.getChangeValue}
           required={props.required ? true : false}
         >
-          {props.defaultValue == 0 && (
+          {props.defaultValue === 0 && (
             <option value={0} selected>
               Select Sub Module
             </option>
           )}
-          {props.defaultValue != 0 && (
+          {props.defaultValue !== 0 && (
             <option value={0}>Select Sub Module</option>
           )}
           {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue == item.id) {
+            if (props.defaultValue && props.defaultValue === item.id) {
               return (
                 <option key={i} value={item.id} selected>
                   {item.sub_module_name}

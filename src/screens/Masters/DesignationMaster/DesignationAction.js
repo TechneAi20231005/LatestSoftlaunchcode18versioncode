@@ -1,9 +1,8 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import DesignationService from "../../../services/MastersService/DesignationService";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import DesignationService from '../../../services/MastersService/DesignationService';
 
-
-export const getDesignationData = createAsyncThunk(
-  "getDesignationData",
+export const getDesignationDataListThunk = createAsyncThunk(
+  'getDesignationDataListThunk',
   async (config, thunkapi) => {
     try {
       const service = new DesignationService();
@@ -16,12 +15,12 @@ export const getDesignationData = createAsyncThunk(
   }
 );
 export const postDesignationData = createAsyncThunk(
-  "postDesignationData",
+  'postDesignationData',
   async (config, thunkapi) => {
     try {
       const service = new DesignationService();
       const response = await service.postDesignation(config);
-   
+
       return response;
     } catch (error) {
       throw error;
@@ -30,12 +29,14 @@ export const postDesignationData = createAsyncThunk(
 );
 
 export const updatedDesignationData = createAsyncThunk(
-  "updatedDesignationData",
+  'updatedDesignationData',
   async (config, thunkapi) => {
-
     try {
       const service = new DesignationService();
-      const response = await service.updateDesignation(config.id, config.payload);
+      const response = await service.updateDesignation(
+        config.id,
+        config.payload
+      );
       return response;
     } catch (error) {
       throw error;

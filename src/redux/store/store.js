@@ -15,7 +15,6 @@ import rolemasterSlice from '../../screens/Masters/RoleMaster/RoleMasterSlice';
 
 import ConsolidatedSlice from '../../screens/ConsolidatedView/ConsolidatedSlice';
 import DepartmentMasterSlice from '../../screens/Masters/DepartmentMaster/DepartmentMasterSlice';
-import TaskAndTicketTypeMasterSlice from '../../screens/Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMasterSlice';
 
 import PaymentTemplateMasterSlice from '../../screens/BillChecking/Masters/BillTypeMaster/PaymentTemplateMasterSlice';
 import TestingTypeComponentSlices from '../../screens/Masters/TestingTypeMaster/TestingTypeComponentSlices';
@@ -43,16 +42,28 @@ import remarkMasterSlice from '../slices/hrms/employeeJoining/remarkMaster';
 import salaryMasterSlice from '../slices/hrms/employeeJoining/salaryMaster';
 import interviewMasterSlice from '../slices/hrms/employeeJoining/interviewListMaster';
 import candidatesMasterSlice from '../slices/hrms/employeeJoining/candidatesListMaster';
+import qrCodeListMasterSlice from '../slices/hrms/employeeJoining/qrCodeListMaster';
 import candidatesFollowUpSlice from '../slices/hrms/employeeJoining/followUp';
 import candidatesRemarkHistorySlice from '../slices/hrms/employeeJoining/remarkHistory';
 import interViewProcessDataSlice from '../slices/hrms/employeeJoining/interviewProcess';
 import candidateInterviewScheduleHistorySlice from '../slices/hrms/employeeJoining/interviewScheduleHistory';
-
 // // PO
 import poCommonSlice from '../slices/po/common';
 import generateRequisitionSlice from '../slices/po/generateRequisition';
 import generatePoSlice from '../slices/po/generatePo';
 import requisitionHistoryPoSlice from '../slices/po/history';
+import menuMaster from '../slices/menuMaster';
+
+// // Test Cases
+import reviewCommentMasterSlice from '../slices/testCases/reviewCommentMaster';
+import testingTypeMasterSlice from '../slices/testCases/testingTypeMaster';
+import testingGroupMasterSlice from '../slices/testCases/testingGroup';
+import functionMasterSlice from '../slices/testCases/functionMaster';
+import downloadFormatSlice from '../slices/testCases/downloadFormatFile';
+import testCaseReviewSlice from '../slices/testCases/testCaseReview';
+import testBankSlice from '../slices/testCases/testBank';
+import sidebarSlice from '../slices/Sidebar';
+import jobRoleMaster from '../slices/jobRoleMaster';
 
 export const store = configureStore({
   reducer: {
@@ -69,7 +80,7 @@ export const store = configureStore({
     planner: PlannerSlice,
     rolemaster: rolemasterSlice,
     department: DepartmentMasterSlice,
-    taskandticket: TaskAndTicketTypeMasterSlice,
+
     paymentmaster: PaymentTemplateMasterSlice,
     testingData: TestingTypeComponentSlices,
     moduleMaster: ModuleSlice,
@@ -87,6 +98,8 @@ export const store = configureStore({
     customerMaster: CustomerMappingSlice,
     dynamicFormDropDown: DynamicFormDropDownSlice,
     consolidatedData: ConsolidatedSlice,
+    jobRoleMaster: jobRoleMaster,
+    menuMaster: menuMaster,
 
     // // HRMS>>Employee Joining
     branchMaster: branchMasterSlice,
@@ -95,6 +108,7 @@ export const store = configureStore({
     salaryMaster: salaryMasterSlice,
     interviewMaster: interviewMasterSlice,
     candidatesMaster: candidatesMasterSlice,
+    qrCodeMaster: qrCodeListMasterSlice,
     candidatesFollowUp: candidatesFollowUpSlice,
     candidatesRemarkHistory: candidatesRemarkHistorySlice,
     interViewProcess: interViewProcessDataSlice,
@@ -105,10 +119,21 @@ export const store = configureStore({
     generateRequisition: generateRequisitionSlice,
     generatePo: generatePoSlice,
     requisitionHistory: requisitionHistoryPoSlice,
+
+    // // Test Cases
+    reviewCommentMaster: reviewCommentMasterSlice,
+    testingTypeMaster: testingTypeMasterSlice,
+    testingGroupMaster: testingGroupMasterSlice,
+    functionMaster: functionMasterSlice,
+    downloadFormat: downloadFormatSlice,
+    testCaseReview: testCaseReviewSlice,
+    testBank: testBankSlice,
+    //SideBar
+    sidebar: sidebarSlice
   },
 
-  middleware: getDefaultMiddleware =>
+  middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
-      serializableCheck: false,
-    }),
+      serializableCheck: false
+    })
 });

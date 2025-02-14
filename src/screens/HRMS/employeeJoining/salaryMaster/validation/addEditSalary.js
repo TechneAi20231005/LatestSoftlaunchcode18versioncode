@@ -1,12 +1,12 @@
 import * as Yup from 'yup';
-import { ALPHA_NUMERIC_REGEX } from '../../../../../settings/constants';
+import { ALPHA_NUMERIC_REGEX } from '../../../../../utils/regexPool';
 
 export const addEditSalaryValidation = Yup.object().shape({
   department_id: Yup.string().required('Department is required'),
   designation_id: Yup.string().required('Designation is required'),
   location_id: Yup.array()
     .min(1, 'Please select at least one location')
-    .required('Preferred role is required'),
+    .required('Preferred designation is required'),
   experience_level: Yup.string().required('Experience level is required'),
   max_salary: Yup.number()
     .positive('Max salary must be positive')

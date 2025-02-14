@@ -1,21 +1,21 @@
-import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
-import MyTicketService from "../../../services/TicketService/MyTicketService";
-import PageHeader from "../../../components/Common/PageHeader";
-import DataTable from "react-data-table-component";
-import Select from "react-select";
-import BillCheckingService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import Tooltip from "react-bootstrap/Tooltip";
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
+import MyTicketService from '../../../services/TicketService/MyTicketService';
+import PageHeader from '../../../components/Common/PageHeader';
+import DataTable from 'react-data-table-component';
+import Select from 'react-select';
+import BillCheckingService from '../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import Tooltip from 'react-bootstrap/Tooltip';
 const BillCheckingHistory = ({ match }) => {
   const { id } = useParams();
 
   const [data, setData] = useState();
 
   const columns = [
-    { name: "Sr", selector: (row) => row.counter, sortable: true },
+    { name: 'Sr', selector: (row) => row.counter, sortable: true },
     {
-      name: " Operation",
+      name: ' Operation',
       selector: (row) => row.operation,
       sortable: true,
       conditionalCellStyles: [
@@ -23,20 +23,20 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("operation"),
+            row.changes.includes('operation'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
-      name: "Bill Id",
+      name: 'Bill Id',
       selector: (row) => row.bc_id,
       sortable: true,
       conditionalCellStyles: [
@@ -44,40 +44,40 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("bc_id"),
+            row.changes.includes('bc_id'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Bill Type",
+      name: 'Bill Type',
       selector: (row) => row.bill_type,
       sortable: true,
-      width: "220px",
+      width: '180px',
       conditionalCellStyles: [
         {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("bill_type"),
+            row.changes.includes('bill_type'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Assign To",
+      name: 'Assign To',
       selector: (row) => row.assign_to,
       sortable: true,
       conditionalCellStyles: [
@@ -85,20 +85,20 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("assign_to"),
+            row.changes.includes('assign_to'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
-      name: "Vendor Name",
+      name: 'Vendor Name',
       selector: (row) => row.vendor_name,
       sortable: true,
       conditionalCellStyles: [
@@ -106,19 +106,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("vendor_name"),
+            row.changes.includes('vendor_name'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Vendor Bill No",
+      name: 'Vendor Bill No',
       selector: (row) => row.vendor_bill_no,
       sortable: true,
       conditionalCellStyles: [
@@ -126,19 +126,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("vendor_bill_no"),
+            row.changes.includes('vendor_bill_no'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Bill Date",
+      name: 'Bill Date',
       selector: (row) => row.bill_date,
       sortable: true,
       conditionalCellStyles: [
@@ -146,20 +146,20 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("bill_date"),
+            row.changes.includes('bill_date'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
-      name: "Received Date",
+      name: 'Received Date',
       selector: (row) => row.received_date,
       sortable: true,
       conditionalCellStyles: [
@@ -167,19 +167,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("received_date"),
+            row.changes.includes('received_date'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Debit Advance",
+      name: 'Debit Advance',
       selector: (row) => row.debit_advance,
       sortable: true,
       conditionalCellStyles: [
@@ -187,20 +187,20 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("debit_advance"),
+            row.changes.includes('debit_advance'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
-      name: "Taxable Amount",
+      name: 'Taxable Amount',
       selector: (row) => row.taxable_amount,
       sortable: true,
       conditionalCellStyles: [
@@ -208,19 +208,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("taxable_amount"),
+            row.changes.includes('taxable_amount'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Igst Amount",
+      name: 'Igst Amount',
       selector: (row) => row.igst_amount,
       sortable: true,
 
@@ -229,20 +229,20 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("igst_amount"),
+            row.changes.includes('igst_amount'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
-      name: "Gst Amount",
+      name: 'Gst Amount',
       selector: (row) => row.gst_amount,
       sortable: true,
       conditionalCellStyles: [
@@ -250,19 +250,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("gst_amount"),
+            row.changes.includes('gst_amount'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Round Off",
+      name: 'Round Off',
       selector: (row) => row.round_off,
       sortable: true,
       conditionalCellStyles: [
@@ -270,19 +270,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("round_off"),
+            row.changes.includes('round_off'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "TCS",
+      name: 'TCS',
       selector: (row) => row.tcs,
       sortable: true,
       conditionalCellStyles: [
@@ -290,19 +290,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("tcs"),
+            row.changes.includes('tcs'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Bill Amount",
+      name: 'Bill Amount',
       selector: (row) => row.bill_amount,
       sortable: true,
       conditionalCellStyles: [
@@ -310,19 +310,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("bill_amount"),
+            row.changes.includes('bill_amount'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "TDS Applicable",
+      name: 'TDS Applicable',
       selector: (row) => row.is_tds_applicable,
       sortable: true,
       cell: (row) => (
@@ -340,20 +340,20 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("is_tds_applicable"),
+            row.changes.includes('is_tds_applicable'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
-      name: "TCS Applicable",
+      name: 'TCS Applicable',
       selector: (row) => row.is_tcs_applicable,
       sortable: true,
       cell: (row) => (
@@ -371,19 +371,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("is_tcs_applicable"),
+            row.changes.includes('is_tcs_applicable'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Original Bill Needed",
+      name: 'Original Bill Needed',
       selector: (row) => row.is_original_bill_needed,
       sortable: true,
       cell: (row) => (
@@ -401,19 +401,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("is_original_bill_needed"),
+            row.changes.includes('is_original_bill_needed'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "TDS Section",
+      name: 'TDS Section',
       selector: (row) => row.tds_section,
       sortable: true,
       conditionalCellStyles: [
@@ -421,19 +421,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("tds_section"),
+            row.changes.includes('tds_section'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "TDS Constitution",
+      name: 'TDS Constitution',
       selector: (row) => row.tds_constitution,
       sortable: true,
       conditionalCellStyles: [
@@ -441,19 +441,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("tds_constitution"),
+            row.changes.includes('tds_constitution'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "TDS Percentage",
+      name: 'TDS Percentage',
       selector: (row) => row.tds_percentage,
       sortable: true,
       conditionalCellStyles: [
@@ -461,19 +461,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("tds_percentage"),
+            row.changes.includes('tds_percentage'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "TDS Amount",
+      name: 'TDS Amount',
       selector: (row) => row.tds_amount,
       sortable: true,
       conditionalCellStyles: [
@@ -481,19 +481,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("tds_amount"),
+            row.changes.includes('tds_amount'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Net Payment",
+      name: 'Net Payment',
       selector: (row) => row.net_payment,
       sortable: true,
       conditionalCellStyles: [
@@ -501,20 +501,20 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("net_payment"),
+            row.changes.includes('net_payment'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
-      name: "Status",
+      name: 'Status',
       selector: (row) => row.payment_status,
       sortable: true,
       conditionalCellStyles: [
@@ -522,19 +522,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("payment_status"),
+            row.changes.includes('payment_status'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Remark",
+      name: 'Remark',
       selector: (row) => row.narration,
       sortable: true,
       conditionalCellStyles: [
@@ -542,20 +542,20 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("narration"),
+            row.changes.includes('narration'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
-      name: "Internal Audit Remark",
+      name: 'Internal Audit Remark',
       selector: (row) => row.audit_remark,
       sortable: true,
       conditionalCellStyles: [
@@ -563,20 +563,20 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("audit_remark"),
+            row.changes.includes('audit_remark'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
-      name: "External Audit Remark",
+      name: 'External Audit Remark',
       selector: (row) => row.external_audit_remark,
       sortable: true,
       conditionalCellStyles: [
@@ -584,20 +584,20 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("external_audit_remark"),
+            row.changes.includes('external_audit_remark'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
-      name: "Upload Attachment",
+      name: 'Upload Attachment',
       selector: (row) => row.invoice_attachment,
       sortable: true,
       conditionalCellStyles: [
@@ -605,20 +605,20 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("invoice_attachment"),
+            row.changes.includes('invoice_attachment'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
-      name: "Authorized by management",
+      name: 'Authorized by management',
       selector: (row) => row.authorized_by_management,
       sortable: true,
       cell: (row) => (
@@ -636,20 +636,20 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("authorized_by_management"),
+            row.changes.includes('authorized_by_management'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
-      name: "Authorized by HOD",
+      name: 'Authorized by HOD',
       selector: (row) => row.authorized_by_hod,
       sortable: true,
       cell: (row) => (
@@ -667,20 +667,20 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("authorized_by_hod"),
+            row.changes.includes('authorized_by_hod'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
-      name: "Itration",
+      name: 'Itration',
       selector: (row) => row.iteration,
       sortable: true,
       conditionalCellStyles: [
@@ -688,19 +688,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("iteration"),
+            row.changes.includes('iteration'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Levels Of Approval",
+      name: 'Levels Of Approval',
       selector: (row) => row.level,
       sortable: true,
 
@@ -709,23 +709,23 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("level"),
+            row.changes.includes('level'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
-      name: "Pending from",
+      name: 'Pending from',
       selector: (row) => row.level_approver,
       sortable: true,
-      width: "250px",
+      // width: "250px",
       cell: (row) => (
         <div
           className="btn-group"
@@ -736,10 +736,10 @@ const BillCheckingHistory = ({ match }) => {
             <OverlayTrigger overlay={<Tooltip>{row.level_approver} </Tooltip>}>
               <div>
                 <span className="ms-1">
-                  {" "}
+                  {' '}
                   {row.level_approver && row.level_approver.length < 20
                     ? row.level_approver
-                    : row.level_approver.substring(0, 50) + "...."}
+                    : row.level_approver.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -751,19 +751,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("level_approver"),
+            row.changes.includes('level_approver'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Approved by",
+      name: 'Approved by',
       selector: (row) => row.approved_by,
       sortable: true,
       conditionalCellStyles: [
@@ -771,20 +771,20 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("approved_by"),
+            row.changes.includes('approved_by'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
-      name: "Rejected by",
+      name: 'Rejected by',
       selector: (row) => row.is_rejected_by,
       sortable: true,
       conditionalCellStyles: [
@@ -792,19 +792,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("is_rejected_by"),
+            row.changes.includes('is_rejected_by'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Is canceled",
+      name: 'Is canceled',
       selector: (row) => row.is_active,
       sortable: true,
       cell: (row) => (
@@ -818,20 +818,20 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("is_canceled"),
+            row.changes.includes('is_canceled'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
 
     {
-      name: "Created At",
+      name: 'Created At',
       selector: (row) => row.created_at,
       sortable: true,
       conditionalCellStyles: [
@@ -839,19 +839,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("created_at"),
+            row.changes.includes('created_at'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Created By",
+      name: 'Created By',
       selector: (row) => row.created_by,
       sortable: true,
       conditionalCellStyles: [
@@ -859,19 +859,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("created_by"),
+            row.changes.includes('created_by'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Updated At",
+      name: 'Updated At',
       selector: (row) => row.updated_at,
       sortable: true,
       conditionalCellStyles: [
@@ -879,19 +879,19 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("updated_at"),
+            row.changes.includes('updated_at'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
     },
     {
-      name: "Updated By",
+      name: 'Updated By',
       selector: (row) => row.updated_by,
       sortable: true,
       conditionalCellStyles: [
@@ -899,17 +899,17 @@ const BillCheckingHistory = ({ match }) => {
           when: (row) =>
             row.changes &&
             row.changes.length > 1 &&
-            row.changes.includes("updated_by"),
+            row.changes.includes('updated_by'),
           style: {
-            color: "red",
-            fontWeight: "bold",
-            "&:hover": {
-              cursor: "pointer",
-            },
-          },
-        },
-      ],
-    },
+            color: 'red',
+            fontWeight: 'bold',
+            '&:hover': {
+              cursor: 'pointer'
+            }
+          }
+        }
+      ]
+    }
   ];
 
   const loadData = async () => {
@@ -985,7 +985,7 @@ const BillCheckingHistory = ({ match }) => {
               total_level: temp[key].total_level,
               approved_by: temp[key].approved_by,
               authorized_by_hod: temp[key].authorized_by_hod,
-              authorized_by_management: temp[key].authorized_by_management,
+              authorized_by_management: temp[key].authorized_by_management
             });
           }
           setData(tempData);

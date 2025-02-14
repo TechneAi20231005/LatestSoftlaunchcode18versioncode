@@ -1,44 +1,45 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Modal } from "react-bootstrap";
-import DataTable from "react-data-table-component";
-import Select from "react-select";
-import ErrorLogService from "../../../services/ErrorLogService";
-import ManageMenuService from "../../../services/MenuManagementService/ManageMenuService";
-import PageHeader from "../../../components/Common/PageHeader";
-import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
-import Alert from "../../../components/Common/Alert";
-import { ExportToExcel } from "../../../components/Utilities/Table/ExportToExcel";
-import { Spinner } from "react-bootstrap";
-import UserService from "../../../services/MastersService/UserService";
-import GeneralSettingService from "../../../services/SettingService/GeneralSettingService";
-import Tooltip from "react-bootstrap/Tooltip";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
-import { useSelector, useDispatch } from "react-redux";
+import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { Modal } from 'react-bootstrap';
+import DataTable from 'react-data-table-component';
+import Select from 'react-select';
+
+import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
+import PageHeader from '../../../components/Common/PageHeader';
+import { Astrick } from '../../../components/Utilities/Style';
+
+import Alert from '../../../components/Common/Alert';
+
+import UserService from '../../../services/MastersService/UserService';
+import GeneralSettingService from '../../../services/SettingService/GeneralSettingService';
+import Tooltip from 'react-bootstrap/Tooltip';
+import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+import { useSelector, useDispatch } from 'react-redux';
 import {
   getGeneralSettingData,
   postGeneralSettingData,
-  updateGeneralSettingData,
-} from "../SettingAction";
-import MyTicketComponentSlice from "../../TicketManagement/MyTicketComponentSlice";
-import { getUserForMyTicketsData } from "../../TicketManagement/MyTicketComponentAction";
-import { handleModalClose, handleGeneralModal } from "../SettingSlice";
+  updateGeneralSettingData
+} from '../SettingAction';
+
+import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
+import { handleModalClose, handleGeneralModal } from '../SettingSlice';
+import { customSearchHandler } from '../../../utils/customFunction';
+import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 
 function GeneralSettings() {
-  const [data, setData] = useState(null);
-  const [exportData, setExportData] = useState(null);
-  const [user, setUser] = useState(null);
-  const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [notify, setNotify] = useState();
-  const [authority, setAuthority] = useState(["Upload ", "Delete", " Restore"]);
-  const [generalSetting, setGeneralSetting] = useState([]);
-  const [checkRole, setCheckRole] = useState([]);
-
+  //initial  state
   const dispatch = useDispatch();
 
   const getAllgeneralSettingData = useSelector(
     (SettingSlice) => SettingSlice.generalSetting.getAllgeneralSettingData
   );
+  const isLoading = useSelector(
+    (SettingSlice) =>
+      SettingSlice.generalSetting.isLoading.getGeneralSettingList
+  );
+
   const User = useSelector(
     (MyTicketComponentSlice) => MyTicketComponentSlice.myTicketComponent.user
   );
@@ -49,75 +50,66 @@ function GeneralSettings() {
     (SettingSlice) => SettingSlice.generalSetting.modal
   );
 
-  const [assignedUserModal, setAssignedUserModal] = useState({
-    showModal: false,
-    modalData: "",
-    modalHeader: "",
-  });
+  //local state
+  const data = null;
+  const exportData = null;
+  const [user, setUser] = useState(null);
 
   const userDetail = useRef();
-  const searchRef = useRef();
+
   const userValue = useRef();
 
   const useSetting = useRef();
   const useRemark = useRef();
 
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filteredData, setFilteredData] = useState([]);
 
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === "string" &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
+  //search function
 
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
+  const handleSearch = useCallback(() => {
+    const filteredList = customSearchHandler(
+      getAllgeneralSettingData,
+      searchTerm
+    );
+    setFilteredData(filteredList);
+  }, [getAllgeneralSettingData, searchTerm]);
+
+  const handleReset = () => {
+    setSearchTerm('');
   };
 
-  const loadData = async () => {
-    const inputRequired = "id,employee_id,first_name,last_name";
+  //Data Table columns
+  const loadData = useCallback(async () => {
+    const inputRequired = 'id,employee_id,first_name,last_name';
     dispatch(getGeneralSettingData());
     dispatch(getUserForMyTicketsData(inputRequired));
-    setShowLoaderModal(null);
-    const data = [];
-    const exportTempData = [];
-    const roleId = sessionStorage.getItem("role_id");
+
+    const roleId = localStorage.getItem('role_id');
 
     await new ManageMenuService().getRole(roleId).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const temp = res.data.data.filter((d) => d.menu_id === 78);
-
-          setCheckRole(temp);
         }
       }
     });
 
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
-        const tempData = [];
-        const temp = res.data.data;
-        if (res.data.status == 1) {
-          const data = res.data.data.sort((a, b) => {
-            if (a.first_name && b.first_name) {
-              return a.first_name.localeCompare(b.first_name);
-            }
-            return 0;
-          });
+        if (res.data.status === 1) {
+          const data = res.data.data?.data
+            ?.filter((i) => i.is_active === 1)
+            ?.sort((a, b) => {
+              if (a.first_name && b.first_name) {
+                return a.first_name.localeCompare(b.first_name);
+              }
+              return 0;
+            });
           setUser(
             data.map((d) => ({
               value: d.id,
-              label: d.first_name + " " + d.last_name,
+              // label: d.first_name + ' ' + d.last_name
+              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
             }))
           );
         }
@@ -126,88 +118,23 @@ function GeneralSettings() {
     await new GeneralSettingService().getGeneralSetting().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          let data = [...res.data.data];
+          let data = [...res.data.data.data];
           let count = 1;
           for (let i = 0; i < data.length; i++) {
             data[i].counter = count++;
           }
-
-          setGeneralSetting(data);
         }
       }
     });
-  };
+  }, [dispatch]);
 
-  const handleForm = (id) => async (e) => {
-    e.preventDefault();
-
-    const userDet = userDetail?.current?.props?.value;
-    const usersettingValue = userValue?.current?.value;
-
-    const settingName = useSetting?.current?.value;
-    const remark = useRemark?.current?.value;
-    let array = [];
-
-    // Add the value 0 to the array
-    array.push(0);
-
-    // Assign the array to form.user_id
-
-    let arrayOfId = [];
-    for (let i = 0; i < userDet?.length; i++) {
-      arrayOfId.push(userDet[i].value);
-    }
-
-    const form = {};
-    // if (settingName === "Time Regularization after task complete") {
-    //   form.user_id = array;
-    // } else if (
-    //   settingName === "Time Regularization after task complete" &&
-    //   arrayOfId?.length > 0
-    // ) {
-    //   form.user_id = arrayOfId;
-    // } else {
-    //   form.user_id = arrayOfId;
-    // }
-
-    if (
-      settingName === "Time Regularization after task complete" &&
-      arrayOfId?.length == 0
-    ) {
-      form.user_id = array;
-    } else {
-      form.user_id = arrayOfId;
-    }
-
-    form.setting_name = settingName;
-    form.remark = remark;
-    form.value = usersettingValue;
-    form.is_active = true;
-
-    setNotify(null);
-    if (!id) {
-      dispatch(postGeneralSettingData(form));
-    } else {
-      dispatch(updateGeneralSettingData({ id, payload: form })).then((res) => {
-        if (res?.payload?.data?.status === 1) {
-          dispatch(getGeneralSettingData());
-        }
-      });
-    }
-  };
-
-  const handleKeyDown = (event) => {
-    if (event.key === "Enter") {
-      handleSearch();
-    }
-  };
-
+  //columns
   const columns = [
     {
-      name: "Action",
+      name: 'Action',
       selector: (row) => {},
       sortable: false,
-      width: "5%",
+      width: '5%',
       cell: (row) => (
         <div className="btn-group" role="group">
           <button
@@ -220,7 +147,7 @@ function GeneralSettings() {
                 handleGeneralModal({
                   showModal: true,
                   modalData: row,
-                  modalHeader: "Edit Settings",
+                  modalHeader: 'Edit Settings'
                 })
               );
             }}
@@ -228,25 +155,25 @@ function GeneralSettings() {
             <i className="icofont-edit text-success"></i>
           </button>
         </div>
-      ),
+      )
     },
     {
-      name: "Sr",
+      name: 'Sr',
       selector: (row) => row.counter,
       sortable: true,
-      width: "5%",
+      width: '5%'
     },
     {
-      name: "Setting Name",
+      name: 'Setting Name',
       selector: (row) => row.setting_name,
       sortable: true,
-      width: "10%",
+      width: '10%'
     },
     {
-      name: "Assigned User",
-      // selector: (row) => row.setting_name,
+      name: 'Assigned User',
+
       sortable: true,
-      width: "20%",
+      width: '20%',
       cell: (row) => {
         let arr = [];
         User.filter((el) => {
@@ -257,7 +184,7 @@ function GeneralSettings() {
 
         return (
           <>
-            <OverlayTrigger overlay={<Tooltip>{arr.join(", ")}</Tooltip>}>
+            <OverlayTrigger overlay={<Tooltip>{arr.join(', ')}</Tooltip>}>
               <div>
                 <span className="ms-1">
                   {arr.length > 2 ? `${(arr[0], arr[1])}...` : `${arr}`}
@@ -266,66 +193,61 @@ function GeneralSettings() {
             </OverlayTrigger>
           </>
         );
-      },
+      }
     },
     {
-      name: "Status",
+      name: 'Status',
       selector: (row) => row.is_active,
       sortable: true,
       cell: (row) => (
         <div>
-          {row.is_active == 1 && (
-            <span className="badge bg-primary" style={{ width: "4rem" }}>
+          {row.is_active === 1 && (
+            <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active == 0 && (
-            <span className="badge bg-danger" style={{ width: "4rem" }}>
+          {row.is_active === 0 && (
+            <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
           )}
         </div>
       ),
-      width: "10%",
+      width: '10%'
     },
     {
-      name: "Remark",
+      name: 'Remark',
       selector: (row) => row.remark,
       sortable: true,
-      width: "10%",
+      width: '10%'
     },
     {
-      name: "Created at",
+      name: 'Created at',
       selector: (row) => row.created_at,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Created by",
+      name: 'Created by',
       sortable: true,
       cell: (row) => {
         let userList = User.filter(
           (userData) => row.created_by === userData.value
         );
-        //   return (
-        //     <>
-        //       {userList[0].label}
-        //     </>
-        //   )
-        // }
+
         if (userList && userList.length > 0) {
           return <>{userList[0].label}</>;
         } else {
-          return <>{""}</>;
+          return <>{''}</>;
         }
-      },
+      }
     },
     {
-      name: "Updated at",
+      name: 'Updated at',
       selector: (row) => row.updated_at,
-      sortable: true,
+      sortable: true
     },
     {
-      name: "Updated by",
+      name: 'Updated by',
       sortable: true,
       cell: (row) => {
         let userList = User.filter(
@@ -334,29 +256,105 @@ function GeneralSettings() {
         if (userList && userList.length > 0) {
           return <>{userList[0].label}</>;
         } else {
-          return <>{""}</>;
+          return <>{''}</>;
         }
-      },
-    },
+      }
+    }
   ];
 
-  const handleKeyPress = (event) => {
-    // Prevent typing more than one character
-    if (event.target.value.length >= 1) {
-      event.preventDefault();
+  const fields = [
+    {
+      name: 'setting_name',
+      label: 'Setting name',
+      required: true,
+      alphaNumeric: true,
+      min: 3,
+      max: 50
+    },
+    {
+      name: 'value',
+      label: 'Value',
+      required: false,
+      max: 1,
+      alphaNumeric: false
+    },
+    {
+      name: 'user_id',
+      label: 'User name',
+      isObject: true,
+      required: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 1000,
+      required: false,
+      alphaNumeric: true
     }
+  ];
+
+  const validationSchema = CustomValidation(fields);
+
+  const userData =
+    modal?.modalData?.user_id &&
+    user?.filter((d) => modal?.modalData?.user_id?.includes(d.value));
+
+  const initialValues = {
+    setting_name: modal.modalData ? modal.modalData?.setting_name : '',
+    value: modal?.modalData?.value || '',
+    user_id: modal.modalData ? userData?.map((item) => item) : '',
+    remark: modal.modalData?.remark || '',
+    is_active: String(modal?.modalData?.is_active) ?? '1'
   };
 
+  const handleForm = async (values, id) => {
+    const formData = new FormData();
+    formData.append('setting_name', values.setting_name);
+    formData.append('value', values.value);
+    // formData.append('user_id', values.user_id);
+    values?.user_id.forEach((item) => {
+      formData?.append('user_id[]', item?.value);
+    });
+    formData.append('remark', values.remark);
+
+    const editformdata = new FormData();
+    editformdata.append('setting_name', values.setting_name);
+    editformdata.append('value', values.value);
+    // editformdata.append('user_id', values.user_id);
+    values?.user_id.forEach((item) => {
+      editformdata?.append('user_id[]', item?.value);
+    });
+    editformdata.append('remark', values.remark);
+    editformdata.append('is_active', values.is_active);
+
+    if (!id) {
+      dispatch(postGeneralSettingData(formData));
+      setTimeout(() => {
+        loadData();
+      }, 500);
+    } else {
+      dispatch(updateGeneralSettingData({ id: id, payload: editformdata }));
+      setTimeout(() => {
+        loadData();
+      }, 500);
+    }
+  };
   useEffect(() => {
     loadData();
-  }, []);
+  }, [loadData]);
+  useEffect(() => {
+    setFilteredData(getAllgeneralSettingData);
+  }, [getAllgeneralSettingData]);
 
+  useEffect(() => {
+    handleSearch();
+  }, [searchTerm, handleSearch]);
   return (
     <div className="container-xxl">
       {Notify && (
         <>
-          {" "}
-          <Alert alertData={Notify} />{" "}
+          {' '}
+          <Alert alertData={Notify} />{' '}
         </>
       )}
       <PageHeader
@@ -366,22 +364,12 @@ function GeneralSettings() {
             <div className="col-auto d-flex w-sm-100">
               <button
                 className="btn btn-dark btn-set-task w-sm-100"
-                // onClick={() => {
-
-                //   dispatch(
-                //     handleModalInStore({
-                //       showModal: true,
-                //       modalData: null,
-                //       modalHeader: "Add Setting",
-                //     })
-                //   );
-                // }}
                 onClick={() => {
                   dispatch(
                     handleGeneralModal({
                       showModal: true,
                       modalData: null,
-                      modalHeader: "Add Setting",
+                      modalHeader: 'Add Setting'
                     })
                   );
                 }}
@@ -392,225 +380,204 @@ function GeneralSettings() {
           );
         }}
       />
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search by Setting name...."
-              ref={searchRef}
-              onKeyDown={handleKeyDown}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              onClick={handleSearch}
-              style={{ marginTop: "0px", fontWeight: "600" }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: "0px", fontWeight: "600" }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportData}
-              fileName="General Settings"
-            />
-          </div>
-        </div>
-      </div>
+      <SearchBoxHeader
+        setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
+        handleSearch={handleSearch}
+        handleReset={handleReset}
+        placeholder="Search by setting name...."
+        exportFileName="General setting  Master Record"
+        exportData={exportData}
+      />
+
       <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {getAllgeneralSettingData && (
-                <DataTable
-                  columns={columns}
-                  data={getAllgeneralSettingData}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        {isLoading && <TableLoadingSkelton />}
+        {!isLoading && getAllgeneralSettingData && (
+          <DataTable
+            columns={columns}
+            data={filteredData}
+            defaultSortField="title"
+            pagination
+            selectableRows={false}
+            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+            highlightOnHover={true}
+          />
+        )}
       </div>
 
-      <Modal show={showLoaderModal} centered>
-        <Modal.Body className="text-center">
-          <Spinner animation="grow" variant="primary" />
-          <Spinner animation="grow" variant="secondary" />
-          <Spinner animation="grow" variant="success" />
-          <Spinner animation="grow" variant="danger" />
-          <Spinner animation="grow" variant="warning" />
-          <Spinner animation="grow" variant="info" />
-          <Spinner animation="grow" variant="dark" />
-        </Modal.Body>
-      </Modal>
-
-      <Modal
-        centered
-        show={modal.showModal}
-        // onHide={(e) => {
-        //   handleModal({
-        //     showModal: false,
-        //     modalData: "",
-        //     modalHeader: "",
-        //   });
-        // }}
-      >
-        <form
-          method="post"
-          onSubmit={handleForm(modal.modalData ? modal.modalData.id : "")}
+      <Modal centered show={modal.showModal}>
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={(value) =>
+            handleForm(value, modal.modalData ? modal.modalData.id : '')
+          }
         >
-          <Modal.Header
-            closeButton
-            onClick={() => {
-              dispatch(
-                handleModalClose({
-                  showModal: false,
-                  modalData: null,
-                  modalHeader: "Add Setting",
-                })
-              );
-            }}
-          >
-            <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="deadline-form">
-              <div className="row g-3 mb-3">
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Setting Name :<Astrick color="red" size="13px" />
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="setting_name"
-                    name="setting_name"
-                    maxLength={50}
-                    ref={useSetting}
-                    defaultValue={
-                      modal.modalData && modal.modalData.setting_name
-                    }
-                    required
-                    readOnly={modal.modalData ? true : false}
-                  />
-                </div>
-
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">Value :</label>
-                  <input
-                    type="number"
-                    className="form-control form-control-sm"
-                    id="value"
-                    name="value"
-                    maxLength={1}
-                    onKeyPress={handleKeyPress}
-                    ref={userValue}
-                    defaultValue={modal.modalData && modal.modalData.value}
-                    // readOnly={modal.modalData ? true : false}
-                  />
-                </div>
-
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Select User :<Astrick color="red" size="13px" />
-                  </label>
-                  {user && (
-                    <Select
-                      id="user_id"
-                      name="user_id[]"
-                      ref={userDetail}
-                      options={user}
-                      // defaultValue={}
-                      isMulti
-                      defaultValue={
-                        modal.modalData &&
-                        user?.filter((d) =>
-                          modal.modalData.user_id.includes(d.value)
-                        )
-                      }
-                    />
-                  )}
-                </div>
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Remark :
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="remark"
-                    name="remark"
-                    maxLength={50}
-                    ref={useRemark}
-                    defaultValue={modal.modalData ? modal.modalData.remark : ""}
-                  />
-                </div>
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            {!modal.modalData && (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{
-                  backgroundColor: "#484C7F",
-                  width: "80px",
-                  padding: "8px",
-                }}
-              >
-                Add
-              </button>
-            )}
-            {modal.modalData && (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{ backgroundColor: "#484C7F" }}
-              >
-                Update
-              </button>
-            )}
-            <button
-              type="button"
-              className="btn btn-danger text-white"
-              onClick={() => {
-                // handleModal({
-                //   showModal: false,
-                //   modalData: "",
-                //   modalHeader: "",
-                // });
-                {
+          {({ values, setFieldValue }) => (
+            <Form>
+              <Modal.Header
+                closeButton
+                onClick={() =>
                   dispatch(
                     handleModalClose({
                       showModal: false,
-                      modalData: "",
-                      modalHeader: "",
+                      modalData: null,
+                      modalHeader: 'Add Setting'
                     })
-                  );
+                  )
                 }
-              }}
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </form>
+              >
+                <Modal.Title className="fw-bold">
+                  {modal.modalHeader}
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="deadline-form">
+                  <div className="row g-3 mb-3">
+                    {/* Setting Name */}
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Setting Name: <span style={{ color: 'red' }}>*</span>
+                      </label>
+                      <Field
+                        type="text"
+                        name="setting_name"
+                        className="form-control form-control-sm"
+                        // readOnly={!!modal.modalData}
+                      />
+                      <ErrorMessage
+                        name="setting_name"
+                        component="small"
+                        className="text-danger small"
+                      />
+                    </div>
+
+                    {/* Value */}
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Value:
+                      </label>
+                      <Field
+                        type="number"
+                        name="value"
+                        className="form-control form-control-sm"
+                      />
+                      <ErrorMessage
+                        name="value"
+                        component="small"
+                        className="text-danger small"
+                      />
+                    </div>
+
+                    {/* Select User */}
+                    {user && (
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Select User: <span className="text-danger">*</span>
+                        </label>
+
+                        <Field
+                          component={Select}
+                          id="user_id"
+                          name="user_id"
+                          options={user}
+                          isMulti
+                          value={values.user_id}
+                          // isArray="true"
+                          onChange={(selectedOptions) =>
+                            setFieldValue('user_id', selectedOptions)
+                          }
+                        />
+
+                        <ErrorMessage
+                          name="user_id"
+                          component="small"
+                          className="text-danger small"
+                        />
+                      </div>
+                    )}
+
+                    {/* Remark */}
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Remark:
+                      </label>
+                      <Field
+                        type="text"
+                        name="remark"
+                        className="form-control form-control-sm"
+                      />
+                      <ErrorMessage
+                        name="remark"
+                        component="small"
+                        className="text-danger small"
+                      />
+                    </div>
+                    {modal.modalData && (
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Status :<Astrick color="red" size="13px" />
+                        </label>
+                        <div className="row">
+                          <div className="col-md-2">
+                            <label className="form-check">
+                              <Field
+                                id="is_active_1"
+                                type="radio"
+                                name="is_active"
+                                value="1"
+                                className="form-check-input"
+                              />
+                              Active
+                            </label>
+                          </div>
+                          <div className="col-md-2">
+                            <label className="form-check">
+                              <Field
+                                type="radio"
+                                name="is_active"
+                                value="0"
+                                id="is_active_0"
+                                className="form-check-input"
+                              />
+                              Deactive
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                {!modal.modalData ? (
+                  <button type="submit" className="btn btn-primary text-white">
+                    Submit
+                  </button>
+                ) : (
+                  <button type="submit" className="btn btn-primary text-white">
+                    Update
+                  </button>
+                )}
+                <button
+                  type="button"
+                  className="btn btn-danger text-white"
+                  onClick={() =>
+                    dispatch(
+                      handleModalClose({
+                        showModal: false,
+                        modalData: '',
+                        modalHeader: ''
+                      })
+                    )
+                  }
+                >
+                  Cancel
+                </button>
+              </Modal.Footer>
+            </Form>
+          )}
+        </Formik>
       </Modal>
     </div>
   );

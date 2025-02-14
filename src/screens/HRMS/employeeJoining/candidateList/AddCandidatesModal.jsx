@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Row, Stack, Spinner } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,19 +9,17 @@ import {
   CustomCurrencyInput,
   CustomDropdown,
   CustomInput,
-  CustomReactSelect,
+  CustomReactSelect
 } from '../../../../components/custom/inputs/CustomInputs';
 import { addCandidatesValidation } from './validation/addCandidates';
 import OtpVerificationModal from './OtpVerificationModal';
 import { RenderIf } from '../../../../utils';
-import { getBranchMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/branchMaster';
-import { getSourceMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/sourceMaster';
-import { getDesignationData } from '../../../Dashboard/DashboardAction';
 import {
   addCandidatesMasterThunk,
-  getCandidatesMasterListThunk,
+  getCandidatesMasterListThunk
 } from '../../../../redux/services/hrms/employeeJoining/candidatesListMaster';
 import { experienceLevel } from '../../../../settings/constants';
+import useDropdownData from '../../../../hooks/useDropdownData';
 
 function AddCandidatesModal({ show, close }) {
   // // initial state
@@ -40,57 +38,35 @@ function AddCandidatesModal({ show, close }) {
     expected_ctc: '',
     current_ctc: '',
     notice_period: '',
-    resume_path: null,
+    resume_path: null
   };
 
   // // redux state
-  const { isLoading } = useSelector(state => state?.candidatesMaster);
-
-  const { branchMasterList, isLoading: branchMasterLoading } = useSelector(
-    state => state?.branchMaster,
-  );
-  const { getDesignationData: designationMasterList, status } = useSelector(
-    DesignationSlice => DesignationSlice.designationMaster,
-  );
-  const { sourceMasterList, isLoading: sourceMasterLoading } = useSelector(
-    state => state?.sourceMaster,
-  );
+  const { isLoading } = useSelector((state) => state?.candidatesMaster);
 
   // // dropdown data
-  const preferredRole = designationMasterList
-    ?.filter(item => item?.is_active === 1)
-    ?.map(item => ({
-      label: item?.designation,
-      value: item?.id,
-    }));
-
-  const preferredLocation = branchMasterList
-    ?.filter(item => item?.is_active === 1)
-    ?.map(item => ({
-      label: item?.location_name,
-      value: item?.id,
-    }));
-
-  const sourceType = sourceMasterList
-    ?.filter(item => item?.is_active === 1)
-    ?.map(item => ({
-      label: item?.source_name,
-      value: item?.id,
-    }));
+  const {
+    sourceDropdown,
+    sourceDropdownLoading,
+    preferredDesignationDropdown,
+    preferredDesignationDropdownLoading,
+    preferredLocationDropdown,
+    preferredLocationDropdownLoading
+  } = useDropdownData({ render: show });
 
   // // local state
   const [otpModal, setOtpModal] = useState(false);
 
   // // handel add candidates
-  const handelAddCandidates = formData => {
+  const handelAddCandidates = (formData) => {
     const candidatesData = new FormData();
     candidatesData.append('source_id', formData.source_id);
     candidatesData.append('full_name', formData.full_name);
     candidatesData.append('dob', formData.dob);
-    formData.designation_id.forEach(id => {
+    formData.designation_id.forEach((id) => {
       candidatesData.append('designation_id[]', id);
     });
-    formData.location_id.forEach(id => {
+    formData.location_id.forEach((id) => {
       candidatesData.append('location_id[]', id);
     });
 
@@ -108,31 +84,18 @@ function AddCandidatesModal({ show, close }) {
         onSuccessHandler: () => {
           close();
           dispatch(getCandidatesMasterListThunk());
-        },
-      }),
+        }
+      })
     );
   };
 
-  useEffect(() => {
-    if (show) {
-      if (!designationMasterList?.length) {
-        dispatch(getDesignationData());
-      }
-      if (!branchMasterList?.length) {
-        dispatch(getBranchMasterListThunk());
-      }
-      if (!sourceMasterList?.length) {
-        dispatch(getSourceMasterListThunk());
-      }
-    }
-  }, [show]);
   return (
     <>
       <CustomModal show={show} title="Add Data" width="lg">
         <Formik
           initialValues={candidatesInitialValue}
           validationSchema={addCandidatesValidation}
-          onSubmit={values => {
+          onSubmit={(values) => {
             handelAddCandidates(values);
             // setOtpModal(true);
           }}
@@ -143,12 +106,13 @@ function AddCandidatesModal({ show, close }) {
                 <Row className="row_gap_3">
                   <Col sm={6} md={6}>
                     <Field
-                      data={sourceType}
-                      component={CustomDropdown}
+                      options={sourceDropdown}
+                      component={CustomReactSelect}
                       name="source_id"
                       label="Source"
+                      id="candidate_source"
                       placeholder={
-                        sourceMasterLoading?.getSourceMasterList ? 'Loading...' : 'Select'
+                        sourceDropdownLoading ? 'Loading...' : 'Select'
                       }
                       requiredField
                     />
@@ -159,6 +123,7 @@ function AddCandidatesModal({ show, close }) {
                         component={CustomInput}
                         name="referred_by_name"
                         label="Referred By"
+                        id="candidate_referredby"
                         placeholder="Enter referred by name"
                         requiredField
                       />
@@ -169,6 +134,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomInput}
                       name="full_name"
                       label="Full Name"
+                      id="candidate_fullname"
                       placeholder="Enter full name"
                       requiredField
                     />
@@ -179,28 +145,37 @@ function AddCandidatesModal({ show, close }) {
                       name="dob"
                       type="date"
                       label="Date Of Birth"
+                      id="candidate_dob"
                       requiredField
                     />
                   </Col>
                   <Col sm={6} md={6}>
                     <Field
-                      options={preferredRole}
+                      options={preferredDesignationDropdown}
                       component={CustomReactSelect}
                       name="designation_id"
-                      label="Preferred Role"
-                      placeholder={status === 'loading' ? 'Loading...' : 'Select'}
+                      label="Preferred Designation"
+                      id="candidate_preferreddesignation"
+                      placeholder={
+                        preferredDesignationDropdownLoading
+                          ? 'Loading...'
+                          : 'Select'
+                      }
                       requiredField
                       isMulti
                     />
                   </Col>
                   <Col sm={6} md={6}>
                     <Field
-                      options={preferredLocation}
+                      options={preferredLocationDropdown}
                       component={CustomReactSelect}
                       name="location_id"
                       label="Preferred Location"
+                      id="candidate_location"
                       placeholder={
-                        branchMasterLoading?.getBranchMasterList ? 'Loading...' : 'Select'
+                        preferredLocationDropdownLoading
+                          ? 'Loading...'
+                          : 'Select'
                       }
                       requiredField
                       isMulti
@@ -211,9 +186,11 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomInput}
                       name="mobile_no"
                       label="Phone Number"
+                      id="candidate_phone"
                       placeholder="Enter contact number"
                       requiredField
                       type="number"
+                      maxLength="10"
                     />
                   </Col>
                   <Col sm={6} md={6}>
@@ -221,6 +198,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomInput}
                       name="email"
                       label="Email"
+                      id="candidate_email"
                       placeholder="Enter email address"
                     />
                   </Col>
@@ -230,6 +208,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomDropdown}
                       name="relevant_experience"
                       label="Current Years Of Work Experience"
+                      id="candidate_experience"
                       placeholder="Select"
                       requiredField
                     />
@@ -239,6 +218,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomCurrencyInput}
                       name="expected_ctc"
                       label="Expected Monthly Salary (Net)"
+                      id="candidate_expectedsalary"
                       placeholder="Enter expected monthly salary"
                       type="number"
                     />
@@ -248,6 +228,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomCurrencyInput}
                       name="current_ctc"
                       label="Current Monthly Salary"
+                      id="candidate_currentsalary"
                       placeholder="Enter current monthly salary"
                       type="number"
                     />
@@ -257,6 +238,7 @@ function AddCandidatesModal({ show, close }) {
                       component={CustomInput}
                       name="notice_period"
                       label="Notice Period (In days)"
+                      id="candidate_noticeperiod"
                       placeholder="Enter notice period in days"
                       type="number"
                     />
@@ -268,16 +250,26 @@ function AddCandidatesModal({ show, close }) {
                     <input
                       type="file"
                       name="resume_path"
+                      id="candidate_resumepath"
                       className={`form-control ${
-                        errors.resume_path && touched.resume_path ? 'is-invalid' : ''
+                        errors.resume_path && touched.resume_path
+                          ? 'is-invalid'
+                          : ''
                       }`}
-                      onChange={event => {
-                        setFieldValue('resume_path', event.currentTarget.files[0]);
+                      onChange={(event) => {
+                        setFieldValue(
+                          'resume_path',
+                          event.currentTarget.files[0]
+                        );
                       }}
                       accept=".jpg, .jpeg, .png, .pdf, .docx,"
                     />
-                    <RenderIf render={errors.resume_path && touched.resume_path}>
-                      <div className="invalid-feedback">{errors.resume_path}</div>
+                    <RenderIf
+                      render={errors.resume_path && touched.resume_path}
+                    >
+                      <div className="invalid-feedback">
+                        {errors.resume_path}
+                      </div>
                     </RenderIf>
                   </Col>
                 </Row>
@@ -291,11 +283,15 @@ function AddCandidatesModal({ show, close }) {
                     {isLoading?.addCandidatesMaster ? (
                       <Spinner animation="border" size="sm" />
                     ) : (
-                      'Add'
+                      'Submit'
                     )}
                   </button>
-                  <button onClick={close} className="btn btn-shadow-light px-3" type="button">
-                    Close
+                  <button
+                    onClick={close}
+                    className="btn btn-danger px-3"
+                    type="button"
+                  >
+                    Cancel
                   </button>
                 </div>
               </Stack>

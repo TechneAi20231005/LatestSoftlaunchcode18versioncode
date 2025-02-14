@@ -4,13 +4,13 @@ import {billCheckingMasterUrl} from '../../../settings/constants';
 
 const _URL = billCheckingMasterUrl.billChecking
 
-const _getPaymentTemplate=_URL+"/getPaymentTemplate"   
-const _updatePaymentTemplate = _URL+"/updatePaymentTemplate/";
+
+
 
 
 
 export function getDateTime(){
-    var now = new Date(); 
+    var now = new Date();
     let year=now.getFullYear();
     let month=now.getMonth()+1;
         month= month  >= 10 ?  month : `0${month}`
@@ -25,20 +25,11 @@ export function getDateTime(){
 export default class BillPaymentServices{
 
 
-    // getPaymentTemplate(){
-    //     return axios.get(_getPaymentTemplate);
-    // }
 
-    // createPaymentTemplate(payload){
-    //     payload.append('tenant_id',userSessionData.tenantId);
-    //     payload.append('created_by',userSessionData.userId);
-    //     payload.append('created_at',getDateTime());  
-    //     return axios.post(_URL+"/createPaymentTemplate",payload)
-    // }
-
+  
     getBillPayments(payload){
         const token = localStorage.getItem("jwt_token");
-      
+
         const config = {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -47,12 +38,12 @@ export default class BillPaymentServices{
           },
         };
         return axios.post(_URL+"/getBillPayment/"+userSessionData.userId, payload,config)
-    } 
-    
-    
+    }
+
+
     downloadTxtFile(payload){
         const token = localStorage.getItem("jwt_token");
-      
+
         const config = {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -61,12 +52,12 @@ export default class BillPaymentServices{
           },
         };
         return axios.post(_URL+"/postDownloadFile", payload,config)
-    }   
+    }
 
 
     autoUpdatePayment(payload){
         const token = localStorage.getItem("jwt_token");
-      
+
         const config = {
           headers: {
             Authorization: `Bearer ${token}`,

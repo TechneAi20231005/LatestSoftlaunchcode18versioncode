@@ -1,13 +1,10 @@
-import React, { Children } from 'react'
-import { Navigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom';
 
 const Auth = (props) => {
+  const Component = props.component;
+  const isAuthenticated = localStorage.getItem('token');
 
-    const Component = props.component;
-    const isAuthenticated = localStorage.getItem('token');
-    
-    return isAuthenticated ? ( <Component /> ) : ( <Navigate to='/' /> );
+  return isAuthenticated ? <Component /> : <Navigate to="/" />;
+};
 
-}
-
-export default Auth
+export default Auth;

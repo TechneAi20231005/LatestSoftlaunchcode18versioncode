@@ -44,7 +44,16 @@ function PoOrderQanFilterModal({ open, onClose }) {
                     type="date"
                     name="delivery_date"
                     label="Delivery Date :"
-                    placeholderText="mm/dd/yyyy"
+                    id="poorderqtyfiltermodal_deliverydate"
+                    placeholderText="dd/mm/yyyy"
+                    dateFormat="dd/MM/yyy"
+                    showMonthDropdown
+                    showYearDropdown
+                    dropdownMode="select"
+                    onKeyDown={e => {
+                      e.preventDefault();
+                    }}
+                    isClearable
                     range
                   />
                 </Col>
@@ -53,7 +62,8 @@ function PoOrderQanFilterModal({ open, onClose }) {
                     component={CustomReactSelect}
                     options={categoryData}
                     name="vender_name"
-                    label="Vender Name :"
+                    label="Vendor Name :"
+                    id="poorderqtyfiltermodal_vendorname"
                     placeholder="Select"
                     isSearchable
                     isMulti
@@ -64,7 +74,8 @@ function PoOrderQanFilterModal({ open, onClose }) {
                     component={CustomReactSelect}
                     options={venderData}
                     name="vender_name"
-                    label="Vender Name :"
+                    label="Vendor Name :"
+                    id="poorderqtyfiltermodal_vendorname"
                     placeholder="Select"
                     isSearchable
                     isMulti

@@ -1,5 +1,5 @@
 import * as Yup from 'yup';
-import { ALPHA_NUMERIC_REGEX } from '../../../../../settings/constants';
+import { ALPHA_NUMERIC_REGEX } from '../../../../../utils/regexPool';
 
 export const addEditBranchValidation = Yup.object().shape({
   location_name: Yup.string()
