@@ -168,7 +168,7 @@ export const menuManagementUrl = {
 
 export const dashboardUrl = _rewampApiUrl + 'dashboard';
 
-export const notificationUrl = _apiUrl + 'notification';
+export const notificationUrl = _rewampApiUrl + 'notification';
 
 export const settingMasterUrl = {
   customerMapping: _rewampApiUrl + 'customerMapping',

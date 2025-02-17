@@ -26,6 +26,7 @@ import { getCustomerMappingData } from '../Settings/CustomerMapping/Slices/Custo
 import { getEmployeeDataById, getRoles } from '../Dashboard/DashboardAction';
 import { getUserForMyTicketsData } from './MyTicketComponentAction';
 import { toast } from 'react-toastify';
+import LoadingScreen from '../../components/custom/LoadingScreen';
 
 export default function CreateTicketComponent() {
   const navigate = useNavigate();
@@ -76,7 +77,8 @@ export default function CreateTicketComponent() {
   var today = new Date().toISOString().split('T')[0];
   const [data, setData] = useState(ticketData);
 
-  const showLoaderModal = false;
+  // const showLoaderModal = false;
+  const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [rows, setRows] = useState();
 
@@ -472,6 +474,7 @@ export default function CreateTicketComponent() {
   };
 
   const loadData = useCallback(async () => {
+    setShowLoaderModal(true);
     const query_type_id = '';
     const queryTypeTemp = [];
     const status = 1;
@@ -573,6 +576,7 @@ export default function CreateTicketComponent() {
           }
         }
       });
+      setShowLoaderModal(false);
 
     dispatch(getRoles());
   }, [dispatch]);
@@ -1479,8 +1483,10 @@ export default function CreateTicketComponent() {
           </Link>
         </div>
       </form>
+      {showLoaderModal && <LoadingScreen showLoaderModal={showLoaderModal} />}
 
-      <Modal show={showLoaderModal} centered>
+
+      {/* <Modal show={showLoaderModal} centered>
         <Modal.Body className="text-center">
           <Spinner animation="grow" variant="primary" />
           <Spinner animation="grow" variant="secondary" />
@@ -1490,7 +1496,7 @@ export default function CreateTicketComponent() {
           <Spinner animation="grow" variant="info" />
           <Spinner animation="grow" variant="dark" />
         </Modal.Body>
-      </Modal>
+      </Modal> */}
     </div>
   );
 }

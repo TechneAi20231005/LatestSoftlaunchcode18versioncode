@@ -615,10 +615,10 @@ export default function TaskComponent() {
               'Sprint End Date': temp[i]?.sprint_end_date,
               'Task Name': temp[i]?.task_name,
               'Task Users': temp[i]?.task_owner,
-              'Task Start Date': temp[i]?.task_start_Date,
+              'Task Start Date': temp[i]?.task_start_date,
               'Task End Date': temp[i]?.task_delivery_scheduled,
               'Task actual completed date': temp[i]?.task_completed_at,
-              'Task scheduled hours': temp[i]?.task_scheduled_Hours,
+              'Task scheduled hours': temp[i]?.task_scheduled_hours,
               'Task actual hours played': temp[i]?.task_actual_worked,
               'Task status': temp[i]?.task_status,
               'Actual status': temp[i]?.task_actual_status
@@ -1271,10 +1271,16 @@ export default function TaskComponent() {
                 </span>
               </div>
               <div className="fs-5">
+              <OverlayTrigger
+      placement="top"
+      overlay={<Tooltip id="tooltip-calendar">Sprint Calendar</Tooltip>}
+    >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="28"
                   height="28"
+                  style={{ cursor: "pointer" }}
+
                   viewBox="0 0 28 28"
                   fill="none"
                   onClick={() => goToSprintCalendarGraph('calendar')}
@@ -1285,13 +1291,19 @@ export default function TaskComponent() {
                     fill="white"
                   />
                 </svg>
+                </OverlayTrigger>
 
+                <OverlayTrigger
+      placement="top"
+      overlay={<Tooltip id="tooltip-calendar">Sprint Graph</Tooltip>}
+    >
                 <span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="34"
                     height="34"
                     viewBox="0 0 34 34"
+                    style={{ cursor: "pointer" }}
                     fill="none"
                     onClick={() => goToSprintCalendarGraph('graph')}
                   >
@@ -1303,7 +1315,11 @@ export default function TaskComponent() {
                     />
                   </svg>
                 </span>
-
+                </OverlayTrigger>
+                <OverlayTrigger
+      placement="top"
+      overlay={<Tooltip id="tooltip-calendar">Sprint Edit</Tooltip>}
+    >
                 <button
                   onClick={() => {
                     setSprintInput({
@@ -1366,6 +1382,14 @@ export default function TaskComponent() {
                     </defs>
                   </svg>
                 </button>
+                </OverlayTrigger>
+
+
+
+                <OverlayTrigger
+      placement="top"
+      overlay={<Tooltip id="tooltip-calendar">Sprint View</Tooltip>}
+    >
                 <span className="ms-1">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1390,7 +1414,11 @@ export default function TaskComponent() {
                     </defs>
                   </svg>
                 </span>
-
+                </OverlayTrigger>
+                <OverlayTrigger
+      placement="top"
+      overlay={<Tooltip id="tooltip-calendar">Sprint Report</Tooltip>}
+    >
                 <span className="ms-1">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1415,6 +1443,7 @@ export default function TaskComponent() {
                     </defs>
                   </svg>
                 </span>
+                </OverlayTrigger>
               </div>
             </div>
           </div>
