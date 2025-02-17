@@ -218,9 +218,9 @@ const DayWiseCalendar = (props) => {
                   </div>
 
                   {/* Right Section: User Avatars & Priority */}
-                  <div className="col-6 d-flex  justify-content-start text-end">
+                  <div className="col-6 d-flex  justify-content-end text-end">
                     <div
-                      className="col-9 d-flex gap-2 justify-content-start"
+                      className="col-9 d-flex gap-2 justify-content-end"
                       style={{
                         display: 'flex',
                         flexWrap: isExpanded ? "wrap" : "nowrap",
