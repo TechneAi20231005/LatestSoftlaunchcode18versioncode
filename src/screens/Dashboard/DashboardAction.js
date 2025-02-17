@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import CityService from '../../services/MastersService/CityService';
 import CountryService from '../../services/MastersService/CountryService';
@@ -13,23 +12,6 @@ import CustomerService from '../../services/MastersService/CustomerService';
 import RoleService from '../../services/MastersService/RoleService';
 import CustomerTypeService from '../../services/MastersService/CustomerTypeService';
 import { errorHandler } from '../../utils';
-=======
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import CityService from "../../services/MastersService/CityService";
-import CountryService from "../../services/MastersService/CountryService";
-import StateService from "../../services/MastersService/StateService";
-import UserService from "../../services/MastersService/UserService";
-import { getNotification } from "../../services/NotificationService/NotificationService";
-import { getData } from "../../services/DashboardService";
-import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
-import DesignationService from "../../services/MastersService/DesignationService";
-import DynamicFormService from "../../services/MastersService/DynamicFormService";
-import CustomerService from "../../services/MastersService/CustomerService";
-import RoleService from "../../services/MastersService/RoleService";
-import CustomerTypeService from "../../services/MastersService/CustomerTypeService";
-import { errorHandler } from "../../utils";
-
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
 
 export const getCityData = createAsyncThunk(
   'getCityData',
@@ -46,12 +28,7 @@ export const getCityData = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -62,12 +39,6 @@ export const postCityData = createAsyncThunk(
     try {
       const service = new CityService();
       const response = await service.postCity(config);
-<<<<<<< HEAD
-      console.log(response, 'responce');
-      return response;
-    } catch (error) {
-      errorHandler(error);
-=======
       if (response?.data?.data?.status === 1) {
         return { data: response?.data?.data, msg: response?.data?.message };
       } else {
@@ -78,7 +49,6 @@ export const postCityData = createAsyncThunk(
     } catch (error) {
       errorHandler(error?.response);
       throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -97,12 +67,7 @@ export const updateCityData = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -121,13 +86,7 @@ export const getCountryData = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -146,12 +105,7 @@ export const getCountryDataSort = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -170,12 +124,7 @@ export const postCountryData = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -193,12 +142,7 @@ export const updateCountryData = createAsyncThunk(
       }
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -217,12 +161,7 @@ export const getStateData = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -241,12 +180,7 @@ export const postStateData = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -265,12 +199,7 @@ export const updateStateData = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -289,12 +218,7 @@ export const getStateDataSort = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -313,12 +237,7 @@ export const getEmployeeData = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -337,12 +256,7 @@ export const getEmployeeDataById = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -361,12 +275,7 @@ export const postUserData = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -385,12 +294,7 @@ export const updateUserData = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -408,12 +312,7 @@ export const getNotifications = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -430,12 +329,7 @@ export const getAllDashboardData = createAsyncThunk(
       }
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -455,12 +349,7 @@ export const getRoles = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -480,12 +369,7 @@ export const getAllRoles = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -504,12 +388,7 @@ export const getDesignationData = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -528,12 +407,7 @@ export const getDynamiucFormData = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -552,12 +426,7 @@ export const getCustomerData = createAsyncThunk(
 
       return response;
     } catch (error) {
-<<<<<<< HEAD
       errorHandler(error);
-=======
-      errorHandler(error?.response);
-      throw error;
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );

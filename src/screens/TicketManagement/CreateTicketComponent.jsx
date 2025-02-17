@@ -26,11 +26,8 @@ import { getCustomerMappingData } from '../Settings/CustomerMapping/Slices/Custo
 import { getEmployeeDataById, getRoles } from '../Dashboard/DashboardAction';
 import { getUserForMyTicketsData } from './MyTicketComponentAction';
 import { toast } from 'react-toastify';
-<<<<<<< HEAD
 import { errorHandler } from '../../utils';
-=======
 import LoadingScreen from '../../components/custom/LoadingScreen';
->>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
 
 export default function CreateTicketComponent() {
   const navigate = useNavigate();
@@ -583,7 +580,7 @@ export default function CreateTicketComponent() {
       .catch((error) => {
         errorHandler(error);
       });
-      setShowLoaderModal(false);
+    setShowLoaderModal(false);
 
     dispatch(getRoles());
   }, [dispatch]);
@@ -1491,7 +1488,6 @@ export default function CreateTicketComponent() {
         </div>
       </form>
       {showLoaderModal && <LoadingScreen showLoaderModal={showLoaderModal} />}
-
 
       {/* <Modal show={showLoaderModal} centered>
         <Modal.Body className="text-center">
