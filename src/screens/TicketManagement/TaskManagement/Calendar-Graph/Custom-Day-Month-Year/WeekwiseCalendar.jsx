@@ -88,6 +88,22 @@ const WeekwiseCalendar = (props) => {
     }
     const users = task?.taskOwners?.join(',');
 
+    const taskOwnersContent =
+    task?.taskOwners?.length > 6 ? (
+      <div
+        style={{
+          maxWidth: "400px",
+          wordWrap: "break-word",
+          whiteSpace: "normal",
+          overflowWrap: "break-word",
+        }}
+      >
+        {users}
+      </div>
+    ) : (
+      users
+    );
+
     const tooltipFields = {
       'Sprint Name': task?.sprint_name,
       'Task Name': task?.task_name,
@@ -99,7 +115,7 @@ const WeekwiseCalendar = (props) => {
       'Actual Worked': task?.task_actual_worked,
       'Status': task?.task_status,
       'Actual Status': task?.task_actual_status,
-      'Task Owners': users
+      'Task Owners': taskOwnersContent
     };
 
     return Object.entries(tooltipFields)?.map(([label, value], index) => (
