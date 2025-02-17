@@ -944,7 +944,8 @@ function CreateUserComponent({ match }) {
                             const email = event?.target?.value;
                             if (
                               !email.match(
-                                /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
+                                // /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
+                                /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/i
                               )
                             ) {
                               setInputState({

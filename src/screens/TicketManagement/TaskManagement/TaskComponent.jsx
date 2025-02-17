@@ -188,7 +188,7 @@ export default function TaskComponent() {
                 // setIsRegularised(res.data.is_regularized)
                 setData(null);
                 // res.data.data.sort(sortFunc);
-
+                console.log('ressss', res.data.data);
                 res.data.data.forEach((tasks, index) => {
                   setBasketStartDate(tasks.start_date);
                   tasks.taskData.forEach((d, i) => {
@@ -277,6 +277,7 @@ export default function TaskComponent() {
         if (res.status === 200) {
           if (res.data.status === 1) {
             temp = res.data.data;
+            console.log('idddd', temp);
             setTaskModalData(temp);
           }
         }
@@ -614,10 +615,10 @@ export default function TaskComponent() {
               'Sprint End Date': temp[i]?.sprint_end_date,
               'Task Name': temp[i]?.task_name,
               'Task Users': temp[i]?.task_owner,
-              'Task Start Date': temp[i]?.task_start_Date,
+              'Task Start Date': temp[i]?.task_start_date,
               'Task End Date': temp[i]?.task_delivery_scheduled,
               'Task actual completed date': temp[i]?.task_completed_at,
-              'Task scheduled hours': temp[i]?.task_scheduled_Hours,
+              'Task scheduled hours': temp[i]?.task_scheduled_hours,
               'Task actual hours played': temp[i]?.task_actual_worked,
               'Task status': temp[i]?.task_status,
               'Actual status': temp[i]?.task_actual_status
@@ -956,17 +957,16 @@ export default function TaskComponent() {
     <div className="container-xxl">
       <PageHeader headerTitle="Manage Task" />
       {/* {notify && <Alert alertData={notify} />} */}
-
       <div className="card mt-2">
         <div className="card-body">
           <div>
             <div className="d-flex align-items-center justify-content-between">
               <h5 className="col-3">
                 <strong>
-                  Ticket -{' '}
-                  {tasksData &&
+                  Ticket - {data?.[0]?.main_ticket_id}
+                  {/* {tasksData &&
                     tasksData?.length > 0 &&
-                    tasksData[0].ticket_id_name}
+                    tasksData[0].ticket_id_name} */}
                   <i onClick={detailsHandler} style={{ cursor: 'pointer' }}>
                     {showDetails ? (
                       <OverlayTrigger
@@ -1271,10 +1271,16 @@ export default function TaskComponent() {
                 </span>
               </div>
               <div className="fs-5">
+              <OverlayTrigger
+      placement="top"
+      overlay={<Tooltip id="tooltip-calendar">Sprint Calendar</Tooltip>}
+    >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="28"
                   height="28"
+                  style={{ cursor: "pointer" }}
+
                   viewBox="0 0 28 28"
                   fill="none"
                   onClick={() => goToSprintCalendarGraph('calendar')}
@@ -1285,13 +1291,19 @@ export default function TaskComponent() {
                     fill="white"
                   />
                 </svg>
+                </OverlayTrigger>
 
+                <OverlayTrigger
+      placement="top"
+      overlay={<Tooltip id="tooltip-calendar">Sprint Graph</Tooltip>}
+    >
                 <span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="34"
                     height="34"
                     viewBox="0 0 34 34"
+                    style={{ cursor: "pointer" }}
                     fill="none"
                     onClick={() => goToSprintCalendarGraph('graph')}
                   >
@@ -1303,24 +1315,27 @@ export default function TaskComponent() {
                     />
                   </svg>
                 </span>
-
+                </OverlayTrigger>
+                <OverlayTrigger
+      placement="top"
+      overlay={<Tooltip id="tooltip-calendar">Sprint Edit</Tooltip>}
+    >
                 <button
                   onClick={() => {
-                      setSprintInput({
-                        sprintName: sprintCardData[0]?.name,
-                        sprintDescription: sprintCardData[0]?.description,
-                        startDate: sprintCardData[0]?.start_date,
-                        endDate: sprintCardData[0]?.end_date
-                      });
-                      setSprintModal({
-                        showModal: true,
-                        modalData: sprintCardData[0],
-                        modalHeader: 'Update'
-                      });
-                    }}
-
+                    setSprintInput({
+                      sprintName: sprintCardData[0]?.name,
+                      sprintDescription: sprintCardData[0]?.description,
+                      startDate: sprintCardData[0]?.start_date,
+                      endDate: sprintCardData[0]?.end_date
+                    });
+                    setSprintModal({
+                      showModal: true,
+                      modalData: sprintCardData[0],
+                      modalHeader: 'Update'
+                    });
+                  }}
                   className="border-0 p-0 ms-1"
-                  disabled={ownership !== 'PROJECT'  ? true : false}
+                  disabled={ownership !== 'PROJECT' ? true : false}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1367,6 +1382,14 @@ export default function TaskComponent() {
                     </defs>
                   </svg>
                 </button>
+                </OverlayTrigger>
+
+
+
+                <OverlayTrigger
+      placement="top"
+      overlay={<Tooltip id="tooltip-calendar">Sprint View</Tooltip>}
+    >
                 <span className="ms-1">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1391,7 +1414,11 @@ export default function TaskComponent() {
                     </defs>
                   </svg>
                 </span>
-
+                </OverlayTrigger>
+                <OverlayTrigger
+      placement="top"
+      overlay={<Tooltip id="tooltip-calendar">Sprint Report</Tooltip>}
+    >
                 <span className="ms-1">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -1416,6 +1443,7 @@ export default function TaskComponent() {
                     </defs>
                   </svg>
                 </span>
+                </OverlayTrigger>
               </div>
             </div>
           </div>
@@ -1719,6 +1747,7 @@ export default function TaskComponent() {
                     moduleSetting={moduleSetting}
                     expectedSolveDate={expectedSolveDate}
                     ticketStartDate={ticketStartDate}
+                    handleShowTaskModal={handleShowTaskModal}
                   />
                 )}
                 {ticketData && (

@@ -110,7 +110,6 @@ function CreateDynamicForm() {
     (DynamicFormDropDownSlice) =>
       DynamicFormDropDownSlice.dynamicFormDropDown.sortDropDown
   );
-  console.log('dropdown', dropdown);
 
   const statusData = useSelector((statusMasterSlice) =>
     statusMasterSlice.statusMaster.filterStatusData
@@ -551,7 +550,6 @@ function CreateDynamicForm() {
                           id="template_name"
                           // required
                           onChange={(e) => {
-                            console.log(e?.target?.value, 'values');
                             setMessage(e?.target?.value);
                             setDisplay(false);
                           }}

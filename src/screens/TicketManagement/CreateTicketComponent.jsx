@@ -26,7 +26,11 @@ import { getCustomerMappingData } from '../Settings/CustomerMapping/Slices/Custo
 import { getEmployeeDataById, getRoles } from '../Dashboard/DashboardAction';
 import { getUserForMyTicketsData } from './MyTicketComponentAction';
 import { toast } from 'react-toastify';
+<<<<<<< HEAD
 import { errorHandler } from '../../utils';
+=======
+import LoadingScreen from '../../components/custom/LoadingScreen';
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
 
 export default function CreateTicketComponent() {
   const navigate = useNavigate();
@@ -77,7 +81,8 @@ export default function CreateTicketComponent() {
   var today = new Date().toISOString().split('T')[0];
   const [data, setData] = useState(ticketData);
 
-  const showLoaderModal = false;
+  // const showLoaderModal = false;
+  const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [rows, setRows] = useState();
 
@@ -473,6 +478,7 @@ export default function CreateTicketComponent() {
   };
 
   const loadData = useCallback(async () => {
+    setShowLoaderModal(true);
     const query_type_id = '';
     const queryTypeTemp = [];
     const status = 1;
@@ -577,6 +583,7 @@ export default function CreateTicketComponent() {
       .catch((error) => {
         errorHandler(error);
       });
+      setShowLoaderModal(false);
 
     dispatch(getRoles());
   }, [dispatch]);
@@ -1311,7 +1318,6 @@ export default function CreateTicketComponent() {
                           )}
                         </select>
                       )}
-
                       {data.inputType === 'select-master' && (
                         <select
                           id={
@@ -1325,7 +1331,7 @@ export default function CreateTicketComponent() {
                         >
                           <option> {data?.inputName}</option>
                           {data?.inputAddOn?.inputDataSourceData &&
-                            data?.inputAddOn?.inputDataSourceData.map(
+                            data?.inputAddOn?.inputDataSourceData?.map(
                               (option) => {
                                 return (
                                   <option
@@ -1369,7 +1375,7 @@ export default function CreateTicketComponent() {
                       name="description"
                       required
                       rows="4"
-                      maxLength={100}
+                      maxLength={1000}
                     />
                   </div>
                 </div>
@@ -1484,8 +1490,10 @@ export default function CreateTicketComponent() {
           </Link>
         </div>
       </form>
+      {showLoaderModal && <LoadingScreen showLoaderModal={showLoaderModal} />}
 
-      <Modal show={showLoaderModal} centered>
+
+      {/* <Modal show={showLoaderModal} centered>
         <Modal.Body className="text-center">
           <Spinner animation="grow" variant="primary" />
           <Spinner animation="grow" variant="secondary" />
@@ -1495,7 +1503,7 @@ export default function CreateTicketComponent() {
           <Spinner animation="grow" variant="info" />
           <Spinner animation="grow" variant="dark" />
         </Modal.Body>
-      </Modal>
+      </Modal> */}
     </div>
   );
 }

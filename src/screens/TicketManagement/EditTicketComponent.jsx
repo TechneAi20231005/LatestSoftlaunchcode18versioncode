@@ -1328,7 +1328,6 @@ export default function EditTicketComponent({ match }) {
                         />
                       )}
                     </div>
-
                     <div className="col-sm-3">
                       <label className=" col-form-label">
                         <b>Reviewer :</b>

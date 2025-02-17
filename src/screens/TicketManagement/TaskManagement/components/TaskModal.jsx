@@ -116,7 +116,9 @@ export default function TaskModal(props) {
     dependent_task: props.data.dependentTaskId
       ? props.data.dependentTaskId
       : '',
-    assign_to_user: props.data.assign_to_user ? props.data.assign_to_user : '',
+    assign_to_user: props.data.assign_to_user
+      ? props.data.assign_to_user
+      : Number(localStorage.getItem('id')),
     task_desc: props?.data?.task_desc || '',
     type: props.data?.type || 'TASK',
     status: props?.data?.status || 'TO_DO'
@@ -577,6 +579,7 @@ export default function TaskModal(props) {
   // const handleDeleteAttachment = (e, id) => {};
   const handleDeleteAttachment = (e, id) => {
     deleteAttachment(id).then((res) => {
+      props?.handleShowTaskModal();
       loadAttachment();
     });
   };

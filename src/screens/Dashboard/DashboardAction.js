@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import CityService from '../../services/MastersService/CityService';
 import CountryService from '../../services/MastersService/CountryService';
@@ -12,6 +13,23 @@ import CustomerService from '../../services/MastersService/CustomerService';
 import RoleService from '../../services/MastersService/RoleService';
 import CustomerTypeService from '../../services/MastersService/CustomerTypeService';
 import { errorHandler } from '../../utils';
+=======
+import { createAsyncThunk } from "@reduxjs/toolkit";
+import CityService from "../../services/MastersService/CityService";
+import CountryService from "../../services/MastersService/CountryService";
+import StateService from "../../services/MastersService/StateService";
+import UserService from "../../services/MastersService/UserService";
+import { getNotification } from "../../services/NotificationService/NotificationService";
+import { getData } from "../../services/DashboardService";
+import ManageMenuService from "../../services/MenuManagementService/ManageMenuService";
+import DesignationService from "../../services/MastersService/DesignationService";
+import DynamicFormService from "../../services/MastersService/DynamicFormService";
+import CustomerService from "../../services/MastersService/CustomerService";
+import RoleService from "../../services/MastersService/RoleService";
+import CustomerTypeService from "../../services/MastersService/CustomerTypeService";
+import { errorHandler } from "../../utils";
+
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
 
 export const getCityData = createAsyncThunk(
   'getCityData',
@@ -19,9 +37,21 @@ export const getCityData = createAsyncThunk(
     try {
       const service = new CityService();
       const response = await service.getCity();
+
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
+
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -32,10 +62,23 @@ export const postCityData = createAsyncThunk(
     try {
       const service = new CityService();
       const response = await service.postCity(config);
+<<<<<<< HEAD
       console.log(response, 'responce');
       return response;
     } catch (error) {
       errorHandler(error);
+=======
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
+
+      return response;
+    } catch (error) {
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -46,9 +89,20 @@ export const updateCityData = createAsyncThunk(
     try {
       const service = new CityService();
       const response = await service.updateCity(config.id, config.payload);
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
+
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -59,10 +113,21 @@ export const getCountryData = createAsyncThunk(
     try {
       const service = new CountryService();
       const response = await service.getCountry();
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
 
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -73,9 +138,20 @@ export const getCountryDataSort = createAsyncThunk(
     try {
       const service = new CountryService();
       const response = await service.getCountrySort();
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
+
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -86,10 +162,20 @@ export const postCountryData = createAsyncThunk(
     try {
       const service = new CountryService();
       const response = await service.postCountry(config);
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
 
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -100,9 +186,19 @@ export const updateCountryData = createAsyncThunk(
     try {
       const service = new CountryService();
       const response = await service.updateCountry(config.id, config.payload);
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -113,10 +209,20 @@ export const getStateData = createAsyncThunk(
     try {
       const service = new StateService();
       const response = await service.getState();
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
 
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -127,10 +233,20 @@ export const postStateData = createAsyncThunk(
     try {
       const service = new StateService();
       const response = await service.postState(config);
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
 
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -141,10 +257,20 @@ export const updateStateData = createAsyncThunk(
     try {
       const service = new StateService();
       const response = await service.updateState(config.id, config.payload);
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
 
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -155,10 +281,20 @@ export const getStateDataSort = createAsyncThunk(
     try {
       const service = new StateService();
       const response = await service.getStateSort();
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
 
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -169,10 +305,20 @@ export const getEmployeeData = createAsyncThunk(
     try {
       const service = new UserService();
       const response = await service.getUser();
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
 
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -183,10 +329,20 @@ export const getEmployeeDataById = createAsyncThunk(
     try {
       const service = new UserService();
       const response = await service.getUsers(id);
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
 
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -197,10 +353,20 @@ export const postUserData = createAsyncThunk(
     try {
       const service = new UserService();
       const response = await service.postUser(config);
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
 
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -211,10 +377,20 @@ export const updateUserData = createAsyncThunk(
     try {
       const service = new UserService();
       const response = await service.updateUser(config.id, config.payload);
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
 
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -224,9 +400,20 @@ export const getNotifications = createAsyncThunk(
   async (config, thunkapi) => {
     try {
       const response = await getNotification();
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
+
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -236,9 +423,19 @@ export const getAllDashboardData = createAsyncThunk(
   async (config, thunkapi) => {
     try {
       const response = await getData();
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -250,10 +447,20 @@ export const getRoles = createAsyncThunk(
       const roleId = localStorage.getItem('role_id');
       const service = new ManageMenuService();
       const response = await service.getRole(roleId);
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
 
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -265,10 +472,20 @@ export const getAllRoles = createAsyncThunk(
       const roleId = localStorage.getItem('role_id');
       const service = new RoleService();
       const response = await service.getRole(roleId);
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
 
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -279,10 +496,20 @@ export const getDesignationData = createAsyncThunk(
     try {
       const service = new DesignationService();
       const response = await service.getDesignation();
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
 
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -293,10 +520,20 @@ export const getDynamiucFormData = createAsyncThunk(
     try {
       const service = new DynamicFormService();
       const response = await service.getDynamicForm();
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
 
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );
@@ -307,10 +544,20 @@ export const getCustomerData = createAsyncThunk(
     try {
       const service = new CustomerService();
       const response = await service.getCustomer();
+      if (response?.data?.data?.status === 1) {
+        return { data: response?.data?.data, msg: response?.data?.message };
+      } else {
+        errorHandler(response);
+      }
 
       return response;
     } catch (error) {
+<<<<<<< HEAD
       errorHandler(error);
+=======
+      errorHandler(error?.response);
+      throw error;
+>>>>>>> e3cfc50000044be95f507c140a5b01cd87189490
     }
   }
 );

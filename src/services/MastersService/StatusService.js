@@ -4,7 +4,7 @@ import { masterURL } from '../../settings/constants';
 
 const _URL = masterURL.status;
 
-const _getAllStatus = `${_URL}/getData?export=1`;
+const _getAllStatus = `${_URL}/getData?type=1?export=1`;
 //  _URL + '/getData';
 const _postStatus = _URL + '/postData';
 const _getStatusById = _URL + '/getStatusById/';
