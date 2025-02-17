@@ -327,8 +327,6 @@ export default function CreateCustomer({ match }) {
 
   return (
     <div className="container-xxl">
-      {Notify && <Alert alertData={Notify} />}
-
       <PageHeader headerTitle="Add Customer" />
 
       <div className="row clearfix g-3">

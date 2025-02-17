@@ -27,6 +27,7 @@ import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
 
 function GeneralSettings() {
   //initial  state
@@ -87,12 +88,17 @@ function GeneralSettings() {
 
     const roleId = localStorage.getItem('role_id');
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
+    await new ManageMenuService()
+      .getRole(roleId)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {

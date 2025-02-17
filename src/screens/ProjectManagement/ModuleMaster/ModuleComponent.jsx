@@ -11,6 +11,7 @@ import Alert from '../../../components/Common/Alert';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import { errorHandler } from '../../../utils';
 function ModuleComponent() {
   //initial state
   const location = useLocation();
@@ -192,14 +193,19 @@ function ModuleComponent() {
         );
       });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const getRoleId = sessionStorage.getItem('role_id');
-          setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
+    await new ManageMenuService()
+      .getRole(roleId)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            const getRoleId = sessionStorage.getItem('role_id');
+            setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }, [roleId]);
 
   useEffect(() => {

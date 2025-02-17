@@ -159,8 +159,6 @@ function CustomerComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader
         headerTitle="Customer Master"
         renderRight={() => {

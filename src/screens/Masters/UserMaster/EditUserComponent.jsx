@@ -42,6 +42,7 @@ import {
   getJobRoleMasterListThunk
 } from '../../../redux/services/jobRoleMaster';
 import CustomerService from '../../../services/MastersService/CustomerService';
+import { errorHandler } from '../../../utils';
 function EditUserComponent({ match }) {
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState('All_Tickets');
@@ -249,10 +250,10 @@ function EditUserComponent({ match }) {
     } else if (mailError === true) {
       alert('Invalid Email');
       flag = 1;
-    }else if (selectPassword === '') {
+    } else if (selectPassword === '') {
       setInputState({ ...state, passwordErr: 'Please enter Password' });
       flag = 1;
-    }else if (confirmedPasswordRef.current.value === '') {
+    } else if (confirmedPasswordRef.current.value === '') {
       setInputState({
         ...state,
         confirmed_PassErr: ' Please Enter Confirmed password'
@@ -403,10 +404,7 @@ function EditUserComponent({ match }) {
         .then((res) => {
           if (res?.status === 200) {
             if (res?.data?.status === 1) {
-              // toast.success(res?.data?.message);
-              toast.success(res?.data?.message, {
-                autoClose: 10000 // 10 seconds in milliseconds
-              });
+              toast.success(res?.data?.message);
               navigate(`/${_base}/User`);
 
               // setNotify({ type: 'success', message: res.data.message });
@@ -421,10 +419,7 @@ function EditUserComponent({ match }) {
               //   });
               // }, 3000);
             } else {
-              toast.error(res?.data?.message, {
-                autoClose: 10000 // 10 seconds in milliseconds
-              });
-              // toast.error(res?.data?.message);
+              toast.error(res?.data?.message);
               // setNotify({ type: 'danger', message: res.data.message });
             }
           }
@@ -650,6 +645,9 @@ function EditUserComponent({ match }) {
         } else {
           setRows([mappingData]);
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
 
     new CustomerService().getCustomer().then((res) => {
@@ -820,7 +818,7 @@ function EditUserComponent({ match }) {
           setRoleDropdown(dropdownData);
         }
       } catch (error) {
-        // Handle error
+        errorHandler(error);
       }
     };
 
@@ -891,7 +889,6 @@ function EditUserComponent({ match }) {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Edit User" />
-      {notify && <Alert alertData={notify} />}
 
       <form
         onSubmit={handleForm}
@@ -1330,7 +1327,6 @@ function EditUserComponent({ match }) {
                                 Validation.password(e);
                               }}
                               onChange={handlePasswordValidation}
-
                               // onChange={(event) => {
                               //   if (event.target.value === '') {
                               //     setInputState({
@@ -1419,17 +1415,18 @@ function EditUserComponent({ match }) {
                             </small>
                           )}
                         </div>
-                        {!inputState.confirmed_PassErr && confirmPasswordError && (
-                          <span
-                            style={{
-                              color: 'red',
-                              position: 'relative',
-                              left: '67%'
-                            }}
-                          >
-                            Password Not matched
-                          </span>
-                        )}
+                        {!inputState.confirmed_PassErr &&
+                          confirmPasswordError && (
+                            <span
+                              style={{
+                                color: 'red',
+                                position: 'relative',
+                                left: '67%'
+                              }}
+                            >
+                              Password Not matched
+                            </span>
+                          )}
                       </div>
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">

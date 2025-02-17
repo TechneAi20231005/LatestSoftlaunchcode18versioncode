@@ -13,6 +13,7 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { errorHandler } from '../../../utils';
 
 function BillTypeMaster() {
   //initial state
@@ -255,31 +256,36 @@ function BillTypeMaster() {
     setIsLoading(true);
     const data = [];
 
-    await new BillTypeMasterService().getBillTypeData().then((res) => {
-      if (res.status === 200) {
-        setIsLoading(false);
+    await new BillTypeMasterService()
+      .getBillTypeData()
+      .then((res) => {
+        if (res.status === 200) {
+          setIsLoading(false);
 
-        let counter = 1;
-        const temp = res.data.data;
-        for (const key in temp) {
-          data.push({
-            id: temp[key].id,
-            counter: counter++,
-            bill_type: temp[key].bill_type,
-            is_active: temp[key].is_active,
-            remark: temp[key].remark,
-            created_at: temp[key].created_at,
-            created_by: temp[key].created_by,
-            updated_at: temp[key].updated_at,
-            updated_by: temp[key].updated_by,
-            employee: temp[key].employee
-          });
+          let counter = 1;
+          const temp = res.data.data;
+          for (const key in temp) {
+            data.push({
+              id: temp[key].id,
+              counter: counter++,
+              bill_type: temp[key].bill_type,
+              is_active: temp[key].is_active,
+              remark: temp[key].remark,
+              created_at: temp[key].created_at,
+              created_by: temp[key].created_by,
+              updated_at: temp[key].updated_at,
+              updated_by: temp[key].updated_by,
+              employee: temp[key].employee
+            });
+          }
+
+          setData(null);
+          setData(data);
         }
-
-        setData(null);
-        setData(data);
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
   useEffect(() => {

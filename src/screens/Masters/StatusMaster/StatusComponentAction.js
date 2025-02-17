@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import StatusService from '../../../services/MastersService/StatusService';
+import { errorHandler } from '../../../utils';
 
 export const getStatusData = createAsyncThunk(
   'getStatusData',
@@ -10,7 +11,7 @@ export const getStatusData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );

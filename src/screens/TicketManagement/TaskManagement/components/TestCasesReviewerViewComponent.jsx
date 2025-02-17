@@ -1,49 +1,51 @@
-import React, { useEffect, useState } from "react";
-import DataTable from "react-data-table-component";
-import TestCasesService from "../../../../services/TicketService/TestCaseService";
+import React, { useEffect, useState } from 'react';
+import DataTable from 'react-data-table-component';
+import TestCasesService from '../../../../services/TicketService/TestCaseService';
 import {
   _base,
   _attachmentUrl,
   _apiUrl,
-  userSessionData,
-} from "../../../../settings/constants";
-import PageHeader from "../../../../components/Common/PageHeader";
-import Alert from "../../../../components/Common/Alert";
-import { Dropdown, Modal } from "react-bootstrap";
-import Select from "react-select";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import ErrorLogService from "../../../../services/ErrorLogService";
-import TesttingTypeServices from "../../../../services/MastersService/TestingTypeService";
-import { ExportToExcel } from "../../../../components/Utilities/Table/ExportToExcel";
-import { object } from "prop-types";
+  userSessionData
+} from '../../../../settings/constants';
+import PageHeader from '../../../../components/Common/PageHeader';
+import Alert from '../../../../components/Common/Alert';
+import { Dropdown, Modal } from 'react-bootstrap';
+import Select from 'react-select';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import ErrorLogService from '../../../../services/ErrorLogService';
+import TesttingTypeServices from '../../../../services/MastersService/TestingTypeService';
+import { ExportToExcel } from '../../../../components/Utilities/Table/ExportToExcel';
+import { object } from 'prop-types';
+import { errorHandler } from '../../../../utils';
+import { toast } from 'react-toastify';
 const TestCasesReviewerView = ({ match }) => {
   const history = useNavigate();
 
-  const {ticketId, taskId} = useParams();
-  const ticket_id = ticketId
-  const task_id = taskId
+  const { ticketId, taskId } = useParams();
+  const ticket_id = ticketId;
+  const task_id = taskId;
   const [sendtoModal, setSendtoModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
 
   const [sendtoTestSuiteModal, setsendtoTestSuiteModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
 
   const [addToExistingSuiteModal, setaddToExistingSuiteModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
 
   const [createNewTestSuiteModal, setcreateNewTestSuiteModal] = useState({
     showModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
 
   const [notify, setNotify] = useState(null);
@@ -70,7 +72,7 @@ const TestCasesReviewerView = ({ match }) => {
 
   const [testSuiteDropdown, setTestSuiteDropdown] = useState();
   const [ExportData, setExportData] = useState();
-  const [isReviewer, setIsReviewer] = useState()
+  const [isReviewer, setIsReviewer] = useState();
   const [testingTypeDropdown, setTestingTypeDropdown] = useState();
   const loadData = async () => {
     let counter = 1;
@@ -82,7 +84,7 @@ const TestCasesReviewerView = ({ match }) => {
         const ExportTempData = [];
         const userType = res.data.type;
         const execution = res.data.execution;
-        setIsReviewer(res.data.show_review_btn)
+        setIsReviewer(res.data.show_review_btn);
         const tempData = [];
         for (const key in temp) {
           tempData.push({
@@ -108,7 +110,7 @@ const TestCasesReviewerView = ({ match }) => {
             module_name: temp[key].module_name,
             attachments: temp[key].attachments,
             approved_status: temp[key].approved_status,
-            userId: temp[key].userId,
+            userId: temp[key].userId
           });
         }
         setData(tempData);
@@ -131,20 +133,23 @@ const TestCasesReviewerView = ({ match }) => {
             tester_status: temp[key].tester_status,
             severity: temp[key].severity,
             module_name: temp[key].module_name,
-            submodule: temp[key].submodule,
+            submodule: temp[key].submodule
             // is_disabled: false,
           });
         }
         setExportData(ExportTempData);
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
 
     await new TesttingTypeServices().getAlltestingType().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          var temp = res.data.data.filter(d=> d.is_active == 1)
-           temp = res.data.data.map((d) => ({
+          var temp = res.data.data.filter((d) => d.is_active == 1);
+          temp = res.data.data.map((d) => ({
             value: d.id,
-            label: d.testing_type,
+            label: d.testing_type
           }));
           setTestingTypeDropdown(temp);
         }
@@ -166,7 +171,7 @@ const TestCasesReviewerView = ({ match }) => {
   const handleAutoChange = async (e, type, rowId, nameField) => {
     if (e) {
       var value = null;
-      if (type === "TOGGLE_BUTTON") {
+      if (type === 'TOGGLE_BUTTON') {
         value = e.target.checked;
 
         if (value == true) {
@@ -177,7 +182,6 @@ const TestCasesReviewerView = ({ match }) => {
         setStyleColor(value);
       } else {
         value = e.target.value;
-
       }
       setData((prev) => {
         var newPrev = [...prev];
@@ -198,15 +202,15 @@ const TestCasesReviewerView = ({ match }) => {
     e.preventDefault();
     setNotify(null);
     const form = new FormData(e.target);
-    form.append("test_case_id", selectedRowsData);
+    form.append('test_case_id', selectedRowsData);
     await new TestCasesService()
       .getAssignTestCasesToTesters(form)
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
-            setNotify({ type: "success", message: res.data.message });
+            toast.success(res.data.message);
           } else {
-            setNotify({ type: "danger", message: res.data.message });
+            toast.error(res.data.message);
           }
           loadData();
         }
@@ -214,8 +218,8 @@ const TestCasesReviewerView = ({ match }) => {
   };
   const columns = [
     {
-      name: "Action",
-      width: "170px",
+      name: 'Action',
+      width: '170px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -241,15 +245,15 @@ const TestCasesReviewerView = ({ match }) => {
           <Link
             to={`/${_base}/TestCaseHistory/` + row.id}
             className="btn btn-sm btn-danger text-white"
-            style={{ borderRadius: "20px", fontSize: "15px" }}
+            style={{ borderRadius: '20px', fontSize: '15px' }}
           >
             <i class="icofont-history"></i>
           </Link>
         </div>
-      ),
+      )
     },
     {
-      name: " Approved Status",
+      name: ' Approved Status',
       cell: (row) => (
         <div
           class="form-check form-switch"
@@ -259,7 +263,7 @@ const TestCasesReviewerView = ({ match }) => {
             class="form-check-input"
             type="checkbox"
             role="switch"
-            key={Math.random()} 
+            key={Math.random()}
             name="approved_status"
             id="approved_status"
             defaultChecked={row.approved_status == 2 ? false : true}
@@ -270,26 +274,25 @@ const TestCasesReviewerView = ({ match }) => {
             onChange={(e) => {
               handleAutoChange(
                 e,
-                "TOGGLE_BUTTON",
+                'TOGGLE_BUTTON',
                 row.counter - 1,
-                "approved_status"
+                'approved_status'
               );
               updateForm(e, row.counter - 1);
-
             }}
           />
         </div>
-      ),
+      )
     },
     {
-      name: "Test Case Id",
+      name: 'Test Case Id',
       selector: (row) => row.test_case_id,
-      sortable: true,
+      sortable: true
     },
 
     {
-      name: "Testing Type",
-      width: "300px",
+      name: 'Testing Type',
+      width: '300px',
       selector: (row) => (
         <div>
           <select
@@ -298,19 +301,20 @@ const TestCasesReviewerView = ({ match }) => {
             id="testing_type"
             key={Math.random()}
             name="testing_type"
-            style={{ borderStyle: "none" }}
+            style={{ borderStyle: 'none' }}
             disabled={row.approved_status == 2}
             DataTa
-            onChange={(e) =>
-              {handleAutoChange(
+            onChange={(e) => {
+              handleAutoChange(
                 e,
-                "TESTINGTYPE",
+                'TESTINGTYPE',
                 row.counter - 1,
-                "testing_type"
-              );updateForm(e, row.counter - 1);}
-            }
+                'testing_type'
+              );
+              updateForm(e, row.counter - 1);
+            }}
             // onBlur={(e) => {
-              
+
             // }}
           >
             {testingTypeDropdown &&
@@ -318,7 +322,7 @@ const TestCasesReviewerView = ({ match }) => {
                 return (
                   <option
                     value={d.value}
-                    selected={d.value == row.testing_type ? "selected" : ""}
+                    selected={d.value == row.testing_type ? 'selected' : ''}
                   >
                     {d.label}
                   </option>
@@ -326,12 +330,12 @@ const TestCasesReviewerView = ({ match }) => {
               })}
           </select>
         </div>
-      ),
+      )
       // row.testing_type, sortable: true
     },
     {
-      name: "Function",
-      width: "220px",
+      name: 'Function',
+      width: '220px',
       selector: (row) => (
         <div>
           <input
@@ -340,22 +344,22 @@ const TestCasesReviewerView = ({ match }) => {
             type="text"
             id="function"
             name="function"
-            style={{ borderStyle: "none" }}
-            readOnly={row.approved_status == 2? true: false}
+            style={{ borderStyle: 'none' }}
+            readOnly={row.approved_status == 2 ? true : false}
             onChange={(e) =>
-              handleAutoChange(e, "FUNCTION", row.counter - 1, "function")
+              handleAutoChange(e, 'FUNCTION', row.counter - 1, 'function')
             }
             onBlur={(e) => {
               updateForm(e, row.counter - 1);
             }}
           />
         </div>
-      ),
+      )
       // row.testing_type, sortable: true
     },
     {
-      name: "Field",
-      width: "220px",
+      name: 'Field',
+      width: '220px',
       selector: (row) => (
         <div>
           <input
@@ -364,25 +368,24 @@ const TestCasesReviewerView = ({ match }) => {
             type="text"
             id="field"
             name="field"
-            style={{ borderStyle: "none" }}
-            readOnly={row.approved_status == 2? true: false}
-
+            style={{ borderStyle: 'none' }}
+            readOnly={row.approved_status == 2 ? true : false}
             onChange={(e) =>
-              handleAutoChange(e, "FUNCTION", row.counter - 1, "field")
+              handleAutoChange(e, 'FUNCTION', row.counter - 1, 'field')
             }
             onBlur={(e) => {
               updateForm(e, row.counter - 1);
             }}
           />
         </div>
-      ),
+      )
       // row.testing_type, sortable: true
     },
 
     {
-      name: "Platform",
-      width: "220px",
-      selector: (row) => row.platform,
+      name: 'Platform',
+      width: '220px',
+      selector: (row) => row.platform
       // <div>
       //   <input
       //     className="col-md"
@@ -403,20 +406,20 @@ const TestCasesReviewerView = ({ match }) => {
       // row.testing_type, sortable: true
     },
     {
-      name: "APK_version",
-      width: "220px",
-      selector: (row) => 
-      row.apk_version, sortable: true
+      name: 'APK_version',
+      width: '220px',
+      selector: (row) => row.apk_version,
+      sortable: true
     },
     {
-      name: "Os_version",
-      width: "220px",
-      selector: (row) => 
-      row.os_version, sortable: true
+      name: 'Os_version',
+      width: '220px',
+      selector: (row) => row.os_version,
+      sortable: true
     },
     {
-      name: "Test Description",
-      width: "220px",
+      name: 'Test Description',
+      width: '220px',
       selector: (row) => (
         <div>
           <textarea
@@ -426,15 +429,14 @@ const TestCasesReviewerView = ({ match }) => {
             rows="10"
             id="test_description"
             name="test_description"
-            style={{ borderStyle: "none" }}
-            readOnly={row.approved_status == 2? true: false}
-
+            style={{ borderStyle: 'none' }}
+            readOnly={row.approved_status == 2 ? true : false}
             onChange={(e) =>
               handleAutoChange(
                 e,
-                "FUNCTION",
+                'FUNCTION',
                 row.counter - 1,
-                "test_description"
+                'test_description'
               )
             }
             onBlur={(e) => {
@@ -442,12 +444,12 @@ const TestCasesReviewerView = ({ match }) => {
             }}
           />
         </div>
-      ),
+      )
       // row.testing_type, sortable: true
     },
     {
-      name: "Expected Result",
-      width: "220px",
+      name: 'Expected Result',
+      width: '220px',
       selector: (row) => (
         <div>
           <textarea
@@ -455,16 +457,16 @@ const TestCasesReviewerView = ({ match }) => {
             value={row.expected_result}
             type="text"
             id="expected_result"
-            readOnly={row.approved_status == 2? true: false}
+            readOnly={row.approved_status == 2 ? true : false}
             rows="10"
             name="expected_result"
-            style={{ borderStyle: "none" }}
+            style={{ borderStyle: 'none' }}
             onChange={(e) =>
               handleAutoChange(
                 e,
-                "FUNCTION",
+                'FUNCTION',
                 row.counter - 1,
-                "expected_result"
+                'expected_result'
               )
             }
             onBlur={(e) => {
@@ -472,30 +474,31 @@ const TestCasesReviewerView = ({ match }) => {
             }}
           />
         </div>
-      ),
+      )
       // row.testing_type, sortable: true
     },
 
     {
-      name: "Tester Comments",
-      width: "220px",
+      name: 'Tester Comments',
+      width: '220px',
       selector: (row) => (
         <div>
           <input
             className="col-md"
             value={row.tester_comments}
             type="text"
-            style={{ borderStyle: "none" }}
-            readOnly={(row.approved_status == 2 || isReviewer == 1)  ? true: false}
-
+            style={{ borderStyle: 'none' }}
+            readOnly={
+              row.approved_status == 2 || isReviewer == 1 ? true : false
+            }
             id="tester_comments"
             name="tester_comments"
             onChange={(e) =>
               handleAutoChange(
                 e,
-                "FUNCTION",
+                'FUNCTION',
                 row.counter - 1,
-                "tester_comments"
+                'tester_comments'
               )
             }
             onBlur={(e) => {
@@ -503,31 +506,30 @@ const TestCasesReviewerView = ({ match }) => {
             }}
           />
         </div>
-      ),
+      )
       // row.testing_type, sortable: true
     },
 
     {
-      name: "Reviewer Comments",
-      width: "220px",
+      name: 'Reviewer Comments',
+      width: '220px',
       selector: (row) => (
         <div>
           <textarea
-            rows= "4"
+            rows="4"
             className="col-md"
             value={row.reviewer_comments}
             type="text"
-            style={{ borderStyle: "none" }}
-            readOnly={row.approved_status == 2? true: false}
-
+            style={{ borderStyle: 'none' }}
+            readOnly={row.approved_status == 2 ? true : false}
             id="reviewer_comments"
             name="reviewer_comments"
             onChange={(e) =>
               handleAutoChange(
                 e,
-                "FUNCTION",
+                'FUNCTION',
                 row.counter - 1,
-                "reviewer_comments"
+                'reviewer_comments'
               )
             }
             onBlur={(e) => {
@@ -535,13 +537,13 @@ const TestCasesReviewerView = ({ match }) => {
             }}
           />
         </div>
-      ),
+      )
       // row.testing_type, sortable: true
     },
 
     {
-      name: "Severity",
-      width: "220px",
+      name: 'Severity',
+      width: '220px',
       selector: (row) => (
         <div>
           <select
@@ -551,37 +553,36 @@ const TestCasesReviewerView = ({ match }) => {
             id="severity"
             key={Math.random()}
             name="severity"
-            style={{ borderStyle: "none" }}
-            disabled={row.approved_status == 2? true: false}
-
+            style={{ borderStyle: 'none' }}
+            disabled={row.approved_status == 2 ? true : false}
             onChange={(e) => {
-              handleAutoChange(e, "SEVERITY", row.counter - 1, "severity");
+              handleAutoChange(e, 'SEVERITY', row.counter - 1, 'severity');
               updateForm(e, row.counter - 1);
             }}
             // onBlur={(e) => {
-              
+
             // }}
           >
-            <option selected={row.severity == "HIGH"} value="HIGH">
+            <option selected={row.severity == 'HIGH'} value="HIGH">
               High
             </option>
-            <option selected={row.severity == "MEDIUM"} value="MEDIUM">
+            <option selected={row.severity == 'MEDIUM'} value="MEDIUM">
               Medium
             </option>
             ;
-            <option selected={row.severity == "LOW"} value="LOW">
+            <option selected={row.severity == 'LOW'} value="LOW">
               Low
             </option>
             ;
           </select>
         </div>
-      ),
+      )
       // row.testing_type, sortable: true
     },
 
     {
-      name: "Priority",
-      width: "220px",
+      name: 'Priority',
+      width: '220px',
       selector: (row) => (
         <div>
           <select
@@ -590,53 +591,52 @@ const TestCasesReviewerView = ({ match }) => {
             id="priority"
             name="priority"
             value={row.priority}
-            style={{ borderStyle: "none" }}
-            disabled={row.approved_status == 2? true: false}
-
+            style={{ borderStyle: 'none' }}
+            disabled={row.approved_status == 2 ? true : false}
             // defaultValue={row.priority}
             onChange={(e) => {
-              handleAutoChange(e, "PRIORITY", row.counter - 1, "priority");
+              handleAutoChange(e, 'PRIORITY', row.counter - 1, 'priority');
               updateForm(e, row.counter - 1);
             }}
             // onBlur={(e) => {updateForm(e, row.counter - 1);
             // }}
           >
             <option
-              selected={row.priority === "LOW" ? true : false}
+              selected={row.priority === 'LOW' ? true : false}
               value="LOW"
             >
               Low
             </option>
             ;
             <option
-              selected={row.priority === "MEDIUM" ? true : false}
+              selected={row.priority === 'MEDIUM' ? true : false}
               value="MEDIUM"
             >
               Medium
             </option>
             ;
             <option
-              selected={row.priority === "HIGH" ? true : false}
+              selected={row.priority === 'HIGH' ? true : false}
               value="HIGH"
             >
               High
             </option>
           </select>
         </div>
-      ),
+      )
       // row.testing_type, sortable: true
-    },
+    }
   ];
 
   const conditionalRowStyles = [
     {
       when: (row) => row.approved_status == 2,
       style: {
-        backgroundColor: "#D3D3D3 ",
-        color: "white",
-        fontWeight: "bold",
-      },
-    },
+        backgroundColor: '#D3D3D3 ',
+        color: 'white',
+        fontWeight: 'bold'
+      }
+    }
   ];
 
   const handleFilter = async (e) => {
@@ -678,13 +678,16 @@ const TestCasesReviewerView = ({ match }) => {
                 attachments: temp[key].attachments,
                 is_disabled: false,
                 userId: temp[key].userId,
-                approved_status: temp[key].approved_status,
+                approved_status: temp[key].approved_status
               });
             }
             setData(null);
             setData(tempData);
           }
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
   };
 
@@ -699,7 +702,7 @@ const TestCasesReviewerView = ({ match }) => {
     e.preventDefault();
     setNotify(null);
     const form = new FormData(e.target);
-    form.append("test_case_id", selectedRowsData);
+    form.append('test_case_id', selectedRowsData);
   };
 
   const updateForm = async (e, index) => {
@@ -707,17 +710,17 @@ const TestCasesReviewerView = ({ match }) => {
     const form = new FormData();
     Object.keys(tempData).map((key) => {
       if (
-        key != "counter" &&
-        key != "is_disabled" &&
-        key != "attachments" &&
-        key != "task_name" &&
-        key != "userId" &&
-        key != "reviewer_status" &&
-        key != "status" &&
-        key != "role" &&
-        key != "testing_type_name"
+        key != 'counter' &&
+        key != 'is_disabled' &&
+        key != 'attachments' &&
+        key != 'task_name' &&
+        key != 'userId' &&
+        key != 'reviewer_status' &&
+        key != 'status' &&
+        key != 'role' &&
+        key != 'testing_type_name'
       ) {
-        const value = tempData[key] || ""; // Use empty string if value is falsy
+        const value = tempData[key] || ''; // Use empty string if value is falsy
         form.append(key, value);
       }
     });
@@ -730,26 +733,11 @@ const TestCasesReviewerView = ({ match }) => {
             // setNotify({ type: 'success', message: res.data.message })
             loadData();
         } else {
-          setNotify({ type: "danger", message: res.data.message });
-
-          new ErrorLogService().sendErrorLog(
-            "TestCase",
-            "Create_TestCases",
-            "INSERT",
-            res.message
-          );
+          toast.error(res.data.message);
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        setNotify({ type: "danger", message: "Request Error !!!" });
-        new ErrorLogService().sendErrorLog(
-          "TestCase",
-          "Create_TestCases",
-          "INSERT",
-          errorObject.data.message
-        );
+        errorHandler(error);
       });
   };
 
@@ -760,15 +748,15 @@ const TestCasesReviewerView = ({ match }) => {
     await new TestCasesService().createTestSuite(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          setNotify({ type: "success", message: res.data.message });
+          toast.success(res.data.message);
           setcreateNewTestSuiteModal({
             showModal: false,
-            modalData: "",
-            modalHeader: "",
+            modalData: '',
+            modalHeader: ''
           });
-          loadData()
+          loadData();
         } else {
-          setNotify({ type: "danger", message: res.data.message });
+          toast.error(res.data.message);
         }
       }
     });
@@ -778,41 +766,47 @@ const TestCasesReviewerView = ({ match }) => {
     setNotify(null);
     e.preventDefault();
     const form = new FormData(e.target);
-    form.append("test_case_id", selectedRowsData);
+    form.append('test_case_id', selectedRowsData);
 
-    await new TestCasesService().addToExistingTestSuiteFromReviewer(form).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          // setNotify({ type: "success", message: res.data.message });
-          history({
-            pathname: `/${_base}/TestBank`,
-         
-          },{ state: { alert: { type: "success", message: res.data.message } }}
-          );
-        } else {
-          setNotify({ type: "danger", message: res.data.message });
+    await new TestCasesService()
+      .addToExistingTestSuiteFromReviewer(form)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            // setNotify({ type: "success", message: res.data.message });
+            history(
+              {
+                pathname: `/${_base}/TestBank`
+              },
+              {
+                state: { alert: toast.success(res.data.message) }
+              }
+            );
+          } else {
+            toast.error(res.data.message);
+          }
         }
-      }
-    });
+      });
   };
 
   const sendTestCasesToTestPlan = async (e) => {
     setNotify(null);
     e.preventDefault();
     const form = new FormData(e.target);
-    form.append("test_case_id", selectedRowsData);
+    form.append('test_case_id', selectedRowsData);
 
     await new TestCasesService().addToExistingTestSuite(form).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
           // setNotify({ type: "success", message: res.data.message });
-          history({
-            pathname: `/${_base}/TestBank`,
-         
-          },{ state: { alert: { type: "success", message: res.data.message } }}
+          history(
+            {
+              pathname: `/${_base}/TestBank`
+            },
+            { state: { alert: toast.success(res.data.message) } }
           );
         } else {
-          setNotify({ type: "danger", message: res.data.message });
+          toast.error(res.data.message);
         }
       }
     });
@@ -842,8 +836,8 @@ const TestCasesReviewerView = ({ match }) => {
         onHide={(e) => {
           handleSendtoModal({
             showModal: false,
-            modalData: "",
-            modalHeader: "",
+            modalData: '',
+            modalHeader: ''
           });
         }}
       >
@@ -884,8 +878,8 @@ const TestCasesReviewerView = ({ match }) => {
         onHide={(e) => {
           handleSendtoTestSuiteModal({
             showModal: false,
-            modalData: "",
-            modalHeader: "",
+            modalData: '',
+            modalHeader: ''
           });
         }}
       >
@@ -898,7 +892,7 @@ const TestCasesReviewerView = ({ match }) => {
           <div className="container">
             <div className="deadline-form ">
               <div className="form-group row ">
-                <div className="row" style={{ fontSize: "16px" }}>
+                <div className="row" style={{ fontSize: '16px' }}>
                   <div className="col-sm-2"></div>
                   <div className="col-sm-16 mt-2">
                     <label class="fancy-checkbox parsley-error" />
@@ -912,8 +906,8 @@ const TestCasesReviewerView = ({ match }) => {
                       onClick={() => {
                         handleAddToExistingSuiteModal({
                           showModal: true,
-                          modalData: "",
-                          modalHeader: "Add to Existing Test Suite",
+                          modalData: '',
+                          modalHeader: 'Add to Existing Test Suite'
                         });
                       }}
                     />
@@ -929,8 +923,8 @@ const TestCasesReviewerView = ({ match }) => {
                       onClick={() => {
                         handleCreateSuiteModal({
                           showModal: true,
-                          modalData: "",
-                          modalHeader: "Create Test Suite",
+                          modalData: '',
+                          modalHeader: 'Create Test Suite'
                         });
                       }}
                     />
@@ -952,8 +946,8 @@ const TestCasesReviewerView = ({ match }) => {
         onHide={(e) => {
           handleAddToExistingSuiteModal({
             showModal: false,
-            modalData: "",
-            modalHeader: "",
+            modalData: '',
+            modalHeader: ''
           });
         }}
       >
@@ -988,7 +982,7 @@ const TestCasesReviewerView = ({ match }) => {
             <button
               type="submit"
               className="btn btn-primary text-white"
-              style={{ backgroundColor: "#484C7F" }}
+              style={{ backgroundColor: '#484C7F' }}
             >
               Submit
             </button>
@@ -999,8 +993,8 @@ const TestCasesReviewerView = ({ match }) => {
               onClick={(e) => {
                 handleAddToExistingSuiteModal({
                   showModal: false,
-                  modalData: "",
-                  modalHeader: "",
+                  modalData: '',
+                  modalHeader: ''
                 });
               }}
             >
@@ -1019,8 +1013,8 @@ const TestCasesReviewerView = ({ match }) => {
         onHide={(e) => {
           handleCreateSuiteModal({
             showModal: false,
-            modalData: "",
-            modalHeader: "",
+            modalData: '',
+            modalHeader: ''
           });
         }}
       >
@@ -1058,7 +1052,7 @@ const TestCasesReviewerView = ({ match }) => {
             <button
               type="submit"
               className="btn btn-primary text-white"
-              style={{ backgroundColor: "#484C7F" }}
+              style={{ backgroundColor: '#484C7F' }}
             >
               Submit
             </button>
@@ -1114,7 +1108,7 @@ const TestCasesReviewerView = ({ match }) => {
                   <button
                     className="btn btn-sm btn-warning text-white"
                     type="submit"
-                    style={{ marginTop: "20px", fontWeight: "600" }}
+                    style={{ marginTop: '20px', fontWeight: '600' }}
                   >
                     <i className="icofont-search-1 "></i> Search
                   </button>
@@ -1122,7 +1116,7 @@ const TestCasesReviewerView = ({ match }) => {
                     className="btn btn-sm btn-info text-white"
                     type="button"
                     onClick={() => window.location.reload(false)}
-                    style={{ marginTop: "20px", fontWeight: "600" }}
+                    style={{ marginTop: '20px', fontWeight: '600' }}
                   >
                     <i className="icofont-refresh text-white"></i> Reset
                   </button>
@@ -1169,7 +1163,7 @@ const TestCasesReviewerView = ({ match }) => {
                                 value={task_id}
                               />
                               <button
-                                style={{ width: "90%" }}
+                                style={{ width: '90%' }}
                                 className="btn btn-primary "
                                 type="submit"
                                 id="button"
@@ -1182,20 +1176,19 @@ const TestCasesReviewerView = ({ match }) => {
                           </form>
                         </li>
                         <li>
-
-                        <button
-                              className="btn  btn-warning"
-                              type="button"
-                              onClick={() => {
-                                handleSendtoTestSuiteModal({
-                                  showModal: true,
-                                  modalData: "",
-                                  modalHeader: "Test Suite ",
-                                });
-                              }}
-                            >
-                              Test Suite <i className="icofont-sign-in" />
-                            </button>
+                          <button
+                            className="btn  btn-warning"
+                            type="button"
+                            onClick={() => {
+                              handleSendtoTestSuiteModal({
+                                showModal: true,
+                                modalData: '',
+                                modalHeader: 'Test Suite '
+                              });
+                            }}
+                          >
+                            Test Suite <i className="icofont-sign-in" />
+                          </button>
                           {/* <form
                             method="post"
                             onSubmit={sendTestCasesToTestPlan}

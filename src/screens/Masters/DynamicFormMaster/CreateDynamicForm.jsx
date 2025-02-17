@@ -33,6 +33,7 @@ import { getDesignationDataListThunk } from '../DesignationMaster/DesignationAct
 
 import { getStatusData } from '../StatusMaster/StatusComponentAction';
 import QueryTypeService from '../../../services/MastersService/QueryTypeService';
+import { toast } from 'react-toastify';
 
 function CreateDynamicForm() {
   const [notify, setNotify] = useState(null);
@@ -450,14 +451,14 @@ function CreateDynamicForm() {
         if (res.data.status === 1) {
           dispatch(dynamicFormData());
 
-          setNotify({ type: 'success', message: res.data.message });
+          toast.success(res.data.message);
           setTimeout(() => {
             navigate(`/${_base}/DynamicForm`, {
               state: { alert: { type: 'success', message: res.data.message } }
             });
           }, 1000);
         } else {
-          setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message);
         }
       } else {
         setNotify({ type: 'danger', message: res.message });
@@ -528,7 +529,6 @@ function CreateDynamicForm() {
                   <h2 className="mb-0 fw-bold ">Dynamic Form</h2>
                 </div>
               </div>
-              {notify && <Alert alertData={notify} />}
 
               {/*************** TABLE ***************/}
               <div className="card mt-2">

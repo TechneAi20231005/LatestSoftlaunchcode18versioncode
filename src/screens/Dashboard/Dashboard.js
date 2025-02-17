@@ -22,6 +22,7 @@ import {
 import Dropdown from 'react-bootstrap/Dropdown';
 import ApproveRequestModal from '../TicketManagement/TaskManagement/components/ApproveRequestModal';
 import TimeRegularizationHistory from '../TicketManagement/TaskManagement/components/TimeRegularizationHistory';
+import { errorHandler } from '../../utils';
 
 export default function HrDashboard(props) {
   const history = useNavigate();
@@ -116,49 +117,57 @@ export default function HrDashboard(props) {
       status: status,
       time: time.getDateTime()
     };
-    await postTimerData(data).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          get();
-        } else {
-          checkTokenExpiration();
+    await postTimerData(data)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            get();
+          } else {
+            checkTokenExpiration();
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
   const loadNotifcation = () => {
-    getNotification().then((res) => {
-      if (res.status === 200) {
-        setNotifications(null);
-        setApprovedNotifications(null);
-        if (res.data.data !== null) {
-          if (res?.data?.data?.result) {
-            var length = res.data.data.result.length;
+    getNotification()
+      .then((res) => {
+        if (res.status === 200) {
+          setNotifications(null);
+          setApprovedNotifications(null);
+          if (res.data.data !== null) {
+            if (res?.data?.data?.result) {
+              var length = res.data.data.result.length;
 
-            setNotifications(res.data.data.result);
+              setNotifications(res.data.data.result);
 
-            setApprovedNotifications(
-              res?.data?.data?.result?.filter((d) => d?.status === 1)
-            );
+              setApprovedNotifications(
+                res?.data?.data?.result?.filter((d) => d?.status === 1)
+              );
 
-            setAllNotificationRequest(
-              res?.data?.data?.result?.filter(
-                (d) => d?.status !== 0 && d.type === 'Notification'
-              )
-            );
+              setAllNotificationRequest(
+                res?.data?.data?.result?.filter(
+                  (d) => d?.status !== 0 && d.type === 'Notification'
+                )
+              );
 
-            setAllRegularizationRequest(
-              res?.data?.data?.result?.filter(
-                (d) => d?.status !== 0 && d.type === 'Regularization Request'
-              )
-            );
-            if (parseInt(length) > 0 && parseInt(length) <= 5) {
+              setAllRegularizationRequest(
+                res?.data?.data?.result?.filter(
+                  (d) => d?.status !== 0 && d.type === 'Regularization Request'
+                )
+              );
+              if (parseInt(length) > 0 && parseInt(length) <= 5) {
+              }
             }
           }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
   const handleReadNotification = (e, id) => {

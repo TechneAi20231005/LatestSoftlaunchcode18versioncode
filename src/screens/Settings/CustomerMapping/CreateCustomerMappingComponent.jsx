@@ -471,7 +471,6 @@ export default function CreateCustomerMappingComponent() {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Create Customer Mapping" />
-      {notify && <Alert alertData={notify} />}
 
       <div className="row clearfix g-3">
         <div className="col-sm-12">

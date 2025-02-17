@@ -20,6 +20,7 @@ import TenantService from '../../services/MastersService/TenantService';
 import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
 import DemoProfileImg from '../../assets/images/profile_av.png';
 import './style.scss';
+import { errorHandler } from '../../utils';
 
 export default function Header() {
   // // initial state
@@ -36,22 +37,26 @@ export default function Header() {
 
   // // all handler
   const loadNotifcation = () => {
-    getNotification().then((res) => {
-      if (res.status === 200) {
-        setNotifications([]);
+    getNotification()
+      .then((res) => {
+        if (res.status === 200) {
+          setNotifications([]);
 
-        if (res.data.data !== null) {
-          if (res?.data?.data?.result) {
-            var length = res.data.data.result.length;
-            var height = 0;
-            setNotifications(res.data.data.result);
+          if (res.data.data !== null) {
+            if (res?.data?.data?.result) {
+              var length = res.data.data.result.length;
+              var height = 0;
+              setNotifications(res.data.data.result);
 
-            if (parseInt(length) > 0 && parseInt(length) <= 5) {
+              if (parseInt(length) > 0 && parseInt(length) <= 5) {
+              }
             }
           }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
   const handleReadNotification = (e, id) => {
@@ -104,6 +109,9 @@ export default function Header() {
             setShowDropdown(false);
           }
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
   };
 

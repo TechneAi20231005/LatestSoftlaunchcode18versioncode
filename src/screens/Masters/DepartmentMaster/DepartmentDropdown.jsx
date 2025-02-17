@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import DepartmentService from '../../../services/MastersService/DepartmentService';
 import Select from 'react-select';
 import 'react-select-plus/dist/react-select-plus.css';
+import { errorHandler } from '../../../utils';
 
 export default class DepartmentDropdown extends Component {
   constructor(props) {
@@ -18,40 +19,45 @@ export default class DepartmentDropdown extends Component {
   }
 
   async getData() {
-    new DepartmentService().getDepartment().then((res) => {
-      const data = [];
-      const defaultValue = [];
+    new DepartmentService()
+      .getDepartment()
+      .then((res) => {
+        const data = [];
+        const defaultValue = [];
 
-      if (res.status === 200) {
-        const temp = res.data.data;
-        for (const key in temp) {
-          data.push({
-            value: temp[key].id.toString(),
-            label: temp[key].department
-          });
+        if (res.status === 200) {
+          const temp = res.data.data;
+          for (const key in temp) {
+            data.push({
+              value: temp[key].id.toString(),
+              label: temp[key].department
+            });
 
-          if (this.props.defaultValue && this.props.defaultValue != '') {
-            if (Array.isArray(this.props.defaultValue)) {
-              if (this.props.defaultValue.includes(temp[key].id.toString())) {
-                defaultValue.push({
-                  value: temp[key].id.toString(),
-                  label: temp[key].department
-                });
-              }
-            } else {
-              if (this.props.defaultValue == temp[key].id) {
-                defaultValue.push({
-                  value: temp[key].id.toString(),
-                  label: temp[key].department
-                });
+            if (this.props.defaultValue && this.props.defaultValue != '') {
+              if (Array.isArray(this.props.defaultValue)) {
+                if (this.props.defaultValue.includes(temp[key].id.toString())) {
+                  defaultValue.push({
+                    value: temp[key].id.toString(),
+                    label: temp[key].department
+                  });
+                }
+              } else {
+                if (this.props.defaultValue == temp[key].id) {
+                  defaultValue.push({
+                    value: temp[key].id.toString(),
+                    label: temp[key].department
+                  });
+                }
               }
             }
           }
+          this.setState({ defaultValue: defaultValue });
+          this.setState({ data: data });
         }
-        this.setState({ defaultValue: defaultValue });
-        this.setState({ data: data });
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }
 
   render() {

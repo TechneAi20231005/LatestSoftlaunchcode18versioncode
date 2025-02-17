@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import BillCheckingTransactionService from '../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService';
 import BillTransactionService from '../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService';
 import DropdownService from '../../../services/Bill Checking/Bill Checking Transaction/DropdownService';
+import { errorHandler } from '../../../utils';
 export const getBillcheckingData = createAsyncThunk(
   'getBillcheckingData',
   async (config, thunkapi) => {
@@ -159,7 +160,7 @@ export const getModuleSettingData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );

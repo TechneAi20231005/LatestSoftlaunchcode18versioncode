@@ -3832,18 +3832,12 @@ function VendorMaster({ match }) {
             </Modal.Body>
             <Modal.Footer>
               {!modal.modalData && (
-                <button
-                  type="submit"
-                  className="btn btn-primary text-white"
-                >
-              Submit
+                <button type="submit" className="btn btn-primary text-white">
+                  Submit
                 </button>
               )}
               {modal.modalData && (
-                <button
-                  type="submit"
-                  className="btn btn-primary text-white"
-                >
+                <button type="submit" className="btn btn-primary text-white">
                   Update
                 </button>
               )}

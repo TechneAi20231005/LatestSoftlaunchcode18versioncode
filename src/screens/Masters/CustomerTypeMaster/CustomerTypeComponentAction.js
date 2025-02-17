@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import CustomerTypeService from '../../../services/MastersService/CustomerTypeService';
+import { errorHandler } from '../../../utils';
 export const getCustomerTypeData = createAsyncThunk(
   'getCustomerTypeData',
   async (config, thunkapi) => {
@@ -9,7 +10,7 @@ export const getCustomerTypeData = createAsyncThunk(
       const response = await service.getCustomerType();
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -22,7 +23,7 @@ export const postCustomerData = createAsyncThunk(
       const response = await service.postCustomerType(config);
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -38,7 +39,7 @@ export const updateCustomerData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
