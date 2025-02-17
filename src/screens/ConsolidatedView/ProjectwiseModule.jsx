@@ -1058,7 +1058,7 @@ export default function ProjectwiseModule() {
                       onChange={(e) => {
                         changeSubModuleHandle(e, 'MODULE');
                       }}
-                      isDisabled
+                      isDisabled={!moduleId ? false : true}
                       name="submodule_id"
                     />
                   )}

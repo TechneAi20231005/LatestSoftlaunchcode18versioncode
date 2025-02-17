@@ -1311,7 +1311,6 @@ export default function CreateTicketComponent() {
                           )}
                         </select>
                       )}
-
                       {data.inputType === 'select-master' && (
                         <select
                           id={
@@ -1325,7 +1324,7 @@ export default function CreateTicketComponent() {
                         >
                           <option> {data?.inputName}</option>
                           {data?.inputAddOn?.inputDataSourceData &&
-                            data?.inputAddOn?.inputDataSourceData.map(
+                            data?.inputAddOn?.inputDataSourceData?.map(
                               (option) => {
                                 return (
                                   <option
@@ -1369,7 +1368,7 @@ export default function CreateTicketComponent() {
                       name="description"
                       required
                       rows="4"
-                      maxLength={100}
+                      maxLength={1000}
                     />
                   </div>
                 </div>
