@@ -46,7 +46,7 @@ const DayWiseCalendar = (props) => {
   const toggleExpand = (id) => {
     setExpandedRows((prev) => ({
       ...prev,
-      [id]: !prev[id], // Toggle only the clicked row
+      [id]: !prev[id],
     }));
   };
 
