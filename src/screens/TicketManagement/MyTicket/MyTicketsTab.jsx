@@ -103,9 +103,8 @@ const MyTicketsTab = () => {
   };
 
   const handleTabChange = async (key, values = null, filterMode = '') => {
-    console.log(values, 'values');
+    if (isLoading) return;
     setIsLoading(true);
-
     if (!values) {
       setActiveTabAndData(key);
     }
@@ -230,15 +229,6 @@ const MyTicketsTab = () => {
     [allTicketsData, isFormSubmitted]
   );
 
-  useEffect(() => {
-    fetchDataList();
-    // handleTabChange('AssignToMe');
-  }, []);
-
-  useEffect(() => {
-    handleTabChange(activeTabAndData, null, '');
-  }, [page, perPage]);
-
   const handleSearch = async (values) => {
     let filterMode = 'search';
     handleTabChange('SearchResult', values, filterMode);
@@ -248,6 +238,15 @@ const MyTicketsTab = () => {
     let filterMode = 'filter';
     handleTabChange('SearchResult', values, filterMode);
   };
+
+  useEffect(() => {
+    fetchDataList();
+    // handleTabChange('AssignToMe');
+  }, []);
+
+  useEffect(() => {
+    handleTabChange(activeTabAndData, null, '');
+  }, [page, perPage]);
 
   return (
     <div className="">
@@ -296,10 +295,10 @@ const MyTicketsTab = () => {
               title={
                 <span>
                   {item?.name}
-                  <i
+                  {/* <i
                     style={{ marginLeft: '4px' }}
                     class="icofont-tasks-alt fs-6"
-                  ></i>
+                  ></i> */}
                 </span>
               }
             >
