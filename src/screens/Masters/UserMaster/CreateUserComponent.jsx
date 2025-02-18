@@ -440,11 +440,6 @@ function CreateUserComponent({ match }) {
               setTimeout(() => {
                 navigate(`/${_base}/User`);
               }, 3000);
-            } else {
-              // Error case when status is not 1
-              toast.error(res?.payload?.data?.message, {
-                autoClose: 5000 // 10 seconds in milliseconds
-              });
             }
           } else {
             // Error case when status code is not 200
