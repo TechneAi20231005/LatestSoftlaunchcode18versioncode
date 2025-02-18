@@ -29,6 +29,7 @@ import { handleBasketModal, handleTaskModal } from './TemplateComponetSlice';
 
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
 import TaskTicketTypeService from '../../../services/MastersService/TaskTicketTypeService';
+import { toast } from 'react-toastify';
 
 const EditTemplateComponent = ({ match, props }) => {
   const navigate = useNavigate();
@@ -264,7 +265,7 @@ const EditTemplateComponent = ({ match, props }) => {
       }
     });
 
-    await new TaskTicketTypeService().getChildrenData("TASK")?.then((res) => {
+    await new TaskTicketTypeService().getChildrenData('TASK')?.then((res) => {
       if (res?.status === 200) {
         setTaskData(res?.data?.data?.data);
       }
@@ -375,21 +376,18 @@ const EditTemplateComponent = ({ match, props }) => {
     dispatch(updateTemplateData({ id: templateId, payload: form })).then(
       (res) => {
         if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
-          setNotify({ type: 'success', message: res?.payload?.data?.message });
+          toast.success(res.payload.data.message);
           dispatch(templateData());
 
           setTimeout(() => {
             navigate(`/${_base}/Template`, {
-              state: {
-                alert: {
-                  type: 'success',
-                  message: res?.payload?.data?.message
-                }
-              }
+              // state: {
+              //   alert: toast.success(res.payload.data.message)
+              // }
             });
           }, 3000);
         } else {
-          setNotify({ type: 'danger', message: res?.payload?.data?.message });
+          toast.error(res.payload.data.message);
         }
       }
     );
@@ -410,9 +408,9 @@ const EditTemplateComponent = ({ match, props }) => {
     ).then((res) => {
       if (res.payload.data.status === 1) {
         loadData();
-        setNotify({ type: 'success', message: res.payload.data.message });
+        // setNotify({ type: 'success', message: res.payload.data.message });
       } else {
-        setNotify({ type: 'danger', message: res.payload.data.message });
+        // setNotify({ type: 'danger', message: res.payload.data.message });
         loadData();
       }
     });
@@ -447,7 +445,6 @@ const EditTemplateComponent = ({ match, props }) => {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Edit Template" />
       <div className="row clearfix g-3">
         <div className="card-body">

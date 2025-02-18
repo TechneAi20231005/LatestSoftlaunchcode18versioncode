@@ -6,7 +6,6 @@ import ModuleService from '../../../services/ProjectManagementService/ModuleServ
 
 import { _base } from '../../../settings/constants';
 import ErrorLogService from '../../../services/ErrorLogService';
-import Alert from '../../../components/Common/Alert';
 import PageHeader from '../../../components/Common/PageHeader';
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
@@ -15,6 +14,8 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { SubModuleMasterValidation } from './Validation/SubModuleMasterValidation';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 export default function EditModuleComponent({ match }) {
   const history = useNavigate();
@@ -24,7 +25,6 @@ export default function EditModuleComponent({ match }) {
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 22)
   );
-  const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
   const subModuleId = id;
@@ -119,42 +119,27 @@ export default function EditModuleComponent({ match }) {
     formData?.append('description', values?.description);
     formData?.append('remark', values?.remark);
     formData?.append('is_active', values?.is_active);
-    setNotify(null);
 
     await new SubModuleService()
       .updateSubModule(subModuleId, formData)
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            setNotify({ type: 'success', message: res.data.message });
+            toast.success(res.data.message);
             setTimeout(() => {
               history({
                 pathname: `/${_base}/SubModule`
               });
             }, 1000);
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message);
           }
         } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'SubModule',
-            'Create_SubModule',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.message);
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        setNotify({ type: 'danger', message: errorObject.data.message });
-        new ErrorLogService().sendErrorLog(
-          'SubModule',
-          'Create_SubModule',
-          'INSERT',
-          errorObject.data.message
-        );
+        errorHandler(error);
       });
   };
 
@@ -171,8 +156,6 @@ export default function EditModuleComponent({ match }) {
   }, [checkRole]);
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader headerTitle="Edit Sub-Module" />
 
       <div className="row clearfix g-3">

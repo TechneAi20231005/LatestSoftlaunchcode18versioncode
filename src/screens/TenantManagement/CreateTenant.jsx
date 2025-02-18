@@ -45,10 +45,6 @@ export default function CreateTenant() {
     (dashboardSlice) => dashboardSlice.dashboard.cityData
   );
 
-  const notify = useSelector(
-    (TenantComponentSlice) => TenantComponentSlice.tenantMaster.notify
-  );
-
   const isMasterAdmin = localStorage.getItem('role_name');
   const companyType = [
     { label: 'Private Limited Company', value: 'Private Limited Company' },
@@ -182,13 +178,9 @@ export default function CreateTenant() {
       if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
         navigate(`/${_base}/TenantMaster`);
         dispatch(getAllTenant());
-        toast.success(res.payload.data.message, {
-          autoClose: 10000 // 10 seconds in milliseconds
-        });
+        toast.success(res.payload.data.message);
       } else {
-        toast.error(res.payload.data.message, {
-          autoClose: 10000 // 10 seconds in milliseconds
-        });
+        toast.error(res.payload.data.message);
       }
     });
   };
@@ -217,11 +209,6 @@ export default function CreateTenant() {
 
   return (
     <div className="container-xxl">
-      {notify?.type === 'danger' && (
-        <>
-          <Alert alertData={notify} />
-        </>
-      )}
       <PageHeader headerTitle="Add Tenant" />
 
       <Formik

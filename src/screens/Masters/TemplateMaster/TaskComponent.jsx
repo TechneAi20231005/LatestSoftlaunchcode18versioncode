@@ -9,6 +9,8 @@ import TaskTicketTypeService from '../../../services/MastersService/TaskTicketTy
 import { Astrick } from '../../../components/Utilities/Style';
 import { useDispatch } from 'react-redux';
 import { templateData } from './TemplateComponetAction';
+import { errorHandler } from '../../../utils';
+import { toast } from 'react-toastify';
 export default function TaskComponent(props) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState(null);
@@ -39,7 +41,6 @@ export default function TaskComponent(props) {
     task_type_id: props?.taskData?.parent_name
   });
 
-  const [notify, setNotify] = useState(null);
   const { id } = useParams();
   const dispatch = useDispatch();
 
@@ -212,11 +213,16 @@ export default function TaskComponent(props) {
 
   const handleTaskDelete = (e, idx) => {
     var temp = { is_active: 0 };
-    new TemplateService().deleteTask(idx, temp).then((res) => {
-      if (res.status === 200) {
-        props.refreshData(id);
-      }
-    });
+    new TemplateService()
+      .deleteTask(idx, temp)
+      .then((res) => {
+        if (res.status === 200) {
+          props.refreshData(id);
+        }
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
   const handleShow = () => {
@@ -224,11 +230,16 @@ export default function TaskComponent(props) {
   };
 
   const loadData = async () => {
-    await new TaskTicketTypeService().getChildrenData("TASK")?.then((res) => {
-      if (res?.status === 200) {
-        setTaskData(res?.data?.data?.data);
-      }
-    });
+    await new TaskTicketTypeService()
+      .getChildrenData('TASK')
+      ?.then((res) => {
+        if (res?.status === 200) {
+          setTaskData(res?.data?.data?.data);
+        }
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
   const handleChange = (e, type) => {
@@ -296,7 +307,6 @@ export default function TaskComponent(props) {
       alert('Please fill out all required fields.');
       return;
     }
-    setNotify(null);
     e.preventDefault();
     new TemplateService()
       .updateTask(props.taskData.task_id, data)
@@ -304,14 +314,17 @@ export default function TaskComponent(props) {
         if (res.status === 200) {
           if (res.data.status === 1) {
             props.refreshData(id);
-            setNotify({ type: 'success', message: res.data.message });
+            toast.success(res.data.message);
             setShow(false);
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message);
           }
         } else {
-          setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message);
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
   };
 
@@ -320,8 +333,6 @@ export default function TaskComponent(props) {
       className="card mt-1 card-body d-flex justify-content-between mt-3"
       style={{ borderRadius: '10px', boxShadow: '0 4px 8px 0 rgba(0,0,0,0.2)' }}
     >
-      {notify && <Alert alertData={notify} />}
-
       {!show && (
         <p>
           <strong>{props.taskData.task_name}</strong>

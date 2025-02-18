@@ -4,6 +4,7 @@ import {
   postGeneralSettingData,
   updateGeneralSettingData
 } from './SettingAction';
+import { toast } from 'react-toastify';
 
 const initialState = {
   status: '',
@@ -76,14 +77,11 @@ export const SettingSlice = createSlice({
         state.showLoaderModal = false;
 
         state.postGeneralSetting = postGeneralSetting;
-        state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        let notify = { type: 'danger', message: payload.data.message };
-        state.notify = null;
-        state.notify = notify;
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(postGeneralSettingData.rejected, (state) => {
@@ -103,14 +101,11 @@ export const SettingSlice = createSlice({
         state.showLoaderModal = false;
 
         state.updateGeneralSetting = updateGeneralSetting;
-        state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        let notify = { type: 'danger', message: payload.data.message };
-        state.notify = null;
-        state.notify = notify;
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(updateGeneralSettingData.rejected, (state) => {

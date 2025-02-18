@@ -5,7 +5,6 @@ import ProjectService from '../../../services/ProjectManagementService/ProjectSe
 import ModuleService from '../../../services/ProjectManagementService/ModuleService';
 import { _base } from '../../../settings/constants';
 import ErrorLogService from '../../../services/ErrorLogService';
-import Alert from '../../../components/Common/Alert';
 import PageHeader from '../../../components/Common/PageHeader';
 
 import { Astrick } from '../../../components/Utilities/Style';
@@ -17,10 +16,11 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import { ErrorMessage, Field, Formik, Form } from 'formik';
 import { SubModuleMasterValidation } from './Validation/SubModuleMasterValidation';
 import { ProjectDropdown } from '../ProjectMaster/ProjectComponent';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 export default function CreateModuleComponent({ match }) {
   const history = useNavigate();
-  const [notify, setNotify] = useState(null);
 
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
@@ -61,7 +61,6 @@ export default function CreateModuleComponent({ match }) {
   // const handleForm = async (e) => {
   //   e.preventDefault();
   //   const formData = new FormData(e.target);
-  //   setNotify(null);
   const handleForm = async (values) => {
     // e.preventDefault();
     // const formData = new FormData(e.target);
@@ -72,16 +71,15 @@ export default function CreateModuleComponent({ match }) {
 
     formData.append('description', values.description);
     formData.append('remark', values.remark);
-    setNotify(null);
     await new SubModuleService()
       .postSubModule(formData)
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-              setTimeout(() => {
-                history({pathname:`/${_base}/SubModule`})
-              }, 500);
-              setNotify({ type: 'success', message: res.data.message });
+            setTimeout(() => {
+              history({ pathname: `/${_base}/SubModule` });
+            }, 500);
+            toast.success(res.data.message);
             // history(
             //   {
             //     pathname: `/${_base}/SubModule`
@@ -91,28 +89,14 @@ export default function CreateModuleComponent({ match }) {
             //   }
             // );
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message);
           }
         } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'SubModule',
-            'Create_SubModule',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.data.message);
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        setNotify({ type: 'danger', message: errorObject.data.message });
-        new ErrorLogService().sendErrorLog(
-          'SubModule',
-          'Create_SubModule',
-          'INSERT',
-          errorObject.data.message
-        );
+        errorHandler(error);
       });
   };
 
@@ -154,7 +138,6 @@ export default function CreateModuleComponent({ match }) {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Add Sub-Module" />
 
       <div className="row clearfix g-3">

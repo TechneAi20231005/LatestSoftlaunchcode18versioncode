@@ -13,6 +13,8 @@ import { Field, Form, Formik, ErrorMessage } from 'formik';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
 import { moduleMasterValidation } from './validation/ModuleMaster';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 export default function CreateModuleComponent({ match }) {
   const dispatch = useDispatch();
@@ -27,7 +29,6 @@ export default function CreateModuleComponent({ match }) {
   };
 
   const history = useNavigate();
-  const [notify, setNotify] = useState(null);
 
   const handleForm = async (values) => {
     console.log(values, 'formData');
@@ -39,7 +40,6 @@ export default function CreateModuleComponent({ match }) {
     formData.append('module_name', values.module_name);
     formData.append('description', values.description);
     formData.append('remark', values.remark);
-    setNotify(null);
 
     await new ModuleService()
       .postModule(formData)
@@ -47,47 +47,22 @@ export default function CreateModuleComponent({ match }) {
         if (res.status === 200) {
           if (res.data.status === 1) {
             setTimeout(() => {
-              history({pathname:`/${_base}/Module`})
+              history({ pathname: `/${_base}/Module` });
             }, 500);
-            setNotify({ type: 'success', message: res.data.message });
+            toast.success(res.data.message);
             // history(
             //   {
             //     pathname: `/${_base}/Module`
             //   },
-            //   {
-            //     state: { alert: { type: 'success', message: res.data.message } }
-            //   }
-            // );
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message);
           }
         } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'Module',
-            'Create_Module',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.message);
         }
       })
       .catch((error) => {
-        if (error.response) {
-          const { response } = error;
-          const { request, ...errorObject } = response || {};
-          setNotify({ type: 'danger', message: errorObject.data.message });
-          new ErrorLogService().sendErrorLog(
-            'Module',
-            'Create_Module',
-            'INSERT',
-            errorObject.data.message
-          );
-        } else {
-          console.error(
-            "Error object does not contain expected 'response' property:",
-            error
-          );
-        }
+        errorHandler(error);
       });
   };
   useEffect(() => {
@@ -104,7 +79,6 @@ export default function CreateModuleComponent({ match }) {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Add Module" />
 
       <div className="row clearfix g-3">
@@ -223,10 +197,7 @@ export default function CreateModuleComponent({ match }) {
                 </div>
 
                 <div className="mt-3" style={{ textAlign: 'right' }}>
-                  <button
-                    type="submit"
-                    className="btn btn-sm btn-primary"
-                  >
+                  <button type="submit" className="btn btn-sm btn-primary">
                     Submit
                   </button>
                   <Link

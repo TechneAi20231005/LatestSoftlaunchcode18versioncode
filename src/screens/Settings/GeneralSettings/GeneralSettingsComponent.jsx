@@ -44,9 +44,7 @@ function GeneralSettings() {
   const User = useSelector(
     (MyTicketComponentSlice) => MyTicketComponentSlice.myTicketComponent.user
   );
-  const Notify = useSelector(
-    (SettingSlice) => SettingSlice.generalSetting.notify
-  );
+
   const modal = useSelector(
     (SettingSlice) => SettingSlice.generalSetting.modal
   );
@@ -357,12 +355,6 @@ function GeneralSettings() {
   }, [searchTerm, handleSearch]);
   return (
     <div className="container-xxl">
-      {Notify && (
-        <>
-          {' '}
-          <Alert alertData={Notify} />{' '}
-        </>
-      )}
       <PageHeader
         headerTitle="General Settings"
         renderRight={() => {

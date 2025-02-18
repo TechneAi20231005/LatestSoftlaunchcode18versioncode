@@ -23,6 +23,7 @@ import { handleModalClose, handleModalOpen } from './TemplateComponetSlice';
 
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
 import TaskTicketTypeService from '../../../services/MastersService/TaskTicketTypeService';
+import { toast } from 'react-toastify';
 
 const CreateTemplateComponent = () => {
   const navigate = useNavigate();
@@ -45,7 +46,6 @@ const CreateTemplateComponent = () => {
   const editTaskModal = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.modal
   );
-  const [notify, setNotify] = useState(null);
 
   const [selectedBasket, setSelectedBasket] = useState();
   const [rows, setRows] = useState({
@@ -65,7 +65,7 @@ const CreateTemplateComponent = () => {
   const [taskData, setTaskData] = useState([]);
 
   const loadData = async () => {
-    await new TaskTicketTypeService()?.getChildrenData("TASK")?.then((res) => {
+    await new TaskTicketTypeService()?.getChildrenData('TASK')?.then((res) => {
       if (res?.status === 200) {
         setTaskData(res?.data?.data?.data);
       }
@@ -373,21 +373,17 @@ const CreateTemplateComponent = () => {
     } else {
       dispatch(postTemplateData(rows)).then((res) => {
         if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
-          setNotify({ type: 'success', message: res?.payload?.data?.message });
           dispatch(templateData());
 
           setTimeout(() => {
             navigate(`/${_base}/Template`, {
-              state: {
-                alert: {
-                  type: 'success',
-                  message: res?.payload?.data?.message
-                }
-              }
+              // state: {
+              //   alert: toast.success(res.payload.data.message)
+              // }
             });
           }, 3000);
         } else {
-          setNotify({ type: 'danger', message: res?.payload?.data?.message });
+          toast.error(res.payload.data.message);
         }
       });
     }
@@ -506,7 +502,6 @@ const CreateTemplateComponent = () => {
   }, [checkRole]);
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Template Master" />
       <div className="row clearfix g-3">
         <div className="col-sm-12">

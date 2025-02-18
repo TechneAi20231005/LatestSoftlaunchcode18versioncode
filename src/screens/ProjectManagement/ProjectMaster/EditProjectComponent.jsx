@@ -17,6 +17,8 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import { Formik, Form, Field, ErrorMessage, isObject } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import Spinner from 'react-bootstrap/Spinner';
+import { errorHandler } from '../../../utils';
+import { toast } from 'react-toastify';
 
 export default function EditProjectComponent({ match }) {
   const history = useNavigate();
@@ -87,7 +89,6 @@ export default function EditProjectComponent({ match }) {
 
           if (data) {
             if (data) {
-
               setData(null);
               setData(data);
             }
@@ -95,24 +96,7 @@ export default function EditProjectComponent({ match }) {
         }
       })
       .catch((error) => {
-        if (error.response) {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-
-          // Continue handling the error as needed
-          setNotify({ type: 'danger', message: errorObject.data.message });
-          new ErrorLogService().sendErrorLog(
-            'Project',
-            'Edit_Project',
-            'INSERT',
-            errorObject.data.message
-          );
-        } else {
-          console.error(
-            "Error object does not contain expected 'response' property:",
-            error
-          );
-        }
+        errorHandler(error);
       });
 
     dispatch(getRoles());
@@ -155,32 +139,18 @@ export default function EditProjectComponent({ match }) {
                 pathname: `/${_base}/Project`
               },
               {
-                state: { alert: { type: 'success', message: res.data.message } }
+                state: { alert: toast.success(res.data.message) }
               }
             );
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message);
           }
         } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'Project',
-            'Edit_Project',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.message);
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        setNotify({ type: 'danger', message: errorObject.data.message });
-        new ErrorLogService().sendErrorLog(
-          'Project',
-          'Edit_Project',
-          'INSERT',
-          errorObject.data.message
-        );
+        errorHandler(error);
       });
   };
 
@@ -268,10 +238,7 @@ export default function EditProjectComponent({ match }) {
   const validationSchema = CustomValidation(fields);
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader headerTitle="Edit Project" />
-
       <div className="row clearfix g-3">
         <div className="col-sm-12">
           {data ? (

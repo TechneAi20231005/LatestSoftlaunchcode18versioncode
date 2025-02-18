@@ -5,7 +5,6 @@ import CustomerMappingService from '../../../services/SettingService/CustomerMap
 import { _base, userSessionData } from '../../../settings/constants';
 
 import PageHeader from '../../../components/Common/PageHeader';
-import Alert from '../../../components/Common/Alert';
 import Select from 'react-select';
 import { Astrick } from '../../../components/Utilities/Style';
 import { toast } from 'react-toastify';
@@ -27,6 +26,7 @@ import {
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
 import { ErrorMessage, Formik, Form, Field } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
 
 export function getDateTime() {
   var now = new Date();
@@ -83,7 +83,7 @@ export default function CreateCustomerMappingComponent() {
   } = useSelector(
     (CustomerMappingSlice) => CustomerMappingSlice.customerMaster
   );
-  const [approach, setApproach] = useState("");
+  const [approach, setApproach] = useState('');
 
   const [data, setData] = useState({
     approach: null,
@@ -141,8 +141,8 @@ export default function CreateCustomerMappingComponent() {
     {
       name: 'department_id',
       label: 'department_id',
-      required:  approach !== "AU" && approach !== "SELF" ? true : false
-    },
+      required: approach !== 'AU' && approach !== 'SELF' ? true : false
+    }
     // {
     //   name: 'user_id',
     //   label: 'user_id',
@@ -150,8 +150,8 @@ export default function CreateCustomerMappingComponent() {
     // }
   ];
   useEffect(() => {
-    console.log(userDropDownFilterData,"userDropDownFilterData")
-  },[userDropDownFilterData])
+    console.log(userDropDownFilterData, 'userDropDownFilterData');
+  }, [userDropDownFilterData]);
 
   // Conditionally add 'department_id' field based on approach
 
@@ -190,7 +190,7 @@ export default function CreateCustomerMappingComponent() {
         }
       }
     } catch (error) {
-      console.error('Error fetching dynamic form:', error);
+      errorHandler(error);
     }
   }, []);
 
@@ -224,10 +224,7 @@ export default function CreateCustomerMappingComponent() {
       setSelectedDynamicForm(dynamicFormDropdownTemp);
       form.setFieldValue('dynamic_form_id', queryTypeTemp[0]?.form_id || '');
     } else {
-      setNotify({
-        type: 'warning',
-        message: 'No Form is mapped but still you can map new form'
-      });
+      toast.warning('No Form is mapped but still you can map new form');
     }
   };
 
@@ -249,19 +246,23 @@ export default function CreateCustomerMappingComponent() {
   const getUser = useCallback(async () => {
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active';
-    dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
-      if (res?.payload?.status === 200) {
-        if (res?.payload?.data?.status === 1) {
-          var dropwdown = res?.payload?.data?.data.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({
-              value: d.id,
-              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
-            }));
-          setUserDropdown(dropwdown);
+    dispatch(getUserForMyTicketsData(inputRequired))
+      .then((res) => {
+        if (res?.payload?.status === 200) {
+          if (res?.payload?.data?.status === 1) {
+            var dropwdown = res?.payload?.data?.data.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({
+                value: d.id,
+                label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
+              }));
+            setUserDropdown(dropwdown);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }, [dispatch]);
 
   const handleAutoChanges = async (e, type, nameField) => {
@@ -372,8 +373,8 @@ export default function CreateCustomerMappingComponent() {
   const useridDetail = useRef();
 
   const handleForm = async (values) => {
-    if(userDropDownFilterData){
-      if(values?.user_id?.length === 0){
+    if (userDropDownFilterData) {
+      if (values?.user_id?.length === 0) {
         return;
       }
     }
@@ -833,7 +834,7 @@ export default function CreateCustomerMappingComponent() {
                                   : { value: '', label: 'Select approach' }
                               }
                               onChange={(option) => {
-                               setApproach(option.value);
+                                setApproach(option.value);
                                 form.setFieldValue(
                                   'approach',
                                   option ? option.value : ''

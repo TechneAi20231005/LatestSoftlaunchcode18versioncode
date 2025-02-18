@@ -23,6 +23,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
 
 export function getDateTime() {
   var now = new Date();
@@ -207,6 +208,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
             setstatusData(res?.data?.data?.is_active === 1 ? 1 : 0);
           }
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
     dispatch(getRoles());
 
@@ -554,24 +558,20 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                 },
                 {
                   state: {
-                    alert: { type: 'success', message: res.data.message }
+                    alert: toast.success(res.data.message)
                   }
                 }
               );
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message);
             }
           } else {
-            setNotify({ type: 'danger', message: res.message });
-            new ErrorLogService().sendErrorLog(
-              'Customer',
-              'Create_Customer',
-              'INSERT',
-              res.message
-            );
+            toast.error(res.message);
           }
         })
-        .catch((error) => {});
+        .catch((error) => {
+          errorHandler(error);
+        });
     }
   };
 
@@ -597,7 +597,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Edit Customer Mapping" />
-      {notify && <Alert alertData={notify} />}
+      {/* {notify && <Alert alertData={notify} />} */}
       <div className="row clearfix g-3">
         <div className="col-sm-12">
           <div className="card mt-2">

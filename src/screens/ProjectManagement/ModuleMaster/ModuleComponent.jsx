@@ -183,14 +183,7 @@ function ModuleComponent() {
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'Module Master',
-          'Get_Module',
-          'INSERT',
-          errorObject.data.message
-        );
+        errorHandler(error);
       });
 
     await new ManageMenuService()
@@ -232,8 +225,6 @@ function ModuleComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader
         headerTitle="Module Master"
         renderRight={() => {

@@ -6,6 +6,7 @@ import PageHeader from '../../../components/Common/PageHeader';
 import ErrorLogService from '../../../services/ErrorLogService';
 import Alert from '../../../components/Common/Alert';
 import { errorHandler } from '../../../utils';
+import { toast } from 'react-toastify';
 
 const ModuleSettings = ({ match }) => {
   const moduleRef = useRef();
@@ -18,8 +19,6 @@ const ModuleSettings = ({ match }) => {
   const [settingData, setSettingData] = useState(null);
   const [module, setModule] = useState(null);
   const [submodule, setSubmodule] = useState(null);
-
-  const [notify, setNotify] = useState();
 
   const loadData = () => {
     new ModuleSetting()
@@ -76,35 +75,21 @@ const ModuleSettings = ({ match }) => {
   const handleForm = async (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    setNotify(null);
     await new ModuleSetting()
       .updateAllModuleSetting(formData)
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            setNotify(null);
-            setNotify({ type: 'success', message: res.data.message });
+            toast.success(res.data.message);
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message);
           }
         } else {
-          new ErrorLogService().sendErrorLog(
-            'moduleSetting',
-            'Create_moduleSetting',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.message);
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'moduleSetting',
-          'Create_moduleSetting',
-          'INSERT',
-          errorObject.data.message
-        );
+        errorHandler(error);
       });
   };
 
@@ -115,7 +100,6 @@ const ModuleSettings = ({ match }) => {
   return (
     <>
       <PageHeader headerTitle="Module Settings" />
-      {notify && <Alert alertData={notify} />}
       <form method="post" onSubmit={handleForm}>
         <div className="card mt-2">
           <div className="card-body">

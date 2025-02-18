@@ -1,6 +1,7 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 
 import TenantService from '../../services/MastersService/TenantService';
+import { errorHandler } from '../../utils';
 
 export const getAllTenant = createAsyncThunk(
   'getAllTenant',
@@ -11,7 +12,7 @@ export const getAllTenant = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -21,11 +22,10 @@ export const posttenantData = createAsyncThunk(
     try {
       const service = new TenantService();
       const response = await service.postTenant(config);
-      console.log('response', response);
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -38,7 +38,7 @@ export const updatetenantData = createAsyncThunk(
       const response = await service.updateTenant(config.id, config.payload);
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
