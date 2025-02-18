@@ -298,7 +298,6 @@ function DesignationComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <Container fluid>
         <PageHeader
           headerTitle="Designation Master"

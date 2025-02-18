@@ -33,26 +33,26 @@ const TicketHistory = ({ match }) => {
       ]
     },
 
-    {
-      name: 'Ticket Type',
-      selector: (row) => row.parent_name,
-      sortable: true,
-      conditionalCellStyles: [
-        {
-          when: (row) =>
-            row.changes &&
-            row.changes.length > 1 &&
-            row.changes.includes('parent_name'),
-          style: {
-            color: 'red',
-            fontWeight: 'bold',
-            '&:hover': {
-              cursor: 'pointer'
-            }
-          }
-        }
-      ]
-    },
+    // {
+    //   name: 'Ticket Type',
+    //   selector: (row) => row.parent_name,
+    //   sortable: true,
+    //   conditionalCellStyles: [
+    //     {
+    //       when: (row) =>
+    //         row.changes &&
+    //         row.changes.length > 1 &&
+    //         row.changes.includes('parent_name'),
+    //       style: {
+    //         color: 'red',
+    //         fontWeight: 'bold',
+    //         '&:hover': {
+    //           cursor: 'pointer'
+    //         }
+    //       }
+    //     }
+    //   ]
+    // },
 
     {
       name: 'Ticket Created By User',
@@ -382,12 +382,12 @@ const TicketHistory = ({ match }) => {
         }
       ]
     },
-    {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '6%'
-    },
+    // {
+    //   name: 'Created At',
+    //   selector: (row) => row.created_at,
+    //   sortable: true,
+    //   width: '6%'
+    // },
     {
       name: 'Created At',
       selector: (row) => row.created_at,

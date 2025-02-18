@@ -11,6 +11,7 @@ import Alert from '../../../components/Common/Alert';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import { errorHandler } from '../../../utils';
 function ModuleComponent() {
   //initial state
   const location = useLocation();
@@ -167,10 +168,10 @@ function ModuleComponent() {
           for (const key in data) {
             exportData.push({
               SrNo: exportData.length + 1,
-              Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
               module_name: data[key].module_name,
               project_name: data[key].project_name,
               description: data[key].description,
+              Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
               remark: data[key].remark,
               updated_at: data[key].updated_at,
               updated_by: data[key].updated_by,
@@ -192,14 +193,19 @@ function ModuleComponent() {
         );
       });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const getRoleId = sessionStorage.getItem('role_id');
-          setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
+    await new ManageMenuService()
+      .getRole(roleId)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            const getRoleId = sessionStorage.getItem('role_id');
+            setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }, [roleId]);
 
   useEffect(() => {

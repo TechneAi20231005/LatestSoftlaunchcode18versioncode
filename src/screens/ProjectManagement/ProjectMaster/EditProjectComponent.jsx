@@ -53,8 +53,8 @@ export default function EditProjectComponent({ match }) {
     await new UserService().getUser().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const user = res.data.data.filter((d) => d.is_active === 1);
-          const reviewers = res.data.data.filter(
+          const user = res.data.data?.data?.filter((d) => d.is_active === 1);
+          const reviewers = res.data.data?.data?.filter(
             (d) => d.is_active === 1 && d.account_for === 'SELF'
           );
 
@@ -87,6 +87,7 @@ export default function EditProjectComponent({ match }) {
 
           if (data) {
             if (data) {
+
               setData(null);
               setData(data);
             }

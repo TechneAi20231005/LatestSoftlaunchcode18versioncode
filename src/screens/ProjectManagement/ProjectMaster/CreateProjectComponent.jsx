@@ -18,6 +18,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { Formik, Form, Field, ErrorMessage, isObject } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 export default function CreateProjectComponent({ match }) {
   const history = useNavigate();
@@ -98,40 +100,19 @@ export default function CreateProjectComponent({ match }) {
               },
               {
                 state: {
-                  alert: { type: 'success', message: res.data.message }
+                  alert: toast.success(res.data.message)
                 }
               }
             );
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message);
           }
         } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'Module',
-            'Create_Module',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.message);
         }
       })
       .catch((error) => {
-        if (error.response) {
-          const { response } = error;
-          const { request, ...errorObject } = response || {};
-          setNotify({ type: 'danger', message: errorObject.data.message });
-          new ErrorLogService().sendErrorLog(
-            'Module',
-            'Create_Module',
-            'INSERT',
-            errorObject.data.message
-          );
-        } else {
-          console.error(
-            "Error object does not contain expected 'response' property:",
-            error
-          );
-        }
+        errorHandler(error);
       });
     // }
   };
@@ -264,8 +245,6 @@ export default function CreateProjectComponent({ match }) {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader headerTitle="Create Project" />
 
       <div className="row clearfix g-3">

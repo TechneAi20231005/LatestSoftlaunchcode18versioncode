@@ -11,6 +11,8 @@ import * as Validation from '../../../components/Utilities/Validation';
 import { _base } from '../../../settings/constants';
 import { Field, Form, Formik, ErrorMessage } from 'formik';
 import { moduleMasterValidation } from './validation/ModuleMaster';
+import { errorHandler } from '../../../utils';
+import { toast } from 'react-toastify';
 
 export default function EditModuleComponent({ match }) {
   const history = useNavigate();
@@ -32,14 +34,19 @@ export default function EditModuleComponent({ match }) {
   const [checkRole, setCheckRole] = useState(null);
 
   const loadData = useCallback(async () => {
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const getRoleId = sessionStorage.getItem('role_id');
-          setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
+    await new ManageMenuService()
+      .getRole(roleId)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            const getRoleId = sessionStorage.getItem('role_id');
+            setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
     await new ModuleService()
       .getModuleById(moduleId)
       .then((res) => {
@@ -88,10 +95,10 @@ export default function EditModuleComponent({ match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-                setTimeout(() => {
-                          history({pathname:`/${_base}/Module`})
-                        }, 500);
-                        setNotify({ type: 'success', message: res.data.message });
+            setTimeout(() => {
+              history({ pathname: `/${_base}/Module` });
+            }, 500);
+            toast.success(res.data.message);
             // history(
             //   {
             //     pathname: `/${_base}/Module`
@@ -101,28 +108,14 @@ export default function EditModuleComponent({ match }) {
             //   }
             // );
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message);
           }
         } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'Module',
-            'Edit_Module',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.message);
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        setNotify({ type: 'danger', message: errorObject.data.message });
-        new ErrorLogService().sendErrorLog(
-          'Module',
-          'Edit_Module',
-          'INSERT',
-          errorObject.data.message
-        );
+        errorHandler(error);
       });
   };
 

@@ -222,7 +222,6 @@ function StatusComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader
         headerTitle="Status Master"
         renderRight={() => {

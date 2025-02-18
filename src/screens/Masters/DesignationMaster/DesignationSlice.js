@@ -4,6 +4,7 @@ import {
   postDesignationData,
   updatedDesignationData
 } from './DesignationAction';
+import { toast } from 'react-toastify';
 
 const initialState = {
   status: '',
@@ -101,12 +102,10 @@ export const desegnationSlice = createSlice({
         state.showLoaderModal = false;
         state.postDesignationData = postDesignationData;
         state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
       } else {
-        let notify = { type: 'danger', message: payload.data.message };
-        state.notify = null;
-        state.notify = notify;
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(postDesignationData.rejected, (state) => {
@@ -129,7 +128,7 @@ export const desegnationSlice = createSlice({
 
         state.status = 'succeeded';
         state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         state.showLoaderModal = false;
 
         state.updatedDesignationData = updatedDesignationData;
@@ -137,7 +136,7 @@ export const desegnationSlice = createSlice({
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(updatedDesignationData.rejected, (state) => {

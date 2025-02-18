@@ -11,6 +11,7 @@ import UserService from '../../../../services/MastersService/UserService';
 import MyTicketService from '../../../../services/TicketService/MyTicketService';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { CustomValidation } from '../../../../components/custom/CustomValidation/CustomValidation';
+import moment from 'moment';
 
 export default function BasketDetails(props) {
   const [user, setUser] = useState();
@@ -19,6 +20,10 @@ export default function BasketDetails(props) {
 
   // const [todateformat, setTodateformat] = useState('');
   // const [fromdateformat, setFromdateformat] = useState("");
+
+  const formatDate = (dateString) => {
+    return moment(dateString).format('YYYY-MM-DD');
+  };
 
   const handleFromDate = (e) => {
     const gettodatevalue = e.target.value;
@@ -36,29 +41,34 @@ export default function BasketDetails(props) {
     {
       name: 'basket_name',
       label: 'Basket name',
-      max: 100,
+      max: 50,
       required: true,
-      alphaNumeric: false
+      alphaNumeric: true
     },
     {
       name: 'basket_owner',
       label: 'Basket Owner',
-      max: 100,
-      required: true,
-      alphaNumeric: false
+      required: true
     },
     {
       name: 'start_date',
       label: 'Start date',
       required: true,
-      dateRange: { startDate: 'start_date', endDate: 'end_date', startLabel: 'Start Date' },
+      dateRange: {
+        startDate: 'start_date',
+        endDate: 'end_date',
+        startLabel: 'Start Date'
+      }
     },
     {
       name: 'end_date',
       label: 'End date',
-      // max: 100,
       required: true,
-      dateRange: { startDate: 'start_date', endDate: 'end_date', startLabel: 'Start Date' },
+      dateRange: {
+        startDate: 'start_date',
+        endDate: 'end_date',
+        startLabel: 'Start Date'
+      }
     }
   ];
 
@@ -166,7 +176,8 @@ export default function BasketDetails(props) {
         });
     }
   };
-  // const [ticketData, setTicketData] = useState();
+  const [expectedSolveDate, setExpectedSolveDate] = useState();
+  const formattedDate = formatDate(expectedSolveDate);
   const loadData = async () => {
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active';
@@ -190,7 +201,7 @@ export default function BasketDetails(props) {
     await new MyTicketService().getTicketById(props.ticketId).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          // setTicketData(res.data.data);
+          setExpectedSolveDate(res.data.data.expected_solve_date);
         }
       }
     });
@@ -235,7 +246,6 @@ export default function BasketDetails(props) {
                 id="ticket_id"
                 name="ticket_id"
               />
-
               {props.data && (
                 <input
                   type="hidden"
@@ -350,7 +360,8 @@ export default function BasketDetails(props) {
                     className="form-control form-control-sm"
                     id="start_date"
                     name="start_date"
-                    min={new Date().toISOString().slice(0, 10)}
+
+                    // min={new Date().toISOString().slice(0, 10)}
                   />
                   <ErrorMessage
                     name="start_date"
@@ -382,7 +393,7 @@ export default function BasketDetails(props) {
                     className="form-control form-control-sm"
                     id="end_date"
                     name="end_date"
-                    min={todate}
+                    max={formattedDate}
                   />
                   <ErrorMessage
                     name="end_date"

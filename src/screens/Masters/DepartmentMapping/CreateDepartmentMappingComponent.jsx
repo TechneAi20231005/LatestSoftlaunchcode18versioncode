@@ -3,25 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 
-
-
-
 import Select from 'react-select';
 import ErrorLogService from '../../../services/ErrorLogService';
 
-
 import PageHeader from '../../../components/Common/PageHeader';
 
-
 import { Astrick } from '../../../components/Utilities/Style';
-
 
 import Alert from '../../../components/Common/Alert';
 import UserService from '../../../services/MastersService/UserService';
 import DepartmentService from '../../../services/MastersService/DepartmentService';
 
-
 import DepartmentMappingService from '../../../services/MastersService/DepartmentMappingService';
+import { errorHandler } from '../../../utils';
 
 function CreateDepartmentMappingComponent() {
   const history = useNavigate();
@@ -41,35 +35,41 @@ function CreateDepartmentMappingComponent() {
   const [userData, setUserData] = useState(null);
   const [notify, setNotify] = useState();
 
-
-
-
-
   const loadData = async () => {
     const data = [];
 
-    new UserService().getUser().then((res) => {
-      if (res.status === 200) {
-        const temp = [];
-        res.data.data.forEach((row) => {
-          temp.push({
-            value: row.id,
-            label: row.first_name + ' ' + row.last_name
+    new UserService()
+      .getUser()
+      .then((res) => {
+        if (res.status === 200) {
+          const temp = [];
+          res.data.data.forEach((row) => {
+            temp.push({
+              value: row.id,
+              label: row.first_name + ' ' + row.last_name
+            });
           });
-        });
-        setUserData(temp);
-      }
-    });
+          setUserData(temp);
+        }
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
-    new DepartmentService().getDepartment().then((res) => {
-      if (res.status === 200) {
-        const temp = [];
-        res.data.data.forEach((row) => {
-          temp.push({ value: row.id, label: row.department });
-        });
-        setDepartmentData(temp);
-      }
-    });
+    new DepartmentService()
+      .getDepartment()
+      .then((res) => {
+        if (res.status === 200) {
+          const temp = [];
+          res.data.data.forEach((row) => {
+            temp.push({ value: row.id, label: row.department });
+          });
+          setDepartmentData(temp);
+        }
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
     new DepartmentMappingService()
       .getAllDepartmentMapping()
@@ -165,6 +165,9 @@ function CreateDepartmentMappingComponent() {
             setRows(temp);
           }
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
     setData((prev) => ({ ...prev, employee_id: e.value }));
   };

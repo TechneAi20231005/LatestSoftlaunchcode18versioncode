@@ -83,6 +83,7 @@ export default function CreateCustomerMappingComponent() {
   } = useSelector(
     (CustomerMappingSlice) => CustomerMappingSlice.customerMaster
   );
+  const [approach, setApproach] = useState("");
 
   const [data, setData] = useState({
     approach: null,
@@ -119,7 +120,8 @@ export default function CreateCustomerMappingComponent() {
     },
     {
       name: 'dynamic_form_id',
-      label: 'Dynamic Form'
+      label: 'Dynamic Form',
+      required: false
     },
     {
       name: 'priority',
@@ -135,13 +137,21 @@ export default function CreateCustomerMappingComponent() {
       name: 'approach',
       label: 'approach',
       required: true
-    }
+    },
+    {
+      name: 'department_id',
+      label: 'department_id',
+      required:  approach !== "AU" && approach !== "SELF" ? true : false
+    },
     // {
-    //   name: 'department_id',
-    //   label: 'department_id',
-    //   required: true
+    //   name: 'user_id',
+    //   label: 'user_id',
+    //   required: approach !== "AU" || approach !== "SELF" || userDropDownFilterData?.length > 0 ? true : false
     // }
   ];
+  useEffect(() => {
+    console.log(userDropDownFilterData,"userDropDownFilterData")
+  },[userDropDownFilterData])
 
   // Conditionally add 'department_id' field based on approach
 
@@ -155,17 +165,17 @@ export default function CreateCustomerMappingComponent() {
     priority: '',
     confirmation_required: '1',
     approach: '',
-    // department_id: '',
+    department_id: '',
     user_id: []
   };
 
-  if (initialValues.approach !== 'AU') {
-    fields.push({
-      name: 'department_id',
-      label: 'Department ID',
-      required: true
-    });
-  }
+  // if (initialValues.approach !== 'AU') {
+  //   fields.push({
+  //     name: 'department_id',
+  //     label: 'Department ID',
+  //     required: true
+  //   });
+  // }
   const getDynamicForm = useCallback(async () => {
     try {
       const res = await new DynamicFormService().getDynamicForm();
@@ -362,6 +372,11 @@ export default function CreateCustomerMappingComponent() {
   const useridDetail = useRef();
 
   const handleForm = async (values) => {
+    if(userDropDownFilterData){
+      if(values?.user_id?.length === 0){
+        return;
+      }
+    }
     // const userIds = values?.user_id?.map((user) => user.user_id) || [];
     let userIDs;
     if (Array?.isArray(useridDetail?.current?.props?.value)) {
@@ -456,7 +471,6 @@ export default function CreateCustomerMappingComponent() {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Create Customer Mapping" />
-      {notify && <Alert alertData={notify} />}
 
       <div className="row clearfix g-3">
         <div className="col-sm-12">
@@ -819,6 +833,7 @@ export default function CreateCustomerMappingComponent() {
                                   : { value: '', label: 'Select approach' }
                               }
                               onChange={(option) => {
+                               setApproach(option.value);
                                 form.setFieldValue(
                                   'approach',
                                   option ? option.value : ''

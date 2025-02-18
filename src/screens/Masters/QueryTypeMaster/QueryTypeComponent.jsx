@@ -27,6 +27,7 @@ import { customSearchHandler } from '../../../utils/customFunction';
 import { toast } from 'react-toastify';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { Field, Form, Formik, ErrorMessage } from 'formik';
+import { errorHandler } from '../../../utils';
 
 function QueryTypeComponent() {
   //initial state
@@ -525,33 +526,18 @@ function QueryTypeComponent() {
                 modalHeaderQueryGroup: ''
               });
 
-              setNotify({ type: 'success', message: res.data.message });
+              toast.success(res.data.message);
               loadData();
               loadDataEditPopup();
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message);
             }
           } else {
-            setNotify({ type: 'danger', message: res.message });
-            new ErrorLogService().sendErrorLog(
-              'QueryType',
-              'Create_QueryType',
-              'INSERT',
-              res.message
-            );
+            toast.error(res.data.message);
           }
         })
         .catch((error) => {
-          setNotify({ type: 'danger', message: 'Connection Error !!!' });
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          setNotify({ type: 'danger', message: 'Remark Error !!!' });
-          new ErrorLogService().sendErrorLog(
-            'QueryType',
-            'Create_QueryType',
-            'INSERT',
-            errorObject.data.message
-          );
+          errorHandler(error);
         });
     } else {
       form.delete('is_active');
@@ -559,7 +545,7 @@ function QueryTypeComponent() {
       await new QueryTypeService().updateQueryGroup(id, form).then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            setNotifyy({ type: 'success', message: res.data.message });
+            toast.success(res.data.message);
             setModalQueryGroup({
               showModalQueryGroup: false,
               modalDataQueryGroup: '',
@@ -568,10 +554,10 @@ function QueryTypeComponent() {
             loadData();
             loadDataEditPopup();
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message);
           }
         } else {
-          setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message);
           new ErrorLogService().sendErrorLog(
             'QueryType',
             'Update_QueryType',
@@ -603,7 +589,6 @@ function QueryTypeComponent() {
 
           let counter = 1;
           const temp = res.data.data.data;
-          console.log('data', res.data.data);
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -633,8 +618,8 @@ function QueryTypeComponent() {
             exportTempData.push({
               Sr: data[i].counter,
               Query_Type_Name: data[i].query_type_name,
-              query_group_name: temp[i].group_name,
-              form_name: temp[i].form_name,
+              query_group_name: temp[i].query_group_name,
+              form_name: temp[i].form_id_name,
               Status: data[i].is_active ? 'Active' : 'Deactive',
               Remark: data[i].remark,
               created_at: data[i].created_at,
@@ -649,15 +634,7 @@ function QueryTypeComponent() {
         }
       })
       .catch((error) => {
-        console.log('error', error);
-        // const { response } = error;
-        // const { request, ...errorObject } = response;
-        // new ErrorLogService().sendErrorLog(
-        //   'QueryType',
-        //   'Get_QueryType',
-        //   'INSERT',
-        //   errorObject.data.message
-        // );
+        errorHandler(error);
       });
 
     await new DynamicFormService().getDynamicForm().then((res) => {
@@ -771,14 +748,15 @@ function QueryTypeComponent() {
             setIsSubmitting(false);
             if (res.data.status === 1) {
               setModal({ showModal: false, modalData: '', modalHeader: '' });
-              setNotify({ type: 'success', message: res.data.message });
+              toast.success(res.data.message);
               loadData();
               setIsActive(1);
             } else {
               setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message);
             }
           } else {
-            setNotify({ type: 'danger', message: res.message });
+            toast.error(res.data.message);
             new ErrorLogService().sendErrorLog(
               'QueryType',
               'Edit_QueryType',
@@ -790,7 +768,7 @@ function QueryTypeComponent() {
       } catch (error) {
         const { response } = error;
         const { request, ...errorObject } = response;
-        setNotify({ type: 'danger', message: 'Remark Error !!!' });
+        errorHandler(error?.response);
         new ErrorLogService().sendErrorLog(
           'QueryType',
           'Create_QueryType',
@@ -845,7 +823,7 @@ function QueryTypeComponent() {
           label: d.group_name
         }))
       : [],
-    remark: modal.modalData ? modal.modalData?.remark : '',
+    remark: modal.modalData?.remark || '',
 
     is_active: String(modal?.modalData?.is_active) ?? '1'
   };
@@ -874,7 +852,6 @@ function QueryTypeComponent() {
   return (
     <>
       <div className="container-xxl">
-        {notify && <Alert alertData={notify ? notify : notifyy} />}
         <PageHeader
           headerTitle="Query Master"
           renderRight={() => {
@@ -985,26 +962,29 @@ function QueryTypeComponent() {
                         <label className="form-label font-weight-bold">
                           Select Form: <Astrick color="red" size="13px" />
                         </label>
-                       {
-                        dynamicFormDropdown &&  <Select
-                        options={dynamicFormDropdown}
-                        id="form_id"
-                        name="form_id"
-                        defaultValue={
-                          modal.modalData
-                            ? dynamicFormDropdown?.find(
-                                (d) => modal.modalData.form_id === d.value
+                        {dynamicFormDropdown && (
+                          <Select
+                            options={dynamicFormDropdown}
+                            id="form_id"
+                            name="form_id"
+                            defaultValue={
+                              modal.modalData
+                                ? dynamicFormDropdown?.find(
+                                    (d) => modal.modalData.form_id === d.value
+                                  )
+                                : ''
+                            }
+                            isClearable={true}
+                            onChange={(option) => {
+                              if (
+                                !option ||
+                                Object.entries(option).length === 0
                               )
-                            : ''
-                        }
-                        isClearable={true}
-                        onChange={(option) => {
-                          if (!option || Object.entries(option).length === 0)
-                            return;
-                          setFieldValue('form_id', option?.value);
-                        }}
-                      />
-                       }
+                                return;
+                              setFieldValue('form_id', option?.value);
+                            }}
+                          />
+                        )}
                         <ErrorMessage
                           name="form_id"
                           component="small"
@@ -1265,7 +1245,7 @@ function QueryTypeComponent() {
                           ? modalQueryGroup.modalDataQueryGroup.group_name
                           : ''
                       }
-                      maxLength={50}
+                      maxLength={100}
                       required
                       onKeyPress={(e) => {
                         Validation.CharactersNumbersOnly(e);
@@ -1417,7 +1397,6 @@ function QueryTypeComponent() {
         </Modal.Header>
         <Modal.Body>
           <div className="container-xxl">
-            {notify && <Alert alertData={notify} />}
             <div className="row">
               <div className="col-sm-6">
                 <input
@@ -1453,7 +1432,6 @@ function QueryTypeComponent() {
                 />
               </div>
             </div>
-            {console.log('queryGroupData', queryGroupData)}
             <div className="card mt-2">
               <div className="card-body">
                 <div className="row clearfix g-3">

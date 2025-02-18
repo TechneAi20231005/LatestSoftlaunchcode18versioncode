@@ -6,7 +6,7 @@ import Alert from '../../components/Common/Alert';
 import { _base, userSessionData } from '../../settings/constants';
 
 import MyTicketService from '../../services/TicketService/MyTicketService';
-import { _attachmentUrl , _rewampAttachmentUrl} from '../../settings/constants';
+import { _attachmentUrl, _rewampAttachmentUrl } from '../../settings/constants';
 
 import PageHeader from '../../components/Common/PageHeader';
 import UserService from '../../services/MastersService/UserService';
@@ -26,6 +26,8 @@ import { getCustomerMappingData } from '../Settings/CustomerMapping/Slices/Custo
 import { getEmployeeDataById, getRoles } from '../Dashboard/DashboardAction';
 import { getUserForMyTicketsData } from './MyTicketComponentAction';
 import { toast } from 'react-toastify';
+import { errorHandler } from '../../utils';
+import LoadingScreen from '../../components/custom/LoadingScreen';
 
 export default function CreateTicketComponent() {
   const navigate = useNavigate();
@@ -50,7 +52,7 @@ export default function CreateTicketComponent() {
     department_id: null,
     customer_mapping_id: null,
     ticket_uploading: 'REGULAR',
-    confirmation_required: '0',
+    confirmation_required: '1',
     query_type_id: null,
     ticket_date: todayDate,
     expected_solve_date: null,
@@ -76,7 +78,8 @@ export default function CreateTicketComponent() {
   var today = new Date().toISOString().split('T')[0];
   const [data, setData] = useState(ticketData);
 
-  const showLoaderModal = false;
+  // const showLoaderModal = false;
+  const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [rows, setRows] = useState();
 
@@ -92,7 +95,6 @@ export default function CreateTicketComponent() {
   const [departmentDropdown, setDepartmentDropdown] = useState();
   const [userDropdown, setUserDropdown] = useState();
   const [customerID, setCustomerId] = useState();
-
 
   // const [expectedSolveDate, setExpectedSolveDate] = useState(null);
 
@@ -261,18 +263,22 @@ export default function CreateTicketComponent() {
 
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === 'UPLOAD') {
-      const files = e.target.files;
+      // const files = e.target.files;
+      const fileInput = e.target;
+      const files = fileInput.files;
       const uploadedFiles = [];
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
-
         // Check if file size exceeds 5MB (5 * 1024 * 1024 bytes)
         if (file.size > 5 * 1024 * 1024) {
           alert(
             'File size exceeds 5MB. Please upload a file smaller than 5MB.'
           );
-          continue; // Skip this file and move to the next one
+          fileInput.value = '';
+          return; // Exit the loop and function if a file exceeds the limit
+          // continue; // Skip this file and move to the next one
         }
+
         const reader = new FileReader();
 
         reader.onload = ((file) => {
@@ -296,8 +302,6 @@ export default function CreateTicketComponent() {
       setSelectedFiles(filteredFiles);
     }
   };
-
-
 
   const handleForm = async (e) => {
     e.preventDefault();
@@ -365,10 +369,7 @@ export default function CreateTicketComponent() {
                   return;
                 }
                 toast.success(res?.data?.message);
-                console.log('error', res.data.data);
-                let url =
-                  `${_rewampAttachmentUrl}` + res.data.data;
-                console.log('url', url);
+                let url = `${_rewampAttachmentUrl}` + res.data.data;
                 window.open(url, '_blank').focus();
                 setIsSubmitted(false);
               }
@@ -391,6 +392,7 @@ export default function CreateTicketComponent() {
       setRows(null);
 
       var data = customerMapping.filter((val) => val.query_type_id === e.value);
+
       setApproch(data[0]?.approach);
       const cmId = data?.length > 0 ? data[0].id : null;
       if (cmId) {
@@ -404,14 +406,14 @@ export default function CreateTicketComponent() {
       }
 
       setRows(null);
+
       if (data && data?.length === 0) {
         alert(
           'Dynamic Form is not mapped against this Query Type, Please Map Form first'
         );
         setQueryGroupTypeData(null);
       } else {
-        var dynamicForm = data[0]?.dynamic_form_data;
-        console.log('dynamicForm', dynamicForm);
+        var dynamicForm = data[0]?.dynamic_form;
 
         const filteredArray = dynamicForm?.filter(
           (formInstance) =>
@@ -473,6 +475,7 @@ export default function CreateTicketComponent() {
   };
 
   const loadData = useCallback(async () => {
+    setShowLoaderModal(true);
     const query_type_id = '';
     const queryTypeTemp = [];
     const status = 1;
@@ -486,7 +489,6 @@ export default function CreateTicketComponent() {
             //SET ALL CUSTOMER MAPPING DATA IN A STATE
             setCustomerMapping(null);
             setCustomerMapping(res.data.data);
-            console.log('res---', res.data.data);
             res.data.data.forEach((query) => {
               if (query.query_type_id) {
                 if (!queryTypeTemp.includes(query.query_type_id)) {
@@ -501,7 +503,7 @@ export default function CreateTicketComponent() {
     await new UserService()
       .getUserById(localStorage.getItem('id'))
       .then((res) => {
-        const { data } = res?.data;
+        const { data } = res?.data?.data;
 
         if (res?.data?.status === 1 && data) {
           setCustomerId(data?.customer_type_id);
@@ -551,7 +553,7 @@ export default function CreateTicketComponent() {
 
     await new TaskTicketTypeService()?.getTicketType('TICKET')?.then((res) => {
       if (res?.status === 200) {
-        setTicketsData(res?.data?.data?.data);
+        setTicketsData(res?.data?.data?.data.filter((d) => d.is_active === 1));
       }
     });
 
@@ -574,7 +576,11 @@ export default function CreateTicketComponent() {
             });
           }
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
+    setShowLoaderModal(false);
 
     dispatch(getRoles());
   }, [dispatch]);
@@ -689,15 +695,16 @@ export default function CreateTicketComponent() {
           const customerMapping = filteredItems.filter(
             (item) => Number(item.customer_type_id) === Number(customerID)
           );
+
           const mappingId = filteredItems.map((item) =>
-            accountFor === 'SELF' ? item.id : customerMapping[0].id
+            accountFor === 'SELF' ? item?.id : customerMapping[0]?.id
           );
 
           setData((prev) => {
             const newPrev = { ...prev };
             newPrev['customer_mapping_id'] = mappingId[0];
-            newPrev['confirmation_required'] =
-              customerMapping[0]?.confirmation_required;
+            // newPrev['confirmation_required'] =
+            //   customerMapping[0]?.confirmation_required;
 
             newPrev['priority'] = x[0].priority;
             return newPrev;
@@ -1025,6 +1032,7 @@ export default function CreateTicketComponent() {
                       id="cuid"
                       name="cuid"
                       onInput={(e) => handleAutoChanges(e, 'Text', 'cuid')}
+                      maxLength={100}
                     />
                   </div>
                   <div className="col-sm-3">
@@ -1307,7 +1315,6 @@ export default function CreateTicketComponent() {
                           )}
                         </select>
                       )}
-
                       {data.inputType === 'select-master' && (
                         <select
                           id={
@@ -1321,7 +1328,7 @@ export default function CreateTicketComponent() {
                         >
                           <option> {data?.inputName}</option>
                           {data?.inputAddOn?.inputDataSourceData &&
-                            data?.inputAddOn?.inputDataSourceData.map(
+                            data?.inputAddOn?.inputDataSourceData?.map(
                               (option) => {
                                 return (
                                   <option
@@ -1365,6 +1372,7 @@ export default function CreateTicketComponent() {
                       name="description"
                       required
                       rows="4"
+                      maxLength={1000}
                     />
                   </div>
                 </div>
@@ -1388,6 +1396,9 @@ export default function CreateTicketComponent() {
                       required={
                         data.ticket_uploading === 'REGULAR' ? false : true
                       }
+                      onChange={(e) => {
+                        uploadAttachmentHandler(e, 'UPLOAD', '');
+                      }}
                     />
                   </div>
                 </div>
@@ -1476,8 +1487,9 @@ export default function CreateTicketComponent() {
           </Link>
         </div>
       </form>
+      {showLoaderModal && <LoadingScreen showLoaderModal={showLoaderModal} />}
 
-      <Modal show={showLoaderModal} centered>
+      {/* <Modal show={showLoaderModal} centered>
         <Modal.Body className="text-center">
           <Spinner animation="grow" variant="primary" />
           <Spinner animation="grow" variant="secondary" />
@@ -1487,7 +1499,7 @@ export default function CreateTicketComponent() {
           <Spinner animation="grow" variant="info" />
           <Spinner animation="grow" variant="dark" />
         </Modal.Body>
-      </Modal>
+      </Modal> */}
     </div>
   );
 }

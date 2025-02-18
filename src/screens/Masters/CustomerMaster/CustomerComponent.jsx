@@ -159,8 +159,6 @@ function CustomerComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader
         headerTitle="Customer Master"
         renderRight={() => {
@@ -227,7 +225,6 @@ function CustomerDropdown(props) {
     new CustomerService().getCustomer().then((res) => {
       if (res.status === 200) {
         var data = res?.data?.data;
-
         // var data = data.filter((d) => d.is_active === 1);
         for (const key in data) {
           tempData.push({

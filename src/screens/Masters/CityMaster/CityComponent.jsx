@@ -2,20 +2,20 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import Select from 'react-select';
-
+ 
 import { useSelector, useDispatch } from 'react-redux';
-
+ 
 import CityService from '../../../services/MastersService/CityService';
-
+ 
 import PageHeader from '../../../components/Common/PageHeader';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import Alert from '../../../components/Common/Alert';
-
+ 
 import {
   handleModalInStore,
   handleModalClose
 } from '../../Dashboard/DashbordSlice';
-
+ 
 import {
   getCityData,
   getCountryData,
@@ -31,11 +31,11 @@ import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { CustomValidation } from '../../../../src/components/custom/CustomValidation/CustomValidation';
 function CityComponent() {
   // initial state
-
+ 
   const dispatch = useDispatch();
-
+ 
   //redux state
-
+ 
   const {
     cityData,
     notify,
@@ -55,23 +55,23 @@ function CityComponent() {
   const [isClearable, setIsClearable] = useState(true);
   const [stateDropdownData, setStateDropdownData] = useState([]);
   const [updateStatus, setUpdateStatus] = useState({});
-
+ 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
-
+ 
   //search function
-
+ 
   const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(cityData, searchTerm);
     setFilteredData(filteredList);
   }, [cityData, searchTerm]);
-
+ 
   // Function to handle reset button click
   const handleReset = () => {
     setSearchTerm('');
     setFilteredData(cityData);
   };
-
+ 
   //columns
   const columns = [
     {
@@ -168,7 +168,7 @@ function CityComponent() {
       width: '150px'
     }
   ];
-
+ 
   const fields = [
     {
       name: 'country_id',
@@ -198,17 +198,17 @@ function CityComponent() {
       alphaNumeric: true
     }
   ];
-
+ 
   const validationSchema = CustomValidation(fields);
-
+ 
   let valueof = modal.modalData
     ? filteredCountryData.find((d) => modal.modalData.country_id === d.value)
     : '';
-
+ 
   let stateValue = modal.modalData
     ? filteredStateData?.find((d) => modal.modalData.state_id === d.value)
     : '';
-
+ 
   const initialValues = {
     country_id: valueof?.value || '',
     state_id: stateValue?.value || '',
@@ -216,21 +216,21 @@ function CityComponent() {
     remark: modal.modalData?.remark || '',
     is_active: String(modal.modalData?.is_active) ?? '1'
   };
-
+ 
   const handleForm = async (values, id) => {
     const formData = new FormData();
     formData.append('country_id', values.country_id);
     formData.append('state_id', values.state_id);
     formData.append('city', values.city);
     formData.append('remark', values.remark);
-
+ 
     const editformdata = new FormData();
     editformdata.append('country_id', values.country_id);
     editformdata.append('state_id', values.state_id);
     editformdata.append('city', values.city);
     editformdata.append('remark', values.remark);
     editformdata.append('is_active', values.is_active);
-
+ 
     if (!id) {
       dispatch(postCityData(formData));
       setTimeout(() => {
@@ -243,10 +243,10 @@ function CityComponent() {
       }, 500);
     }
   };
-
+ 
   const handleCountryChange = (e) => {
     if (!e || Object.entries(e).length === 0) return;
-
+ 
     setStateDropdownData(
       activeState &&
         activeState
@@ -257,14 +257,14 @@ function CityComponent() {
     setUpdateStatus(newStatus);
     // setStateName(null);
   };
-
+ 
   useEffect(() => {
     dispatch(getCityData());
     dispatch(getRoles());
     dispatch(getCountryData());
     dispatch(getStateDataSort());
     dispatch(getCountryDataSort());
-
+ 
     if (
       !cityData.length ||
       !checkRole.length ||
@@ -279,23 +279,23 @@ function CityComponent() {
     filteredStateData.length,
     filteredCountryData.length
   ]);
-
+ 
   useEffect(() => {
     setFilteredData(cityData);
   }, [cityData]);
-
+ 
   useEffect(() => {
     dispatch(getCityData());
   }, [dispatch]);
-
+ 
   useEffect(() => {
     handleSearch();
   }, [searchTerm, handleSearch]);
-
+ 
   // useEffect(() => {
   //   if (dependent.country_id !== null) {
   //     const newStates = [...copyState];
-
+ 
   //     const filterNewState = newStates.filter((state) => {
   //       if (state.country_id === dependent.country_id) {
   //         return {
@@ -308,12 +308,12 @@ function CityComponent() {
   //     setStateDropdownData(filterNewState);
   //   }
   // }, [dependent, copyState]);
-
+ 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-
+ 
     if (modal.modalData) {
       if (modal.modalData.state_id) {
         // setStateName(
@@ -322,10 +322,9 @@ function CityComponent() {
       }
     }
   }, [modal.showModal, checkRole, modal.modalData]);
-
+ 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader
         headerTitle="City Master"
         renderRight={() => {
@@ -439,7 +438,7 @@ function CityComponent() {
                         className="text-danger small"
                       />
                     </div>
-
+ 
                     {/* Select State */}
                     <div className="col-sm-12">
                       <label className="form-label font-weight-bold">
@@ -478,7 +477,7 @@ function CityComponent() {
                         className="text-danger small"
                       />
                     </div>
-
+ 
                     {/* City Name */}
                     <div className="col-sm-12">
                       <label className="form-label font-weight-bold">
@@ -496,7 +495,7 @@ function CityComponent() {
                         className="text-danger small"
                       />
                     </div>
-
+ 
                     {/* Remark */}
                     <div className="col-sm-12">
                       <label className="form-label font-weight-bold">
@@ -514,14 +513,14 @@ function CityComponent() {
                         className="text-danger small"
                       />
                     </div>
-
+ 
                     {/* Status */}
                     {modal.modalData && (
                       <div className="col-sm-12">
                         <label className="form-label font-weight-bold">
                           Status: <span style={{ color: 'red' }}>*</span>
                         </label>
-
+ 
                         <div className="row">
                           <div className="col-md-2">
                             <div className="form-check">
@@ -565,7 +564,7 @@ function CityComponent() {
                     Submit
                   </button>
                 )}
-
+ 
                 {modal.modalData &&
                   checkRole &&
                   checkRole[0]?.can_update === 1 && (
@@ -577,7 +576,7 @@ function CityComponent() {
                       Update
                     </button>
                   )}
-
+ 
                 <button
                   type="button"
                   className="btn btn-danger text-white"
@@ -622,7 +621,7 @@ function CityDropdown(props) {
       }
     });
   }, []);
-
+ 
   return (
     <>
       {data && (
@@ -660,5 +659,5 @@ function CityDropdown(props) {
     </>
   );
 }
-
+ 
 export { CityComponent, CityDropdown };

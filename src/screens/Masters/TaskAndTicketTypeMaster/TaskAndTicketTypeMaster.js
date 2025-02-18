@@ -14,6 +14,7 @@ import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { toast } from 'react-toastify';
 // for task type created customoption function
 
 const CustomOption = ({ label, options, onClick, closeDropdown }) => {
@@ -875,19 +876,20 @@ function TaskAndTicketTypeMaster(props) {
         await new TaskTicketTypeService().postType(form).then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              setNotify({ type: 'success', message: res.data.message });
+              toast.success(res.data.message);
               setModal({ showModal: false });
 
               loadData();
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message);
             }
           }
         });
       } else {
         if (
-          selectedOptionId === 'Primary' ||
-          modal.modalData.parent_name === 'Primary'
+          selectedOptionId === 'Primary'
+          //  ||
+          // modal.modalData.parent_name === 'Primary'
         ) {
           form.append('parent_id', 0);
           form.append('type_name', value?.type_name);
@@ -909,19 +911,17 @@ function TaskAndTicketTypeMaster(props) {
         }
 
         form.append('type', selectedType);
-
         await new TaskTicketTypeService()._updateType(id, form).then((res) => {
           if (res.status === 200) {
             if (res.data.status === 1) {
-              setNotify({ type: 'success', message: res.data.message });
+              toast.success(res.data.message);
               setModal({ showModal: false });
               loadData();
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message);
             }
           } else {
-            // setLoading(false);
-            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message);
           }
         });
       }
@@ -952,7 +952,6 @@ function TaskAndTicketTypeMaster(props) {
 
   // Assuming your data is stored in a variable called `data`
   // const labelsAndParentIDs = extractLabelsAndParentIDs(taskData);
-
   const initialValues = {
     type_name: modal.modalData?.type_name || '',
     remark: modal.modalData?.remark || '',
@@ -983,12 +982,6 @@ function TaskAndTicketTypeMaster(props) {
 
   return (
     <div className="container-xxl">
-      {notify && (
-        <>
-          {' '}
-          <Alert alertData={notify} />{' '}
-        </>
-      )}
       <PageHeader
         headerTitle="Ticket And Task Type Master"
         renderRight={() => {

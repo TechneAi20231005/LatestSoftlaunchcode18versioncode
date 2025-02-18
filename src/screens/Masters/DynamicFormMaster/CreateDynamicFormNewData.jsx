@@ -320,7 +320,6 @@ function CreateDynamicForm({ match }) {
                   <h2 className="mb-0 fw-bold ">Dynamic Form</h2>
                 </div>
               </div>
-              {notify && <Alert alertData={notify} />}
               <Modal
                 show={showDynamicFormModal.display}
                 onHide={(e) => handleDynamicModal(e, false, null, null)}

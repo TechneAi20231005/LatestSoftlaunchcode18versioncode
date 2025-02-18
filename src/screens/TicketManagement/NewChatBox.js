@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MentionsInput, Mention } from 'react-mentions';
 import { Button, ListGroup } from 'react-bootstrap';
 import UserService from '../../services/MastersService/UserService'; // Import your UserService
 import classNames from './example.module.css';
 import MyTicketService from '../../services/TicketService/MyTicketService';
+import { toast } from 'react-toastify';
 
 const Chatbox = (props) => {
   const { ticketId, loadComment, commentData } = props;
@@ -13,6 +14,56 @@ const Chatbox = (props) => {
   const handleMentionAdd = (e) => {
     setMentionId([...mentionId, e]);
   };
+  const [selectedFile, setSelectedFile] = useState([]);
+  const fileInputRef = useRef(null);
+
+  const uploadAttachmentHandler = (e, type, id = null) => {
+    let file;
+    if (type === 'UPLOAD') {
+      const selectedFilesCount = selectedFile?.length;
+      const maxTotalSizeMB = 10; // Maximum total size in MB
+      // Calculate the total size of video files in the existing selected files
+      const totalSizeBytesExisting = selectedFile
+        .filter((file) => file.file.type.startsWith('video/'))
+        .reduce((acc, currFile) => acc + currFile.file.size, 0);
+
+      const newFiles = Array.from(e.target.files)
+        .filter((file, index) => index < 5 - selectedFilesCount) // Limit to available slots
+        .map((file) => ({
+          file,
+          show_to_customer: 0,
+          show_to_project_owner: 0
+        }));
+
+      if (newFiles?.length === 0) {
+        // All available slots already used
+        alert('You can only upload a maximum of 5 files.');
+      } else {
+        // Calculate the total size of video files in the new selection
+        const totalSizeBytesNew = newFiles
+          .filter((file) => file.file.type.startsWith('video/'))
+          .reduce((acc, currFile) => acc + currFile.file.size, 0);
+
+        // Calculate the total size in MB
+        const totalSizeMB =
+          (totalSizeBytesExisting + totalSizeBytesNew) / (1024 * 1024);
+
+        if (totalSizeMB > maxTotalSizeMB) {
+          alert(
+            `Total video file size exceeds ${maxTotalSizeMB} MB. Please reduce the size of your videos.`
+          );
+        } else {
+          setSelectedFile((prevSelectedFiles) => [
+            ...prevSelectedFiles,
+            ...newFiles
+          ]);
+        }
+
+        // Clear the input field
+        fileInputRef.current.value = '';
+      }
+    }
+  };
   const handleComment = async (e) => {
     e.preventDefault();
     setMessage('');
@@ -21,12 +72,19 @@ const Chatbox = (props) => {
     //   return;
     // }
     await new MyTicketService()
+
       .postComment({
         ticket_id: ticketId,
         comment: message,
-        mentions_id: mentionId
+        mentions_id: mentionId,
+        attachment: selectedFile[0]?.file
       })
       .then((res) => {
+        if (res?.data?.status === 1) {
+          toast.success(res?.data?.message);
+        } else {
+          toast.success(res?.data?.message);
+        }
         loadComment();
       });
   };
@@ -35,12 +93,11 @@ const Chatbox = (props) => {
     const fetchData = async () => {
       try {
         const inputRequired =
-          'id,employee_id,first_name,last_name,middle_name,is_active';
+          'id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id';
         const res = await new UserService().getUserForMyTickets(inputRequired);
 
         if (res.status === 200 && res.data.status === 1) {
-          console.log('res', res);
-          const data = res.data.data.filter(
+          const data = res.data.data?.data?.filter(
             (d) => d.is_active === 1 && d.account_for
           );
           const select = data.map((d) => ({
@@ -84,12 +141,47 @@ const Chatbox = (props) => {
                   />
                 </MentionsInput>
 
-                <Button variant="primary" className="mt-2" type="submit">
-                  Send
-                </Button>
+                <input
+                  type="file"
+                  className="form-control"
+                  multiple
+                  ref={fileInputRef}
+                  onChange={(e) => {
+                    uploadAttachmentHandler(e, 'UPLOAD', '');
+                  }}
+                />
+                <div className="mt-2">
+                  {selectedFile.length > 0 && (
+                    <ul className="list-group">
+                      {selectedFile.map((fileObj, index) => (
+                        <li
+                          key={index}
+                          className="list-group-item d-flex justify-content-between align-items-center"
+                        >
+                          {fileObj.file.name}{' '}
+                          {/* FIXED: Access file name correctly */}
+                          <button
+                            className="btn btn-sm btn-danger"
+                            onClick={() =>
+                              uploadAttachmentHandler(null, 'DELETE', index)
+                            }
+                          >
+                            Remove
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+
+                <div className="col-md-12 d-flex justify-content-end">
+                  <Button variant="primary" className="mt-5" type="submit">
+                    submit
+                  </Button>
+                </div>
               </div>
             </div>
-            <div className="card mt-2">
+            {/* <div className="card mt-2">
               <div className="card-body">
                 <div className="row">
                   <div className="col-sm-6 mt-3">
@@ -131,6 +223,7 @@ const Chatbox = (props) => {
                         // maxLengthCheck(e, "UPLOAD");
                       }}
                     />
+
                   </div>
                   <div className="col-md-6 d-flex justify-content-end">
                     <Button variant="primary" className="mt-2" type="submit">
@@ -139,7 +232,7 @@ const Chatbox = (props) => {
                   </div>
                 </div>
               </div>
-            </div>
+            </div> */}
 
             <ListGroup
               className="mt-3"

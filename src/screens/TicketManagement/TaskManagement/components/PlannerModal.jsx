@@ -399,7 +399,6 @@ function PlannerModal(props) {
       (sumHoras[1] < 10 ? '0' + sumHoras[1] : sumHoras[1]);
     setTotalHours(t);
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData(e.target);
@@ -412,6 +411,11 @@ function PlannerModal(props) {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setNotify({ type: 'success', message: res.data.message });
+          setTimeout(() => {
+            if (props.handleClose) {
+              props.handleClose();
+            }
+          }, 2000); // Delay closing by 2 seconds
         } else {
           setNotify({ type: 'danger', message: res.data.message });
         }

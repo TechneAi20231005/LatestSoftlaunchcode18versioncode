@@ -5,6 +5,7 @@ import Select from 'react-select';
 import PageHeader from '../../../components/Common/PageHeader';
 import ErrorLogService from '../../../services/ErrorLogService';
 import Alert from '../../../components/Common/Alert';
+import { errorHandler } from '../../../utils';
 
 const ModuleSettings = ({ match }) => {
   const moduleRef = useRef();
@@ -21,18 +22,23 @@ const ModuleSettings = ({ match }) => {
   const [notify, setNotify] = useState();
 
   const loadData = () => {
-    new ModuleSetting().getAllModuleSetting().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setData(res.data.data);
-          const t = res.data.data.map((d) => ({
-            label: d.module_name,
-            value: d.module_name
-          }));
-          setModule(t);
+    new ModuleSetting()
+      .getAllModuleSetting()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setData(res.data.data);
+            const t = res.data.data.map((d) => ({
+              label: d.module_name,
+              value: d.module_name
+            }));
+            setModule(t);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
   const handleSubmoduleChange = (e) => {
@@ -41,14 +47,19 @@ const ModuleSettings = ({ match }) => {
 
     const url = selected.module_name + '/' + e.value;
 
-    new ModuleSetting().getModuleSetting(url).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setSettingData(null);
-          setSettingData(res.data.data);
+    new ModuleSetting()
+      .getModuleSetting(url)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setSettingData(null);
+            setSettingData(res.data.data);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
   const handleModuleChange = (e) => {

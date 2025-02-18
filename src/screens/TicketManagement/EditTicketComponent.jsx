@@ -5,7 +5,7 @@ import Alert from '../../components/Common/Alert';
 import { _base } from '../../settings/constants';
 
 import * as Validation from '../../components/Utilities/Validation';
-import { _attachmentUrl } from '../../settings/constants';
+import { _attachmentUrl, _rewampAttachmentUrl } from '../../settings/constants';
 import {
   getAttachment,
   deleteAttachment
@@ -39,6 +39,7 @@ import { UseDispatch, useDispatch, useSelector } from 'react-redux';
 import { getUserForMyTicketsData } from './MyTicketComponentAction';
 import { getRoles } from '../Dashboard/DashboardAction';
 import TaskTicketTypeService from '../../services/MastersService/TaskTicketTypeService';
+import { errorHandler } from '../../utils';
 
 export default function EditTicketComponent({ match }) {
   const history = useNavigate();
@@ -523,92 +524,104 @@ export default function EditTicketComponent({ match }) {
       }
     });
 
-    await new MyTicketService().getTicketById(ticketId).then((res) => {
-      if (res.status === 200) {
-        const data = res.data.data;
-        setProjectId(res.data.data?.project_id);
-        setUsers(res.data.data?.ticket_users);
-        setTicketStatus(data?.status_id);
-        setRows(res.data.data?.dynamic_form);
-        if (data.status_id == 3) {
-          setIsSolved(true);
-        }
-        setData(null);
-        setData(data);
-        // handleAttachment("GetAttachment", ticketId);
-        if (rows) {
-          var dynamicForm = res.data.data.dynamic_form;
+    await new MyTicketService()
+      .getTicketById(ticketId)
+      .then((res) => {
+        if (res.status === 200) {
+          const data = res.data.data;
+          setProjectId(res.data.data?.project_id);
+          setUsers(res.data.data?.ticket_users);
+          setTicketStatus(data?.status_id);
+          setRows(res.data.data?.dynamic_form);
+          if (data.status_id == 3) {
+            setIsSolved(true);
+          }
+          setData(null);
+          setData(data);
+          // handleAttachment("GetAttachment", ticketId);
+          if (rows) {
+            var dynamicForm = res.data.data.dynamic_form;
 
-          const filteredArray = dynamicForm.filter(
-            (formInstance) =>
-              formInstance.inputType === 'select' &&
-              formInstance.inputAddOn.inputDataSource
-          );
+            const filteredArray = dynamicForm.filter(
+              (formInstance) =>
+                formInstance.inputType === 'select' &&
+                formInstance.inputAddOn.inputDataSource
+            );
 
-          Promise.all(
-            filteredArray.map((d) =>
-              new DynamicFormDropdownMasterService().getDropdownById(
-                d.inputAddOn.inputDataSource
+            Promise.all(
+              filteredArray.map((d) =>
+                new DynamicFormDropdownMasterService().getDropdownById(
+                  d.inputAddOn.inputDataSource
+                )
               )
             )
-          )
-            .then((result) => {
-              var tempResponse = [];
+              .then((result) => {
+                var tempResponse = [];
 
-              result.forEach((resu, i) => {
-                if (resu.status == 200) {
-                  if (resu.data.status == 1) {
-                    var temp = [];
-                    temp = resu.data.data.dropdown.map((d) => ({
-                      value: d.id,
-                      label: d.label
-                    }));
-                    tempResponse.push(temp);
+                result.forEach((resu, i) => {
+                  if (resu.status == 200) {
+                    if (resu.data.status == 1) {
+                      var temp = [];
+                      temp = resu.data.data.dropdown.map((d) => ({
+                        value: d.id,
+                        label: d.label
+                      }));
+                      tempResponse.push(temp);
+                    }
                   }
-                }
-              });
+                });
 
-              dynamicForm.forEach((d, i) => {
-                if (d.inputType === 'select') {
-                  if (tempResponse.length > 0) {
-                    dynamicForm[i].inputAddOn.inputDataSourceData =
-                      tempResponse[0];
-                    tempResponse.splice(i, 1);
+                dynamicForm.forEach((d, i) => {
+                  if (d.inputType === 'select') {
+                    if (tempResponse.length > 0) {
+                      dynamicForm[i].inputAddOn.inputDataSourceData =
+                        tempResponse[0];
+                      tempResponse.splice(i, 1);
+                    }
                   }
-                }
+                });
+                setRows(dynamicForm);
+              })
+              .catch((error) => {
+                errorHandler(error);
               });
-              setRows(dynamicForm);
-            })
-            .catch((err) => {});
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
-    await new DesignationService().getdesignatedDropdown().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const deta = res.data.data;
-          setBa(
-            deta.BA.filter((d) => d.is_active === 1).map((d) => ({
-              value: d.id,
-              label: d.first_name + '-' + d.last_name + ' (' + d.id + ')'
-            }))
-          );
-          setDev(
-            deta.DEV.filter((d) => d.is_active === 1).map((d) => ({
-              value: d.id,
-              label: d.first_name + '-' + d.last_name + ' (' + d.id + ')'
-            }))
-          );
-          setTester(
-            deta.TESTER.filter((d) => d.is_active === 1).map((d) => ({
-              value: d.id,
-              label: d.first_name + '-' + d.last_name + ' (' + d.id + ')'
-            }))
-          );
+    await new DesignationService()
+      .getdesignatedDropdown()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            const deta = res.data.data;
+            setBa(
+              deta.BA.filter((d) => d.is_active === 1).map((d) => ({
+                value: d.id,
+                label: d.first_name + '-' + d.last_name + ' (' + d.id + ')'
+              }))
+            );
+            setDev(
+              deta.DEV.filter((d) => d.is_active === 1).map((d) => ({
+                value: d.id,
+                label: d.first_name + '-' + d.last_name + ' (' + d.id + ')'
+              }))
+            );
+            setTester(
+              deta.TESTER.filter((d) => d.is_active === 1).map((d) => ({
+                value: d.id,
+                label: d.first_name + '-' + d.last_name + ' (' + d.id + ')'
+              }))
+            );
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
     await new CustomerMappingService()
       .getCustomerMappingSettings()
@@ -625,86 +638,126 @@ export default function EditTicketComponent({ match }) {
             });
           }
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
 
-    new QueryTypeService().getQueryType().then((resp) => {
-      if (resp.data.status === 1) {
-        var queryType = [];
-        resp.data.data.data.forEach((q) => {
-          if (q.query_type_name) {
-            queryType.push({ value: q.id, label: q.query_type_name });
+    new QueryTypeService()
+      .getQueryType()
+      .then((resp) => {
+        if (resp.data.status === 1) {
+          var queryType = [];
+          resp.data.data.data.forEach((q) => {
+            if (q.query_type_name) {
+              queryType.push({ value: q.id, label: q.query_type_name });
+            }
+          });
+          setQueryType(queryType);
+        }
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
+
+    await new DepartmentService()
+      .getDepartment()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            const data = res.data.data?.data?.filter((d) => d.is_active === 1);
+            const select = res.data.data?.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({ value: d.id, label: d.department }));
+            setDepartment(data);
+            setDepartmentDropdown(select);
           }
-        });
-        setQueryType(queryType);
-      }
-    });
-
-    await new DepartmentService().getDepartment().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const data = res.data.data?.data?.filter((d) => d.is_active === 1);
-          const select = res.data.data?.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({ value: d.id, label: d.department }));
-          setDepartment(data);
-          setDepartmentDropdown(select);
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
-    await new ProjectService().getProject().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const temp = res.data.data?.data?.filter((d) => d.is_active === 1);
-          setProjectData(temp);
-          setProjectDropdown(
-            temp.map((d) => ({ value: d.id, label: d.project_name }))
-          );
+    await new ProjectService()
+      .getProject()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            const temp = res.data.data?.data?.filter((d) => d.is_active === 1);
+            setProjectData(temp);
+            setProjectDropdown(
+              temp.map((d) => ({ value: d.id, label: d.project_name }))
+            );
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
-    await new ModuleService().getModule().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const temp = res.data.data?.data?.filter((d) => d.is_active === 1);
+    await new ModuleService()
+      .getModule()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            const temp = res.data.data?.data?.filter((d) => d.is_active === 1);
 
-          setModuleData(temp);
-          setModuleDropdown(
-            temp.map((d) => ({ value: d.id, label: d.module_name }))
-          );
+            setModuleData(temp);
+            setModuleDropdown(
+              temp.map((d) => ({ value: d.id, label: d.module_name }))
+            );
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
-    await new SubModuleService().getSubModule().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const temp = res?.data?.data?.data?.filter((d) => d.is_active === 1);
-          setSubModuleData(temp);
-          setSubModuleDropdown(
-            temp?.map((d) => ({ value: d.id, label: d.sub_module_name }))
-          );
+    await new SubModuleService()
+      .getSubModule()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            const temp = res?.data?.data?.data?.filter(
+              (d) => d.is_active === 1
+            );
+            setSubModuleData(temp);
+            setSubModuleDropdown(
+              temp?.map((d) => ({ value: d.id, label: d.sub_module_name }))
+            );
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
-    await new StatusService().getStatus().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const temp = res.data.data?.data?.filter((d) => d.is_active === 1);
-          setStatusValue(temp);
-          const select = temp.map((d) => ({ value: d.id, label: d.status }));
-          setStatusData(select);
+    await new StatusService()
+      .getStatus()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            const temp = res.data.data?.data?.filter((d) => d.is_active === 1);
+            setStatusValue(temp);
+            const select = temp.map((d) => ({ value: d.id, label: d.status }));
+            setStatusData(select);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
-    await new TaskTicketTypeService().getChildrenData('TASK')?.then((res) => {
-      if (res?.status === 200) {
-        setTicketsData(res?.data?.data?.data);
-      }
-    });
+    await new TaskTicketTypeService()
+      .getChildrenData('TASK')
+      ?.then((res) => {
+        if (res?.status === 200) {
+          setTicketsData(res?.data?.data?.data);
+        }
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
     loadComments();
     setShowLoaderModal(false);
@@ -782,7 +835,6 @@ export default function EditTicketComponent({ match }) {
           value: d.id,
           label: d.first_name + ' ' + d.last_name + '(' + d.id + ')'
         }));
-
       setUserDropdown(select);
       setUserName(null);
     }
@@ -1160,8 +1212,8 @@ export default function EditTicketComponent({ match }) {
                           >
                             {selectedOption
                               ? selectedOption
-                              : data?.parent_name !== null
-                              ? data?.parent_name
+                              : data?.type_name !== null
+                              ? data?.type_name
                               : 'Primary'}
                           </div>
                           {isMenuOpen && (
@@ -1192,7 +1244,7 @@ export default function EditTicketComponent({ match }) {
                       </div>
                     </div>
 
-                    <div className="col-sm-4">
+                    {/* <div className="col-sm-4">
                       <label className="col-form-label">
                         <b>Ticket Type : </b>
                       </label>
@@ -1204,7 +1256,7 @@ export default function EditTicketComponent({ match }) {
                         readOnly
                         name="ticket_type_id"
                       />
-                    </div>
+                    </div> */}
                   </div>
                 </div>
               </div>
@@ -1219,7 +1271,6 @@ export default function EditTicketComponent({ match }) {
                           Project : <Astrick color="red" size="13px" />
                         </b>
                       </label>
-
                       {projectDropdown && data && (
                         <Select
                           id="project_id"
@@ -1277,7 +1328,6 @@ export default function EditTicketComponent({ match }) {
                         />
                       )}
                     </div>
-
                     <div className="col-sm-3">
                       <label className=" col-form-label">
                         <b>Reviewer :</b>
@@ -1332,7 +1382,6 @@ export default function EditTicketComponent({ match }) {
                             Assign to User : <Astrick color="red" size="13px" />
                           </b>
                         </label>
-
                         {userDropdown && userDrp && (
                           <Select
                             id="assign_to_user_id"
@@ -1862,7 +1911,7 @@ export default function EditTicketComponent({ match }) {
                           </p>
                           <div className="d-flex justify-content-end p-0">
                             <a
-                              href={`${_attachmentUrl + '/' + attach.path}`}
+                              href={`${_rewampAttachmentUrl + attach.path}`}
                               target="_blank"
                               className="btn btn-warning btn-sm p-0 px-1"
                             >

@@ -29,6 +29,7 @@ import UserService from '../../../services/MastersService/UserService';
 import { getDesignationDataListThunk } from '../DesignationMaster/DesignationAction';
 import { getStatusData } from '../StatusMaster/StatusComponentAction';
 import QueryTypeService from '../../../services/MastersService/QueryTypeService';
+import { toast } from 'react-toastify';
 
 function EditDynamicForm() {
   const { id } = useParams();
@@ -434,7 +435,7 @@ function EditDynamicForm() {
 
             // );
 
-            setNotify({ type: 'success', message: res.data.message });
+            toast.success(res.data.message);
             setTimeout(() => {
               navigate(`/${_base}/DynamicForm`, {
                 state: {
@@ -443,16 +444,10 @@ function EditDynamicForm() {
               });
             }, 1000);
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message);
           }
         } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'User',
-            'Create_User',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.data.message);
         }
       });
   };
@@ -524,7 +519,6 @@ function EditDynamicForm() {
                   <h2 className="mb-0 fw-bold "> Edit Dynamic Form</h2>
                 </div>
               </div>
-              {notify && <Alert alertData={notify} />}
               {/*************** TABLE ***************/}
               <div className="card mt-2">
                 <div className="card-body">

@@ -20,11 +20,11 @@ export const _rewampAttachmentUrl = REACT_APP_API_REWAMP_ATTACHMENT_URL;
 export const _pincodeUrl = REACT_APP_PIN_CODE_API_URL;
 
 export const loginURL = _rewampApiUrl + 'login';
-export const fpURL = _apiUrl + 'reset/forgetPasswordOtp';
-export const otpURL = _apiUrl + 'reset/sendOtp';
-export const rpURL = _apiUrl + 'reset/resetPassword';
+export const fpURL = _rewampApiUrl + 'reset/forgetPasswordOtp';
+export const otpURL = _rewampApiUrl + 'reset/sendOtp';
+export const rpURL = _rewampApiUrl + 'reset/resetPassword';
 
-export const attachmentUrl = _apiUrl + 'attachment';
+export const attachmentUrl = _rewampApiUrl + 'attachment';
 
 export const userSessionData = {
   tenantId: localStorage.getItem('tenant_id'),
@@ -68,7 +68,7 @@ export const userSessionData = {
 };
 
 export const menuUrl =
-  _apiUrl + 'getMenuByRoleId/' + localStorage.getItem('role_id');
+  _rewampApiUrl + 'getMenuByRoleId/' + localStorage.getItem('role_id');
 
 export const masterURL = {
   user: _rewampApiUrl + 'employeeMaster/getData',
@@ -163,12 +163,12 @@ export const projectManagementUrl = {
 };
 
 export const menuManagementUrl = {
-  menusUrl: _apiUrl + 'menuManagement'
+  menusUrl: _rewampApiUrl + 'roleMaster'
 };
 
 export const dashboardUrl = _rewampApiUrl + 'dashboard';
 
-export const notificationUrl = _apiUrl + 'notification';
+export const notificationUrl = _rewampApiUrl + 'notification';
 
 export const settingMasterUrl = {
   customerMapping: _rewampApiUrl + 'customerMapping',

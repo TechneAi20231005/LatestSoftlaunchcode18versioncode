@@ -25,7 +25,6 @@ import PageHeader from '../../components/Common/PageHeader';
 export default function ProjectwiseModule() {
   const params = useParams();
   const { projectId, moduleId } = params;
-
   const location = useLocation();
   const [data, setData] = useState(null);
   const [isProjectOwner, setIsProjectOwner] = useState(null);
@@ -963,11 +962,11 @@ export default function ProjectwiseModule() {
               </div>
               {!isNaN(parseInt(moduleId)) ? (
                 <span className="small text-muted project_name fw-bold text-center">
-                  {data && data?.project_name}
+                  {data && data?.project?.project_name}
                 </span>
               ) : (
                 <h6 className="mb-0 fw-bold  fs-6  mb-2">
-                  {data && data?.project_name}
+                  {data && data?.project?.project_name}
                 </h6>
               )}
               <h6 className="mb-0 fw-bold  fs-6  mb-2">
@@ -1052,35 +1051,39 @@ export default function ProjectwiseModule() {
                       }
                       // options={projectWiseModuleDropdown}
                       ref={moduleRef}
+                      defaultValue={
+                        moduleDropdown?.length > 0 &&
+                        moduleDropdown?.filter((d) => d?.value == moduleId)
+                      }
                       onChange={(e) => {
                         changeSubModuleHandle(e, 'MODULE');
                       }}
+                      isDisabled={!moduleId ? false : true}
                       name="submodule_id"
                     />
                   )}
                 </div>
                 {((subModuleDropdown && subModuleDropdown?.length > 0) ||
-                  projectWiseSubModuleDropdown?.length > 0) &&
-                  moduleValue && (
-                    <div className="d-md-flex mt-2">
-                      <label className="form-label col-sm-3 mt-2 me-2 fw-bold">
-                        SubModule:
-                      </label>
-                      <Select
-                        className="w-100"
-                        options={
-                          parseInt(ModuleID)?.length > 0
-                            ? subModuleDropdown
-                            : projectWiseSubModuleDropdown
-                        }
-                        ref={submoduleRef}
-                        onChange={(e) => {
-                          changeSubModuleHandle(e, 'SUBMODULE');
-                        }}
-                        name="submodule_id"
-                      />
-                    </div>
-                  )}
+                  projectWiseSubModuleDropdown?.length > 0) && (
+                  <div className="d-md-flex mt-2">
+                    <label className="form-label col-sm-3 mt-2 me-2 fw-bold">
+                      SubModule:
+                    </label>
+                    <Select
+                      className="w-100"
+                      options={
+                        subModuleDropdown.length > 0
+                          ? subModuleDropdown
+                          : projectWiseSubModuleDropdown
+                      }
+                      ref={submoduleRef}
+                      onChange={(e) => {
+                        changeSubModuleHandle(e, 'SUBMODULE');
+                      }}
+                      name="submodule_id"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="col-4 text-center">

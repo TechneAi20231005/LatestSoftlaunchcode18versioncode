@@ -41,6 +41,8 @@ import {
   editJobRoleMasterThunk,
   getJobRoleMasterListThunk
 } from '../../../redux/services/jobRoleMaster';
+import CustomerService from '../../../services/MastersService/CustomerService';
+import { errorHandler } from '../../../utils';
 function EditUserComponent({ match }) {
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState('All_Tickets');
@@ -105,6 +107,8 @@ function EditUserComponent({ match }) {
   const [updateStatus, setUpdateStatus] = useState({});
 
   const [passwordShown, setPasswordShown] = useState(false);
+  const [customerData, setCustomerData] = useState(false);
+
   const togglePasswordVisiblity = () => {
     setPasswordShown(passwordShown ? false : true);
   };
@@ -117,9 +121,9 @@ function EditUserComponent({ match }) {
   // const [stateName, setStateName] = useState(null);
   const [cityName, setCityName] = useState(null);
 
-  // const [password, setPassword] = useState(null);
-  // const [confirmPasswordError, setConfirmPasswordError] = useState(false);
-  const confirmPasswordError = false;
+  const [password, setPassword] = useState(null);
+  const [confirmPasswordError, setConfirmPasswordError] = useState(false);
+  // const confirmPasswordError = false;
 
   // const roleId = sessionStorage.getItem('role_id');
 
@@ -137,37 +141,37 @@ function EditUserComponent({ match }) {
   //   (jobRoleSlice) => jobRoleSlice.dashboard.filterJobRoleData
   // );
 
-  // const [passwordError, setPasswordError] = useState(null);
-  // const [passwordValid, setPasswordValid] = useState(false);
+  const [passwordError, setPasswordError] = useState(null);
+  const [passwordValid, setPasswordValid] = useState(false);
 
-  // const handlePasswordValidation = (e) => {
-  //   if (e.target.value === '') {
-  //     setInputState({ ...state, passwordErr: 'Please enter Password' });
-  //   } else {
-  //     setInputState({ ...state, passwordErr: '' });
-  //   }
-  //   setPassword(e.target.value);
-  //   const passwordValidation = e.target.value;
-  //   if (passwordValidation.length > 20) {
-  //     setPasswordError('Enter Password min. 6 & max. 20');
-  //     setPasswordValid(true);
-  //   } else if (passwordValidation.length < 6) {
-  //     setPasswordError('Enter Password min. 6 & max. 20');
-  //     setPasswordValid(true);
-  //   } else {
-  //     setPasswordError('');
-  //     setPasswordValid(false);
-  //   }
+  const handlePasswordValidation = (e) => {
+    if (e.target.value === '') {
+      setInputState({ ...state, passwordErr: 'Please enter Password' });
+    } else {
+      setInputState({ ...state, passwordErr: '' });
+    }
+    setPassword(e.target.value);
+    const passwordValidation = e.target.value;
+    if (passwordValidation.length > 20) {
+      setPasswordError('Enter Password min. 6 & max. 20');
+      setPasswordValid(true);
+    } else if (passwordValidation.length < 6) {
+      setPasswordError('Enter Password min. 6 & max. 20');
+      setPasswordValid(true);
+    } else {
+      setPasswordError('');
+      setPasswordValid(false);
+    }
 
-  //   if (
-  //     confirmedPasswordRef.current.value !== '' &&
-  //     confirmedPasswordRef.current.value !== passwordValidation
-  //   ) {
-  //     setConfirmPasswordError(true);
-  //   } else {
-  //     setConfirmPasswordError(false);
-  //   }
-  // };
+    if (
+      confirmedPasswordRef.current.value !== '' &&
+      confirmedPasswordRef.current.value !== passwordValidation
+    ) {
+      setConfirmPasswordError(true);
+    } else {
+      setConfirmPasswordError(false);
+    }
+  };
 
   const [inputState, setInputState] = useState({
     firstNameErr: '',
@@ -194,11 +198,12 @@ function EditUserComponent({ match }) {
     var selectEmail = form.getAll('email_id')[0];
     var selectUserName = form.getAll('user_name')[0];
     var selectContactNo = form.getAll('contact_no')[0];
-    // var selectPassword = form.getAll('password')[0];
+    var selectPassword = form.getAll('password')[0];
     // var selectWhatsapp = form.getAll('whats_app_contact_no')[0];
     var selectRole = form.getAll('role_id')[0];
     var selectJobRole = form.getAll('job_role')[0];
     var selectDesignation = form.getAll('designation_id')[0];
+    var confirm_password = form.getAll('confirm_password')[0];
 
     let flag = 0;
     if (selectFirstName === '') {
@@ -245,6 +250,21 @@ function EditUserComponent({ match }) {
     } else if (mailError === true) {
       alert('Invalid Email');
       flag = 1;
+    } else if (selectPassword === '') {
+      setInputState({ ...state, passwordErr: 'Please enter Password' });
+      flag = 1;
+    } else if (confirmedPasswordRef.current.value === '') {
+      setInputState({
+        ...state,
+        confirmed_PassErr: ' Please Enter Confirmed password'
+      });
+      flag = 1;
+    } else if (confirm_password !== selectPassword) {
+      // setInputState({
+      //   ...state,
+      //   confirmed_PassErr: 'Password Not matched'
+      // });
+      flag = 1;
     }
     return flag;
   }
@@ -273,6 +293,22 @@ function EditUserComponent({ match }) {
   // };
 
   // const [contactNumber, setContactNumber] = useState(null);
+
+  const handleConfirmedPassword = (event) => {
+    if (event.target.value === '') {
+      setInputState({
+        ...state,
+        confirmed_PassErr: 'Please Enter Confirmed password'
+      });
+    } else {
+      setInputState({ ...state, confirmed_PassErr: '' });
+    }
+    if (event.target.value === password) {
+      setConfirmPasswordError(false);
+    } else {
+      setConfirmPasswordError(true);
+    }
+  };
 
   const [contactValid, setContactValid] = useState(false);
   const handleContactValidation = (e) => {
@@ -343,7 +379,7 @@ function EditUserComponent({ match }) {
       return false;
     }
 
-    var selectDepartment = form.getAll('department_id[]');
+    const selectDepartment = form.getAll('department_id[]');
     if (selectDepartment === '') {
       setInputState({ ...state, departmentErr: ' Please Select Department' });
       return false;
@@ -368,10 +404,7 @@ function EditUserComponent({ match }) {
         .then((res) => {
           if (res?.status === 200) {
             if (res?.data?.status === 1) {
-              // toast.success(res?.data?.message);
-              toast.success(res?.data?.message, {
-                autoClose: 10000 // 10 seconds in milliseconds
-              });
+              toast.success(res?.data?.message);
               navigate(`/${_base}/User`);
 
               // setNotify({ type: 'success', message: res.data.message });
@@ -386,10 +419,7 @@ function EditUserComponent({ match }) {
               //   });
               // }, 3000);
             } else {
-              toast.error(res?.data?.message, {
-                autoClose: 10000 // 10 seconds in milliseconds
-              });
-              // toast.error(res?.data?.message);
+              toast.error(res?.data?.message);
               // setNotify({ type: 'danger', message: res.data.message });
             }
           }
@@ -615,7 +645,25 @@ function EditUserComponent({ match }) {
         } else {
           setRows([mappingData]);
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
+
+    new CustomerService().getCustomer().then((res) => {
+      const tempData = [];
+      if (res.status === 200) {
+        let data = res?.data?.data?.data;
+        // var data = data.filter((d) => d.is_active === 1);
+        for (const key in data) {
+          tempData.push({
+            value: data[key].id,
+            label: data[key].name
+          });
+        }
+      }
+      setCustomerData(tempData);
+    });
   }, [mappingData, roleDropdown, userId]);
   const handleDependentChange = (e, type) => {
     if (type === 'COUNTRY') {
@@ -770,7 +818,7 @@ function EditUserComponent({ match }) {
           setRoleDropdown(dropdownData);
         }
       } catch (error) {
-        // Handle error
+        errorHandler(error);
       }
     };
 
@@ -841,7 +889,6 @@ function EditUserComponent({ match }) {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Edit User" />
-      {notify && <Alert alertData={notify} />}
 
       <form
         onSubmit={handleForm}
@@ -893,7 +940,24 @@ function EditUserComponent({ match }) {
                             </b>
                           </label>
                           <div className="col-sm-3">
-                            <CustomerDropdown
+                            {customerData && (
+                              <Select
+                                id="customer_id"
+                                name="customer_id"
+                                options={customerData}
+                                defaultValue={
+                                  data &&
+                                  customerData &&
+                                  customerData.filter(
+                                    (d) => d?.value === data?.customer_id
+                                  )
+                                }
+                                readOnly={true}
+                                required={true}
+                              />
+                            )}
+
+                            {/* <CustomerDropdown
                               id="customer_id"
                               name="customer_id"
                               defaultValue={
@@ -901,7 +965,7 @@ function EditUserComponent({ match }) {
                               }
                               readOnly={true}
                               required={true}
-                            />
+                            /> */}
                           </div>
                         </div>
                       )}
@@ -1056,7 +1120,7 @@ function EditUserComponent({ match }) {
                                 color: 'red'
                               }}
                             >
-                              {emailError}
+                              {inputState.emailErr}
                             </small>
                           )}
                         </div>
@@ -1262,6 +1326,17 @@ function EditUserComponent({ match }) {
                               onKeyPress={(e) => {
                                 Validation.password(e);
                               }}
+                              onChange={handlePasswordValidation}
+                              // onChange={(event) => {
+                              //   if (event.target.value === '') {
+                              //     setInputState({
+                              //       ...state,
+                              //       passwordErr: 'Please enter Password'
+                              //     });
+                              //   } else {
+                              //     setInputState({ ...state, passwordErr: '' });
+                              //   }
+                              // }}
                               onPaste={(e) => {
                                 e.preventDefault();
                                 return false;
@@ -1309,7 +1384,7 @@ function EditUserComponent({ match }) {
                               name="confirm_password"
                               id="confirm_password"
                               ref={confirmedPasswordRef}
-                              // onChange={handleConfirmedPassword}
+                              onChange={handleConfirmedPassword}
                               type={passwordShown1 ? 'text' : 'Password'}
                               onPaste={(e) => {
                                 e.preventDefault();
@@ -1328,7 +1403,7 @@ function EditUserComponent({ match }) {
                             </InputGroup.Text>
                           </InputGroup>
 
-                          {inputState && (
+                          {inputState.confirmed_PassErr && (
                             <small
                               style={{
                                 color: 'red',
@@ -1340,17 +1415,18 @@ function EditUserComponent({ match }) {
                             </small>
                           )}
                         </div>
-                        {confirmPasswordError && (
-                          <span
-                            style={{
-                              color: 'red',
-                              position: 'relative',
-                              left: '67%'
-                            }}
-                          >
-                            Password Not matched
-                          </span>
-                        )}
+                        {!inputState.confirmed_PassErr &&
+                          confirmPasswordError && (
+                            <span
+                              style={{
+                                color: 'red',
+                                position: 'relative',
+                                left: '67%'
+                              }}
+                            >
+                              Password Not matched
+                            </span>
+                          )}
                       </div>
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
