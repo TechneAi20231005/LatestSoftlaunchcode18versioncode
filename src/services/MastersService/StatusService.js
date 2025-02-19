@@ -4,7 +4,9 @@ import { masterURL } from '../../settings/constants';
 
 const _URL = masterURL.status;
 
-const _getAllStatus = `${_URL}/getData?type=1?export=1`;
+const _getAllStatus = `${_URL}/getData?export=1`;
+
+const _getGridStatus = `${_URL}/getData?export=1`;
 //  _URL + '/getData';
 const _postStatus = _URL + '/postData';
 const _getStatusById = _URL + '/getStatusById/';
@@ -41,6 +43,20 @@ export default class StatusService {
     };
 
     return axios.get(_getAllStatus, config);
+  }
+
+  getGridStatus(id) {
+    const token = localStorage.getItem('jwt_token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+
+    return axios.get(_getGridStatus, config);
   }
 
   postStatus(payload) {

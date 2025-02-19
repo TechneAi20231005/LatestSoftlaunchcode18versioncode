@@ -62,7 +62,14 @@ export const ExportAllTicketsToExcel = ({
               Confirmation_Required: dataToDownload[key].confirmation_required
                 ? 'YES'
                 : 'NO',
-              Ref_id: dataToDownload[key].cuid,
+              Ref_id:
+                dataToDownload[key]?.attachment &&
+                dataToDownload[key].attachment.length > 0
+                  ? dataToDownload[key].attachment
+                      .map((item) => item.ref_id)
+                      .join(',')
+                  : '',
+
               from_department_name: dataToDownload[key].from_department_name,
               Status: dataToDownload[key].is_active ? 'Active' : 'Deactive',
               module_name: dataToDownload[key].module_name,

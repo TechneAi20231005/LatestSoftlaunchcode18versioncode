@@ -15,6 +15,20 @@ export const getStatusData = createAsyncThunk(
     }
   }
 );
+
+export const getGridStatusData = createAsyncThunk(
+  'getStatusData',
+  async (config, thunkapi) => {
+    try {
+      const service = new StatusService();
+      const response = await service.getGridStatus();
+
+      return response;
+    } catch (error) {
+      errorHandler(error);
+    }
+  }
+);
 export const postStatusData = createAsyncThunk(
   'postStatusData',
   async (config, thunkapi) => {
