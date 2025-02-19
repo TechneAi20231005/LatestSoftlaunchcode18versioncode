@@ -25,7 +25,7 @@ export default function CreateDropdownComponent() {
   const [notify, setNotify] = useState(null);
   const [message, setMessage] = useState('');
   const [display, setDisplay] = useState('');
-
+  const [submitting, setSubmitting] = useState(false);
   const dispatch = useDispatch();
 
   const checkRole = useSelector((DashbordSlice) =>
@@ -34,40 +34,45 @@ export default function CreateDropdownComponent() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
     if (!message?.trim()) {
       setDisplay('Dropdown Name is Required');
+      setSubmitting(false);
       return;
     } else {
       setDisplay(''); // Clear error
       console.log('Form Submitted with Dropdown Name:', message);
     }
     const formData = new FormData(e.target);
-
-    await new DynamicFormDropdownMasterService()
-      .createDropdown(formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            history(
-              {
-                pathname: `/${_base}/DynamicFormDropdown`
-              },
-              {
-                state: {
-                  alert: toast.success(res.data.message)
-                }
+    setSubmitting(true);
+    try {
+      const res = await new DynamicFormDropdownMasterService().createDropdown(
+        formData
+      );
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          history(
+            {
+              pathname: `/${_base}/DynamicFormDropdown`
+            },
+            {
+              state: {
+                alert: toast.success(res.data.message)
               }
-            );
-          } else {
-            toast.error(res.data.message);
-          }
+            }
+          );
         } else {
-          toast.error(res.message);
+          toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleAddRow = () => {

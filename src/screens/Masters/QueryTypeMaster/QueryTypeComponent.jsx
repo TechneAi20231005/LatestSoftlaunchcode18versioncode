@@ -42,7 +42,6 @@ function QueryTypeComponent() {
 
   const [notify, setNotify] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [data, setData] = useState([]);
 
   // const [dataa, setDataa] = useState(null);
@@ -670,7 +669,8 @@ function QueryTypeComponent() {
     loadDataEditPopup();
   };
 
-  const handleForm = async (values, id) => {
+  const handleForm = async (values, id, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('query_type_name', values.query_type_name);
     formData.append('form_id', values.form_id);
@@ -682,11 +682,8 @@ function QueryTypeComponent() {
     formData.append('remark', values.remark);
     formData.append('is_active', values.is_active);
     // e.preventDefault();
-    setIsSubmitting(true);
-    setNotify(null);
     // const form = new FormData(values);
     var flag = 1;
-    setNotify(null);
     // var selectFormId = form.getAll('form_id');
     // // var selectCustomerId = form.getAll('customer_id');
     // var selectQueryGroup = form.getAll('query_group_data[]');
@@ -712,7 +709,6 @@ function QueryTypeComponent() {
           const res = await new QueryTypeService().postQueryType(formData);
           if (res.status === 200) {
             // setShowLoaderModal(false);
-            setIsSubmitting(false);
             if (res.data.status === 1) {
               // setShowLoaderModal(false);
               setModal({ showModal: false, modalData: '', modalHeader: '' });
@@ -745,7 +741,6 @@ function QueryTypeComponent() {
           );
           if (res.status === 200) {
             // setShowLoaderModal(false);
-            setIsSubmitting(false);
             if (res.data.status === 1) {
               setModal({ showModal: false, modalData: '', modalHeader: '' });
               toast.success(res.data.message);
@@ -775,6 +770,8 @@ function QueryTypeComponent() {
           'INSERT',
           errorObject.data.message
         );
+      } finally {
+        setSubmitting(false);
       }
     }
   };
@@ -920,11 +917,13 @@ function QueryTypeComponent() {
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
-            onSubmit={(values) => {
-              handleForm(values, modal.modalData ? modal.modalData.id : '');
+            onSubmit={(values, { setSubmitting }) => {
+              handleForm(values, modal.modalData ? modal.modalData.id : '', {
+                setSubmitting
+              });
             }}
           >
-            {({ values, setFieldValue }) => (
+            {({ values, setFieldValue, isSubmitting }) => (
               <Form>
                 <Modal.Header closeButton>
                   <Modal.Title className="fw-bold">
@@ -1162,6 +1161,7 @@ function QueryTypeComponent() {
                 <Modal.Footer>
                   {!modal.modalData && (
                     <button
+                      disabled={isSubmitting}
                       type="submit"
                       className="btn btn-primary text-white"
                     >
@@ -1172,6 +1172,7 @@ function QueryTypeComponent() {
                     checkRole &&
                     checkRole[0]?.can_update === 1 && (
                       <button
+                        disabled={isSubmitting}
                         type="submit"
                         className="btn btn-primary text-white"
                       >

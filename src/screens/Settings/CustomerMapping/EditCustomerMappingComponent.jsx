@@ -494,7 +494,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     }
   };
 
-  const handleForm = async (values) => {
+  const handleForm = async (values, { setSubmitting }) => {
+    setSubmitting(true);
     let userIds;
 
     if (Array?.isArray(values?.user_id)) {
@@ -547,31 +548,34 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     }
 
     if (flag === 1) {
-      await new CustomerMappingService()
-        .updateCustomerMapping(mappingId, values)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              history(
-                {
-                  pathname: `/${_base}/CustomerMapping`
-                },
-                {
-                  state: {
-                    alert: toast.success(res.data.message)
-                  }
+      try {
+        const res = await new CustomerMappingService().updateCustomerMapping(
+          mappingId,
+          values
+        );
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            history(
+              {
+                pathname: `/${_base}/CustomerMapping`
+              },
+              {
+                state: {
+                  alert: toast.success(res.data.message)
                 }
-              );
-            } else {
-              toast.error(res.data.message);
-            }
+              }
+            );
           } else {
-            toast.error(res.message);
+            toast.error(res.data.message);
           }
-        })
-        .catch((error) => {
-          errorHandler(error);
-        });
+        } else {
+          toast.error(res.message);
+        }
+      } catch (error) {
+        errorHandler(error);
+      } finally {
+        setSubmitting(false);
+      }
     }
   };
 
@@ -597,7 +601,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Edit Customer Mapping" />
-      {/* {notify && <Alert alertData={notify} />} */}
       <div className="row clearfix g-3">
         <div className="col-sm-12">
           <div className="card mt-2">
@@ -670,8 +673,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                   // Generate validation schema dynamically
                   return CustomValidation(fields);
                 }}
-                onSubmit={(values) => {
-                  handleForm(values);
+                onSubmit={(values, { setSubmitting }) => {
+                  handleForm(values, { setSubmitting });
                 }}
               >
                 {({
@@ -1298,6 +1301,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
                       <div className="mt-3 d-flex justify-content-end">
                         <button
+                          disabled={isSubmitting}
                           type="submit"
                           className="btn btn-primary btn-sm"
                         >

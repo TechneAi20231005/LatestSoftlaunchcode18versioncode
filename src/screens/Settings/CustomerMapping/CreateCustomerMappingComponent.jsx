@@ -46,7 +46,6 @@ export default function CreateCustomerMappingComponent() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const departmentDropdownRef = useRef();
-  const [notify, setNotify] = useState();
   const [userDropDownFilterData, setUserDropDownFilterData] = useState();
 
   const [dynamicForm, setDynamicForm] = useState();
@@ -201,7 +200,6 @@ export default function CreateCustomerMappingComponent() {
   const handleQueryType = async (selectedOption, form) => {
     if (!selectedOption || Object.entries(selectedOption).length === 0) return;
 
-    setNotify(null);
     setDynamicForm(null);
     setDynamicFormDropdown(null);
     setSelectedDynamicForm(null);
@@ -372,7 +370,8 @@ export default function CreateCustomerMappingComponent() {
 
   const useridDetail = useRef();
 
-  const handleForm = async (values) => {
+  const handleForm = async (values, { setSubmitting }) => {
+    setSubmitting(true);
     if (userDropDownFilterData) {
       if (values?.user_id?.length === 0) {
         return;
@@ -419,30 +418,31 @@ export default function CreateCustomerMappingComponent() {
     }
 
     if (flag === 1) {
-      await new CustomerMappingService()
-        .postCustomerMapping(values)
-        .then((res) => {
-          if (res?.status === 200) {
-            if (res?.data?.status === 1) {
-              toast.success(res?.data?.message);
+      try {
+        const res = await new CustomerMappingService().postCustomerMapping(
+          values
+        );
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            toast.success(res?.data?.message);
 
-              navigate(`/${_base}/CustomerMapping`);
-            } else {
-              toast.error(res?.data?.message);
-            }
+            navigate(`/${_base}/CustomerMapping`);
           } else {
             toast.error(res?.data?.message);
           }
-        })
-        .catch((res) => {
+        } else {
           toast.error(res?.data?.message);
-        });
+        }
+      } catch (error) {
+        errorHandler(error);
+      } finally {
+        setSubmitting(false);
+      }
     } else {
     }
   };
 
   useEffect(() => {
-    setNotify(null);
     dispatch(getTemplateData());
     loadData();
     getUser();
@@ -480,11 +480,12 @@ export default function CreateCustomerMappingComponent() {
               <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
-                onSubmit={(values) => {
-                  handleForm(values);
+                onSubmit={(values, { setSubmitting }) => {
+                  handleForm(values, { setSubmitting });
                 }}
               >
                 {({
+                  isSubmitting,
                   setFieldValue,
                   values,
                   field,
@@ -1020,7 +1021,11 @@ export default function CreateCustomerMappingComponent() {
                       )}
 
                     <div className="mt-3 d-flex justify-content-end">
-                      <button type="submit" className="btn btn-primary btn-sm">
+                      <button
+                        disabled={isSubmitting}
+                        type="submit"
+                        className="btn btn-primary btn-sm"
+                      >
                         Submit
                       </button>
 

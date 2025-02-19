@@ -216,7 +216,8 @@ function RoleComponent({ location }) {
     is_active: String(modal.modalData?.is_active) ?? '1'
   };
 
-  const handleForm = async (values, id) => {
+  const handleForm = async (values, id, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('role', values.role);
     formData.append('remark', values.remark);
@@ -225,17 +226,22 @@ function RoleComponent({ location }) {
     editformdata.append('role', values.role);
     editformdata.append('remark', values.remark);
     editformdata.append('is_active', values.is_active);
-
-    if (!id) {
-      dispatch(postRole(formData));
-      setTimeout(() => {
-        dispatch(getRoleData());
-      }, 500);
-    } else {
-      dispatch(updatedRole({ id: id, payload: editformdata }));
-      setTimeout(() => {
-        dispatch(getRoleData());
-      }, 500);
+    try {
+      if (!id) {
+        await dispatch(postRole(formData));
+        setTimeout(() => {
+          dispatch(getRoleData());
+        }, 500);
+      } else {
+        await dispatch(updatedRole({ id: id, payload: editformdata }));
+        setTimeout(() => {
+          dispatch(getRoleData());
+        }, 500);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -334,8 +340,10 @@ function RoleComponent({ location }) {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(value) =>
-            handleForm(value, modal.modalData ? modal.modalData.id : '')
+          onSubmit={(value, { setSubmitting }) =>
+            handleForm(value, modal.modalData ? modal.modalData.id : '', {
+              setSubmitting
+            })
           }
         >
           {({ isSubmitting }) => (
