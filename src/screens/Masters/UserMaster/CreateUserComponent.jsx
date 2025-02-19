@@ -164,7 +164,6 @@ function CreateUserComponent({ match }) {
     departmentErr: '',
     jobRoleErr: ''
   });
-
   function checkingValidation(form) {
     var selectFirstName = form.getAll('first_name')[0];
     var selectMiddleName = form.getAll('middle_name')[0];
@@ -387,8 +386,7 @@ function CreateUserComponent({ match }) {
     if (loading) {
       return;
     }
-    setLoading(true); // Set loading state to true
-    // setNotify(null);
+    setLoading(true);
 
     const form = new FormData(e.target);
     var flag = 1;

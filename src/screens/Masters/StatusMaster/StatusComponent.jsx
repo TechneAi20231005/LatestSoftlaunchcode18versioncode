@@ -9,7 +9,9 @@ import { useDispatch, useSelector } from 'react-redux';
 import {
   getStatusData,
   postStatusData,
-  updateStatusData
+  updateStatusData,
+  getGridStatusData
+
 } from './StatusComponentAction';
 
 import { getRoles } from '../../Dashboard/DashboardAction';
@@ -187,13 +189,13 @@ function StatusComponent() {
     if (!id) {
       dispatch(postStatusData(formData));
       setTimeout(() => {
-        dispatch(getStatusData());
+        dispatch(getGridStatusData());
       }, 500);
     } else {
       dispatch(updateStatusData({ id: id, payload: editformdata }));
 
       setTimeout(() => {
-        dispatch(getStatusData());
+        dispatch(getGridStatusData());
       }, 500);
     }
   };
@@ -206,7 +208,7 @@ function StatusComponent() {
 
   useEffect(() => {
     loadData();
-    dispatch(getStatusData());
+    dispatch(getGridStatusData());
 
     if (!statusData.length) {
       dispatch(getRoles());

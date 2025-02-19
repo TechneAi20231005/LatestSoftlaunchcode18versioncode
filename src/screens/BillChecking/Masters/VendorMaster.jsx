@@ -33,6 +33,7 @@ import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 function VendorMaster({ match }) {
   const [data, setData] = useState([]);
@@ -650,19 +651,24 @@ function VendorMaster({ match }) {
         }
       });
 
-    await new VendorMasterService().getActiveCountry().then((res) => {
-      if (res.status === 200) {
-        setCountry(res.data.data);
-        setCountryDropdown(
-          res.data.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({
-              value: d.id,
-              label: d.country.charAt(0).toUpperCase() + d.country.slice(1)
-            }))
-        );
-      }
-    });
+    await new VendorMasterService()
+      .getActiveCountry()
+      .then((res) => {
+        if (res.status === 200) {
+          setCountry(res.data.data);
+          setCountryDropdown(
+            res.data.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({
+                value: d.id,
+                label: d.country.charAt(0).toUpperCase() + d.country.slice(1)
+              }))
+          );
+        }
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {

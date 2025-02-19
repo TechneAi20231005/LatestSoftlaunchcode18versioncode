@@ -190,7 +190,7 @@ function EditUserComponent({ match }) {
     ticketTypeShowErr: '',
     PinCodeErr: ''
   });
-
+  const [submitting, setSubmitting] = useState(false);
   function checkingValidation(form) {
     var selectFirstName = form.getAll('first_name')[0];
     var selectMiddleName = form.getAll('middle_name')[0];
@@ -363,6 +363,9 @@ function EditUserComponent({ match }) {
 
   const handleForm = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+
     const form = new FormData(e.target);
     form.append('account_for', data?.account_for);
     if (isReadOnly) {
@@ -397,7 +400,6 @@ function EditUserComponent({ match }) {
       });
       return false;
     }
-
     if (flag === 1) {
       await new UserService()
         .updateUser(userId, form)
@@ -406,48 +408,18 @@ function EditUserComponent({ match }) {
             if (res?.data?.status === 1) {
               toast.success(res?.data?.message);
               navigate(`/${_base}/User`);
-
-              // setNotify({ type: 'success', message: res.data.message });
-
               dispatch(getEmployeeData());
-
-              // setTimeout(() => {
-              //   navigate(`/${_base}/User`, {
-              //     state: {
-              //       alert: { type: 'success', message: res.data.message }
-              //     }
-              //   });
-              // }, 3000);
             } else {
               toast.error(res?.data?.message);
-              // setNotify({ type: 'danger', message: res.data.message });
             }
           }
-
-          // else {
-          // setNotify({ type: 'danger', message: res.message });
-          // new ErrorLogService().sendErrorLog(
-          //   'User',
-          //   'Create_User',
-          //   'INSERT',
-          //   res.message
-          // );
-          // }
         })
         .catch((res) => {
           toast.error(res?.data?.message);
-          // if (error.response) {
-          //   const { request, ...errorObject } = error.response;
-          //   new ErrorLogService().sendErrorLog(
-          //     'User',
-          //     'Create_User',
-          //     'INSERT',
-          //     errorObject.data.message
-          //   );
-          // } else {
-          // }
+        })
+        .finally(() => {
+          setSubmitting(false);
         });
-      // }
     }
   };
 
@@ -613,14 +585,7 @@ function EditUserComponent({ match }) {
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'Status',
-          'Get_Status',
-          'INSERT',
-          errorObject.data.message
-        );
+        errorHandler(error);
       });
 
     await new DepartmentMappingService()
@@ -738,7 +703,7 @@ function EditUserComponent({ match }) {
     if (flag === 1) {
       setRows([...rows, mappingData]);
     } else {
-      setNotify({ type: 'danger', message: 'Complete Previous Record' });
+      toast.error('Complete Previous Record');
     }
   };
 

@@ -21,6 +21,7 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
 
 function DesignationComponent() {
   //initial state
@@ -240,33 +241,35 @@ function DesignationComponent() {
   //   }
   // }}
 
-  const handleForm = async (values, id) => {
+  const handleForm = async (values, id, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('designation', values.designation);
     formData.append('remark', values.remark);
-
-    if (id) {
-      // If id exists, it means you are updating an existing entry
-      formData.append('is_active', values.is_active);
-
-      // Dispatch update action
-      dispatch(updatedDesignationData({ id, payload: formData }));
-    } else {
-      // If id does not exist, it means you are creating a new entry
-      dispatch(postDesignationData(formData));
+    try {
+      if (id) {
+        formData.append('is_active', values.is_active);
+        await dispatch(updatedDesignationData({ id, payload: formData }));
+        setTimeout(() => {
+          dispatch(getDesignationDataListThunk());
+        }, 500);
+      } else {
+        await dispatch(postDesignationData(formData));
+        setTimeout(() => {
+          dispatch(getDesignationDataListThunk());
+        }, 500);
+        handleModalClose({
+          showModal: false,
+          modalData: null,
+          modalHeader: ''
+        });
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
     }
-
-    // Close modal and refresh data list
-    handleModalClose({
-      showModal: false,
-      modalData: null,
-      modalHeader: ''
-    });
-
     // Use a timeout to ensure data is refreshed after the action
-    setTimeout(() => {
-      dispatch(getDesignationDataListThunk());
-    }, 500);
   };
 
   useEffect(() => {
@@ -358,8 +361,10 @@ function DesignationComponent() {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(values) => {
-            handleForm(values, modal.modalData ? modal.modalData.id : '');
+          onSubmit={(values, { setSubmitting }) => {
+            handleForm(values, modal.modalData ? modal.modalData.id : '', {
+              setSubmitting
+            });
           }}
         >
           {({ isSubmitting }) => (
@@ -476,7 +481,7 @@ function DesignationComponent() {
                     <button
                       type="submit"
                       className="btn btn-primary text-white"
-                      // disabled={isSubmitting}
+                      disabled={isSubmitting}
                     >
                       Update
                     </button>

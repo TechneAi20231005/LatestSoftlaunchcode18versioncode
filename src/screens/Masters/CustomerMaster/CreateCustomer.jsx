@@ -662,7 +662,11 @@ export default function CreateCustomer({ match }) {
                 {/* CARD */}
 
                 <div className="mt-3" style={{ textAlign: 'right' }}>
-                  <button type="submit" className="btn btn-primary">
+                  <button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-primary"
+                  >
                     Submit
                   </button>
                   <Link
