@@ -497,7 +497,7 @@ export default function TaskComponent() {
           ticketId
         );
         if (sprintRes?.data?.status) {
-          setSprintdata(sprintRes?.data?.data);
+          setSprintdata(sprintRes?.data?.data?.data);
           const temp = sprintRes?.data?.data?.data?.map((data) => ({
             label: data.name,
             value: data.id
