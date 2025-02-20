@@ -16,7 +16,6 @@ import { toast } from 'react-toastify';
 
 export default function EditModuleComponent({ match }) {
   const history = useNavigate();
-  const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
   const moduleId = id;
@@ -77,8 +76,8 @@ export default function EditModuleComponent({ match }) {
       });
   }, [moduleId, roleId]);
 
-  const handleForm = async (values) => {
-    console.log(values, 'formData');
+  const handleForm = async (values, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('project_id', values.project_id);
     formData.append('module_name', values.module_name);
@@ -88,35 +87,33 @@ export default function EditModuleComponent({ match }) {
     // return false
     // e.preventDefault();
     // const formData = new FormData(e.target);
-    setNotify(null);
-
-    await new ModuleService()
-      .updateModule(moduleId, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            setTimeout(() => {
-              history({ pathname: `/${_base}/Module` });
-            }, 500);
-            toast.success(res.data.message);
-            // history(
-            //   {
-            //     pathname: `/${_base}/Module`
-            //   },
-            //   {
-            //     state: { alert: { type: 'success', message: res.data.message } }
-            //   }
-            // );
-          } else {
-            toast.error(res.data.message);
-          }
+    try {
+      const res = await new ModuleService().updateModule(moduleId, formData);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          setTimeout(() => {
+            history({ pathname: `/${_base}/Module` });
+          }, 500);
+          toast.success(res.data.message);
+          // history(
+          //   {
+          //     pathname: `/${_base}/Module`
+          //   },
+          //   {
+          //     state: { alert: { type: 'success', message: res.data.message } }
+          //   }
+          // );
         } else {
-          toast.error(res.message);
+          toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -133,8 +130,6 @@ export default function EditModuleComponent({ match }) {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader headerTitle="Edit Module" />
 
       <div className="row clearfix g-3">
@@ -143,11 +138,11 @@ export default function EditModuleComponent({ match }) {
             <Formik
               initialValues={initialValue}
               validationSchema={moduleMasterValidation}
-              onSubmit={(values) => {
-                handleForm(values);
+              onSubmit={(values, { setSubmitting }) => {
+                handleForm(values, { setSubmitting });
               }}
             >
-              {({ values }) => (
+              {({ values, isSubmitting }) => (
                 <Form>
                   <div className="card mt-2">
                     <div className="card-body">
@@ -278,7 +273,11 @@ export default function EditModuleComponent({ match }) {
                   {/* Buttons */}
                   <div className="mt-3" style={{ textAlign: 'right' }}>
                     {checkRole && checkRole[0].can_update === 1 ? (
-                      <button type="submit" className="btn btn-sm btn-primary">
+                      <button
+                        disabled={isSubmitting}
+                        type="submit"
+                        className="btn btn-sm btn-primary"
+                      >
                         Update
                       </button>
                     ) : (

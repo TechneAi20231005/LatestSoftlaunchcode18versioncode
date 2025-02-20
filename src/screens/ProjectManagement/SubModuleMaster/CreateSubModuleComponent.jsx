@@ -61,9 +61,10 @@ export default function CreateModuleComponent({ match }) {
   // const handleForm = async (e) => {
   //   e.preventDefault();
   //   const formData = new FormData(e.target);
-  const handleForm = async (values) => {
+  const handleForm = async (values, { setSubmitting }) => {
     // e.preventDefault();
     // const formData = new FormData(e.target);
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('project_id', values.project_id);
     formData.append('module_id', values.module_id);
@@ -71,33 +72,33 @@ export default function CreateModuleComponent({ match }) {
 
     formData.append('description', values.description);
     formData.append('remark', values.remark);
-    await new SubModuleService()
-      .postSubModule(formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            setTimeout(() => {
-              history({ pathname: `/${_base}/SubModule` });
-            }, 500);
-            toast.success(res.data.message);
-            // history(
-            //   {
-            //     pathname: `/${_base}/SubModule`
-            //   },
-            //   {
-            //     state: { alert: { type: 'success', message: res.data.message } }
-            //   }
-            // );
-          } else {
-            toast.error(res.data.message);
-          }
+    try {
+      const res = await new SubModuleService().postSubModule(formData);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          setTimeout(() => {
+            history({ pathname: `/${_base}/SubModule` });
+          }, 500);
+          toast.success(res.data.message);
+          // history(
+          //   {
+          //     pathname: `/${_base}/SubModule`
+          //   },
+          //   {
+          //     state: { alert: { type: 'success', message: res.data.message } }
+          //   }
+          // );
         } else {
           toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const loadData = useCallback(async () => {
@@ -145,8 +146,8 @@ export default function CreateModuleComponent({ match }) {
           <Formik
             initialValues={initialValue}
             validationSchema={SubModuleMasterValidation}
-            onSubmit={(values) => {
-              handleForm(values);
+            onSubmit={(values, { setSubmitting }) => {
+              handleForm(values, { setSubmitting });
               // setOtpModal(true);
             }}
             // onSubmit={handleForm}
@@ -300,6 +301,7 @@ export default function CreateModuleComponent({ match }) {
 
                 <div className="mt-3" style={{ textAlign: 'right' }}>
                   <button
+                    disabled={isSubmitting}
                     type="submit"
                     className="btn btn-sm btn-primary"
                     // disabled={isSubmitting}

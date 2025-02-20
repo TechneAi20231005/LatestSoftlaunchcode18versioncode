@@ -30,8 +30,8 @@ export default function CreateModuleComponent({ match }) {
 
   const history = useNavigate();
 
-  const handleForm = async (values) => {
-    console.log(values, 'formData');
+  const handleForm = async (values, { setSubmitting }) => {
+    setSubmitting(true);
 
     // e.preventDefault();
     // const formData = new FormData(e.target);
@@ -41,29 +41,29 @@ export default function CreateModuleComponent({ match }) {
     formData.append('description', values.description);
     formData.append('remark', values.remark);
 
-    await new ModuleService()
-      .postModule(formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            setTimeout(() => {
-              history({ pathname: `/${_base}/Module` });
-            }, 500);
-            toast.success(res.data.message);
-            // history(
-            //   {
-            //     pathname: `/${_base}/Module`
-            //   },
-          } else {
-            toast.error(res.data.message);
-          }
+    try {
+      const res = await new ModuleService().postModule(formData);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          setTimeout(() => {
+            history({ pathname: `/${_base}/Module` });
+          }, 500);
+          toast.success(res.data.message);
+          // history(
+          //   {
+          //     pathname: `/${_base}/Module`
+          //   },
         } else {
-          toast.error(res.message);
+          toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
   useEffect(() => {
     dispatch(getRoles());
@@ -86,11 +86,9 @@ export default function CreateModuleComponent({ match }) {
           <Formik
             initialValues={initialValue}
             validationSchema={moduleMasterValidation}
-            onSubmit={(values) => {
-              handleForm(values);
-              // setOtpModal(true);
+            onSubmit={(values, { setSubmitting }) => {
+              handleForm(values, { setSubmitting });
             }}
-            // onSubmit={handleForm}
           >
             {({ isSubmitting }) => (
               <Form>
@@ -197,7 +195,11 @@ export default function CreateModuleComponent({ match }) {
                 </div>
 
                 <div className="mt-3" style={{ textAlign: 'right' }}>
-                  <button type="submit" className="btn btn-sm btn-primary">
+                  <button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-sm btn-primary"
+                  >
                     Submit
                   </button>
                   <Link

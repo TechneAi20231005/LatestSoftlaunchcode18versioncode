@@ -72,25 +72,28 @@ const ModuleSettings = ({ match }) => {
     setSubmodule(sub);
   };
 
+  const [submitting, setSubmitting] = useState(false);
   const handleForm = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
     const formData = new FormData(e.target);
-    await new ModuleSetting()
-      .updateAllModuleSetting(formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            toast.success(res.data.message);
-          } else {
-            toast.error(res.data.message);
-          }
+    try {
+      const res = await new ModuleSetting().updateAllModuleSetting(formData);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          toast.success(res.data.message);
         } else {
-          toast.error(res.message);
+          toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -192,7 +195,11 @@ const ModuleSettings = ({ match }) => {
               </table>
 
               <div className="d-flex justify-content-end">
-                <button type="submit" className="btn btn-primary text-white">
+                <button
+                  disabled={submitting}
+                  type="submit"
+                  className="btn btn-primary text-white"
+                >
                   Submit
                 </button>
               </div>

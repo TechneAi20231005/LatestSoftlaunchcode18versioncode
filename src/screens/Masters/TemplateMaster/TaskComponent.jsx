@@ -289,8 +289,11 @@ export default function TaskComponent(props) {
   const handleCancle = () => {
     setShow(false);
   };
-
-  const handleSubmit = (e) => {
+  const [submitting, setSubmitting] = useState(false);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
     const taskName = document.querySelector('input[name="task"]').value.trim();
 
     const daysRequired = document
@@ -305,27 +308,32 @@ export default function TaskComponent(props) {
 
     if (!taskName || !daysRequired || !hoursRequired || !startDays) {
       alert('Please fill out all required fields.');
+      setSubmitting(false);
       return;
     }
-    e.preventDefault();
-    new TemplateService()
-      .updateTask(props.taskData.task_id, data)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            props.refreshData(id);
-            toast.success(res.data.message);
-            setShow(false);
-          } else {
-            toast.error(res.data.message);
-          }
+
+    try {
+      const res = await new TemplateService().updateTask(
+        props.taskData.task_id,
+        data
+      );
+
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          props.refreshData(id);
+          toast.success(res.data.message);
+          setShow(false);
         } else {
           toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (

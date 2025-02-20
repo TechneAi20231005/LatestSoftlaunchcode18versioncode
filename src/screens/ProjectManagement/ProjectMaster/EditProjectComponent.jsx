@@ -102,7 +102,8 @@ export default function EditProjectComponent({ match }) {
     dispatch(getRoles());
   }, [dispatch, projectId]);
 
-  const handleForm = async (values) => {
+  const handleForm = async (values, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('customer_id', values.customer_id);
     formData.append('project_name', values.project_name);
@@ -128,30 +129,29 @@ export default function EditProjectComponent({ match }) {
     formData.append('is_active:', values.is_active);
     // e.preventDefault();
     // const formData = new FormData(e.target);
-
-    await new ProjectService()
-      .updateProject(projectId, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            history(
-              {
-                pathname: `/${_base}/Project`
-              },
-              {
-                state: { alert: toast.success(res.data.message) }
-              }
-            );
-          } else {
-            toast.error(res.data.message);
-          }
+    try {
+      const res = await new ProjectService().updateProject(projectId, formData);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          history(
+            {
+              pathname: `/${_base}/Project`
+            },
+            {
+              state: { alert: toast.success(res.data.message) }
+            }
+          );
         } else {
-          toast.error(res.message);
+          toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleShowLogo = (e) => {
@@ -245,11 +245,11 @@ export default function EditProjectComponent({ match }) {
             <Formik
               initialValues={initialValues}
               validationSchema={validationSchema}
-              onSubmit={(values) => {
-                handleForm(values);
+              onSubmit={(values, { setSubmitting }) => {
+                handleForm(values, { setSubmitting });
               }}
             >
-              {({ setFieldValue, values }) => (
+              {({ setFieldValue, values, isSubmitting }) => (
                 <Form>
                   {/* <form onSubmit={handleForm}> */}
                   <div className="card mt-2">
@@ -547,7 +547,11 @@ export default function EditProjectComponent({ match }) {
 
                   <div className="mt-3" style={{ textAlign: 'right' }}>
                     {checkRole && checkRole[0]?.can_update === 1 ? (
-                      <button type="submit" className="btn btn-sm btn-primary">
+                      <button
+                        disabled={isSubmitting}
+                        type="submit"
+                        className="btn btn-sm btn-primary"
+                      >
                         Update
                       </button>
                     ) : (
