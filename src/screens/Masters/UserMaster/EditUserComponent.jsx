@@ -145,11 +145,11 @@ function EditUserComponent({ match }) {
   const [passwordValid, setPasswordValid] = useState(false);
 
   const handlePasswordValidation = (e) => {
-    if (e.target.value === '') {
-      setInputState({ ...state, passwordErr: 'Please enter Password' });
-    } else {
-      setInputState({ ...state, passwordErr: '' });
-    }
+    // if (e.target.value === '') {
+    //   setInputState({ ...state, passwordErr: 'Please enter Password' });
+    // } else {
+    //   setInputState({ ...state, passwordErr: '' });
+    // }
     setPassword(e.target.value);
     const passwordValidation = e.target.value;
     if (passwordValidation.length > 20) {
@@ -250,22 +250,25 @@ function EditUserComponent({ match }) {
     } else if (mailError === true) {
       alert('Invalid Email');
       flag = 1;
-    } else if (selectPassword === '') {
-      setInputState({ ...state, passwordErr: 'Please enter Password' });
-      flag = 1;
-    } else if (confirmedPasswordRef.current.value === '') {
-      setInputState({
-        ...state,
-        confirmed_PassErr: ' Please Enter Confirmed password'
-      });
-      flag = 1;
-    } else if (confirm_password !== selectPassword) {
-      // setInputState({
-      //   ...state,
-      //   confirmed_PassErr: 'Password Not matched'
-      // });
-      flag = 1;
     }
+    // else if (selectPassword === '') {
+    //   setInputState({ ...state, passwordErr: 'Please enter Password' });
+    //   flag = 1;
+    // }
+    // else if (confirmedPasswordRef.current.value === '') {
+    //   setInputState({
+    //     ...state,
+    //     confirmed_PassErr: ' Please Enter Confirmed password'
+    //   });
+    //   flag = 1;
+    // }
+    // else if (confirm_password !== selectPassword) {
+    //   // setInputState({
+    //   //   ...state,
+    //   //   confirmed_PassErr: 'Password Not matched'
+    //   // });
+    //   flag = 1;
+    // }
     return flag;
   }
 
@@ -295,14 +298,14 @@ function EditUserComponent({ match }) {
   // const [contactNumber, setContactNumber] = useState(null);
 
   const handleConfirmedPassword = (event) => {
-    if (event.target.value === '') {
-      setInputState({
-        ...state,
-        confirmed_PassErr: 'Please Enter Confirmed password'
-      });
-    } else {
-      setInputState({ ...state, confirmed_PassErr: '' });
-    }
+    // if (event.target.value === '') {
+    //   setInputState({
+    //     ...state,
+    //     confirmed_PassErr: 'Please Enter Confirmed password'
+    //   });
+    // } else {
+    //   setInputState({ ...state, confirmed_PassErr: '' });
+    // }
     if (event.target.value === password) {
       setConfirmPasswordError(false);
     } else {

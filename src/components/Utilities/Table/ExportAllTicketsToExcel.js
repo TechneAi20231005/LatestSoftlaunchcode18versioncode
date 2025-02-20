@@ -85,16 +85,18 @@ export const ExportAllTicketsToExcel = ({
               sub_module_name: dataToDownload[key].sub_module_name
             });
           }
+          const ws = XLSX.utils.json_to_sheet(tempExport);
+          const wb = { Sheets: { data: ws }, SheetNames: ['data'] };
+          const excelBuffer = XLSX.write(wb, {
+            bookType: 'xlsx',
+            type: 'array'
+          });
+          const data = new Blob([excelBuffer], { type: fileType });
+
+          FileSaver.saveAs(data, fileName + fileExtension);
         }
       }
     });
-
-    const ws = XLSX.utils.json_to_sheet(tempExport);
-    const wb = { Sheets: { data: ws }, SheetNames: ['data'] };
-    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    const data = new Blob([excelBuffer], { type: fileType });
-
-    FileSaver.saveAs(data, fileName + fileExtension);
 
     setLoading(false);
   };
