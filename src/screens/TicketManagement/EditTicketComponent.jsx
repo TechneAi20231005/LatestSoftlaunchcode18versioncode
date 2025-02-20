@@ -1390,7 +1390,7 @@ export default function EditTicketComponent({ match }) {
                         </label>
                         {userDropdown && userDrp && (
                           <Select
-                          ref={userSelectRef} // Attach ref here
+                          ref={userSelectRef}
                             id="assign_to_user_id"
                             name="assign_to_user_id"
                             options={userDropdown}
