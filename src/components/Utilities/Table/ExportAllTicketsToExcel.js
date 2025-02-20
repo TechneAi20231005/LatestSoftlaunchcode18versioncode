@@ -56,7 +56,7 @@ export const ExportAllTicketsToExcel = ({
               ASSIGN_TO_USER: dataToDownload[key].assign_to_user,
               QUERY_TYPE_NAME: dataToDownload[key].query_type_name,
               PRIORITY: dataToDownload[key].priority,
-              STATUS: dataToDownload[key].status_name,
+              // STATUS: dataToDownload[key].status_name,
               DESCRIPTION: dataToDownload[key].description,
               CREATED_BY: dataToDownload[key].created_by_name,
               Confirmation_Required: dataToDownload[key].confirmation_required
@@ -71,7 +71,7 @@ export const ExportAllTicketsToExcel = ({
                   : '',
 
               from_department_name: dataToDownload[key].from_department_name,
-              Status: dataToDownload[key].is_active ? 'Active' : 'Deactive',
+              // Status: dataToDownload[key].is_active ? 'Active' : 'Deactive',
               module_name: dataToDownload[key].module_name,
               Passed_Status: dataToDownload[key].passed_status,
               Passed_Status_Changed_At:
