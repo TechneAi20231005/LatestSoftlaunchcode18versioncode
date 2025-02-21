@@ -105,7 +105,6 @@ export default function TaskModal(props) {
     //   required: true
     // }
   ];
-  let item = [localStorage.getItem('id')];
 
   const validationSchema = CustomValidation(fields);
   const initialValues = {
@@ -119,7 +118,7 @@ export default function TaskModal(props) {
       : '',
     assign_to_user: props.data.assign_to_user
       ? props.data.assign_to_user
-      :item,
+      : Number(localStorage.getItem('id')),
     task_desc: props?.data?.task_desc || '',
     type: props.data?.type || 'TASK',
     status: props?.data?.status || 'TO_DO'
@@ -587,8 +586,6 @@ export default function TaskModal(props) {
 
   const assignUserRef = useRef();
   const handleForm = async (values) => {
-    console.log("🚀 ~ handleForm ~ values:", values)
-
     // e.preventDefault();
     // setIsDisabled(true);
 
@@ -2137,17 +2134,14 @@ export default function TaskModal(props) {
                         value={userData.filter(
                           (option) =>
                             Array.isArray(values.assign_to_user)
-
-                              ? values.assign_to_user.includes(String(option.value)) // Check for array
-                              : values.assign_to_user === (option.value) // Check for scalar
+                              ? values.assign_to_user.includes(option.value) // Check for array
+                              : values.assign_to_user === option.value // Check for scalar
                         )}
                         onChange={(selectedOptions) => {
-
                           const selectedValues = Array.isArray(selectedOptions)
-                            ? selectedOptions.map((option) => String( option.value)) // Map selected options to their values
+                            ? selectedOptions.map((option) => option.value) // Map selected options to their values
                             : [];
-                          setFieldValue('assign_to_user', selectedValues);
-                          console.log(selectedValues,"selectedOptions") // Update the form value
+                          setFieldValue('assign_to_user', selectedValues); // Update the form value
                         }}
                         isMulti
                       />

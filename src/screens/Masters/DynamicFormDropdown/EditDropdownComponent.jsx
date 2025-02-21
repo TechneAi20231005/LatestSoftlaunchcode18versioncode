@@ -54,42 +54,48 @@ export default function EditDropdownComponent({ match }) {
         errorHandler(error);
       });
   }, [id]);
-
+  const [submitting, setSubmitting] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
     if (!message.trim()) {
       setDisplay('Dropdown Name is Required');
+      setSubmitting(false);
       return;
     } else {
       setDisplay(''); // Clear error
     }
     const formData = new FormData(e.target);
+    setSubmitting(true);
+    try {
+      const res = await new DynamicFormDropdownMasterService().updateDropdown(
+        id,
+        formData
+      );
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          history(
+            {
+              pathname: `/${_base}/DynamicFormDropdown`
+            },
+            {
+              state: { alert: toast.success(res.data.message) }
+            }
+          );
 
-    await new DynamicFormDropdownMasterService()
-      .updateDropdown(id, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            history(
-              {
-                pathname: `/${_base}/DynamicFormDropdown`
-              },
-              {
-                state: { alert: toast.success(res.data.message) }
-              }
-            );
-
-            // dispatch(dynamicFormDropDownData());
-          } else {
-            toast.error(res.data.message);
-          }
+          // dispatch(dynamicFormDropDownData());
         } else {
-          toast.error(res.message);
+          toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleAddRow = () => {

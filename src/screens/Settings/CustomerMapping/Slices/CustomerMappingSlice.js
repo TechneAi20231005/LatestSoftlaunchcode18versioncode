@@ -6,6 +6,7 @@ import {
   getTemplateData,
   getcustomerTypeData
 } from './CustomerMappingAction';
+import { toast } from 'react-toastify';
 
 const initialState = {
   status: '',
@@ -237,10 +238,9 @@ export const CustomerMappingSlice = createSlice({
         }));
         state.templateDropDownData = templateDropDownData;
         state.status = 'succeded';
-
-        state.notify = { type: 'success', message: payload.data.message };
+        // toast.success(payload.data.message);
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(getTemplateData.rejected, (state) => {

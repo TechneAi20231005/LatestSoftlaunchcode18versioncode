@@ -2,6 +2,7 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import TemplateService from '../../../services/MastersService/TemplateService';
 import TaskTicketTypeService from '../../../services/MastersService/TaskTicketTypeService';
 import BasketService from '../../../services/TicketService/BasketService';
+import { errorHandler } from '../../../utils';
 
 export const templateData = createAsyncThunk(
   'templateData',
@@ -11,7 +12,7 @@ export const templateData = createAsyncThunk(
       const response = await service.getTemplate();
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -24,7 +25,7 @@ export const exportTempateData = createAsyncThunk(
       const response = await service.exporttempData();
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -37,7 +38,7 @@ export const getParentData = createAsyncThunk(
       const response = await service.getParent();
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -51,7 +52,7 @@ export const getAllTypeData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -67,7 +68,7 @@ export const postTemplateData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -85,7 +86,7 @@ export const updateBasketModalData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -101,7 +102,7 @@ export const basketinEditData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -116,7 +117,7 @@ export const updateTemplateData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -135,7 +136,7 @@ export const addTaskinBasketData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
@@ -150,7 +151,7 @@ export const getTemplateByIdData = createAsyncThunk(
       const response = await service.getTemplateById(config.id);
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );

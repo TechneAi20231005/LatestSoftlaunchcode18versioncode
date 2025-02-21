@@ -44,9 +44,7 @@ function GeneralSettings() {
   const User = useSelector(
     (MyTicketComponentSlice) => MyTicketComponentSlice.myTicketComponent.user
   );
-  const Notify = useSelector(
-    (SettingSlice) => SettingSlice.generalSetting.notify
-  );
+
   const modal = useSelector(
     (SettingSlice) => SettingSlice.generalSetting.modal
   );
@@ -313,7 +311,8 @@ function GeneralSettings() {
     is_active: String(modal?.modalData?.is_active) ?? '1'
   };
 
-  const handleForm = async (values, id) => {
+  const handleForm = async (values, id, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('setting_name', values.setting_name);
     formData.append('value', values.value);
@@ -332,19 +331,27 @@ function GeneralSettings() {
     });
     editformdata.append('remark', values.remark);
     editformdata.append('is_active', values.is_active);
-
-    if (!id) {
-      dispatch(postGeneralSettingData(formData));
-      setTimeout(() => {
-        loadData();
-      }, 500);
-    } else {
-      dispatch(updateGeneralSettingData({ id: id, payload: editformdata }));
-      setTimeout(() => {
-        loadData();
-      }, 500);
+    try {
+      if (!id) {
+        await dispatch(postGeneralSettingData(formData));
+        setTimeout(() => {
+          loadData();
+        }, 500);
+      } else {
+        await dispatch(
+          updateGeneralSettingData({ id: id, payload: editformdata })
+        );
+        setTimeout(() => {
+          loadData();
+        }, 500);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
     }
   };
+
   useEffect(() => {
     loadData();
   }, [loadData]);
@@ -357,12 +364,6 @@ function GeneralSettings() {
   }, [searchTerm, handleSearch]);
   return (
     <div className="container-xxl">
-      {Notify && (
-        <>
-          {' '}
-          <Alert alertData={Notify} />{' '}
-        </>
-      )}
       <PageHeader
         headerTitle="General Settings"
         renderRight={() => {
@@ -415,11 +416,13 @@ function GeneralSettings() {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(value) =>
-            handleForm(value, modal.modalData ? modal.modalData.id : '')
+          onSubmit={(value, { setSubmitting }) =>
+            handleForm(value, modal.modalData ? modal.modalData.id : '', {
+              setSubmitting
+            })
           }
         >
-          {({ values, setFieldValue }) => (
+          {({ values, setFieldValue, isSubmitting }) => (
             <Form>
               <Modal.Header
                 closeButton
@@ -557,11 +560,19 @@ function GeneralSettings() {
               </Modal.Body>
               <Modal.Footer>
                 {!modal.modalData ? (
-                  <button type="submit" className="btn btn-primary text-white">
+                  <button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-primary text-white"
+                  >
                     Submit
                   </button>
                 ) : (
-                  <button type="submit" className="btn btn-primary text-white">
+                  <button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-primary text-white"
+                  >
                     Update
                   </button>
                 )}

@@ -5,7 +5,6 @@ import CustomerMappingService from '../../../services/SettingService/CustomerMap
 import { _base, userSessionData } from '../../../settings/constants';
 
 import PageHeader from '../../../components/Common/PageHeader';
-import Alert from '../../../components/Common/Alert';
 import Select from 'react-select';
 import { Astrick } from '../../../components/Utilities/Style';
 import { toast } from 'react-toastify';
@@ -27,6 +26,7 @@ import {
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
 import { ErrorMessage, Formik, Form, Field } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
 
 export function getDateTime() {
   var now = new Date();
@@ -46,7 +46,6 @@ export default function CreateCustomerMappingComponent() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const departmentDropdownRef = useRef();
-  const [notify, setNotify] = useState();
   const [userDropDownFilterData, setUserDropDownFilterData] = useState();
 
   const [dynamicForm, setDynamicForm] = useState();
@@ -83,7 +82,7 @@ export default function CreateCustomerMappingComponent() {
   } = useSelector(
     (CustomerMappingSlice) => CustomerMappingSlice.customerMaster
   );
-  const [approach, setApproach] = useState("");
+  const [approach, setApproach] = useState('');
 
   const [data, setData] = useState({
     approach: null,
@@ -141,8 +140,8 @@ export default function CreateCustomerMappingComponent() {
     {
       name: 'department_id',
       label: 'department_id',
-      required:  approach !== "AU" && approach !== "SELF" ? true : false
-    },
+      required: approach !== 'AU' && approach !== 'SELF' ? true : false
+    }
     // {
     //   name: 'user_id',
     //   label: 'user_id',
@@ -150,8 +149,8 @@ export default function CreateCustomerMappingComponent() {
     // }
   ];
   useEffect(() => {
-    console.log(userDropDownFilterData,"userDropDownFilterData")
-  },[userDropDownFilterData])
+    console.log(userDropDownFilterData, 'userDropDownFilterData');
+  }, [userDropDownFilterData]);
 
   // Conditionally add 'department_id' field based on approach
 
@@ -190,7 +189,7 @@ export default function CreateCustomerMappingComponent() {
         }
       }
     } catch (error) {
-      console.error('Error fetching dynamic form:', error);
+      errorHandler(error);
     }
   }, []);
 
@@ -201,7 +200,6 @@ export default function CreateCustomerMappingComponent() {
   const handleQueryType = async (selectedOption, form) => {
     if (!selectedOption || Object.entries(selectedOption).length === 0) return;
 
-    setNotify(null);
     setDynamicForm(null);
     setDynamicFormDropdown(null);
     setSelectedDynamicForm(null);
@@ -224,10 +222,7 @@ export default function CreateCustomerMappingComponent() {
       setSelectedDynamicForm(dynamicFormDropdownTemp);
       form.setFieldValue('dynamic_form_id', queryTypeTemp[0]?.form_id || '');
     } else {
-      setNotify({
-        type: 'warning',
-        message: 'No Form is mapped but still you can map new form'
-      });
+      toast.warning('No Form is mapped but still you can map new form');
     }
   };
 
@@ -249,19 +244,23 @@ export default function CreateCustomerMappingComponent() {
   const getUser = useCallback(async () => {
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active';
-    dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
-      if (res?.payload?.status === 200) {
-        if (res?.payload?.data?.status === 1) {
-          var dropwdown = res?.payload?.data?.data.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({
-              value: d.id,
-              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
-            }));
-          setUserDropdown(dropwdown);
+    dispatch(getUserForMyTicketsData(inputRequired))
+      .then((res) => {
+        if (res?.payload?.status === 200) {
+          if (res?.payload?.data?.status === 1) {
+            var dropwdown = res?.payload?.data?.data.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({
+                value: d.id,
+                label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
+              }));
+            setUserDropdown(dropwdown);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }, [dispatch]);
 
   const handleAutoChanges = async (e, type, nameField) => {
@@ -371,9 +370,10 @@ export default function CreateCustomerMappingComponent() {
 
   const useridDetail = useRef();
 
-  const handleForm = async (values) => {
-    if(userDropDownFilterData){
-      if(values?.user_id?.length === 0){
+  const handleForm = async (values, { setSubmitting }) => {
+    setSubmitting(true);
+    if (userDropDownFilterData) {
+      if (values?.user_id?.length === 0) {
         return;
       }
     }
@@ -418,30 +418,31 @@ export default function CreateCustomerMappingComponent() {
     }
 
     if (flag === 1) {
-      await new CustomerMappingService()
-        .postCustomerMapping(values)
-        .then((res) => {
-          if (res?.status === 200) {
-            if (res?.data?.status === 1) {
-              toast.success(res?.data?.message);
+      try {
+        const res = await new CustomerMappingService().postCustomerMapping(
+          values
+        );
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            toast.success(res?.data?.message);
 
-              navigate(`/${_base}/CustomerMapping`);
-            } else {
-              toast.error(res?.data?.message);
-            }
+            navigate(`/${_base}/CustomerMapping`);
           } else {
             toast.error(res?.data?.message);
           }
-        })
-        .catch((res) => {
+        } else {
           toast.error(res?.data?.message);
-        });
+        }
+      } catch (error) {
+        errorHandler(error);
+      } finally {
+        setSubmitting(false);
+      }
     } else {
     }
   };
 
   useEffect(() => {
-    setNotify(null);
     dispatch(getTemplateData());
     loadData();
     getUser();
@@ -479,11 +480,12 @@ export default function CreateCustomerMappingComponent() {
               <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
-                onSubmit={(values) => {
-                  handleForm(values);
+                onSubmit={(values, { setSubmitting }) => {
+                  handleForm(values, { setSubmitting });
                 }}
               >
                 {({
+                  isSubmitting,
                   setFieldValue,
                   values,
                   field,
@@ -833,7 +835,7 @@ export default function CreateCustomerMappingComponent() {
                                   : { value: '', label: 'Select approach' }
                               }
                               onChange={(option) => {
-                               setApproach(option.value);
+                                setApproach(option.value);
                                 form.setFieldValue(
                                   'approach',
                                   option ? option.value : ''
@@ -1019,7 +1021,11 @@ export default function CreateCustomerMappingComponent() {
                       )}
 
                     <div className="mt-3 d-flex justify-content-end">
-                      <button type="submit" className="btn btn-primary btn-sm">
+                      <button
+                        disabled={isSubmitting}
+                        type="submit"
+                        className="btn btn-primary btn-sm"
+                      >
                         Submit
                       </button>
 

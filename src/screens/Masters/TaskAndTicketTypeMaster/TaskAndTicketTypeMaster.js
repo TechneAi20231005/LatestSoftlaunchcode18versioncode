@@ -16,7 +16,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { toast } from 'react-toastify';
 // for task type created customoption function
-
+import errorHandler from '../../../utils/errorHandler';
 const CustomOption = ({ label, options, onClick, closeDropdown }) => {
   const [expanded, setExpanded] = useState(false);
   const [openOptions, setOpenOptions] = useState([]);
@@ -832,86 +832,77 @@ function TaskAndTicketTypeMaster(props) {
     setSelectedOption(null);
   };
 
-  const handleForm = async (value, id) => {
-    // e.preventDefault();
+  const handleForm = async (value, id, { setSubmitting }) => {
+    setSubmitting(true);
 
-    if (id) {
-      if (modal.modalData.type === '') {
-        alert('Type is required.');
-        return;
-      }
+    if (id && modal.modalData.type === '') {
+      alert('Type is required.');
+      setSubmitting(false);
+      return;
     }
+
     setNotify(null);
     const form = new FormData();
+
     if (!selectedOption && !id) {
       setParentTaskName('Please select a parent task type.');
       setParentTicketName('Please select a parent ticket type.');
+      setSubmitting(false);
     } else {
-      setParentTaskName(''); // Clear the error message if present
+      setParentTaskName('');
       setParentTicketName('');
 
-      if (!id) {
-        if (selectedOptionId === 'Primary') {
-          form.append('parent_id', 0);
+      try {
+        if (!id) {
+          if (selectedOptionId === 'Primary') {
+            form.append('parent_id', 0);
+          } else {
+            form.append(
+              'parent_id',
+              selectedOptionId
+                ? selectedOptionId
+                : modal?.modalData?.parent_name !== null
+                ? modal?.modalData?.parent_name
+                : 'Primary'
+            );
+          }
           form.append('type_name', value?.type_name);
           form.append('remark', value?.remark);
           form.append('is_active', value?.is_active);
-        } else {
-          form.append(
-            'parent_id',
-            // selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
-            selectedOptionId
-              ? selectedOptionId
-              : modal?.modalData?.parent_name !== null
-              ? modal?.modalData?.parent_name
-              : 'Primary'
-          );
-          form.append('type_name', value?.type_name);
-          form.append('remark', value?.remark);
-          form.append('is_active', value?.is_active);
-        }
+          form.append('type', selectedType);
 
-        form.append('type', selectedType);
-        setNotify(null);
-        await new TaskTicketTypeService().postType(form).then((res) => {
+          setNotify(null);
+          const res = await new TaskTicketTypeService().postType(form);
+
           if (res.status === 200) {
             if (res.data.status === 1) {
               toast.success(res.data.message);
               setModal({ showModal: false });
-
               loadData();
             } else {
               toast.error(res.data.message);
             }
           }
-        });
-      } else {
-        if (
-          selectedOptionId === 'Primary'
-          //  ||
-          // modal.modalData.parent_name === 'Primary'
-        ) {
-          form.append('parent_id', 0);
-          form.append('type_name', value?.type_name);
-          form.append('remark', value?.remark);
-          form.append('is_active', value?.is_active);
         } else {
-          form.append(
-            'parent_id',
-            // selectedOptionId ? selectedOptionId : modal?.modalData?.parent_name
-            selectedOptionId
-              ? selectedOptionId
-              : modal?.modalData?.parent_name !== null
-              ? modal?.modalData?.parent_name
-              : 'Primary'
-          );
+          if (selectedOptionId === 'Primary') {
+            form.append('parent_id', 0);
+          } else {
+            form.append(
+              'parent_id',
+              selectedOptionId
+                ? selectedOptionId
+                : modal?.modalData?.parent_name !== null
+                ? modal?.modalData?.parent_name
+                : 'Primary'
+            );
+          }
           form.append('type_name', value?.type_name);
           form.append('remark', value?.remark);
           form.append('is_active', value?.is_active);
-        }
+          form.append('type', selectedType);
 
-        form.append('type', selectedType);
-        await new TaskTicketTypeService()._updateType(id, form).then((res) => {
+          const res = await new TaskTicketTypeService()._updateType(id, form);
+
           if (res.status === 200) {
             if (res.data.status === 1) {
               toast.success(res.data.message);
@@ -923,9 +914,12 @@ function TaskAndTicketTypeMaster(props) {
           } else {
             toast.error(res.data.message);
           }
-        });
+        }
+      } catch (error) {
+        errorHandler(error);
+      } finally {
+        setSubmitting(false);
       }
-      // setLoading(false);
     }
   };
 
@@ -1083,8 +1077,10 @@ function TaskAndTicketTypeMaster(props) {
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
-            onSubmit={(value) =>
-              handleForm(value, modal.modalData ? modal.modalData.id : '')
+            onSubmit={(value, { setSubmitting }) =>
+              handleForm(value, modal.modalData ? modal.modalData.id : '', {
+                setSubmitting
+              })
             }
           >
             {({ isSubmitting, setFieldValue, values }) => (
@@ -1382,6 +1378,7 @@ function TaskAndTicketTypeMaster(props) {
                 </div>
                 <Modal.Footer>
                   <ButtonComponent
+                    disabled={isSubmitting}
                     type="submit"
                     text={modal?.modalData ? 'Update' : 'Submit'}
                   />

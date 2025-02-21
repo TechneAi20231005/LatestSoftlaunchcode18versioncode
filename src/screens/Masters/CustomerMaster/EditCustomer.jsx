@@ -855,7 +855,11 @@ function EditCustomer() {
 
                   <div className="mt-3" style={{ textAlign: 'right' }}>
                     {checkRole && checkRole[0]?.can_update === 1 ? (
-                      <button type="submit" className="btn btn-primary">
+                      <button
+                        disabled={isSubmitting}
+                        type="submit"
+                        className="btn btn-primary"
+                      >
                         Update
                       </button>
                     ) : (

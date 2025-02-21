@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import ErrorLogService from '../../../services/ErrorLogService';
 import { Link } from 'react-router-dom';
-import { _base } from '../../../settings/constants';
+import { _base, reportUrl } from '../../../settings/constants';
 
 import DynamicFormService from '../../../services/MastersService/DynamicFormService';
 import DynamicFormDropdownMasterService from '../../../services/MastersService/DynamicFormDropdownMasterService';
@@ -30,6 +30,7 @@ import { getDesignationDataListThunk } from '../DesignationMaster/DesignationAct
 import { getStatusData } from '../StatusMaster/StatusComponentAction';
 import QueryTypeService from '../../../services/MastersService/QueryTypeService';
 import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 function EditDynamicForm() {
   const { id } = useParams();
@@ -406,15 +407,21 @@ function EditDynamicForm() {
     }
     setFormShow(formShow === true ? false : true);
   };
-
+  const [submitting, setSubmitting] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (submitting) return;
+    setSubmitting(true);
+
     if (!message.trim()) {
       setDisplay('Form Name is Required');
+      setSubmitting(false);
       return;
     } else {
-      setDisplay(''); // Clear error
+      setDisplay('');
     }
+
     const data = {
       template_name: e.target.template_name.value,
       is_active: e.target.is_active.value,
@@ -422,34 +429,33 @@ function EditDynamicForm() {
       data: JSON.stringify(rows)
     };
 
-    await new DynamicFormService()
-      .updateDynamicForm(formId, data)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            dispatch(dynamicFormData());
-            // history({
-            //   pathname: `/${_base}/DynamicForm`,
+    try {
+      const res = await new DynamicFormService().updateDynamicForm(
+        formId,
+        data
+      );
 
-            // },{ state: { alert: { type: "success", message: res.data.message } }}
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          dispatch(dynamicFormData());
+          toast.success(res.data.message);
 
-            // );
-
-            toast.success(res.data.message);
-            setTimeout(() => {
-              navigate(`/${_base}/DynamicForm`, {
-                state: {
-                  alert: { type: 'success', message: res.data.message }
-                }
-              });
-            }, 1000);
-          } else {
-            toast.error(res.data.message);
-          }
+          setTimeout(() => {
+            navigate(`/${_base}/DynamicForm`, {
+              state: { alert: { type: 'success', message: res.data.message } }
+            });
+          }, 1000);
         } else {
           toast.error(res.data.message);
         }
-      });
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const loadData = useCallback(async () => {

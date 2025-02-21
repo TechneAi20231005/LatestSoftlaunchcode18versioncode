@@ -42,13 +42,13 @@ export const postCityData = createAsyncThunk(
       if (response?.data?.data?.status === 1) {
         return { data: response?.data?.data, msg: response?.data?.message };
       } else {
-        errorHandler(response);
+        // errorHandler(response);
       }
 
       return response;
     } catch (error) {
       errorHandler(error?.response);
-      throw error;
+      // throw error;
     }
   }
 );
@@ -62,7 +62,7 @@ export const updateCityData = createAsyncThunk(
       if (response?.data?.data?.status === 1) {
         return { data: response?.data?.data, msg: response?.data?.message };
       } else {
-        errorHandler(response);
+        // errorHandler(response);
       }
 
       return response;
@@ -81,7 +81,7 @@ export const getCountryData = createAsyncThunk(
       if (response?.data?.data?.status === 1) {
         return { data: response?.data?.data, msg: response?.data?.message };
       } else {
-        errorHandler(response);
+        // errorHandler(response);
       }
 
       return response;
@@ -119,7 +119,7 @@ export const postCountryData = createAsyncThunk(
       if (response?.data?.data?.status === 1) {
         return { data: response?.data?.data, msg: response?.data?.message };
       } else {
-        errorHandler(response);
+        // errorHandler(response);
       }
 
       return response;
@@ -138,7 +138,7 @@ export const updateCountryData = createAsyncThunk(
       if (response?.data?.data?.status === 1) {
         return { data: response?.data?.data, msg: response?.data?.message };
       } else {
-        errorHandler(response);
+        // errorHandler(response);
       }
       return response;
     } catch (error) {
@@ -156,7 +156,7 @@ export const getStateData = createAsyncThunk(
       if (response?.data?.data?.status === 1) {
         return { data: response?.data?.data, msg: response?.data?.message };
       } else {
-        errorHandler(response);
+        // errorHandler(response);
       }
 
       return response;
@@ -175,7 +175,7 @@ export const postStateData = createAsyncThunk(
       if (response?.data?.data?.status === 1) {
         return { data: response?.data?.data, msg: response?.data?.message };
       } else {
-        errorHandler(response);
+        // errorHandler(response);
       }
 
       return response;
@@ -194,7 +194,7 @@ export const updateStateData = createAsyncThunk(
       if (response?.data?.data?.status === 1) {
         return { data: response?.data?.data, msg: response?.data?.message };
       } else {
-        errorHandler(response);
+        // errorHandler(response);
       }
 
       return response;

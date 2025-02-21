@@ -25,6 +25,7 @@ import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { Field, Form, Formik, ErrorMessage } from 'formik';
+import { errorHandler } from '../../../utils';
 
 function CustomerTypeComponent() {
   const isActive1Ref = useRef();
@@ -177,7 +178,8 @@ function CustomerTypeComponent() {
       // setIsActive(0);
     }
   };
-  const handleForm = async (values, id) => {
+  const handleForm = async (values, id, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('type_name', values.type_name);
     formData.append('remark', values.remark);
@@ -186,25 +188,29 @@ function CustomerTypeComponent() {
     editFormData.append('type_name', values.type_name);
     editFormData.append('remark', values.remark);
     editFormData.append('is_active', values.is_active);
-    // e.preventDefault();
 
-    // const form = new FormData(e.target);
-    if (!id) {
-      dispatch(postCustomerData(formData)).then((res) => {
-        if (res?.payload?.data?.status === 1) {
-          dispatch(getCustomerTypeData());
-        } else {
-        }
-      });
-    } else {
-      dispatch(updateCustomerData({ id: id, payload: editFormData })).then(
-        (res) => {
+    try {
+      if (!id) {
+        await dispatch(postCustomerData(formData)).then((res) => {
           if (res?.payload?.data?.status === 1) {
             dispatch(getCustomerTypeData());
           } else {
           }
-        }
-      );
+        });
+      } else {
+        await dispatch(
+          updateCustomerData({ id: id, payload: editFormData })
+        ).then((res) => {
+          if (res?.payload?.data?.status === 1) {
+            dispatch(getCustomerTypeData());
+          } else {
+          }
+        });
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -329,12 +335,14 @@ function CustomerTypeComponent() {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(values) => {
-            handleForm(values, modal.modalData ? modal.modalData.id : '');
+          onSubmit={(values, { setSubmitting }) => {
+            handleForm(values, modal.modalData ? modal.modalData.id : '', {
+              setSubmitting
+            });
             // setOtpModal(true);
           }}
         >
-          {({ setFieldValue }) => (
+          {({ isSubmitting }) => (
             <Form>
               <Modal.Header
                 closeButton
@@ -445,13 +453,18 @@ function CustomerTypeComponent() {
               <Modal.Footer>
                 {/* Submit / Update Button */}
                 {!modal.modalData ? (
-                  <button type="submit" className="btn btn-primary text-white">
+                  <button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-primary text-white"
+                  >
                     Submit
                   </button>
                 ) : (
                   checkRole &&
                   checkRole[0]?.can_update === 1 && (
                     <button
+                      disabled={isSubmitting}
                       type="submit"
                       className="btn btn-primary text-white"
                     >

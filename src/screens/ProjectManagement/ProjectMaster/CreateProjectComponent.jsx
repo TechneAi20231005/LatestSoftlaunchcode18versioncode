@@ -33,7 +33,8 @@ export default function CreateProjectComponent({ match }) {
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 20)
   );
-  const handleForm = async (values) => {
+  const handleForm = async (values, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('customer_id', values.customer_id);
     formData.append('project_name', values.project_name);
@@ -89,32 +90,31 @@ export default function CreateProjectComponent({ match }) {
     // }
 
     // if (flag === 1) {
-    await new ProjectService()
-      .postProject(formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            history(
-              {
-                pathname: `/${_base}/Project`
-              },
-              {
-                state: {
-                  alert: toast.success(res.data.message)
-                }
+    try {
+      const res = await new ProjectService().postProject(formData);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          history(
+            {
+              pathname: `/${_base}/Project`
+            },
+            {
+              state: {
+                alert: toast.success(res.data.message)
               }
-            );
-          } else {
-            toast.error(res.data.message);
-          }
+            }
+          );
         } else {
-          toast.error(res.message);
+          toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
-    // }
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const [ba, setBa] = useState(null);
@@ -122,49 +122,59 @@ export default function CreateProjectComponent({ match }) {
   const [users, setUsers] = useState(null);
 
   const loadData = useCallback(async () => {
-    await new CustomerService().getCustomer().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setCustomer(
-            res.data.data?.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({ value: d.id, label: d.name }))
-          );
+    await new CustomerService()
+      .getCustomer()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setCustomer(
+              res.data.data?.data
+                .filter((d) => d.is_active === 1)
+                .map((d) => ({ value: d.id, label: d.name }))
+            );
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
     dispatch(getRoles());
 
-    await new UserService().getUser().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const user = res.data.data?.data?.filter((d) => d.is_active === 1);
-          setBa(
-            res.data.data?.data
-              .filter((d) => d.is_active === 1 && d.account_for === 'SELF')
-              .map((d) => ({
-                value: d.id,
-                label: d.first_name + ' ' + d.last_name
-              }))
-          );
-          user.sort((a, b) => {
-            if (a.first_name && b.first_name) {
-              return a.first_name.localeCompare(b.first_name);
-            }
-            return 0;
-          });
-          setUsers(
-            res.data.data?.data
-              .filter((d) => d.is_active === 1 && d.account_for === 'SELF')
-              .map((d) => ({
-                value: d.id,
-                label: d.first_name + ' ' + d.last_name
-              }))
-          );
+    await new UserService()
+      .getUser()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            const user = res.data.data?.data?.filter((d) => d.is_active === 1);
+            setBa(
+              res.data.data?.data
+                .filter((d) => d.is_active === 1 && d.account_for === 'SELF')
+                .map((d) => ({
+                  value: d.id,
+                  label: d.first_name + ' ' + d.last_name
+                }))
+            );
+            user.sort((a, b) => {
+              if (a.first_name && b.first_name) {
+                return a.first_name.localeCompare(b.first_name);
+              }
+              return 0;
+            });
+            setUsers(
+              res.data.data?.data
+                .filter((d) => d.is_active === 1 && d.account_for === 'SELF')
+                .map((d) => ({
+                  value: d.id,
+                  label: d.first_name + ' ' + d.last_name
+                }))
+            );
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }, [dispatch]);
 
   function handleFileChange(event) {
@@ -252,11 +262,11 @@ export default function CreateProjectComponent({ match }) {
           <Formik
             initialValues={initialValues}
             validationSchema={validationSchema}
-            onSubmit={(values) => {
-              handleForm(values);
+            onSubmit={(values, { setSubmitting }) => {
+              handleForm(values, { setSubmitting });
             }}
           >
-            {({ setFieldValue, values }) => (
+            {({ setFieldValue, values, isSubmitting }) => (
               <Form>
                 {/* <form onSubmit={handleForm}> */}
                 <div className="card mt-2">
@@ -489,7 +499,11 @@ export default function CreateProjectComponent({ match }) {
                 {/* CARD */}
 
                 <div className="mt-3" style={{ textAlign: 'right' }}>
-                  <button type="submit" className="btn btn-sm btn-primary">
+                  <button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-sm btn-primary"
+                  >
                     Submit
                   </button>
                   <Link

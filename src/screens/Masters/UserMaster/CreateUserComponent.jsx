@@ -164,7 +164,6 @@ function CreateUserComponent({ match }) {
     departmentErr: '',
     jobRoleErr: ''
   });
-
   function checkingValidation(form) {
     var selectFirstName = form.getAll('first_name')[0];
     var selectMiddleName = form.getAll('middle_name')[0];
@@ -387,8 +386,7 @@ function CreateUserComponent({ match }) {
     if (loading) {
       return;
     }
-    setLoading(true); // Set loading state to true
-    // setNotify(null);
+    setLoading(true);
 
     const form = new FormData(e.target);
     var flag = 1;
@@ -440,11 +438,6 @@ function CreateUserComponent({ match }) {
               setTimeout(() => {
                 navigate(`/${_base}/User`);
               }, 3000);
-            } else {
-              // Error case when status is not 1
-              toast.error(res?.payload?.data?.message, {
-                autoClose: 5000 // 10 seconds in milliseconds
-              });
             }
           } else {
             // Error case when status code is not 200

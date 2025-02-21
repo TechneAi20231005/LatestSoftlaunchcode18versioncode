@@ -13,6 +13,8 @@ import { Field, Form, Formik, ErrorMessage } from 'formik';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
 import { moduleMasterValidation } from './validation/ModuleMaster';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 export default function CreateModuleComponent({ match }) {
   const dispatch = useDispatch();
@@ -27,10 +29,9 @@ export default function CreateModuleComponent({ match }) {
   };
 
   const history = useNavigate();
-  const [notify, setNotify] = useState(null);
 
-  const handleForm = async (values) => {
-    console.log(values, 'formData');
+  const handleForm = async (values, { setSubmitting }) => {
+    setSubmitting(true);
 
     // e.preventDefault();
     // const formData = new FormData(e.target);
@@ -39,56 +40,30 @@ export default function CreateModuleComponent({ match }) {
     formData.append('module_name', values.module_name);
     formData.append('description', values.description);
     formData.append('remark', values.remark);
-    setNotify(null);
 
-    await new ModuleService()
-      .postModule(formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            setTimeout(() => {
-              history({pathname:`/${_base}/Module`})
-            }, 500);
-            setNotify({ type: 'success', message: res.data.message });
-            // history(
-            //   {
-            //     pathname: `/${_base}/Module`
-            //   },
-            //   {
-            //     state: { alert: { type: 'success', message: res.data.message } }
-            //   }
-            // );
-          } else {
-            setNotify({ type: 'danger', message: res.data.message });
-          }
+    try {
+      const res = await new ModuleService().postModule(formData);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          setTimeout(() => {
+            history({ pathname: `/${_base}/Module` });
+          }, 500);
+          toast.success(res.data.message);
+          // history(
+          //   {
+          //     pathname: `/${_base}/Module`
+          //   },
         } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'Module',
-            'Create_Module',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        if (error.response) {
-          const { response } = error;
-          const { request, ...errorObject } = response || {};
-          setNotify({ type: 'danger', message: errorObject.data.message });
-          new ErrorLogService().sendErrorLog(
-            'Module',
-            'Create_Module',
-            'INSERT',
-            errorObject.data.message
-          );
-        } else {
-          console.error(
-            "Error object does not contain expected 'response' property:",
-            error
-          );
-        }
-      });
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
   useEffect(() => {
     dispatch(getRoles());
@@ -104,7 +79,6 @@ export default function CreateModuleComponent({ match }) {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Add Module" />
 
       <div className="row clearfix g-3">
@@ -112,11 +86,9 @@ export default function CreateModuleComponent({ match }) {
           <Formik
             initialValues={initialValue}
             validationSchema={moduleMasterValidation}
-            onSubmit={(values) => {
-              handleForm(values);
-              // setOtpModal(true);
+            onSubmit={(values, { setSubmitting }) => {
+              handleForm(values, { setSubmitting });
             }}
-            // onSubmit={handleForm}
           >
             {({ isSubmitting }) => (
               <Form>
@@ -224,6 +196,7 @@ export default function CreateModuleComponent({ match }) {
 
                 <div className="mt-3" style={{ textAlign: 'right' }}>
                   <button
+                    disabled={isSubmitting}
                     type="submit"
                     className="btn btn-sm btn-primary"
                   >

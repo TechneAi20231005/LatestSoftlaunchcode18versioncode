@@ -1,11 +1,12 @@
-import { createAsyncThunk } from "@reduxjs/toolkit";
-import CustomerMappingService from "../../../../services/SettingService/CustomerMappingService";
-import CustomerTypeService from "../../../../services/MastersService/CustomerTypeService";
-import QueryTypeService from "../../../../services/MastersService/QueryTypeService";
-import TemplateService from "../../../../services/MastersService/TemplateService";
+import { createAsyncThunk } from '@reduxjs/toolkit';
+import CustomerMappingService from '../../../../services/SettingService/CustomerMappingService';
+import CustomerTypeService from '../../../../services/MastersService/CustomerTypeService';
+import QueryTypeService from '../../../../services/MastersService/QueryTypeService';
+import TemplateService from '../../../../services/MastersService/TemplateService';
+import { errorHandler } from '../../../../utils';
 
 export const getCustomerMappingData = createAsyncThunk(
-  "getCustomerMappingData",
+  'getCustomerMappingData',
   async (config, thunkapi) => {
     try {
       const service = new CustomerMappingService();
@@ -13,12 +14,12 @@ export const getCustomerMappingData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
 export const exportCustomerMappingData = createAsyncThunk(
-  "exportCustomerMappingData",
+  'exportCustomerMappingData',
   async (config, thunkapi) => {
     try {
       const service = new CustomerMappingService();
@@ -26,13 +27,13 @@ export const exportCustomerMappingData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
 
 export const getcustomerTypeData = createAsyncThunk(
-  "getcustomerTypeData",
+  'getcustomerTypeData',
   async (config, thunkapi) => {
     try {
       const service = new CustomerTypeService();
@@ -40,13 +41,13 @@ export const getcustomerTypeData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
 
 export const getQueryTypeData = createAsyncThunk(
-  "getQueryTypeData",
+  'getQueryTypeData',
   async (config, thunkapi) => {
     try {
       const service = new QueryTypeService();
@@ -54,20 +55,20 @@ export const getQueryTypeData = createAsyncThunk(
 
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );
 
 export const getTemplateData = createAsyncThunk(
-  "getTemplateData",
+  'getTemplateData',
   async (config, thunkapi) => {
     try {
       const service = new TemplateService();
       const response = await service.getTemplate();
       return response;
     } catch (error) {
-      throw error;
+      errorHandler(error);
     }
   }
 );

@@ -543,7 +543,6 @@ export default function TaskComponent() {
         let filteredArray = prevState?.filter(
           (sprint) => sprint?.id === selectedOption?.value
         );
-
         return filteredArray;
       });
 

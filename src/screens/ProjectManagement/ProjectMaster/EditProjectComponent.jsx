@@ -17,6 +17,8 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import { Formik, Form, Field, ErrorMessage, isObject } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import Spinner from 'react-bootstrap/Spinner';
+import { errorHandler } from '../../../utils';
+import { toast } from 'react-toastify';
 
 export default function EditProjectComponent({ match }) {
   const history = useNavigate();
@@ -87,7 +89,6 @@ export default function EditProjectComponent({ match }) {
 
           if (data) {
             if (data) {
-
               setData(null);
               setData(data);
             }
@@ -95,30 +96,14 @@ export default function EditProjectComponent({ match }) {
         }
       })
       .catch((error) => {
-        if (error.response) {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-
-          // Continue handling the error as needed
-          setNotify({ type: 'danger', message: errorObject.data.message });
-          new ErrorLogService().sendErrorLog(
-            'Project',
-            'Edit_Project',
-            'INSERT',
-            errorObject.data.message
-          );
-        } else {
-          console.error(
-            "Error object does not contain expected 'response' property:",
-            error
-          );
-        }
+        errorHandler(error);
       });
 
     dispatch(getRoles());
   }, [dispatch, projectId]);
 
-  const handleForm = async (values) => {
+  const handleForm = async (values, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('customer_id', values.customer_id);
     formData.append('project_name', values.project_name);
@@ -144,44 +129,29 @@ export default function EditProjectComponent({ match }) {
     formData.append('is_active:', values.is_active);
     // e.preventDefault();
     // const formData = new FormData(e.target);
-
-    await new ProjectService()
-      .updateProject(projectId, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            history(
-              {
-                pathname: `/${_base}/Project`
-              },
-              {
-                state: { alert: { type: 'success', message: res.data.message } }
-              }
-            );
-          } else {
-            setNotify({ type: 'danger', message: res.data.message });
-          }
-        } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'Project',
-            'Edit_Project',
-            'INSERT',
-            res.message
+    try {
+      const res = await new ProjectService().updateProject(projectId, formData);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          history(
+            {
+              pathname: `/${_base}/Project`
+            },
+            {
+              state: { alert: toast.success(res.data.message) }
+            }
           );
+        } else {
+          toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        setNotify({ type: 'danger', message: errorObject.data.message });
-        new ErrorLogService().sendErrorLog(
-          'Project',
-          'Edit_Project',
-          'INSERT',
-          errorObject.data.message
-        );
-      });
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleShowLogo = (e) => {
@@ -268,21 +238,18 @@ export default function EditProjectComponent({ match }) {
   const validationSchema = CustomValidation(fields);
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader headerTitle="Edit Project" />
-
       <div className="row clearfix g-3">
         <div className="col-sm-12">
           {data ? (
             <Formik
               initialValues={initialValues}
               validationSchema={validationSchema}
-              onSubmit={(values) => {
-                handleForm(values);
+              onSubmit={(values, { setSubmitting }) => {
+                handleForm(values, { setSubmitting });
               }}
             >
-              {({ setFieldValue, values }) => (
+              {({ setFieldValue, values, isSubmitting }) => (
                 <Form>
                   {/* <form onSubmit={handleForm}> */}
                   <div className="card mt-2">
@@ -580,7 +547,11 @@ export default function EditProjectComponent({ match }) {
 
                   <div className="mt-3" style={{ textAlign: 'right' }}>
                     {checkRole && checkRole[0]?.can_update === 1 ? (
-                      <button type="submit" className="btn btn-sm btn-primary">
+                      <button
+                        disabled={isSubmitting}
+                        type="submit"
+                        className="btn btn-sm btn-primary"
+                      >
                         Update
                       </button>
                     ) : (

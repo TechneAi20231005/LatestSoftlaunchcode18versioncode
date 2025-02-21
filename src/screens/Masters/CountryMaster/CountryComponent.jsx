@@ -26,6 +26,7 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
 
 function CountryComponent() {
   //initial state
@@ -150,33 +151,35 @@ function CountryComponent() {
       width: '175px'
     }
   ];
+  const handleForm = async (values, id, { setSubmitting = false }) => {
+    setSubmitting(true);
 
-  const handleForm = async (values, id) => {
     const formData = new FormData();
     formData.append('country', values.country);
     formData.append('remark', values.remark);
 
-    const editformdata = new FormData();
-    editformdata.append('country', values.country);
-    editformdata.append('remark', values.remark);
-    editformdata.append('is_active', values.is_active);
+    const editFormData = new FormData();
+    editFormData.append('country', values.country);
+    editFormData.append('remark', values.remark);
+    editFormData.append('is_active', values.is_active);
 
-    if (!id) {
-      dispatch(postCountryData(formData)).then((res) => {
-        if (res?.payload?.data?.status === 1) {
-          dispatch(getCountryData());
-        } else {
-        }
-      });
-    } else {
-      dispatch(updateCountryData({ id: id, payload: editformdata })).then(
-        (res) => {
-          if (res?.payload?.data?.status === 1) {
-            dispatch(getCountryData());
-          } else {
-          }
-        }
-      );
+    try {
+      let response;
+      if (!id) {
+        response = await dispatch(postCountryData(formData));
+      } else {
+        response = await dispatch(
+          updateCountryData({ id, payload: editFormData })
+        );
+      }
+
+      if (response?.payload?.data?.status === 1) {
+        await dispatch(getCountryData());
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -216,8 +219,6 @@ function CountryComponent() {
       max: 100,
       min: 3,
       required: true,
-      min: 3,
-      max: 25,
       alphaNumeric: true
     },
     {
@@ -233,8 +234,6 @@ function CountryComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader
         headerTitle="Country Master"
         renderRight={() => {
@@ -291,6 +290,7 @@ function CountryComponent() {
       </div>
       <Modal centered show={modal.showModal}>
         <Formik
+          isLoading
           initialValues={{
             id: modal.modalData?.id || '',
             country: modal.modalData?.country || '',
@@ -298,11 +298,13 @@ function CountryComponent() {
             is_active: String(modal?.modalData?.is_active) ?? '1'
           }}
           validationSchema={validationSchema}
-          onSubmit={(values) => {
-            handleForm(values, modal.modalData ? modal.modalData.id : '');
+          onSubmit={(values, { setSubmitting }) => {
+            handleForm(values, modal.modalData ? modal.modalData.id : '', {
+              setSubmitting
+            });
           }}
         >
-          {({ errors, touched }) => (
+          {({ errors, touched, isSubmitting }) => (
             <Form>
               <Modal.Header
                 closeButton
@@ -414,6 +416,7 @@ function CountryComponent() {
                 {!modal.modalData && (
                   <button
                     type="submit"
+                    disabled={isSubmitting}
                     className="btn btn-primary text-white"
                     style={{
                       backgroundColor: '#484C7F',
@@ -428,6 +431,7 @@ function CountryComponent() {
                   checkRole &&
                   checkRole[0]?.can_update === 1 && (
                     <button
+                      disabled={isSubmitting}
                       type="submit"
                       className="btn btn-primary text-white"
                       style={{ backgroundColor: '#484C7F' }}

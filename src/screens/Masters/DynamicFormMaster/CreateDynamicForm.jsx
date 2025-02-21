@@ -34,9 +34,9 @@ import { getDesignationDataListThunk } from '../DesignationMaster/DesignationAct
 import { getStatusData } from '../StatusMaster/StatusComponentAction';
 import QueryTypeService from '../../../services/MastersService/QueryTypeService';
 import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 function CreateDynamicForm() {
-  const [notify, setNotify] = useState(null);
   const [message, setMessage] = useState('');
   const [display, setDisplay] = useState('');
 
@@ -360,13 +360,11 @@ function CreateDynamicForm() {
   };
 
   const handleAddRow = async () => {
-    setNotify(null);
     let flag = 1;
     let last = rows.length - 1;
 
     if (!rows[last].inputType || !rows[last].inputLabel) {
       flag = 0;
-      setNotify(null);
     }
 
     const item = {
@@ -396,7 +394,7 @@ function CreateDynamicForm() {
       setRows([...rows, item]);
       setRows([...rows, mainJson]);
     } else {
-      setNotify({ type: 'danger', message: 'Fill Complete Details !!!' });
+      toast.error('Fill Complete Details !!!');
     }
   };
 
@@ -432,21 +430,27 @@ function CreateDynamicForm() {
 
     setFormShow(formShow === true ? false : true);
   };
-
+  const [submitting, setSubmitting] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+
     if (!message.trim()) {
       setDisplay('Form Name is Required');
       return;
     } else {
       setDisplay(''); // Clear error
     }
+
     const data = {
       template_name: e.target.template_name.value,
       data: JSON.stringify(rows)
     };
 
-    await new DynamicFormService().postDynamicForm(data).then((res) => {
+    try {
+      const res = await new DynamicFormService().postDynamicForm(data);
+
       if (res.status === 200) {
         if (res.data.status === 1) {
           dispatch(dynamicFormData());
@@ -461,15 +465,13 @@ function CreateDynamicForm() {
           toast.error(res.data.message);
         }
       } else {
-        setNotify({ type: 'danger', message: res.message });
-        new ErrorLogService().sendErrorLog(
-          'User',
-          'Create_User',
-          'INSERT',
-          res.message
-        );
+        toast.error(res.message);
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   useEffect(() => {

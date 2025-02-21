@@ -11,7 +11,6 @@ import {
   postStatusData,
   updateStatusData,
   getGridStatusData
-
 } from './StatusComponentAction';
 
 import { getRoles } from '../../Dashboard/DashboardAction';
@@ -22,6 +21,7 @@ import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
 
 function StatusComponent() {
   const dispatch = useDispatch();
@@ -173,7 +173,8 @@ function StatusComponent() {
   const validationSchema = CustomValidation(fields);
   const loadData = async () => {};
 
-  const handleForm = async (values, id) => {
+  const handleForm = async (values, id, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('status', values.status);
     formData.append('remark', values.remark);
@@ -183,20 +184,23 @@ function StatusComponent() {
     editformdata.append('remark', values.remark);
     editformdata.append('is_active', values.is_active);
 
-    // e.preventDefault();
-    // setNotify(null);
-    // const form = new FormData(values);
-    if (!id) {
-      dispatch(postStatusData(formData));
-      setTimeout(() => {
-        dispatch(getGridStatusData());
-      }, 500);
-    } else {
-      dispatch(updateStatusData({ id: id, payload: editformdata }));
+    try {
+      if (!id) {
+        await dispatch(postStatusData(formData));
+        setTimeout(() => {
+          dispatch(getGridStatusData());
+        }, 500);
+      } else {
+        await dispatch(updateStatusData({ id: id, payload: editformdata }));
 
-      setTimeout(() => {
-        dispatch(getGridStatusData());
-      }, 500);
+        setTimeout(() => {
+          dispatch(getGridStatusData());
+        }, 500);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -300,11 +304,13 @@ function StatusComponent() {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(values) => {
-            handleForm(values, modal.modalData ? modal.modalData.id : '');
+          onSubmit={(values, { setSubmitting }) => {
+            handleForm(values, modal.modalData ? modal.modalData.id : '', {
+              setSubmitting
+            });
           }}
         >
-          {({}) => (
+          {({ isSubmitting }) => (
             <Form>
               <Modal.Header closeButton>
                 <Modal.Title className="fw-bold">
@@ -384,6 +390,7 @@ function StatusComponent() {
               <Modal.Footer>
                 {!modal.modalData ? (
                   <button
+                    disabled={isSubmitting}
                     type="submit"
                     className="btn btn-primary text-white"
                     style={{
@@ -398,6 +405,7 @@ function StatusComponent() {
                   checkRole &&
                   checkRole[0]?.can_update === 1 && (
                     <button
+                      disabled={isSubmitting}
                       type="submit"
                       className="btn btn-primary text-white"
                       style={{ backgroundColor: '#484C7F' }}
