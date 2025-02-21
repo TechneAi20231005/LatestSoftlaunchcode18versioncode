@@ -823,10 +823,16 @@ export default function EditTicketComponent({ match }) {
   const subModuleIdRef = useRef();
   const reviewerIdRef = useRef();
   const userDepRef = useRef();
+  const userSelectRef = useRef(null);
   const handleDepartment = (e) => {
     if (userDepRef.current) {
       userDepRef.current.clearValue();
     }
+    if (userSelectRef.current) {
+      userSelectRef.current.clearValue();
+    }
+
+
 
     if (e) {
       const select = user
@@ -1384,6 +1390,7 @@ export default function EditTicketComponent({ match }) {
                         </label>
                         {userDropdown && userDrp && (
                           <Select
+                          ref={userSelectRef}
                             id="assign_to_user_id"
                             name="assign_to_user_id"
                             options={userDropdown}
@@ -1392,6 +1399,7 @@ export default function EditTicketComponent({ match }) {
                                 setUserName(event);
                               }
                             }}
+
                             defaultValue={
                               // userDropdown &&
                               // data.assign_to_user_id &&
@@ -1403,6 +1411,7 @@ export default function EditTicketComponent({ match }) {
                             isDisabled={isSolved}
                           />
                         )}
+
                       </div>
                       <div className="col-sm-3">
                         <label className="col-form-label">

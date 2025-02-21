@@ -56,7 +56,7 @@ export const ExportAllTicketsToExcel = ({
               ASSIGN_TO_USER: dataToDownload[key].assign_to_user,
               QUERY_TYPE_NAME: dataToDownload[key].query_type_name,
               PRIORITY: dataToDownload[key].priority,
-              STATUS: dataToDownload[key].status_name,
+              // STATUS: dataToDownload[key].status_name,
               DESCRIPTION: dataToDownload[key].description,
               CREATED_BY: dataToDownload[key].created_by_name,
               Confirmation_Required: dataToDownload[key].confirmation_required
@@ -64,7 +64,7 @@ export const ExportAllTicketsToExcel = ({
                 : 'NO',
               Ref_id: dataToDownload[key].cuid,
               from_department_name: dataToDownload[key].from_department_name,
-              Status: dataToDownload[key].is_active ? 'Active' : 'Deactive',
+              // Status: dataToDownload[key].is_active ? 'Active' : 'Deactive',
               module_name: dataToDownload[key].module_name,
               Passed_Status: dataToDownload[key].passed_status,
               Passed_Status_Changed_At:
@@ -78,16 +78,18 @@ export const ExportAllTicketsToExcel = ({
               sub_module_name: dataToDownload[key].sub_module_name
             });
           }
+          const ws = XLSX.utils.json_to_sheet(tempExport);
+          const wb = { Sheets: { data: ws }, SheetNames: ['data'] };
+          const excelBuffer = XLSX.write(wb, {
+            bookType: 'xlsx',
+            type: 'array'
+          });
+          const data = new Blob([excelBuffer], { type: fileType });
+
+          FileSaver.saveAs(data, fileName + fileExtension);
         }
       }
     });
-
-    const ws = XLSX.utils.json_to_sheet(tempExport);
-    const wb = { Sheets: { data: ws }, SheetNames: ['data'] };
-    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
-    const data = new Blob([excelBuffer], { type: fileType });
-
-    FileSaver.saveAs(data, fileName + fileExtension);
 
     setLoading(false);
   };

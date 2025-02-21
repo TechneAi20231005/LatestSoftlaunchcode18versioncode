@@ -435,11 +435,12 @@ export default function TaskModal(props) {
     //   }
     // });
 
-    await new TaskTicketTypeService()?.getTaskType('Task')?.then((res) => {
+    await new TaskTicketTypeService()?.getChildrenData('Task')?.then((res) => {
       if (res?.status === 200) {
-        let filterData = res?.data?.data.data?.filter(
-          (item) => item?.is_active === 1
-        );
+        let filterData = res?.data?.data.data
+        // res?.data?.data.data?.filter(
+        //   (item) => item?.is_active === 1
+        // );
         setTaskData(filterData);
       }
     });
