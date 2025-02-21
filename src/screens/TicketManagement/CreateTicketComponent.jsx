@@ -528,7 +528,7 @@ export default function CreateTicketComponent() {
       if (res.payload.status === 200) {
       }
     });
-    await new QueryTypeService().getAllQueryGroup(status).then((res) => {
+    await new QueryTypeService().getQueryGroupForSelect().then((res) => {
       if (res.data.status === 1) {
         setQueryGroupDropdown(
           res.data.data.data
@@ -551,9 +551,9 @@ export default function CreateTicketComponent() {
       }
     });
 
-    await new TaskTicketTypeService()?.getTicketType('TICKET')?.then((res) => {
+    await new TaskTicketTypeService()?.getChildrenData('TICKET')?.then((res) => {
       if (res?.status === 200) {
-        setTicketsData(res?.data?.data?.data.filter((d) => d.is_active === 1));
+        setTicketsData(res?.data?.data?.data);
       }
     });
 

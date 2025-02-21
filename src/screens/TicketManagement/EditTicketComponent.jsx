@@ -749,7 +749,7 @@ export default function EditTicketComponent({ match }) {
       });
 
     await new TaskTicketTypeService()
-      .getChildrenData('TASK')
+      .getChildrenData('TICKET')
       ?.then((res) => {
         if (res?.status === 200) {
           setTicketsData(res?.data?.data?.data);
