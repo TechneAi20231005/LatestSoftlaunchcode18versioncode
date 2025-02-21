@@ -1027,7 +1027,9 @@ function QueryTypeComponent() {
                             <Dropdown.Menu as="ul">
                               <li
                                 className="btn btn-sm btn-warning text-white"
+
                                 onClick={(e) => {
+                                  if (!queryGroupData?.length) return;
                                   handleModalEditPopup({
                                     showModalEditPopup: true,
                                     modalDataEditPopup: '',
