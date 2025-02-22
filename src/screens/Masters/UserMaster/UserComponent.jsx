@@ -62,12 +62,14 @@ function UserComponent() {
       width: '80px',
       cell: (row) => (
         <div className="btn-group" role="group">
-          <Link
+          {
+            checkRole && checkRole[0]?.can_update === 1 ?    <Link
             to={`/${_base}/User/Edit/` + row.id}
             className="btn btn-outline-secondary"
           >
             <i className="icofont-edit text-success"></i>
-          </Link>
+          </Link> : ""
+          }
         </div>
       )
     },

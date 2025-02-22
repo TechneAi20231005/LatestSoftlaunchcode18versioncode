@@ -840,7 +840,7 @@ function QueryTypeComponent() {
       label: 'remark',
       required: false,
       alphaNumeric: true,
-      max: 1000
+      max: 255
     }
   ];
 
