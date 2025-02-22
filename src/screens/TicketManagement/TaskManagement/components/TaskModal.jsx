@@ -106,6 +106,8 @@ export default function TaskModal(props) {
     // }
   ];
 
+  let item = [localStorage.getItem('id')];
+
   const validationSchema = CustomValidation(fields);
   const initialValues = {
     task_name: props?.data?.task_name || '',
@@ -118,7 +120,7 @@ export default function TaskModal(props) {
       : '',
     assign_to_user: props.data.assign_to_user
       ? props.data.assign_to_user
-      : Number(localStorage.getItem('id')),
+      : item,
     task_desc: props?.data?.task_desc || '',
     type: props.data?.type || 'TASK',
     status: props?.data?.status || 'TO_DO'
@@ -2135,12 +2137,12 @@ export default function TaskModal(props) {
                         value={userData.filter(
                           (option) =>
                             Array.isArray(values.assign_to_user)
-                              ? values.assign_to_user.includes(option.value) // Check for array
+                              ? values.assign_to_user.includes(String(option.value)) // Check for array
                               : values.assign_to_user === option.value // Check for scalar
                         )}
                         onChange={(selectedOptions) => {
                           const selectedValues = Array.isArray(selectedOptions)
-                            ? selectedOptions.map((option) => option.value) // Map selected options to their values
+                            ? selectedOptions.map((option) => String(option.value)) // Map selected options to their values
                             : [];
                           setFieldValue('assign_to_user', selectedValues); // Update the form value
                         }}
