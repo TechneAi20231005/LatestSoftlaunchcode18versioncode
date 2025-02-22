@@ -894,6 +894,7 @@ function EditUserComponent({ match }) {
       <PageHeader headerTitle="Edit User" />
 
       <form
+      autoComplete="off"
         onSubmit={handleForm}
         ref={userForm}
         encType="multipart/form-data"
@@ -1321,6 +1322,7 @@ function EditUserComponent({ match }) {
                           <InputGroup className="">
                             <input
                               typeof="password"
+                               autoComplete="new-password"
                               className="form-control"
                               id="password"
                               name="password"

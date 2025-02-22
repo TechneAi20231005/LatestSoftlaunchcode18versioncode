@@ -758,7 +758,7 @@ function CreateUserComponent({ match }) {
     <div className="container-xxl">
       <PageHeader headerTitle="Create User" />
 
-      <form onSubmit={handleForm} ref={userForm} method="post">
+      <form autoComplete="off" onSubmit={handleForm} ref={userForm} method="post">
         <Tabs
           defaultActiveKey={tabKey}
           activeKey={tabKey}
@@ -984,6 +984,7 @@ function CreateUserComponent({ match }) {
                           className="form-control"
                           id="user_name"
                           name="user_name"
+                          autoComplete='off'
                           placeholder="Username"
                           onKeyPress={(e) => {
                             Validation.CharactersNumbersOnly(e);
@@ -1126,6 +1127,7 @@ function CreateUserComponent({ match }) {
                             onKeyPress={(e) => {
                               Validation.password(e);
                             }}
+                            autoComplete="new-password"
                             onChange={handlePasswordValidation}
                             onPaste={(e) => {
                               e.preventDefault();

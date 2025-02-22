@@ -7,7 +7,7 @@ import {
 export const addJobRoleMasterValidation = Yup.object().shape({
   job_role: Yup.string()
     .required('Job role title is required.')
-    .min(3, 'Job role title must be at least 3 character.')
+    .min(2, 'Job role title must be at least 2 character.')
     .max(100, 'Job role title must be at most 100 characters.')
     .matches(
       JOB_ROLE_REGEX,
