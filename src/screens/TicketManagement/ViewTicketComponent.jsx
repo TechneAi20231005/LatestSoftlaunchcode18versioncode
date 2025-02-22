@@ -46,7 +46,7 @@ export default function ViewTicketComponent({ match }) {
       setChartData(res.data.data['series']);
     });
     await new MyTicketService().getTicketById(ticketId).then((res) => {
-      setRows(res?.data?.data?.dynamic_form?.dynamic_data);
+      setRows(res?.data?.data?.dynamic_form);
       setShowLoaderModal(null);
 
       if (res.status === 200) {

@@ -195,7 +195,7 @@ function RoleComponent({ location }) {
     {
       name: 'role',
       label: 'Role name',
-      max: 25,
+      max: 100,
       required: true,
       alphaNumeric: true
     },

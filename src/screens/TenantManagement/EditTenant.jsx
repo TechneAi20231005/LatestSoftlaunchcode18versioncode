@@ -72,6 +72,8 @@ export default function EditTenant() {
 
   const [errorMessage, setErrorMessage] = useState('');
 
+  const [isDisabled, setIsDisabled] = useState(false)
+
   const [inputState, setInputState] = useState({});
   const initialValues = {
     company_name: data?.company_name || '',
@@ -182,6 +184,8 @@ export default function EditTenant() {
   }, [dispatch, tenanatId]);
 
   const handleForm = async (values) => {
+    setIsDisabled(true)
+    if(isDisabled) return
     const formData = new FormData();
 
     formData.append('company_name', values.company_name);
@@ -207,6 +211,7 @@ export default function EditTenant() {
         }
       }
     );
+    setIsDisabled(false)
   };
 
   const handleKeyPress = (e) => {
@@ -571,7 +576,7 @@ export default function EditTenant() {
 
               <div className="mt-3" style={{ textAlign: 'right' }}>
                 {/* {checkRole && checkRole[0]?.can_update === 1 ? ( */}
-                <button type="submit" className="btn btn-primary">
+                <button disabled={isDisabled} type="submit" className="btn btn-primary">
                   Update
                 </button>
                 {/* ) : (

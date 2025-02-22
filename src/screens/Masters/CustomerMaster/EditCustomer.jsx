@@ -388,7 +388,7 @@ function EditCustomer() {
       label: 'Remark',
       alphaNumeric: true,
       required: false,
-      max: 1000
+      max: 255
     }
   ];
 
@@ -437,9 +437,9 @@ function EditCustomer() {
                             maxLength={30}
                             // required
                             // defaultValue={data ? data.name : null}
-                            onKeyPress={(e) => {
-                              Validation.CharactersOnly(e);
-                            }}
+                            // onKeyPress={(e) => {
+                            //   Validation.CharactersOnly(e);
+                            // }}
                           />
                           <ErrorMessage
                             name="name"
@@ -856,7 +856,7 @@ function EditCustomer() {
                   <div className="mt-3" style={{ textAlign: 'right' }}>
                     {checkRole && checkRole[0]?.can_update === 1 ? (
                       <button
-                        disabled={isSubmitting}
+                        // disabled={isSubmitting}
                         type="submit"
                         className="btn btn-primary"
                       >

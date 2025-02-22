@@ -76,7 +76,7 @@ export default class ProjectService {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'multipart/form-data'
       }
     };
     return axios.post(_updateProject + id, payload, config);

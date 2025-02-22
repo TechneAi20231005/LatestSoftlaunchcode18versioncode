@@ -41,7 +41,8 @@ export default function CreateProjectComponent({ match }) {
     values?.project_owner.forEach((item) => {
       formData?.append('project_owner[]', item?.value);
     });
-    formData.append('logo', values.logo);
+    console.log(values?.logo, "logo")
+    values?.logo && formData.append('logo', values.logo);
     if (values?.project_reviewer?.length > 0) {
       values?.project_reviewer?.forEach((item) => {
         formData.append('project_reviewer[]', item?.value || '');

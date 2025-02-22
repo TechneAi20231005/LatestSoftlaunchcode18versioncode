@@ -371,8 +371,9 @@ export default function CreateCustomerMappingComponent() {
   const useridDetail = useRef();
 
   const handleForm = async (values, { setSubmitting }) => {
+    // return
     setSubmitting(true);
-    if (userDropDownFilterData) {
+    if (userDropDownFilterData && values?.approach !== "RW") {
       if (values?.user_id?.length === 0) {
         return;
       }
@@ -1022,7 +1023,7 @@ export default function CreateCustomerMappingComponent() {
 
                     <div className="mt-3 d-flex justify-content-end">
                       <button
-                        disabled={isSubmitting}
+                        // disabled={isSubmitting}
                         type="submit"
                         className="btn btn-primary btn-sm"
                       >

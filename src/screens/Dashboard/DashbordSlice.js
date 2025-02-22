@@ -749,7 +749,7 @@ export const DashbordSlice = createSlice({
       for (const i in temp) {
         exportCustomerData.push({
           SrNo: temp[i].counter,
-          Name: temp[i].name,
+          Customer_Name: temp[i].name,
           Customer_Type: temp[i].customer_type,
           Email: temp[i].email_id,
           Contact_Number: temp[i].contact_no,

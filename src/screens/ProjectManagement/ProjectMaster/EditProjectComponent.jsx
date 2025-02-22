@@ -19,6 +19,7 @@ import { CustomValidation } from '../../../components/custom/CustomValidation/Cu
 import Spinner from 'react-bootstrap/Spinner';
 import { errorHandler } from '../../../utils';
 import { toast } from 'react-toastify';
+import { _rewampAttachmentUrl } from '../../../settings/constants';
 
 export default function EditProjectComponent({ match }) {
   const history = useNavigate();
@@ -110,7 +111,7 @@ export default function EditProjectComponent({ match }) {
     values?.project_owner.forEach((item) => {
       formData?.append('project_owner[]', item?.value);
     });
-    formData.append('logo', values.logo);
+    values?.logo && formData.append('logo', values.logo);
     if (values?.project_reviewer?.length > 0) {
       values.project_reviewer.forEach((item) => {
         formData.append('project_reviewer[]', item?.value);
@@ -156,8 +157,8 @@ export default function EditProjectComponent({ match }) {
 
   const handleShowLogo = (e) => {
     var URL =
-      'http://3.108.206.34/TSNewBackend/storage/app/Attachment/project/' +
-      data.logo;
+      `${_rewampAttachmentUrl}/storage/app/Attachment/project/` +
+      data?.logo;
     window.open(URL, '_blank');
   };
 
@@ -187,7 +188,7 @@ export default function EditProjectComponent({ match }) {
     customer_id: customerId?.value || '',
     project_name: data?.project_name || '',
     project_owner: projectOwner || [],
-    logo: null,
+    logo: data?.logo,
     project_reviewer: projectReviewer || [],
     description: data?.description || '',
     git_url: data?.git_url || '',
@@ -356,11 +357,20 @@ export default function EditProjectComponent({ match }) {
                             name="logo"
                             accept="image/*"
                             onChange={(event) =>
+                            {
+                              let file = event?.target?.files[0]
+                              if (file?.size > 2 * 1024 * 1024) {
+                                // File size exceeds 2MB, notify the user and clear the input field
+                                alert('File size must be less than 2MB.');
+                                event.target.value = null; // Clear the input field
+                              }
                               setFieldValue('logo', event?.target?.files[0])
                             }
+
+                            }
                           />
-                          <p>{data.logo}</p>
-                          {data && data.logo !== 'null' && (
+                          <p>{data.logo || ""}</p>
+                          {data && data.logo !== null && (
                             <i
                               title="Click to view logo"
                               onClick={handleShowLogo}
@@ -495,7 +505,7 @@ export default function EditProjectComponent({ match }) {
 
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
-                          <b>Status : </b>
+                          <b>Status : <Astrick color="red" size="13px" /> </b>
                         </label>
                         <div className="col-sm-10">
                           <div className="row">

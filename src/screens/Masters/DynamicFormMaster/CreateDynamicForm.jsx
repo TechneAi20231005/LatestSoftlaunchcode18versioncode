@@ -245,7 +245,7 @@ function CreateDynamicForm() {
           .getUserForMyTickets(inputRequired)
           .then((res) => {
             if (res?.status === 200) {
-              const data = res?.data?.data.filter((d) => d.is_active === 1);
+              const data = res?.data?.data?.data?.filter((d) => d.is_active === 1);
 
               for (const key in data) {
                 tempUserData.push({

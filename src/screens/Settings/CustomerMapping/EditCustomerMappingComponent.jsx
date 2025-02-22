@@ -44,6 +44,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const dispatch = useDispatch();
 
   const useridDetail = useRef(null);
+   const [approach, setApproach] = useState('');
 
   const { id } = useParams();
   const mappingId = id;
@@ -139,12 +140,12 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       name: 'approach',
       label: 'approach',
       required: true
+    },
+    {
+      name: 'department_id',
+      label: 'department_id',
+      required: approach !== 'AU' && approach !== 'SELF' ? true : false
     }
-    // {
-    //   name: 'department_id',
-    //   label: 'department_id',
-    //   required: true
-    // }
   ];
 
   const validationSchema = CustomValidation(fields);
@@ -662,13 +663,13 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                 }
                 // validationSchema={validationSchema}
                 validationSchema={(values) => {
-                  if (data?.approach !== 'AU') {
-                    fields.push({
-                      name: 'department_id',
-                      label: 'Department ID',
-                      required: true
-                    });
-                  }
+                  // if (data?.approach !== 'AU') {
+                  //   fields.push({
+                  //     name: 'department_id',
+                  //     label: 'Department ID',
+                  //     required: true
+                  //   });
+                  // }
 
                   // Generate validation schema dynamically
                   return CustomValidation(fields);
@@ -1103,6 +1104,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                   )}
                                   isClearable={true}
                                   onChange={(selectedOption) => {
+                                    setApproach(selectedOption.value);
                                     const value = selectedOption
                                       ? selectedOption?.value
                                       : '';
@@ -1301,7 +1303,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
                       <div className="mt-3 d-flex justify-content-end">
                         <button
-                          disabled={isSubmitting}
+                          // disabled={isSubmitting}
                           type="submit"
                           className="btn btn-primary btn-sm"
                         >

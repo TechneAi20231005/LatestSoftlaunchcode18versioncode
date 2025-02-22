@@ -78,7 +78,7 @@ function CustomerComponent() {
       width: '60px'
     },
     {
-      name: 'Name',
+      name: 'Customer Name',
       selector: (row) => row.name,
       sortable: true,
       width: '150px'

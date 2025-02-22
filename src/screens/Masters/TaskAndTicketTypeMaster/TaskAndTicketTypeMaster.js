@@ -674,7 +674,7 @@ function TaskAndTicketTypeMaster(props) {
                 parent_name: temp[i].parent_name,
                 type_name: temp[i].type_name,
                 remark: temp[i].remark,
-                active: temp[i].is_active,
+                status: temp[i].is_active === 1 ? 'Active' : 'Deactive',
                 created_at: temp[i].created_at,
                 created_by: temp[i].created_by,
                 updated_at: temp[i].updated_at,
