@@ -27,11 +27,11 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
   // // initial state
   const dispatch = useDispatch();
 
+  console.log('edit data', currentSalaryData);
+
   const addEditSalaryInitialValue = {
-    department_id:
-      type === 'EDIT' ? currentSalaryData?.department_id?.toString() : '',
-    designation_id:
-      type === 'EDIT' ? currentSalaryData?.designation_id?.toString() : '',
+    department_id: type === 'EDIT' ? currentSalaryData?.department_id : '',
+    designation_id: type === 'EDIT' ? currentSalaryData?.designation_id : '',
     location_id:
       type === 'EDIT'
         ? currentSalaryData?.locations?.map((location) => location?.location_id)
