@@ -127,7 +127,7 @@ export default function EditProjectComponent({ match }) {
     formData.append('git_url', values.git_url);
     formData.append('api_document_link', values.api_document_link);
     formData.append('remark', values.remark);
-    formData.append('is_active:', values.is_active);
+    formData.append('is_active', values.is_active);
     // e.preventDefault();
     // const formData = new FormData(e.target);
     try {
@@ -194,7 +194,7 @@ export default function EditProjectComponent({ match }) {
     git_url: data?.git_url || '',
     api_document_link: data?.api_document_link || '',
     remark: data?.remark || '',
-    is_active: data?.is_active !== undefined ? String(data?.is_active) : '1'
+    is_active: String(data?.is_active) ?? "1"
   };
   const fields = [
     { name: 'customer_id', label: 'Customer Name', required: true },

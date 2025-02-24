@@ -162,6 +162,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         if (res.status === 200) {
           if (res.data.status === 1) {
             tempData = res.data.data;
+            setSelectedCustomer(tempData?.customer_type_id?.length || 0)
             setRatioData(
               tempData?.user_policy?.map((d) => ({
                 user_id: d.user_id,
@@ -364,7 +365,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const handleAutoChanges = async (e, type, nameField) => {
     if (!e || Object.entries(e).length === 0) return;
     if (type === 'Select2' && nameField === 'customer_type_id') {
-      setSelectedCustomer(e?.length);
+      setSelectedCustomer(e?.length) ;
     }
     const value =
       type === 'Select2' && nameField === 'customer_type_id'

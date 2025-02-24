@@ -50,7 +50,7 @@ export default function EditModuleComponent({ match }) {
     sub_module_name: data?.sub_module_name ? data?.sub_module_name : '',
     description: data?.description ? data?.description : '',
     remark: data?.remark ? data?.remark : '',
-    is_active: data?.is_active !== undefined ? String(data?.is_active) : '1'
+    is_active: String(data?.is_active) ?? "1"
   };
   const loadData = async () => {
     await new SubModuleService()
@@ -98,6 +98,10 @@ export default function EditModuleComponent({ match }) {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setModules(res.data.data?.data.filter((d) => d.is_active === 1));
+          console.log( data?.project_id)
+          let filters = res?.data?.data?.data?.filter((item) => item?.project_id === data?.project_id)
+          console.log("🚀 ~ awaitnewModuleService ~ filters:", filters)
+
           setModulesDropdown(
             res.data.data &&
               res.data.data?.data
@@ -250,6 +254,7 @@ export default function EditModuleComponent({ match }) {
                               )
                             }
                           >
+
                             <option value="" label="Select a module" />
                             {modulesDropdown?.map((option) => (
                               <option key={option.value} value={option.value}>
@@ -376,7 +381,7 @@ export default function EditModuleComponent({ match }) {
 
                   {/* Buttons */}
                   <div className="mt-3" style={{ textAlign: 'right' }}>
-                    {checkRole && checkRole[0].can_update === 1 ? (
+                    {checkRole && checkRole[0]?.can_update === 1 ? (
                       <button
                         disabled={isSubmitting}
                         type="submit"
