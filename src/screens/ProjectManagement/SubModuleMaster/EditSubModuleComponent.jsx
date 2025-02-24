@@ -98,9 +98,6 @@ export default function EditModuleComponent({ match }) {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setModules(res.data.data?.data.filter((d) => d.is_active === 1));
-          console.log( data?.project_id)
-          let filters = res?.data?.data?.data?.filter((item) => item?.project_id === data?.project_id)
-          console.log("🚀 ~ awaitnewModuleService ~ filters:", filters)
 
           setModulesDropdown(
             res.data.data &&
