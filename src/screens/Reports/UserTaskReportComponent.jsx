@@ -250,7 +250,9 @@ function UserTaskReportComponent() {
       name: 'task_name',
       label: 'Task Name',
       required: false,
-      alphaNumeric: true
+      alphaNumeric: true,
+      max: 100
+
     }
   ];
 

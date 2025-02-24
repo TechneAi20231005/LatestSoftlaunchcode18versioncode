@@ -706,7 +706,8 @@ export default function TaskComponent() {
               }
             });
         } else {
-          setNotify({ type: 'danger', message: res?.data?.message });
+          toast.error(res?.data?.message)
+          // setNotify({ type: 'danger', message: res?.data?.message });
         }
       });
   };
