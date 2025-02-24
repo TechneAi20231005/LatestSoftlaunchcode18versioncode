@@ -194,7 +194,7 @@ function CityComponent() {
     {
       name: 'remark',
       label: 'Remark',
-      max: 1000,
+      max: 255,
       required: false,
       alphaNumeric: true
     }
@@ -214,7 +214,7 @@ function CityComponent() {
     country_id: valueof?.value || '',
     state_id: stateValue?.value || '',
     city: modal.modalData?.city || '',
-    remark: modal.modalData?.remark || '',
+    remark: modal?.modalData?.remark || '',
     is_active: String(modal.modalData?.is_active) ?? '1'
   };
 
