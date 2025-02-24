@@ -441,60 +441,58 @@ function QueryTypeComponent() {
   const loadDataEditPopup = async () => {
     const data = [];
     const exportTempQueryGroupData = [];
-    await new QueryTypeService()
-      .getAllQueryGroup()
-      .then((res) => {
-        if (res.data.status === 1) {
-          setQueryGroupDropdown(
-            res.data.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({ value: d.id, label: d.group_name }))
-          );
-        }
-        if (res.status === 200) {
-          let counter = 1;
-          const temp = res.data.data.data;
-          for (const key in temp) {
-            data.push({
-              counter: counter++,
-              id: temp[key].id,
-              group_name: temp[key].group_name,
-              is_active: temp[key].is_active,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by
-            });
-          }
 
-          setQueryGroupData(data);
-
-          for (const i in data) {
-            exportTempQueryGroupData.push({
-              Sr: data[i].counter,
-              group_name: data[i].group_name,
-              Status: data[i].is_active ? 'Active' : 'Deactive',
-              created_at: data[i].created_at,
-              created_by: data[i].created_by,
-              updated_at: data[i].updated_at,
-              updated_by: data[i].updated_by
-            });
-          }
-
-          setExportQueryGroupData(null);
-          setExportQueryGroupData(exportTempQueryGroupData);
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'QueryType',
-          'Get_QueryType',
-          'INSERT',
-          errorObject.data.message
+    try {
+      const res = await new QueryTypeService().getAllQueryGroup();
+      if (res.data.status === 1) {
+        setQueryGroupDropdown(
+          res.data.data.data
+            .filter((d) => d.is_active === 1)
+            .map((d) => ({ value: d.id, label: d.group_name }))
         );
-      });
+      }
+      if (res.status === 200) {
+        let counter = 1;
+        const temp = res.data.data.data;
+        for (const key in temp) {
+          data.push({
+            counter: counter++,
+            id: temp[key].id,
+            group_name: temp[key].group_name,
+            is_active: temp[key].is_active,
+            created_at: temp[key].created_at,
+            created_by: temp[key].created_by,
+            updated_at: temp[key].updated_at,
+            updated_by: temp[key].updated_by
+          });
+        }
+
+        setQueryGroupData(data);
+
+        for (const i in data) {
+          exportTempQueryGroupData.push({
+            Sr: data[i].counter,
+            group_name: data[i].group_name,
+            Status: data[i].is_active ? 'Active' : 'Deactive',
+            created_at: data[i].created_at,
+            created_by: data[i].created_by,
+            updated_at: data[i].updated_at,
+            updated_by: data[i].updated_by
+          });
+        }
+
+        setExportQueryGroupData(null);
+        setExportQueryGroupData(exportTempQueryGroupData);
+      }
+    } catch (error) {
+      errorHandler(error);
+      // new ErrorLogService().sendErrorLog(
+      //   'QueryType',
+      //   'Get_QueryType',
+      //   'INSERT',
+      //   errorObject.data.message
+      // );
+    }
   };
 
   // ************************************ End Edit & View Popup **********************************
@@ -514,34 +512,33 @@ function QueryTypeComponent() {
     setNotify(null);
     setNotifyy(null);
     if (!id) {
-      await new QueryTypeService()
-        .postQueryGroup(form)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setModalQueryGroup({
-                showModalQueryGroup: false,
-                modalDataQueryGroup: '',
-                modalHeaderQueryGroup: ''
-              });
+      try {
+        const res = await new QueryTypeService().postQueryGroup(form);
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setModalQueryGroup({
+              showModalQueryGroup: false,
+              modalDataQueryGroup: '',
+              modalHeaderQueryGroup: ''
+            });
 
-              toast.success(res.data.message);
-              loadData();
-              loadDataEditPopup();
-            } else {
-              toast.error(res.data.message);
-            }
+            toast.success(res.data.message);
+            loadData();
+            loadDataEditPopup();
           } else {
             toast.error(res.data.message);
           }
-        })
-        .catch((error) => {
-          errorHandler(error);
-        });
+        } else {
+          toast.error(res.data.message);
+        }
+      } catch (error) {
+        errorHandler(error);
+      }
     } else {
       form.delete('is_active');
       form.append('is_active', isActive);
-      await new QueryTypeService().updateQueryGroup(id, form).then((res) => {
+      try {
+        const res = await new QueryTypeService().updateQueryGroup(id, form);
         if (res.status === 200) {
           if (res.data.status === 1) {
             toast.success(res.data.message);
@@ -564,7 +561,9 @@ function QueryTypeComponent() {
             res.message
           );
         }
-      });
+      } catch (error) {
+        errorHandler(error);
+      }
     }
   };
 
@@ -580,63 +579,62 @@ function QueryTypeComponent() {
     // setShowLoaderModal(true);
     const data = [];
     const exportTempData = [];
-    await new QueryTypeService()
-      .getQueryType()
-      .then((res) => {
-        if (res.status === 200) {
-          // setShowLoaderModal(false);
+    try {
+      const res = await new QueryTypeService().getQueryType();
+      if (res.status === 200) {
+        // setShowLoaderModal(false);
 
-          let counter = 1;
-          const temp = res.data.data.data;
-          for (const key in temp) {
-            data.push({
-              counter: counter++,
-              id: temp[key].id,
-              query_type_name: temp[key].query_type_name,
-              form_id: temp[key].form_id,
-              customer_id: temp[key].customer_id,
+        let counter = 1;
+        const temp = res.data.data.data;
+        for (const key in temp) {
+          data.push({
+            counter: counter++,
+            id: temp[key].id,
+            query_type_name: temp[key].query_type_name,
+            form_id: temp[key].form_id,
+            customer_id: temp[key].customer_id,
 
-              form_name: temp[key].form_id_name,
-              query_group_name: temp[key].query_group_name,
-              query_group: temp[key].query_group,
-              is_active: temp[key].is_active,
-              remark: temp[key].remark,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by,
-              query_group_data: temp[key].query_group_data
-            });
-          }
-
-          setData(data);
-          // setDataa(data);
-          setIsLoading(false);
-
-          for (const i in data) {
-            exportTempData.push({
-              Sr: data[i].counter,
-              Query_Type_Name: data[i].query_type_name,
-              query_group_name: temp[i].query_group_name,
-              form_name: temp[i].form_id_name,
-              Status: data[i].is_active ? 'Active' : 'Deactive',
-              Remark: data[i].remark,
-              created_at: data[i].created_at,
-              created_by: data[i].created_by,
-              updated_at: data[i].updated_at,
-              updated_by: data[i].updated_by
-            });
-          }
-
-          setExportData(null);
-          setExportData(exportTempData);
+            form_name: temp[key].form_id_name,
+            query_group_name: temp[key].query_group_name,
+            query_group: temp[key].query_group,
+            is_active: temp[key].is_active,
+            remark: temp[key].remark,
+            created_at: temp[key].created_at,
+            created_by: temp[key].created_by,
+            updated_at: temp[key].updated_at,
+            updated_by: temp[key].updated_by,
+            query_group_data: temp[key].query_group_data
+          });
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
 
-    await new DynamicFormService().getDynamicForm().then((res) => {
+        setData(data);
+        // setDataa(data);
+        setIsLoading(false);
+
+        for (const i in data) {
+          exportTempData.push({
+            Sr: data[i].counter,
+            Query_Type_Name: data[i].query_type_name,
+            query_group_name: temp[i].query_group_name,
+            form_name: temp[i].form_id_name,
+            Status: data[i].is_active ? 'Active' : 'Deactive',
+            Remark: data[i].remark,
+            created_at: data[i].created_at,
+            created_by: data[i].created_by,
+            updated_at: data[i].updated_at,
+            updated_by: data[i].updated_by
+          });
+        }
+
+        setExportData(null);
+        setExportData(exportTempData);
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
+
+    try {
+      const res = await new DynamicFormService().getDynamicForm();
       if (res.data.status === 1) {
         // setShowLoaderModal(false);
         // setDynamicForm(res.data.data.filter((d) => d.is_active === 1));
@@ -646,9 +644,12 @@ function QueryTypeComponent() {
             ?.map((d) => ({ value: d.id, label: d.template_name }))
         );
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    }
 
-    await new CustomerService().getCustomer().then((res) => {
+    try {
+      const res = await new CustomerService().getCustomer();
       if (res.data.status === 1) {
         // setSelectedCustomer(res.data.data.filter((d) => d.is_active === 1));
         // setCustomerDropdown(
@@ -657,7 +658,10 @@ function QueryTypeComponent() {
         //     .map((d) => ({ value: d.id, label: d.name }))
         // );
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    }
+
     dispatch(getRoles());
   }, [dispatch]);
 
