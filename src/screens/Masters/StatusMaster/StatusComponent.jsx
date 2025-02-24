@@ -149,7 +149,7 @@ function StatusComponent() {
   ];
   const initialValues = {
     status: modal.modalData ? modal.modalData.status : '',
-    remark: modal.modalData ? modal.modalData.remark : '',
+    remark: modal.modalData.remark || '',
     is_active: String(modal?.modalData?.is_active) ?? '1'
   };
 
