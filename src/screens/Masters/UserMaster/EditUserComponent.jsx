@@ -398,6 +398,12 @@ function EditUserComponent({ match }) {
       return;
     }
     var selectTicketTypeShow = form.getAll('ticket_show_type_id[]');
+    let is_default = form.getAll('is_default[]').map(value => value === "" ? "0" : value);
+
+    form.delete('is_default[]');
+   is_default.forEach(value => form.append('is_default[]', value));
+
+
     if (selectTicketTypeShow === '') {
       setInputState({
         ...state,

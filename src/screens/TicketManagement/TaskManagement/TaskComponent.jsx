@@ -529,27 +529,50 @@ export default function TaskComponent() {
       });
     }
   };
-  const sprintDropDownHandler = async (selectedOption) => {
-    // setDisableNextBtn(false);
-    // setDisablePrevBtn(false);
-    setSprintCardData(sprintData);
-    setSelectedOption((prevStateOption) => {
-      if (selectedOption === prevStateOption) {
-        setSprintCardData([]);
-        getBasketData(0, currentTaskStatus);
-        return null;
-      }
-      setSprintCardData((prevState) => {
-        let filteredArray = prevState?.filter(
-          (sprint) => sprint?.id === selectedOption?.value
-        );
-        return filteredArray;
-      });
+  const selectedOptionRef = useRef(null);
 
-      getBasketData(selectedOption?.value, currentTaskStatus);
-      return selectedOption;
-    });
+  // const sprintDropDownHandler = async (selectedOption) => {
+  //   // setDisableNextBtn(false);
+  //   // setDisablePrevBtn(false);
+  //   setSprintCardData(sprintData);
+  //   setSelectedOption((prevStateOption) => {
+  //     if (selectedOption === prevStateOption) {
+  //       setSprintCardData([]);
+  //       getBasketData(0, currentTaskStatus);
+  //       return null;
+  //     }
+  //     setSprintCardData((prevState) => {
+  //       let filteredArray = prevState?.filter(
+  //         (sprint) => sprint?.id === selectedOption?.value
+  //       );
+  //       return filteredArray;
+  //     });
+
+  //     getBasketData(selectedOption?.value, currentTaskStatus);
+  //     return selectedOption;
+  //   });
+  // };
+  const sprintDropDownHandler = async (selectedOption) => {
+    if (!selectedOption) return;
+    if (selectedOption?.value === selectedOptionRef.current?.value) {
+      setSprintCardData([]);
+      getBasketData(0, currentTaskStatus);
+      setSelectedOption(null);
+      selectedOptionRef.current = null;
+      return;
+    }
+
+    selectedOptionRef.current = selectedOption;
+
+    setSelectedOption(selectedOption);
+
+    const filteredArray = sprintData?.filter(
+      (sprint) => sprint?.id === selectedOption?.value
+    );
+    setSprintCardData(filteredArray);
+    getBasketData(selectedOption?.value, currentTaskStatus);
   };
+
 
   const showNext = async () => {
     // setDisableNextBtn(false);

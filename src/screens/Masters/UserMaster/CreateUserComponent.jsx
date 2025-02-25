@@ -579,6 +579,7 @@ function CreateUserComponent({ match }) {
     roleDropdown?.filter((d) => {
       return d.role.toLowerCase() === 'user';
     });
+
   const filterCutomerRole = customerSort
     ?.filter((d) => d.is_active === 1)
     .map((d) => ({

@@ -159,15 +159,14 @@ const Chatbox = (props) => {
                           className="list-group-item d-flex justify-content-between align-items-center"
                         >
                           {fileObj.file.name}{' '}
-                          {/* FIXED: Access file name correctly */}
-                          <button
+                          {/* <button
                             className="btn btn-sm btn-danger"
                             onClick={() =>
                               uploadAttachmentHandler(null, 'DELETE', index)
                             }
                           >
                             Remove
-                          </button>
+                          </button> */}
                         </li>
                       ))}
                     </ul>

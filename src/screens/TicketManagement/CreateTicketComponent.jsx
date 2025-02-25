@@ -703,8 +703,8 @@ export default function CreateTicketComponent() {
           setData((prev) => {
             const newPrev = { ...prev };
             newPrev['customer_mapping_id'] = mappingId[0];
-            // newPrev['confirmation_required'] =
-            //   customerMapping[0]?.confirmation_required;
+            newPrev['confirmation_required'] =
+              customerMapping[0]?.confirmation_required;
 
             newPrev['priority'] = x[0].priority;
             return newPrev;
