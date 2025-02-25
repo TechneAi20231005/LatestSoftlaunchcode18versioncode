@@ -24,6 +24,7 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
+import LoadingScreen from '../../../components/custom/LoadingScreen';
 
 export function getDateTime() {
   var now = new Date();
@@ -73,6 +74,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 32)
   );
+  const [loading , setLoading] = useState(false)
 
   const [data, setData] = useState({
     approach: [],
@@ -155,6 +157,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     : '';
 
   const loadData = useCallback(async () => {
+    setLoading(true)
     var tempData = '';
     await new CustomerMappingService()
       .getCustomerMappingById(mappingId)
@@ -300,6 +303,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         }
       }
     });
+    setLoading(false)
   }, [dispatch, mappingId, ratiowiseData]);
 
   const getDynamicForm = async () => {
@@ -1301,6 +1305,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             )}
                           </div>
                         )}
+
+                        {loading && <LoadingScreen  showLoaderModal={loading} />}
 
                       <div className="mt-3 d-flex justify-content-end">
                         <button

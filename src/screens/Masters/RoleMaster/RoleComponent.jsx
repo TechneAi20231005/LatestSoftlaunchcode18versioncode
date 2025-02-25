@@ -202,7 +202,7 @@ function RoleComponent({ location }) {
     {
       name: 'remark',
       label: 'Remark',
-      max: 1000,
+      max: 255,
       required: false,
       alphaNumeric: false
     }

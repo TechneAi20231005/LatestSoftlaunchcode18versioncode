@@ -43,6 +43,7 @@ import {
 } from '../../../redux/services/jobRoleMaster';
 import CustomerService from '../../../services/MastersService/CustomerService';
 import { errorHandler } from '../../../utils';
+import LoadingScreen from '../../../components/custom/LoadingScreen';
 function EditUserComponent({ match }) {
   const [notify, setNotify] = useState(null);
   const [tabKey, setTabKey] = useState('All_Tickets');
@@ -71,6 +72,7 @@ function EditUserComponent({ match }) {
   const [jobRoleDropDown, setJobRoleDropDown] = useState(null);
   // const [userDepartment, setUserDepartment] = useState(null);
   const [departmentDropdown, setDepartmentDropdown] = useState(null);
+  const [loading, setLoading] = useState(false)
   // const [defaultDepartmentDropdown, setDefaultDepartmentDropdown] = useState();
 
   const options = [
@@ -474,6 +476,7 @@ function EditUserComponent({ match }) {
   };
 
   const loadData = useCallback(async () => {
+    setLoading(true)
     await new StateService().getState().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
@@ -632,6 +635,7 @@ function EditUserComponent({ match }) {
       }
       setCustomerData(tempData);
     });
+    setLoading(false)
   }, [mappingData, roleDropdown, userId]);
   const handleDependentChange = (e, type) => {
     if (type === 'COUNTRY') {
@@ -1930,6 +1934,7 @@ function EditUserComponent({ match }) {
             )}
           </Tab>
         </Tabs>
+
         <div className="mt-3" style={{ textAlign: 'right' }}>
           {tabKey === 'All_Tickets' && (
             <span
@@ -1966,6 +1971,7 @@ function EditUserComponent({ match }) {
           </Link>
         </div>
       </form>
+      {loading && <LoadingScreen showLoaderModal={loading} />}
     </div>
   );
 }

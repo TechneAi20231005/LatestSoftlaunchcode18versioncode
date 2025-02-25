@@ -149,7 +149,7 @@ function StatusComponent() {
   ];
   const initialValues = {
     status: modal.modalData ? modal.modalData.status : '',
-    remark: modal.modalData.remark || '',
+    remark: modal?.modalData?.remark || '',
     is_active: String(modal?.modalData?.is_active) ?? '1'
   };
 
@@ -164,7 +164,7 @@ function StatusComponent() {
     {
       name: 'remark',
       label: 'Remark',
-      max: 1000,
+      max: 255,
       required: false,
       alphaNumeric: true
     }
