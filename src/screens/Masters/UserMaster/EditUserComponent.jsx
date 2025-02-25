@@ -398,6 +398,12 @@ function EditUserComponent({ match }) {
       return;
     }
     var selectTicketTypeShow = form.getAll('ticket_show_type_id[]');
+    let is_default = form.getAll('is_default[]').map(value => value === "" ? "0" : value);
+
+    form.delete('is_default[]'); // Remove existing values
+   is_default.forEach(value => form.append('is_default[]', value));
+
+
     if (selectTicketTypeShow === '') {
       setInputState({
         ...state,
@@ -1876,7 +1882,11 @@ function EditUserComponent({ match }) {
                                   id={`is_default_` + idx}
                                   checked={item.is_default === 1}
                                   onChange={(e) =>
+
+                                   {
                                     handleCheckInput(e, idx, 'IS_DEFAULT')
+                                    console.log("is_default",e.target.checked)
+                                   }
                                   }
                                 />
                               </td>

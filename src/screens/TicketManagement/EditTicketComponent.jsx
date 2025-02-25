@@ -1218,8 +1218,8 @@ export default function EditTicketComponent({ match }) {
                           >
                             {selectedOption
                               ? selectedOption
-                              : data?.type_name !== null
-                              ? data?.type_name
+                              : data?.parent_name !== null
+                              ? data?.parent_name
                               : 'Primary'}
                           </div>
                           {isMenuOpen && (
