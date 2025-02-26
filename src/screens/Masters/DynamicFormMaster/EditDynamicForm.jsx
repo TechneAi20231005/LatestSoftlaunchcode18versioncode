@@ -808,7 +808,7 @@ function EditDynamicForm() {
                                   )}
                                 </td>
 
-                                <td>
+                                <td  className='text-center'>
                                   <input
                                     type="checkbox"
                                     name="inputMandatory"
@@ -818,7 +818,7 @@ function EditDynamicForm() {
                                   />
                                 </td>
 
-                                <td>
+                                <td className='text-center'>
                                   {(item.inputType === 'select-master' ||
                                     item.inputType === 'checkbox' ||
                                     item.inputType === 'select') && (

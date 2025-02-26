@@ -751,9 +751,10 @@ function CreateDynamicForm() {
                                     />
                                   )}
                                 </td>
-                                <td>
+                                <td className="text-center">
                                   <input
                                     type="checkbox"
+
                                     name="inputMandatory"
                                     defaultValue={item.inputMandatory}
                                     onChange={handleChange(idx)}
@@ -761,7 +762,7 @@ function CreateDynamicForm() {
                                   />
                                 </td>
 
-                                <td>
+                                <td className='text-center'>
                                   {(rows[idx].inputType === 'select-master' ||
                                     rows[idx].inputType === 'select' ||
                                     rows[idx].inputType === 'checkbox') && (

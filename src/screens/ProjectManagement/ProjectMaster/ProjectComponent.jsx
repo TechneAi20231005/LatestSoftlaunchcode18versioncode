@@ -344,8 +344,8 @@ function ProjectComponent() {
               description: data[key].description,
               Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
               remark: data[key].remark,
-              created_at: data[key].created_at,
               created_by: data[key].created_by,
+              created_at: data[key].created_at,
               updated_at: data[key].updated_at,
               updated_by: data[key].updated_by
             });
