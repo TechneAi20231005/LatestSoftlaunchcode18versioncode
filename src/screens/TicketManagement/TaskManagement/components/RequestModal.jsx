@@ -421,9 +421,6 @@ const RequestModal = (props) => {
                       <th className="text-center"> Action</th>
                     </tr>
                   </thead>
-                    {console.log(regularizeTimeData,
-                      "regularizeTimeData"
-                    )}
                   <tbody>
                     {regularizeTimeData && regularizeTimeData.length > 0 ? (
                       <>
@@ -792,14 +789,12 @@ const RequestModal = (props) => {
                                   max={formattedDate}
                                   value={row.from_date}
                                   onChange={(e) =>
-                                  {console.log(e.target.value, ">>>>>")
                                     handleDateChange(
                                       index,
                                       'from_date',
                                       e.target.value,
                                       row.from_time
                                     )
-                                  }
                                   }
                                   required
                                 />
