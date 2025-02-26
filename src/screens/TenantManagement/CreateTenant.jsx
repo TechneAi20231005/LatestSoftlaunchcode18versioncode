@@ -25,6 +25,7 @@ import { handleError } from './TenantComponentSlice';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { TenantValidation } from './Validation/TenantMasterValidation';
 import { toast } from 'react-toastify';
+import LoadingScreen from '../../components/custom/LoadingScreen';
 
 export default function CreateTenant() {
   const dispatch = useDispatch();
@@ -162,7 +163,7 @@ export default function CreateTenant() {
   }, [dispatch]);
   const handleForm = async (values) => {
     setIsDisabled(true)
-    if(isDisabled) return
+    // if(isDisabled) return
     const formData = new FormData();
 
     formData.append('company_name', values.company_name);
@@ -183,10 +184,11 @@ export default function CreateTenant() {
         dispatch(getAllTenant());
         toast.success(res.payload.data.message);
       } else {
+        setIsDisabled(false)
         toast.error(res.payload.data.message);
       }
     });
-    setIsDisabled(false)
+
   };
 
   const handleKeyPress = (e) => {
@@ -519,6 +521,7 @@ export default function CreateTenant() {
                 </div>
               </div>
             </div>
+            {isDisabled && <LoadingScreen showLoaderModal={isDisabled}/> }
 
             <div className="card-footer">
               <div className="mt-3" style={{ textAlign: 'right' }}>
