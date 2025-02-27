@@ -372,7 +372,8 @@ export default function CreateCustomerMappingComponent() {
   const useridDetail = useRef();
 
   const handleForm = async (values, { setSubmitting }) => {
-
+   console.log(values,"values")
+  //  return false
 
     // return
     setSubmitting(true);
@@ -413,6 +414,9 @@ export default function CreateCustomerMappingComponent() {
     // if (!values.department_id) {
     //   delete values.department_id;
     // }
+    if(values?.user_id?.length === 0){
+      delete values.user_id;
+    }
 
     if (values.approach != 'AU') {
       values.department_id = values?.department_id;

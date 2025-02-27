@@ -287,10 +287,86 @@ function PlannerModal(props) {
 
   const [times, setTimes] = useState({ label: '00', value: '00' });
 
+  // const loadData = async () => {
+  //   var hours = 0;
+  //   var min = 0;
+  //   var times = [{ label: '00:00', value: '00:00' }];
+  //   do {
+  //     min += 1;
+  //     if (min === 60) {
+  //       min = 0;
+  //       hours += 1;
+  //     }
+  //     let a =
+  //       (hours < 10 ? '0' + hours : hours) + ':' + (min < 10 ? '0' + min : min);
+  //     times.push({ label: a, value: a });
+  //   } while (hours <= 23);
+
+  //   setTimes(times);
+
+  //   await getTaskUser(props.plannerData.taskId).then((res) => {
+  //     if (res.status === 200) {
+  //       setTaskUsers(null);
+
+  //       // res.data.data.forEach
+  //       setTaskUsers(res.data.data);
+  //     }
+  //   });
+
+  //   setPlannerData(props.plannerData);
+
+  //   // if(props.plannerData.data){
+  //   //     let tempTotalHours=0;
+
+  //   //     plannerData.data.forEach(ele=>{
+  //   //             var t=ele.total_hours.replace(':', '.');
+  //   //             tempTotalHours+=parseFloat(t)*60;
+  //   //     })
+  //   //     var Hours = Math.floor(tempTotalHours /60);
+  //   //     var minutes = tempTotalHours % 60;
+  //   //     setTotalHours(Hours+":"+minutes);
+
+  //   // }
+
+  //   const sumHoras = [0, 0];
+  //   for (let i = 0; i < props.plannerData.data.length; i++) {
+  //     const [hours, minutes] = props.plannerData.data[i].total_hours
+  //       .split(':')
+  //       .map((s) => parseInt(s, 10));
+
+  //     // console.log(hours+" "+minutes);
+
+  //     //// hours
+  //     //sumHoras[0] += hours;
+
+  //     //// minutes
+  //     // if ((sumHoras[i] + minutes) > 59) {
+  //     //   const diff = sumHoras[1] + minutes - 60;
+  //     //   sumHoras[0] += 1;
+  //     //   sumHoras[1] = diff;
+  //     // } else {
+  //     //   sumHoras[1] += minutes ;
+  //     // }
+
+  //     sumHoras[0] += hours;
+  //     sumHoras[1] += minutes;
+  //     if (sumHoras[1] >= 60) {
+  //       sumHoras[0] += 1;
+  //       sumHoras[1] = 0;
+  //     }
+  //   }
+  //   var t =
+  //     (sumHoras[0] < 10 ? '0' + sumHoras[0] : sumHoras[0]) +
+  //     ':' +
+  //     (sumHoras[1] < 10 ? '0' + sumHoras[1] : sumHoras[1]);
+  //   setTotalHours(t);
+  // };
+
   const loadData = async () => {
     var hours = 0;
     var min = 0;
     var times = [{ label: '00:00', value: '00:00' }];
+
     do {
       min += 1;
       if (min === 60) {
@@ -307,59 +383,37 @@ function PlannerModal(props) {
     await getTaskUser(props.plannerData.taskId).then((res) => {
       if (res.status === 200) {
         setTaskUsers(null);
-
-        // res.data.data.forEach
         setTaskUsers(res.data.data);
       }
     });
 
     setPlannerData(props.plannerData);
 
-    // if(props.plannerData.data){
-    //     let tempTotalHours=0;
+    // Calculate Total Hours
+    const sumHoras = [0, 0]; // sumHoras[0] -> hours, sumHoras[1] -> minutes
 
-    //     plannerData.data.forEach(ele=>{
-    //             var t=ele.total_hours.replace(':', '.');
-    //             tempTotalHours+=parseFloat(t)*60;
-    //     })
-    //     var Hours = Math.floor(tempTotalHours /60);
-    //     var minutes = tempTotalHours % 60;
-    //     setTotalHours(Hours+":"+minutes);
-
-    // }
-
-    const sumHoras = [0, 0];
     for (let i = 0; i < props.plannerData.data.length; i++) {
-      const [hours, minutes] = props.plannerData.data[i].total_hours
+      const [hrs, mins] = props.plannerData.data[i].total_hours
         .split(':')
         .map((s) => parseInt(s, 10));
 
-      // console.log(hours+" "+minutes);
-
-      //// hours
-      //sumHoras[0] += hours;
-
-      //// minutes
-      // if ((sumHoras[i] + minutes) > 59) {
-      //   const diff = sumHoras[1] + minutes - 60;
-      //   sumHoras[0] += 1;
-      //   sumHoras[1] = diff;
-      // } else {
-      //   sumHoras[1] += minutes ;
-      // }
-
-      sumHoras[0] += hours;
-      sumHoras[1] += minutes;
-      if (sumHoras[1] >= 60) {
-        sumHoras[0] += 1;
-        sumHoras[1] = 0;
-      }
+      sumHoras[0] += hrs;  // Add hours
+      sumHoras[1] += mins; // Add minutes
     }
-    var t =
+
+    // Convert minutes to hours if minutes >= 60
+    if (sumHoras[1] >= 60) {
+      sumHoras[0] += Math.floor(sumHoras[1] / 60); // Add extra hours
+      sumHoras[1] = sumHoras[1] % 60; // Keep remaining minutes
+    }
+
+    // Format the final total time correctly
+    const totalTime =
       (sumHoras[0] < 10 ? '0' + sumHoras[0] : sumHoras[0]) +
       ':' +
       (sumHoras[1] < 10 ? '0' + sumHoras[1] : sumHoras[1]);
-    setTotalHours(t);
+
+    setTotalHours(totalTime);
   };
 
   const handleChange = (e, index) => {

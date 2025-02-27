@@ -552,6 +552,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     // if (!values.department_id) {
     //   delete values.department_id;
     // }
+    if(values?.user_id?.length === 0){
+      delete values.user_id;
+    }
     let flag = 1;
     if (values?.approach === 'RW') {
       if (!ratioTotal || ratioTotal !== 100) {

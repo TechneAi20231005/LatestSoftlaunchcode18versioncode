@@ -2924,23 +2924,25 @@ export default function MyTicketComponent() {
                 />
               </div>
 
-              <div className="col-md-3">
-                <label className="">
-                  <b>Select User :</b>
-                </label>
-                {userData && (
-                  <Select
-                    options={userData}
-                    isMulti={true}
-                    id="assign_to_user_id[]"
-                    value={selectedUsers}
-                    name="assign_to_user_id[]"
-                    onChange={(selectedOptions) => {
-                      setSelectedUsers(selectedOptions);
-                    }}
-                  />
-                )}
-              </div>
+             {
+              localStorage.getItem('account_for') === 'SELF' &&   <div className="col-md-3">
+              <label className="">
+                <b>Select User :</b>
+              </label>
+              {userData && (
+                <Select
+                  options={userData}
+                  isMulti={true}
+                  id="assign_to_user_id[]"
+                  value={selectedUsers}
+                  name="assign_to_user_id[]"
+                  onChange={(selectedOptions) => {
+                    setSelectedUsers(selectedOptions);
+                  }}
+                />
+              )}
+            </div>
+             }
               {localStorage.getItem('account_for') === 'SELF' && (
                 <>
                   <div className="col-md-3">
