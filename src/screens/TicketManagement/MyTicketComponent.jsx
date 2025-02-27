@@ -115,6 +115,7 @@ export default function MyTicketComponent() {
   const [key, setKey] = useState(
     account_for === 'SELF' ? 'Assigned_To_Me' : 'created_by_me'
   );
+  const [found, setFound] = useState(false);
   const selectInputRef = useRef();
   const selectAssignUserRef = useRef();
   const selectEntryDeptRef = useRef();
@@ -1802,6 +1803,7 @@ export default function MyTicketComponent() {
     }
 
     try {
+      setFound(false);
       const res = await new MyTicketService().getUserTicketsTestWithoutTypeOf();
       if (res.status === 200) {
         if (res?.data?.status === 1) {
@@ -1810,7 +1812,6 @@ export default function MyTicketComponent() {
             res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
           );
           const dataAssignToMe = res.data.data.data;
-
           var counter = 1;
           var tempAssignToMeExport = [];
           for (const key in dataAssignToMe) {
@@ -1826,7 +1827,6 @@ export default function MyTicketComponent() {
               STATUS: dataAssignToMe[key].status_name,
               DESCRIPTION: dataAssignToMe[key].description,
               CREATED_BY: dataAssignToMe[key].created_by_name,
-
               Basket_Configured: dataAssignToMe[key].basket_configured,
               Confirmation_Required: dataAssignToMe[key].confirmation_required
                 ? 'YES'
@@ -1853,6 +1853,7 @@ export default function MyTicketComponent() {
           }
         }
       }
+      setFound(true);
     } catch (error) {
       errorHandler(error);
     } finally {
@@ -2003,19 +2004,12 @@ export default function MyTicketComponent() {
               setSearchResult(res.data.data.data);
               setSearchResultData(res.data.data);
               setKey('Search_Result');
-              setIsLoading(false);
-
               setKey('Search_Result');
-
-              // setSearchResultExport(searchResultExport);
             } else {
               setSearchResult([]);
               setSearchResultData([]);
               setKey('Search_Result');
-
               setIsLoading(false);
-
-              // alert('No Data Found');
             }
           } else {
             toast.error(res.data.message);
@@ -2103,6 +2097,8 @@ export default function MyTicketComponent() {
       errorHandler(error);
       // Handle errors that may occur during the getTicketReport call
       // You can add additional error handling logic here, such as displaying an error message to the user.
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -2161,7 +2157,7 @@ export default function MyTicketComponent() {
 
   const handleFilterForm = async (e) => {
     e.preventDefault();
-    setIsLoading(null);
+    if (isLoading) return;
     setIsLoading(true);
     const payload = {
       from_date: startDate,
@@ -2211,7 +2207,6 @@ export default function MyTicketComponent() {
         const res = await new ReportService().getTicketReport(payload);
         if (res?.status === 200) {
           if (res?.data?.status === 1) {
-            setIsLoading(false);
             setSearchResult(null);
             setSearchResult(res.data.data.data);
             setSearchResultData(res.data.data);
@@ -2292,6 +2287,8 @@ export default function MyTicketComponent() {
         }
       } catch (error) {
         errorHandler(error);
+      } finally {
+        setIsLoading(false);
       }
     }
   };
@@ -3355,7 +3352,7 @@ export default function MyTicketComponent() {
                         {isLoading && <TableLoadingSkelton />}
 
                         {
-                          !isLoading && assignedToMe && (
+                          found && !isLoading && assignedToMe && (
                             <DataTable
                               // customStyles={customStyles}
                               columns={assignedToMeColumns}
@@ -3672,67 +3669,63 @@ export default function MyTicketComponent() {
                   <div className="card mb-3 mt-3">
                     <div className="card-body">
                       <div className="row">
-                        <div className="row">
-                          <div className="col-md-6 mb-1">
-                            {unpassedTickets?.length > 0 && (
-                              <ExportAllTicketsToExcel
-                                className="btn btn-danger btn-block"
-                                fileName="Unpassed Ticket"
-                                typeOf="UnPassed"
-                              />
-                            )}
+                        <div className="col-md-6 mb-1">
+                          {unpassedTickets?.length > 0 && (
+                            <ExportAllTicketsToExcel
+                              className="btn btn-danger btn-block"
+                              fileName="Unpassed Ticket"
+                              typeOf="UnPassed"
+                            />
+                          )}
 
-                            {!isLoading && unpassedTickets && (
-                              <>
-                                <button
-                                  className="btn btn-success btn-block text-white"
-                                  onClick={(e) => {
-                                    passTicketHandler();
-                                    const selectedData = unpassedTickets.filter(
-                                      (row) => selectedRowss.includes(row.id)
-                                    );
-                                    handleRemarkModal({
-                                      showModal: true,
-                                      modalData: selectedData,
-                                      modalHeader: 'Enter Remark',
-                                      status: 'PASS'
-                                    });
-                                  }}
-                                  disabled={
-                                    !selectAllNames &&
-                                    selectedRowss?.length <= 0
-                                      ? true
-                                      : false
-                                  }
-                                >
-                                  <i className="icofont-checked"></i> Pass
-                                </button>
-                                <button
-                                  className="btn btn-danger btn-block text-white"
-                                  onClick={(e) => {
-                                    const selectedData = unpassedTickets.filter(
-                                      (row) => selectedRowss.includes(row.id)
-                                    );
-                                    handleRemarkModal({
-                                      showModal: true,
-                                      modalData: selectedData,
-                                      modalHeader: 'Enter Remark',
-                                      status: 'REJECT'
-                                    });
-                                  }}
-                                  disabled={
-                                    !selectAllNames &&
-                                    selectedRowss?.length <= 0
-                                      ? true
-                                      : false
-                                  }
-                                >
-                                  <i className="icofont-close-squared-alt"></i>{' '}
-                                  Reject
-                                </button>
-                              </>
-                            )}
-                          </div>
+                          {!isLoading && unpassedTickets && (
+                            <>
+                              <button
+                                className="btn btn-success btn-block text-white"
+                                onClick={(e) => {
+                                  passTicketHandler();
+                                  const selectedData = unpassedTickets.filter(
+                                    (row) => selectedRowss.includes(row.id)
+                                  );
+                                  handleRemarkModal({
+                                    showModal: true,
+                                    modalData: selectedData,
+                                    modalHeader: 'Enter Remark',
+                                    status: 'PASS'
+                                  });
+                                }}
+                                disabled={
+                                  !selectAllNames && selectedRowss?.length <= 0
+                                    ? true
+                                    : false
+                                }
+                              >
+                                <i className="icofont-checked"></i> Pass
+                              </button>
+                              <button
+                                className="btn btn-danger btn-block text-white"
+                                onClick={(e) => {
+                                  const selectedData = unpassedTickets.filter(
+                                    (row) => selectedRowss.includes(row.id)
+                                  );
+                                  handleRemarkModal({
+                                    showModal: true,
+                                    modalData: selectedData,
+                                    modalHeader: 'Enter Remark',
+                                    status: 'REJECT'
+                                  });
+                                }}
+                                disabled={
+                                  !selectAllNames && selectedRowss?.length <= 0
+                                    ? true
+                                    : false
+                                }
+                              >
+                                <i className="icofont-close-squared-alt"></i>{' '}
+                                Reject
+                              </button>
+                            </>
+                          )}
                         </div>
                       </div>
 

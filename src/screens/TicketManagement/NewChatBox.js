@@ -5,6 +5,7 @@ import UserService from '../../services/MastersService/UserService'; // Import y
 import classNames from './example.module.css';
 import MyTicketService from '../../services/TicketService/MyTicketService';
 import { toast } from 'react-toastify';
+import { errorHandler } from '../../utils';
 
 const Chatbox = (props) => {
   const { ticketId, loadComment, commentData } = props;
@@ -16,7 +17,7 @@ const Chatbox = (props) => {
   };
   const [selectedFile, setSelectedFile] = useState([]);
   const fileInputRef = useRef(null);
-
+  const [submitting, setSubmitting] = useState(false);
   const uploadAttachmentHandler = (e, type, id = null) => {
     let file;
     if (type === 'UPLOAD') {
@@ -66,27 +67,32 @@ const Chatbox = (props) => {
   };
   const handleComment = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
     setMessage('');
     // if (!mentionId.length) {
     //   alert("Kindly mention user");
     //   return;
     // }
-    await new MyTicketService()
 
-      .postComment({
+    try {
+      const res = await new MyTicketService().postComment({
         ticket_id: ticketId,
         comment: message,
         mentions_id: mentionId,
         attachment: selectedFile[0]?.file
-      })
-      .then((res) => {
-        if (res?.data?.status === 1) {
-          toast.success(res?.data?.message);
-        } else {
-          toast.success(res?.data?.message);
-        }
-        loadComment();
       });
+      if (res?.data?.status === 1) {
+        toast.success(res?.data?.message);
+      } else {
+        toast.error(res?.data?.message);
+      }
+      loadComment();
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -106,7 +112,9 @@ const Chatbox = (props) => {
           }));
           setUsers(select);
         }
-      } catch (error) {}
+      } catch (error) {
+        errorHandler(error);
+      }
     };
 
     fetchData();
