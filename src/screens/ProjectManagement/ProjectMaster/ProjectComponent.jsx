@@ -441,7 +441,7 @@ function ProjectComponent() {
 
 function ProjectDropdown({ field, form, ...props }) {
   const [data, setData] = useState(null);
-
+  const [deafultValue, setDeafultValue] = useState('');
   useEffect(() => {
     const tempData = [];
     new ProjectService().getProject().then((res) => {
@@ -454,6 +454,12 @@ function ProjectDropdown({ field, form, ...props }) {
             id: activeData[key].id,
             project_name: activeData[key].project_name
           });
+        }
+        const DeafultValue = tempData.find((d) => d.id === props.defaultValue);
+        if (DeafultValue) {
+          setDeafultValue(DeafultValue.id);
+        } else {
+          setDeafultValue('');
         }
         setData(tempData);
       }
@@ -475,7 +481,7 @@ function ProjectDropdown({ field, form, ...props }) {
           className="form-control form-control-sm"
           id={props.id}
           name={field.name}
-          value={field.value || props.defaultValue || ''} // Controlled by Formik or defaultValue
+          value={deafultValue}
           onChange={handleChange}
           onBlur={field.onBlur}
         >
