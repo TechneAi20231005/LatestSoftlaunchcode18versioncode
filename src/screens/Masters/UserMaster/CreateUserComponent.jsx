@@ -590,6 +590,11 @@ function CreateUserComponent({ match }) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
 
+  const customerRolesData = [{
+    label: "User",
+    value: 0
+  }]
+
   const accountForChange = async (account_for) => {
     setSelctRole(null);
     setAccountFor(account_for);
@@ -602,6 +607,7 @@ function CreateUserComponent({ match }) {
       }
       return false;
     });
+
 
     const response = filteredAsAccountFor
       .filter((d) => d.is_active === 1)
@@ -1232,8 +1238,9 @@ function CreateUserComponent({ match }) {
                           options={
                             accountFor === 'SELF'
                               ? orderedSelfRoleData
-                              : orderedCustomerRoleData
+                              : customerRolesData
                           }
+
                           isClearable={true}
                           onChange={(e) => {
                             handleSelectRole(e);
