@@ -40,6 +40,7 @@ import { getUserForMyTicketsData } from './MyTicketComponentAction';
 import { getRoles } from '../Dashboard/DashboardAction';
 import TaskTicketTypeService from '../../services/MastersService/TaskTicketTypeService';
 import { errorHandler } from '../../utils';
+import { toast } from 'react-toastify';
 
 export default function EditTicketComponent({ match }) {
   const history = useNavigate();
@@ -173,6 +174,8 @@ export default function EditTicketComponent({ match }) {
   };
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
+
+  const [attachments, setAttachments] = useState([]);
 
   const [expectedTrue, setExpectedTrue] = useState();
   const handleForm = async (e) => {
@@ -538,6 +541,8 @@ export default function EditTicketComponent({ match }) {
           }
           setData(null);
           setData(data);
+          console.log(data,"data")
+          setAttachments(data?.attachment || [])
           // handleAttachment("GetAttachment", ticketId);
           if (rows) {
             var dynamicForm = res.data.data.dynamic_form;
@@ -823,6 +828,7 @@ export default function EditTicketComponent({ match }) {
   const subModuleIdRef = useRef();
   const reviewerIdRef = useRef();
   const userDepRef = useRef();
+  const moduleRef = useRef();
   const userSelectRef = useRef(null);
   const handleDepartment = (e) => {
     if (userDepRef.current) {
@@ -894,6 +900,10 @@ export default function EditTicketComponent({ match }) {
   };
 
   const handleModuleChange = (e) => {
+    if (subModuleIdRef.current) {
+      subModuleIdRef.current.clearValue();
+    }
+    // subModuleIdRef.current.clearValue();
     if (e) {
       setSubModuleDropdown(null);
       const data = subModuleData
@@ -939,7 +949,15 @@ export default function EditTicketComponent({ match }) {
   };
   const handleDeleteAttachment = (e, id) => {
     deleteAttachment(id).then((res) => {
-      loadAttachment();
+      if(res.status === 200){
+        setAttachments((prevAttachments) =>
+          prevAttachments.filter((attach) => attach.id !== id)
+        );
+        toast.success(res?.data?.message);
+      }else{
+        toast.error(res?.data?.message);
+      }
+      // loadData()
     });
   };
   const loadCommentsCallback = useCallback(() => {
@@ -1899,8 +1917,8 @@ export default function EditTicketComponent({ match }) {
                 className="d-flex justify-content-start mt-2"
                 style={{ overflowX: 'auto' }}
               >
-                {data.attachment &&
-                  data.attachment.map((attach, index) => (
+                {attachments &&
+                  attachments?.map((attach, index) => (
                     <div
                       className="justify-content-start"
                       key={index}
