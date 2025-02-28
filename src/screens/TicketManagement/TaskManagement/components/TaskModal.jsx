@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Modal, Table } from 'react-bootstrap';
 import ErrorLogService from '../../../../services/ErrorLogService';
-import { _attachmentUrl } from '../../../../settings/constants';
+import { _rewampAttachmentUrl } from '../../../../settings/constants';
 // import { UserDropdown } from '../../../../screens/Masters/UserMaster/UserComponent';
 import Select from 'react-select';
 import {
@@ -47,6 +47,10 @@ export default function TaskModal(props) {
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [taskData, setTaskData] = useState([]);
   const [attachment, setAttachment] = useState([]);
+
+
+  const [attachments, setAttachments] = useState(props.data.attachment || []);
+
 
   // const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
@@ -582,8 +586,17 @@ export default function TaskModal(props) {
   // const handleDeleteAttachment = (e, id) => {};
   const handleDeleteAttachment = (e, id) => {
     deleteAttachment(id).then((res) => {
-      props?.handleShowTaskModal();
-      loadAttachment();
+      if(res.status === 200){
+        setAttachments((prevAttachments) =>
+          prevAttachments.filter((attach) => attach.id !== id)
+        );
+        toast.success(res?.data?.message);
+      }else{
+        toast.error(res?.data?.message);
+      }
+      // props?.handleShowTaskModal();
+      // loadAttachment();
+
     });
   };
 
@@ -2351,8 +2364,8 @@ export default function TaskModal(props) {
                   className="d-flex justify-content-start mt-2"
                   style={{ overflowX: 'auto' }}
                 >
-                  {props?.data?.attachment &&
-                    props?.data?.attachment?.attachments?.map(
+                  {attachments &&
+                    attachments?.map(
                       (attach, index) => {
                         return (
                           <div
@@ -2373,7 +2386,7 @@ export default function TaskModal(props) {
                                 </p>
                                 <div className="d-flex justify-content-end p-0">
                                   <a
-                                    href={`${_attachmentUrl + attach.path}`}
+                                    href={`${_rewampAttachmentUrl + attach.path}`}
                                     target="_blank"
                                     className="btn btn-warning btn-sm p-0 px-1"
                                     rel="noreferrer"

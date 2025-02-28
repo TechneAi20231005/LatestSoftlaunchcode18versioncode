@@ -168,6 +168,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
             tempData = res.data.data;
             console.log('tempData', tempData.customer_type_id?.length);
             setApproach(tempData.approach);
+            // setSelectedCustomer(tempData?.customer_type_id?.length || 0)
             setSelectedCustomer(tempData?.customer_type_id?.length || 0)
             setRatioData(
               tempData?.user_policy?.map((d) => ({
@@ -336,8 +337,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     const queryTypeTemp = queryType.filter((d) => d.id === e.value);
 
     const dynamicFormDropdownTemp = dynamicForm
-      .filter((d) => d.id === queryTypeTemp[0].form_id)
-      .map((d) => ({ value: d.id, label: d.template_name }));
+      ?.filter((d) => d.id === queryTypeTemp[0]?.form_id)
+      ?.map((d) => ({ value: d.id, label: d.template_name }));
 
     if (dynamicFormDropdownTemp.length > 0) {
       setData((prev) => {
@@ -552,9 +553,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     // if (!values.department_id) {
     //   delete values.department_id;
     // }
-    if(values?.user_id?.length === 0){
-      delete values.user_id;
-    }
+    // if(values?.user_id?.length === 0){
+    //   delete values.user_id;
+    // }
     let flag = 1;
     if (values?.approach === 'RW') {
       if (!ratioTotal || ratioTotal !== 100) {
@@ -776,9 +777,11 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                   name="query_type_id"
                                   isClearable={true}
                                   onChange={(selectedOption) => {
+                                    console.log(selectedOption?.value, "selectedOption")
+                                    const values = selectedOption ? selectedOption?.value : '';
                                     form.setFieldValue(
                                       'query_type_id',
-                                      selectedOption?.value || ''
+                                      values
                                     );
                                     handleQueryType(selectedOption);
                                   }}
