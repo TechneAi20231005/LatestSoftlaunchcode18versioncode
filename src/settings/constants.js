@@ -90,7 +90,7 @@ export const masterURL = {
 
   getAllQueryGroup: _rewampApiUrl + 'queryTypeMaster/queryGroup',
 
-  departmentMapping: _apiUrl + 'departmentMapping',
+  departmentMapping: _rewampApiUrl + 'departmentMapping',
   moduleSetting: _apiUrl + 'moduleSetting',
   dynamicFormDropdownMaster: _rewampApiUrl + 'dynamicFormDropdownMaster',
   testingTypeMaster: _apiUrl + 'testingTypeMaster',

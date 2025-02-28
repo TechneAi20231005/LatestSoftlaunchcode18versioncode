@@ -401,7 +401,8 @@ const CreateTemplateComponent = () => {
 
   const addTask = (e) => {
     e.preventDefault();
-
+    if (submitting) return;
+    setSubmitting(true);
     const hoursInput = document.getElementById('hours_add');
     const enteredValue = hoursInput.value.trim();
     const timeRegex = /^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/;
@@ -453,6 +454,7 @@ const CreateTemplateComponent = () => {
       document.getElementById('start_days').value = '';
     }
     setShow(false);
+    setSubmitting(false);
   };
 
   const handleCancelTask = (e) => {
@@ -650,7 +652,11 @@ const CreateTemplateComponent = () => {
                 </div>
 
                 <div className="pull-right">
-                  <button type="submit" class="btn btn-sm btn-primary">
+                  <button
+                    disabled={submitting}
+                    type="submit"
+                    class="btn btn-sm btn-primary"
+                  >
                     Submit
                   </button>
                   <Link to={`/${_base}/Template`} class="btn btn-sm btn-danger">
@@ -1009,6 +1015,7 @@ const CreateTemplateComponent = () => {
                               <Modal.Footer>
                                 <div>
                                   <button
+                                    disabled={submitting}
                                     type="button"
                                     onClick={(e) => {
                                       // Validate the "Hours Required" field

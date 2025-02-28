@@ -238,6 +238,7 @@ export default function HrDashboard(props) {
         }
       })
       .catch((error) => {
+        errorHandler(error);
         // Handle errors, e.g., show an error message to the user
       });
     const data = null;
