@@ -2945,7 +2945,7 @@ export default function MyTicketComponent() {
                 />
               </div>
 
-              <div className="col-md-3">
+              {/* <div className="col-md-3">
                 <label className="">
                   <b>Select User :</b>
                 </label>
@@ -2961,8 +2961,8 @@ export default function MyTicketComponent() {
                     }}
                   />
                 )}
-              </div>
-              {localStorage.getItem('account_for') === 'SELF' && (
+              </div> */}
+              {/* {localStorage.getItem('account_for') === 'SELF' && (
                 <>
                   <div className="col-md-3">
                     <label className="">
@@ -2982,7 +2982,7 @@ export default function MyTicketComponent() {
                     )}
                   </div>
                 </>
-              )}
+              )} */}
 
 
         {/* Select User - Only for SELF */}
