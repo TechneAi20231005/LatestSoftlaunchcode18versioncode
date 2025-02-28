@@ -11,6 +11,8 @@ import InputGroup from 'react-bootstrap/InputGroup';
 import AvatarEditor from 'react-avatar-edit';
 import { Button } from 'react-bootstrap';
 import DemoProfileImg from '../../assets/images/profile_av.png';
+import { errorHandler } from '../../utils';
+import { toast } from 'react-toastify';
 
 function Profile() {
   const [state, setState] = useState(null);
@@ -33,7 +35,7 @@ function Profile() {
     departmentErr: ''
   });
   const history = useNavigate();
-  const [notify, setNotify] = useState();
+  const [submitting, setSubmitting] = useState(false);
   const [data, setData] = useState();
   const comm = ['EMAIL', 'WHATS_APP', 'SMS'];
 
@@ -141,7 +143,8 @@ function Profile() {
 
   const handleAccountChange = async (e) => {
     e.preventDefault();
-    setNotify(null);
+    if (submitting) return;
+    setSubmitting(true);
     const formData = new FormData(e.target);
     var flag = 1;
     var a = JSON.stringify(Object.fromEntries(formData));
@@ -160,28 +163,29 @@ function Profile() {
       return false;
     } else if (mailError == false || contactErr == true) {
       if (flag === 1) {
-        await new UserService()
-          .updateAccountDetails(localStorage.getItem('id'), formData)
-          .then((res) => {
-            if (res.status === 200) {
-              if (res.data.status == 1) {
-                const data = res.data.data;
-
-                setNotify({ type: 'success', message: res.data.message });
-                setTimeout(() => {
-                  navigate(`/${_base}/Dashboard`, {
-                    state: {
-                      alert: { type: 'success', message: res.data.message }
-                    }
-                  });
-                }, 3000);
-              } else {
-                setNotify({ type: 'danger', message: res.data.message });
-              }
+        try {
+          const res = await new UserService().updateAccountDetails(
+            localStorage.getItem('id'),
+            formData
+          );
+          if (res.status === 200) {
+            if (res.data.status == 1) {
+              const data = res.data.data;
+              toast.success(res.data.message);
+              setTimeout(() => {
+                navigate(`/${_base}/Dashboard`, {});
+              }, 2000);
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
+              toast.error(res.data.message);
             }
-          });
+          } else {
+            toast.error(res.data.message);
+          }
+        } catch (error) {
+          errorHandler(error);
+        } finally {
+          setSubmitting(false);
+        }
       }
     }
   };
@@ -204,24 +208,33 @@ function Profile() {
 
             window.location.href = `/${_base}`;
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message);
           }
         } else {
-          setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message);
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
   };
 
   const loadData = async (e) => {
-    new UserService().getUserById(localStorage.getItem('id')).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          res.data.data.profile_picture =
-            'http://3.108.206.34/TSNewBackend/' + res.data.data.profile_picture;
-          setData(res.data.data?.data);
+    new UserService()
+      .getUserById(localStorage.getItem('id'))
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            res.data.data.profile_picture =
+              'http://3.108.206.34/TSNewBackend/' +
+              res.data.data.profile_picture;
+            setData(res.data.data?.data);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
   const fileChangedHandler = (e) => {
     let file_size = e?.target?.files[0]?.size;
@@ -250,10 +263,10 @@ function Profile() {
   };
 
   const handleCrop = (previewUrl) => {
-     setData((prevData) => ({
-          ...prevData,
-          upload_Picture: previewUrl
-        }));
+    setData((prevData) => ({
+      ...prevData,
+      upload_Picture: previewUrl
+    }));
     // setPreview(previewUrl);
   };
 
@@ -277,12 +290,10 @@ function Profile() {
     loadData();
   }, [whatsapp]);
 
-
   return (
     <div className="container-xxl">
-      <PageHeader headerTitle="User Profile" showBackBtn  />
+      <PageHeader headerTitle="User Profile" showBackBtn />
 
-      {notify && <Alert alertData={notify} />}
       <div className="row">
         <div className="col-lg-4 mb-4">
           <div className="card shadow">
@@ -299,7 +310,11 @@ function Profile() {
               ></div>
               <img
                 className="avatar lg rounded-circle img-thumbnail"
-                src={  data?.upload_Picture ? data?.upload_Picture  :  _attachmentUrl + data?.profile_picture }
+                src={
+                  data?.upload_Picture
+                    ? data?.upload_Picture
+                    : _attachmentUrl + data?.profile_picture
+                }
                 alt="profile"
                 onError={(e) => {
                   e.target.onerror = null;
@@ -422,31 +437,35 @@ function Profile() {
           </div>
         </div>
 
-        <Modal  className="custom-modal"  show={showModal}  onHide={() => setShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Edit Avatar</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <AvatarEditor
-            width={300}
-            height={300}
-            border={50}
-            borderRadius={150}
-            scale={1.2}
-            onCrop={handleCrop}
-            onClose={() => setImage(null)}
-            src={image}
-          />
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={() => setShowModal(false)}>
-            Cancel
-          </Button>
-          <Button variant="primary" onClick={handleSave}>
-            Save Avatar
-          </Button>
-        </Modal.Footer>
-      </Modal>
+        <Modal
+          className="custom-modal"
+          show={showModal}
+          onHide={() => setShowModal(false)}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Edit Avatar</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <AvatarEditor
+              width={300}
+              height={300}
+              border={50}
+              borderRadius={150}
+              scale={1.2}
+              onCrop={handleCrop}
+              onClose={() => setImage(null)}
+              src={image}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleSave}>
+              Save Avatar
+            </Button>
+          </Modal.Footer>
+        </Modal>
 
         <div className="col-8">
           <div className="card shadow">
@@ -718,7 +737,11 @@ function Profile() {
                 )}
 
                 <div className="mt-3 text-end">
-                  <button type="submit" className="btn btn-primary text-white">
+                  <button
+                    disabled={submitting}
+                    type="submit"
+                    className="btn btn-primary text-white"
+                  >
                     Update
                   </button>
                 </div>
