@@ -44,7 +44,6 @@ import { toast } from 'react-toastify';
 
 export default function EditTicketComponent({ match }) {
   const history = useNavigate();
-  const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
   const ticketId = id;
@@ -99,6 +98,8 @@ export default function EditTicketComponent({ match }) {
 
   const [proceed, setProceed] = useState(true);
 
+
+
   const [selectedFile, setSelectedFile] = useState([]);
   const fileInputRef = useRef(null);
 
@@ -116,61 +117,76 @@ export default function EditTicketComponent({ match }) {
   const handleConfirmationModal = async (type, data) => {
     if (type && data.status_id === 3) {
       setProceed(false);
-      await new MyTicketService()
-        .sendTicketConfirmationOtp(data.id)
-        .then((res) => {
-          if (res?.status === 200) {
-            if (res?.data?.status == 1) {
-              setConfirmationModalDetails(null);
-              setConfirmationModalDetails(res.data);
-            } else {
-              setNotify(null);
-              setNotify(res?.data?.message);
-            }
+      try {
+        const res = await new MyTicketService().sendTicketConfirmationOtp(
+          data.id
+        );
+        if (res?.status === 200) {
+          if (res?.data?.status == 1) {
+            setConfirmationModalDetails(null);
+            setConfirmationModalDetails(res.data);
+          } else {
+            // toast.error(res.data.message);
           }
-        });
+        }
+      } catch (error) {
+        errorHandler(error);
+      }
     }
     setConfirmationModal(type);
   };
 
   const handleResendOtp = async (type, data) => {
-    setNotify(null);
     if (ticketStatus === 3 && data) {
       setProceed(false);
-      await new MyTicketService()
-        .sendTicketConfirmationOtp(data.id)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              setNotify({ type: 'success', message: 'Otp has been sent !!!' });
-              setConfirmationModalDetails(null);
-              setConfirmationModalDetails(res.data);
-            }
+      if (submitting) return;
+      setSubmitting(true);
+      try {
+        const res = await new MyTicketService().sendTicketConfirmationOtp(
+          data.id
+        );
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            toast.success('Otp has been sent !!!');
+            setConfirmationModalDetails(null);
+            setConfirmationModalDetails(res.data);
           }
-        });
+        }
+      } catch (error) {
+        errorHandler(error);
+      } finally {
+        setSubmitting(false);
+      }
     }
     setConfirmationModal(type);
   };
 
   const verifyOtp = async (e) => {
     e.preventDefault();
-    setNotify(null);
+    if (submitting) return;
+    setSubmitting(true);
     const formData = new FormData(e.target);
-    await new MyTicketService()
-      .verifyTicketConfirmationOtp(data.id, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            loadData();
-            setProceed(true);
-            setConfirmationModal(false);
-            setNotify({ type: 'success', message: res.data.message });
-          } else {
-            setNotify({ type: 'danger', message: res.data.message });
-            setProceed(false);
-          }
+    try {
+      const res = await new MyTicketService().verifyTicketConfirmationOtp(
+        data.id,
+        formData
+      );
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
+          loadData();
+          setProceed(true);
+          setConfirmationModal(false);
+          toast.success(res.data.message);
+        } else {
+          toast.error(res.data.message);
+          setProceed(false);
         }
-      });
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const [showLoaderModal, setShowLoaderModal] = useState(false);
@@ -178,8 +194,11 @@ export default function EditTicketComponent({ match }) {
   const [attachments, setAttachments] = useState([]);
 
   const [expectedTrue, setExpectedTrue] = useState();
+  const [submitting, setSubmitting] = useState(false);
   const handleForm = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
     const formData = new FormData(e.target);
     const status = formData.getAll('status_id');
     if (status.includes('3')) {
@@ -201,50 +220,35 @@ export default function EditTicketComponent({ match }) {
     ) {
       await handleConfirmationModal(true, data);
     } else {
-      setNotify(null);
-      await new MyTicketService()
-        .updateTicket(ticketId, formData)
-        .then((res) => {
-          setShowLoaderModal(null);
-          setShowLoaderModal(false);
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              history(
-                {
-                  pathname: `/${_base}/Ticket`
-                },
-                {
-                  state: {
-                    type: 'success',
-                    message: res.data.message
-                  }
-                }
-              );
-            } else {
-              setNotify({ type: 'danger', message: res.data.message });
-            }
-          } else {
-            setNotify({ type: 'danger', message: res.message });
-            new ErrorLogService().sendErrorLog(
-              'Ticket',
-              'Update_Ticket',
-              'INSERT',
-              res.message
+      try {
+        const res = await new MyTicketService().updateTicket(
+          ticketId,
+          formData
+        );
+        setShowLoaderModal(null);
+        setShowLoaderModal(false);
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            history(
+              {
+                pathname: `/${_base}/Ticket`
+              },
+              {
+                state: toast.success(res.data.message)
+              }
             );
+          } else {
+            toast.error(res.data.message);
           }
-        })
-        .catch((error) => {
-          setShowLoaderModal(false);
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          setNotify({ type: 'danger', message: 'Request Error !!!' });
-          new ErrorLogService().sendErrorLog(
-            'Ticket',
-            'Update_Ticket',
-            'INSERT',
-            errorObject.data.message
-          );
-        });
+        } else {
+          toast.error(res.message);
+        }
+      } catch (error) {
+        setShowLoaderModal(false);
+        errorHandler(error);
+      } finally {
+        setSubmitting(false);
+      }
     }
   };
 
@@ -455,19 +459,24 @@ export default function EditTicketComponent({ match }) {
       formdata.append('dropdownId', currentData[0].inputAddOn.inputDataSource);
 
       var dropdown = [];
-      await new DynamicFormDropdownMasterService()
-        .getDropdownByName(formdata)
-        .then((res) => {
-          if (res.status == 200) {
-            if (res.data.status == 1) {
-              var temp = [];
-              dropdown = res.data.data.dropdown.map((d) => ({
-                value: d.id,
-                label: d.label
-              }));
-            }
+      try {
+        const res =
+          await new DynamicFormDropdownMasterService().getDropdownByName(
+            formdata
+          );
+        if (res?.status == 200) {
+          if (res?.data?.status == 1) {
+            var temp = [];
+            dropdown = res?.data?.data?.dropdown.map((d) => ({
+              value: d.id,
+              label: d.label
+            }));
           }
-        });
+        }
+      } catch (error) {
+        errorHandler(error);
+      }
+
       var rowIndex = rows.findIndex(
         (d) =>
           d.inputName === dependanceDropdownName &&
@@ -504,266 +513,244 @@ export default function EditTicketComponent({ match }) {
 
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id';
-    dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
-      if (res?.payload?.status === 200) {
-        if (res?.payload?.data?.status === 1) {
-          const getUserData = res?.payload?.data?.data?.data;
-          const data = getUserData.filter((d) => d.is_active === 1);
-          const select = getUserData
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({
-              value: d.id,
-              label: d.first_name + ' ' + d.last_name
-            }));
-          setUser(data);
-
-          setEmailData(getUserData.filter((d) => d.is_active === 1));
-          emilData?.filter((d) => d.id === data?.created_by);
-
-          setUserDropdown(select);
-
-          setUserdrp(select);
-        }
-      }
-    });
-
-    await new MyTicketService()
-      .getTicketById(ticketId)
+    dispatch(getUserForMyTicketsData(inputRequired))
       .then((res) => {
-        if (res.status === 200) {
-          const data = res.data.data;
-          setProjectId(res.data.data?.project_id);
-          setUsers(res.data.data?.ticket_users);
-          setTicketStatus(data?.status_id);
-          setRows(res.data.data?.dynamic_form);
-          if (data.status_id == 3) {
-            setIsSolved(true);
+        if (res?.payload?.status === 200) {
+          if (res?.payload?.data?.status === 1) {
+            const getUserData = res?.payload?.data?.data?.data;
+            const data = getUserData.filter((d) => d.is_active === 1);
+            const select = getUserData
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({
+                value: d.id,
+                label: d.first_name + ' ' + d.last_name
+              }));
+            setUser(data);
+
+            setEmailData(getUserData.filter((d) => d.is_active === 1));
+            emilData?.filter((d) => d.id === data?.created_by);
+
+            setUserDropdown(select);
+
+            setUserdrp(select);
           }
-          setData(null);
-          setData(data);
-          console.log(data,"data")
-          setAttachments(data?.attachment || [])
-          // handleAttachment("GetAttachment", ticketId);
-          if (rows) {
-            var dynamicForm = res.data.data.dynamic_form;
+        }
+      })
+      .catch((error) => errorHandler(error));
+    try {
+      const res = await new MyTicketService().getTicketById(ticketId);
+      if (res?.status === 200) {
+        const data = res?.data?.data;
+        setProjectId(res?.data?.data?.project_id);
+        setUsers(res?.data?.data?.ticket_users);
+        setTicketStatus(data?.status_id);
+        setRows(res?.data?.data?.dynamic_form);
+        if (data.status_id == 3) {
+          setIsSolved(true);
+        }
+        setData(null);
+        setData(data);
+        setAttachments(data?.attachment || [])
+        // handleAttachment("GetAttachment", ticketId);
+        if (rows) {
+          var dynamicForm = res?.data?.data.dynamic_form;
 
-            const filteredArray = dynamicForm.filter(
-              (formInstance) =>
-                formInstance.inputType === 'select' &&
-                formInstance.inputAddOn.inputDataSource
-            );
+          const filteredArray = dynamicForm.filter(
+            (formInstance) =>
+              formInstance.inputType === 'select' &&
+              formInstance.inputAddOn.inputDataSource
+          );
 
-            Promise.all(
-              filteredArray.map((d) =>
-                new DynamicFormDropdownMasterService().getDropdownById(
-                  d.inputAddOn.inputDataSource
-                )
+          Promise.all(
+            filteredArray.map((d) =>
+              new DynamicFormDropdownMasterService().getDropdownById(
+                d.inputAddOn.inputDataSource
               )
             )
-              .then((result) => {
-                var tempResponse = [];
+          )
+            .then((result) => {
+              var tempResponse = [];
 
-                result.forEach((resu, i) => {
-                  if (resu.status == 200) {
-                    if (resu.data.status == 1) {
-                      var temp = [];
-                      temp = resu.data.data.dropdown.map((d) => ({
-                        value: d.id,
-                        label: d.label
-                      }));
-                      tempResponse.push(temp);
-                    }
+              result.forEach((resu, i) => {
+                if (resu.status == 200) {
+                  if (resu.data.status == 1) {
+                    var temp = [];
+                    temp = resu.data.data.dropdown.map((d) => ({
+                      value: d.id,
+                      label: d.label
+                    }));
+                    tempResponse.push(temp);
                   }
-                });
-
-                dynamicForm.forEach((d, i) => {
-                  if (d.inputType === 'select') {
-                    if (tempResponse.length > 0) {
-                      dynamicForm[i].inputAddOn.inputDataSourceData =
-                        tempResponse[0];
-                      tempResponse.splice(i, 1);
-                    }
-                  }
-                });
-                setRows(dynamicForm);
-              })
-              .catch((error) => {
-                errorHandler(error);
+                }
               });
-          }
-        }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
 
-    await new DesignationService()
-      .getdesignatedDropdown()
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            const deta = res.data.data;
-            setBa(
-              deta.BA.filter((d) => d.is_active === 1).map((d) => ({
-                value: d.id,
-                label: d.first_name + '-' + d.last_name + ' (' + d.id + ')'
-              }))
-            );
-            setDev(
-              deta.DEV.filter((d) => d.is_active === 1).map((d) => ({
-                value: d.id,
-                label: d.first_name + '-' + d.last_name + ' (' + d.id + ')'
-              }))
-            );
-            setTester(
-              deta.TESTER.filter((d) => d.is_active === 1).map((d) => ({
-                value: d.id,
-                label: d.first_name + '-' + d.last_name + ' (' + d.id + ')'
-              }))
-            );
-          }
-        }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
-
-    await new CustomerMappingService()
-      .getCustomerMappingSettings()
-      .then((res) => {
-        if (res.data.status === 1) {
-          if (res.data.data) {
-            const queryTypeTemp = [];
-            setCustomerMapping(null);
-            setCustomerMapping(res.data.data);
-            res.data.data.forEach((query) => {
-              if (query.query_type_id) {
-                queryTypeTemp.push(query.query_type_id);
-              }
+              dynamicForm.forEach((d, i) => {
+                if (d.inputType === 'select') {
+                  if (tempResponse.length > 0) {
+                    dynamicForm[i].inputAddOn.inputDataSourceData =
+                      tempResponse[0];
+                    tempResponse.splice(i, 1);
+                  }
+                }
+              });
+              setRows(dynamicForm);
+            })
+            .catch((error) => {
+              errorHandler(error);
             });
-          }
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
 
-    new QueryTypeService()
-      .getQueryType()
-      .then((resp) => {
-        if (resp.data.status === 1) {
-          var queryType = [];
-          resp.data.data.data.forEach((q) => {
-            if (q.query_type_name) {
-              queryType.push({ value: q.id, label: q.query_type_name });
+    try {
+      const res = await new DesignationService().getdesignatedDropdown();
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
+          const deta = res?.data?.data;
+          setBa(
+            deta.BA.filter((d) => d.is_active === 1).map((d) => ({
+              value: d.id,
+              label: d.first_name + '-' + d.last_name + ' (' + d.id + ')'
+            }))
+          );
+          setDev(
+            deta.DEV.filter((d) => d.is_active === 1).map((d) => ({
+              value: d.id,
+              label: d.first_name + '-' + d.last_name + ' (' + d.id + ')'
+            }))
+          );
+          setTester(
+            deta.TESTER.filter((d) => d.is_active === 1).map((d) => ({
+              value: d.id,
+              label: d.first_name + '-' + d.last_name + ' (' + d.id + ')'
+            }))
+          );
+        }
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
+
+    try {
+      const res =
+        await new CustomerMappingService().getCustomerMappingSettings();
+      if (res?.data?.status === 1) {
+        if (res?.data?.data) {
+          const queryTypeTemp = [];
+          setCustomerMapping(null);
+          setCustomerMapping(res?.data?.data);
+          res?.data?.data?.forEach((query) => {
+            if (query.query_type_id) {
+              queryTypeTemp.push(query.query_type_id);
             }
           });
-          setQueryType(queryType);
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
 
-    await new DepartmentService()
-      .getDepartment()
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            const data = res.data.data?.data?.filter((d) => d.is_active === 1);
-            const select = res.data.data?.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({ value: d.id, label: d.department }));
-            setDepartment(data);
-            setDepartmentDropdown(select);
+    try {
+      const resp = new QueryTypeService().getQueryType();
+      if (resp?.data?.status === 1) {
+        var queryType = [];
+        resp.data.data.data.forEach((q) => {
+          if (q.query_type_name) {
+            queryType.push({ value: q.id, label: q.query_type_name });
           }
+        });
+        setQueryType(queryType);
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
+
+    try {
+      const res = await new DepartmentService().getDepartment();
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
+          const data = res?.data?.data?.data?.filter((d) => d.is_active === 1);
+          const select = res?.data?.data?.data
+            .filter((d) => d.is_active === 1)
+            .map((d) => ({ value: d.id, label: d.department }));
+          setDepartment(data);
+          setDepartmentDropdown(select);
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
 
-    await new ProjectService()
-      .getProject()
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            const temp = res.data.data?.data?.filter((d) => d.is_active === 1);
-            setProjectData(temp);
-            setProjectDropdown(
-              temp.map((d) => ({ value: d.id, label: d.project_name }))
-            );
-          }
+    try {
+      const res = await new ProjectService().getProject();
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
+          const temp = res?.data?.data?.data?.filter((d) => d.is_active === 1);
+          setProjectData(temp);
+          setProjectDropdown(
+            temp.map((d) => ({ value: d.id, label: d.project_name }))
+          );
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
 
-    await new ModuleService()
-      .getModule()
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            const temp = res.data.data?.data?.filter((d) => d.is_active === 1);
+    try {
+      const res = await new ModuleService().getModule();
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
+          const temp = res?.data?.data?.data?.filter((d) => d.is_active === 1);
 
-            setModuleData(temp);
-            setModuleDropdown(
-              temp.map((d) => ({ value: d.id, label: d.module_name }))
-            );
-          }
+          setModuleData(temp);
+          setModuleDropdown(
+            temp.map((d) => ({ value: d.id, label: d.module_name }))
+          );
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
 
-    await new SubModuleService()
-      .getSubModule()
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            const temp = res?.data?.data?.data?.filter(
-              (d) => d.is_active === 1
-            );
-            setSubModuleData(temp);
-            setSubModuleDropdown(
-              temp?.map((d) => ({ value: d.id, label: d.sub_module_name }))
-            );
-          }
+    try {
+      const res = await new SubModuleService().getSubModule();
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
+          const temp = res?.data?.data?.data?.filter((d) => d.is_active === 1);
+          setSubModuleData(temp);
+          setSubModuleDropdown(
+            temp?.map((d) => ({ value: d.id, label: d.sub_module_name }))
+          );
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
 
-    await new StatusService()
-      .getStatus()
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            const temp = res.data.data?.data?.filter((d) => d.is_active === 1);
-            setStatusValue(temp);
-            const select = temp.map((d) => ({ value: d.id, label: d.status }));
-            setStatusData(select);
-          }
+    try {
+      const res = await new StatusService().getStatus();
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
+          const temp = res?.data?.data?.data?.filter((d) => d.is_active === 1);
+          setStatusValue(temp);
+          const select = temp.map((d) => ({ value: d.id, label: d.status }));
+          setStatusData(select);
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
 
-    await new TaskTicketTypeService()
-      .getChildrenData('TICKET')
-      ?.then((res) => {
-        if (res?.status === 200) {
-          setTicketsData(res?.data?.data?.data);
-        }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
-
+    try {
+      const res = await new TaskTicketTypeService().getChildrenData('TICKET');
+      if (res?.status === 200) {
+        setTicketsData(res?.data?.data?.data);
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
     loadComments();
     setShowLoaderModal(false);
   };
@@ -808,12 +795,15 @@ export default function EditTicketComponent({ match }) {
 
   const loadComments = async () => {
     setIsLoading(true);
-    await new MyTicketService().getComments(ticketId).then((res) => {
-      if (res.status === 200) {
-        setCommentData(res.data.data);
+    try {
+      const res = await new MyTicketService().getComments(ticketId);
+      if (res?.status === 200) {
+        setCommentData(res?.data?.data);
         setIsLoading(false);
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    }
   };
 
   const handleDateChange = (e) => {
@@ -837,8 +827,6 @@ export default function EditTicketComponent({ match }) {
     if (userSelectRef.current) {
       userSelectRef.current.clearValue();
     }
-
-
 
     if (e) {
       const select = user
@@ -885,18 +873,23 @@ export default function EditTicketComponent({ match }) {
         .filter((d) => d.project_id == e.value)
         .map((d) => ({ value: d.id, label: d.module_name }))
     );
-    await new ProjectService().getProjectById(e.value).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setReviewerData(
-            res.data.data?.reviewers?.map((d) => ({
-              value: d.user_id,
-              label: d.first_name + ' ' + d.last_name
-            }))
-          );
+    await new ProjectService()
+      .getProjectById(e.value)
+      .then((res) => {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            setReviewerData(
+              res?.data.data?.reviewers?.map((d) => ({
+                value: d.user_id,
+                label: d.first_name + ' ' + d.last_name
+              }))
+            );
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
   const handleModuleChange = (e) => {
@@ -914,9 +907,7 @@ export default function EditTicketComponent({ match }) {
     }
   };
 
-  const loadAttachment = async () => {
-    setNotify(null);
-  };
+  const loadAttachment = async () => {};
 
   const uploadAttachmentHandler = (e, type, id = null) => {
     if (type === 'UPLOAD') {
@@ -1012,7 +1003,6 @@ export default function EditTicketComponent({ match }) {
       <PageHeader headerTitle={`Edit Ticket - ${data ? data.ticket_id : ''}`} />
       <div className="row">
         <div className="col-md-8">
-          {notify && <Alert alertData={notify} />}
           {data && (
             <form
               onSubmit={handleForm}
@@ -1408,7 +1398,7 @@ export default function EditTicketComponent({ match }) {
                         </label>
                         {userDropdown && userDrp && (
                           <Select
-                          ref={userSelectRef}
+                            ref={userSelectRef}
                             id="assign_to_user_id"
                             name="assign_to_user_id"
                             options={userDropdown}
@@ -1417,7 +1407,6 @@ export default function EditTicketComponent({ match }) {
                                 setUserName(event);
                               }
                             }}
-
                             defaultValue={
                               // userDropdown &&
                               // data.assign_to_user_id &&
@@ -1429,7 +1418,6 @@ export default function EditTicketComponent({ match }) {
                             isDisabled={isSolved}
                           />
                         )}
-
                       </div>
                       <div className="col-sm-3">
                         <label className="col-form-label">
@@ -1968,7 +1956,11 @@ export default function EditTicketComponent({ match }) {
 
               <div className="mt-3" style={{ textAlign: 'right' }}>
                 {isSolved == false && (
-                  <button type="submit" className="btn btn-sm btn-primary">
+                  <button
+                    disabled={submitting}
+                    type="submit"
+                    className="btn btn-sm btn-primary"
+                  >
                     Update
                   </button>
                 )}
@@ -2075,7 +2067,11 @@ export default function EditTicketComponent({ match }) {
                   </button>
                 )}
                 <span>
-                  <button type="submit" className="btn btn-primary text-white">
+                  <button
+                    disabled={submitting}
+                    type="submit"
+                    className="btn btn-primary text-white"
+                  >
                     Submit
                   </button>
                   <button

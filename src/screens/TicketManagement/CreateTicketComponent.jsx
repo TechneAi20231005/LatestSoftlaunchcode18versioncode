@@ -32,7 +32,6 @@ import LoadingScreen from '../../components/custom/LoadingScreen';
 export default function CreateTicketComponent() {
   const navigate = useNavigate();
 
-  const [notify, setNotify] = useState(null);
   const departmentRef = useRef();
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
@@ -78,34 +77,17 @@ export default function CreateTicketComponent() {
   var today = new Date().toISOString().split('T')[0];
   const [data, setData] = useState(ticketData);
 
-  // const showLoaderModal = false;
   const [showLoaderModal, setShowLoaderModal] = useState(false);
-
   const [rows, setRows] = useState();
-
-  // const [dynamicTicketData, setDynamicTicketData] = useState(null);
-
-  // const [queryType, setQueryType] = useState(null);
   const [customerMapping, setCustomerMapping] = useState(null);
-
   const [isFileGenerated, setIsFileGenerated] = useState(null);
-  // const [alldepartmentData, setAllDepartmentData] = useState();
-
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [departmentDropdown, setDepartmentDropdown] = useState();
   const [userDropdown, setUserDropdown] = useState();
   const [customerID, setCustomerId] = useState();
 
-  // const [expectedSolveDate, setExpectedSolveDate] = useState(null);
-
-  // const [parent, setParent] = useState();
-
-  // const [queryGroupData, setQueryGroupData] = useState(null);
-  // const [queryTypeData, setQueryTypeData] = useState(null);
-
   const [userDepartments, setUserDepartments] = useState();
   const [approch, setApproch] = useState();
-  // const [user, setUser] = useState('');
   const [selectedFiles, setSelectedFiles] = useState([]);
   const [ticketsData, setTicketsData] = useState([]);
 
@@ -119,7 +101,6 @@ export default function CreateTicketComponent() {
   const CustomMenuListTicket = ({ options, onSelect }) => {
     const [searchTerm, setSearchTerm] = useState('');
     const [openOptions, setOpenOptions] = useState([]);
-    // const [selectedOption, setSelectedOption] = useState(null);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -305,6 +286,7 @@ export default function CreateTicketComponent() {
 
   const handleForm = async (e) => {
     e.preventDefault();
+
     if (e.target.name === 'CHECKBOX' && selectedCheckBoxValue?.length <= 0) {
       // Here you can proceed with form submission
       alert('At least one checkbox must be selected');
@@ -346,42 +328,41 @@ export default function CreateTicketComponent() {
       }
     }
 
-    setNotify(null);
     if (flag === 1) {
-      await new MyTicketService()
-        .postTicket(formData)
-        .then((res) => {
-          if (res?.status === 200) {
-            if (res?.data?.status === 1) {
-              toast.success(res?.data?.message);
-              navigate(`/${_base}/Ticket`);
+      try {
+        const res = await new MyTicketService().postTicket(formData);
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            toast.success(res?.data?.message);
+            navigate(`/${_base}/Ticket`);
 
+            setIsSubmitted(false);
+          } else {
+            if (formData.getAll('ticket_uploading') === 'REGULAR') {
+              toast.error(res?.data?.message);
               setIsSubmitted(false);
             } else {
-              if (formData.getAll('ticket_uploading') === 'REGULAR') {
+              if (!res?.data?.data) {
                 toast.error(res?.data?.message);
-                setIsSubmitted(false);
-              } else {
-                if (!res?.data?.data) {
-                  toast.error(res?.data?.message);
 
-                  setIsSubmitted(false);
-                  return;
-                }
-                toast.success(res?.data?.message);
-                let url = `${_rewampAttachmentUrl}` + res.data.data;
-                window.open(url, '_blank').focus();
                 setIsSubmitted(false);
+                return;
               }
+              toast.success(res?.data?.message);
+              let url = `${_rewampAttachmentUrl}` + res.data.data;
+              window.open(url, '_blank').focus();
+              setIsSubmitted(false);
             }
-          } else {
-            toast.success(res?.data?.message);
-            setIsSubmitted(false);
           }
-        })
-        .catch((res) => {
+        } else {
           toast.success(res?.data?.message);
-        });
+          setIsSubmitted(false);
+        }
+      } catch (error) {
+        errorHandler(error);
+      } finally {
+        setIsSubmitted(false);
+      }
     }
   };
 
@@ -396,12 +377,15 @@ export default function CreateTicketComponent() {
       setApproch(data[0]?.approach);
       const cmId = data?.length > 0 ? data[0].id : null;
       if (cmId) {
-        await new MyTicketService().getExpectedSolveDate(cmId).then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
+        await new MyTicketService()
+          .getExpectedSolveDate(cmId)
+          .then((res) => {
+            if (res.status === 200) {
+              if (res.data.status === 1) {
+              }
             }
-          }
-        });
+          })
+          .catch((error) => errorHandler(error));
       } else {
       }
 
@@ -455,7 +439,7 @@ export default function CreateTicketComponent() {
               }
             });
           })
-          .catch((err) => {});
+          .catch((err) => errorHandler(err));
         setRows(dynamicForm);
       }
     }
@@ -498,7 +482,8 @@ export default function CreateTicketComponent() {
             });
           }
         }
-      });
+      })
+      .catch((error) => errorHandler(error));
 
     await new UserService()
       .getUserById(localStorage.getItem('id'))
@@ -508,54 +493,69 @@ export default function CreateTicketComponent() {
         if (res?.data?.status === 1 && data) {
           setCustomerId(data?.customer_type_id);
         }
-      });
+      })
+      .catch((error) => errorHandler(error));
 
     var queryType = [];
-    await new QueryTypeService().getQueryType().then((resp) => {
-      if (resp.data.status === 1) {
-        resp.data.data.data
-          .filter((q) => q.is_active === 1)
-          .filter((q) => queryTypeTemp.includes(q.id))
-          .forEach((q) => {
-            queryType.push({ id: q.id, query_type_name: q.query_type_name });
-          });
-      }
-    });
+    await new QueryTypeService()
+      .getQueryType()
+      .then((resp) => {
+        if (resp.data.status === 1) {
+          resp.data.data.data
+            .filter((q) => q.is_active === 1)
+            .filter((q) => queryTypeTemp.includes(q.id))
+            .forEach((q) => {
+              queryType.push({ id: q.id, query_type_name: q.query_type_name });
+            });
+        }
+      })
+      .catch((error) => errorHandler(error));
 
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active,department_id,email_id';
-    dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
-      if (res.payload.status === 200) {
-      }
-    });
-    await new QueryTypeService().getQueryGroupForSelect().then((res) => {
-      if (res.data.status === 1) {
-        setQueryGroupDropdown(
-          res.data.data.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({ value: d.id, label: d.group_name }))
-        );
-      }
-    });
-
-    await new DepartmentService().getDepartment().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          var defaultValue = [{ value: 0, label: 'Select Department' }];
-          var dropwdown = res.data.data.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({ value: d.id, label: d.department }));
-          defaultValue = [...defaultValue, ...dropwdown];
-          setDepartmentDropdown(defaultValue);
+    dispatch(getUserForMyTicketsData(inputRequired))
+      .then((res) => {
+        if (res.payload.status === 200) {
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
+    await new QueryTypeService()
+      .getQueryGroupForSelect()
+      .then((res) => {
+        if (res.data.status === 1) {
+          setQueryGroupDropdown(
+            res.data.data.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({ value: d.id, label: d.group_name }))
+          );
+        }
+      })
+      .catch((error) => errorHandler(error));
 
-    await new TaskTicketTypeService()?.getChildrenData('TICKET')?.then((res) => {
-      if (res?.status === 200) {
-        setTicketsData(res?.data?.data?.data);
-      }
-    });
+    await new DepartmentService()
+      .getDepartment()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            var defaultValue = [{ value: 0, label: 'Select Department' }];
+            var dropwdown = res.data.data.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({ value: d.id, label: d.department }));
+            defaultValue = [...defaultValue, ...dropwdown];
+            setDepartmentDropdown(defaultValue);
+          }
+        }
+      })
+      .catch((error) => errorHandler(error));
+
+    await new TaskTicketTypeService()
+      ?.getChildrenData('TICKET')
+      ?.then((res) => {
+        if (res?.status === 200) {
+          setTicketsData(res?.data?.data?.data);
+        }
+      })
+      .catch((error) => errorHandler(error));
 
     new DepartmentMappingService()
       .getDepartmentMappingByEmployeeId(userSessionData.userId)
@@ -586,27 +586,32 @@ export default function CreateTicketComponent() {
   }, [dispatch]);
 
   const handleDownloadFormat = async (e) => {
-    setNotify(null);
-
-    await new MyTicketService().getBulkFormat().then((res) => {
+    if (isSubmitted) return;
+    setIsSubmitted(true);
+    try {
+      const res = await new MyTicketService().getBulkFormat();
       if (res.status === 200) {
         if (res.data.status === 1) {
           let url = `${_attachmentUrl}` + res.data.data;
           window.open(url, '_blank')?.focus();
           setIsFileGenerated(res.data.data);
         } else {
-          setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message);
         }
       } else {
-        setNotify({ type: 'danger', message: res.message });
+        toast.error(res.message);
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setIsSubmitted(false);
+    }
   };
 
   const handleQueryGroupDropDown = async (e) => {
+    setIsSubmitted(true);
     try {
       setQueryGroupTypeData([]);
-      setNotify({});
       if (queryTypeRef?.current) {
         queryTypeRef?.current.clearValue();
       }
@@ -619,40 +624,44 @@ export default function CreateTicketComponent() {
           .map((d) => ({ value: d.id, label: d.query_type_name }));
         setQueryGroupTypeData(activeData);
       } else {
-        setNotify({
-          type: 'danger',
-          message: 'No Query type mapped for this Query group'
-        });
+        toast.error('No Query type mapped for this Query group');
       }
     } catch (res) {
-      setNotify({ type: 'danger', message: res.message });
+      toast.error(res.message);
+    } finally {
+      setIsSubmitted(false);
     }
   };
 
   const handleGetDepartmentUsers = async (e) => {
     setUserDropdown(null);
-    await new UserService().getUserWithMultipleDepartment().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          var defaultValue = [{ value: '', label: 'Select User' }];
+    await new UserService()
+      .getUserWithMultipleDepartment()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            var defaultValue = [{ value: '', label: 'Select User' }];
 
-          const dropdown = res.data.data
-            .filter((d) => d.is_active === 1)
-            .filter((d) => d.multiple_department_id.includes(e.value))
-            .map((d) => ({
-              value: d.id,
-              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
-            }));
+            const dropdown = res.data.data
+              .filter((d) => d.is_active === 1)
+              .filter((d) => d.multiple_department_id.includes(e.value))
+              .map((d) => ({
+                value: d.id,
+                label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
+              }));
 
-          if (data.approach === 'RW') {
-            defaultValue = dropdown;
-          } else {
-            defaultValue = [...defaultValue, ...dropdown];
+            if (data.approach === 'RW') {
+              defaultValue = dropdown;
+            } else {
+              defaultValue = [...defaultValue, ...dropdown];
+            }
+            setUserDropdown(defaultValue);
           }
-          setUserDropdown(defaultValue);
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
   function transformDataTicket(ticketsData) {
@@ -743,7 +752,6 @@ export default function CreateTicketComponent() {
     <div className="container-xxl">
       <PageHeader headerTitle="Create Ticket" />
 
-      {notify && <Alert alertData={notify} />}
       <form onSubmit={handleForm} method="post" encType="multipart/form-data">
         <input
           type="hidden"

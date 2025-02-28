@@ -33,47 +33,37 @@ export default function EditModuleComponent({ match }) {
   const [checkRole, setCheckRole] = useState(null);
 
   const loadData = useCallback(async () => {
-    await new ManageMenuService()
-      .getRole(roleId)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            const getRoleId = sessionStorage.getItem('role_id');
-            setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
-          }
+    try {
+      const res = await new ManageMenuService().getRole(roleId);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          const getRoleId = sessionStorage.getItem('role_id');
+          setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
         }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
-    await new ModuleService()
-      .getModuleById(moduleId)
-      .then((res) => {
-        if (res.status === 200) {
-          const data = res.data.data;
-          if (data) {
-            setData(null);
-            setData(data);
-          }
-        } else {
-          new ErrorLogService().sendErrorLog(
-            'Module',
-            'Get_Module',
-            'INSERT',
-            res.message
-          );
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
+
+    try {
+      const res = await new ModuleService().getModuleById(moduleId);
+      if (res.status === 200) {
+        const data = res.data.data;
+        if (data) {
+          setData(null);
+          setData(data);
         }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
+      } else {
         new ErrorLogService().sendErrorLog(
           'Module',
           'Get_Module',
           'INSERT',
-          errorObject.data.message
+          res.message
         );
-      });
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
   }, [moduleId, roleId]);
 
   const handleForm = async (values, { setSubmitting }) => {
@@ -238,7 +228,9 @@ export default function EditModuleComponent({ match }) {
                       {/* Status */}
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
-                          <b>Status : <Astrick color="red" size="13px" /> </b>
+                          <b>
+                            Status : <Astrick color="red" size="13px" />{' '}
+                          </b>
                         </label>
                         <div className="col-sm-10">
                           <div className="row">
