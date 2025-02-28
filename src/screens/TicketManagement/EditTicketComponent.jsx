@@ -653,7 +653,8 @@ export default function EditTicketComponent({ match }) {
     }
 
     try {
-      const resp = new QueryTypeService().getQueryType();
+
+      const resp = await new QueryTypeService().getQueryType();
       if (resp?.data?.status === 1) {
         var queryType = [];
         resp.data.data.data.forEach((q) => {

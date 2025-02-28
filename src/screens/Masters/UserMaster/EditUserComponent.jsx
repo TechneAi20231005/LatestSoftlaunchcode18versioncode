@@ -570,9 +570,7 @@ function EditUserComponent({ match }) {
         if (res.status === 200) {
           if (res.data.status === 1) {
             const temp = res.data.data.data;
-            setSelctRole(
-              roleDropdown &&
-                roleDropdown.filter((d) => d.value === temp?.role_id)
+            setSelctRole(  temp?.account_for === "SELF" ?  roleDropdown && roleDropdown.filter((d) => d.value === temp?.role_id) : customerRolesData
             );
 
 
