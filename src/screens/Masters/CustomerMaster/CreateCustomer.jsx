@@ -60,6 +60,7 @@ export default function CreateCustomer({ match }) {
   const [cityDropdownData, setCityDropdownData] = useState(false);
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [email, setEmail] = useState('');
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const handleEmailChange = (e) => {
     const newEmail = e.target.value;
@@ -177,8 +178,12 @@ export default function CreateCustomer({ match }) {
   //   // }
   // };
 
+
   const handleForm = async (values, { setSubmitting }) => {
     setSubmitting(true);
+    setIsDisabled(true)
+    if(isDisabled) return;
+
     // Manually create FormData object
     const formData = new FormData();
     formData.append('address', values.address);
@@ -206,11 +211,14 @@ export default function CreateCustomer({ match }) {
       } else {
         toast.error(res?.payload?.data?.message);
       }
+
     } catch (error) {
       errorHandler(error);
     } finally {
       setSubmitting(false);
+      setIsDisabled(false)
     }
+
   };
 
   const handleCountryChange = (e) => {
@@ -661,7 +669,7 @@ export default function CreateCustomer({ match }) {
 
                 <div className="mt-3" style={{ textAlign: 'right' }}>
                   <button
-                    disabled={isSubmitting}
+                    disabled={isDisabled}
                     type="submit"
                     className="btn btn-primary"
                   >

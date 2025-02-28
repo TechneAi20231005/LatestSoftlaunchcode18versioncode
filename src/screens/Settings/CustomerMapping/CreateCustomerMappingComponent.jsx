@@ -210,8 +210,8 @@ export default function CreateCustomerMappingComponent() {
     );
 
     const dynamicFormDropdownTemp = dynamicForm
-      .filter((d) => d.id === queryTypeTemp[0].form_id)
-      .map((d) => ({ value: d.id, label: d.template_name }));
+      ?.filter((d) => d.id === queryTypeTemp[0].form_id)
+      ?.map((d) => ({ value: d.id, label: d.template_name }));
 
     if (dynamicFormDropdownTemp?.length > 0) {
       setData((prev) => {
@@ -264,7 +264,8 @@ export default function CreateCustomerMappingComponent() {
   }, [dispatch]);
 
   const handleAutoChanges = async (e, type, nameField) => {
-    if (!e || Object.entries(e).length === 0) return;
+
+    // if (!e || Object.entries(e).length === 0) return;
     if (type === 'Select2' && nameField === 'customer_type_id') {
       setSelectedCustomer(e?.length);
     }
@@ -371,8 +372,12 @@ export default function CreateCustomerMappingComponent() {
   const useridDetail = useRef();
 
   const handleForm = async (values, { setSubmitting }) => {
+   console.log(values,"values")
+  //  return false
+
     // return
     setSubmitting(true);
+    // return false
     if (userDropDownFilterData && values?.approach !== "RW") {
       if (values?.user_id?.length === 0) {
         return;
@@ -405,6 +410,13 @@ export default function CreateCustomerMappingComponent() {
     values.tenant_id = localStorage.getItem('tenant_id');
     values.created_by = userSessionData.userId;
     values.created_at = getDateTime();
+
+    // if (!values.department_id) {
+    //   delete values.department_id;
+    // }
+    if(values?.user_id?.length === 0){
+      delete values.user_id;
+    }
 
     if (values.approach != 'AU') {
       values.department_id = values?.department_id;
@@ -836,6 +848,7 @@ export default function CreateCustomerMappingComponent() {
                                   : { value: '', label: 'Select approach' }
                               }
                               onChange={(option) => {
+                                setFieldValue('department_id', "");
                                 setApproach(option.value);
                                 form.setFieldValue(
                                   'approach',

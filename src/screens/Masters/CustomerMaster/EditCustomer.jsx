@@ -409,7 +409,7 @@ function EditCustomer() {
                             id="name"
                             name="name"
                             placeholder="Customer Name"
-                            maxLength={30}
+                            // maxLength={30}
                             // required
                             // defaultValue={data ? data.name : null}
                             // onKeyPress={(e) => {

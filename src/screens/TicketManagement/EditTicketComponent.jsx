@@ -1349,8 +1349,8 @@ export default function EditTicketComponent({ match }) {
                   </div>
                 </div>
               </div>
-
-              {data && data.passed_status == 'PASS' && (
+                 {/* removed passed status condiition dicussed with amit sir & tester */}
+              {/* {data && data.passed_status == 'PASS' && ( */}
                 <div className="card mt-2">
                   <div className="card-body">
                     <div className="form-group row ">
@@ -1448,7 +1448,7 @@ export default function EditTicketComponent({ match }) {
                     </div>
                   </div>
                 </div>
-              )}
+              {/* )} */}
 
               {rows && rows.length > 0 && (
                 <div className="row">

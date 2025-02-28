@@ -16,6 +16,7 @@ const RequestModal = (props) => {
 
   const basketStartDate = props.date;
 
+
   const timeDifference = '';
   const dispatch = useDispatch();
 
@@ -420,7 +421,6 @@ const RequestModal = (props) => {
                       <th className="text-center"> Action</th>
                     </tr>
                   </thead>
-
                   <tbody>
                     {regularizeTimeData && regularizeTimeData.length > 0 ? (
                       <>

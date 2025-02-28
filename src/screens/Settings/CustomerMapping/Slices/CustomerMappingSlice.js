@@ -147,7 +147,11 @@ export const CustomerMappingSlice = createSlice({
             Approach: exportTempateData[i].approach,
             remark: exportTempateData[i].remark,
             'Customer Type Name': exportTempateData[i].customer_type_name,
-            'Assign User': exportTempateData[i].mapped_user,
+            'Assign User': exportTempateData[i]?.user_policy
+              ? exportTempateData[i]?.user_policy
+                  ?.map((user) => user?.user_name || '')
+                  .join(', ')
+              : '',
             'Confirmation Required':
               exportTempateData[i].confirmation_required == 1 ? 'Yes' : 'no',
             Status: exportTempateData[i].is_active == 1 ? 'Active' : 'Deactive',

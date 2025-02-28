@@ -10,7 +10,7 @@ import {
 } from 'react-router-dom';
 import ConsolidatedService from '../../services/ProjectManagementService/ConsolidatedService';
 import GeneralSettingService from '../../services/SettingService/GeneralSettingService';
-import { _apiUrl, _attachmentUrl, _base } from '../../settings/constants';
+import { _apiUrl, _attachmentUrl, _base , _rewampAttachmentUrl} from '../../settings/constants';
 
 import DataTable from 'react-data-table-component';
 import Select from 'react-select';
@@ -702,7 +702,7 @@ export default function ProjectwiseModule() {
               className="mb-0"
             >
               <a
-                href={_attachmentUrl + row?.document_attachment}
+                href={_rewampAttachmentUrl + row?.document_attachment}
                 target="_blank"
                 rel="noopener noreferrer"
                 // style={{
@@ -868,7 +868,7 @@ export default function ProjectwiseModule() {
     const filesArray = Array.from(files);
 
     // Maximum file size in bytes (50 MB)
-    const maxFileSize = 50 * 1024 * 1024;
+    const maxFileSize = 51 * 1024 * 1024;
 
     // Allowed file extensions
     const allowedExtensions = [
@@ -883,7 +883,8 @@ export default function ProjectwiseModule() {
       'txt',
       'csv',
       'xls',
-      'wps'
+      'wps',
+      'mp4'
     ];
 
     // Flags to track errors
@@ -899,7 +900,7 @@ export default function ProjectwiseModule() {
       const fileExtension = getFileExtension(file.name);
 
       // Check file size
-      if (file.size > maxFileSize) {
+      if (file.size >= maxFileSize) {
         hasInvalidFiles = true;
         invalidFiles.push(file.name); // Collect names of files with invalid size
         return false; // Exclude files larger than 50 MB

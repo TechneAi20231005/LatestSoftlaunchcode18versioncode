@@ -448,6 +448,11 @@ function EditUserComponent({ match }) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
 
+  const customerRolesData = [{
+    label: "User",
+    value: 0
+  }]
+
   const customerSort =
     roleDropdown &&
     roleDropdown?.filter((d) => {
@@ -569,6 +574,7 @@ function EditUserComponent({ match }) {
               roleDropdown &&
                 roleDropdown.filter((d) => d.value === temp?.role_id)
             );
+
 
             setAccountFor(temp.account_for);
             setIsReadOnly();
@@ -1080,7 +1086,7 @@ function EditUserComponent({ match }) {
                               const email = event.target.value;
                               if (
                                 !email.match(
-                                  /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
+                                  /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/i
                                 )
                               ) {
                                 setInputState({
@@ -1422,7 +1428,7 @@ function EditUserComponent({ match }) {
                               options={
                                 accountFor === 'SELF'
                                   ? orderedSelfRoleData
-                                  : orderedCustomerRoleData
+                                  : customerRolesData
                               }
                               // defaultValue={
                               //   data &&

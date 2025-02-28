@@ -150,6 +150,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     }
   ];
 
+
   const validationSchema = CustomValidation(fields);
 
   const valueof = data
@@ -165,6 +166,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         if (res.status === 200) {
           if (res.data.status === 1) {
             tempData = res.data.data;
+            console.log('tempData', tempData.customer_type_id?.length);
+            setApproach(tempData.approach);
+            // setSelectedCustomer(tempData?.customer_type_id?.length || 0)
             setSelectedCustomer(tempData?.customer_type_id?.length || 0)
             setRatioData(
               tempData?.user_policy?.map((d) => ({
@@ -333,8 +337,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     const queryTypeTemp = queryType.filter((d) => d.id === e.value);
 
     const dynamicFormDropdownTemp = dynamicForm
-      .filter((d) => d.id === queryTypeTemp[0].form_id)
-      .map((d) => ({ value: d.id, label: d.template_name }));
+      ?.filter((d) => d.id === queryTypeTemp[0]?.form_id)
+      ?.map((d) => ({ value: d.id, label: d.template_name }));
 
     if (dynamicFormDropdownTemp.length > 0) {
       setData((prev) => {
@@ -367,7 +371,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   };
 
   const handleAutoChanges = async (e, type, nameField) => {
-    if (!e || Object.entries(e).length === 0) return;
+    // if (!e || Object.entries(e).length === 0) return;
     if (type === 'Select2' && nameField === 'customer_type_id') {
       setSelectedCustomer(e?.length) ;
     }
@@ -501,9 +505,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   };
 
   const handleForm = async (values, { setSubmitting }) => {
+    console.log(values,"values")
     setSubmitting(true);
     let userIds;
-
     if (Array?.isArray(values?.user_id)) {
       // Check if the first item is an object
       if (
@@ -545,6 +549,13 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     values.tenant_id = localStorage.getItem('tenant_id');
     values.created_by = userSessionData.userId;
     values.created_at = getDateTime();
+
+    // if (!values.department_id) {
+    //   delete values.department_id;
+    // }
+    // if(values?.user_id?.length === 0){
+    //   delete values.user_id;
+    // }
     let flag = 1;
     if (values?.approach === 'RW') {
       if (!ratioTotal || ratioTotal !== 100) {
@@ -610,6 +621,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       <div className="row clearfix g-3">
         <div className="col-sm-12">
           <div className="card mt-2">
+
             {data && (
               <Formik
                 enableReinitialize
@@ -765,9 +777,11 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                   name="query_type_id"
                                   isClearable={true}
                                   onChange={(selectedOption) => {
+                                    console.log(selectedOption?.value, "selectedOption")
+                                    const values = selectedOption ? selectedOption?.value : '';
                                     form.setFieldValue(
                                       'query_type_id',
-                                      selectedOption?.value || ''
+                                      values
                                     );
                                     handleQueryType(selectedOption);
                                   }}
@@ -1109,6 +1123,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                   )}
                                   isClearable={true}
                                   onChange={(selectedOption) => {
+                                    setFieldValue('department_id', "");
                                     setApproach(selectedOption.value);
                                     const value = selectedOption
                                       ? selectedOption?.value
