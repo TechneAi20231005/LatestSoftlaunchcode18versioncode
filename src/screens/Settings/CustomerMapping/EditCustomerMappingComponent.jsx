@@ -109,6 +109,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const [statusData, setstatusData] = useState('');
   const [ratioData, setRatioData] = useState([]);
+  const [queryTypeId, setQueryTypeId] = useState("");
 
   const handleConfirmationChange = (e) => {
     setConfirmationRequired(Number(e?.target?.value));
@@ -166,10 +167,11 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         if (res.status === 200) {
           if (res.data.status === 1) {
             tempData = res.data.data;
-            console.log('tempData', tempData.customer_type_id?.length);
+            console.log('tempData.query_type_id', tempData.query_type_id);
             setApproach(tempData.approach);
             // setSelectedCustomer(tempData?.customer_type_id?.length || 0)
             setSelectedCustomer(tempData?.customer_type_id?.length || 0)
+            setQueryTypeId(tempData.query_type_id)
             setRatioData(
               tempData?.user_policy?.map((d) => ({
                 user_id: d.user_id,
@@ -507,6 +509,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const handleForm = async (values, { setSubmitting }) => {
     console.log(values,"values")
     setSubmitting(true);
+
     let userIds;
     if (Array?.isArray(values?.user_id)) {
       // Check if the first item is an object
@@ -549,6 +552,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     values.tenant_id = localStorage.getItem('tenant_id');
     values.created_by = userSessionData.userId;
     values.created_at = getDateTime();
+    values.query_type_id = queryTypeId;
 
     // if (!values.department_id) {
     //   delete values.department_id;
@@ -779,6 +783,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                   onChange={(selectedOption) => {
                                     console.log(selectedOption?.value, "selectedOption")
                                     const values = selectedOption ? selectedOption?.value : '';
+                                    setQueryTypeId(values)
                                     form.setFieldValue(
                                       'query_type_id',
                                       values

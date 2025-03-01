@@ -5,7 +5,7 @@ import ManageMenuService from '../../../services/MenuManagementService/ManageMen
 import ErrorLogService from '../../../services/ErrorLogService';
 import Alert from '../../../components/Common/Alert';
 import PageHeader from '../../../components/Common/PageHeader';
-import { ProjectDropdown } from '../ProjectMaster/ProjectComponent';
+// import { ProjectDropdown } from '../ProjectMaster/ProjectComponent';
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
 import { _base } from '../../../settings/constants';
@@ -13,6 +13,7 @@ import { Field, Form, Formik, ErrorMessage } from 'formik';
 import { moduleMasterValidation } from './validation/ModuleMaster';
 import { errorHandler } from '../../../utils';
 import { toast } from 'react-toastify';
+import ProjectService from '../../../services/ProjectManagementService/ProjectService';
 
 export default function EditModuleComponent({ match }) {
   const history = useNavigate();
@@ -31,8 +32,22 @@ export default function EditModuleComponent({ match }) {
 
   const roleId = localStorage.getItem('role_id');
   const [checkRole, setCheckRole] = useState(null);
+  const [Projectdropdown, setProjectdropdown] = useState([]);
 
   const loadData = useCallback(async () => {
+
+      await new ProjectService().getProject().then((res) => {
+          if (res.status === 200) {
+            if (res.data.status === 1) {
+              console.log(res.data.data.data, ">>>>>");
+              setProjectdropdown(
+                res.data.data.data
+                  .filter((d) => d.is_active === 1)
+                  .map((d) => ({ value: d.id, label: d.project_name }))
+              );
+            }
+          }
+        });
     try {
       const res = await new ManageMenuService().getRole(roleId);
       if (res.status === 200) {
@@ -132,7 +147,7 @@ export default function EditModuleComponent({ match }) {
                 handleForm(values, { setSubmitting });
               }}
             >
-              {({ values, isSubmitting }) => (
+              {({ values, isSubmitting, setFieldValue }) => (
                 <Form>
                   <div className="card mt-2">
                     <div className="card-body">
@@ -143,7 +158,36 @@ export default function EditModuleComponent({ match }) {
                             Select Project : <Astrick color="red" size="13px" />
                           </b>
                         </label>
-                        <div className="col-sm-4">
+                           <div className="col-sm-4">
+                                                  <Field
+                                                    as="select"
+                                                    className="form-control form-control-sm"
+                                                    id="project_id"
+                                                    name="project_id"
+                                                    onChange={(e) => {
+                                                      setFieldValue('project_id', e?.target?.value);
+                                                    }} // Call handleChange on selection
+                                                    defaultValue={
+                                                      data &&
+                                                      Projectdropdown?.filter(
+                                                        (d) => d.value === data.project_id
+                                                      )
+                                                    }
+                                                  >
+                                                    <option value="" label="Select a project" />
+                                                    {Projectdropdown?.map((option) => (
+                                                      <option key={option.value} value={option.value}>
+                                                        {option.label}
+                                                      </option>
+                                                    ))}
+                                                  </Field>
+                                                  <ErrorMessage
+                                                    name="project_id"
+                                                    component="small"
+                                                    className="text-danger"
+                                                  />
+                                                </div>
+                        {/* <div className="col-sm-4">
                           <Field name="project_id">
                             {({ field, form }) => (
                               <ProjectDropdown
@@ -154,7 +198,7 @@ export default function EditModuleComponent({ match }) {
                               />
                             )}
                           </Field>
-                        </div>
+                        </div> */}
                       </div>
 
                       {/* Module Name */}

@@ -465,6 +465,7 @@ function EditUserComponent({ match }) {
   const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
+  // console.log("orderedCustomerRoleData", orderedCustomerRoleData)
 
   const [selectRole, setSelctRole] = useState(null);
   const handleSelectRole = (e) => {
@@ -570,7 +571,7 @@ function EditUserComponent({ match }) {
         if (res.status === 200) {
           if (res.data.status === 1) {
             const temp = res.data.data.data;
-            setSelctRole(  temp?.account_for === "SELF" ?  roleDropdown && roleDropdown.filter((d) => d.value === temp?.role_id) : customerRolesData
+            setSelctRole( roleDropdown && roleDropdown.filter((d) => d.value === temp?.role_id)
             );
 
 
@@ -1426,7 +1427,7 @@ function EditUserComponent({ match }) {
                               options={
                                 accountFor === 'SELF'
                                   ? orderedSelfRoleData
-                                  : customerRolesData
+                                  : orderedCustomerRoleData
                               }
                               // defaultValue={
                               //   data &&

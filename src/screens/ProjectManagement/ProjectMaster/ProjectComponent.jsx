@@ -467,6 +467,7 @@ function ProjectDropdown({ field, form, ...props }) {
   }, []);
 
   const handleChange = (e) => {
+    console.log(e.target.value);
     const value = e.target.value;
     form.setFieldValue(field.name, value); // Update Formik value
   };

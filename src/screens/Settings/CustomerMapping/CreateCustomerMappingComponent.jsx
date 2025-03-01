@@ -177,9 +177,10 @@ export default function CreateCustomerMappingComponent() {
   // }
   const getDynamicForm = useCallback(async () => {
     try {
-      const res = await new DynamicFormService().getDynamicForm();
+      const res = await new DynamicFormService().getDynamicFormForSelect();
       if (res?.status === 200) {
         if (res?.data?.status === 1) {
+
           const data = res?.data?.data.data.filter((d) => d.is_active === 1);
           const select = res?.data?.data.data
             .filter((d) => d.is_active === 1)
@@ -571,7 +572,9 @@ export default function CreateCustomerMappingComponent() {
                                 ) || null
                               }
                               onChange={(selectedOption) => {
+                                console.log(selectedOption, 'selectedOption');
                                 const values = selectedOption
+
                                   ? selectedOption.value
                                   : [];
                                 form.setFieldValue('query_type_id', values);

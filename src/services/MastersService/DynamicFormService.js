@@ -6,6 +6,7 @@ import { masterURL } from '../../settings/constants';
 const _URL = masterURL.dynamicForm;
 
 const _getAllDynamicForm = `${_URL}/getData?export=1`;
+const _getAllDynamicFormForSelect = `${_URL}/getData?type=1`;
 // _URL+"/getAllDynamicForm";
 
 const _createDynamicForm = `${_URL}/postData`;
@@ -31,6 +32,20 @@ export default class DynamicFormService {
     };
 
     return axios.get(_getAllDynamicForm, config);
+  }
+
+  getDynamicFormForSelect() {
+    const token = localStorage.getItem('jwt_token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+
+    return axios.get(_getAllDynamicFormForSelect, config);
   }
 
   postDynamicForm(payload) {

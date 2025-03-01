@@ -589,6 +589,7 @@ function CreateUserComponent({ match }) {
   const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
+  // console.log(orderedCustomerRoleData, "orderedCustomerRoleData")
 
   const customerRolesData = [{
     label: "User",
@@ -1238,7 +1239,7 @@ function CreateUserComponent({ match }) {
                           options={
                             accountFor === 'SELF'
                               ? orderedSelfRoleData
-                              : customerRolesData
+                              : orderedCustomerRoleData
                           }
 
                           isClearable={true}
