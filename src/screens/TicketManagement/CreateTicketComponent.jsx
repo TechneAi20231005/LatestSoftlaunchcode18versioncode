@@ -1105,6 +1105,7 @@ export default function CreateTicketComponent() {
         )}
 
         {data.ticket_uploading === 'REGULAR' && rows && rows?.length > 0 && (
+
           <div className="card mt-2">
             <div className="card-body">
               <div className="row">
@@ -1229,6 +1230,8 @@ export default function CreateTicketComponent() {
                             );
                           })
                         : ''}
+
+
 
                       {data?.inputType === 'checkbox' &&
                       data?.inputAddOn?.inputRadio

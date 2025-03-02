@@ -538,6 +538,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       return userIds;
     };
 
+
     const RwuserID = getUserData();
 
     if (values.approach === 'RW') {
@@ -740,6 +741,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                           (option) => option.value
                                         )
                                       : [];
+                                     data?.approach === "SELF" &&  setTimeout(() => {
+                                      form.setFieldValue("approach", null);
+                                    }, 0);
 
                                     form.setFieldValue(
                                       'customer_type_id',
@@ -1124,8 +1128,9 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                   name="approach"
                                   options={options}
                                   defaultValue={options.filter(
-                                    (d) => data?.approach === d.value
+                                    (d) => data?.approach === d.value || null
                                   )}
+                                  value={values?.approach ? options.filter((item) => item.value === values.approach) : null}
                                   isClearable={true}
                                   onChange={(selectedOption) => {
                                     setFieldValue('department_id', "");

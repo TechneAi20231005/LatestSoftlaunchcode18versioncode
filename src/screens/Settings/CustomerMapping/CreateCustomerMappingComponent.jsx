@@ -518,6 +518,7 @@ export default function CreateCustomerMappingComponent() {
                       <div className="col-sm-4">
                         <Field name="customer_type_id">
                           {({ field, form }) => (
+
                             <Select
                               id="customer_type_id"
                               name="customer_type_id"
@@ -532,6 +533,7 @@ export default function CreateCustomerMappingComponent() {
                                       (option) => option.value
                                     )
                                   : [];
+                               approach === "SELF" &&   form.setFieldValue("approach", null);
 
                                 form.setFieldValue('customer_type_id', values);
 
@@ -823,11 +825,30 @@ export default function CreateCustomerMappingComponent() {
                       </label>
                       <div className="col-sm-4">
                         <Field name="approach">
-                          {({ field, form }) => (
+                          {({ field, form }) => {
+                            const options = [
+                              { value: '', label: 'Select Approach' },
+                              {
+                                value: 'RR',
+                                label: 'Departmentwise Round Robin'
+                              },
+                              {
+                                value: 'HLT',
+                                label: 'User Having Less Ticket'
+                              },
+                              { value: 'SP', label: 'Single Person' },
+                              { value: 'RW', label: 'Ratio Wise' },
+                              ...(selectedCustomer === 0
+                                ? [{ value: 'SELF', label: 'Self' }]
+                                : []),
+                              { value: 'AU', label: 'Assign to user' }
+                            ];
+                            return (
                             <Select
                               id="approach"
                               name="approach"
-                              isClearable
+                              placeholder="Select Approach"
+                              // isClearable
                               options={[
                                 { value: '', label: 'Select Approach' },
                                 {
@@ -845,17 +866,18 @@ export default function CreateCustomerMappingComponent() {
                                   : []),
                                 { value: 'AU', label: 'Assign to user' }
                               ]}
-                              value={
-                                field.value
-                                  ? { value: field.value, label: field.value }
-                                  : { value: '', label: 'Select approach' }
-                              }
+                              value={values?.approach ? options.filter((item) => item.value === values.approach) : null}
+                              // value={
+                              //   field.value
+                              //     ? { value: field.value, label: field.value }
+                              //     : { value: '', label: 'Select approach' }
+                              // }
                               onChange={(option) => {
                                 setFieldValue('department_id', "");
-                                setApproach(option.value);
+                                setApproach(option?.value || "");
                                 form.setFieldValue(
                                   'approach',
-                                  option ? option.value : ''
+                                  option ? option?.value : ''
                                 );
                                 handleAutoChanges(
                                   option,
@@ -864,7 +886,9 @@ export default function CreateCustomerMappingComponent() {
                                 );
                               }}
                             />
-                          )}
+                            )
+                            }
+                          }
                         </Field>
                         <ErrorMessage
                           name="approach"

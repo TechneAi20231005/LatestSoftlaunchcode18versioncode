@@ -464,7 +464,7 @@ export default function EditProjectComponent({ match }) {
                       </div>
 
                       <div className="form-group row mt-3">
-                        <label className="col-sm-2 col-form-label">
+                        <label className="col-sm-2 col-form-label" style={{ whiteSpace: "nowrap" }}>
                           <b>API Document Link : </b>
                         </label>
                         <div className="col-sm-10">

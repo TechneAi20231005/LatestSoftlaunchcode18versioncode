@@ -238,9 +238,9 @@ export default function EditModuleComponent({ match }) {
                             className="form-control form-control-sm"
                             name="description"
                             rows="6"
-                            onKeyPress={(e) => {
-                              Validation.addressFieldOnly(e);
-                            }}
+                            // onKeyPress={(e) => {
+                            //   Validation.addressFieldOnly(e);
+                            // }}
                           />
                           <ErrorMessage
                             name="description"

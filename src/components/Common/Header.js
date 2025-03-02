@@ -7,7 +7,8 @@ import Select from 'react-select';
 import {
   _base,
   userSessionData,
-  _attachmentUrl
+  _attachmentUrl,
+  _rewampAttachmentUrl
 } from '../../settings/constants';
 import Alert from './Alert';
 import UserService from '../../services/MastersService/UserService';
@@ -272,7 +273,7 @@ export default function Header() {
                   }}
                   className="avatar lg rounded-circle img-thumbnail"
                   src={
-                    _attachmentUrl + data?.data?.profile_picture ||
+                    _rewampAttachmentUrl + data?.data?.profile_picture ||
                     DemoProfileImg
                   }
                   alt="profile"
@@ -304,7 +305,8 @@ export default function Header() {
                           e.target.src = DemoProfileImg;
                         }}
                         src={
-                          data && _attachmentUrl + data?.data?.profile_picture
+                          data &&
+                          _rewampAttachmentUrl + data?.data?.profile_picture
                         }
                         alt="profile"
                       />

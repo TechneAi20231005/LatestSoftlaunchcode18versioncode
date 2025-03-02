@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import PageHeader from '../../components/Common/PageHeader';
 import { Spinner, Modal } from 'react-bootstrap';
 import Alert from '../../components/Common/Alert';
-import { _attachmentUrl, _base, attachmentUrl } from '../../settings/constants';
+import { _attachmentUrl, _base, attachmentUrl, _rewampAttachmentUrl } from '../../settings/constants';
 import ProfileImg from '../../assets/images/profile_av.png';
 import UserService from '../../services/MastersService/UserService';
 import * as Validation from '../../components/Utilities/Validation';
@@ -313,7 +313,7 @@ function Profile() {
                 src={
                   data?.upload_Picture
                     ? data?.upload_Picture
-                    : _attachmentUrl + data?.profile_picture
+                    : _rewampAttachmentUrl + data?.profile_picture
                 }
                 alt="profile"
                 onError={(e) => {

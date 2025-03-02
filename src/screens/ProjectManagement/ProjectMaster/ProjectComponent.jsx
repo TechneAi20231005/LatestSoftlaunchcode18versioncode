@@ -482,7 +482,7 @@ function ProjectDropdown({ field, form, ...props }) {
           className="form-control form-control-sm"
           id={props.id}
           name={field.name}
-          value={deafultValue}
+          value={field.value || deafultValue}
           onChange={handleChange}
           onBlur={field.onBlur}
         >

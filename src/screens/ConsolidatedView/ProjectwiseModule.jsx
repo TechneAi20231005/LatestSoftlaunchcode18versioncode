@@ -1093,7 +1093,7 @@ export default function ProjectwiseModule() {
                     Status :
                     {/* Show DOC :<Astrick color="red" size="13px" /> */}
                   </label>
-                  <div className="col-md-2">
+                  <div className="col-md-3">
                     <div className="form-check">
                       <input
                         className="form-check-input"

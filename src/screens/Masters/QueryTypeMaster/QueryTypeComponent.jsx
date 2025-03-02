@@ -506,9 +506,10 @@ function QueryTypeComponent() {
       setIsActive(0);
     }
   };
-  const handleFormQueryGroup = (id) => async (e) => {
-    e.preventDefault();
-    const form = new FormData(e.target);
+  const handleFormQueryGroup = async (values, id) => {
+    // e.preventDefault();
+    const form = new FormData();
+    form.append('group_name', values.group_name);
     setNotify(null);
     setNotifyy(null);
     if (!id) {
@@ -849,6 +850,26 @@ function QueryTypeComponent() {
   ];
 
   const validationSchema = CustomValidation(fields);
+
+  console.log(modalQueryGroup,"modalQueryGroup")
+
+  const initialValueGroupName = {
+    group_name: modalQueryGroup.modalDataQueryGroup
+      ? modalQueryGroup.modalDataQueryGroup.group_name
+      : '',
+    is_active: String(modalQueryGroup?.modalDataQueryGroup?.is_active) ?? '1'
+  };
+  const fieldsGroupName = [
+    {
+      name: 'group_name',
+      label: 'Group name',
+      required: true,
+      alphaNumeric: true,
+      max: 100,
+      min: 3,
+    }
+  ];
+  const validationSchemaGroupName = CustomValidation(fieldsGroupName);
 
   return (
     <>
@@ -1218,7 +1239,193 @@ function QueryTypeComponent() {
           });
         }}
       >
-        <form
+        <Formik
+        initialValues={initialValueGroupName}
+        validationSchema={validationSchemaGroupName}
+        onSubmit={(value) =>
+          // console.log(value,"values")
+          handleFormQueryGroup(value, modalQueryGroup.modalDataQueryGroup ? modalQueryGroup.modalDataQueryGroup.id : '')
+        }
+      >
+         {({ isSubmitting, setFieldValue, values }) => (
+        <Form
+          // method="post"
+          // onSubmit={handleFormQueryGroup(
+          //   modalQueryGroup.modalDataQueryGroup
+          //     ? modalQueryGroup.modalDataQueryGroup.id
+          //     : ''
+          // )}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title className="fw-bold">
+              {modalQueryGroup.modalHeaderQueryGroup}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <div className="deadline-form">
+              <div className="row g-3 mb-3">
+                <label className="form-label font-weight-bold">
+                  Query Group :<Astrick color="red" size="13px" />
+                </label>
+                <div className="col-sm-12">
+                  {modalQueryGroup.modalDataQueryGroup && (
+                    <Field
+                      type="text"
+                      style={{ height: '40px' }}
+                      id="group_name"
+                      name="group_name"
+                      placeholder=""
+                      defaultValue={
+                        modalQueryGroup.modalDataQueryGroup &&
+                        modalQueryGroup.modalDataQueryGroup &&
+                        modalQueryGroup.modalDataQueryGroup.group_name
+                          ? modalQueryGroup.modalDataQueryGroup.group_name
+                          : ''
+                      }
+                      // maxLength={50}
+                      // required
+                      // onKeyPress={(e) => {
+                      //   Validation.CharactersNumbersOnly(e);
+                      // }}
+                    />
+                  )}
+                     {/* <ErrorMessage
+                                          name="group_name"
+                                          component="small"
+                                          className="text-danger small"
+                                        /> */}
+
+                  {!modalQueryGroup.modalDataQueryGroup && (
+                    <Field
+                      type="text"
+                      style={{ height: '40px' }}
+                      id="group_name"
+                      name="group_name"
+                      placeholder=""
+                      // maxLength={50}
+                      // required
+                      // onKeyPress={(e) => {
+                      //   Validation.CharactersNumbersOnly(e);
+                      // }}
+                    />
+                  )}
+
+                </div>
+                <ErrorMessage
+                                          name="group_name"
+                                          component="small"
+                                          className="text-danger small"
+                                        />
+              </div>
+
+              {modalQueryGroup.modalDataQueryGroup && (
+                <div className="col-sm-12">
+                  <label className="form-label font-weight-bold">
+                    Status: <Astrick color="red" size="13px" />
+                  </label>
+                  <div className="row">
+                    <div className="col-md-2">
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          name="is_active"
+                          id="is_active_1"
+                          value="1"
+                          onClick={(e) => handleIsActive(e)}
+                          defaultChecked={
+                            modalQueryGroup.modalDataQueryGroup &&
+                            modalQueryGroup.modalDataQueryGroup.is_active === 1
+                              ? true
+                              : !modalQueryGroup.modalDataQueryGroup
+                              ? true
+                              : false
+                          }
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor="is_active_1"
+                        >
+                          Active
+                        </label>
+                      </div>
+                    </div>
+                    <div className="col-md-1">
+                      <div className="form-check">
+                        <input
+                          className="form-check-input"
+                          type="radio"
+                          name="is_active"
+                          id="is_active_0"
+                          value="0"
+                          style={{ marginLeft: 'auto' }}
+                          readOnly={
+                            modalQueryGroup.modalDataQueryGroup ? false : true
+                          }
+                          onClick={(e) => handleIsActive(e)}
+                          defaultChecked={
+                            modalQueryGroup.modalDataQueryGroup &&
+                            modalQueryGroup.modalDataQueryGroup.is_active === 0
+                              ? true
+                              : false
+                          }
+                        />
+                        <label
+                          className="form-check-label"
+                          htmlFor="is_active_0"
+                        >
+                          Deactive
+                        </label>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Modal.Body>
+          <Modal.Footer>
+            {!modalQueryGroup.modalDataQueryGroup && (
+              <button
+                type="submit"
+                className="btn btn-primary text-white"
+                style={{
+                  backgroundColor: '#484C7F',
+                  width: '80px',
+                  padding: '8px'
+                }}
+              >
+                Add
+              </button>
+            )}
+
+            {modalQueryGroup.modalDataQueryGroup && (
+              <button
+                type="submit"
+                className="btn btn-primary text-white"
+                style={{ backgroundColor: '#484C7F' }}
+              >
+                Update
+              </button>
+            )}
+
+            <button
+              type="button"
+              className="btn btn-danger text-white"
+              onClick={() => {
+                handleModalQueryGroup({
+                  showModalQueryGroup: false,
+                  modalDataQueryGroup: '',
+                  modalHeaderQueryGroup: ''
+                });
+              }}
+            >
+              Cancel
+            </button>
+          </Modal.Footer>
+        </Form>
+             )}
+        </Formik>
+        {/* <form
           method="post"
           onSubmit={handleFormQueryGroup(
             modalQueryGroup.modalDataQueryGroup
@@ -1381,7 +1588,7 @@ function QueryTypeComponent() {
               Cancel
             </button>
           </Modal.Footer>
-        </form>
+        </form> */}
       </Modal>
 
       {/* *************************************End Add Query Group************************** */}

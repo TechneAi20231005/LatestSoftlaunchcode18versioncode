@@ -268,12 +268,9 @@ export default function EditModuleComponent({ match }) {
                       </div>
 
                       <div className="form-group row mt-2">
-                        <label className="col-sm-2 col-form-label">
-                          <b>
-                            Sub Module Name :{' '}
-                            <span style={{ color: 'red' }}>*</span>
-                          </b>
-                        </label>
+                      <label className="col-sm-2 col-form-label d-flex align-items-center" style={{ whiteSpace: "nowrap" }}>
+    <b>Sub Module Name : <span style={{ color: 'red' }}>*</span></b>
+  </label>
                         <div className="col-sm-4">
                           <Field
                             type="text"

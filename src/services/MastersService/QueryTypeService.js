@@ -190,7 +190,7 @@ const _URLGetAllQueryType = masterURL.getAllQueryGroup;
 
 const _getAllQueryType = `${_URL}/getData?export=1`;
 // _URL + '/getAllQueryType1';
-const _getAllQueryGroup = `${_URLGetAllQueryType}/getData?grid=1`;
+const _getAllQueryGroup = `${_URLGetAllQueryType}/getData?grid=1&export=1`;
 
 const _getQueryGroupForSelect = `${_URLGetAllQueryType}/getData?type=1`;
 //  _URL + '/getAllQueryGroup';
