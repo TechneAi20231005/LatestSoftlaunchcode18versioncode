@@ -50,7 +50,7 @@ export default function EditModuleComponent({ match }) {
     sub_module_name: data?.sub_module_name ? data?.sub_module_name : '',
     description: data?.description ? data?.description : '',
     remark: data?.remark ? data?.remark : '',
-    is_active: String(data?.is_active) ?? "1"
+    is_active: String(data?.is_active) ?? '1'
   };
   const loadData = async () => {
     await new SubModuleService()
@@ -82,6 +82,21 @@ export default function EditModuleComponent({ match }) {
         );
       });
 
+      await new ModuleService().getModule().then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setModules(res.data.data?.data.filter((d) => d.is_active === 1));
+
+            // setModulesDropdown(
+            //   res.data.data &&
+            //     res.data.data?.data
+            //       .filter((d) => d.is_active === 1)
+            //       .map((d) => ({ value: d.id, label: d.module_name }))
+            // );
+          }
+        }
+      });
+
     await new ProjectService().getProject().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
@@ -94,22 +109,24 @@ export default function EditModuleComponent({ match }) {
       }
     });
 
-    await new ModuleService().getModule().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setModules(res.data.data?.data.filter((d) => d.is_active === 1));
 
-          setModulesDropdown(
-            res.data.data &&
-              res.data.data?.data
-                .filter((d) => d.is_active === 1)
-                .map((d) => ({ value: d.id, label: d.module_name }))
-          );
-        }
-      }
-    });
     dispatch(getRoles());
   };
+
+  useEffect(() => {
+    if (data && data?.project_id && modules?.length > 0) {
+      const filteredModules = modules.filter(
+        (d) => d.project_id === data.project_id
+      );
+
+      setModulesDropdown(
+        filteredModules?.map((d) => ({
+          value: d.id,
+          label: d.module_name,
+        }))
+      );
+    }
+  }, [data, modules]);
 
   const handleForm = async (values, { setSubmitting }) => {
     setSubmitting(true);
@@ -192,6 +209,7 @@ export default function EditModuleComponent({ match }) {
                             name="project_id"
                             onChange={(e) => {
                               setFieldValue('project_id', e?.target?.value);
+                              setFieldValue('module_id', null);
                               setModulesDropdown(
                                 modules &&
                                   modules
@@ -251,7 +269,6 @@ export default function EditModuleComponent({ match }) {
                               )
                             }
                           >
-
                             <option value="" label="Select a module" />
                             {modulesDropdown?.map((option) => (
                               <option key={option.value} value={option.value}>
@@ -268,9 +285,15 @@ export default function EditModuleComponent({ match }) {
                       </div>
 
                       <div className="form-group row mt-2">
-                      <label className="col-sm-2 col-form-label d-flex align-items-center" style={{ whiteSpace: "nowrap" }}>
-    <b>Sub Module Name : <span style={{ color: 'red' }}>*</span></b>
-  </label>
+                        <label
+                          className="col-sm-2 col-form-label d-flex align-items-center"
+                          style={{ whiteSpace: 'nowrap' }}
+                        >
+                          <b>
+                            Sub Module Name :{' '}
+                            <span style={{ color: 'red' }}>*</span>
+                          </b>
+                        </label>
                         <div className="col-sm-4">
                           <Field
                             type="text"

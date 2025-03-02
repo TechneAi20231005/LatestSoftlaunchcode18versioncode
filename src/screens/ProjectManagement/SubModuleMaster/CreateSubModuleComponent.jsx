@@ -171,6 +171,7 @@ export default function CreateModuleComponent({ match }) {
                           name="project_id"
                           onChange={(e) => {
                             setFieldValue('project_id', e?.target?.value);
+                            setFieldValue('module_id', null);
                             setModulesDropdown(
                               modules &&
                                 modules

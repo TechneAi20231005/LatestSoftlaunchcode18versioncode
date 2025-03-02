@@ -21,6 +21,7 @@ import { Modal, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import CustomAlertModal from '../../components/custom/modal/CustomAlertModal';
 import PageHeader from '../../components/Common/PageHeader';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 export default function ProjectwiseModule() {
   const params = useParams();
@@ -75,6 +76,7 @@ export default function ProjectwiseModule() {
   const submoduleRef = useRef(null);
   const moduleRef = useRef(null);
   const ModuleID = moduleId?.length > 0 ? moduleId : null;
+
 
   const loadData = async () => {
     const userId = localStorage.getItem('id');
@@ -164,7 +166,7 @@ export default function ProjectwiseModule() {
 
             setFilterData(
               temp?.filter(
-                (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
               )
             );
           }
@@ -247,7 +249,7 @@ export default function ProjectwiseModule() {
               setDocList(tempData);
               setFilterData(
                 tempData?.filter(
-                  (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                  (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
                 )
               );
             }
@@ -289,7 +291,7 @@ export default function ProjectwiseModule() {
               setDocList(tempData);
               setFilterData(
                 tempData?.filter(
-                  (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                  (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
                 )
               );
             }
@@ -344,6 +346,7 @@ export default function ProjectwiseModule() {
             is_active: temp[key].is_active,
             document_attachment: temp[key].document_attachment,
             uploaded_by: temp[key].uploaded_by,
+            uploaded_by_id: temp[key].uploaded_by_id,
 
             sub_module_name: temp[key].sub_module_name
               ? temp[key].sub_module_name
@@ -353,7 +356,7 @@ export default function ProjectwiseModule() {
         setDocList(tempData);
         setFilterData(
           tempData?.filter(
-            (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+            (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
           )
         );
 
@@ -407,6 +410,7 @@ export default function ProjectwiseModule() {
                 is_active: temp[key].is_active,
                 document_attachment: temp[key].document_attachment,
                 uploaded_by: temp[key].uploaded_by,
+                uploaded_by_id: temp[key].uploaded_by_id,
 
                 sub_module_name: temp[key].sub_module_name
                   ? temp[key].sub_module_name
@@ -416,7 +420,7 @@ export default function ProjectwiseModule() {
             setDocList(tempData);
             setFilterData(
               tempData?.filter(
-                (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
               )
             );
           });
@@ -457,7 +461,7 @@ export default function ProjectwiseModule() {
             setDocList(temp);
             setFilterData(
               temp?.filter(
-                (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
               )
             );
           }
@@ -550,6 +554,7 @@ export default function ProjectwiseModule() {
                     is_active: temp[key].is_active,
                     document_attachment: temp[key].document_attachment,
                     uploaded_by: temp[key].uploaded_by,
+                    uploaded_by_id: temp[key].uploaded_by_id,
 
                     sub_module_name: temp[key].sub_module_name
                       ? temp[key].sub_module_name
@@ -561,7 +566,7 @@ export default function ProjectwiseModule() {
                 setDocList(tempData);
                 setFilterData(
                   tempData?.filter(
-                    (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                    (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
                   )
                 );
               }
@@ -617,6 +622,15 @@ export default function ProjectwiseModule() {
       setSelectedRows([...selectedRows, id]); // Select
     }
   };
+
+  const renderTooltip = (text) => (
+    <OverlayTrigger
+      placement="top"
+      overlay={<Tooltip>{text}</Tooltip>}
+    >
+      <span style={{ cursor: 'pointer' }}>{text}</span>
+    </OverlayTrigger>
+  );
 
   const columns = [
     {
@@ -705,14 +719,14 @@ export default function ProjectwiseModule() {
                 href={_rewampAttachmentUrl + row?.document_attachment}
                 target="_blank"
                 rel="noopener noreferrer"
-                // style={{
-                //   pointerEvents:
-                //     authorityCheck === false &&
-                //     isProjectOwner === 0 &&
-                //     !isReviewer
-                //       ? 'none'
-                //       : 'auto'
-                // }}
+                style={{
+                  pointerEvents:
+                    authorityCheck === false &&
+                    isProjectOwner === 0 &&
+                    !isReviewer
+                      ? 'none'
+                      : 'auto'
+                }}
               >
                 <i
                   className="icofont-download me-3 btn btn-sm btn-secondary text-white"
@@ -731,7 +745,7 @@ export default function ProjectwiseModule() {
           </div>
         </>
       ),
-      width: '20%'
+      width: '15%'
     },
     {
       name: 'File Name',
@@ -747,19 +761,24 @@ export default function ProjectwiseModule() {
     {
       name: 'Project Name',
       selector: (row) => row.project_name,
-      sortable: true
+      sortable: true,
+      width: '15%',
+      cell: (row) => renderTooltip(row.project_name),
     },
     {
       name: 'Module Name',
       selector: (row) => (row.module_name ? row.module_name : 'No Module'),
-      sortable: true
+      sortable: true,
+      width: '15%',
+      cell: (row) => renderTooltip(row.module_name ? row.module_name : 'No Module'),
     },
     {
       name: 'SubModule Name',
       selector: (row) =>
         row.sub_module_name ? row.sub_module_name : 'No SubModule',
-
-      sortable: true
+       sortable: true,
+       width: '15%',
+       cell: (row) => renderTooltip(row.sub_module_name ? row.sub_module_name : 'No SubModule'),
     }
   ];
 
@@ -815,6 +834,8 @@ export default function ProjectwiseModule() {
                 is_active: temp[key].is_active,
                 document_attachment: temp[key].document_attachment,
                 uploaded_by: temp[key].uploaded_by,
+                uploaded_by_id: temp[key].uploaded_by_id,
+
                 sub_module_name: temp[key].sub_module_name
                   ? temp[key].sub_module_name
                   : ''
@@ -825,7 +846,7 @@ export default function ProjectwiseModule() {
             setDocList(tempData);
             setFilterData(
               tempData?.filter(
-                (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
               )
             );
           }
@@ -937,8 +958,9 @@ export default function ProjectwiseModule() {
     docList &&
     docList?.filter(
       (i) =>
-        i?.uploaded_by === parseInt(sessionStorage?.id) || i?.show_to_all === 1
+        i?.uploaded_by_id === parseInt(localStorage.getItem("id")) || i?.show_to_all === 1
     );
+    {console.log('FilterData', FilterData)}
 
   useEffect(() => {
     loadData();
@@ -1318,6 +1340,7 @@ export default function ProjectwiseModule() {
               >
                 3) Please Select Module or Submodule to Filter The Documents
               </span>
+              {console.log(authorityCheck,"?>>>>")}
               <DataTable
                 columns={columns}
                 data={
