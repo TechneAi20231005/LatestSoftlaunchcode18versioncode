@@ -231,6 +231,9 @@ function CreateDynamicForm() {
         rows[idx].inputAddOn.inputDateTime = e.target.value;
       } else if (e.target.name === 'inputFormat') {
         rows[idx].inputFormat = e.target.value;
+      } else if (e.target.name === 'inputOnChangeSource') {
+        // rows[idx].inputAddOn.inputDataSource = e.target.value;
+        rows[idx].inputAddOn.inputOnChangeSource = e.target.value;
       }
 
       if (e.target.name === 'inputDataSource' && e.target.value === 'user') {
@@ -245,7 +248,9 @@ function CreateDynamicForm() {
           .getUserForMyTickets(inputRequired)
           .then((res) => {
             if (res?.status === 200) {
-              const data = res?.data?.data?.data?.filter((d) => d.is_active === 1);
+              const data = res?.data?.data?.data?.filter(
+                (d) => d.is_active === 1
+              );
 
               for (const key in data) {
                 tempUserData.push({
@@ -447,7 +452,6 @@ function CreateDynamicForm() {
       template_name: e.target.template_name.value,
       data: JSON.stringify(rows)
     };
-
     try {
       const res = await new DynamicFormService().postDynamicForm(data);
 
@@ -458,7 +462,7 @@ function CreateDynamicForm() {
           toast.success(res.data.message);
           setTimeout(() => {
             navigate(`/${_base}/DynamicForm`, {
-              state: { alert: { type: 'success', message: res.data.message } }
+              state: { alert: toast.success(res.data.message) }
             });
           }, 1000);
         } else {
@@ -754,7 +758,6 @@ function CreateDynamicForm() {
                                 <td className="text-center">
                                   <input
                                     type="checkbox"
-
                                     name="inputMandatory"
                                     defaultValue={item.inputMandatory}
                                     onChange={handleChange(idx)}
@@ -762,7 +765,7 @@ function CreateDynamicForm() {
                                   />
                                 </td>
 
-                                <td className='text-center'>
+                                <td className="text-center">
                                   {(rows[idx].inputType === 'select-master' ||
                                     rows[idx].inputType === 'select' ||
                                     rows[idx].inputType === 'checkbox') && (
@@ -1178,7 +1181,11 @@ function CreateDynamicForm() {
                     )}
 
                     <div className="float-end">
-                      <button type="submit" className="btn btn-sm btn-primary">
+                      <button
+                        disabled={submitting}
+                        type="submit"
+                        className="btn btn-sm btn-primary"
+                      >
                         Submit
                       </button>
                       <Link
