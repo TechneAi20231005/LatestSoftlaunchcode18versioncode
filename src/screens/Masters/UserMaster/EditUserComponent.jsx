@@ -72,7 +72,7 @@ function EditUserComponent({ match }) {
   const [jobRoleDropDown, setJobRoleDropDown] = useState(null);
   // const [userDepartment, setUserDepartment] = useState(null);
   const [departmentDropdown, setDepartmentDropdown] = useState(null);
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   // const [defaultDepartmentDropdown, setDefaultDepartmentDropdown] = useState();
 
   const options = [
@@ -398,11 +398,12 @@ function EditUserComponent({ match }) {
       return;
     }
     var selectTicketTypeShow = form.getAll('ticket_show_type_id[]');
-    let is_default = form.getAll('is_default[]').map(value => value === "" ? "0" : value);
+    let is_default = form
+      .getAll('is_default[]')
+      .map((value) => (value === '' ? '0' : value));
 
     form.delete('is_default[]');
-   is_default.forEach(value => form.append('is_default[]', value));
-
+    is_default.forEach((value) => form.append('is_default[]', value));
 
     if (selectTicketTypeShow === '') {
       setInputState({
@@ -448,10 +449,12 @@ function EditUserComponent({ match }) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
 
-  const customerRolesData = [{
-    label: "User",
-    value: 0
-  }]
+  const customerRolesData = [
+    {
+      label: 'User',
+      value: 0
+    }
+  ];
 
   const customerSort =
     roleDropdown &&
@@ -488,7 +491,7 @@ function EditUserComponent({ match }) {
   };
 
   const loadData = useCallback(async () => {
-    setLoading(true)
+    setLoading(true);
     await new StateService().getState().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
@@ -571,9 +574,10 @@ function EditUserComponent({ match }) {
         if (res.status === 200) {
           if (res.data.status === 1) {
             const temp = res.data.data.data;
-            setSelctRole( roleDropdown && roleDropdown.filter((d) => d.value === temp?.role_id)
+            setSelctRole(
+              roleDropdown &&
+                roleDropdown.filter((d) => d.value === temp?.role_id)
             );
-
 
             setAccountFor(temp.account_for);
             setIsReadOnly();
@@ -646,7 +650,7 @@ function EditUserComponent({ match }) {
       }
       setCustomerData(tempData);
     });
-    setLoading(false)
+    setLoading(false);
   }, [mappingData, roleDropdown, userId]);
   const handleDependentChange = (e, type) => {
     if (type === 'COUNTRY') {
@@ -874,7 +878,7 @@ function EditUserComponent({ match }) {
       <PageHeader headerTitle="Edit User" />
 
       <form
-      autoComplete="off"
+        autoComplete="off"
         onSubmit={handleForm}
         ref={userForm}
         encType="multipart/form-data"
@@ -1121,7 +1125,7 @@ function EditUserComponent({ match }) {
                             id="user_name"
                             name="user_name"
                             placeholder="Username"
-                            maxLength={30}
+                            maxLength={50}
                             onKeyPress={(e) => {
                               Validation.CharactersNumbersOnly(e);
                             }}
@@ -1302,7 +1306,7 @@ function EditUserComponent({ match }) {
                           <InputGroup className="">
                             <input
                               typeof="password"
-                               autoComplete="new-password"
+                              autoComplete="new-password"
                               className="form-control"
                               id="password"
                               name="password"
@@ -1585,9 +1589,9 @@ function EditUserComponent({ match }) {
                             className="form-control form-control-sm"
                             id="address"
                             name="address"
-                            placeholder="Enter maximum 250 character"
+                            placeholder="Enter maximum 1000 character"
                             rows="4"
-                            maxLength={250}
+                            maxLength={1000}
                             onKeyPress={(e) => {
                               Validation.addressFieldOnly(e);
                             }}
