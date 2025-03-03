@@ -1250,6 +1250,7 @@ function EditUserComponent({ match }) {
                                 id="whats_app_contact_no"
                                 name="whats_app_contact_no"
                                 placeholder="Whats App Contact Number"
+                                defaultValue={data.whats_app_contact_no}
                                 // defaultValue={
                                 //   // isReadOnly === false
                                 //   //   ? data.contact_no

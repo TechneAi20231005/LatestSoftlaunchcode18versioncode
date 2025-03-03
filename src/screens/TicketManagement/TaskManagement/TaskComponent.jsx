@@ -39,6 +39,7 @@ import SprintService from '../../../services/TicketService/SprintService';
 import DataTable from 'react-data-table-component';
 import CardLoadingSkeleton from '../../../components/custom/loader/CardLoadingSkeleton';
 import ManageTaskSkeleton from '../../../components/custom/loader/ManageTaskSkeleton';
+import { _rewampAttachmentUrl } from '../../../settings/constants';
 
 export default function TaskComponent() {
   const [notify, setNotify] = useState(null);
@@ -207,7 +208,7 @@ export default function TaskComponent() {
                       Basket_Name: tasks.basket_name,
                       taskOwnerNames: taskOwnerNames,
 
-                      task_type: d.parent_name
+                      task_type: d.task_type_name,
                     });
                   });
                 });
@@ -1173,8 +1174,9 @@ export default function TaskComponent() {
                                 {attachment.name}
                                 <div className="d-flex justify-content-center p-0 mt-1">
                                   <a
+
                                     // href="/"
-                                    // href={`${_attachmentUrl}/${attachment.path}`}
+                                    href={`${_rewampAttachmentUrl}/${attachment.path}`}
                                     target="_blank"
                                     className="btn btn-primary btn-sm p-1"
                                   >
