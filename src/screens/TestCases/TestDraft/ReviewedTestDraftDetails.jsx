@@ -78,12 +78,6 @@ function ReviewedTestDraftDetails(props) {
 
   const { allReviewDraftTestListData, isLoading, filterReviewedDraftTestList } =
     useSelector((state) => state?.downloadFormat);
-  // const [paginationData, setPaginationData] = useReducer(
-  //   (prevState, nextState) => {
-  //     return { ...prevState, ...nextState };
-  //   },
-  //   { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
-  // );
 
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const [errorMessage, setErrorMessage] = useState('');
@@ -289,17 +283,14 @@ function ReviewedTestDraftDetails(props) {
             sort: sortOrder
           };
 
-    // const updatedFilters = [...filters, newFilter];
     const getLatestConditions = (data) => {
       const latestConditions = {};
 
-      // Traverse the list to keep the most recent condition for each column
       data.forEach((condition) => {
         const column = condition.column;
         latestConditions[column] = condition;
       });
 
-      // Convert the dictionary back to a list
       const latestConditionsList = Object.values(latestConditions);
 
       return latestConditionsList;
@@ -377,17 +368,14 @@ function ReviewedTestDraftDetails(props) {
       sort: sortOrder
     };
 
-    // const updatedFilters = [...filters, newFilter];
     const getLatestConditions = (data) => {
       const latestConditions = {};
 
-      // Traverse the list to keep the most recent condition for each column
       data.forEach((condition) => {
         const column = condition.column;
         latestConditions[column] = condition;
       });
 
-      // Convert the dictionary back to a list
       const latestConditionsList = Object.values(latestConditions);
 
       return latestConditionsList;
@@ -411,7 +399,6 @@ function ReviewedTestDraftDetails(props) {
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
       localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
-      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
     } catch (error) {}
   };
 
@@ -453,7 +440,9 @@ function ReviewedTestDraftDetails(props) {
             <OverlayTrigger overlay={<Tooltip>{row.test_plan_id} </Tooltip>}>
               <div>
                 <Link
-                  to={`/${_base + '/ReviewedTestDraftComponent/' + row?.id}`}
+                  to={`/${
+                    _base + '/ReviewedTestDraftComponent/' + row?.id
+                  }?testPlanId=${row?.test_plan_id}`}
                   className="link_underline_primary"
                 >
                   {row.test_plan_id}
@@ -861,17 +850,14 @@ function ReviewedTestDraftDetails(props) {
               sort: sortOrder
             };
 
-      // const updatedFilters = [...filters, newFilter];
       const getLatestConditions = (data) => {
         const latestConditions = {};
 
-        // Traverse the list to keep the most recent condition for each column
         data.forEach((condition) => {
           const column = condition.column;
           latestConditions[column] = condition;
         });
 
-        // Convert the dictionary back to a list
         const latestConditionsList = Object.values(latestConditions);
 
         return latestConditionsList;
@@ -898,7 +884,6 @@ function ReviewedTestDraftDetails(props) {
         localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
         localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
       } catch (error) {}
-      // handleApplyFilter(sortOrder);
     }
   }, [sortOrder]);
 
@@ -923,17 +908,14 @@ function ReviewedTestDraftDetails(props) {
             sort: sortOrder
           };
 
-    // const updatedFilters = [...filters, newFilter];
     const getLatestConditions = (data) => {
       const latestConditions = {};
 
-      // Traverse the list to keep the most recent condition for each column
       data.forEach((condition) => {
         const column = condition.column;
         latestConditions[column] = condition;
       });
 
-      // Convert the dictionary back to a list
       const latestConditionsList = Object.values(latestConditions);
 
       return latestConditionsList;

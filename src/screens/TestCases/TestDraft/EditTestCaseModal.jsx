@@ -181,13 +181,7 @@ function EditTestCaseModal({
     if (getSubModuleList?.length <= 0) {
       dispatch(getSubModuleMasterThunk());
     }
-    // dispatch(
-    //   getByTestPlanIDListThunk({
-    //     id: id,
-    //     limit: paginationData.rowPerPage,
-    //     page: paginationData.currentPage
-    //   })
-    // );
+
     dispatch(getFunctionMasterListThunk());
     dispatch(getTestingGroupMasterListThunk());
     dispatch(getTestingTypeMasterListThunk());
@@ -337,11 +331,7 @@ function EditTestCaseModal({
               </Row>
 
               <div className="d-flex justify-content-end gap-2">
-                <button
-                  // disabled={disable}
-                  className="btn btn-dark px-4"
-                  type="submit"
-                >
+                <button className="btn btn-dark px-4" type="submit">
                   Update
                 </button>
                 <button

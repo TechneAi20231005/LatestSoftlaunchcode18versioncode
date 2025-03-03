@@ -112,12 +112,10 @@ const CustomFilterModal = ({
       window.removeEventListener('resize', handleResize);
     };
   }, []);
-
   const handleShow = (value) => {
-    setSelectedValue(value);
     setShowModal(true);
+    setSelectedValue(value);
   };
-  const handleCloseModal = () => setShowModal(false);
   const handleKeyDown = (event) => {
     if (event.key === 'Enter') {
       // Call the API with the searchTerm
@@ -387,6 +385,156 @@ const CustomFilterModal = ({
         </Modal>
       </div>
     </>
+
+    // <>
+    //   <Modal
+    //     show={!showModal} // Show modal when showModal is false
+    //     onHide={handleClose}
+    //     className="custom-modal"
+    //     aria-labelledby="contained-modal-title-vcenter"
+    //     centered
+    //     backdrop="true"
+    //   >
+    //     <Modal.Header closeButton>
+    //       <Modal.Title className="fs-5 text-primary">{columnName}</Modal.Title>
+    //     </Modal.Header>
+    //     <Modal.Body>
+    //       <div className="p-2">
+    //         <p className="Sort mb-2">Sort</p>
+    //         <span className="d-flex flex-column">
+    //           <p
+    //             className="fs-6 mb-2 cp"
+    //             onClick={() => handleAscendingClick('ASC')}
+    //           >
+    //             <i className="bi bi-arrow-up-short fs-6"></i>Ascending
+    //           </p>
+    //           <p
+    //             className="fs-6 mb-2 cp"
+    //             onClick={() => handleDescendingClick('DESC')}
+    //           >
+    //             <i className="bi bi-arrow-down-short fs-6"></i>Descending
+    //           </p>
+    //         </span>
+
+    //         <hr className="my-1" />
+    //         <p className="fs-6 mb-0 ms-4 text-filters-container">
+    //           {type === 'number' ? 'Number Filters' : 'Text Filters'}
+    //           <i
+    //             ref={target}
+    //             className="icofont-rounded-right icon-spacing"
+    //             onClick={() => setShowTooltip(!showTooltip)}
+    //           ></i>
+    //         </p>
+
+    //         <hr className="my-1" />
+    //         <div className="position-relative">
+    //           <input
+    //             ref={searchRef}
+    //             type="text"
+    //             placeholder="Search Here"
+    //             className="form-control pe-5"
+    //             value={searchTerm}
+    //             onChange={handleSearchChange}
+    //             onKeyDown={handleKeyDown}
+    //           />
+    //           <i className="icofont-ui-search position-absolute top-50 end-0 translate-middle-y me-3 cp"></i>
+    //         </div>
+    //       </div>
+    //       <div className="p-1">
+    //         <input
+    //           type="checkbox"
+    //           id="filterAll"
+    //           name="filterAll"
+    //           checked={selectedFilters?.length === filterData?.length}
+    //           onChange={handleSelectAll}
+    //         />
+    //         <label className="mt-3 mx-3 fs-6" htmlFor="filterAll">
+    //           All
+    //         </label>
+    //       </div>
+    //       {filterData?.map((value) => (
+    //         <div key={value?.id} className="filter-item p-1">
+    //           <input
+    //             type="checkbox"
+    //             id={`filter${value?.id}`}
+    //             name={`filter${value?.id}`}
+    //             className="check-box-size"
+    //             checked={selectedFilters.includes(value?.name)}
+    //             onChange={(e) =>
+    //               handleCheckboxChange(e, value?.name, value?.id)
+    //             }
+    //           />
+    //           <label className="mx-3 fs-6 mb-0" htmlFor={`filter${value?.id}`}>
+    //             {value?.name}
+    //           </label>
+    //         </div>
+    //       ))}
+    //     </Modal.Body>
+    //     <Modal.Footer className="modal-footer custom-modal-footer">
+    //       <Button
+    //         className="btn btn-sm btn-primary mt-3"
+    //         onClick={handleApplyButton}
+    //       >
+    //         Apply
+    //       </Button>
+    //       <Button variant="warning" onClick={handleClose}>
+    //         Cancel
+    //       </Button>
+    //       <Button
+    //         onClick={handleClearAllFilter}
+    //         className="btn btn-sm btn-outline-primary mt-3"
+    //         title="Clear All"
+    //       >
+    //         Clear All
+    //       </Button>
+    //     </Modal.Footer>
+    //   </Modal>
+
+    //   {/* Tooltip Overlay */}
+    //   <Overlay target={target.current} show={showTooltip} placement="right">
+    //     {({
+    //       placement: _placement,
+    //       arrowProps: _arrowProps,
+    //       show: _show,
+    //       popper: _popper,
+    //       hasDoneInitialMeasure: _hasDoneInitialMeasure,
+    //       ...props
+    //     }) => (
+    //       <div className="custom-toolkit" {...props}>
+    //         <div className="my-3">
+    //           {type === 'number' ? (
+    //             <>
+    //               {numberFilterData.map((option) => (
+    //                 <p
+    //                   key={option.value}
+    //                   className="mb-2 cp"
+    //                   onClick={() => {
+    //                     handleShow(option.value);
+    //                   }}
+    //                 >
+    //                   {option.label}
+    //                 </p>
+    //               ))}
+    //             </>
+    //           ) : (
+    //             <>
+    //               {textFilterData.map((option) => (
+    //                 <p
+    //                   key={option.value}
+    //                   className="mb-2 cp"
+    //                   onClick={() => handleShow(option.value)}
+    //                 >
+    //                   {option.label}
+    //                 </p>
+    //               ))}
+    //             </>
+    //           )}
+    //           <hr className="my-1 cp" />
+    //         </div>
+    //       </div>
+    //     )}
+    //   </Overlay>
+    // </>
   );
 };
 

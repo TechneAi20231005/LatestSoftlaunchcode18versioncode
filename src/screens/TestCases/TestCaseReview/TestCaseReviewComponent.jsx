@@ -310,17 +310,14 @@ function TestCaseReviewComponent() {
             sort: sortOrder
           };
 
-    // const updatedFilters = [...filters, newFilter];
     const getLatestConditions = (data) => {
       const latestConditions = {};
 
-      // Traverse the list to keep the most recent condition for each column
       data.forEach((condition) => {
         const column = condition.column;
         latestConditions[column] = condition;
       });
 
-      // Convert the dictionary back to a list
       const latestConditionsList = Object.values(latestConditions);
 
       return latestConditionsList;
@@ -386,17 +383,14 @@ function TestCaseReviewComponent() {
       sort: sortOrder
     };
 
-    // const updatedFilters = [...filters, newFilter];
     const getLatestConditions = (data) => {
       const latestConditions = {};
 
-      // Traverse the list to keep the most recent condition for each column
       data.forEach((condition) => {
         const column = condition.column;
         latestConditions[column] = condition;
       });
 
-      // Convert the dictionary back to a list
       const latestConditionsList = Object.values(latestConditions);
 
       return latestConditionsList;
@@ -421,7 +415,6 @@ function TestCaseReviewComponent() {
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
       localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
-      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
     } catch (error) {}
   };
 
@@ -461,7 +454,9 @@ function TestCaseReviewComponent() {
             <OverlayTrigger overlay={<Tooltip>{row.test_plan_id} </Tooltip>}>
               <div>
                 <Link
-                  to={`/${_base + '/TestCaseReviewDetails/' + row?.id}`}
+                  to={`/${
+                    _base + '/TestCaseReviewDetails/' + row?.id
+                  }?testPlanId=${row?.test_plan_id}`}
                   className="link_underline_primary"
                 >
                   {row.test_plan_id}
@@ -931,17 +926,14 @@ function TestCaseReviewComponent() {
               sort: sortOrder
             };
 
-      // const updatedFilters = [...filters, newFilter];
       const getLatestConditions = (data) => {
         const latestConditions = {};
 
-        // Traverse the list to keep the most recent condition for each column
         data.forEach((condition) => {
           const column = condition.column;
           latestConditions[column] = condition;
         });
 
-        // Convert the dictionary back to a list
         const latestConditionsList = Object.values(latestConditions);
 
         return latestConditionsList;

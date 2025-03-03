@@ -58,7 +58,10 @@ export function markedAllReadRegularizationNotification({ id, type }) {
       'Content-Type': 'application/json'
     }
   };
-  return axios.get(_markedReadRegularizationNotification + id, config);
+  return axios.get(
+    _markedReadRegularizationNotification + id + '/' + type,
+    config
+  );
 }
 
 export function markedReadNotification(id) {

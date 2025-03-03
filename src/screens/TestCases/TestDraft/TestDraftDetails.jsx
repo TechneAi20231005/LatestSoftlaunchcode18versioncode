@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer, useState } from 'react';
+import React, { useEffect, useReducer, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Container, Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
@@ -75,7 +75,6 @@ function localReducer(state, action) {
     case 'SET_SELECTED_ROWS':
       return {
         ...state,
-        // selectedRows: action.payload
         selectedRows:
           typeof action?.payload === 'function'
             ? action?.payload(state.selectedRows)
@@ -131,6 +130,7 @@ function TestDraftDetails(props) {
     selectedRows,
     betweenValues
   } = state;
+  const [showModal, setShowModal] = useState(false);
 
   const [addEditTestCasesModal, setAddEditTestCasesModal] = useState({
     type: '',
@@ -144,12 +144,6 @@ function TestDraftDetails(props) {
     modalHeader: ''
   });
 
-  // const [paginationData, setPaginationData] = useReducer(
-  //   (prevState, nextState) => {
-  //     return { ...prevState, ...nextState };
-  //   },
-  //   { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
-  // );
   const [disable, setDisable] = useState(false);
   const [reviewerError, setReviewerError] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -205,6 +199,7 @@ function TestDraftDetails(props) {
   };
 
   const handleFilterClick = (event, column, name, type, id) => {
+    setShowModal(false);
     if (clearAllFilter === true) {
       localDispatch({ type: 'SET_FILTERS', payload: [] });
     }
@@ -307,8 +302,7 @@ function TestDraftDetails(props) {
       });
     }
   };
-  {
-  }
+
   const handleSelectAll = (event) => {
     if (event.target.checked) {
       localDispatch({
@@ -375,10 +369,6 @@ function TestDraftDetails(props) {
 
   const handleClearAllButton = () => {
     localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
-    // localDispatch({
-    //   type: 'SET_SORT_ORDER',
-    //   payload: null
-    // });
   };
   const [selectedValue, setSelectedValue] = useState('');
 
@@ -407,13 +397,11 @@ function TestDraftDetails(props) {
     const getLatestConditions = (data) => {
       const latestConditions = {};
 
-      // Traverse the list to keep the most recent condition for each column
       data.forEach((condition) => {
         const column = condition.column;
         latestConditions[column] = condition;
       });
 
-      // Convert the dictionary back to a list
       const latestConditionsList = Object.values(latestConditions);
 
       return latestConditionsList;
@@ -422,7 +410,6 @@ function TestDraftDetails(props) {
 
     const updatedFilters = getLatestConditions(updatedFiltersData);
 
-    // const updatedFilters = [...filters, newFilter];
     localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
     props.setIsFilterApplied((prev) => ({
       ...prev,
@@ -441,8 +428,7 @@ function TestDraftDetails(props) {
       localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
     } catch (error) {}
   };
-  {
-  }
+
   const handleApplyButton = async () => {
     props?.setClearData(false);
     const newFilter = {
@@ -453,18 +439,14 @@ function TestDraftDetails(props) {
       sort: sortOrder
     };
 
-    // const updatedFilters = [...filters, newFilter];
-
     const getLatestConditions = (data) => {
       const latestConditions = {};
 
-      // Traverse the list to keep the most recent condition for each column
       data.forEach((condition) => {
         const column = condition.column;
         latestConditions[column] = condition;
       });
 
-      // Convert the dictionary back to a list
       const latestConditionsList = Object.values(latestConditions);
 
       return latestConditionsList;
@@ -490,7 +472,6 @@ function TestDraftDetails(props) {
 
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
       localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
-      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
     } catch (error) {}
   };
 
@@ -550,34 +531,6 @@ function TestDraftDetails(props) {
       sortable: false,
       width: '150px'
     },
-    // {
-    //   name: (
-    //     <div onClick={handleSelectAllNamesChange}>
-    //       <input
-    //         type="checkbox"
-    //         checked={selectAllNames}
-    //         onChange={handleSelectAllNamesChange}
-    //       />
-    //     </div>
-    //   ),
-    //   selector: 'selectAll',
-    //   width: '5rem',
-    //   center: true,
-    //   cell: (row) => {
-    //     if (!row || row.tc_id === null || row.status === null) return null;
-    //     return
-    //     (
-
-    //     <div>
-    //       <input
-    //         type="checkbox"
-    //         checked={selectedRows.includes(row.tc_id)}
-    //         onChange={() => handleCheckboxChange(row)}
-    //         disabled={row.status !== 'DRAFT'}
-    //       />
-    //     </div>
-    //   )}
-    // },
 
     {
       name: (
@@ -654,53 +607,6 @@ function TestDraftDetails(props) {
         </div>
       )
     },
-
-    // {
-    //   name: (
-    //     <div>
-    //       <span>Submodule</span>
-    //       <i
-    //         onClick={(e, row) =>
-    //           handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
-    //         }
-    //         className={`icofont-filter ms-2 ${
-    //           props?.isFilterApplied['sub_module_name']
-    //             ? 'text-warning'
-    //             : 'text-dark'
-    //         }`}
-    //       />
-    //     </div>
-    //   ),
-    //   selector: (row) => row.sub_module_name,
-    //   width: '10rem',
-    //   sortable: false,
-    //   cell: (row) => (
-    //     <div
-    //       className="btn-group"
-    //       role="group"
-    //       aria-label="Basic outlined example"
-    //     >
-    //       {row.sub_module_name && (
-    //         <OverlayTrigger overlay={<Tooltip>{row.sub_module_name} </Tooltip>}>
-    //           <div>
-    //             <span className="ms-1">
-    //               {' '}
-    //               {row.sub_module_name && row.sub_module_name.length < 20
-    //                 ? row.sub_module_name
-    //                 : row.sub_module_name.substring(0, 50) + '....'}
-    //             </span>
-    //           </div>
-    //         </OverlayTrigger>
-    //       )}
-    //     </div>
-    //   ),
-    //   header: (column, sortDirection) => (
-    //     <div className="d-flex align-items-center">
-    //       <span>{column.name}</span>
-    //       <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-    //     </div>
-    //   )
-    // },
 
     {
       name: (
@@ -1539,7 +1445,6 @@ function TestDraftDetails(props) {
 
   useEffect(() => {
     if (sortOrder && sortOrder != null) {
-      // handleApplyFilter(sortOrder);
       const newFilter =
         filterType === 'is not between' ||
         filterType === 'is between' ||
@@ -1563,13 +1468,11 @@ function TestDraftDetails(props) {
       const getLatestConditions = (data) => {
         const latestConditions = {};
 
-        // Traverse the list to keep the most recent condition for each column
         data.forEach((condition) => {
           const column = condition.column;
           latestConditions[column] = condition;
         });
 
-        // Convert the dictionary back to a list
         const latestConditionsList = Object.values(latestConditions);
 
         return latestConditionsList;
@@ -1578,7 +1481,6 @@ function TestDraftDetails(props) {
 
       const updatedFilters = getLatestConditions(updatedFiltersData);
 
-      // const updatedFilters = [...filters, newFilter];
       localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
       props.setIsFilterApplied((prev) => ({
         ...prev,
@@ -1636,23 +1538,28 @@ function TestDraftDetails(props) {
 
   useEffect(() => {
     if (filterValues && searchTerm?.length === 0) {
-      localDispatch({ type: 'SET_FILTER_VALUES', payload: filterValues });
+      const appliedFilters = filterValues.filter((item) =>
+        state.selectedFilters.includes(item.name)
+      );
+
+      localDispatch({
+        type: 'SET_FILTER_VALUES',
+        payload: filterValues
+      });
 
       localDispatch({
         type: 'SET_SELECTED_FILTER',
-        payload: filterValues.map((item) => item.name)
+        payload: appliedFilters.map((item) => item.name)
       });
 
       localDispatch({
         type: 'SET_SELECTED_FILTER_IDS',
-        payload: filterValues.map((item) => item.id)
+        payload: appliedFilters.map((item) => item.id)
       });
     }
-  }, [filterValues, localDispatch]);
+  }, [filterValues, searchTerm, localDispatch]);
 
   useEffect(() => {
-    // Whenever searchTerm or filterData changes, update the selected filter IDs
-    // if (searchTerm?.length === 0) {
     const filteredData = filteredResults?.filter((item) =>
       item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
     );
@@ -1660,6 +1567,28 @@ function TestDraftDetails(props) {
     localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: filteredIds });
     // }
   }, [searchTerm, localDispatch]);
+
+  const modalRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        !showModal &&
+        modalRef.current &&
+        !modalRef.current.contains(event.target)
+      ) {
+        closeModal();
+      }
+    };
+
+    if (modalIsOpen && showModal) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [modalIsOpen, showModal]);
 
   return (
     <>
@@ -1681,7 +1610,6 @@ function TestDraftDetails(props) {
             props?.setPaginationData({ rowPerPage: newPageSize });
             props?.setPaginationData({ currentPage: 1 });
           }}
-          // paginationRowsPerPageOptions={[10, 15, 20, 25, 30]}
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
@@ -1794,36 +1722,42 @@ function TestDraftDetails(props) {
         />
       )}
 
-      {modalIsOpen && (
-        <CustomFilterModal
-          show={modalIsOpen}
-          handleClose={closeModal}
-          handleApply={handleApplyFilter}
-          handleClearAllButton={handleClearAllButton}
-          position={modalPosition}
-          filterColumn={filterColumn}
-          filterColumnId={filterColumnId}
-          handleCheckboxChange={handleFilterCheckboxChange}
-          selectedFilters={selectedFilters}
-          handleSelectAll={handleSelectAll}
-          filterData={filteredResults}
-          searchTerm={searchTerm}
-          handleSearchChange={handleSearchChange}
-          filterType={filterType}
-          paginationData={props?.paginationData}
-          handleAscendingClick={handleAscendingClick}
-          handleDescendingClick={handleDescendingClick}
-          handleBetweenValueChange={handleBetweenValueChange}
-          columnName={columnName}
-          type={type}
-          handleApplyButton={handleApplyButton}
-          localDispatch={localDispatch}
-          handleClearAllFilter={handleClearAllFilter}
-          errorMessage={errorMessage}
-          setSelectedValue={setSelectedValue}
-          selectedValue={selectedValue}
-        />
-      )}
+      <>
+        {modalIsOpen && (
+          <div ref={modalRef}>
+            <CustomFilterModal
+              show={modalIsOpen}
+              handleClose={closeModal}
+              handleApply={handleApplyFilter}
+              handleClearAllButton={handleClearAllButton}
+              position={modalPosition}
+              filterColumn={filterColumn}
+              filterColumnId={filterColumnId}
+              handleCheckboxChange={handleFilterCheckboxChange}
+              selectedFilters={selectedFilters}
+              handleSelectAll={handleSelectAll}
+              filterData={filteredResults}
+              searchTerm={searchTerm}
+              handleSearchChange={handleSearchChange}
+              filterType={filterType}
+              paginationData={props?.paginationData}
+              handleAscendingClick={handleAscendingClick}
+              handleDescendingClick={handleDescendingClick}
+              handleBetweenValueChange={handleBetweenValueChange}
+              columnName={columnName}
+              type={type}
+              handleApplyButton={handleApplyButton}
+              localDispatch={localDispatch}
+              handleClearAllFilter={handleClearAllFilter}
+              errorMessage={errorMessage}
+              setSelectedValue={setSelectedValue}
+              selectedValue={selectedValue}
+              setShowModal={setShowModal}
+              showModal={showModal}
+            />
+          </div>
+        )}
+      </>
     </>
   );
 }

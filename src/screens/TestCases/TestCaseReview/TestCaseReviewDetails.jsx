@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useState } from 'react';
 import { Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useLocation, useParams } from 'react-router-dom';
 import PageHeader from '../../../components/Common/PageHeader';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
 import { _base } from '../../../settings/constants';
@@ -74,7 +74,6 @@ function localReducer(state, action) {
     case 'SET_SELECTED_ROWS':
       return {
         ...state,
-        // selectedRows: action.payload
         selectedRows:
           typeof action?.payload === 'function'
             ? action?.payload(state.selectedRows)
@@ -89,6 +88,11 @@ function localReducer(state, action) {
 
 function TestCaseReviewDetails() {
   const { id } = useParams();
+  const location = useLocation();
+
+  const queryParams = new URLSearchParams(location.search);
+  const testPlanId = queryParams.get('testPlanId');
+
   const planID = id;
   const dispatch = useDispatch();
 
@@ -177,20 +181,6 @@ function TestCaseReviewDetails() {
   };
 
   const totalRows = rowData?.length;
-  // const handleCheckboxChange = (row) => {
-  //   localDispatch({
-  //     type: 'SET_SELECTED_ROWS',
-  //     payload: (prevSelectedRows) => {
-  //       if (prevSelectedRows.includes(row.tc_id)) {
-  //         return prevSelectedRows.filter(
-  //           (selectedRow) => selectedRow !== row.tc_id
-  //         );
-  //       } else {
-  //         return [...prevSelectedRows, row.tc_id];
-  //       }
-  //     }
-  //   });
-  // };
 
   const handleCheckboxChange = (row) => {
     localDispatch({
@@ -206,7 +196,6 @@ function TestCaseReviewDetails() {
           updatedSelectedRows = [...prevSelectedRows, row.tc_id];
         }
 
-        // Check if all rows are selected
         if (updatedSelectedRows?.length === totalRows) {
           localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: true });
         } else {
@@ -221,24 +210,16 @@ function TestCaseReviewDetails() {
   const [commentIdError, setCommentIdError] = useState('');
   const [changedRows, setChangedRows] = useState({});
   const handleSubmit = async (status) => {
-    // const updatedRows = exportTestCaseReviewData
-    //   ?.filter((row) => selectedRows?.includes(row.tc_id))
-    //   ?.map((row) => ({
-    //     tc_id: row.tc_id,
-
-    //     comment_id: comments[row.id] || row.comment_id || commonComment,
-    //     other_remark: remarks[row.id] || row.other_remark
-    //   }));
     if (status === 'RESEND' && selectAllNames !== true) {
       alert(
         'Please select all test cases to send for modification, partial selection is not allowed.'
       );
-      return false; // Exit the function or prevent further execution
+      return false;
     }
 
     if (status === 'APPROVED' && selectedRows?.length <= 0) {
       alert('Please select the test cases that you want to approve.');
-      return false; // Exit the function or prevent further execution
+      return false;
     }
     const getUpdatedRows = () => {
       let updatedRows = [];
@@ -316,7 +297,6 @@ function TestCaseReviewDetails() {
           planID,
           formData,
           onSuccessHandler: () => {
-            // setCommonComment('');
             setCommonRemark('');
             dispatch(
               getByTestPlanIDListThunk({
@@ -348,9 +328,6 @@ function TestCaseReviewDetails() {
   };
 
   useEffect(() => {
-    // if (testPlanIdData) {
-    //   setRowData(testPlanIdData);
-    // }
     setRowData(testPlanIdData);
   }, [testPlanIdData]);
 
@@ -942,13 +919,6 @@ function TestCaseReviewDetails() {
           <select
             className="form-select"
             aria-label="Default select example"
-            // value={row.comment_id || ''}
-            // value={comments[row.id] || row.comment_id || ''}
-            // value={
-            //   selectedRows && selectedRows.includes(row.tc_id)
-            //     ? comments[row.id] || commonComment
-            //     : commonComment
-            // }
             value={comments[row.id] || row.comment_id || commonComment || ''}
             id="comment_id"
             name="comment_id"
@@ -986,12 +956,7 @@ function TestCaseReviewDetails() {
           placeholder="Enter Remark"
           aria-label="default input example"
           maxLength={100}
-          defaultValue={
-            // selectedRows && selectedRows.includes(row.tc_id)
-            //   ? remarks[row.other_remark] || row.other_remark
-            //   : commonRemark
-            row.other_remark || remarks[row.id] || commonRemark
-          }
+          defaultValue={row.other_remark || remarks[row.id] || commonRemark}
           onChange={(e) =>
             handleRowChange(row.id, 'other_remark', e.target.value)
           }
@@ -1245,68 +1210,6 @@ function TestCaseReviewDetails() {
     updated_by: 'updated_by'
   };
 
-  // const transformDataForExport = (rowData, data, comments, commonComment) => {
-  //   if (comments) {
-  //     const obj = comments;
-  //     let objKey;
-  //     let val;
-  //     for (const key in obj) {
-  //       if (obj.hasOwnProperty(key)) {
-  //         objKey = key;
-  //         val = obj[key];
-  //       }
-  //     }
-
-  //     const filteredCommnet = getFilterReviewCommentMasterList.filter(
-  //       (comment) => comment.value == val
-  //     );
-
-  //     for (let i = 0; i < rowData?.length; i++) {
-  //       if (rowData[i].id == objKey) {
-  //         rowData[i].reviewer_comment = filteredCommnet[0].label;
-  //       }
-  //     }
-  //   }
-  //   // const updateReviewerComment = rowData.map((rowData) => {
-  //   //   if (rowData.id === key) {
-  //   //     rowData.reviewer_comment = filteredCommnet[0].value;
-  //   //   }
-  //   // });
-
-  //   return rowData?.map((rowData) => ({
-  //     module_name: rowData.module_name,
-  //     sub_module_name: rowData.sub_module_name,
-  //     function_name: rowData.function_name,
-  //     field: rowData.field,
-  //     type_name: rowData.type_name,
-  //     group_name: rowData.group_name,
-  //     tc_id: rowData.tc_id,
-  //     test_description: rowData.test_description,
-  //     steps: rowData.steps,
-  //     severity: rowData.severity,
-  //     expected_result: rowData.expected_result,
-  //     rev: rowData.rev,
-  //     // reviewer_comment:
-  //     //   comments[row.id] || row.comment_id || commonComment || '',
-  //     reviewer_comment: rowData.reviewer_comment,
-  //     remark: remarks[rowData.id] || rowData.other_remark || commonRemark,
-
-  //     project_name: rowData.project_name,
-  //     created_at: rowData.created_at,
-  //     created_by: rowData.created_by,
-  //     updated_at: rowData.updated_at,
-  //     updated_by: rowData.updated_by
-  //   }));
-  // };
-
-  // Example usage
-  // const transformedData = transformDataForExport(
-  //   rowData,
-  //   exportTestCaseReviewData,
-  //   comments,
-  //   commonComment
-  // );
-
   const exportColumns = [
     { title: 'Module', field: 'module_name' },
     { title: 'Submodule', field: 'sub_module_name' },
@@ -1520,17 +1423,14 @@ function TestCaseReviewDetails() {
             sort: sortOrder
           };
 
-    // const updatedFilters = [...filters, newFilter];
     const getLatestConditions = (data) => {
       const latestConditions = {};
 
-      // Traverse the list to keep the most recent condition for each column
       data.forEach((condition) => {
         const column = condition.column;
         latestConditions[column] = condition;
       });
 
-      // Convert the dictionary back to a list
       const latestConditionsList = Object.values(latestConditions);
 
       return latestConditionsList;
@@ -1595,17 +1495,14 @@ function TestCaseReviewDetails() {
       sort: sortOrder
     };
 
-    // const updatedFilters = [...filters, newFilter];
     const getLatestConditions = (data) => {
       const latestConditions = {};
 
-      // Traverse the list to keep the most recent condition for each column
       data.forEach((condition) => {
         const column = condition.column;
         latestConditions[column] = condition;
       });
 
-      // Convert the dictionary back to a list
       const latestConditionsList = Object.values(latestConditions);
 
       return latestConditionsList;
@@ -1630,7 +1527,6 @@ function TestCaseReviewDetails() {
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
       localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
-      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
     } catch (error) {}
   };
 
@@ -1655,7 +1551,6 @@ function TestCaseReviewDetails() {
 
   useEffect(() => {
     if (sortOrder && sortOrder != null) {
-      // handleApplyFilter(sortOrder);
       const newFilter =
         filterType === 'is not between' ||
         filterType === 'is between' ||
@@ -1676,17 +1571,14 @@ function TestCaseReviewDetails() {
               sort: sortOrder
             };
 
-      // const updatedFilters = [...filters, newFilter];
       const getLatestConditions = (data) => {
         const latestConditions = {};
 
-        // Traverse the list to keep the most recent condition for each column
         data.forEach((condition) => {
           const column = condition.column;
           latestConditions[column] = condition;
         });
 
-        // Convert the dictionary back to a list
         const latestConditionsList = Object.values(latestConditions);
 
         return latestConditionsList;
@@ -1761,7 +1653,7 @@ function TestCaseReviewDetails() {
   return (
     <div className="container-xxl">
       <PageHeader
-        headerTitle="Test Case Review"
+        headerTitle={`Test Case Review : ${testPlanId}`}
         renderRight={() => {
           return (
             <div className="col-md-6 d-flex justify-content-end">
