@@ -591,10 +591,12 @@ function CreateUserComponent({ match }) {
   });
   // console.log(orderedCustomerRoleData, "orderedCustomerRoleData")
 
-  const customerRolesData = [{
-    label: "User",
-    value: 0
-  }]
+  const customerRolesData = [
+    {
+      label: 'User',
+      value: 0
+    }
+  ];
 
   const accountForChange = async (account_for) => {
     setSelctRole(null);
@@ -608,7 +610,6 @@ function CreateUserComponent({ match }) {
       }
       return false;
     });
-
 
     const response = filteredAsAccountFor
       .filter((d) => d.is_active === 1)
@@ -759,7 +760,12 @@ function CreateUserComponent({ match }) {
     <div className="container-xxl">
       <PageHeader headerTitle="Create User" />
 
-      <form autoComplete="off" onSubmit={handleForm} ref={userForm} method="post">
+      <form
+        autoComplete="off"
+        onSubmit={handleForm}
+        ref={userForm}
+        method="post"
+      >
         <Tabs
           defaultActiveKey={tabKey}
           activeKey={tabKey}
@@ -985,12 +991,12 @@ function CreateUserComponent({ match }) {
                           className="form-control"
                           id="user_name"
                           name="user_name"
-                          autoComplete='off'
+                          autoComplete="off"
                           placeholder="Username"
                           onKeyPress={(e) => {
                             Validation.CharactersNumbersOnly(e);
                           }}
-                          maxLength={30}
+                          maxLength={50}
                           onChange={(event) => {
                             if (event.target.value === '') {
                               setInputState({
@@ -1241,7 +1247,6 @@ function CreateUserComponent({ match }) {
                               ? orderedSelfRoleData
                               : orderedCustomerRoleData
                           }
-
                           isClearable={true}
                           onChange={(e) => {
                             handleSelectRole(e);
@@ -1370,9 +1375,9 @@ function CreateUserComponent({ match }) {
                           className="form-control form-control-sm"
                           id="address"
                           name="address"
-                          placeholder="Enter maximum 250 character"
+                          placeholder="Enter maximum 1000 character"
                           rows="4"
-                          maxLength={250}
+                          maxLength={1000}
                           // onKeyPress={(e) => {
                           //   Validation.addressFieldOnly(e);}}
                         />
