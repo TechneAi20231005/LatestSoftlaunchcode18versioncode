@@ -49,7 +49,7 @@ const sidebarSlice = createSlice({
         state.isLoading.getMenuList = false;
         state.sidebarMenuList = action?.payload?.data?.menu;
 
-        state.successMsg.getMenuList = action.payload.msg;
+        state.successMsg.getMenuList = action?.payload?.msg;
       })
       .addCase(getMenuListThunk.rejected, (state, action) => {
         state.isLoading.getMenuList = false;

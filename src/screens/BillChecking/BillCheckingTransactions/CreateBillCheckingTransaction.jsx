@@ -244,7 +244,7 @@ export default function CreateBillCheckingTransaction({ match }) {
 
   let startFinancialYear;
 
-  if (month >= 3) {
+  if (month > 3) {
     // April or later
 
     startFinancialYear = new Date(year, 3, 1); // April 1 of the current year
