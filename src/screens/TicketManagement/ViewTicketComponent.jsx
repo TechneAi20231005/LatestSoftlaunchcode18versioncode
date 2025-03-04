@@ -342,7 +342,7 @@ export default function ViewTicketComponent({ match }) {
                                     }
                                     readOnly
                                     disabled
-                                    checked={d.value === data.inputDefaultValue}
+                                    checked={d.value == data.inputDefaultValue}
                                     name={data.inputName}
                                     className="mx-2"
                                     type="radio"
@@ -367,12 +367,12 @@ export default function ViewTicketComponent({ match }) {
                                         : ''
                                     }
                                     required={
-                                      data.inputMandatory === true
+                                      data.inputMandatory == true
                                         ? true
                                         : false
                                     }
                                     disabled
-                                    checked={d.value === data.inputDefaultValue}
+                                    checked={d.value == data.inputDefaultValue}
                                     name={data.inputName}
                                     className="mx-2"
                                     type="checkbox"
