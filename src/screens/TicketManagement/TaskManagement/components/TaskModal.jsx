@@ -48,9 +48,7 @@ export default function TaskModal(props) {
   const [taskData, setTaskData] = useState([]);
   const [attachment, setAttachment] = useState([]);
 
-
   const [attachments, setAttachments] = useState(props.data.attachment || []);
-
 
   // const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
@@ -443,7 +441,7 @@ export default function TaskModal(props) {
 
     await new TaskTicketTypeService()?.getChildrenData('Task')?.then((res) => {
       if (res?.status === 200) {
-        let filterData = res?.data?.data.data
+        let filterData = res?.data?.data.data;
         // res?.data?.data.data?.filter(
         //   (item) => item?.is_active === 1
         // );
@@ -586,17 +584,16 @@ export default function TaskModal(props) {
   // const handleDeleteAttachment = (e, id) => {};
   const handleDeleteAttachment = (e, id) => {
     deleteAttachment(id).then((res) => {
-      if(res.status === 200){
+      if (res.status === 200) {
         setAttachments((prevAttachments) =>
           prevAttachments.filter((attach) => attach.id !== id)
         );
         toast.success(res?.data?.message);
-      }else{
+      } else {
         toast.error(res?.data?.message);
       }
       // props?.handleShowTaskModal();
       // loadAttachment();
-
     });
   };
 
@@ -2150,12 +2147,16 @@ export default function TaskModal(props) {
                         value={userData.filter(
                           (option) =>
                             Array.isArray(values.assign_to_user)
-                              ? values.assign_to_user.includes(String(option.value)) // Check for array
+                              ? values.assign_to_user.includes(
+                                  String(option.value)
+                                ) // Check for array
                               : values.assign_to_user === option.value // Check for scalar
                         )}
                         onChange={(selectedOptions) => {
                           const selectedValues = Array.isArray(selectedOptions)
-                            ? selectedOptions.map((option) => String(option.value)) // Map selected options to their values
+                            ? selectedOptions.map((option) =>
+                                String(option.value)
+                              ) // Map selected options to their values
                             : [];
                           setFieldValue('assign_to_user', selectedValues); // Update the form value
                         }}
@@ -2365,59 +2366,57 @@ export default function TaskModal(props) {
                   style={{ overflowX: 'auto' }}
                 >
                   {attachments &&
-                    attachments?.map(
-                      (attach, index) => {
-                        return (
+                    attachments?.map((attach, index) => {
+                      return (
+                        <div
+                          className="justify-content-start"
+                          style={{
+                            marginRight: '5px',
+                            padding: '0px',
+                            width: '200px'
+                          }}
+                        >
                           <div
-                            className="justify-content-start"
-                            style={{
-                              marginRight: '5px',
-                              padding: '0px',
-                              width: '200px'
-                            }}
+                            className="card"
+                            style={{ backgroundColor: '#EBF5FB' }}
                           >
-                            <div
-                              className="card"
-                              style={{ backgroundColor: '#EBF5FB' }}
-                            >
-                              <div className="card-header">
-                                <p style={{ fontSize: '12px' }}>
-                                  <b>{attach.name}</b>
-                                </p>
-                                <div className="d-flex justify-content-end p-0">
-                                  <a
-                                    href={`${_rewampAttachmentUrl + attach.path}`}
-                                    target="_blank"
-                                    className="btn btn-warning btn-sm p-0 px-1"
-                                    rel="noreferrer"
-                                  >
-                                    <i
-                                      className="icofont-download"
-                                      style={{
-                                        fontSize: '12px',
-                                        height: '15px'
-                                      }}
-                                    ></i>
-                                  </a>
-                                  <button
-                                    className="btn btn-danger text-white btn-sm p-0 px-1"
-                                    type="button"
-                                    onClick={(e) => {
-                                      handleDeleteAttachment(e, attach.id);
+                            <div className="card-header">
+                              <p style={{ fontSize: '12px' }}>
+                                <b>{attach.name}</b>
+                              </p>
+                              <div className="d-flex justify-content-end p-0">
+                                <a
+                                  href={`${_rewampAttachmentUrl + attach.path}`}
+                                  target="_blank"
+                                  className="btn btn-warning btn-sm p-0 px-1"
+                                  rel="noreferrer"
+                                >
+                                  <i
+                                    className="icofont-download"
+                                    style={{
+                                      fontSize: '12px',
+                                      height: '15px'
                                     }}
-                                  >
-                                    <i
-                                      className="icofont-ui-delete"
-                                      style={{ fontSize: '12px' }}
-                                    ></i>
-                                  </button>
-                                </div>
+                                  ></i>
+                                </a>
+                                <button
+                                  className="btn btn-danger text-white btn-sm p-0 px-1"
+                                  type="button"
+                                  onClick={(e) => {
+                                    handleDeleteAttachment(e, attach.id);
+                                  }}
+                                >
+                                  <i
+                                    className="icofont-ui-delete"
+                                    style={{ fontSize: '12px' }}
+                                  ></i>
+                                </button>
                               </div>
                             </div>
                           </div>
-                        );
-                      }
-                    )}
+                        </div>
+                      );
+                    })}
                 </div>
               </Modal.Body>
               <Modal.Footer>
