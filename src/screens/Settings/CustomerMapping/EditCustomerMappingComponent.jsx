@@ -177,6 +177,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                 user_id: d.user_id,
                 ratio: d.ratio
               }))
+              || []
             );
             setUserData(
               tempData?.user_policy2
