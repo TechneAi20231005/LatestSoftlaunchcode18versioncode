@@ -32,6 +32,10 @@ export default function ResetPassword() {
 
   const submitHandler = (e) => {
     e.preventDefault();
+    console.log(userData, 'userData');
+    if (userData.password !== userData.confirm_password) {
+      return;
+    }
     postData(userData).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {

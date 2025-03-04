@@ -530,7 +530,7 @@ export default function EditTicketComponent({ match }) {
             setEmailData(getUserData.filter((d) => d.is_active === 1));
             emilData?.filter((d) => d.id === data?.created_by);
 
-            setUserDropdown(select);
+            // setUserDropdown(select);
 
             setUserdrp(select);
           }
@@ -974,7 +974,7 @@ export default function EditTicketComponent({ match }) {
   }, []);
 
   useEffect(() => {
-    if (user && data !== null) {
+    if (data && data?.assign_to_user_id && user?.length > 0) {
       const userData = user.map((d) => ({
         value: d.id,
         label: d.first_name + ' ' + d.last_name
@@ -989,7 +989,7 @@ export default function EditTicketComponent({ match }) {
           }))
       );
     }
-  }, [user]);
+  }, [user, data]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_update === 0) {
@@ -1397,7 +1397,7 @@ export default function EditTicketComponent({ match }) {
                             Assign to User : <Astrick color="red" size="13px" />
                           </b>
                         </label>
-                        {userDropdown && userDrp && (
+                        {userDropdown?.length > 0 && (
                           <Select
                             ref={userSelectRef}
                             id="assign_to_user_id"

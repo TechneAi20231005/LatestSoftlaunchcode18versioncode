@@ -138,7 +138,7 @@ function GeneralSettings() {
       name: 'Action',
       selector: (row) => {},
       sortable: false,
-      width: '5%',
+      width: '8%',
       cell: (row) => (
         <div className="btn-group" role="group">
           <button
@@ -452,7 +452,7 @@ function GeneralSettings() {
                         type="text"
                         name="setting_name"
                         className="form-control form-control-sm"
-                        // readOnly={!!modal.modalData}
+                        readOnly={!!modal.modalData}
                       />
                       <ErrorMessage
                         name="setting_name"
