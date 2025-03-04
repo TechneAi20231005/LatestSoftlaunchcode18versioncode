@@ -8,6 +8,7 @@ import Alert from '../Common/Alert';
 
 import { postLoginUser } from './AuthSices/loginAction';
 import { InputGroup } from 'react-bootstrap';
+import { errorHandler } from '../../utils';
 
 export default function SignIn() {
   const dispatch = useDispatch();
@@ -19,23 +20,26 @@ export default function SignIn() {
 
   const notify = useSelector((loginSlice) => loginSlice.login.notify);
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
     if (isLoading) {
       return;
     }
     setIsLoading(true);
     const data = new FormData(e.target);
-    dispatch(postLoginUser(data)).then((success) => {
-      if (success.payload?.status === 1) {
-        const token = localStorage.getItem('jwt_token');
-        const tokenExpirationTime = decodeToken(token).exp * 1000;
-        localStorage.setItem('jwt_token_expiration', tokenExpirationTime);
-        window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
-      } else {
-        setIsLoading(false);
-      }
-    });
+
+    await dispatch(postLoginUser(data))
+      .then((success) => {
+        if (success.payload?.status === 1) {
+          const token = localStorage.getItem('jwt_token');
+          const tokenExpirationTime = decodeToken(token).exp * 1000;
+          localStorage.setItem('jwt_token_expiration', tokenExpirationTime);
+          window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+        } else {
+          setIsLoading(false);
+        }
+      })
+      .catch((error) => errorHandler(error));
   };
 
   const decodeToken = (token) => {
@@ -91,8 +95,6 @@ export default function SignIn() {
       className="col-lg-6 d-flex justify-content-center align-items-center border-0 rounded-lg"
       style={{ marginTop: '0px', height: '200%' }}
     >
-      {notify && <Alert alertData={notify} />}
-
       <div
         className="w-100 p-3 p-md-5 card border-0 bg-dark text-light"
         style={{ maxWidth: '32rem' }}
@@ -151,6 +153,7 @@ export default function SignIn() {
 
           <div className="col-12 text-center mt-4">
             <button
+              disabled={isLoading}
               type="submit"
               className="btn btn-lg btn-block btn-light lift text-uppercase"
               atl="signin"

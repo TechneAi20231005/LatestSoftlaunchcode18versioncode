@@ -6,30 +6,34 @@ import * as Validation from '../Utilities/Validation';
 import Alert from '../Common/Alert';
 import { _base } from '../../settings/constants';
 import UserService from '../../services/MastersService/UserService';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../utils';
 
 export default function ForgetPassword() {
   const history = useNavigate();
-  const [notify, setNotify] = useState(null);
   const [emailCount, setEmailCount] = useState(null);
   const [count] = useState(null);
   const [userData, setUserData] = useState({ email: null });
-
+  const [submitting, setSubmitting] = useState(false);
   const loadData = useCallback(async () => {
     var temp = [];
     var count = 0;
-    await new UserService().getUser().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          temp = res.data.data;
-          for (var i = 0; i < temp.length; i++) {
-            if (temp[i].email_id === userData.email) {
-              count = count + 1;
+    await new UserService()
+      .getUser()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            temp = res.data.data;
+            for (var i = 0; i < temp.length; i++) {
+              if (temp[i].email_id === userData.email) {
+                count = count + 1;
+              }
             }
+            setEmailCount(count);
           }
-          setEmailCount(count);
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   }, [userData.email]);
 
   const changeHandler = (e) => {
@@ -41,9 +45,12 @@ export default function ForgetPassword() {
     setEmailCount(count);
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    postData(userData).then((res) => {
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      const res = await postData(userData);
       if (res.status === 200) {
         if (res.data.status === 1) {
           history(
@@ -53,14 +60,16 @@ export default function ForgetPassword() {
             { state: { email: userData.email } }
           );
         } else {
-          setNotify();
-          setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message);
         }
       } else {
-        setNotify();
-        setNotify({ type: 'danger', message: 'Request Error' });
+        toast.error('Request Error');
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -69,7 +78,6 @@ export default function ForgetPassword() {
 
   return (
     <div className="col-lg-6 d-flex justify-content-center align-items-center border-0 rounded-lg auth-h100">
-      {notify && <Alert alertData={notify} />}
       <div
         className="w-100 p-3 p-md-5 card border-0 bg-dark text-light"
         style={{ maxWidth: '32rem' }}
@@ -115,6 +123,7 @@ export default function ForgetPassword() {
           </div>
           <div className="col-12 text-center mt-4">
             <button
+              disabled={submitting}
               type="submit"
               onClick={(e) => {
                 if (

@@ -6,12 +6,13 @@ import * as Validation from '../Utilities/Validation';
 import Alert from '../Common/Alert';
 import { _base } from '../../settings/constants';
 import InputGroup from 'react-bootstrap/InputGroup';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../utils';
 
 export default function ResetPassword() {
   const location = useLocation();
 
   const history = useNavigate();
-  const [notify, setNotify] = useState(null);
   const [userData, setUserData] = useState({ email: null });
   const [passwordShown, setPasswordShown] = useState(false);
   const togglePasswordVisiblity = () => {
@@ -19,6 +20,7 @@ export default function ResetPassword() {
   };
 
   const [passwordShown1, setPasswordShown1] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const togglePasswordVisiblity1 = () => {
     setPasswordShown1(passwordShown1 ? false : true);
   };
@@ -30,25 +32,29 @@ export default function ResetPassword() {
     });
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     e.preventDefault();
-    console.log(userData, 'userData');
+    if (submitting) return;
+    setSubmitting(true);
     if (userData.password !== userData.confirm_password) {
       return;
     }
-    postData(userData).then((res) => {
+    try {
+      const res = await postData(userData);
       if (res.status === 200) {
         if (res.data.status === 1) {
           history(`/${_base}/`);
         } else {
-          setNotify();
-          setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message);
         }
       } else {
-        setNotify();
-        setNotify({ type: 'danger', message: 'Request Error' });
+        toast.error('Request Error');
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
   useEffect(() => {
     if (location && location.state) {
@@ -61,7 +67,6 @@ export default function ResetPassword() {
   }, [location]);
   return (
     <div className="col-lg-6 d-flex justify-content-center align-items-center border-0 rounded-lg auth-h100">
-      {notify && <Alert alertData={notify} />}
       <div
         className="w-100 p-3 p-md-5 card border-0 bg-dark text-light"
         style={{ maxWidth: '32rem' }}

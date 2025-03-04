@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { postLoginUser } from './loginAction';
+import { toast } from 'react-toastify';
 
 const initialState = {
   status: '',
@@ -23,9 +24,9 @@ export const loginSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.status = 'succeded';
-        state.notify = { type: 'success', message: payload };
+        toast.success(payload);
       } else {
-        state.notify = { type: 'danger', message: payload };
+        toast.error(payload);
       }
     });
     builder.addCase(postLoginUser.rejected, (state) => {
