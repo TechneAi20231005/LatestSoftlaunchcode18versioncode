@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Alert from '../Common/Alert';
 
 import { postLoginUser } from './AuthSices/loginAction';
+import { InputGroup } from 'react-bootstrap';
 
 export default function SignIn() {
   const dispatch = useDispatch();
@@ -14,6 +15,7 @@ export default function SignIn() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [shouldNavigate, setShouldNavigate] = useState(false);
+  const [show, setShow] = useState(false);
 
   const notify = useSelector((loginSlice) => loginSlice.login.notify);
 
@@ -128,14 +130,22 @@ export default function SignIn() {
                   </Link>
                 </span>
               </div>
-              <input
-                type="password"
-                className="form-control form-control-lg"
-                placeholder="***************"
-                id="password"
-                name="password"
-                required
-              />
+              <InputGroup>
+                <input
+                  type={show ? 'text' : 'password'}
+                  className="form-control form-control-lg"
+                  placeholder="***************"
+                  id="password"
+                  name="password"
+                  required
+                />
+                <InputGroup.Text>
+                  <i
+                    className="bi bi-eye-fill"
+                    onClick={() => setShow(!show)}
+                  ></i>
+                </InputGroup.Text>
+              </InputGroup>
             </div>
           </div>
 

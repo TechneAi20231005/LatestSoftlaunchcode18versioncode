@@ -108,7 +108,7 @@ export default class SubModuleService {
     };
 
     return axios.get(
-      `${_getSubModuleDocumentById}/${projectId}/${moduleId}/${type}`,
+      `${_getSubModuleDocumentById}/${projectId}/${moduleId}/${type}/${subModuleId}`,
       // /${subModuleId}`,
       config
     );

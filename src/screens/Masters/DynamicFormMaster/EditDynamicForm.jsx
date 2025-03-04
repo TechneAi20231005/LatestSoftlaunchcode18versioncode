@@ -51,7 +51,6 @@ function EditDynamicForm() {
       DynamicFormDropDownSlice.dynamicFormDropDown.sortDropDown
   );
 
-  const [notify, setNotify] = useState(null);
   const mainJson = {
     inputWidth: null,
     inputType: null,
@@ -70,7 +69,6 @@ function EditDynamicForm() {
   };
 
   const [rows, setRows] = useState([mainJson]);
-
   const [formShow, setFormShow] = useState(false);
 
   // const [inputDataSource, setInputDataSource] = useState();
@@ -80,7 +78,6 @@ function EditDynamicForm() {
   // const [selectedValueErr, setSelectedValueErr] = useState('');
 
   const [selectedValue, setSelectedValue] = useState();
-
   // const [userData, setUserData] = useState(null);
   // const [radioSelect, setRadioSelect] = useState();
 
@@ -230,8 +227,10 @@ function EditDynamicForm() {
         rows[idx].inputAddOn.inputDateTime = e.target.value;
       } else if (e.target.name === 'inputFormat') {
         rows[idx].inputFormat = e.target.value;
+      } else if (e.target.name === 'inputOnChangeSource') {
+        rows[idx].inputAddOn.inputDataSource = e.target.value;
+        // rows[idx].inputAddOn.inputOnChangeSource = e.target.value;
       }
-
       if (e.target.name === 'inputDataSource' && e.target.value === 'user') {
         const tempUserData = [];
         const test1 = e.target.value;
@@ -263,7 +262,8 @@ function EditDynamicForm() {
               rows[idx].inputAddOn.inputDataSourceData = aa;
               // setInputDataSource(aa);
             }
-          });
+          })
+          .catch((error) => errorHandler(error));
       } else if (
         e.target.name === 'inputDataSource' &&
         e.target.value === 'city'
@@ -310,17 +310,20 @@ function EditDynamicForm() {
         e.target.name === 'inputDataSource' &&
         e.target.value === 'query'
       ) {
-        await new QueryTypeService().getQueryType().then((res) => {
-          if (res.status === 200) {
-            const data = res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({ value: d.id, label: d.query_type_name }));
+        await new QueryTypeService()
+          .getQueryType()
+          .then((res) => {
+            if (res.status === 200) {
+              const data = res.data.data
+                .filter((d) => d.is_active === 1)
+                .map((d) => ({ value: d.id, label: d.query_type_name }));
 
-            rows[idx].inputAddOn.inputDataSourceData = data;
+              rows[idx].inputAddOn.inputDataSourceData = data;
 
-            // setInputDataSource(data);
-          }
-        });
+              // setInputDataSource(data);
+            }
+          })
+          .catch((error) => errorHandler(error));
       }
 
       // else if (e.target.name == "inputRadio") {
@@ -347,7 +350,8 @@ function EditDynamicForm() {
                 // setInputDataSource(temp);
               }
             }
-          });
+          })
+          .catch((error) => errorHandler(error));
       }
     }
   };
@@ -422,6 +426,7 @@ function EditDynamicForm() {
       setDisplay('');
     }
 
+    // return;
     const data = {
       template_name: e.target.template_name.value,
       is_active: e.target.is_active.value,
@@ -442,7 +447,7 @@ function EditDynamicForm() {
 
           setTimeout(() => {
             navigate(`/${_base}/DynamicForm`, {
-              state: { alert: { type: 'success', message: res.data.message } }
+              state: { alert: toast.success(res.data.message) }
             });
           }, 1000);
         } else {
@@ -808,7 +813,7 @@ function EditDynamicForm() {
                                   )}
                                 </td>
 
-                                <td  className='text-center'>
+                                <td className="text-center">
                                   <input
                                     type="checkbox"
                                     name="inputMandatory"
@@ -818,7 +823,7 @@ function EditDynamicForm() {
                                   />
                                 </td>
 
-                                <td className='text-center'>
+                                <td className="text-center">
                                   {(item.inputType === 'select-master' ||
                                     item.inputType === 'checkbox' ||
                                     item.inputType === 'select') && (
@@ -1237,7 +1242,11 @@ function EditDynamicForm() {
                     )}
 
                     <div className="pull-right">
-                      <button type="submit" className="btn btn-sm btn-primary">
+                      <button
+                        disabled={submitting}
+                        type="submit"
+                        className="btn btn-sm btn-primary"
+                      >
                         Update
                       </button>
                       <Link
