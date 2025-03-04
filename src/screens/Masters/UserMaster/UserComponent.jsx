@@ -62,14 +62,16 @@ function UserComponent() {
       width: '80px',
       cell: (row) => (
         <div className="btn-group" role="group">
-          {
-            checkRole && checkRole[0]?.can_update === 1 ?    <Link
-            to={`/${_base}/User/Edit/` + row.id}
-            className="btn btn-outline-secondary"
-          >
-            <i className="icofont-edit text-success"></i>
-          </Link> : ""
-          }
+          {checkRole && checkRole[0]?.can_update === 1 ? (
+            <Link
+              to={`/${_base}/User/Edit/` + row.id}
+              className="btn btn-outline-secondary"
+            >
+              <i className="icofont-edit text-success"></i>
+            </Link>
+          ) : (
+            ''
+          )}
         </div>
       )
     },
@@ -160,10 +162,9 @@ function UserComponent() {
     const exportTempData = [];
 
     await new UserService().getExportTicket().then((res) => {
-
       if (res.status === 200) {
-        const temp = res.data.data?.data;
-
+        const temp = res?.data?.data?.data;
+        console.log('export data', temp);
         for (const i in temp) {
           exportTempData.push({
             SrNo: exportTempData.length + 1,
@@ -188,16 +189,19 @@ function UserComponent() {
             Country: temp[i].country,
             State: temp[i].state,
             City: temp[i].city,
-            Department: temp[i].department?.map((d) => d.department_name)?.join(','),
-            Ticket_Show_Type:
-              temp[i].ticket_show_type === 'MY_TICKETS'
-                ? 'My Tickets'
-                : 'Department Tickets',
+            Department: temp[i].department
+              ?.map((d) => d.department_name)
+              ?.join(','),
+            Ticket_Show_Type: temp[i].department
+              ?.map((d) => d.ticket_show_type)
+              ?.join(','),
 
-            Ticket_Passing_Authority: temp[i].ticket_passing_authority
-              ? 'Yes'
-              : 'No',
-            Make_Default: temp[i].is_default ? 'yes' : 'No',
+            Ticket_Passing_Authority: temp[i].department
+              ?.map((d) => (d.ticket_passing_authority ? 'Yes' : 'No'))
+              ?.join(','),
+            Make_Default: temp[i].department
+              ?.map((d) => (d.is_default ? 'Yes' : 'No'))
+              ?.join(','),
             Status: temp[i].is_active ? 'Active' : 'Deactive',
             created_at: temp[i].created_at,
             created_by: temp[i].created_by,
