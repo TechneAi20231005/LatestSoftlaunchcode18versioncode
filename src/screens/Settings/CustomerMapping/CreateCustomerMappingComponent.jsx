@@ -180,7 +180,6 @@ export default function CreateCustomerMappingComponent() {
       const res = await new DynamicFormService().getDynamicFormForSelect();
       if (res?.status === 200) {
         if (res?.data?.status === 1) {
-
           const data = res?.data?.data.data.filter((d) => d.is_active === 1);
           const select = res?.data?.data.data
             .filter((d) => d.is_active === 1)
@@ -228,18 +227,21 @@ export default function CreateCustomerMappingComponent() {
   };
 
   const getDepartment = async () => {
-    await new DepartmentService().getDepartment().then((res) => {
-      if (res?.status === 200) {
-        if (res?.data?.status === 1) {
-          var defaultValue = [{ value: 0, label: 'Select Department' }];
-          var dropwdown = res?.data?.data?.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({ value: d.id, label: d.department }));
-          defaultValue = [...defaultValue, ...dropwdown];
-          setDepartmentDropdown(defaultValue);
+    await new DepartmentService()
+      .getDepartment()
+      .then((res) => {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            var defaultValue = [{ value: 0, label: 'Select Department' }];
+            var dropwdown = res?.data?.data?.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({ value: d.id, label: d.department }));
+            defaultValue = [...defaultValue, ...dropwdown];
+            setDepartmentDropdown(defaultValue);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   };
 
   const getUser = useCallback(async () => {
@@ -265,7 +267,6 @@ export default function CreateCustomerMappingComponent() {
   }, [dispatch]);
 
   const handleAutoChanges = async (e, type, nameField) => {
-
     // if (!e || Object.entries(e).length === 0) return;
     if (type === 'Select2' && nameField === 'customer_type_id') {
       setSelectedCustomer(e?.length);
@@ -373,13 +374,8 @@ export default function CreateCustomerMappingComponent() {
   const useridDetail = useRef();
 
   const handleForm = async (values, { setSubmitting }) => {
-   console.log(values,"values")
-  //  return false
-
-    // return
     setSubmitting(true);
-    // return false
-    if (userDropDownFilterData && values?.approach !== "RW") {
+    if (userDropDownFilterData && values?.approach !== 'RW') {
       if (values?.user_id?.length === 0) {
         return;
       }
@@ -415,7 +411,7 @@ export default function CreateCustomerMappingComponent() {
     // if (!values.department_id) {
     //   delete values.department_id;
     // }
-    if(values?.user_id?.length === 0){
+    if (values?.user_id?.length === 0) {
       delete values.user_id;
     }
 
@@ -446,6 +442,7 @@ export default function CreateCustomerMappingComponent() {
           }
         } else {
           toast.error(res?.data?.message);
+          setSubmitting(false);
         }
       } catch (error) {
         errorHandler(error);
@@ -518,7 +515,6 @@ export default function CreateCustomerMappingComponent() {
                       <div className="col-sm-4">
                         <Field name="customer_type_id">
                           {({ field, form }) => (
-
                             <Select
                               id="customer_type_id"
                               name="customer_type_id"
@@ -533,7 +529,8 @@ export default function CreateCustomerMappingComponent() {
                                       (option) => option.value
                                     )
                                   : [];
-                               approach === "SELF" &&   form.setFieldValue("approach", null);
+                                approach === 'SELF' &&
+                                  form.setFieldValue('approach', null);
 
                                 form.setFieldValue('customer_type_id', values);
 
@@ -576,7 +573,6 @@ export default function CreateCustomerMappingComponent() {
                               onChange={(selectedOption) => {
                                 console.log(selectedOption, 'selectedOption');
                                 const values = selectedOption
-
                                   ? selectedOption.value
                                   : [];
                                 form.setFieldValue('query_type_id', values);
@@ -844,51 +840,56 @@ export default function CreateCustomerMappingComponent() {
                               { value: 'AU', label: 'Assign to user' }
                             ];
                             return (
-                            <Select
-                              id="approach"
-                              name="approach"
-                              placeholder="Select Approach"
-                              // isClearable
-                              options={[
-                                { value: '', label: 'Select Approach' },
-                                {
-                                  value: 'RR',
-                                  label: 'Departmentwise Round Robin'
-                                },
-                                {
-                                  value: 'HLT',
-                                  label: 'User Having Less Ticket'
-                                },
-                                { value: 'SP', label: 'Single Person' },
-                                { value: 'RW', label: 'Ratio Wise' },
-                                ...(selectedCustomer === 0
-                                  ? [{ value: 'SELF', label: 'Self' }]
-                                  : []),
-                                { value: 'AU', label: 'Assign to user' }
-                              ]}
-                              value={values?.approach ? options.filter((item) => item.value === values.approach) : null}
-                              // value={
-                              //   field.value
-                              //     ? { value: field.value, label: field.value }
-                              //     : { value: '', label: 'Select approach' }
-                              // }
-                              onChange={(option) => {
-                                setFieldValue('department_id', "");
-                                setApproach(option?.value || "");
-                                form.setFieldValue(
-                                  'approach',
-                                  option ? option?.value : ''
-                                );
-                                handleAutoChanges(
-                                  option,
-                                  'Select2',
-                                  'approach'
-                                );
-                              }}
-                            />
-                            )
-                            }
-                          }
+                              <Select
+                                id="approach"
+                                name="approach"
+                                placeholder="Select Approach"
+                                // isClearable
+                                options={[
+                                  { value: '', label: 'Select Approach' },
+                                  {
+                                    value: 'RR',
+                                    label: 'Departmentwise Round Robin'
+                                  },
+                                  {
+                                    value: 'HLT',
+                                    label: 'User Having Less Ticket'
+                                  },
+                                  { value: 'SP', label: 'Single Person' },
+                                  { value: 'RW', label: 'Ratio Wise' },
+                                  ...(selectedCustomer === 0
+                                    ? [{ value: 'SELF', label: 'Self' }]
+                                    : []),
+                                  { value: 'AU', label: 'Assign to user' }
+                                ]}
+                                value={
+                                  values?.approach
+                                    ? options.filter(
+                                        (item) => item.value === values.approach
+                                      )
+                                    : null
+                                }
+                                // value={
+                                //   field.value
+                                //     ? { value: field.value, label: field.value }
+                                //     : { value: '', label: 'Select approach' }
+                                // }
+                                onChange={(option) => {
+                                  setFieldValue('department_id', '');
+                                  setApproach(option?.value || '');
+                                  form.setFieldValue(
+                                    'approach',
+                                    option ? option?.value : ''
+                                  );
+                                  handleAutoChanges(
+                                    option,
+                                    'Select2',
+                                    'approach'
+                                  );
+                                }}
+                              />
+                            );
+                          }}
                         </Field>
                         <ErrorMessage
                           name="approach"
@@ -1063,7 +1064,7 @@ export default function CreateCustomerMappingComponent() {
 
                     <div className="mt-3 d-flex justify-content-end">
                       <button
-                        // disabled={isSubmitting}
+                        disabled={isSubmitting}
                         type="submit"
                         className="btn btn-primary btn-sm"
                       >
