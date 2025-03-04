@@ -10,9 +10,6 @@ export const postLoginUser = createAsyncThunk(
       if (res?.status === 200 && res?.data?.status === 1) {
         const data = res.data.data;
         const token = res?.data?.token;
-
-        console.log(data, 'data');
-
         if (data.departments && Array.isArray(data.departments)) {
           data.departments = data.departments
             .map((dept) => dept.department)
