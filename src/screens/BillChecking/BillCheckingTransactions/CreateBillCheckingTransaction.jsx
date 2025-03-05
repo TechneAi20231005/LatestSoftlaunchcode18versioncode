@@ -401,9 +401,9 @@ export default function CreateBillCheckingTransaction({ match }) {
     await new DepartmentService().getDepartment().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          setDepartment(res.data.data);
+          setDepartment(res.data.data?.data);
           setDepartmentDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.department }))
+            res.data.data?.data.map((d) => ({ value: d.id, label: d.department }))
           );
         }
       }
@@ -413,8 +413,8 @@ export default function CreateBillCheckingTransaction({ match }) {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const temp = res.data.data.filter((d) => d.is_active == 1);
-          setUser(res.data.data);
+          const temp = res.data.data?.data?.filter((d) => d.is_active == 1);
+          setUser(res.data.data?.data);
           setUserDropdown(
             temp.map((d) => ({ value: d.id, label: d.user_name }))
           );

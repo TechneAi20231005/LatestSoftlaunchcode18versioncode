@@ -46,7 +46,7 @@ const ViewVendorDetails = ({ match }) => {
     await new VendorMasterService().getActiveCountry().then((res) => {
       if (res.status === 200) {
         setCountryDropdown(
-          res.data.data.map((d) => ({
+          res.data.data?.data?.map((d) => ({
             value: d.id,
             label: d.country.charAt(0).toUpperCase() + d.country.slice(1)
           }))
@@ -57,7 +57,7 @@ const ViewVendorDetails = ({ match }) => {
     await new VendorMasterService().getActiveState().then((res) => {
       if (res.status === 200) {
         setStateDropdown(
-          res.data.data.map((d) => ({
+          res.data.data?.data?.map((d) => ({
             value: d.id,
             label: d.state
           }))
@@ -68,7 +68,7 @@ const ViewVendorDetails = ({ match }) => {
     await new VendorMasterService().getActiveCity().then((res) => {
       if (res.status === 200) {
         setCityDropdown(
-          res.data.data.map((d) => ({
+          res.data.data?.data.map((d) => ({
             value: d.id,
             label: d.city
           }))

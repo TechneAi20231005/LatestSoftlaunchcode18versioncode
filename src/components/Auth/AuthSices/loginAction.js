@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { postData } from '../../../services/loginService';
+import { errorHandler } from '../../../utils';
 
 export const postLoginUser = createAsyncThunk(
   'postLoginUser',
@@ -33,6 +34,7 @@ export const postLoginUser = createAsyncThunk(
         return res.data.message;
       }
     } catch (error) {
+      errorHandler(error);
       throw error;
     }
   }
