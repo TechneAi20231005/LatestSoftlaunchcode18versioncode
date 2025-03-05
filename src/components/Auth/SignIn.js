@@ -20,7 +20,7 @@ export default function SignIn() {
 
   const notify = useSelector((loginSlice) => loginSlice.login.notify);
 
-  const submitHandler = async (e) => {
+  const submitHandler = (e) => {
     e.preventDefault();
     if (isLoading) {
       return;
@@ -28,7 +28,7 @@ export default function SignIn() {
     setIsLoading(true);
     const data = new FormData(e.target);
 
-    await dispatch(postLoginUser(data))
+    dispatch(postLoginUser(data))
       .then((success) => {
         if (success.payload?.status === 1) {
           const token = localStorage.getItem('jwt_token');

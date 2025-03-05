@@ -627,6 +627,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
         setLoading(false);
       }
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -728,7 +729,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                 }}
               >
                 {({
-                  isSubmitting,
                   setFieldValue,
                   values,
                   handleBlur,
@@ -1368,7 +1368,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
                       <div className="mt-3 d-flex justify-content-end">
                         <button
-                          disabled={isSubmitting}
+                          disabled={loading}
                           type="submit"
                           className="btn btn-primary btn-sm"
                         >
