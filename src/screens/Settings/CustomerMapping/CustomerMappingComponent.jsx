@@ -42,7 +42,6 @@ export default function CustomerMappingComponent() {
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 32)
   );
 
-
   // const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -191,6 +190,7 @@ export default function CustomerMappingComponent() {
     if (!checkRole.length) {
       dispatch(getRoles());
     }
+  }, [dispatch, checkRole.length, location]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
