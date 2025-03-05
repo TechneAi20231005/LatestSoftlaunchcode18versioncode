@@ -149,7 +149,7 @@ const ViewBillTypeComponent = ({ match }) => {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const a = res.data.data.filter((d) => d.is_active == 1);
+          const a = res.data.data?.data?.filter((d) => d.is_active == 1);
           setUserData(
             a.map((d) => ({
               value: d.id,
