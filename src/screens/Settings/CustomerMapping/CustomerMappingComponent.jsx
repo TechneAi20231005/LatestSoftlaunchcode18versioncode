@@ -42,8 +42,6 @@ export default function CustomerMappingComponent() {
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 32)
   );
 
-  const [notify, setNotify] = useState(null);
-
   // const [showLoaderModal, setShowLoaderModal] = useState(false);
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -192,9 +190,6 @@ export default function CustomerMappingComponent() {
     if (!checkRole.length) {
       dispatch(getRoles());
     }
-    if (location && location.state) {
-      setNotify(location.state.alert);
-    }
   }, [dispatch, checkRole.length, location]);
 
   useEffect(() => {
@@ -211,8 +206,6 @@ export default function CustomerMappingComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader
         headerTitle="Customer Mapping"
         renderRight={() => {
