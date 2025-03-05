@@ -129,9 +129,9 @@ export default function ViewBillTransaction({ match }, props) {
     await new DepartmentService().getDepartment().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          setDepartment(res.data.data);
+          setDepartment(res.data.data?.data);
           setDepartmentDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.department }))
+            res.data.data?.data?.map((d) => ({ value: d.id, label: d.department }))
           );
         }
       }
@@ -142,9 +142,9 @@ export default function ViewBillTransaction({ match }, props) {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          setUser(res.data.data);
+          setUser(res.data.data?.data);
           setUserDropdown(
-            res.data.data.map((d) => ({
+            res.data.data?.data?.map((d) => ({
               value: d.id,
               label: `${d.first_name} ${d.last_name}`,
             }))

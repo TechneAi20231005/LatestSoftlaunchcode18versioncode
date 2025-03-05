@@ -655,9 +655,9 @@ function VendorMaster({ match }) {
       .getActiveCountry()
       .then((res) => {
         if (res.status === 200) {
-          setCountry(res.data.data);
+          setCountry(res.data.data?.data);
           setCountryDropdown(
-            res.data.data
+            res.data.data?.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({
                 value: d.id,
@@ -681,9 +681,9 @@ function VendorMaster({ match }) {
 
     await new VendorMasterService().getActiveState().then((res) => {
       if (res.status === 200) {
-        setState(res.data.data);
+        setState(res.data.data?.data);
         setStateDropdown(
-          res.data.data.map((d) => ({
+          res.data.data?.data.map((d) => ({
             value: d.id,
             label: d.state
           }))
@@ -693,9 +693,9 @@ function VendorMaster({ match }) {
 
     await new VendorMasterService().getActiveCity().then((res) => {
       if (res.status === 200) {
-        setCity(res.data.data);
+        setCity(res.data.data?.data);
         setCityDropdown(
-          res.data.data
+          res.data.data?.data
             .filter((d) => d.is_active === 1)
             .map((i) => ({
               value: i.id,
