@@ -49,7 +49,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const { id } = useParams();
   const mappingId = id;
-  const [notify, setNotify] = useState();
 
   const [customerTypeDropdown, setCustomerTypeDropdown] = useState();
 
@@ -164,9 +163,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       .getCustomerMappingById(mappingId)
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status === 1) {
+          if (res?.data?.status === 1) {
             tempData = res.data.data;
-            console.log('tempData.query_type_id', tempData.query_type_id);
             setApproach(tempData.approach);
             // setSelectedCustomer(tempData?.customer_type_id?.length || 0)
             setSelectedCustomer(tempData?.customer_type_id?.length || 0);
@@ -175,8 +173,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
               tempData?.user_policy?.map((d) => ({
                 user_id: d.user_id,
                 ratio: d.ratio
-              }))
-              || []
+              })) || []
             );
             setUserData(
               tempData?.user_policy2
@@ -217,6 +214,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
             setConfirmationRequired(res?.data?.data?.confirmation_required);
 
             setstatusData(res?.data?.data?.is_active === 1 ? 1 : 0);
+          } else {
+            toast.error(res?.data?.message);
           }
         }
       })
@@ -229,12 +228,14 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       .getCustomerType()
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status === 1) {
+          if (res?.data?.status === 1) {
             const select = res.data.data.data
               .filter((d) => d.is_active)
               .map((d) => ({ value: d.id, label: d.type_name }));
 
             setCustomerTypeDropdown(select);
+          } else {
+            toast.error(res?.data?.message);
           }
         }
       })
@@ -244,8 +245,10 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       .getPriorityDropdown()
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status === 1) {
+          if (res?.data?.status === 1) {
           }
+        } else {
+          toast.error(res?.data?.message);
         }
       })
       .catch((error) => errorHandler(error));
@@ -254,7 +257,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       .getQueryType()
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status === 1) {
+          if (res?.data?.status === 1) {
             const data = res.data.data.data.filter((d) => d.is_active === 1);
 
             setQueryType(data);
@@ -263,6 +266,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                 .filter((d) => d.is_active === 1)
                 .map((d) => ({ value: d.id, label: d.query_type_name }))
             );
+          } else {
+            toast.error(res?.data?.message);
           }
         }
       })
@@ -273,13 +278,15 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       .getTemplate()
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status === 1) {
+          if (res?.data?.status === 1) {
             const select = res.data.data.data.map((d) => ({
               value: d.id,
               label: d.template_name
             }));
 
             setTemplateDropdown(select);
+          } else {
+            toast.error(res?.data?.message);
           }
         }
       })
@@ -302,7 +309,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       .getUserWithMultipleDepartment()
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status === 1) {
+          if (res?.data?.status === 1) {
             var placeholderOption = [{ value: ' ', label: 'Select User' }];
 
             const dropdown = res.data.data
@@ -319,6 +326,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
               tempData.approach === 'RW' ? dropdown : [...dropdown];
 
             setUserDropdown(finalDropdown);
+          } else {
+            toast.error(res?.data?.message);
           }
         }
       })
@@ -331,7 +340,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       .getDynamicForm()
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status === 1) {
+          if (res?.data?.status === 1) {
             const data = res.data.data.data.filter((d) => d.is_active === 1);
             const select = res.data.data.data.map((d) => ({
               value: d.id,
@@ -339,6 +348,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
             }));
             setDynamicForm(data);
             setDynamicFormDropdown(select);
+          } else {
+            toast.error(res?.data?.message);
           }
         }
       })
@@ -347,7 +358,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const handleQueryType = async (e) => {
     if (!e || Object.entries(e).length === 0) return;
-    setNotify(null);
     setDynamicForm(null);
     setDynamicFormDropdown(null);
     setSelectedDynamicForm(null);
@@ -367,10 +377,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       });
       setSelectedDynamicForm(dynamicFormDropdownTemp);
     } else {
-      setNotify({
-        type: 'warning',
-        message: 'No Form is mapped but still you can map new form'
-      });
+      toast.warning('No Form is mapped but still you can map new form');
     }
   };
 
@@ -379,13 +386,15 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       .getDepartment()
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status === 1) {
+          if (res?.data?.status === 1) {
             var defaultValue = [{ value: 0, label: 'Select Department' }];
             var dropwdown = res.data.data.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.department }));
             defaultValue = [...defaultValue, ...dropwdown];
             setDepartmentDropdown(defaultValue);
+          } else {
+            toast.error(res?.data?.message);
           }
         }
       })
@@ -595,19 +604,19 @@ export default function EditCustomerMappingComponentBackup({ match }) {
           values
         );
         if (res.status === 200) {
-          if (res.data.status === 1) {
+          if (res?.data?.status === 1) {
             history(
               {
                 pathname: `/${_base}/CustomerMapping`
               },
               {
                 state: {
-                  alert: toast.success(res.data.message)
+                  alert: toast.success(res?.data?.message)
                 }
               }
             );
           } else {
-            toast.error(res.data.message);
+            toast.error(res?.data?.message);
           }
         } else {
           toast.error(res.message);

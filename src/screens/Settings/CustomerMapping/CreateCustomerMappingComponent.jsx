@@ -148,9 +148,7 @@ export default function CreateCustomerMappingComponent() {
     //   required: approach !== "AU" || approach !== "SELF" || userDropDownFilterData?.length > 0 ? true : false
     // }
   ];
-  useEffect(() => {
-    console.log(userDropDownFilterData, 'userDropDownFilterData');
-  }, [userDropDownFilterData]);
+  useEffect(() => {}, [userDropDownFilterData]);
 
   // Conditionally add 'department_id' field based on approach
 
@@ -571,7 +569,6 @@ export default function CreateCustomerMappingComponent() {
                                 ) || null
                               }
                               onChange={(selectedOption) => {
-                                console.log(selectedOption, 'selectedOption');
                                 const values = selectedOption
                                   ? selectedOption.value
                                   : [];
