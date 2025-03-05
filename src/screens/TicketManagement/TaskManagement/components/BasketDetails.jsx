@@ -12,10 +12,12 @@ import MyTicketService from '../../../../services/TicketService/MyTicketService'
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { CustomValidation } from '../../../../components/custom/CustomValidation/CustomValidation';
 import moment from 'moment';
+import { errorHandler } from '../../../../utils';
 
 export default function BasketDetails(props) {
   const [user, setUser] = useState();
   const [todate, setTodate] = useState([]);
+  const [submitting, setSubmitting] = useState(false);
   // const [fromdate, setFromdate] = useState([]);
 
   // const [todateformat, setTodateformat] = useState('');
@@ -95,6 +97,8 @@ export default function BasketDetails(props) {
   // };
 
   const handleForm = async (values) => {
+    if (submitting) return;
+    setSubmitting(true);
     // e.preventDefault();
     const formData = new FormData();
     formData.append('basket_name[]', values.basket_name);
@@ -123,25 +127,12 @@ export default function BasketDetails(props) {
             }
           } else {
             toast.error(res.data.message);
-
-            new ErrorLogService().sendErrorLog(
-              'Basket',
-              'Edit_Basket',
-              'INSERT',
-              res.message
-            );
           }
         })
         .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          new ErrorLogService().sendErrorLog(
-            'Basket',
-            'Edit_Basket',
-            'INSERT',
-            errorObject.data.message
-          );
-        });
+          errorHandler(error);
+        })
+        .finally(() => setSubmitting(false));
     } else {
       await new BasketService()
         .postBasket(formData)
@@ -156,24 +147,12 @@ export default function BasketDetails(props) {
             }
           } else {
             toast.error(res.data.message);
-            new ErrorLogService().sendErrorLog(
-              'Basket',
-              'Create_Basket',
-              'INSERT',
-              res.message
-            );
           }
         })
         .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          new ErrorLogService().sendErrorLog(
-            'Basket',
-            'Create_Basket',
-            'INSERT',
-            errorObject.data.message
-          );
-        });
+          errorHandler(error);
+        })
+        .finally(() => setSubmitting(false));
     }
   };
   const [expectedSolveDate, setExpectedSolveDate] = useState();
@@ -181,30 +160,45 @@ export default function BasketDetails(props) {
   const loadData = async () => {
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active';
-    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const tempData = res.data.data?.data
-            .filter((d) => d.is_active === 1 && d.account_for === 'SELF')
-            .map((d) => ({
-              value: d.id,
-              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
-            }));
-          const aa = tempData.sort(function (a, b) {
-            return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
-          });
-          setUser(aa);
+    await new UserService()
+      .getUserForMyTickets(inputRequired)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            const tempData = res.data.data?.data
+              .filter((d) => d.is_active === 1 && d.account_for === 'SELF')
+              .map((d) => ({
+                value: d.id,
+                label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
+              }));
+            const aa = tempData.sort(function (a, b) {
+              return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+            });
+            setUser(aa);
+          } else {
+            toast.error(res.data.message);
+          }
         }
-      }
-    });
+        toast.error(res.message);
+      })
+      .catch((error) => errorHandler(error))
+      .finally(() => setSubmitting(false));
 
-    await new MyTicketService().getTicketById(props.ticketId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setExpectedSolveDate(res.data.data.expected_solve_date);
+    await new MyTicketService()
+      .getTicketById(props.ticketId)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setExpectedSolveDate(res.data.data.expected_solve_date);
+          } else {
+            toast.error(res.data.message);
+          }
+        } else {
+          toast.error(res.message);
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error))
+      .finally(() => setSubmitting(false));
   };
   useEffect(() => {
     loadData();
@@ -405,6 +399,7 @@ export default function BasketDetails(props) {
             </Modal.Body>
             <Modal.Footer>
               <button
+                disabled={submitting}
                 type="submit"
                 className="btn btn-sm btn-primary"
                 style={{ backgroundColor: '#484C7F' }}

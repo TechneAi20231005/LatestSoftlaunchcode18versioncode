@@ -22,6 +22,7 @@ import { Astrick } from '../../../../components/Utilities/Style';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { CustomValidation } from '../../../../components/custom/CustomValidation/CustomValidation';
 import { toast } from 'react-toastify';
+import { errorHandler } from '../../../../utils';
 
 export default function TaskModal(props) {
   const [notify, setNotify] = useState();
@@ -48,9 +49,7 @@ export default function TaskModal(props) {
   const [taskData, setTaskData] = useState([]);
   const [attachment, setAttachment] = useState([]);
 
-
   const [attachments, setAttachments] = useState(props.data.attachment || []);
-
 
   // const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
@@ -353,7 +352,7 @@ export default function TaskModal(props) {
 
     // await new TestCasesService().getTaskBytTicket(props.data.ticket_id).then((res) => {
     //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
+    //     if (res?.data?.status == 1) {
     //       const temp = res.data.data;
     //       setTaskDropdown(
     //         temp.map((d) => ({ value: d.id, label: d.task_name }))
@@ -414,7 +413,7 @@ export default function TaskModal(props) {
 
     // await new TaskTicketTypeService().getAllType().then((res) => {
     //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
+    //     if (res?.data?.status == 1) {
     //       const temp = res.data.data;
     //       setTasktypeDropdown(
     //         temp
@@ -427,7 +426,7 @@ export default function TaskModal(props) {
 
     // await new TaskTicketTypeService().getParent().then((res) => {
     //   if (res.status === 200) {
-    //     if (res.data.status === 1) {
+    //     if (res?.data?.status === 1) {
     //       if (res.status === 200) {
     //         // const mappedData = res.data.data.map((d) => ({
     //         //   value: d.id,
@@ -443,7 +442,7 @@ export default function TaskModal(props) {
 
     await new TaskTicketTypeService()?.getChildrenData('Task')?.then((res) => {
       if (res?.status === 200) {
-        let filterData = res?.data?.data.data
+        let filterData = res?.data?.data.data;
         // res?.data?.data.data?.filter(
         //   (item) => item?.is_active === 1
         // );
@@ -586,28 +585,23 @@ export default function TaskModal(props) {
   // const handleDeleteAttachment = (e, id) => {};
   const handleDeleteAttachment = (e, id) => {
     deleteAttachment(id).then((res) => {
-      if(res.status === 200){
+      if (res?.status === 200) {
         setAttachments((prevAttachments) =>
           prevAttachments.filter((attach) => attach.id !== id)
         );
         toast.success(res?.data?.message);
-      }else{
+      } else {
         toast.error(res?.data?.message);
       }
       // props?.handleShowTaskModal();
       // loadAttachment();
-
     });
   };
 
   const assignUserRef = useRef();
   const handleForm = async (values) => {
-    // e.preventDefault();
-    // setIsDisabled(true);
-
-    // setLoading(true);
-    // const selectedOptions = assignUserRef.current?.getValue() || [];
-    // const selectedValues = selectedOptions.map((option) => option.value);
+    if (isDisabled) return;
+    setIsDisabled(true);
     const formData = new FormData();
     formData.append('ticket_id', props.data.ticket_id);
     formData.append('ticket_basket_id', props.data.ticket_basket_id);
@@ -650,7 +644,6 @@ export default function TaskModal(props) {
     } else {
       setParentTaskName(''); // Clear the error message if present
 
-      setNotify(null);
       //Appeding File in selected State
       formData.delete('attachment[]');
       formData.delete('show_to_customer[]');
@@ -735,42 +728,24 @@ export default function TaskModal(props) {
               await updateTask(props?.data?.id, formData)
                 .then((res) => {
                   if (res.status === 200) {
-                    if (res.data.status === 1) {
+                    if (res?.data?.status === 1) {
                       // props.loadBasket();
-                      setNotify({ type: 'success', message: res.data.message });
-                      // setLoading(false);
-
+                      toast.success(res?.data?.message);
                       setTimeout(() => {
                         handleClose();
                         props.loadBasket();
                       }, 1000);
                     } else {
-                      // setLoading(false);
-                      setNotify({ type: 'danger', message: res.data.message });
+                      toast.error(res?.data?.message);
                     }
                   } else {
-                    setIsDisabled(false);
-                    // setLoading(false);
-                    setNotify({ type: 'danger', message: res.message });
-                    new ErrorLogService().sendErrorLog(
-                      'Ticket',
-                      'Edit_Task',
-                      'INSERT',
-                      res.message
-                    );
+                    toast.error(res?.message);
                   }
                 })
                 .catch((error) => {
-                  // setLoading(false);
-                  const { response } = error;
-                  const { request, ...errorObject } = response;
-                  new ErrorLogService().sendErrorLog(
-                    'Task',
-                    'Edit_Task',
-                    'INSERT',
-                    errorObject.data.message
-                  );
-                });
+                  errorHandler(error);
+                })
+                .finally(() => setIsDisabled(false));
             }
           } else {
             if (selectedOptionId === 'Primary') {
@@ -787,29 +762,22 @@ export default function TaskModal(props) {
               );
             }
             await postTask(formData).then((res) => {
-              if (res.status === 200) {
-                if (res.data.status === 1) {
-                  // setNotify({ type: 'success', message: res.data.message });
+              if (res?.status === 200) {
+                if (res?.data?.status === 1) {
                   toast.success(res?.data?.message);
-                  // setLoading(false);
-
                   handleClose();
                   props.loadBasket();
                 } else {
-                  // setLoading(false);
-                  // setNotify({ type: 'danger', message: res.data.message });
                   toast.error(res?.data?.message);
                 }
               } else {
                 setIsDisabled(false);
-                // setLoading(false);
-                // setNotify({ type: 'danger', message: res.data.message });
-                toast.error(res?.data?.message);
+                toast.error(res?.message);
                 new ErrorLogService().sendErrorLog(
                   'Ticket',
                   'Edit_Task',
                   'INSERT',
-                  res.message
+                  res?.message
                 );
               }
             });
@@ -817,6 +785,7 @@ export default function TaskModal(props) {
         }
       }
     }
+    setIsDisabled(false);
   };
 
   // const handleParentchange = async (e) => {
@@ -825,7 +794,7 @@ export default function TaskModal(props) {
   //   }
   //   await new TaskTicketTypeService().getAllType().then((res) => {
   //     if (res.status === 200) {
-  //       if (res.data.status === 1) {
+  //       if (res?.data?.status === 1) {
   //         const temp = res.data.data;
   //         setTasktypeDropdown(
   //           temp
@@ -2150,12 +2119,16 @@ export default function TaskModal(props) {
                         value={userData.filter(
                           (option) =>
                             Array.isArray(values.assign_to_user)
-                              ? values.assign_to_user.includes(String(option.value)) // Check for array
+                              ? values.assign_to_user.includes(
+                                  String(option.value)
+                                ) // Check for array
                               : values.assign_to_user === option.value // Check for scalar
                         )}
                         onChange={(selectedOptions) => {
                           const selectedValues = Array.isArray(selectedOptions)
-                            ? selectedOptions.map((option) => String(option.value)) // Map selected options to their values
+                            ? selectedOptions.map((option) =>
+                                String(option.value)
+                              ) // Map selected options to their values
                             : [];
                           setFieldValue('assign_to_user', selectedValues); // Update the form value
                         }}
@@ -2365,59 +2338,57 @@ export default function TaskModal(props) {
                   style={{ overflowX: 'auto' }}
                 >
                   {attachments &&
-                    attachments?.map(
-                      (attach, index) => {
-                        return (
+                    attachments?.map((attach, index) => {
+                      return (
+                        <div
+                          className="justify-content-start"
+                          style={{
+                            marginRight: '5px',
+                            padding: '0px',
+                            width: '200px'
+                          }}
+                        >
                           <div
-                            className="justify-content-start"
-                            style={{
-                              marginRight: '5px',
-                              padding: '0px',
-                              width: '200px'
-                            }}
+                            className="card"
+                            style={{ backgroundColor: '#EBF5FB' }}
                           >
-                            <div
-                              className="card"
-                              style={{ backgroundColor: '#EBF5FB' }}
-                            >
-                              <div className="card-header">
-                                <p style={{ fontSize: '12px' }}>
-                                  <b>{attach.name}</b>
-                                </p>
-                                <div className="d-flex justify-content-end p-0">
-                                  <a
-                                    href={`${_rewampAttachmentUrl + attach.path}`}
-                                    target="_blank"
-                                    className="btn btn-warning btn-sm p-0 px-1"
-                                    rel="noreferrer"
-                                  >
-                                    <i
-                                      className="icofont-download"
-                                      style={{
-                                        fontSize: '12px',
-                                        height: '15px'
-                                      }}
-                                    ></i>
-                                  </a>
-                                  <button
-                                    className="btn btn-danger text-white btn-sm p-0 px-1"
-                                    type="button"
-                                    onClick={(e) => {
-                                      handleDeleteAttachment(e, attach.id);
+                            <div className="card-header">
+                              <p style={{ fontSize: '12px' }}>
+                                <b>{attach.name}</b>
+                              </p>
+                              <div className="d-flex justify-content-end p-0">
+                                <a
+                                  href={`${_rewampAttachmentUrl + attach.path}`}
+                                  target="_blank"
+                                  className="btn btn-warning btn-sm p-0 px-1"
+                                  rel="noreferrer"
+                                >
+                                  <i
+                                    className="icofont-download"
+                                    style={{
+                                      fontSize: '12px',
+                                      height: '15px'
                                     }}
-                                  >
-                                    <i
-                                      className="icofont-ui-delete"
-                                      style={{ fontSize: '12px' }}
-                                    ></i>
-                                  </button>
-                                </div>
+                                  ></i>
+                                </a>
+                                <button
+                                  className="btn btn-danger text-white btn-sm p-0 px-1"
+                                  type="button"
+                                  onClick={(e) => {
+                                    handleDeleteAttachment(e, attach.id);
+                                  }}
+                                >
+                                  <i
+                                    className="icofont-ui-delete"
+                                    style={{ fontSize: '12px' }}
+                                  ></i>
+                                </button>
                               </div>
                             </div>
                           </div>
-                        );
-                      }
-                    )}
+                        </div>
+                      );
+                    })}
                 </div>
               </Modal.Body>
               <Modal.Footer>
