@@ -168,6 +168,21 @@ const Chatbox = (props) => {
                           className="list-group-item d-flex justify-content-between align-items-center"
                         >
                           {fileObj.file.name}{' '}
+                          <button
+                            className="btn btn-danger text-white btn-sm p-0 px-1"
+                            type="button"
+                            onClick={(e) => {
+                              const newFiles = selectedFile.filter(
+                                (file, i) => i !== index
+                              );
+                              setSelectedFile(newFiles);
+                            }}
+                          >
+                            <i
+                              className="icofont-ui-delete"
+                              style={{ fontSize: '12px' }}
+                            ></i>
+                          </button>
                           {/* <button
                             className="btn btn-sm btn-danger"
                             onClick={() =>
