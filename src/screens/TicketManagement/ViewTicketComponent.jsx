@@ -160,7 +160,7 @@ export default function ViewTicketComponent({ match }) {
   }, [checkRole]);
   return (
     <div className="container-xxl">
-      <PageHeader headerTitle={`Ticket - ${data ? data.ticket_id : ''}`} />
+      <PageHeader showBackBtn headerTitle={`Ticket - ${data ? data.ticket_id : ''}`} />
 
       {/* {notify && <Alert alertData={notify} />}   */}
 
