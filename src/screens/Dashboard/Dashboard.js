@@ -25,7 +25,7 @@ import TimeRegularizationHistory from '../TicketManagement/TaskManagement/compon
 import { errorHandler } from '../../utils';
 import CustomeLoaderDashboard, {
   ChartSkeleton
-} from '../TicketManagement/TaskManagement/components/CustomeLoaderDashboard';
+} from '../../components/custom/loader/CustomeLoaderDashboard';
 
 export default function HrDashboard(props) {
   const history = useNavigate();
