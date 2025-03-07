@@ -93,7 +93,6 @@ export default function HrDashboard(props) {
       history(`${process.env.PUBLIC_URL}/`);
     }
   };
-  const [displayCount, setDisplayCount] = useState(0);
 
   const get = useCallback(async () => {
     const id = localStorage.getItem('id');
@@ -298,32 +297,6 @@ export default function HrDashboard(props) {
     totalTask: 0
   });
 
-  // useEffect(() => {
-  //   if (!count) return;
-
-  //   const animateCounter = (key, targetValue) => {
-  //     if (targetValue === 0) {
-  //       setAnimatedCounts((prev) => ({ ...prev, [key]: 0 }));
-  //       return;
-  //     }
-
-  //     let start = 0;
-  //     const duration = 1000;
-  //     const stepTime = Math.max(10, Math.floor(duration / targetValue));
-
-  //     const timer = setInterval(() => {
-  //       start += 1;
-  //       setAnimatedCounts((prev) => ({ ...prev, [key]: start }));
-
-  //       if (start >= targetValue) clearInterval(timer);
-  //     }, stepTime);
-  //   };
-
-  //   animateCounter('pendingTask', count.pendingTask);
-  //   animateCounter('workingTask', count.workingTask);
-  //   animateCounter('completedTask', count.completedTask);
-  //   animateCounter('totalTask', count.totalTask);
-  // }, [count]);
   useEffect(() => {
     if (!count) return;
 
@@ -352,7 +325,7 @@ export default function HrDashboard(props) {
     };
 
     requestAnimationFrame(animate);
-  }, [count]); // Runs when `count` changes
+  }, [count]);
   useEffect(() => {
     get();
     loadNotifcation();
@@ -376,12 +349,9 @@ export default function HrDashboard(props) {
   const [showFourth, setShowFourth] = useState(false);
 
   useEffect(() => {
-    // Show first box immediately
     setTimeout(() => {
       setShowFirst(true);
-    }, 200); // Delay of 500ms
-
-    // Show second box after the first box appears
+    }, 200);
     setTimeout(() => {
       setShowSecond(true);
     }, 700);
@@ -390,7 +360,7 @@ export default function HrDashboard(props) {
     }, 1200);
     setTimeout(() => {
       setShowFourth(true);
-    }, 1700); // Delay of 1s after first box
+    }, 1700);
   }, []);
 
   return (
