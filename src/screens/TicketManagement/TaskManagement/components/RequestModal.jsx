@@ -3,19 +3,16 @@
 import React, { useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 
-import Alert from '../../../../components/Common/Alert';
-
 import { getRegularizationTimeData } from '../../../../services/TicketService/TaskService';
 
 import { useDispatch } from 'react-redux';
 
 import { postTimeRegularizationData } from '../../BasketManagement/Slices/TimeRegularizationAction';
 import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../../utils';
 const RequestModal = (props) => {
-  const [notify, setNotify] = useState(null);
-
   const basketStartDate = props.date;
-
 
   const timeDifference = '';
   const dispatch = useDispatch();
@@ -31,7 +28,6 @@ const RequestModal = (props) => {
   var ticket_task_id = props.data.id;
 
   const [isLoading, setIsLoading] = useState(false);
-
   const handleFirstCheckboxChange = (e) => {
     if (e) {
       if (e.target.checked) {
@@ -62,21 +58,24 @@ const RequestModal = (props) => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setNotify(null);
-
+    if (isLoading) return;
+    setIsLoading(true);
     const data = new FormData(e.target);
     data?.append('scheduled_time', props.data.task_hours);
-    dispatch(postTimeRegularizationData(data)).then((res) => {
-      if (res?.payload?.data?.status === 1) {
-        setNotify({ type: 'success', message: res?.payload?.data?.message });
-        setTimeout(() => {
-          props.close();
-          props.taskData();
-        }, 1000);
-      } else {
-        setNotify({ type: 'danger', message: res?.payload?.data?.message });
-      }
-    });
+    dispatch(postTimeRegularizationData(data))
+      .then((res) => {
+        if (res?.payload?.data?.status === 1) {
+          toast.success(res.payload.data.message);
+          setTimeout(() => {
+            props.close();
+            props.taskData();
+          }, 1000);
+        } else {
+          toast.error(res.payload.data.message);
+        }
+      })
+      .catch((error) => errorHandler(error))
+      .finally(() => setIsLoading(false));
   };
 
   const handleRemoveClick = (index) => {
@@ -92,16 +91,16 @@ const RequestModal = (props) => {
   const loadData = () => {
     setIsLoading(null);
     setIsLoading(true);
-    new getRegularizationTimeData(props.data.ticket_id, props.data.id).then(
-      (res) => {
+    new getRegularizationTimeData(props.data.ticket_id, props.data.id)
+      .then((res) => {
         if (res.status === 200) {
-          setIsLoading(false);
           if (res.data.data) {
             setRegularizeTimeData(res.data.data);
           }
         }
-      }
-    );
+      })
+      .catch((error) => errorHandler(error))
+      .finally(() => setIsLoading(false));
   };
   useEffect(() => {
     const updatedRows = rows.map((row) => ({
@@ -348,8 +347,6 @@ const RequestModal = (props) => {
         backdrop="static"
         aria-labelledby="example-custom-modal-styling-title"
       >
-        {notify && <Alert alertData={notify} />}
-
         <Modal.Header closeButton>
           <Modal.Title id="example-custom-modal-styling-title">
             Time Regularization

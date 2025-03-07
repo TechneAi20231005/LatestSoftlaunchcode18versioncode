@@ -22,6 +22,7 @@ import { Astrick } from '../../../../components/Utilities/Style';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { CustomValidation } from '../../../../components/custom/CustomValidation/CustomValidation';
 import { toast } from 'react-toastify';
+import { errorHandler } from '../../../../utils';
 
 export default function TaskModal(props) {
   const [notify, setNotify] = useState();
@@ -351,7 +352,7 @@ export default function TaskModal(props) {
 
     // await new TestCasesService().getTaskBytTicket(props.data.ticket_id).then((res) => {
     //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
+    //     if (res?.data?.status == 1) {
     //       const temp = res.data.data;
     //       setTaskDropdown(
     //         temp.map((d) => ({ value: d.id, label: d.task_name }))
@@ -412,7 +413,7 @@ export default function TaskModal(props) {
 
     // await new TaskTicketTypeService().getAllType().then((res) => {
     //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
+    //     if (res?.data?.status == 1) {
     //       const temp = res.data.data;
     //       setTasktypeDropdown(
     //         temp
@@ -425,7 +426,7 @@ export default function TaskModal(props) {
 
     // await new TaskTicketTypeService().getParent().then((res) => {
     //   if (res.status === 200) {
-    //     if (res.data.status === 1) {
+    //     if (res?.data?.status === 1) {
     //       if (res.status === 200) {
     //         // const mappedData = res.data.data.map((d) => ({
     //         //   value: d.id,
@@ -599,12 +600,8 @@ export default function TaskModal(props) {
 
   const assignUserRef = useRef();
   const handleForm = async (values) => {
-    // e.preventDefault();
-    // setIsDisabled(true);
-
-    // setLoading(true);
-    // const selectedOptions = assignUserRef.current?.getValue() || [];
-    // const selectedValues = selectedOptions.map((option) => option.value);
+    if (isDisabled) return;
+    setIsDisabled(true);
     const formData = new FormData();
     formData.append('ticket_id', props.data.ticket_id);
     formData.append('ticket_basket_id', props.data.ticket_basket_id);
@@ -647,7 +644,6 @@ export default function TaskModal(props) {
     } else {
       setParentTaskName(''); // Clear the error message if present
 
-      setNotify(null);
       //Appeding File in selected State
       formData.delete('attachment[]');
       formData.delete('show_to_customer[]');
@@ -732,42 +728,24 @@ export default function TaskModal(props) {
               await updateTask(props?.data?.id, formData)
                 .then((res) => {
                   if (res.status === 200) {
-                    if (res.data.status === 1) {
+                    if (res?.data?.status === 1) {
                       // props.loadBasket();
-                      setNotify({ type: 'success', message: res.data.message });
-                      // setLoading(false);
-
+                      toast.success(res?.data?.message);
                       setTimeout(() => {
                         handleClose();
                         props.loadBasket();
                       }, 1000);
                     } else {
-                      // setLoading(false);
-                      setNotify({ type: 'danger', message: res.data.message });
+                      toast.error(res?.data?.message);
                     }
                   } else {
-                    setIsDisabled(false);
-                    // setLoading(false);
-                    setNotify({ type: 'danger', message: res.message });
-                    new ErrorLogService().sendErrorLog(
-                      'Ticket',
-                      'Edit_Task',
-                      'INSERT',
-                      res.message
-                    );
+                    toast.error(res?.message);
                   }
                 })
                 .catch((error) => {
-                  // setLoading(false);
-                  const { response } = error;
-                  const { request, ...errorObject } = response;
-                  new ErrorLogService().sendErrorLog(
-                    'Task',
-                    'Edit_Task',
-                    'INSERT',
-                    errorObject.data.message
-                  );
-                });
+                  errorHandler(error);
+                })
+                .finally(() => setIsDisabled(false));
             }
           } else {
             if (selectedOptionId === 'Primary') {
@@ -784,29 +762,22 @@ export default function TaskModal(props) {
               );
             }
             await postTask(formData).then((res) => {
-              if (res.status === 200) {
-                if (res.data.status === 1) {
-                  // setNotify({ type: 'success', message: res.data.message });
+              if (res?.status === 200) {
+                if (res?.data?.status === 1) {
                   toast.success(res?.data?.message);
-                  // setLoading(false);
-
                   handleClose();
                   props.loadBasket();
                 } else {
-                  // setLoading(false);
-                  // setNotify({ type: 'danger', message: res.data.message });
                   toast.error(res?.data?.message);
                 }
               } else {
                 setIsDisabled(false);
-                // setLoading(false);
-                // setNotify({ type: 'danger', message: res.data.message });
-                toast.error(res?.data?.message);
+                toast.error(res?.message);
                 new ErrorLogService().sendErrorLog(
                   'Ticket',
                   'Edit_Task',
                   'INSERT',
-                  res.message
+                  res?.message
                 );
               }
             });
@@ -814,6 +785,7 @@ export default function TaskModal(props) {
         }
       }
     }
+    setIsDisabled(false);
   };
 
   // const handleParentchange = async (e) => {
@@ -822,7 +794,7 @@ export default function TaskModal(props) {
   //   }
   //   await new TaskTicketTypeService().getAllType().then((res) => {
   //     if (res.status === 200) {
-  //       if (res.data.status === 1) {
+  //       if (res?.data?.status === 1) {
   //         const temp = res.data.data;
   //         setTasktypeDropdown(
   //           temp

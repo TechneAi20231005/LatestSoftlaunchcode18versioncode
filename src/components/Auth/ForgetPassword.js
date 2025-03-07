@@ -30,7 +30,11 @@ export default function ForgetPassword() {
               }
             }
             setEmailCount(count);
+          } else {
+            toast.error(res.data.message);
           }
+        } else {
+          toast.error(res.message);
         }
       })
       .catch((error) => errorHandler(error));
