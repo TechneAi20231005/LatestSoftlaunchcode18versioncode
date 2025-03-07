@@ -36,7 +36,7 @@ class PageHeader extends React.Component {
                 />
               )}
 
-              <span> {headerTitle}</span>
+              <span className="hover-underline"> {headerTitle}</span>
             </h3>
             {isTabShow ? (
               <div className="col-auto py-2 w-sm-100">
