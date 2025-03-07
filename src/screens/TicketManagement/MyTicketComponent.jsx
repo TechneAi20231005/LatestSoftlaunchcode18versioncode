@@ -2984,102 +2984,108 @@ export default function MyTicketComponent() {
                 </>
               )} */}
 
+              {/* Select User - Only for SELF */}
+              {localStorage.getItem('account_for') === 'SELF' && (
+                <div className="col-md-3">
+                  <label>
+                    <b>Select User :</b>
+                  </label>
+                  {userData && (
+                    <Select
+                      options={userData}
+                      isMulti={true}
+                      id="assign_to_user_id[]"
+                      value={selectedUsers}
+                      name="assign_to_user_id[]"
+                      onChange={(selectedOptions) =>
+                        setSelectedUsers(selectedOptions)
+                      }
+                    />
+                  )}
+                </div>
+              )}
 
-        {/* Select User - Only for SELF */}
-        {localStorage.getItem('account_for') === 'SELF' && (
-          <div className="col-md-3">
-            <label>
-              <b>Select User :</b>
-            </label>
-            {userData && (
-              <Select
-                options={userData}
-                isMulti={true}
-                id="assign_to_user_id[]"
-                value={selectedUsers}
-                name="assign_to_user_id[]"
-                onChange={(selectedOptions) => setSelectedUsers(selectedOptions)}
-              />
+              {/* Select Department - Only for SELF */}
+              {localStorage.getItem('account_for') === 'SELF' && (
+                <div className="col-md-3">
+                  <label>
+                    <b>Select Department :</b>
+                  </label>
+                  {departmentData && (
+                    <Select
+                      options={departmentData}
+                      isMulti={true}
+                      value={selectedDepartment}
+                      id="assign_to_department_id[]"
+                      name="assign_to_department_id[]"
+                      onChange={(selectedOptions) =>
+                        setSelectedDepartment(selectedOptions)
+                      }
+                    />
+                  )}
+                </div>
+              )}
+
+              {/* Select Status */}
+              <div className="col-md-3">
+                <label>
+                  <b>Select Status :</b>
+                </label>
+                {statusData && (
+                  <Select
+                    options={statusData}
+                    isMulti={true}
+                    value={selectedStatus}
+                    id="status_id[]"
+                    name="status_id[]"
+                    onChange={(selectedOptions) =>
+                      setSelectedStatus(selectedOptions)
+                    }
+                  />
+                )}
+              </div>
+            </div>
+            {localStorage.getItem('account_for') !== 'SELF' && (
+              <div className="row"></div>
             )}
-          </div>
-        )}
 
-        {/* Select Department - Only for SELF */}
-        {localStorage.getItem('account_for') === 'SELF' && (
-          <div className="col-md-3">
-            <label>
-              <b>Select Department :</b>
-            </label>
-            {departmentData && (
-              <Select
-                options={departmentData}
-                isMulti={true}
-                value={selectedDepartment}
-                id="assign_to_department_id[]"
-                name="assign_to_department_id[]"
-                onChange={(selectedOptions) => setSelectedDepartment(selectedOptions)}
-              />
-            )}
-          </div>
-        )}
-
-        {/* Select Status */}
-        <div className="col-md-3">
-          <label>
-            <b>Select Status :</b>
-          </label>
-          {statusData && (
-            <Select
-              options={statusData}
-              isMulti={true}
-              value={selectedStatus}
-              id="status_id[]"
-              name="status_id[]"
-              onChange={(selectedOptions) => setSelectedStatus(selectedOptions)}
-            />
-          )}
-        </div>
-      </div>
-      {localStorage.getItem('account_for') !== 'SELF' && <div className="row"></div>}
-
-      {/* Buttons */}
-      <div className="row mt-2">
-        <div className="col-md-4">
+            {/* Buttons */}
+            <div className="row mt-2">
+              <div className="col-md-4">
                 <button
                   className="btn btn-sm btn-warning text-white"
                   type="submit"
                   style={{ marginTop: '20px', fontWeight: '600' }}
                 >
                   <i className="icofont-search-1 "></i> Search
-          </button>
-          <button
-            className="btn btn-sm btn-info text-white"
-            type="button"
-            onClick={handleClearSearchedData}
+                </button>
+                <button
+                  className="btn btn-sm btn-info text-white"
+                  type="button"
+                  onClick={handleClearSearchedData}
                   style={{ marginTop: '20px', fontWeight: '600' }}
-          >
-            <i className="icofont-refresh text-white"></i> Reset
-          </button>
-          <button
-            className="btn btn-sm btn-primary text-white"
-            type="button"
-            id="openFilter"
+                >
+                  <i className="icofont-refresh text-white"></i> Reset
+                </button>
+                <button
+                  className="btn btn-sm btn-primary text-white"
+                  type="button"
+                  id="openFilter"
                   styleName={
                     account_for == 'CUSTOMER'
                       ? { display: 'none' }
                       : { display: 'block' }
                   }
-            onClick={handleShow}
+                  onClick={handleShow}
                   style={{ marginTop: '20px', fontWeight: '600' }}
-          >
-            Filter <i className="icofont-filter" />
-          </button>
+                >
+                  Filter <i className="icofont-filter" />
+                </button>
+              </div>
+            </div>
+          </form>
         </div>
       </div>
-    </form>
-  </div>
-</div>
-
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>

@@ -515,6 +515,13 @@ const GraphWeekWise = () => {
             categories: allBasketNames
           },
           tooltip: {
+            enabled: true,
+            fixed: {
+              enabled: true,
+              position: 'topRight',
+              offsetX: 0,
+              offsetY: 40,
+            },
             custom: ({ series, seriesIndex, dataPointIndex, w }) => {
               const taskDetail =
                 w.globals.initialSeries[seriesIndex].data[dataPointIndex]

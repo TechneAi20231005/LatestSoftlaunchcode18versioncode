@@ -6,6 +6,7 @@ import classNames from './example.module.css';
 import MyTicketService from '../../services/TicketService/MyTicketService';
 import { toast } from 'react-toastify';
 import { errorHandler } from '../../utils';
+import { _rewampAttachmentUrl } from '../../settings/constants';
 
 const Chatbox = (props) => {
   const { ticketId, loadComment, commentData } = props;
@@ -167,6 +168,21 @@ const Chatbox = (props) => {
                           className="list-group-item d-flex justify-content-between align-items-center"
                         >
                           {fileObj.file.name}{' '}
+                          <button
+                            className="btn btn-danger text-white btn-sm p-0 px-1"
+                            type="button"
+                            onClick={(e) => {
+                              const newFiles = selectedFile.filter(
+                                (file, i) => i !== index
+                              );
+                              setSelectedFile(newFiles);
+                            }}
+                          >
+                            <i
+                              className="icofont-ui-delete"
+                              style={{ fontSize: '12px' }}
+                            ></i>
+                          </button>
                           {/* <button
                             className="btn btn-sm btn-danger"
                             onClick={() =>
@@ -243,7 +259,11 @@ const Chatbox = (props) => {
 
             <ListGroup
               className="mt-3"
-              style={{ overflowY: 'scroll', height: '70vh' }}
+              style={{
+                overflowY: 'scroll',
+                height: '70vh',
+                gap: '10px'
+              }}
             >
               {commentData?.comments?.map((comment, index) => (
                 <ListGroup.Item key={index}>
@@ -254,6 +274,29 @@ const Chatbox = (props) => {
                     </p>
                   </div>
 
+                  {comment?.attachments?.length > 0 && (
+                    <div className="mt-2">
+                      {comment?.attachments?.map((attachment, i) => {
+                        const fileName = attachment?.split('/').pop();
+                        return (
+                          <div
+                            key={i}
+                            className="d-flex align-items-center mt-1 gap-2"
+                          >
+                            <i class="icofont-download "></i>
+                            <a
+                              style={{ color: '#a908c6' }}
+                              href={`${_rewampAttachmentUrl}/${attachment}`}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              {fileName}
+                            </a>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                   <div className="d-flex justify-content-between mt-4">
                     <p>{comment?.user_id}</p>
                     <p>{comment?.time}</p>

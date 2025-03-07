@@ -555,7 +555,7 @@ const TicketHistory = ({ match }) => {
       <div>
         {/* Page Header */}
         <div className="container-xxl">
-          <PageHeader headerTitle="Ticket History" />
+          <PageHeader showBackBtn headerTitle="Ticket History" />
         </div>
         <div className="card mt-2">
           <div className="card-body">
