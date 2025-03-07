@@ -1001,7 +1001,7 @@ export default function EditTicketComponent({ match }) {
 
   return (
     <div className="container-xxl">
-      <PageHeader headerTitle={`Edit Ticket - ${data ? data.ticket_id : ''}`} />
+      <PageHeader showBackBtn headerTitle={`Edit Ticket - ${data ? data.ticket_id : ''}`} />
       <div className="row">
         <div className="col-md-8">
           {data && (

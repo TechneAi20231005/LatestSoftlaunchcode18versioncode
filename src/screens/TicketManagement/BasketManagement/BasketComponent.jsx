@@ -174,7 +174,7 @@ export default function BasketComponent({ match }) {
 
   return (
     <div className="container-xxl">
-      <PageHeader headerTitle="Manage Basket" />
+      <PageHeader showBackBtn headerTitle="Manage Basket" />
 
       {notify && <Alert alertData={notify} />}
       <div className="card mt-2" style={{ zIndex: 0 }}>
