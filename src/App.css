@@ -78,3 +78,94 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
+.total-task-hover-effect {
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+
+}
+
+.total-task-hover-effect:hover {
+  transform: translateY(-2px) scale(1.05);
+
+}
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.task-name {
+  display: inline-block;
+  transition: all 0.3s ease-in-out;
+}
+
+.task-name:hover {
+  animation: bounce 0.8s ease-in-out;
+}
+
+.hover-underline {
+  font-size: 2rem;
+  position: relative;
+  display: inline-block;
+  cursor: pointer;
+}
+
+.hover-underline::after
+ {
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(to right, #00010e, #00ffff);
+  bottom: -5px;
+  left: 0;
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.4s ease-out;
+}
+
+.hover-underline::before {
+  top: -5px;
+  transform-origin: left;
+}
+
+.hover-underline:hover::after,
+.hover-underline:hover::before {
+  transform: scaleX(1);
+}
+
+.animate-box {
+  opacity: 0;
+  transform: translateY(30px);
+  animation: fadeInUp 0.5s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.skeleton-glow {
+  background: linear-gradient(90deg, #e0e0e0 25%, #f0f0f0 50%, #e0e0e0 75%);
+  background-size: 200% 100%;
+  animation: glowing 1.5s infinite linear;
+}
+
+.skeleton-glow-light {
+  background: linear-gradient(90deg, #484c7f 25%, #f8f8f8 50%, #ffffff 75%);
+  background-size: 200% 100%;
+  animation: glowing 1.5s infinite linear;
+}
+
+@keyframes glowing {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
