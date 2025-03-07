@@ -78,12 +78,12 @@
   opacity: 0.5;
   cursor: not-allowed;
 }
-.hover-effect {
+.total-task-hover-effect {
   transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
 
 }
 
-.hover-effect:hover {
+.total-task-hover-effect:hover {
   transform: translateY(-2px) scale(1.05);
 
 }

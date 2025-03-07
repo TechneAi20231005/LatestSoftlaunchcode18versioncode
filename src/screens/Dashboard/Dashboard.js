@@ -795,7 +795,7 @@ export default function HrDashboard(props) {
                   // border: '5px solid red',
                   boxShadow: ' rgba(0, 0, 0, 0.30) 0px 5px 15px'
                 }}
-                className="card bg-danger text-white hover-effect"
+                className="card bg-danger text-white total-task-hover-effect"
               >
                 <div className="card-body">
                   <div className="d-flex align-items-center">
@@ -833,7 +833,7 @@ export default function HrDashboard(props) {
                   borderRadius: '10px',
                   boxShadow: ' rgba(0, 0, 0, 0.30) 0px 5px 15px'
                 }}
-                className="card bg-warning text-white hover-effect"
+                className="card bg-warning text-white total-task-hover-effect"
               >
                 <div className="card-body">
                   <div className="d-flex align-items-center">
@@ -871,7 +871,7 @@ export default function HrDashboard(props) {
                   borderRadius: '10px',
                   boxShadow: ' rgba(0, 0, 0, 0.30) 0px 5px 15px'
                 }}
-                className="card bg-success text-white hover-effect"
+                className="card bg-success text-white total-task-hover-effect"
               >
                 <div className="card-body">
                   <div className="d-flex align-items-center">
@@ -909,7 +909,7 @@ export default function HrDashboard(props) {
                   borderRadius: '10px',
                   boxShadow: ' rgba(0, 0, 0, 0.30) 0px 5px 15px'
                 }}
-                className="card bg-info text-white hover-effect"
+                className="card bg-info text-white total-task-hover-effect"
               >
                 <div className="card-body">
                   <div className="d-flex align-items-center">
