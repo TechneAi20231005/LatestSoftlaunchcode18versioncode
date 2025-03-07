@@ -1747,6 +1747,10 @@ export default function TaskModal(props) {
                         id="start_date"
                         name="start_date"
                         // onChange={handleFromDate}
+                        onChange={(option) => {
+                          setFromdate(option.target.value);
+                          setFieldValue('start_date', option.target.value);
+                        }}
                         min={props.ticketStartDate}
                       />
                     ) : (
@@ -1759,6 +1763,10 @@ export default function TaskModal(props) {
                         min={props.ticketStartDate}
                         defaultValue={props.data.start_date}
                         // required
+                        onChange={(option) => {
+                          setFromdate(option.target.value);
+                          setFieldValue('start_date', option.target.value);
+                        }}
                       />
                     )}
                     <ErrorMessage
