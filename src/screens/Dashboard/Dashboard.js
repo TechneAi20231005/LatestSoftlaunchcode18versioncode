@@ -264,7 +264,6 @@ export default function HrDashboard(props) {
     await new getRegularizationTime(id).then((res) => {
       if (res.status === 200) {
         setIsLoading(false);
-        console.log('res', res);
         const temp = res?.data?.data
 
           ?.filter((d) => d.status_remark === 'PENDING')
@@ -334,7 +333,6 @@ export default function HrDashboard(props) {
 
   useEffect(() => {
     const account_for = localStorage.getItem('account_for');
-    console.log(account_for);
 
     if (account_for === 'CUSTOMER') {
       window.location.href = `${process.env.PUBLIC_URL}/Ticket`;
@@ -949,14 +947,14 @@ export default function HrDashboard(props) {
                   <div className="card-header border-bottom text-white bg-primary">
                     <h5 className="">My Tasks</h5>
                   </div>
-                  {dailyTask && dailyTask.length > 0 ? (
+                  {dailyTask && dailyTask.length >= 0 ? (
                     <div className="card-body p-0">
                       <div
                         className="flex-grow-1"
                         style={{ height: '250px', overflowY: 'scroll' }}
                       >
                         {dailyTask &&
-                          dailyTask.length > 0 &&
+                          dailyTask.length >= 0 &&
                           dailyTask.map((ele, index) => {
                             if (ele.time_status === 'STOP') {
                               return (
@@ -1111,8 +1109,7 @@ export default function HrDashboard(props) {
                             }
                           })}
 
-                        {dailyTask &&
-                          dailyTask.length > 0 &&
+                        {dailyTask.length >= 0 &&
                           dailyTask.map((ele, index) => {
                             if (ele.time_status === 'START') {
                               return (
@@ -1265,14 +1262,14 @@ export default function HrDashboard(props) {
                   <div className="card-header border-bottom bg-primary text-white">
                     <h5 className="">Pending Tasks</h5>
                   </div>
-                  {dailyTask && dailyTask.length > 0 ? (
+                  {dailyTask && dailyTask.length >= 0 ? (
                     <div className="card-body p-0">
                       <div
                         className="flex-grow-1"
                         style={{ height: '250px', overflowY: 'scroll' }}
                       >
                         {previousTask &&
-                          previousTask.length > 0 &&
+                          previousTask.length >= 0 &&
                           previousTask.map((ele, index) => {
                             if (ele.time_status === 'STOP') {
                               return (
@@ -1440,7 +1437,7 @@ export default function HrDashboard(props) {
                           })}
 
                         {previousTask &&
-                          previousTask.length > 0 &&
+                          previousTask.length >= 0 &&
                           previousTask.map((ele, index) => {
                             if (ele.time_status === 'START') {
                               return (
@@ -1601,7 +1598,7 @@ export default function HrDashboard(props) {
                   </div>
                   <div className="card-body p-0">
                     <div className="flex-grow-1" style={{ height: '250px' }}>
-                      {dailyTask && dailyTask?.length > 0 ? (
+                      {dailyTask && dailyTask?.length >= 0 ? (
                         <Chart
                           options={chartData.options}
                           series={chartData?.series}
@@ -1628,7 +1625,7 @@ export default function HrDashboard(props) {
                     <h5 className="">Upcoming Tasks</h5>
                   </div>
 
-                  {dailyTask && dailyTask.length > 0 ? (
+                  {dailyTask && dailyTask.length >= 0 ? (
                     <div className="card-body p-0">
                       <div
                         className="flex-grow-1"
