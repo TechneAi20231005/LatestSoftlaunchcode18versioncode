@@ -126,7 +126,6 @@ export default function HrDashboard(props) {
     status,
     task_list
   ) => {
-    console.log(task_list, 'task_list');
     setLoading({ id: ticket_task_id, condition: true, task_list: task_list });
     var data = {
       tenant_id: localStorage.getItem('tenant_id'),
