@@ -52,6 +52,11 @@ export default function HrDashboard(props) {
     show: false,
     data: null
   });
+  const [loading, setLoading] = useState({
+    id: 0,
+    condition: false,
+    task_list: ''
+  });
 
   const [historyModal, setHistoryModal] = useState({
     show: false,
@@ -111,9 +116,17 @@ export default function HrDashboard(props) {
         ]
       }));
     }
+    setLoading({ id: 0, condition: false, task_list: '' });
   }, []);
 
-  const handleTimer = async (e, ticket_id, ticket_task_id, status) => {
+  const handleTimer = async (
+    e,
+    ticket_id,
+    ticket_task_id,
+    status,
+    task_list
+  ) => {
+    setLoading({ id: ticket_task_id, condition: true, task_list: task_list });
     var data = {
       tenant_id: localStorage.getItem('tenant_id'),
       ticket_id: ticket_id,
@@ -343,8 +356,6 @@ export default function HrDashboard(props) {
 
   const [showFirst, setShowFirst] = useState(false);
   const [showSecond, setShowSecond] = useState(false);
-  const [showThird, setShowThird] = useState(false);
-  const [showFourth, setShowFourth] = useState(false);
 
   useEffect(() => {
     setTimeout(() => {
@@ -352,13 +363,7 @@ export default function HrDashboard(props) {
     }, 200);
     setTimeout(() => {
       setShowSecond(true);
-    }, 700);
-    setTimeout(() => {
-      setShowThird(true);
-    }, 1200);
-    setTimeout(() => {
-      setShowFourth(true);
-    }, 1700);
+    }, 900);
   }, []);
 
   return (
@@ -786,7 +791,7 @@ export default function HrDashboard(props) {
         <>
           {' '}
           <div className="row row_gap_3 mt-2">
-            <div className="col-md-6 col-lg-3 animate-box">
+            <div className="col-md-6 col-lg-3 animate-box cp">
               <div
                 style={{
                   borderRadius: '10px',
@@ -825,7 +830,7 @@ export default function HrDashboard(props) {
               </div>
             </div>
 
-            <div className="col-md-6 col-lg-3 animate-box">
+            <div className="col-md-6 col-lg-3 animate-box cp">
               <div
                 style={{
                   borderRadius: '10px',
@@ -863,7 +868,7 @@ export default function HrDashboard(props) {
               </div>
             </div>
 
-            <div className="col-md-6 col-lg-3 animate-box">
+            <div className="col-md-6 col-lg-3 animate-box cp">
               <div
                 style={{
                   borderRadius: '10px',
@@ -901,7 +906,7 @@ export default function HrDashboard(props) {
               </div>
             </div>
 
-            <div className="col-md-6 col-lg-3 animate-box">
+            <div className="col-md-6 col-lg-3 animate-box cp">
               <div
                 style={{
                   borderRadius: '10px',
@@ -940,7 +945,9 @@ export default function HrDashboard(props) {
               <div className="col-md-12 col-lg-6 col-xl-6 col-xxl-6 animate-box">
                 <div
                   style={{
-                    boxShadow: ' rgba(0, 0, 0, 0.20) 0px 5px 15px'
+                    boxShadow: ' rgba(0, 0, 0, 0.20) 0px 5px 15px',
+                    overflow: 'hidden',
+                    borderRadius: '10px'
                   }}
                   className="card"
                 >
@@ -998,18 +1005,27 @@ export default function HrDashboard(props) {
                                           e,
                                           ele.ticket_id,
                                           ele.id,
-                                          'STOP'
+                                          'STOP',
+                                          'my_task'
                                         )
                                       }
                                     >
-                                      <i
-                                        className="icofont-ui-pause"
-                                        style={{
-                                          fontSize: '20px',
-                                          color: '#EC7063',
-                                          margin: 'auto'
-                                        }}
-                                      ></i>
+                                      {loading.condition &&
+                                      loading.id == ele.id &&
+                                      loading.task_list === 'my_task' ? (
+                                        <span>
+                                          <i className="fa fa-spinner fa-spin" />
+                                        </span>
+                                      ) : (
+                                        <i
+                                          className="icofont-ui-pause"
+                                          style={{
+                                            fontSize: '20px',
+                                            color: '#EC7063',
+                                            margin: 'auto'
+                                          }}
+                                        ></i>
+                                      )}
                                     </button>
                                   )}
 
@@ -1157,18 +1173,27 @@ export default function HrDashboard(props) {
                                           e,
                                           ele.ticket_id,
                                           ele.id,
-                                          'START'
+                                          'START',
+                                          'my_task'
                                         )
                                       }
                                     >
-                                      <i
-                                        className="icofont-ui-play"
-                                        style={{
-                                          fontSize: '20px',
-                                          color: '#1ABC9C',
-                                          margin: 'auto'
-                                        }}
-                                      ></i>
+                                      {loading?.condition &&
+                                      loading.id == ele.id &&
+                                      loading.task_list === 'my_task' ? (
+                                        <span>
+                                          <i className="fa fa-spinner fa-spin" />
+                                        </span>
+                                      ) : (
+                                        <i
+                                          className="icofont-ui-play"
+                                          style={{
+                                            fontSize: '20px',
+                                            color: '#1ABC9C',
+                                            margin: 'auto'
+                                          }}
+                                        ></i>
+                                      )}
                                     </button>
                                   )}
                                   {ele && ele && ele.status === 'TO_DO' ? (
@@ -1251,11 +1276,13 @@ export default function HrDashboard(props) {
                 </div>
               </div>
             )}
-            {showSecond && (
+            {showFirst && (
               <div className="col-md-12 col-lg-6 col-xl-6 col-xxl-6 animate-box">
                 <div
                   style={{
-                    boxShadow: ' rgba(0, 0, 0, 0.20) 0px 5px 15px'
+                    boxShadow: ' rgba(0, 0, 0, 0.20) 0px 5px 15px',
+                    overflow: 'hidden',
+                    borderRadius: '10px'
                   }}
                   className="card "
                 >
@@ -1314,18 +1341,27 @@ export default function HrDashboard(props) {
                                           e,
                                           ele.ticket_id,
                                           ele.id,
-                                          'STOP'
+                                          'STOP',
+                                          'pending_task'
                                         )
                                       }
                                     >
-                                      <i
-                                        className="icofont-ui-pause"
-                                        style={{
-                                          fontSize: '20px',
-                                          color: '#EC7063',
-                                          margin: 'auto'
-                                        }}
-                                      ></i>
+                                      {loading?.condition &&
+                                      loading.id == ele.id &&
+                                      loading.task_list === 'pending_task' ? (
+                                        <span>
+                                          <i className="fa fa-spinner fa-spin" />
+                                        </span>
+                                      ) : (
+                                        <i
+                                          className="icofont-ui-pause"
+                                          style={{
+                                            fontSize: '20px',
+                                            color: '#EC7063',
+                                            margin: 'auto'
+                                          }}
+                                        ></i>
+                                      )}
                                     </button>
                                   )}
 
@@ -1481,18 +1517,27 @@ export default function HrDashboard(props) {
                                           e,
                                           ele.ticket_id,
                                           ele.id,
-                                          'START'
+                                          'START',
+                                          'pending_task'
                                         )
                                       }
                                     >
-                                      <i
-                                        className="icofont-ui-play"
-                                        style={{
-                                          fontSize: '20px',
-                                          color: '#1ABC9C',
-                                          margin: 'auto'
-                                        }}
-                                      ></i>
+                                      {loading?.condition &&
+                                      loading.id == ele.id &&
+                                      loading.task_list === 'pending_task' ? (
+                                        <span>
+                                          <i className="fa fa-spinner fa-spin" />
+                                        </span>
+                                      ) : (
+                                        <i
+                                          className="icofont-ui-play"
+                                          style={{
+                                            fontSize: '20px',
+                                            color: '#1ABC9C',
+                                            margin: 'auto'
+                                          }}
+                                        ></i>
+                                      )}
                                     </button>
                                   )}
                                   {ele && ele && ele.status === 'TO_DO' ? (
@@ -1585,11 +1630,13 @@ export default function HrDashboard(props) {
             )}
           </div>
           <div className="row g-3 mb-3 row-deck ">
-            {showThird && (
+            {showSecond && (
               <div className="col-md-12 col-lg-6 col-xl-6 col-xxl-6 animate-box">
                 <div
                   style={{
-                    boxShadow: ' rgba(0, 0, 0, 0.20) 0px 5px 15px'
+                    boxShadow: ' rgba(0, 0, 0, 0.20) 0px 5px 15px',
+                    overflow: 'hidden',
+                    borderRadius: '10px'
                   }}
                   className="card "
                 >
@@ -1613,11 +1660,13 @@ export default function HrDashboard(props) {
                 </div>
               </div>
             )}
-            {showFourth && (
+            {showSecond && (
               <div className="col-md-12 col-lg-6 col-xl-6 col-xxl-6 animate-box">
                 <div
                   style={{
-                    boxShadow: ' rgba(0, 0, 0, 0.20) 0px 5px 15px'
+                    boxShadow: ' rgba(0, 0, 0, 0.20) 0px 5px 15px',
+                    overflow: 'hidden',
+                    borderRadius: '10px'
                   }}
                   className="card "
                 >
@@ -1672,18 +1721,27 @@ export default function HrDashboard(props) {
                                           e,
                                           ele.ticket_id,
                                           ele.id,
-                                          'STOP'
+                                          'STOP',
+                                          'upcoming_task'
                                         )
                                       }
                                     >
-                                      <i
-                                        className="icofont-ui-pause"
-                                        style={{
-                                          fontSize: '20px',
-                                          color: '#EC7063',
-                                          margin: 'auto'
-                                        }}
-                                      ></i>
+                                      {loading?.condition &&
+                                      loading.id == ele.id &&
+                                      loading.task_list === 'upcoming_task' ? (
+                                        <span>
+                                          <i className="fa fa-spinner fa-spin" />
+                                        </span>
+                                      ) : (
+                                        <i
+                                          className="icofont-ui-pause"
+                                          style={{
+                                            fontSize: '20px',
+                                            color: '#EC7063',
+                                            margin: 'auto'
+                                          }}
+                                        ></i>
+                                      )}
                                     </button>
                                   )}
                                   {ele && ele && ele.status === 'TO_DO' ? (
@@ -1799,18 +1857,27 @@ export default function HrDashboard(props) {
                                           e,
                                           ele.ticket_id,
                                           ele.id,
-                                          'START'
+                                          'START',
+                                          'upcoming_task'
                                         )
                                       }
                                     >
-                                      <i
-                                        className="icofont-ui-play"
-                                        style={{
-                                          fontSize: '20px',
-                                          color: '#1ABC9C',
-                                          margin: 'auto'
-                                        }}
-                                      ></i>
+                                      {loading?.condition &&
+                                      loading.id == ele.id &&
+                                      loading.task_list === 'upcoming_task' ? (
+                                        <span>
+                                          <i className="fa fa-spinner fa-spin" />
+                                        </span>
+                                      ) : (
+                                        <i
+                                          className="icofont-ui-play"
+                                          style={{
+                                            fontSize: '20px',
+                                            color: '#1ABC9C',
+                                            margin: 'auto'
+                                          }}
+                                        ></i>
+                                      )}
                                     </button>
                                   )}
                                   {ele && ele && ele.status === 'TO_DO' ? (
