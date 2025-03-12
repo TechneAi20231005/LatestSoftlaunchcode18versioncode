@@ -98,8 +98,6 @@ export default function EditTicketComponent({ match }) {
 
   const [proceed, setProceed] = useState(true);
 
-
-
   const [selectedFile, setSelectedFile] = useState([]);
   const fileInputRef = useRef(null);
 
@@ -163,8 +161,7 @@ export default function EditTicketComponent({ match }) {
 
   const verifyOtp = async (e) => {
     e.preventDefault();
-    if (submitting) return;
-    setSubmitting(true);
+
     const formData = new FormData(e.target);
     try {
       const res = await new MyTicketService().verifyTicketConfirmationOtp(
@@ -185,7 +182,6 @@ export default function EditTicketComponent({ match }) {
     } catch (error) {
       errorHandler(error);
     } finally {
-      setSubmitting(false);
     }
   };
 
@@ -550,7 +546,7 @@ export default function EditTicketComponent({ match }) {
         }
         setData(null);
         setData(data);
-        setAttachments(data?.attachment || [])
+        setAttachments(data?.attachment || []);
         // handleAttachment("GetAttachment", ticketId);
         if (rows) {
           var dynamicForm = res?.data?.data.dynamic_form;
@@ -653,7 +649,6 @@ export default function EditTicketComponent({ match }) {
     }
 
     try {
-
       const resp = await new QueryTypeService().getQueryType();
       if (resp?.data?.status === 1) {
         var queryType = [];
@@ -941,12 +936,12 @@ export default function EditTicketComponent({ match }) {
   };
   const handleDeleteAttachment = (e, id) => {
     deleteAttachment(id).then((res) => {
-      if(res.status === 200){
+      if (res.status === 200) {
         setAttachments((prevAttachments) =>
           prevAttachments.filter((attach) => attach.id !== id)
         );
         toast.success(res?.data?.message);
-      }else{
+      } else {
         toast.error(res?.data?.message);
       }
       // loadData()
@@ -1001,7 +996,10 @@ export default function EditTicketComponent({ match }) {
 
   return (
     <div className="container-xxl">
-      <PageHeader showBackBtn headerTitle={`Edit Ticket - ${data ? data.ticket_id : ''}`} />
+      <PageHeader
+        showBackBtn
+        headerTitle={`Edit Ticket - ${data ? data.ticket_id : ''}`}
+      />
       <div className="row">
         <div className="col-md-8">
           {data && (
@@ -1364,105 +1362,103 @@ export default function EditTicketComponent({ match }) {
                   </div>
                 </div>
               </div>
-                 {/* removed passed status condiition dicussed with amit sir & tester */}
+              {/* removed passed status condiition dicussed with amit sir & tester */}
               {/* {data && data.passed_status == 'PASS' && ( */}
-                <div className="card mt-2">
-                  <div className="card-body">
-                    <div className="form-group row ">
-                      <div className="col-sm-3">
-                        <label className=" col-form-label">
-                          <b>
-                            Assign Department :{' '}
-                            <Astrick color="red" size="13px" />
-                          </b>
-                        </label>
-                        {departmentDropdown && (
-                          <Select
-                            id="assign_to_department_id"
-                            name="assign_to_department_id"
-                            options={departmentDropdown}
-                            onChange={(e) => {
-                              handleDepartment(e);
-                            }}
-                            defaultValue={departmentDropdown.filter(
-                              (d) => d.value == data.assign_to_department_id
-                            )}
-                            isDisabled={isSolved}
-                          />
-                        )}
-                      </div>
-                      <div className="col-sm-3">
-                        <label className="col-form-label">
-                          <b>
-                            Assign to User : <Astrick color="red" size="13px" />
-                          </b>
-                        </label>
-                        {userDropdown?.length > 0 && (
-                          <Select
-                            ref={userSelectRef}
-                            id="assign_to_user_id"
-                            name="assign_to_user_id"
-                            options={userDropdown}
-                            onChange={(event) => {
-                              if (event) {
-                                setUserName(event);
-                              }
-                            }}
-                            defaultValue={
-                              // userDropdown &&
-                              // data.assign_to_user_id &&
-                              userDropdown.filter(
-                                (d) => d.value == data.assign_to_user_id
-                              )
-                            }
-                            // ref={userDepRef}
-                            isDisabled={isSolved}
-                          />
-                        )}
-                      </div>
-                      <div className="col-sm-3">
-                        <label className="col-form-label">
-                          <b>
-                            Priority :<Astrick color="red" size="13px" />
-                          </b>
-                        </label>
-
-                        <input
-                          type="text"
-                          className="form-control form-control-sm"
-                          id="priority"
-                          name="priority"
-                          required={true}
-                          readOnly={true}
-                          defaultValue={data.priority}
+              <div className="card mt-2">
+                <div className="card-body">
+                  <div className="form-group row ">
+                    <div className="col-sm-3">
+                      <label className=" col-form-label">
+                        <b>
+                          Assign Department :{' '}
+                          <Astrick color="red" size="13px" />
+                        </b>
+                      </label>
+                      {departmentDropdown && (
+                        <Select
+                          id="assign_to_department_id"
+                          name="assign_to_department_id"
+                          options={departmentDropdown}
+                          onChange={(e) => {
+                            handleDepartment(e);
+                          }}
+                          defaultValue={departmentDropdown.filter(
+                            (d) => d.value == data.assign_to_department_id
+                          )}
+                          isDisabled={isSolved}
                         />
-                      </div>
-
-                      <div className="col-sm-3">
-                        <label className=" col-form-label">
-                          <b>
-                            Status : <Astrick color="red" size="13px" />
-                          </b>
-                        </label>
-
-                        {statusData && (
-                          <Select
-                            id="status_id"
-                            name="status_id"
-                            options={statusData}
-                            onChange={(e) => handleTicketStatus(e)}
-                            defaultValue={
-                              statusData &&
-                              statusData.filter(
-                                (d) => d.value == data.status_id
-                              )
+                      )}
+                    </div>
+                    <div className="col-sm-3">
+                      <label className="col-form-label">
+                        <b>
+                          Assign to User : <Astrick color="red" size="13px" />
+                        </b>
+                      </label>
+                      {userDropdown?.length > 0 && (
+                        <Select
+                          ref={userSelectRef}
+                          id="assign_to_user_id"
+                          name="assign_to_user_id"
+                          options={userDropdown}
+                          onChange={(event) => {
+                            if (event) {
+                              setUserName(event);
                             }
-                          />
-                        )}
-                      </div>
+                          }}
+                          defaultValue={
+                            // userDropdown &&
+                            // data.assign_to_user_id &&
+                            userDropdown.filter(
+                              (d) => d.value == data.assign_to_user_id
+                            )
+                          }
+                          // ref={userDepRef}
+                          isDisabled={isSolved}
+                        />
+                      )}
+                    </div>
+                    <div className="col-sm-3">
+                      <label className="col-form-label">
+                        <b>
+                          Priority :<Astrick color="red" size="13px" />
+                        </b>
+                      </label>
+
+                      <input
+                        type="text"
+                        className="form-control form-control-sm"
+                        id="priority"
+                        name="priority"
+                        required={true}
+                        readOnly={true}
+                        defaultValue={data.priority}
+                      />
+                    </div>
+
+                    <div className="col-sm-3">
+                      <label className=" col-form-label">
+                        <b>
+                          Status : <Astrick color="red" size="13px" />
+                        </b>
+                      </label>
+
+                      {statusData && (
+                        <Select
+                          id="status_id"
+                          name="status_id"
+                          options={statusData}
+                          onChange={(e) => handleTicketStatus(e)}
+                          defaultValue={
+                            statusData &&
+                            statusData.filter((d) => d.value == data.status_id)
+                          }
+                        />
+                      )}
                     </div>
                   </div>
                 </div>
+              </div>
               {/* )} */}
 
               {rows && rows.length > 0 && (
@@ -2069,7 +2065,7 @@ export default function EditTicketComponent({ match }) {
                 )}
                 <span>
                   <button
-                    disabled={submitting}
+                    // disabled={proceed}
                     type="submit"
                     className="btn btn-primary text-white"
                   >
