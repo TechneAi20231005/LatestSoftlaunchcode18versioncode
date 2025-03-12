@@ -78,12 +78,12 @@ function CustomerComponent() {
       width: '60px'
     },
     {
-      name: 'Name',
+      name: 'Customer Name',
       selector: (row) => row.name,
       sortable: true,
       width: '150px'
     },
-    { name: 'Type', selector: (row) => row.type_name, sortable: true },
+    { name: 'Type', selector: (row) => row.customer_type, sortable: true },
     {
       name: 'Status',
       selector: (row) => row.is_active,
@@ -159,8 +159,6 @@ function CustomerComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader
         headerTitle="Customer Master"
         renderRight={() => {
@@ -184,6 +182,7 @@ function CustomerComponent() {
 
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by customer name...."
@@ -226,7 +225,6 @@ function CustomerDropdown(props) {
     new CustomerService().getCustomer().then((res) => {
       if (res.status === 200) {
         var data = res?.data?.data;
-
         // var data = data.filter((d) => d.is_active === 1);
         for (const key in data) {
           tempData.push({

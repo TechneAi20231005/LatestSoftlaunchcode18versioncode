@@ -11,6 +11,7 @@ import Alert from '../../../components/Common/Alert';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import { errorHandler } from '../../../utils';
 function ModuleComponent() {
   //initial state
   const location = useLocation();
@@ -45,7 +46,7 @@ function ModuleComponent() {
   const columns = [
     {
       name: 'Action',
-      width: '5%',
+      width: '80px',
       selector: (row) => {},
       sortable: false,
       cell: (row) => (
@@ -59,22 +60,27 @@ function ModuleComponent() {
         </div>
       )
     },
-    { name: 'Sr', width: '5%', selector: (row) => row.counter, sortable: true },
+    {
+      name: 'Sr',
+      width: '70px',
+      selector: (row) => row.counter,
+      sortable: true
+    },
     {
       name: 'Module Name',
-      width: '15%',
+      width: '13%',
       selector: (row) => row.module_name,
       sortable: true
     },
     {
       name: 'Project Name',
-      width: '15%',
+      width: '13%',
       selector: (row) => row.project_name,
       sortable: true
     },
     {
       name: 'Status',
-      width: '10%',
+      width: '100px',
       selector: (row) => row.is_active,
       sortable: false,
       cell: (row) => (
@@ -90,13 +96,13 @@ function ModuleComponent() {
     },
     {
       name: 'Description',
-      width: '10%',
+      width: '120px',
       selector: (row) => row.description,
       sortable: true
     },
     {
       name: 'Remark',
-      width: '10%',
+      width: '120px',
       selector: (row) => row.remark,
       sortable: true
     },
@@ -136,7 +142,7 @@ function ModuleComponent() {
       .then((res) => {
         if (res.status === 200) {
           let counter = 1;
-          const temp = res.data.data;
+          const temp = res.data.data.data;
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -161,41 +167,38 @@ function ModuleComponent() {
           let exportData = [];
           for (const key in data) {
             exportData.push({
-              SrNo: exportData.length,
-
+              SrNo: exportData.length + 1,
               module_name: data[key].module_name,
               project_name: data[key].project_name,
-              is_active: data[key].is_active === 1 ? 'Active' : 'Deactive',
+              description: data[key].description,
               remark: data[key].remark,
-              updated_at: data[key].updated_at,
-              updated_by: data[key].updated_by,
+              Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
               created_by: temp[key].created_by,
-
-              description: data[key].description
+              created_at: temp[key].created_at,
+              updated_by: data[key].updated_by,
+              updated_at: data[key].updated_at,
             });
           }
           setExportData(exportData);
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'Module Master',
-          'Get_Module',
-          'INSERT',
-          errorObject.data.message
-        );
+        errorHandler(error);
       });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const getRoleId = sessionStorage.getItem('role_id');
-          setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
+    await new ManageMenuService()
+      .getRole(roleId)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            const getRoleId = sessionStorage.getItem('role_id');
+            setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }, [roleId]);
 
   useEffect(() => {
@@ -222,8 +225,6 @@ function ModuleComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader
         headerTitle="Module Master"
         renderRight={() => {
@@ -245,6 +246,7 @@ function ModuleComponent() {
       />
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by module name...."

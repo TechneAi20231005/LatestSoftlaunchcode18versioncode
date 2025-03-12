@@ -184,15 +184,22 @@ import { userSessionData } from '../../settings/constants';
 import { masterURL } from '../../settings/constants';
 
 const _URL = masterURL.queryType;
+const _URLQueryTypeMapped = masterURL.queryTypeMapped;
 
-const _getAllQueryType = _URL + '/getAllQueryType1';
-const _getAllQueryGroup = _URL + '/getAllQueryGroup';
-const _postQueryType = _URL + '/createQueryType1';
-const _postQueryGroup = _URL + '/createQueryGroup';
+const _URLGetAllQueryType = masterURL.getAllQueryGroup;
+
+const _getAllQueryType = `${_URL}/getData?export=1`;
+// _URL + '/getAllQueryType1';
+const _getAllQueryGroup = `${_URLGetAllQueryType}/getData?grid=1&export=1`;
+
+const _getQueryGroupForSelect = `${_URLGetAllQueryType}/getData?type=1`;
+//  _URL + '/getAllQueryGroup';
+const _postQueryType = `${_URL}/postData`;
+const _postQueryGroup = `${_URLGetAllQueryType}/postData`;
 const _getQueryTypeById = _URL + '/getQueryTypeById/';
-const _updateQueryType = _URL + '/updateQueryType1/';
+const _updateQueryType = `${_URL}/postData/`;
 const _getQueryTypeForm = _URL + '/getQueryTypeForm';
-const _updateQueryGroup = _URL + '/updateQueryGroup/';
+const _updateQueryGroup = `${_URLGetAllQueryType}/postData/`;
 
 export function getDateTime() {
   var now = new Date();
@@ -240,6 +247,19 @@ export default class QueryTypeService {
       return axios.get(_getAllQueryGroup, config);
     }
   }
+  getQueryGroupForSelect() {
+    const token = localStorage.getItem('jwt_token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+
+    return axios.get(_getQueryGroupForSelect, config);
+  }
 
   getQueryTypeMapped(id) {
     const token = localStorage.getItem('jwt_token');
@@ -252,7 +272,10 @@ export default class QueryTypeService {
       }
     };
 
-    return axios.get(_URL + '/getQueryTypeMappedData/' + id, config);
+    return axios.get(
+      _URLQueryTypeMapped + '/getQueryTypeMappedData/' + id,
+      config
+    );
   }
 
   postQueryType(payload) {

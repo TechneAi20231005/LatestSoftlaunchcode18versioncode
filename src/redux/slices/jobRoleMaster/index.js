@@ -4,7 +4,7 @@ import {
   getJobRoleMasterListThunk,
   addJobRoleMasterThunk,
   editJobRoleMasterThunk
-} from "../../services/jobRoleMaster/index"
+} from '../../services/jobRoleMaster/index';
 
 const initialState = {
   jobRoleMasterList: [],
@@ -38,13 +38,13 @@ const jobRoleMasterSlice = createSlice({
   extraReducers(builder) {
     builder
 
-    //get job role master
+      //get job role master
       .addCase(getJobRoleMasterListThunk.pending, (state, action) => {
         state.isLoading.getJobRoleMasterList = true;
       })
       .addCase(getJobRoleMasterListThunk.fulfilled, (state, action) => {
         state.isLoading.getJobRoleMasterList = false;
-        state.jobRoleMasterList = action?.payload?.data;
+        state.jobRoleMasterList = action?.payload?.data?.data;
         // state.filterJobRoleMasterList = action?.payload?.data?.filter((d) => d.is_active === 1).map((d) => ({ value: d.id, label: d.function_name }));
         state.successMsg.getJobRoleMasterList = action.payload.msg;
       })
@@ -79,10 +79,9 @@ const jobRoleMasterSlice = createSlice({
       .addCase(editJobRoleMasterThunk.rejected, (state, action) => {
         state.isLoading.editJobRoleMaster = false;
         state.errorMsg.editJobRoleMaster = action.error.message;
-      })
+      });
   }
-})
+});
 export default jobRoleMasterSlice.reducer;
-
 
 /// jobrolemaste.created_by || "__"

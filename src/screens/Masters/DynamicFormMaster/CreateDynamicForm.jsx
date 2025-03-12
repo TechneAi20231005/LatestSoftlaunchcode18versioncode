@@ -33,9 +33,12 @@ import { getDesignationDataListThunk } from '../DesignationMaster/DesignationAct
 
 import { getStatusData } from '../StatusMaster/StatusComponentAction';
 import QueryTypeService from '../../../services/MastersService/QueryTypeService';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 function CreateDynamicForm() {
-  const [notify, setNotify] = useState(null);
+  const [message, setMessage] = useState('');
+  const [display, setDisplay] = useState('');
 
   const mainJson = {
     inputWidth: 'col-sm-6',
@@ -228,6 +231,9 @@ function CreateDynamicForm() {
         rows[idx].inputAddOn.inputDateTime = e.target.value;
       } else if (e.target.name === 'inputFormat') {
         rows[idx].inputFormat = e.target.value;
+      } else if (e.target.name === 'inputOnChangeSource') {
+        // rows[idx].inputAddOn.inputDataSource = e.target.value;
+        rows[idx].inputAddOn.inputOnChangeSource = e.target.value;
       }
 
       if (e.target.name === 'inputDataSource' && e.target.value === 'user') {
@@ -242,7 +248,9 @@ function CreateDynamicForm() {
           .getUserForMyTickets(inputRequired)
           .then((res) => {
             if (res?.status === 200) {
-              const data = res?.data?.data.filter((d) => d.is_active === 1);
+              const data = res?.data?.data?.data?.filter(
+                (d) => d.is_active === 1
+              );
 
               for (const key in data) {
                 tempUserData.push({
@@ -357,13 +365,11 @@ function CreateDynamicForm() {
   };
 
   const handleAddRow = async () => {
-    setNotify(null);
     let flag = 1;
     let last = rows.length - 1;
 
     if (!rows[last].inputType || !rows[last].inputLabel) {
       flag = 0;
-      setNotify(null);
     }
 
     const item = {
@@ -393,7 +399,7 @@ function CreateDynamicForm() {
       setRows([...rows, item]);
       setRows([...rows, mainJson]);
     } else {
-      setNotify({ type: 'danger', message: 'Fill Complete Details !!!' });
+      toast.error('Fill Complete Details !!!');
     }
   };
 
@@ -429,39 +435,47 @@ function CreateDynamicForm() {
 
     setFormShow(formShow === true ? false : true);
   };
-
+  const [submitting, setSubmitting] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+
+    if (!message.trim()) {
+      setDisplay('Form Name is Required');
+      return;
+    } else {
+      setDisplay(''); // Clear error
+    }
 
     const data = {
       template_name: e.target.template_name.value,
       data: JSON.stringify(rows)
     };
+    try {
+      const res = await new DynamicFormService().postDynamicForm(data);
 
-    await new DynamicFormService().postDynamicForm(data).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
           dispatch(dynamicFormData());
 
-          setNotify({ type: 'success', message: res.data.message });
+          toast.success(res.data.message);
           setTimeout(() => {
             navigate(`/${_base}/DynamicForm`, {
-              state: { alert: { type: 'success', message: res.data.message } }
+              state: { alert: toast.success(res.data.message) }
             });
-          }, 3000);
+          }, 1000);
         } else {
-          setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message);
         }
       } else {
-        setNotify({ type: 'danger', message: res.message });
-        new ErrorLogService().sendErrorLog(
-          'User',
-          'Create_User',
-          'INSERT',
-          res.message
-        );
+        toast.error(res.message);
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -521,7 +535,6 @@ function CreateDynamicForm() {
                   <h2 className="mb-0 fw-bold ">Dynamic Form</h2>
                 </div>
               </div>
-              {notify && <Alert alertData={notify} />}
 
               {/*************** TABLE ***************/}
               <div className="card mt-2">
@@ -541,11 +554,18 @@ function CreateDynamicForm() {
                           className="form-control form-control-sm"
                           name="template_name"
                           id="template_name"
-                          required
+                          // required
+                          onChange={(e) => {
+                            setMessage(e?.target?.value);
+                            setDisplay(false);
+                          }}
                           onKeyPress={(e) => {
                             Validation.CharactersNumbersOnly(e);
                           }}
                         />
+                        {display && (
+                          <div className="text-danger mt-1">{display}</div>
+                        )}
                       </div>
                     </div>
 
@@ -627,7 +647,7 @@ function CreateDynamicForm() {
                                 <td>
                                   <select
                                     className="form-control form-control-sm"
-                                    required
+                                    required={message.trim()}
                                     key={idx}
                                     name="inputType"
                                     value={item.inputType}
@@ -735,7 +755,7 @@ function CreateDynamicForm() {
                                     />
                                   )}
                                 </td>
-                                <td>
+                                <td className="text-center">
                                   <input
                                     type="checkbox"
                                     name="inputMandatory"
@@ -745,7 +765,7 @@ function CreateDynamicForm() {
                                   />
                                 </td>
 
-                                <td>
+                                <td className="text-center">
                                   {(rows[idx].inputType === 'select-master' ||
                                     rows[idx].inputType === 'select' ||
                                     rows[idx].inputType === 'checkbox') && (
@@ -1161,7 +1181,11 @@ function CreateDynamicForm() {
                     )}
 
                     <div className="float-end">
-                      <button type="submit" className="btn btn-sm btn-primary">
+                      <button
+                        disabled={submitting}
+                        type="submit"
+                        className="btn btn-sm btn-primary"
+                      >
                         Submit
                       </button>
                       <Link

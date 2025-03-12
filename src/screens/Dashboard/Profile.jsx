@@ -1,35 +1,43 @@
-import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import PageHeader from "../../components/Common/PageHeader";
-import { Spinner, Modal } from "react-bootstrap";
-import Alert from "../../components/Common/Alert";
-import { _attachmentUrl, _base, attachmentUrl } from "../../settings/constants";
-import ProfileImg from "../../assets/images/profile_av.png";
-import UserService from "../../services/MastersService/UserService";
-import * as Validation from "../../components/Utilities/Validation";
-import InputGroup from "react-bootstrap/InputGroup";
+import React, { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import PageHeader from '../../components/Common/PageHeader';
+import { Spinner, Modal } from 'react-bootstrap';
+import Alert from '../../components/Common/Alert';
+import { _attachmentUrl, _base, attachmentUrl, _rewampAttachmentUrl } from '../../settings/constants';
+import ProfileImg from '../../assets/images/profile_av.png';
+import UserService from '../../services/MastersService/UserService';
+import * as Validation from '../../components/Utilities/Validation';
+import InputGroup from 'react-bootstrap/InputGroup';
+import AvatarEditor from 'react-avatar-edit';
+import { Button } from 'react-bootstrap';
+import DemoProfileImg from '../../assets/images/profile_av.png';
+import { errorHandler } from '../../utils';
+import { toast } from 'react-toastify';
 
 function Profile() {
   const [state, setState] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+  const [image, setImage] = useState(null);
+  const [preview, setPreview] = useState(null);
 
   const [inputState, setInputState] = useState({
-    firstNameErr: "",
-    middleNameErr: "",
-    lastNameErr: "",
-    emailErr: "",
-    userNameErr: "",
-    contactNoErr: "",
-    whatsappErr: "",
-    passwordErr: "",
-    confirmed_PassErr: "",
-    roleErr: "",
-    designationErr: "",
-    departmentErr: "",
+    firstNameErr: '',
+    middleNameErr: '',
+    lastNameErr: '',
+    emailErr: '',
+    userNameErr: '',
+    contactNoErr: '',
+    whatsappErr: '',
+    passwordErr: '',
+    confirmed_PassErr: '',
+    roleErr: '',
+    designationErr: '',
+    departmentErr: ''
   });
   const history = useNavigate();
-  const [notify, setNotify] = useState();
+  const [submitting, setSubmitting] = useState(false);
   const [data, setData] = useState();
-  const comm = ["EMAIL", "WHATS_APP", "SMS"];
+  const comm = ['EMAIL', 'WHATS_APP', 'SMS'];
 
   const [whatsapp, setWhatsapp] = useState(false);
 
@@ -56,21 +64,21 @@ function Profile() {
   const [passwordError, setPasswordError] = useState(null);
   const [passwordValid, setPasswordValid] = useState(false);
   const handlePasswordValidation = (e) => {
-    if (e.target.value === "") {
-      setInputState({ ...state, passwordErr: "Please Select Password" });
+    if (e.target.value === '') {
+      setInputState({ ...state, passwordErr: 'Please Select Password' });
     } else {
-      setInputState({ ...state, passwordErr: "" });
+      setInputState({ ...state, passwordErr: '' });
     }
     setPassword(e.target.value);
     const passwordValidation = e.target.value;
-    if (passwordValidation.length > "12") {
-      setPasswordError("Enter Password min. 6 & max. 12");
+    if (passwordValidation.length > '12') {
+      setPasswordError('Enter Password min. 6 & max. 12');
       setPasswordValid(true);
-    } else if (passwordValidation.length < "6") {
-      setPasswordError("Enter Password min. 6 & max. 12");
+    } else if (passwordValidation.length < '6') {
+      setPasswordError('Enter Password min. 6 & max. 12');
       setPasswordValid(true);
     } else {
-      setPasswordError("");
+      setPasswordError('');
       setPasswordValid(false);
     }
   };
@@ -82,10 +90,10 @@ function Profile() {
     const emailRegex =
       /^([a-z\d\.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/;
     if (emailRegex.test(email) === false) {
-      setEmailError("Invalid Email");
+      setEmailError('Invalid Email');
       setMailError(true);
     } else {
-      setEmailError("");
+      setEmailError('');
       setMailError(false);
     }
   };
@@ -97,18 +105,18 @@ function Profile() {
     const contactNumber = e.target.value;
     setContactNumber(contactNumber);
     if (
-      contactNumber.charAt(0) == "9" ||
-      contactNumber.charAt(0) == "8" ||
-      contactNumber.charAt(0) == "7" ||
-      contactNumber.charAt(0) == "6"
+      contactNumber.charAt(0) == '9' ||
+      contactNumber.charAt(0) == '8' ||
+      contactNumber.charAt(0) == '7' ||
+      contactNumber.charAt(0) == '6'
     ) {
       setContactErr(false);
-      setContactError("");
+      setContactError('');
     } else if (contactNumber.length === 10) {
       setContactErr(true);
-      setContactError("Invalid Mobile Number");
+      setContactError('Invalid Mobile Number');
     } else {
-      setContactError("");
+      setContactError('');
     }
   };
 
@@ -120,62 +128,64 @@ function Profile() {
     const whatsappNumber = e.target.value;
     setWhatsappNumber(whatsappNumber);
     if (
-      whatsappNumber.charAt(0) == "9" ||
-      whatsappNumber.charAt(0) == "8" ||
-      whatsappNumber.charAt(0) == "7" ||
-      whatsappNumber.charAt(0) == "6"
+      whatsappNumber.charAt(0) == '9' ||
+      whatsappNumber.charAt(0) == '8' ||
+      whatsappNumber.charAt(0) == '7' ||
+      whatsappNumber.charAt(0) == '6'
     ) {
-      setWhatsappError("");
+      setWhatsappError('');
       setWhatsappValid(false);
     } else {
-      setWhatsappError("Invalid Whatsapp Number");
+      setWhatsappError('Invalid Whatsapp Number');
       setWhatsappValid(true);
     }
   };
 
   const handleAccountChange = async (e) => {
     e.preventDefault();
-    setNotify(null);
+    if (submitting) return;
+    setSubmitting(true);
     const formData = new FormData(e.target);
     var flag = 1;
     var a = JSON.stringify(Object.fromEntries(formData));
 
     if (mailError == true) {
-      alert("Enter valid email");
+      alert('Enter valid email');
       return false;
     } else if (contactErr == true) {
-      alert("Enter valid Mobile Number");
+      alert('Enter valid Mobile Number');
       return false;
     } else if (confirmPasswordError == true) {
-      alert("Enter valid password");
+      alert('Enter valid password');
       return false;
     } else if (whatsappValid == true) {
-      alert("Enter valid Whatsapp Number");
+      alert('Enter valid Whatsapp Number');
       return false;
     } else if (mailError == false || contactErr == true) {
       if (flag === 1) {
-        await new UserService()
-          .updateAccountDetails(localStorage.getItem("id"), formData)
-          .then((res) => {
-            if (res.status === 200) {
-              if (res.data.status == 1) {
-                const data = res.data.data;
-
-                setNotify({ type: "success", message: res.data.message });
-                setTimeout(() => {
-                  navigate(`/${_base}/Dashboard`, {
-                    state: {
-                      alert: { type: "success", message: res.data.message },
-                    },
-                  });
-                }, 3000);
-              } else {
-                setNotify({ type: "danger", message: res.data.message });
-              }
+        try {
+          const res = await new UserService().updateAccountDetails(
+            localStorage.getItem('id'),
+            formData
+          );
+          if (res.status === 200) {
+            if (res.data.status == 1) {
+              const data = res.data.data;
+              toast.success(res.data.message);
+              setTimeout(() => {
+                navigate(`/${_base}/Dashboard`, {});
+              }, 2000);
             } else {
-              setNotify({ type: "danger", message: res.data.message });
+              toast.error(res.data.message);
             }
-          });
+          } else {
+            toast.error(res.data.message);
+          }
+        } catch (error) {
+          errorHandler(error);
+        } finally {
+          setSubmitting(false);
+        }
       }
     }
   };
@@ -184,57 +194,92 @@ function Profile() {
     e.preventDefault();
     const formData = new FormData(e.target);
     new UserService()
-      .updatePasswordDetails(localStorage.getItem("id"), formData)
+      .updatePasswordDetails(localStorage.getItem('id'), formData)
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status == 1) {
             localStorage.clear();
             localStorage.clear();
-            localStorage.setItem("message_type", "success");
+            localStorage.setItem('message_type', 'success');
             localStorage.setItem(
-              "message",
-              "Password updated !!! Please login to confirm"
+              'message',
+              'Password updated !!! Please login to confirm'
             );
 
             window.location.href = `/${_base}`;
           } else {
-            setNotify({ type: "danger", message: res.data.message });
+            toast.error(res.data.message);
           }
         } else {
-          setNotify({ type: "danger", message: res.data.message });
+          toast.error(res.data.message);
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
   };
 
   const loadData = async (e) => {
-    new UserService().getUserById(localStorage.getItem("id")).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status == 1) {
-          res.data.data.profile_picture =
-            "http://3.108.206.34/TSNewBackend/" + res.data.data.profile_picture;
-          setData(res.data.data);
+    new UserService()
+      .getUserById(localStorage.getItem('id'))
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status == 1) {
+            res.data.data.profile_picture =
+              'http://3.108.206.34/TSNewBackend/' +
+              res.data.data.profile_picture;
+            setData(res.data.data?.data);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
   const fileChangedHandler = (e) => {
-    let file_size = e.target.files[0].size;
+    let file_size = e?.target?.files[0]?.size;
     if (file_size > 2000000) {
-      alert("Please select file size less than 2 MB");
-      document.getElementById("profile_picture").value = "";
+      alert('Please select file size less than 2 MB');
+      document.getElementById('profile_picture').value = '';
     }
-    let a = e.target.files[0].name;
-    let b = a.lastIndexOf(".");
-    let imageFile = a.substring(b);
-    if (imageFile == ".jpg" || imageFile == ".png" || imageFile == ".jpeg") {
+    let a = e?.target?.files[0]?.name;
+    let b = a?.lastIndexOf('.');
+    let imageFile = a?.substring(b);
+    if (imageFile == '.jpg' || imageFile == '.png' || imageFile == '.jpeg') {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setImage(reader.result);
+        setShowModal(true);
+        // setData((prevData) => ({
+        //   ...prevData,
+        //   upload_Picture: reader.result
+        // }));
+      };
+      reader.readAsDataURL(e?.target?.files[0]);
     } else {
-      alert("Please Upload jpg, jepg and png Image");
-      document.getElementById("profile_picture").value = "";
+      alert('Please Upload jpg, jepg and png Image');
+      document.getElementById('profile_picture').value = '';
     }
   };
 
+  const handleCrop = (previewUrl) => {
+    setData((prevData) => ({
+      ...prevData,
+      upload_Picture: previewUrl
+    }));
+    // setPreview(previewUrl);
+  };
+
+  // Save the cropped image
+  const handleSave = () => {
+    // if (preview) {
+    //   console.log("Saving avatar:", preview);
+    // }
+    setShowModal(false);
+  };
+
   const handlePreferredComm = (e) => {
-    if (e.target.value === "WHATS_APP") {
+    if (e.target.value === 'WHATS_APP') {
       setWhatsapp(true);
     } else {
       setWhatsapp(false);
@@ -247,9 +292,8 @@ function Profile() {
 
   return (
     <div className="container-xxl">
-      <PageHeader headerTitle="User Profile" />
+      <PageHeader headerTitle="User Profile" showBackBtn />
 
-      {notify && <Alert alertData={notify} />}
       <div className="row">
         <div className="col-lg-4 mb-4">
           <div className="card shadow">
@@ -257,40 +301,48 @@ function Profile() {
             <div className="card-body text-center p-0 ">
               <div
                 style={{
-                  height: "9.5rem",
+                  height: '9.5rem',
                   backgroundImage:
-                    " linear-gradient(to top, #484c7f, #525796, #5c62ae, #666ec7, #7179e0)",
-                  clipPath: "polygon(50% 14%, 100% 2%, 100% 100%, 0 100%, 0 0)",
-                  transform: "rotateX(180deg)",
+                    ' linear-gradient(to top, #484c7f, #525796, #5c62ae, #666ec7, #7179e0)',
+                  clipPath: 'polygon(50% 14%, 100% 2%, 100% 100%, 0 100%, 0 0)',
+                  transform: 'rotateX(180deg)'
                 }}
               ></div>
               <img
                 className="avatar lg rounded-circle img-thumbnail"
-                src={data && data.profile_picture}
+                src={
+                  data?.upload_Picture
+                    ? data?.upload_Picture
+                    : _rewampAttachmentUrl + data?.profile_picture
+                }
                 alt="profile"
+                onError={(e) => {
+                  e.target.onerror = null;
+                  e.target.src = DemoProfileImg;
+                }}
                 style={{
-                  height: "11.375rem",
-                  width: "9.375rem",
-                  position: "relative",
-                  marginTop: "-6.25rem",
+                  height: '11.375rem',
+                  width: '9.375rem',
+                  position: 'relative',
+                  marginTop: '-6.25rem'
                 }}
               />
               <div className="p-3">
                 <div className="d-flex justify-content-center mt-2">
                   <h5>
-                    <b>{data && data.first_name + "  " + data.last_name}</b>
+                    <b>{data && data.first_name + '  ' + data.last_name}</b>
                   </h5>
                 </div>
 
                 <div
                   className="d-flex justify-content-center"
                   style={{
-                    color: "#2E86C1",
-                    fontSize: "1.125rem",
-                    fontWeight: "500",
+                    color: '#2E86C1',
+                    fontSize: '1.125rem',
+                    fontWeight: '500'
                   }}
                 >
-                  <p style={{ maxWidth: "100%", overflowWrap: "break-word" }}>
+                  <p style={{ maxWidth: '100%', overflowWrap: 'break-word' }}>
                     {data && data.email_id}
                   </p>
                 </div>
@@ -298,15 +350,14 @@ function Profile() {
                 <center>
                   <span
                     className="badge bg-primary"
-                    style={{ fontSize: "0.938rem", borderRadius: "50px" }}
+                    style={{ fontSize: '0.938rem', borderRadius: '50px' }}
                   >
-                    {data && data.role_name}
+                    {data && data.role}
                   </span>
                 </center>
               </div>
             </div>
           </div>
-
           {/* <div className="card shadow mt-2">
             <div className="card-header bg-primary text-white">
               <h5 style={{ textAlign: "center" }}>Your Departments</h5>
@@ -347,15 +398,15 @@ function Profile() {
 
           <div className="card shadow mt-2">
             <div className="card-header bg-primary text-white">
-              <h5 className="mb-0">Your Departments</h5>{" "}
+              <h5 className="mb-0">Your Departments</h5>{' '}
               {/* Added mb-0 class to remove margin */}
             </div>
             <div className="card-body p-0">
-              {" "}
+              {' '}
               {/* Removed unnecessary text-center class */}
               <div className="table-responsive">
                 <table className="table table-bordered mb-0">
-                  {" "}
+                  {' '}
                   {/* Added mb-0 class to remove margin */}
                   <thead>
                     <tr>
@@ -365,10 +416,10 @@ function Profile() {
                   </thead>
                   <tbody>
                     {data &&
-                      data.department.length > 0 &&
-                      data.department.map((d, i) => (
+                      data?.department.length > 0 &&
+                      data?.department.map((d, i) => (
                         <tr key={i}>
-                          <td className="text-center">{i + 1}</td>{" "}
+                          <td className="text-center">{i + 1}</td>{' '}
                           {/* Center align Sr column */}
                           <td>{d.department_name}</td>
                           {/* Render badge if department is default */}
@@ -385,6 +436,36 @@ function Profile() {
             </div>
           </div>
         </div>
+
+        <Modal
+          className="custom-modal"
+          show={showModal}
+          onHide={() => setShowModal(false)}
+        >
+          <Modal.Header closeButton>
+            <Modal.Title>Edit Avatar</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <AvatarEditor
+              width={300}
+              height={300}
+              border={50}
+              borderRadius={150}
+              scale={1.2}
+              onCrop={handleCrop}
+              onClose={() => setImage(null)}
+              src={image}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={() => setShowModal(false)}>
+              Cancel
+            </Button>
+            <Button variant="primary" onClick={handleSave}>
+              Save Avatar
+            </Button>
+          </Modal.Footer>
+        </Modal>
 
         <div className="col-8">
           <div className="card shadow">
@@ -404,7 +485,7 @@ function Profile() {
                         className="form-control"
                         id="user_name"
                         name="user_name"
-                        value={(data && data.user_name) || ""}
+                        value={(data && data.user_name) || ''}
                         readOnly={true}
                       />
                     </div>
@@ -472,9 +553,9 @@ function Profile() {
                     {emailError && (
                       <small
                         style={{
-                          color: "red",
-                          position: "absolute",
-                          right: "85%",
+                          color: 'red',
+                          position: 'absolute',
+                          right: '85%'
                         }}
                       >
                         {emailError}
@@ -508,7 +589,7 @@ function Profile() {
                         }}
                       />
                       {contactError && (
-                        <small style={{ color: "red", right: "45%" }}>
+                        <small style={{ color: 'red', right: '45%' }}>
                           {contactError}
                         </small>
                       )}
@@ -544,7 +625,7 @@ function Profile() {
                         }}
                       />
                       {whatsappError && (
-                        <small style={{ color: "red", right: "45%" }}>
+                        <small style={{ color: 'red', right: '45%' }}>
                           {whatsappError}
                         </small>
                       )}
@@ -565,13 +646,13 @@ function Profile() {
                           if (data && data.preferred_communication === opt) {
                             return (
                               <option value={opt} selected>
-                                {opt.replace("_", " ")}
+                                {opt.replace('_', ' ')}
                               </option>
                             );
                           } else {
                             return (
                               <option value={opt}>
-                                {opt.replace("_", "")}
+                                {opt.replace('_', '')}
                               </option>
                             );
                           }
@@ -590,7 +671,7 @@ function Profile() {
                           className="form-control"
                           id="password"
                           name="password"
-                          type={passwordShown1 ? "text" : "password"}
+                          type={passwordShown1 ? 'text' : 'password'}
                           minLength={6}
                           maxLength={12}
                           onChange={(e) => handlePasswordValidation(e)}
@@ -620,7 +701,7 @@ function Profile() {
                       </label>
                       <InputGroup>
                         <input
-                          type={passwordShown ? "text" : "password"}
+                          type={passwordShown ? 'text' : 'password'}
                           className="form-control"
                           id="confirm_password"
                           name="confirm_password"
@@ -649,17 +730,17 @@ function Profile() {
 
                 {confirmPasswordError && (
                   <span
-                    style={{ color: "red", position: "absolute", right: "15%" }}
+                    style={{ color: 'red', position: 'absolute', right: '15%' }}
                   >
                     Password Not matched
                   </span>
                 )}
 
-                <div className="mt-3" style={{ textAlign: "right" }}>
+                <div className="mt-3 text-end">
                   <button
+                    disabled={submitting}
                     type="submit"
                     className="btn btn-primary text-white"
-                    style={{ backgroundColor: "#484C7F" }}
                   >
                     Update
                   </button>

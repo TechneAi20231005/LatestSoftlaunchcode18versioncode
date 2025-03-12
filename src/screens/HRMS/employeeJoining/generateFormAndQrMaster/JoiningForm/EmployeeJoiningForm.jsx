@@ -121,6 +121,7 @@ function EmployeeJoiningForm({ data }) {
                       component={CustomReactSelect}
                       name="designation_id"
                       label="Preferred Role"
+                      id="employeejoining_role"
                       // placeholder={QrFormLoading ? "Loading..." : "Select"}
                       requiredField
                       isMulti
@@ -132,6 +133,7 @@ function EmployeeJoiningForm({ data }) {
                       component={CustomReactSelect}
                       name="location_id"
                       label="Preferred Location"
+                      id="employeejoining_location"
                       // placeholder={QrFormLoading ? "Loading..." : "Select"}
                       requiredField
                       isMulti

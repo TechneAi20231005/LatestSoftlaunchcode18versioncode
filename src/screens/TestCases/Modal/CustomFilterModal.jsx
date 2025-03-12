@@ -368,7 +368,7 @@ const CustomFilterModal = ({
             </div>
             {errorMessage && (
               <div className="col">
-                <span className="text-danger">{errorMessage}</span>
+                <small className="text-danger">{errorMessage}</small>
               </div>
             )}
           </Modal.Body>

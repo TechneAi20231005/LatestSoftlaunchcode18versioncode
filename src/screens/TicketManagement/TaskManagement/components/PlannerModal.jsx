@@ -277,20 +277,98 @@ import {
   updateTaskPlanner
 } from '../../../../services/TicketService/TaskService';
 
-import Alert from '../../../../components/Common/Alert';
 import Select from 'react-select';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../../utils';
 function PlannerModal(props) {
-  const [notify, setNotify] = useState();
   const [plannerData, setPlannerData] = useState([]);
   const [taskUsers, setTaskUsers] = useState(null);
   const [totalHours, setTotalHours] = useState(0.0);
-
+  const [submitting, setSubmitting] = useState(false);
   const [times, setTimes] = useState({ label: '00', value: '00' });
 
+  // const loadData = async () => {
+  //   var hours = 0;
+  //   var min = 0;
+  //   var times = [{ label: '00:00', value: '00:00' }];
+  //   do {
+  //     min += 1;
+  //     if (min === 60) {
+  //       min = 0;
+  //       hours += 1;
+  //     }
+  //     let a =
+  //       (hours < 10 ? '0' + hours : hours) + ':' + (min < 10 ? '0' + min : min);
+  //     times.push({ label: a, value: a });
+  //   } while (hours <= 23);
+
+  //   setTimes(times);
+
+  //   await getTaskUser(props.plannerData.taskId).then((res) => {
+  //     if (res.status === 200) {
+  //       setTaskUsers(null);
+
+  //       // res.data.data.forEach
+  //       setTaskUsers(res.data.data);
+  //     }
+  //   });
+
+  //   setPlannerData(props.plannerData);
+
+  //   // if(props.plannerData.data){
+  //   //     let tempTotalHours=0;
+
+  //   //     plannerData.data.forEach(ele=>{
+  //   //             var t=ele.total_hours.replace(':', '.');
+  //   //             tempTotalHours+=parseFloat(t)*60;
+  //   //     })
+  //   //     var Hours = Math.floor(tempTotalHours /60);
+  //   //     var minutes = tempTotalHours % 60;
+  //   //     setTotalHours(Hours+":"+minutes);
+
+  //   // }
+
+  //   const sumHoras = [0, 0];
+  //   for (let i = 0; i < props.plannerData.data.length; i++) {
+  //     const [hours, minutes] = props.plannerData.data[i].total_hours
+  //       .split(':')
+  //       .map((s) => parseInt(s, 10));
+
+  //     // console.log(hours+" "+minutes);
+
+  //     //// hours
+  //     //sumHoras[0] += hours;
+
+  //     //// minutes
+  //     // if ((sumHoras[i] + minutes) > 59) {
+  //     //   const diff = sumHoras[1] + minutes - 60;
+  //     //   sumHoras[0] += 1;
+  //     //   sumHoras[1] = diff;
+  //     // } else {
+  //     //   sumHoras[1] += minutes ;
+  //     // }
+
+  //     sumHoras[0] += hours;
+  //     sumHoras[1] += minutes;
+  //     if (sumHoras[1] >= 60) {
+  //       sumHoras[0] += 1;
+  //       sumHoras[1] = 0;
+  //     }
+  //   }
+  //   var t =
+  //     (sumHoras[0] < 10 ? '0' + sumHoras[0] : sumHoras[0]) +
+  //     ':' +
+  //     (sumHoras[1] < 10 ? '0' + sumHoras[1] : sumHoras[1]);
+  //   setTotalHours(t);
+  // };
+
   const loadData = async () => {
+    if (submitting) return;
+    setSubmitting(true);
     var hours = 0;
     var min = 0;
     var times = [{ label: '00:00', value: '00:00' }];
+
     do {
       min += 1;
       if (min === 60) {
@@ -304,62 +382,45 @@ function PlannerModal(props) {
 
     setTimes(times);
 
-    await getTaskUser(props.plannerData.taskId).then((res) => {
-      if (res.status === 200) {
-        setTaskUsers(null);
-
-        // res.data.data.forEach
-        setTaskUsers(res.data.data);
-      }
-    });
+    await getTaskUser(props.plannerData.taskId)
+      .then((res) => {
+        if (res.status === 200) {
+          setTaskUsers(null);
+          setTaskUsers(res.data.data);
+        } else {
+          toast.error(res.message);
+        }
+      })
+      .catch((error) => errorHandler(error));
 
     setPlannerData(props.plannerData);
 
-    // if(props.plannerData.data){
-    //     let tempTotalHours=0;
+    // Calculate Total Hours
+    const sumHoras = [0, 0]; // sumHoras[0] -> hours, sumHoras[1] -> minutes
 
-    //     plannerData.data.forEach(ele=>{
-    //             var t=ele.total_hours.replace(':', '.');
-    //             tempTotalHours+=parseFloat(t)*60;
-    //     })
-    //     var Hours = Math.floor(tempTotalHours /60);
-    //     var minutes = tempTotalHours % 60;
-    //     setTotalHours(Hours+":"+minutes);
-
-    // }
-
-    const sumHoras = [0, 0];
     for (let i = 0; i < props.plannerData.data.length; i++) {
-      const [hours, minutes] = props.plannerData.data[i].total_hours
+      const [hrs, mins] = props.plannerData.data[i].total_hours
         .split(':')
         .map((s) => parseInt(s, 10));
 
-      // console.log(hours+" "+minutes);
-
-      //// hours
-      //sumHoras[0] += hours;
-
-      //// minutes
-      // if ((sumHoras[i] + minutes) > 59) {
-      //   const diff = sumHoras[1] + minutes - 60;
-      //   sumHoras[0] += 1;
-      //   sumHoras[1] = diff;
-      // } else {
-      //   sumHoras[1] += minutes ;
-      // }
-
-      sumHoras[0] += hours;
-      sumHoras[1] += minutes;
-      if (sumHoras[1] >= 60) {
-        sumHoras[0] += 1;
-        sumHoras[1] = 0;
-      }
+      sumHoras[0] += hrs; // Add hours
+      sumHoras[1] += mins; // Add minutes
     }
-    var t =
+
+    // Convert minutes to hours if minutes >= 60
+    if (sumHoras[1] >= 60) {
+      sumHoras[0] += Math.floor(sumHoras[1] / 60); // Add extra hours
+      sumHoras[1] = sumHoras[1] % 60; // Keep remaining minutes
+    }
+
+    // Format the final total time correctly
+    const totalTime =
       (sumHoras[0] < 10 ? '0' + sumHoras[0] : sumHoras[0]) +
       ':' +
       (sumHoras[1] < 10 ? '0' + sumHoras[1] : sumHoras[1]);
-    setTotalHours(t);
+
+    setTotalHours(totalTime);
+    setSubmitting(false);
   };
 
   const handleChange = (e, index) => {
@@ -399,24 +460,34 @@ function PlannerModal(props) {
       (sumHoras[1] < 10 ? '0' + sumHoras[1] : sumHoras[1]);
     setTotalHours(t);
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
     const data = new FormData(e.target);
 
     //  for(var pair of data.entries()) {
     //     console.log(pair[0]+ ', '+ pair[1]);
     //  }
-    setNotify(null);
-    await updateTaskPlanner(plannerData.taskId, data).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setNotify({ type: 'success', message: res.data.message });
+    await updateTaskPlanner(plannerData.taskId, data)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            toast.success(res.data.message);
+            setTimeout(() => {
+              if (props.handleClose) {
+                props.handleClose();
+              }
+            }, 2000); // Delay closing by 2 seconds
+          } else {
+            toast.error(res.data.message);
+          }
         } else {
-          setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.message);
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error))
+      .finally(() => setSubmitting(false));
   };
 
   useEffect(() => {
@@ -430,8 +501,6 @@ function PlannerModal(props) {
           <h4 style={{ color: '#252640' }}>Task Planner </h4>
         </Modal.Header>
         <Modal.Body>
-          {notify && <Alert alertData={notify} />}
-
           <form onSubmit={handleSubmit}>
             <input
               type="hidden"
@@ -571,6 +640,7 @@ function PlannerModal(props) {
 
             <div className="d-flex justify-content-end">
               <button
+                disabled={submitting}
                 type="submit"
                 className="btn btn-sm text-white"
                 style={{ backgroundColor: '#484C7F' }}

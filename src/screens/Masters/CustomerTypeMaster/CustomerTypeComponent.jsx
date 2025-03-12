@@ -23,10 +23,14 @@ import {
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { Field, Form, Formik, ErrorMessage } from 'formik';
+import { errorHandler } from '../../../utils';
 
 function CustomerTypeComponent() {
   const isActive1Ref = useRef();
   const dispatch = useDispatch();
+  const [message, setMessage] = useState(null);
   const customerData = useSelector(
     (CustomerTypeComponentSlice) =>
       CustomerTypeComponentSlice.customerTypeMaster.getCustomerTypeData
@@ -35,6 +39,10 @@ function CustomerTypeComponent() {
   const isLoading = useSelector(
     (CustomerTypeComponentSlice) =>
       CustomerTypeComponentSlice.customerTypeMaster.isLoading.customerTypeList
+  );
+  const notify = useSelector(
+    (CustomerTypeComponentSlice) =>
+      CustomerTypeComponentSlice.customerTypeMaster.notify
   );
 
   const exportData = useSelector(
@@ -45,9 +53,9 @@ function CustomerTypeComponent() {
   const modal = useSelector(
     (customerMasterSlice) => customerMasterSlice.customerTypeMaster.modal
   );
-  const notify = useSelector(
-    (customerMasterSlice) => customerMasterSlice.customerTypeMaster.notify
-  );
+  // const notify = useSelector(
+  //   (customerMasterSlice) => customerMasterSlice.customerTypeMaster.notify
+  // );
 
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 12)
@@ -170,24 +178,39 @@ function CustomerTypeComponent() {
       // setIsActive(0);
     }
   };
-  const handleForm = (id) => async (e) => {
-    e.preventDefault();
+  const handleForm = async (values, id, { setSubmitting }) => {
+    setSubmitting(true);
+    const formData = new FormData();
+    formData.append('type_name', values.type_name);
+    formData.append('remark', values.remark);
 
-    const form = new FormData(e.target);
-    if (!id) {
-      dispatch(postCustomerData(form)).then((res) => {
-        if (res?.payload?.data?.status === 1) {
-          dispatch(getCustomerTypeData());
-        } else {
-        }
-      });
-    } else {
-      dispatch(updateCustomerData({ id: id, payload: form })).then((res) => {
-        if (res?.payload?.data?.status === 1) {
-          dispatch(getCustomerTypeData());
-        } else {
-        }
-      });
+    const editFormData = new FormData();
+    editFormData.append('type_name', values.type_name);
+    editFormData.append('remark', values.remark);
+    editFormData.append('is_active', values.is_active);
+
+    try {
+      if (!id) {
+        await dispatch(postCustomerData(formData)).then((res) => {
+          if (res?.payload?.data?.status === 1) {
+            dispatch(getCustomerTypeData());
+          } else {
+          }
+        });
+      } else {
+        await dispatch(
+          updateCustomerData({ id: id, payload: editFormData })
+        ).then((res) => {
+          if (res?.payload?.data?.status === 1) {
+            dispatch(getCustomerTypeData());
+          } else {
+          }
+        });
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -220,9 +243,32 @@ function CustomerTypeComponent() {
     }
   }, [dispatch, customerData.length]);
 
+  const initialValues = {
+    type_name: modal.modalData?.type_name || '',
+    remark: modal.modalData?.remark || '',
+    is_active: String(modal?.modalData?.is_active) ?? '1'
+  };
+  const fields = [
+    {
+      name: 'type_name',
+      label: 'Customer Type name',
+      max: 100,
+      required: true,
+      alphaNumeric: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 255,
+      required: false,
+      alphaNumeric: true
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
+
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader
         headerTitle="Customer Type Master"
         renderRight={() => {
@@ -254,6 +300,7 @@ function CustomerTypeComponent() {
 
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by customer type name...."
@@ -285,177 +332,166 @@ function CustomerTypeComponent() {
       </div>
 
       <Modal centered show={modal.showModal}>
-        <form
-          method="post"
-          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={(values, { setSubmitting }) => {
+            handleForm(values, modal.modalData ? modal.modalData.id : '', {
+              setSubmitting
+            });
+            // setOtpModal(true);
+          }}
         >
-          <Modal.Header
-            closeButton
-            onClick={() => {
-              dispatch(
-                handleModalClose({
-                  showModal: false,
-                  modalData: '',
-                  modalHeader: ''
-                })
-              );
-            }}
-          >
-            <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="deadline-form">
-              <div className="row g-3 mb-3">
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Customer Type Name :<Astrick color="red" size="13px" />
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="type_name"
-                    name="type_name"
-                    required
-                    maxLength={30}
-                    defaultValue={
-                      modal.modalData ? modal.modalData.type_name : ''
-                    }
-                    onKeyPress={(e) => {
-                      Validation.CharactersNumbersOnly(e);
-                    }}
-                    onPaste={(e) => {
-                      e.preventDefault();
-                      return false;
-                    }}
-                    onCopy={(e) => {
-                      e.preventDefault();
-                      return false;
-                    }}
-                  />
-                </div>
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Remark :
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="remark"
-                    name="remark"
-                    maxLength={50}
-                    defaultValue={modal.modalData ? modal.modalData.remark : ''}
-                  />
-                </div>
-
-                {modal.modalData && (
-                  <div className="col-sm-12">
-                    <label className="form-label font-weight-bold">
-                      Status :<Astrick color="red" size="13px" />
-                    </label>
-                    <div className="row">
-                      <div className="col-md-2">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            onClick={(e) => {
-                              handleIsActive(e);
-                            }}
-                            id="is_active_1"
-                            ref={isActive1Ref}
-                            value="1"
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 1
-                                ? true
-                                : !modal.modalData
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_1"
-                          >
-                            Active
-                          </label>
-                        </div>
-                      </div>
-                      <div className="col-md-1">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_0"
-                            onClick={(e) => {
-                              handleIsActive(e);
-                            }}
-                            ref={isActive0Ref}
-                            value="0"
-                            readOnly={modal.modalData ? false : true}
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_0"
-                          >
-                            Deactive
-                          </label>
-                        </div>
-                      </div>
+          {({ isSubmitting }) => (
+            <Form>
+              <Modal.Header
+                closeButton
+                onClick={() =>
+                  dispatch(
+                    handleModalClose({
+                      showModal: false,
+                      modalData: '',
+                      modalHeader: ''
+                    })
+                  )
+                }
+              >
+                <Modal.Title className="fw-bold">
+                  {modal.modalHeader}
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="deadline-form">
+                  <div className="row g-3 mb-3">
+                    {/* Customer Type Name */}
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Customer Type Name :<Astrick color="red" size="13px" />
+                      </label>
+                      <Field
+                        type="text"
+                        className="form-control form-control-sm"
+                        id="type_name"
+                        name="type_name"
+                        // onKeyPress={(e) => Validation.CharactersNumbersOnly(e)}
+                        // onPaste={(e) => e.preventDefault()}
+                        // onCopy={(e) => e.preventDefault()}
+                      />
+                      <ErrorMessage
+                        name="type_name"
+                        component="small"
+                        className="text-danger"
+                      />
                     </div>
+
+                    {/* Remark */}
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Remark :
+                      </label>
+                      <Field
+                        type="text"
+                        className="form-control form-control-sm"
+                        id="remark"
+                        name="remark"
+                      />
+                      <ErrorMessage
+                        name="remark"
+                        component="small"
+                        className="text-danger"
+                      />
+                    </div>
+
+                    {/* Status */}
+                    {modal.modalData && (
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Status :<Astrick color="red" size="13px" />
+                        </label>
+                        <div className="row">
+                          <div className="col-md-2">
+                            <div className="form-check">
+                              <Field
+                                className="form-check-input"
+                                type="radio"
+                                name="is_active"
+                                id="is_active_1"
+                                value="1"
+                              />
+                              <label
+                                className="form-check-label"
+                                htmlFor="is_active_1"
+                              >
+                                Active
+                              </label>
+                            </div>
+                          </div>
+                          <div className="col-md-1">
+                            <div className="form-check">
+                              <Field
+                                className="form-check-input"
+                                type="radio"
+                                name="is_active"
+                                id="is_active_0"
+                                value="0"
+                                disabled={!modal.modalData}
+                              />
+                              <label
+                                className="form-check-label"
+                                htmlFor="is_active_0"
+                              >
+                                Deactive
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                {/* Submit / Update Button */}
+                {!modal.modalData ? (
+                  <button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-primary text-white"
+                  >
+                    Submit
+                  </button>
+                ) : (
+                  checkRole &&
+                  checkRole[0]?.can_update === 1 && (
+                    <button
+                      disabled={isSubmitting}
+                      type="submit"
+                      className="btn btn-primary text-white"
+                    >
+                      Update
+                    </button>
+                  )
                 )}
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            {!modal.modalData && (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{
-                  backgroundColor: '#484C7F',
-                  width: '80px',
-                  padding: '8px'
-                }}
-              >
-                Add
-              </button>
-            )}
-            {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{ backgroundColor: '#484C7F' }}
-              >
-                Update
-              </button>
-            ) : (
-              ''
-            )}
-            <button
-              type="button"
-              className="btn btn-danger text-white"
-              onClick={() => {
-                dispatch(
-                  handleModalClose({
-                    showModal: false,
-                    modalData: '',
-                    modalHeader: ''
-                  })
-                );
-              }}
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </form>
+                {/* Cancel Button */}
+                <button
+                  type="button"
+                  className="btn btn-danger text-white"
+                  onClick={() =>
+                    dispatch(
+                      handleModalClose({
+                        showModal: false,
+                        modalData: '',
+                        modalHeader: ''
+                      })
+                    )
+                  }
+                >
+                  Cancel
+                </button>
+              </Modal.Footer>
+            </Form>
+          )}
+        </Formik>
       </Modal>
     </div>
   );

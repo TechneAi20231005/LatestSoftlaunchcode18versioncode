@@ -5,7 +5,6 @@ import ProjectService from '../../../services/ProjectManagementService/ProjectSe
 import ModuleService from '../../../services/ProjectManagementService/ModuleService';
 import { _base } from '../../../settings/constants';
 import ErrorLogService from '../../../services/ErrorLogService';
-import Alert from '../../../components/Common/Alert';
 import PageHeader from '../../../components/Common/PageHeader';
 
 import { Astrick } from '../../../components/Utilities/Style';
@@ -14,10 +13,14 @@ import Select from 'react-select';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
+import { ErrorMessage, Field, Formik, Form } from 'formik';
+import { SubModuleMasterValidation } from './Validation/SubModuleMasterValidation';
+import { ProjectDropdown } from '../ProjectMaster/ProjectComponent';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 export default function CreateModuleComponent({ match }) {
   const history = useNavigate();
-  const [notify, setNotify] = useState(null);
 
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
@@ -29,57 +32,73 @@ export default function CreateModuleComponent({ match }) {
   const [modules, setModules] = useState(null);
   const [modulesDropdown, setModulesDropdown] = useState(null);
 
-  const handleChangevalue = (e) => {
+  const initialValue = {
+    project_id: '',
+    module_id: '',
+    sub_module_name: '',
+    description: '',
+    remark: ''
+  };
+
+  // const handleChange = (e) => {
+  //   setModulesDropdown(
+  //     modules &&
+  //       modules
+  //         .filter((d) => d.project_id === e.value)
+  //         .map((d) => ({ value: d.id, label: d.module_name }))
+  //   );
+  // };
+  const handleChange = (e) => {
+    const selectedValue = e.target.value; // Get the selected project ID
+
     setModulesDropdown(
-      modules &&
-        modules
-          .filter((d) => d.project_id === e.value)
-          .map((d) => ({ value: d.id, label: d.module_name }))
+      modules
+        ?.filter((d) => d.project_id === parseInt(selectedValue, 10)) // Filter by project_id
+        .map((d) => ({ value: d.id, label: d.module_name })) || [] // Map to dropdown options
     );
   };
 
-  const handleForm = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    setNotify(null);
+  // const handleForm = async (e) => {
+  //   e.preventDefault();
+  //   const formData = new FormData(e.target);
+  const handleForm = async (values, { setSubmitting }) => {
+    // e.preventDefault();
+    // const formData = new FormData(e.target);
+    setSubmitting(true);
+    const formData = new FormData();
+    formData.append('project_id', values.project_id);
+    formData.append('module_id', values.module_id);
+    formData.append('sub_module_name', values.sub_module_name);
 
-    await new SubModuleService()
-      .postSubModule(formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            history(
-              {
-                pathname: `/${_base}/SubModule`
-              },
-              {
-                state: { alert: { type: 'success', message: res.data.message } }
-              }
-            );
-          } else {
-            setNotify({ type: 'danger', message: res.data.message });
-          }
+    formData.append('description', values.description);
+    formData.append('remark', values.remark);
+    try {
+      const res = await new SubModuleService().postSubModule(formData);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          setTimeout(() => {
+            history({ pathname: `/${_base}/SubModule` });
+          }, 500);
+          toast.success(res.data.message);
+          // history(
+          //   {
+          //     pathname: `/${_base}/SubModule`
+          //   },
+          //   {
+          //     state: { alert: { type: 'success', message: res.data.message } }
+          //   }
+          // );
         } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'SubModule',
-            'Create_SubModule',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        setNotify({ type: 'danger', message: errorObject.data.message });
-        new ErrorLogService().sendErrorLog(
-          'SubModule',
-          'Create_SubModule',
-          'INSERT',
-          errorObject.data.message
-        );
-      });
+      } else {
+        toast.error(res.data.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const loadData = useCallback(async () => {
@@ -87,7 +106,7 @@ export default function CreateModuleComponent({ match }) {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setProjectdropdown(
-            res.data.data
+            res.data.data.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.project_name }))
           );
@@ -100,7 +119,7 @@ export default function CreateModuleComponent({ match }) {
     await new ModuleService().getModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          setModules(res.data.data.filter((d) => d.is_active === 1));
+          setModules(res.data.data.data.filter((d) => d.is_active === 1));
         }
       }
     });
@@ -120,7 +139,187 @@ export default function CreateModuleComponent({ match }) {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
+      <PageHeader headerTitle="Add Sub-Module" />
+
+      <div className="row clearfix g-3">
+        <div className="col-sm-12">
+          <Formik
+            initialValues={initialValue}
+            validationSchema={SubModuleMasterValidation}
+            onSubmit={(values, { setSubmitting }) => {
+              handleForm(values, { setSubmitting });
+              // setOtpModal(true);
+            }}
+            // onSubmit={handleForm}
+          >
+            {({ isSubmitting, setFieldValue }) => (
+              <Form>
+                <div className="card mt-2">
+                  <div className="card-body">
+                    <div className="form-group row mt-2">
+                      <label className="col-sm-2 col-form-label">
+                        <b>
+                          Select Project :{' '}
+                          <span style={{ color: 'red' }}>*</span>
+                        </b>
+                      </label>
+                      <div className="col-sm-4">
+                        <Field
+                          as="select"
+                          className="form-control form-control-sm"
+                          id="project_id"
+                          name="project_id"
+                          onChange={(e) => {
+                            setFieldValue('project_id', e?.target?.value);
+                            setFieldValue('module_id', null);
+                            setModulesDropdown(
+                              modules &&
+                                modules
+                                  .filter(
+                                    (d) =>
+                                      d.project_id === parseInt(e.target.value)
+                                  )
+                                  .map((d) => ({
+                                    value: d.id,
+                                    label: d.module_name
+                                  }))
+                            );
+                          }} // Call handleChange on selection
+                        >
+                          <option value="" label="Select a project" />
+                          {Projectdropdown?.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Field>
+                        <ErrorMessage
+                          name="project_id"
+                          component="small"
+                          className="text-danger"
+                        />
+                      </div>
+                    </div>
+                    <div className="form-group row mt-2">
+                      <label className="col-sm-2 col-form-label">
+                        <b>
+                          Select Module :{' '}
+                          <span style={{ color: 'red' }}>*</span>
+                        </b>
+                      </label>
+                      <div className="col-sm-4">
+                        <Field
+                          as="select"
+                          className="form-control form-control-sm"
+                          id="module_id"
+                          name="module_id"
+                        >
+                          <option value="" label="Select a module" />
+                          {modulesDropdown?.map((option) => (
+                            <option key={option.value} value={option.value}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </Field>
+                        <ErrorMessage
+                          name="module_id"
+                          component="small"
+                          className="text-danger"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group row mt-2">
+                    <label className="col-sm-2 col-form-label d-flex align-items-center" style={{ whiteSpace: "nowrap" }}>
+    <b>Sub Module Name : <span style={{ color: 'red' }}>*</span></b>
+  </label>
+                      <div className="col-sm-4">
+                        <Field
+                          type="text"
+                          className="form-control form-control-sm"
+                          id="sub_module_name"
+                          name="sub_module_name"
+                          // onKeyPress={(e) => {
+                          //   Validation.addressFieldOnly(e);
+                          // }}
+                        />
+                        <ErrorMessage
+                          name="sub_module_name"
+                          component="small"
+                          className="text-danger"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group row mt-2">
+                      <label className="col-sm-2 col-form-label">
+                        <b>
+                          Description : <span style={{ color: 'red' }}>*</span>
+                        </b>
+                      </label>
+                      <div className="col-sm-10">
+                        <Field
+                          as="textarea"
+                          className="form-control form-control-sm"
+                          id="description"
+                          name="description"
+                          rows="6"
+                          // onKeyPress={(e) => {
+                          //   Validation.addressFieldOnly(e);
+                          // }}
+                        />
+                        <ErrorMessage
+                          name="description"
+                          component="small"
+                          className="text-danger"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="form-group row mt-3">
+                      <label className="col-sm-2 col-form-label">
+                        <b>Remark:</b>
+                      </label>
+                      <div className="col-sm-10">
+                        <Field
+                          type="text"
+                          className="form-control form-control-sm"
+                          id="remark"
+                          name="remark"
+                        />
+                        <ErrorMessage
+                          name="remark"
+                          component="small"
+                          className="text-danger"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="mt-3" style={{ textAlign: 'right' }}>
+                  <button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-sm btn-primary"
+                    // disabled={isSubmitting}
+                  >
+                    Submit
+                  </button>
+                  <Link
+                    to={`/${_base}/SubModule`}
+                    className="btn btn-sm btn-danger text-white"
+                  >
+                    Cancel
+                  </Link>
+                </div>
+              </Form>
+            )}
+          </Formik>
+        </div>
+      </div>
+
+      {/* {notify && <Alert alertData={notify} />}
 
       <PageHeader headerTitle="Add Sub-Module" />
 
@@ -216,9 +415,9 @@ export default function CreateModuleComponent({ match }) {
                   </div>
                 </div>
               </div>{' '}
-              {/* CARD BODY */}
+
             </div>
-            {/* CARD */}
+
 
             <div className="mt-3" style={{ textAlign: 'right' }}>
               <button type="submit" className="btn btn-sm btn-primary">
@@ -233,7 +432,7 @@ export default function CreateModuleComponent({ match }) {
             </div>
           </form>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

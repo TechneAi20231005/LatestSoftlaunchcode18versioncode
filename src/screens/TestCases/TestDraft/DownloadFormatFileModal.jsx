@@ -109,6 +109,7 @@ function DownloadFormatFileModal({ show, close }) {
                     component={CustomDropdown}
                     name="project_id"
                     label="Project Name"
+                    id="testdraft_projectname"
                     requiredField
                     handleChange={(event) =>
                       handleProjectChange(event, setFieldValue)
@@ -121,6 +122,7 @@ function DownloadFormatFileModal({ show, close }) {
                     component={CustomDropdown}
                     name="module_id"
                     label="Module Name"
+                    id="testdraft_modulename"
                     requiredField
                     handleChange={(event) =>
                       handleModuleChange(event, setFieldValue)
@@ -134,6 +136,7 @@ function DownloadFormatFileModal({ show, close }) {
                     component={CustomReactSelect}
                     name="submodule_id"
                     label="SubModule Name"
+                    id="testdraft_submodulename"
                     placeholder="Select"
                     ref={subModuleIdRef}
                     isMulti

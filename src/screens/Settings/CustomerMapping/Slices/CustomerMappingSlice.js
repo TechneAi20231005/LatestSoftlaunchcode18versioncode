@@ -4,8 +4,9 @@ import {
   getCustomerMappingData,
   getQueryTypeData,
   getTemplateData,
-  getcustomerTypeData,
+  getcustomerTypeData
 } from './CustomerMappingAction';
+import { toast } from 'react-toastify';
 
 const initialState = {
   status: '',
@@ -14,10 +15,10 @@ const initialState = {
   modal: {
     showModal: false,
     modalData: '',
-    modalHeader: '',
+    modalHeader: ''
   },
   isLoading: {
-    customerMappingList: false,
+    customerMappingList: false
   },
   customerMappingData: [],
   exportTempData: [],
@@ -25,7 +26,7 @@ const initialState = {
   customerTypeData: [],
   queryTypeData: [],
   queryTypeDropDownData: [],
-  templateDropDownData: [],
+  templateDropDownData: []
 };
 
 export const CustomerMappingSlice = createSlice({
@@ -40,10 +41,10 @@ export const CustomerMappingSlice = createSlice({
     },
     handleModalClose: (state, action) => {
       state.modal = action.payload;
-    },
+    }
   },
-  extraReducers: builder => {
-    builder.addCase(getCustomerMappingData.pending, state => {
+  extraReducers: (builder) => {
+    builder.addCase(getCustomerMappingData.pending, (state) => {
       state.status = 'loading';
       state.isLoading.customerMappingList = true;
     });
@@ -56,6 +57,7 @@ export const CustomerMappingSlice = createSlice({
 
         let counter = 1;
         const data = payload.data.data;
+        console.log('dataaaaaaaaaaaaaaaaaaa', data);
         let customerMappingData = [];
         for (const key in data) {
           customerMappingData.push({
@@ -75,7 +77,7 @@ export const CustomerMappingSlice = createSlice({
             created_at: data[key].created_at,
             created_by: data[key].created_by,
             updated_at: data[key].updated_at,
-            updated_by: data[key].updated_by,
+            updated_by: data[key].updated_by
           });
         }
         state.customerMappingData = customerMappingData;
@@ -99,20 +101,21 @@ export const CustomerMappingSlice = createSlice({
             // confirmation_required:[i].confirmation_required,
             dynamic_form_name: data[i].dynamic_form_name,
             customer_type_name: data[i].customer_type_name,
-            confirmation_required: data[i].confirmation_required == 1 ? 'Yes' : 'no',
+            confirmation_required:
+              data[i].confirmation_required == 1 ? 'Yes' : 'no'
           });
         }
         state.exportTempData = exportTempData;
       }
     });
-    builder.addCase(getCustomerMappingData.rejected, state => {
+    builder.addCase(getCustomerMappingData.rejected, (state) => {
       state.status = 'rejected';
       state.isLoading.customerMappingList = false;
     });
 
     //ExportCustomerMapping
 
-    builder.addCase(exportCustomerMappingData.pending, state => {
+    builder.addCase(exportCustomerMappingData.pending, (state) => {
       state.status = 'loading';
       state.isLoading.customerMappingList = true;
     });
@@ -122,6 +125,7 @@ export const CustomerMappingSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let exportTempateData = payload.data.data;
+        console.log('exportTempateData', exportTempateData);
         state.isLoading.customerMappingList = false;
 
         state.status = 'succeded';
@@ -138,31 +142,37 @@ export const CustomerMappingSlice = createSlice({
             Sr: exportTempateData[i].counter,
             Query: exportTempateData[i].query_type_name,
             Template: exportTempateData[i].template_name,
+            'Dynamic Form Name': exportTempateData[i].dynamic_form_name,
+
             Department: exportTempateData[i].department_name,
             Priority: exportTempateData[i].priority,
             Approach: exportTempateData[i].approach,
             remark: exportTempateData[i].remark,
-            is_active: exportTempateData[i].is_active == 1 ? 'Active' : 'Deactive',
-            created_at: exportTempateData[i].created_at,
-            created_by: exportTempateData[i].created_by,
-            updated_at: exportTempateData[i].updated_at,
-            updated_by: exportTempateData[i].updated_by,
+            'Customer Type Name': exportTempateData[i].customer_type_name,
+            'Assign User': exportTempateData[i]?.user_policy
+              ? exportTempateData[i]?.user_policy
+                  ?.map((user) => user?.user_name || '')
+                  .join(', ')
+              : '',
+            'Confirmation Required':
+              exportTempateData[i].confirmation_required == 1 ? 'Yes' : 'no',
+            Status: exportTempateData[i].is_active == 1 ? 'Active' : 'Deactive',
+            'Created At': exportTempateData[i].created_at,
+            'Created By': exportTempateData[i].created_by,
+            'Updated At': exportTempateData[i].updated_at,
+            'Updated By': exportTempateData[i].updated_by
             // confirmation_required:[i].confirmation_required,
-            dynamic_form_name: exportTempateData[i].dynamic_form_name,
-            customer_type_name: exportTempateData[i].customer_type_name,
-            'Assign User': exportTempateData[i].mapped_user,
-            confirmation_required: exportTempateData[i].confirmation_required == 1 ? 'Yes' : 'no',
           });
           state.exportData = exportData;
         }
       }
     });
-    builder.addCase(exportCustomerMappingData.rejected, state => {
+    builder.addCase(exportCustomerMappingData.rejected, (state) => {
       state.status = 'rejected';
       state.isLoading.customerMappingList = false;
     });
 
-    builder.addCase(getcustomerTypeData.pending, state => {
+    builder.addCase(getcustomerTypeData.pending, (state) => {
       state.status = 'loading';
       state.isLoading.customerMappingList = true;
     });
@@ -171,9 +181,10 @@ export const CustomerMappingSlice = createSlice({
       state.isLoading.customerMappingList = false;
       state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        const select = payload.data.data
-          .filter(d => d.is_active)
-          .map(d => ({ value: d.id, label: d.type_name }));
+        const select = payload.data.data.data
+
+          .filter((d) => d.is_active)
+          .map((d) => ({ value: d.id, label: d.type_name }));
         state.customerTypeData = select;
 
         state.status = 'succeded';
@@ -183,21 +194,23 @@ export const CustomerMappingSlice = createSlice({
         state.notify = { type: 'danger', message: payload.data.message };
       }
     });
-    builder.addCase(getcustomerTypeData.rejected, state => {
+    builder.addCase(getcustomerTypeData.rejected, (state) => {
       state.status = 'rejected';
     });
 
-    builder.addCase(getQueryTypeData.pending, state => {
+    builder.addCase(getQueryTypeData.pending, (state) => {
       state.status = 'loading';
     });
     builder.addCase(getQueryTypeData.fulfilled, (state, action) => {
       const { payload } = action;
       state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        const queryTypeData = payload.data.data.filter(d => d.is_active == 1);
-        const queryTypeDropDownData = payload.data.data
-          .filter(d => d.is_active === 1)
-          .map(d => ({ value: d.id, label: d.query_type_name }));
+        const queryTypeData = payload.data.data.data.filter(
+          (d) => d.is_active == 1
+        );
+        const queryTypeDropDownData = payload.data.data.data
+          .filter((d) => d.is_active === 1)
+          .map((d) => ({ value: d.id, label: d.query_type_name }));
         state.queryTypeData = queryTypeData;
         state.queryTypeDropDownData = queryTypeDropDownData;
         state.status = 'succeded';
@@ -207,12 +220,12 @@ export const CustomerMappingSlice = createSlice({
         state.notify = { type: 'danger', message: payload.data.message };
       }
     });
-    builder.addCase(getQueryTypeData.rejected, state => {
+    builder.addCase(getQueryTypeData.rejected, (state) => {
       state.status = 'rejected';
       state.isLoading.customerMappingList = false;
     });
 
-    builder.addCase(getTemplateData.pending, state => {
+    builder.addCase(getTemplateData.pending, (state) => {
       state.status = 'loading';
       state.isLoading.customerMappingList = true;
     });
@@ -221,24 +234,25 @@ export const CustomerMappingSlice = createSlice({
       state.isLoading.customerMappingList = false;
       state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        const activeTemplate = payload.data.data.filter(d => d.is_active == 1);
+        const activeTemplate = payload.data.data.data.filter(
+          (d) => d.is_active == 1
+        );
 
-        let templateDropDownData = activeTemplate.map(d => ({
+        let templateDropDownData = activeTemplate.map((d) => ({
           value: d.id,
-          label: d.template_name,
+          label: d.template_name
         }));
         state.templateDropDownData = templateDropDownData;
         state.status = 'succeded';
-
-        state.notify = { type: 'success', message: payload.data.message };
+        // toast.success(payload.data.message);
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
-    builder.addCase(getTemplateData.rejected, state => {
+    builder.addCase(getTemplateData.rejected, (state) => {
       state.status = 'rejected';
       state.isLoading.customerMappingList = false;
     });
-  },
+  }
 });
 export default CustomerMappingSlice.reducer;

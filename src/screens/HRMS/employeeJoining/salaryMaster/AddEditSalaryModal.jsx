@@ -122,6 +122,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                       component={CustomReactSelect}
                       name="department_id"
                       label="Department"
+                      id="salarymaster_department"
                       placeholder={
                         preferredDepartmentDropdownLoading === 'loading'
                           ? 'Loading...'
@@ -136,6 +137,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                       component={CustomReactSelect}
                       name="designation_id"
                       label="Designation"
+                      id="salarymaster_designation"
                       placeholder={
                         preferredDesignationDropdownLoading
                           ? 'Loading...'
@@ -150,6 +152,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                       component={CustomReactSelect}
                       name="location_id"
                       label="Location"
+                      id="salarymaster_location"
                       placeholder={
                         preferredLocationDropdownLoading
                           ? 'Loading...'
@@ -165,6 +168,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                       component={CustomDropdown}
                       name="experience_level"
                       label="Experience Level"
+                      id="salarymaster_experiencelevel"
                       placeholder="Select"
                       requiredField
                     />
@@ -176,6 +180,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                       component={CustomCurrencyInput}
                       name="max_salary"
                       label="Max salary(In Hand)"
+                      id="salarymaster_maxsalary"
                       placeholder="Enter max salary"
                       type="number"
                       requiredField
@@ -186,6 +191,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                       component={CustomInput}
                       name="remark"
                       label="Remark"
+                      id="salarymaster_remark"
                       placeholder="Enter Remark"
                     />
                   </Col>
@@ -201,6 +207,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                     type="radio"
                     name="is_active"
                     label="Active"
+                    id="salarymaster_active"
                     value="1"
                     inputClassName="me-1"
                   />
@@ -209,6 +216,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                     type="radio"
                     name="is_active"
                     label="Deactive"
+                    id="salarymaster_deactive"
                     value="0"
                     inputClassName="me-1"
                   />
@@ -217,15 +225,15 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
 
               <div className="d-flex justify-content-end mt-3 gap-2">
                 <button
-                  className="btn btn-dark px-4"
+                  className="btn btn-primary px-4"
                   type="submit"
                   disabled={!dirty}
                 >
-                  {type === 'ADD' ? 'Save' : 'Update'}
+                  {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>
                 <button
                   onClick={close}
-                  className="btn btn-shadow-light px-3"
+                  className="btn btn-danger px-3"
                   type="button"
                 >
                   Cancel

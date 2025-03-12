@@ -4,10 +4,13 @@ import { ticketUrl, _apiUrl } from '../../settings/constants';
 
 const _URL = ticketUrl.ticket;
 const _getAllTicket = _URL + '/getAllTicket/' + userSessionData.userId;
-const _getAllTicketTest = _URL + '/getAllTicketTest';
+// const _getAllTicketTest = `${_URL}/getAllTicket`;
+
+const _getAllTicketTestWithoutTypeOF = _URL + '/getAllTicket';
+
 const _getAllTicketNew = _URL + '/getAllTicketNew';
 
-const _createTicket = _URL + '/createTicket';
+const _createTicket = _URL + '/postData';
 const _updateTicket = _URL + '/updateTicket/';
 const _getTicketById = _URL + '/getTicketById/';
 const _createComment = _URL + '/comment/createComment';
@@ -41,9 +44,22 @@ export default class MyTicketService {
         'Content-Type': 'application/json'
       }
     };
-    return axios.post(_getAllTicketTest, payload, config);
+
+    return axios.post(`${_URL}/getAllTicket`, payload, config);
   }
 
+  getUserTicketsTestWithoutTypeOf(payload) {
+    const token = localStorage.getItem('jwt_token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+    return axios.post(_getAllTicketTestWithoutTypeOF, payload, config);
+  }
   getExpectedSolveDate(cuMappingId) {
     const token = localStorage.getItem('jwt_token');
 
@@ -99,7 +115,6 @@ export default class MyTicketService {
         'Content-Type': 'application/json'
       }
     };
-    console.log('_getTicketById', _getTicketById);
     return axios.get(_getTicketById + id, config);
   }
 
@@ -160,7 +175,8 @@ export default class MyTicketService {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: 'application/json'
+        Accept: 'application/json',
+        'Content-Type': 'multipart/form-data'
         // Remove 'Content-Type' header so Axios can set it automatically
         // when using FormData, it will be set to multipart/form-data
       }

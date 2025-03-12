@@ -76,6 +76,7 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
                     component={CustomInput}
                     name="function_name"
                     label="Function Title"
+                    id="functionmaster_functiontitle"
                     placeholder="Enter Function Title"
                     requiredField
                   />
@@ -85,6 +86,7 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
                     component={CustomInput}
                     name="remark"
                     label="Remark"
+                    id="functionmaster_remark"
                     placeholder="Enter Remark"
                   />
                 </Col>
@@ -99,6 +101,7 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
                       type="radio"
                       name="is_active"
                       label="Active"
+                      id="functionmaster_active"
                       value="1"
                       inputClassName="me-1"
                     />
@@ -107,6 +110,7 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
                       type="radio"
                       name="is_active"
                       label="Deactive"
+                      id="functionmaster_deactive"
                       value="0"
                       inputClassName="me-1"
                     />
@@ -116,15 +120,15 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
 
               <div className="d-flex justify-content-end gap-2 mt-3">
                 <button
-                  className="btn btn-dark px-4"
+                  className="btn btn-primary px-4"
                   type="submit"
                   disabled={!dirty}
                 >
-                  {type === 'ADD' ? 'Save' : 'Update'}
+                  {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>
                 <button
                   onClick={() => close()}
-                  className="btn btn-shadow-light px-3"
+                  className="btn btn-danger px-3"
                   type="button"
                 >
                   Cancel

@@ -4,6 +4,7 @@ import {
   postdepartment,
   updateDepartment
 } from './DepartmentMasterAction';
+import { toast } from 'react-toastify';
 
 const initialState = {
   status: '',
@@ -46,7 +47,7 @@ export const departmentMasterSlice = createSlice({
       state.isLoading.departmentDataList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let departmentData = payload.data.data;
+        let departmentData = payload.data.data?.data;
         state.status = 'succeded';
         state.showLoaderModal = false;
         let count = 1;
@@ -56,7 +57,9 @@ export const departmentMasterSlice = createSlice({
         state.departmentData = [...departmentData];
         let exportDepartmentData = [];
 
-        let filterdata = payload.data.data.filter((d) => d.is_active === 1);
+        let filterdata = payload.data.data.data?.filter(
+          (d) => d.is_active === 1
+        );
         let sortDepartmentData = [];
         for (const key in filterdata) {
           if (filterdata[key].department) {
@@ -107,13 +110,11 @@ export const departmentMasterSlice = createSlice({
         state.showLoaderModal = false;
         state.postdepartment = postdepartment;
         state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        let notify = { type: 'danger', message: payload.data.message };
-        state.notify = null;
-        state.notify = notify;
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(postdepartment.rejected, (state) => {
@@ -136,14 +137,14 @@ export const departmentMasterSlice = createSlice({
 
         state.status = 'succeded';
         state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         state.showLoaderModal = false;
         state.updateDepartment = updateDepartment;
 
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(updateDepartment.rejected, (state) => {

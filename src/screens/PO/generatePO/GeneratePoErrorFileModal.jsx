@@ -125,6 +125,7 @@ function GeneratePoErrorFileModal({ open, close }) {
                     options={venderData}
                     name="vender_name"
                     label="Vendor Name :"
+                    id="generatepoerror_vendorname"
                     placeholder={getVenderList ? 'Loading...' : 'Select'}
                     requiredField
                     isSearchable
@@ -136,6 +137,7 @@ function GeneratePoErrorFileModal({ open, close }) {
                     options={venderUnixCode}
                     name="unix_code"
                     label="Error File Date :"
+                    id="generatepoerror_errorfiledate"
                     placeholder={
                       getUnixCodeAgainstVendor ? 'Loading...' : 'Select'
                     }

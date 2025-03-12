@@ -213,6 +213,7 @@ function EditTestCaseModal({
                     component={CustomDropdown}
                     name="project_id"
                     label="Project Name"
+                    id="edittestcasemodal_projectname"
                     placeholder="Select"
                     requiredField
                     handleChange={(event) =>
@@ -226,6 +227,7 @@ function EditTestCaseModal({
                     component={CustomDropdown}
                     name="module_id"
                     label="Module Name"
+                    id="edittestcasemodal_modulename"
                     requiredField
                     placeholder="Select"
                     handleChange={(event) =>
@@ -240,6 +242,7 @@ function EditTestCaseModal({
                     component={CustomDropdown}
                     name="submodule_id"
                     label="SubModule Name"
+                    id="edittestcasemodal_submodulename"
                     placeholder="Select"
                     // isMulti
                     requiredField
@@ -252,6 +255,7 @@ function EditTestCaseModal({
                     component={CustomDropdown}
                     name="function_id"
                     label="Function"
+                    id="edittestcasemodal_function"
                     placeholder="Enter function name"
                     requiredField
                   />
@@ -262,6 +266,7 @@ function EditTestCaseModal({
                     component={CustomInput}
                     name="field"
                     label="Field"
+                    id="edittestcasemodal_field"
                     placeholder="Enter field name"
                   />
                 </Col>
@@ -271,6 +276,7 @@ function EditTestCaseModal({
                     component={CustomDropdown}
                     name="type_id"
                     label="Testing Type"
+                    id="editestcasemodal_testingtype"
                     placeholder="Enter testing type name"
                     requiredField
                   />
@@ -280,6 +286,7 @@ function EditTestCaseModal({
                     component={CustomInput}
                     name="tc_id"
                     label="Test Id"
+                    id="edittestcasemodal_testid"
                     placeholder="Enter testing id"
                     requiredField
                     disabled
@@ -292,6 +299,7 @@ function EditTestCaseModal({
                     component={CustomDropdown}
                     name="group_id"
                     label="Testing Group"
+                    id="edittestcasemodal_testinggroup"
                   />
                 </Col>
 
@@ -301,6 +309,7 @@ function EditTestCaseModal({
                     component={CustomDropdown}
                     name="severity"
                     label="Severity"
+                    id="edittestcasemodal_severity"
                     placeholder="Enter Severity"
                     requiredField
                   />
@@ -311,6 +320,7 @@ function EditTestCaseModal({
                     component={CustomTextArea}
                     name="steps"
                     label="Steps"
+                    id="edittestcasemodal_steps"
                     placeholder="Enter steps"
                   />
                 </Col>
@@ -320,6 +330,7 @@ function EditTestCaseModal({
                     component={CustomTextArea}
                     name="test_description"
                     label="Test Description"
+                    id="edittestcasemodal_testdescription"
                     placeholder="Enter test description"
                     requiredField
                   />
@@ -330,6 +341,7 @@ function EditTestCaseModal({
                     component={CustomTextArea}
                     name="expected_result"
                     label="Expected Result"
+                    id='edittestcasemodal_expectedresult'
                     placeholder="Enter expected result"
                     requiredField
                   />
@@ -339,17 +351,17 @@ function EditTestCaseModal({
               <div className="d-flex justify-content-end gap-2">
                 <button
                   // disabled={disable}
-                  className="btn btn-dark px-4"
+                  className="btn btn-primary px-4"
                   type="submit"
                 >
                   Update
                 </button>
                 <button
                   onClick={close}
-                  className="btn btn-shadow-light px-3"
+                  className="btn btn-danger px-3"
                   type="button"
                 >
-                  Close
+                  Cancel
                 </button>
               </div>
             </Form>

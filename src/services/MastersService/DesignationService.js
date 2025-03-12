@@ -4,9 +4,10 @@ import { masterURL } from '../../settings/constants';
 
 const _URL = masterURL.designation;
 
-const _getAllDesignation = _URL + '/getAllDesignation/1';
-const _createDepartment = _URL + '/createDesignation';
-const _updateDesignation = _URL + '/updateDesignation/';
+const _getAllDesignation = `${_URL}/getData?export=1`;
+// _URL + '/getAllDesignation/1';
+const _createDepartment = _URL + '/postData';
+const _updateDesignation = _URL + '/postData/';
 const _getDesignationById = _URL + '/getDesignationById/';
 
 export function getDateTime() {

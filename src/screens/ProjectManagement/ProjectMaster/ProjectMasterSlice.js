@@ -110,8 +110,6 @@ export const ProjectMasterSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: 'success', message: payload.data.message };
-
         let postprojectData = payload.data.data;
 
         state.postprojectData = postprojectData;
@@ -139,7 +137,6 @@ export const ProjectMasterSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: 'success', message: payload.data.message };
         let updateprojectMaster = payload.data.data;
 
         state.updateprojectMaster = updateprojectMaster;

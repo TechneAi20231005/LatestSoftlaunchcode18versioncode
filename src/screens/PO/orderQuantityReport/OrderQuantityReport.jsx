@@ -266,6 +266,7 @@ function OrderQuantityReport() {
                       options={venderData}
                       name="vender_name"
                       label="Vendor Name :"
+                      id="orderqtyreport_vendorname"
                       placeholder={getVenderList ? 'Loading...' : 'Select'}
                       isSearchable
                       isMulti
@@ -277,6 +278,7 @@ function OrderQuantityReport() {
                       type="date"
                       name="order_date"
                       label="Order Date :"
+                        id="orderqtyreport_orderdate"
                       placeholderText="dd/mm/yyyy"
                       dateFormat="dd/MM/yyy"
                       showMonthDropdown
@@ -295,6 +297,7 @@ function OrderQuantityReport() {
                       type="date"
                       name="delivery_date"
                       label="Delivery Date :"
+                        id="orderqtyreport_deliverydate"
                       placeholderText="dd/mm/yyyy"
                       dateFormat="dd/MM/yyy"
                       showMonthDropdown

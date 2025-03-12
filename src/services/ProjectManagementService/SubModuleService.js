@@ -1,22 +1,25 @@
 import axios from 'axios';
-import { consolidateViewUrl, userSessionData } from '../../settings/constants';
+import {
+  consolidateViewUrl,
+  masterURL,
+  userSessionData
+} from '../../settings/constants';
 import { projectManagementUrl } from '../../settings/constants';
 
-const _URL = projectManagementUrl.subModuleUrl;
-const _getAllSubModule = _URL + '/getAllSubmodule';
-const _postSubModule = _URL + '/createSubmodule';
-const _getSubModuleById = _URL + '/getSubmoduleById/';
-const _updateSubModule = _URL + '/updateSubmodule/';
-const _updateSubModuleDoc =
-  consolidateViewUrl.consolidateViewUrl + '/createProjectsSubModules';
+const _URL = masterURL.subModuleMaster;
+
+const _getAllSubModule = `${_URL}/getData?export=1`;
+const _postSubModule = _URL + '/postData';
+const _getSubModuleById = _URL + '/getData/';
+const _updateSubModule = _URL + '/postData/';
+const _updateSubModuleDoc = consolidateViewUrl.consolidateViewUrl + '/postData';
 const _getSubModuleDocumentById =
   consolidateViewUrl.consolidateViewUrl + '/getProjectsSubModules';
 const _getDocumentHistory =
   consolidateViewUrl.consolidateViewUrl + '/getProjectAttachmentHistory';
 
 const deleteRestoreSubModuleDoc =
-  consolidateViewUrl.consolidateViewUrl +
-  '/deleteRestoreProjectsSubModulesAttachment';
+  consolidateViewUrl.consolidateViewUrl + '/deleteRestoreProjectsAttachment';
 const updateProjectDocUrl =
   consolidateViewUrl.consolidateViewUrl + '/updateProjectDocument/';
 
@@ -106,6 +109,7 @@ export default class SubModuleService {
 
     return axios.get(
       `${_getSubModuleDocumentById}/${projectId}/${moduleId}/${type}/${subModuleId}`,
+      // /${subModuleId}`,
       config
     );
   }

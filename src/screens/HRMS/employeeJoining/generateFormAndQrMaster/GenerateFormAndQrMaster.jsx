@@ -308,6 +308,7 @@ ${currentDate}
                                   type="radio"
                                   name="branding_type"
                                   label="Select Logo"
+                                  id="generateqr_selectlogo"
                                   value="logo"
                                   disabled={success}
                                   inputClassName="me-1"
@@ -322,6 +323,7 @@ ${currentDate}
                                   type="radio"
                                   name="branding_type"
                                   label="Enter Company Name"
+                                  id="generateqr_companyname"
                                   value="text"
                                   disabled={success}
                                   inputClassName="me-1"
@@ -382,6 +384,7 @@ ${currentDate}
                                   type="text"
                                   disabled={success}
                                   name="company_name"
+                                  id="generateqr_companyname"
                                   withOutLabel
                                   placeholder="Enter Company Name"
                                 />
@@ -393,6 +396,7 @@ ${currentDate}
                               component={CustomReactSelect}
                               name="source_name"
                               label="Select Source"
+                              id="generateqr_source"
                               disabled={success}
                               placeholder="Select"
                               requiredField
@@ -403,6 +407,7 @@ ${currentDate}
                               component={CustomReactSelect}
                               name="job_opening_id"
                               label="Select Opening"
+                              id="generateqr_opening"
                               disabled={success}
                               placeholder="Select"
                               requiredField
@@ -413,6 +418,7 @@ ${currentDate}
                               component={CustomReactSelect}
                               name="branch_id"
                               label="Select Location"
+                              id="generateqr_location"
                               disabled={success}
                               placeholder="Select"
                               requiredField
@@ -427,6 +433,7 @@ ${currentDate}
                                   name="theme_color"
                                   disabled={success}
                                   label="Theme Color"
+                                  id="generateqr_themecolor"
                                   placeholder="Enter Theme Color"
                                   requiredField
                                 />
@@ -451,6 +458,7 @@ ${currentDate}
                               type="email"
                               name="recruiter_email_id"
                               label="Recruiter Email ID"
+                              id="generateqr_recruteremail"
                               disabled={success}
                               placeholder="Enter Recruiter Email Id"
                               // requiredField
@@ -460,6 +468,7 @@ ${currentDate}
                               type="number"
                               name="recruiter_contact_no"
                               label="Recruiter Contact Number"
+                              id="generateqr_recrutercontact"
                               placeholder="Enter Recruiter Contact Number"
                               disabled={success}
                               // requiredField

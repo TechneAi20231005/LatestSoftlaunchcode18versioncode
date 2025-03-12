@@ -25,6 +25,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 export default function CreateBillCheckingTransaction({ match }) {
   const { id } = useParams();
@@ -344,6 +345,9 @@ export default function CreateBillCheckingTransaction({ match }) {
             SetAuthorities(res.data.data);
           }
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
@@ -397,9 +401,9 @@ export default function CreateBillCheckingTransaction({ match }) {
     await new DepartmentService().getDepartment().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          setDepartment(res.data.data);
+          setDepartment(res.data.data?.data);
           setDepartmentDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.department }))
+            res.data.data?.data.map((d) => ({ value: d.id, label: d.department }))
           );
         }
       }
@@ -409,8 +413,8 @@ export default function CreateBillCheckingTransaction({ match }) {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const temp = res.data.data.filter((d) => d.is_active == 1);
-          setUser(res.data.data);
+          const temp = res.data.data?.data?.filter((d) => d.is_active == 1);
+          setUser(res.data.data?.data);
           setUserDropdown(
             temp.map((d) => ({ value: d.id, label: d.user_name }))
           );
@@ -874,6 +878,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         // className="form-control form-control"
                         options={billTypeDropdown}
                         // onChange={(e) => handleAssignToPerson(e)}
+                        isClearable={true}
                         onChange={(e) => {
                           handleAssignToPerson(e);
                           handleBillTypeChange(e); // Call the function to clear the assign to field
@@ -901,6 +906,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         name="assign_to"
                         placeholder="Assign To"
                         required
+                        isClearable={true}
                       />
                       {/* )} */}
                     </div>
@@ -919,6 +925,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         name="vendor_name"
                         options={vendorDropdown}
                         required
+                        isClearable={true}
                       />
                     )}
                   </div>

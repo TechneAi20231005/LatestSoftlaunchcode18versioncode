@@ -10,7 +10,7 @@ import {
 } from 'react-router-dom';
 import ConsolidatedService from '../../services/ProjectManagementService/ConsolidatedService';
 import GeneralSettingService from '../../services/SettingService/GeneralSettingService';
-import { _apiUrl, _attachmentUrl, _base } from '../../settings/constants';
+import { _apiUrl, _attachmentUrl, _base , _rewampAttachmentUrl} from '../../settings/constants';
 
 import DataTable from 'react-data-table-component';
 import Select from 'react-select';
@@ -21,11 +21,11 @@ import { Modal, Button } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import CustomAlertModal from '../../components/custom/modal/CustomAlertModal';
 import PageHeader from '../../components/Common/PageHeader';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 export default function ProjectwiseModule() {
   const params = useParams();
   const { projectId, moduleId } = params;
-
   const location = useLocation();
   const [data, setData] = useState(null);
   const [isProjectOwner, setIsProjectOwner] = useState(null);
@@ -77,6 +77,7 @@ export default function ProjectwiseModule() {
   const moduleRef = useRef(null);
   const ModuleID = moduleId?.length > 0 ? moduleId : null;
 
+
   const loadData = async () => {
     const userId = localStorage.getItem('id');
     const newModuleID = ModuleID?.length > 0 ? ModuleID : moduleValue;
@@ -89,7 +90,7 @@ export default function ProjectwiseModule() {
             setData(null);
             setData(res.data.data);
             setId(res.data.data.id);
-            setIsProjectActive(res?.data?.data?.is_project_active);
+            setIsProjectActive(res?.data?.data?.project?.is_project_active);
           }
         }
       });
@@ -97,7 +98,7 @@ export default function ProjectwiseModule() {
     await new ModuleService().getModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const temp = res?.data?.data;
+          const temp = res?.data?.data.data;
           // const a = res.data.data.filter((d) => d.module_id);
 
           const findModuleActivity = temp.filter(
@@ -122,9 +123,10 @@ export default function ProjectwiseModule() {
     await new SubModuleService().getSubModule().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const temp = res.data.data;
+          const temp = res.data.data.data;
+
           // const a = res.data.data.filter((d) => d.module_id);
-          setSubmoduleData(res.data.data);
+          setSubmoduleData(res.data.data.data);
           const findSubModuleActivity = temp.filter(
             (subModule) => subModule.id == subModuleValue
           );
@@ -164,7 +166,7 @@ export default function ProjectwiseModule() {
 
             setFilterData(
               temp?.filter(
-                (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
               )
             );
           }
@@ -247,7 +249,7 @@ export default function ProjectwiseModule() {
               setDocList(tempData);
               setFilterData(
                 tempData?.filter(
-                  (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                  (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
                 )
               );
             }
@@ -289,7 +291,7 @@ export default function ProjectwiseModule() {
               setDocList(tempData);
               setFilterData(
                 tempData?.filter(
-                  (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                  (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
                 )
               );
             }
@@ -344,6 +346,7 @@ export default function ProjectwiseModule() {
             is_active: temp[key].is_active,
             document_attachment: temp[key].document_attachment,
             uploaded_by: temp[key].uploaded_by,
+            uploaded_by_id: temp[key].uploaded_by_id,
 
             sub_module_name: temp[key].sub_module_name
               ? temp[key].sub_module_name
@@ -353,7 +356,7 @@ export default function ProjectwiseModule() {
         setDocList(tempData);
         setFilterData(
           tempData?.filter(
-            (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+            (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
           )
         );
 
@@ -407,6 +410,7 @@ export default function ProjectwiseModule() {
                 is_active: temp[key].is_active,
                 document_attachment: temp[key].document_attachment,
                 uploaded_by: temp[key].uploaded_by,
+                uploaded_by_id: temp[key].uploaded_by_id,
 
                 sub_module_name: temp[key].sub_module_name
                   ? temp[key].sub_module_name
@@ -416,7 +420,7 @@ export default function ProjectwiseModule() {
             setDocList(tempData);
             setFilterData(
               tempData?.filter(
-                (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
               )
             );
           });
@@ -457,7 +461,7 @@ export default function ProjectwiseModule() {
             setDocList(temp);
             setFilterData(
               temp?.filter(
-                (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
               )
             );
           }
@@ -550,6 +554,7 @@ export default function ProjectwiseModule() {
                     is_active: temp[key].is_active,
                     document_attachment: temp[key].document_attachment,
                     uploaded_by: temp[key].uploaded_by,
+                    uploaded_by_id: temp[key].uploaded_by_id,
 
                     sub_module_name: temp[key].sub_module_name
                       ? temp[key].sub_module_name
@@ -561,7 +566,7 @@ export default function ProjectwiseModule() {
                 setDocList(tempData);
                 setFilterData(
                   tempData?.filter(
-                    (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                    (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
                   )
                 );
               }
@@ -617,6 +622,15 @@ export default function ProjectwiseModule() {
       setSelectedRows([...selectedRows, id]); // Select
     }
   };
+
+  const renderTooltip = (text) => (
+    <OverlayTrigger
+      placement="top"
+      overlay={<Tooltip>{text}</Tooltip>}
+    >
+      <span style={{ cursor: 'pointer' }}>{text}</span>
+    </OverlayTrigger>
+  );
 
   const columns = [
     {
@@ -702,17 +716,17 @@ export default function ProjectwiseModule() {
               className="mb-0"
             >
               <a
-                href={_attachmentUrl + row?.document_attachment}
+                href={_rewampAttachmentUrl + row?.document_attachment}
                 target="_blank"
                 rel="noopener noreferrer"
-                // style={{
-                //   pointerEvents:
-                //     authorityCheck === false &&
-                //     isProjectOwner === 0 &&
-                //     !isReviewer
-                //       ? 'none'
-                //       : 'auto'
-                // }}
+                style={{
+                  pointerEvents:
+                    authorityCheck === false &&
+                    isProjectOwner === 0 &&
+                    !isReviewer
+                      ? 'none'
+                      : 'auto'
+                }}
               >
                 <i
                   className="icofont-download me-3 btn btn-sm btn-secondary text-white"
@@ -731,7 +745,7 @@ export default function ProjectwiseModule() {
           </div>
         </>
       ),
-      width: '20%'
+      width: '15%'
     },
     {
       name: 'File Name',
@@ -747,19 +761,24 @@ export default function ProjectwiseModule() {
     {
       name: 'Project Name',
       selector: (row) => row.project_name,
-      sortable: true
+      sortable: true,
+      width: '15%',
+      cell: (row) => renderTooltip(row.project_name),
     },
     {
       name: 'Module Name',
       selector: (row) => (row.module_name ? row.module_name : 'No Module'),
-      sortable: true
+      sortable: true,
+      width: '15%',
+      cell: (row) => renderTooltip(row.module_name ? row.module_name : 'No Module'),
     },
     {
       name: 'SubModule Name',
       selector: (row) =>
         row.sub_module_name ? row.sub_module_name : 'No SubModule',
-
-      sortable: true
+       sortable: true,
+       width: '15%',
+       cell: (row) => renderTooltip(row.sub_module_name ? row.sub_module_name : 'No SubModule'),
     }
   ];
 
@@ -815,6 +834,8 @@ export default function ProjectwiseModule() {
                 is_active: temp[key].is_active,
                 document_attachment: temp[key].document_attachment,
                 uploaded_by: temp[key].uploaded_by,
+                uploaded_by_id: temp[key].uploaded_by_id,
+
                 sub_module_name: temp[key].sub_module_name
                   ? temp[key].sub_module_name
                   : ''
@@ -825,7 +846,7 @@ export default function ProjectwiseModule() {
             setDocList(tempData);
             setFilterData(
               tempData?.filter(
-                (i) => i?.uploaded_by == parseInt(sessionStorage?.id)
+                (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
               )
             );
           }
@@ -868,7 +889,7 @@ export default function ProjectwiseModule() {
     const filesArray = Array.from(files);
 
     // Maximum file size in bytes (50 MB)
-    const maxFileSize = 50 * 1024 * 1024;
+    const maxFileSize = 51 * 1024 * 1024;
 
     // Allowed file extensions
     const allowedExtensions = [
@@ -883,7 +904,8 @@ export default function ProjectwiseModule() {
       'txt',
       'csv',
       'xls',
-      'wps'
+      'wps',
+      'mp4'
     ];
 
     // Flags to track errors
@@ -899,7 +921,7 @@ export default function ProjectwiseModule() {
       const fileExtension = getFileExtension(file.name);
 
       // Check file size
-      if (file.size > maxFileSize) {
+      if (file.size >= maxFileSize) {
         hasInvalidFiles = true;
         invalidFiles.push(file.name); // Collect names of files with invalid size
         return false; // Exclude files larger than 50 MB
@@ -936,8 +958,9 @@ export default function ProjectwiseModule() {
     docList &&
     docList?.filter(
       (i) =>
-        i?.uploaded_by === parseInt(sessionStorage?.id) || i?.show_to_all === 1
+        i?.uploaded_by_id === parseInt(localStorage.getItem("id")) || i?.show_to_all === 1
     );
+    {console.log('FilterData', FilterData)}
 
   useEffect(() => {
     loadData();
@@ -962,11 +985,11 @@ export default function ProjectwiseModule() {
               </div>
               {!isNaN(parseInt(moduleId)) ? (
                 <span className="small text-muted project_name fw-bold text-center">
-                  {data && data?.project_name}
+                  {data && data?.project?.project_name}
                 </span>
               ) : (
                 <h6 className="mb-0 fw-bold  fs-6  mb-2">
-                  {data && data?.project_name}
+                  {data && data?.project?.project_name}
                 </h6>
               )}
               <h6 className="mb-0 fw-bold  fs-6  mb-2">
@@ -1051,35 +1074,39 @@ export default function ProjectwiseModule() {
                       }
                       // options={projectWiseModuleDropdown}
                       ref={moduleRef}
+                      defaultValue={
+                        moduleDropdown?.length > 0 &&
+                        moduleDropdown?.filter((d) => d?.value == moduleId)
+                      }
                       onChange={(e) => {
                         changeSubModuleHandle(e, 'MODULE');
                       }}
+                      isDisabled={!moduleId ? false : true}
                       name="submodule_id"
                     />
                   )}
                 </div>
                 {((subModuleDropdown && subModuleDropdown?.length > 0) ||
-                  projectWiseSubModuleDropdown?.length > 0) &&
-                  moduleValue && (
-                    <div className="d-md-flex mt-2">
-                      <label className="form-label col-sm-3 mt-2 me-2 fw-bold">
-                        SubModule:
-                      </label>
-                      <Select
-                        className="w-100"
-                        options={
-                          parseInt(ModuleID)?.length > 0
-                            ? subModuleDropdown
-                            : projectWiseSubModuleDropdown
-                        }
-                        ref={submoduleRef}
-                        onChange={(e) => {
-                          changeSubModuleHandle(e, 'SUBMODULE');
-                        }}
-                        name="submodule_id"
-                      />
-                    </div>
-                  )}
+                  projectWiseSubModuleDropdown?.length > 0) && (
+                  <div className="d-md-flex mt-2">
+                    <label className="form-label col-sm-3 mt-2 me-2 fw-bold">
+                      SubModule:
+                    </label>
+                    <Select
+                      className="w-100"
+                      options={
+                        subModuleDropdown.length > 0
+                          ? subModuleDropdown
+                          : projectWiseSubModuleDropdown
+                      }
+                      ref={submoduleRef}
+                      onChange={(e) => {
+                        changeSubModuleHandle(e, 'SUBMODULE');
+                      }}
+                      name="submodule_id"
+                    />
+                  </div>
+                )}
               </div>
 
               <div className="col-4 text-center">
@@ -1088,7 +1115,7 @@ export default function ProjectwiseModule() {
                     Status :
                     {/* Show DOC :<Astrick color="red" size="13px" /> */}
                   </label>
-                  <div className="col-md-2">
+                  <div className="col-md-3">
                     <div className="form-check">
                       <input
                         className="form-check-input"
@@ -1130,6 +1157,7 @@ export default function ProjectwiseModule() {
                   </div>
                 </div>
               </div>
+
               <div
                 className={
                   isProjectActive === 1
@@ -1312,6 +1340,7 @@ export default function ProjectwiseModule() {
               >
                 3) Please Select Module or Submodule to Filter The Documents
               </span>
+              {console.log(authorityCheck,"?>>>>")}
               <DataTable
                 columns={columns}
                 data={

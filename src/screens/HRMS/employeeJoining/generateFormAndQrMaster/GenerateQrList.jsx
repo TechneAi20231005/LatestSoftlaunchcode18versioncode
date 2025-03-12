@@ -307,6 +307,7 @@ ${currentDate}
           <input
             type="search"
             name="interview_search"
+
             value={searchValue}
             onChange={(e) => setSearchValue(e?.target?.value)}
             placeholder="Search here..."

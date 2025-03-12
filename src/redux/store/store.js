@@ -47,12 +47,12 @@ import candidatesFollowUpSlice from '../slices/hrms/employeeJoining/followUp';
 import candidatesRemarkHistorySlice from '../slices/hrms/employeeJoining/remarkHistory';
 import interViewProcessDataSlice from '../slices/hrms/employeeJoining/interviewProcess';
 import candidateInterviewScheduleHistorySlice from '../slices/hrms/employeeJoining/interviewScheduleHistory';
-
 // // PO
 import poCommonSlice from '../slices/po/common';
 import generateRequisitionSlice from '../slices/po/generateRequisition';
 import generatePoSlice from '../slices/po/generatePo';
 import requisitionHistoryPoSlice from '../slices/po/history';
+import menuMaster from '../slices/menuMaster';
 
 // // Test Cases
 import reviewCommentMasterSlice from '../slices/testCases/reviewCommentMaster';
@@ -99,7 +99,8 @@ export const store = configureStore({
     dynamicFormDropDown: DynamicFormDropDownSlice,
     consolidatedData: ConsolidatedSlice,
     jobRoleMaster: jobRoleMaster,
-    
+    menuMaster: menuMaster,
+
     // // HRMS>>Employee Joining
     branchMaster: branchMasterSlice,
     sourceMaster: sourceMasterSlice,

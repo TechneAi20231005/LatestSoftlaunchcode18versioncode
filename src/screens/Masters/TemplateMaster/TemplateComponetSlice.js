@@ -10,6 +10,7 @@ import {
   getTemplateByIdData,
   exportTempateData
 } from './TemplateComponetAction';
+import { toast } from 'react-toastify';
 
 const initialState = {
   status: '',
@@ -90,7 +91,7 @@ export const templateSlice = createSlice({
       state.isLoading.templateDataList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let templateData = payload.data.data;
+        let templateData = payload.data.data?.data;
 
         state.status = 'succeded';
         state.showLoaderModal = false;
@@ -117,7 +118,7 @@ export const templateSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let exportTempateData = payload.data.data;
+        let exportTempateData = payload.data.data?.data;
         state.isLoading.templateDataList = false;
 
         state.status = 'succeded';
@@ -236,11 +237,10 @@ export const templateSlice = createSlice({
         state.status = 'succeded';
         state.showLoaderModal = false;
         state.postTemplateData = postTemplateData;
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
       } else {
-        state.notify = null;
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(postTemplateData.rejected, (state) => {
@@ -258,7 +258,7 @@ export const templateSlice = createSlice({
       const { payload } = action;
       state.isLoading.templateDataList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
 
         let updateBasketModalData = payload.data.data;
@@ -266,7 +266,7 @@ export const templateSlice = createSlice({
         state.showLoaderModal = false;
         state.updateBasketModalData = updateBasketModalData;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(updateBasketModalData.rejected, (state) => {
@@ -285,7 +285,7 @@ export const templateSlice = createSlice({
       const { payload } = action;
       state.isLoading.templateDataList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         state.addBasketModal = {
           showModal: false,
           modalAddData: null,
@@ -297,7 +297,7 @@ export const templateSlice = createSlice({
         state.showLoaderModal = false;
         state.basketinEditData = basketinEditData;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(basketinEditData.rejected, (state) => {
@@ -316,7 +316,7 @@ export const templateSlice = createSlice({
       const { payload } = action;
       state.isLoading.templateDataList = false;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         state.addTaskModal = {
           showModal: false,
           modalAddData: null,
@@ -328,7 +328,7 @@ export const templateSlice = createSlice({
         state.showLoaderModal = false;
         state.addTaskinBasketData = addTaskinBasketData;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(addTaskinBasketData.rejected, (state) => {

@@ -8,6 +8,7 @@ import PageHeader from '../../components/Common/PageHeader';
 import Alert from '../../components/Common/Alert';
 
 import RoleService from '../../services/MastersService/RoleService';
+import { errorHandler } from '../../utils';
 
 const ManageMenu = ({ match }) => {
   const { id } = useParams();
@@ -53,30 +54,35 @@ const ManageMenu = ({ match }) => {
                 // 'can_delete': 0
               });
             });
-            new ManageMenuService().getRole(roleId).then((res1) => {
-              if (res1.status === 200) {
-                if (res1.data.status === 1) {
-                  const data1 = res1.data.data;
-                  let menu1 = menu;
-                  data1.forEach((d, i1) => {
-                    menu1.forEach((m, i2) => {
-                      if (d.menu_id === m.id) {
-                        menu[i2].can_read = d.can_read;
-                        menu[i2].can_create = d.can_create;
-                        menu[i2].can_update = d.can_update;
-                        // menu[i2].can_delete = d.can_delete;
-                      }
+            new ManageMenuService()
+              .getRole(roleId)
+              .then((res1) => {
+                if (res1.status === 200) {
+                  if (res1.data.status === 1) {
+                    const data1 = res1.data.data;
+                    let menu1 = menu;
+                    data1.forEach((d, i1) => {
+                      menu1.forEach((m, i2) => {
+                        if (d.menu_id === m.id) {
+                          menu[i2].can_read = d.can_read;
+                          menu[i2].can_create = d.can_create;
+                          menu[i2].can_update = d.can_update;
+                          // menu[i2].can_delete = d.can_delete;
+                        }
+                      });
                     });
-                  });
-                  //                                setMenus(prev => ({ ...prev, 'menu': null }));
-                  setMenus((prev) => ({ ...prev, menu: menu }));
-                } else {
-                  setMenus((prev) => ({ ...prev, menu: menu }));
-                  setNotify({ type: 'danger', message: res.data.message });
-                  setNotify(null);
+                    //                                setMenus(prev => ({ ...prev, 'menu': null }));
+                    setMenus((prev) => ({ ...prev, menu: menu }));
+                  } else {
+                    setMenus((prev) => ({ ...prev, menu: menu }));
+                    setNotify({ type: 'danger', message: res.data.message });
+                    setNotify(null);
+                  }
                 }
-              }
-            });
+              })
+              .catch((error) => {
+                errorHandler(error);
+              });
           }
         }
       })
@@ -204,13 +210,11 @@ const ManageMenu = ({ match }) => {
 
   useEffect(() => {
     loadData();
-    //    setNotify(null);
   }, [loadData]);
 
   return (
     <div className="container-xxl">
       <PageHeader />
-      {notify && <Alert alertData={notify} />}
       <div className="row clearfix g-3">
         <div className="col-sm-12">
           <form
@@ -352,10 +356,7 @@ const ManageMenu = ({ match }) => {
               <button type="submit" className="btn btn-primary">
                 Submit
               </button>
-              <Link
-                to={`/${_base}/MenuManage`}
-                className="btn btn-danger text-white"
-              >
+              <Link to={`/${_base}/Role`} className="btn btn-danger text-white">
                 Cancel
               </Link>
             </div>

@@ -33,6 +33,7 @@ import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 function VendorMaster({ match }) {
   const [data, setData] = useState([]);
@@ -650,19 +651,24 @@ function VendorMaster({ match }) {
         }
       });
 
-    await new VendorMasterService().getActiveCountry().then((res) => {
-      if (res.status === 200) {
-        setCountry(res.data.data);
-        setCountryDropdown(
-          res.data.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({
-              value: d.id,
-              label: d.country.charAt(0).toUpperCase() + d.country.slice(1)
-            }))
-        );
-      }
-    });
+    await new VendorMasterService()
+      .getActiveCountry()
+      .then((res) => {
+        if (res.status === 200) {
+          setCountry(res.data.data?.data);
+          setCountryDropdown(
+            res.data.data?.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({
+                value: d.id,
+                label: d.country.charAt(0).toUpperCase() + d.country.slice(1)
+              }))
+          );
+        }
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
     //   if (res.status === 200) {
@@ -675,9 +681,9 @@ function VendorMaster({ match }) {
 
     await new VendorMasterService().getActiveState().then((res) => {
       if (res.status === 200) {
-        setState(res.data.data);
+        setState(res.data.data?.data);
         setStateDropdown(
-          res.data.data.map((d) => ({
+          res.data.data?.data.map((d) => ({
             value: d.id,
             label: d.state
           }))
@@ -687,9 +693,9 @@ function VendorMaster({ match }) {
 
     await new VendorMasterService().getActiveCity().then((res) => {
       if (res.status === 200) {
-        setCity(res.data.data);
+        setCity(res.data.data?.data);
         setCityDropdown(
-          res.data.data
+          res.data.data?.data
             .filter((d) => d.is_active === 1)
             .map((i) => ({
               value: i.id,
@@ -3832,20 +3838,12 @@ function VendorMaster({ match }) {
             </Modal.Body>
             <Modal.Footer>
               {!modal.modalData && (
-                <button
-                  type="submit"
-                  className="btn btn-primary text-white"
-                  style={{ backgroundColor: '#484C7F' }}
-                >
-                  Save
+                <button type="submit" className="btn btn-primary text-white">
+                  Submit
                 </button>
               )}
               {modal.modalData && (
-                <button
-                  type="submit"
-                  className="btn btn-primary text-white"
-                  style={{ backgroundColor: '#484C7F' }}
-                >
+                <button type="submit" className="btn btn-primary text-white">
                   Update
                 </button>
               )}
@@ -3861,7 +3859,7 @@ function VendorMaster({ match }) {
                   });
                 }}
               >
-                Close
+                Cancel
               </button>
             </Modal.Footer>
           </form>

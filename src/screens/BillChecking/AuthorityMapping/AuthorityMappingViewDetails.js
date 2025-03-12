@@ -1,6 +1,6 @@
-import React, { useEffect, useState, useRef } from "react";
+import React, { useEffect, useState, useRef } from 'react';
 
-import UserService from "../../../services/MastersService/UserService";
+import UserService from '../../../services/MastersService/UserService';
 
 function AuthorityMappingViewDetails() {
   const [assign, SetAssign] = useState([{ label: null, value: null }]);
@@ -10,21 +10,21 @@ function AuthorityMappingViewDetails() {
   const tempUserData = [];
   const loadData = async () => {
     const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
+      'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         setShowLoaderModal(false);
-        const data = res.data.data.filter((d) => d.is_active === 1);
+        const data = res.data.data?.data?.filter((d) => d.is_active === 1);
         for (const key in data) {
           tempUserData.push({
             value: data[key].id,
             label:
               data[key].first_name +
-              " " +
+              ' ' +
               data[key].last_name +
-              " (" +
+              ' (' +
               data[key].id +
-              ")",
+              ')'
           });
         }
         const aa = tempUserData.sort(function (a, b) {
@@ -65,7 +65,7 @@ function AuthorityMappingViewDetails() {
                         defaultValue={item.employee}
                         readOnly
                         required
-                        style={{ zIndex: "100" }}
+                        style={{ zIndex: '100' }}
                       />
                     </td>
 

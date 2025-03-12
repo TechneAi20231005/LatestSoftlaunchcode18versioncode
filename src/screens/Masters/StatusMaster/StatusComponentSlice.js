@@ -4,6 +4,7 @@ import {
   postStatusData,
   updateStatusData
 } from './StatusComponentAction';
+import { toast } from 'react-toastify';
 
 const initialState = {
   status: '',
@@ -51,8 +52,8 @@ export const statusMasterSlice = createSlice({
       state.isLoading.statusData = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let getStatusData = payload.data.data;
-        let filterStatusData = payload.data.data.filter(
+        let getStatusData = payload.data.data?.data;
+        let filterStatusData = payload.data.data?.data?.filter(
           (d) => d.tenant_id !== 0
         );
         state.filterStatusData = [...filterStatusData];
@@ -66,8 +67,6 @@ export const statusMasterSlice = createSlice({
 
         let sortStatusData = [];
         for (const key in getStatusData) {
-
-
           if (getStatusData[key].id) {
             sortStatusData.push({
               value: getStatusData[key].id,
@@ -76,7 +75,7 @@ export const statusMasterSlice = createSlice({
           }
         }
 
-        let filerStatus = payload.data.data
+        let filerStatus = payload.data.data?.data
           .filter((d) => d.is_active === 1)
           .map((d) => ({ value: d.id, label: d.status }));
         state.filterStatus = filerStatus;
@@ -84,12 +83,9 @@ export const statusMasterSlice = createSlice({
         let exportStatusData = [];
         for (const i in getStatusData) {
           exportStatusData.push({
-
-
             Sr: getStatusData[i].counter,
             status_Name: getStatusData[i].status,
             Status: getStatusData[i].is_active ? 'Active' : 'Deactive',
-
 
             created_at: getStatusData[i].created_at,
             created_by: getStatusData[i].created_by,
@@ -123,13 +119,11 @@ export const statusMasterSlice = createSlice({
         state.showLoaderModal = false;
         state.postStatusData = postStatusData;
         state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        let notify = { type: 'danger', message: payload.data.message };
-        state.notify = null;
-        state.notify = notify;
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(postStatusData.rejected, (state) => {
@@ -155,11 +149,11 @@ export const statusMasterSlice = createSlice({
         state.status = 'succeded';
         state.showLoaderModal = false;
         state.updateStatusData = updateStatusData;
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(updateStatusData.rejected, (state) => {

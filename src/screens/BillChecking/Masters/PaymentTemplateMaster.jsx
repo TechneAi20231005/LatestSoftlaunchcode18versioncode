@@ -347,9 +347,9 @@ function PaymentTemplateMaster() {
 
     await new CountryService().getCountry().then((res) => {
       if (res.status === 200) {
-        setCountry(res.data.data);
+        setCountry(res.data.data?.data);
         setCountryDropdown(
-          res.data.data.map((d) => ({
+          res.data.data?.data?.map((d) => ({
             value: d.id,
             label: d.country
           }))
@@ -359,9 +359,9 @@ function PaymentTemplateMaster() {
 
     await new StateService().getState().then((res) => {
       if (res.status === 200) {
-        setState(res.data.data);
+        setState(res.data.data?.data);
         setStateDropdown(
-          res.data.data.map((d) => ({
+          res.data.data?.data?.map((d) => ({
             value: d.id,
             label: d.state
           }))
@@ -371,9 +371,9 @@ function PaymentTemplateMaster() {
 
     await new CityService().getCity().then((res) => {
       if (res.status === 200) {
-        setCity(res.data.data);
+        setCity(res.data.data?.data);
         setCityDropdown(
-          res.data.data.map((d) => ({
+          res.data.data?.data?.map((d) => ({
             value: d.id,
             label: d.city
           }))
@@ -862,7 +862,7 @@ function PaymentTemplateMaster() {
                 className="btn btn-primary text-white"
                 style={{ backgroundColor: '#484C7F' }}
               >
-                Save
+                Submit
               </button>
             )}
             {modal.modalData && (

@@ -246,7 +246,7 @@ const ProjectWiseModuleHistory = ({ match }) => {
       <div>
         {/* Page Header */}
         <div className="container-xxl">
-          <PageHeader headerTitle="Project Wise Module History" />
+          <PageHeader showBackBtn  headerTitle="Project Wise Module History" />
         </div>
         <div className="card mt-2">
           <div className="card-body">

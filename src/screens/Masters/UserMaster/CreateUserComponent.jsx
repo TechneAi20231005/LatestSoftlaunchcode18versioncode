@@ -164,7 +164,6 @@ function CreateUserComponent({ match }) {
     departmentErr: '',
     jobRoleErr: ''
   });
-
   function checkingValidation(form) {
     var selectFirstName = form.getAll('first_name')[0];
     var selectMiddleName = form.getAll('middle_name')[0];
@@ -387,8 +386,7 @@ function CreateUserComponent({ match }) {
     if (loading) {
       return;
     }
-    setLoading(true); // Set loading state to true
-    // setNotify(null);
+    setLoading(true);
 
     const form = new FormData(e.target);
     var flag = 1;
@@ -431,7 +429,7 @@ function CreateUserComponent({ match }) {
             if (res?.payload?.data?.status === 1) {
               // Success case
               toast.success(res?.payload?.data?.message, {
-                autoClose: 10000 // 10 seconds in milliseconds
+                autoClose: 5000 // 10 seconds in milliseconds
               });
               navigate(`/${_base}/User`);
               dispatch(getEmployeeData());
@@ -440,16 +438,11 @@ function CreateUserComponent({ match }) {
               setTimeout(() => {
                 navigate(`/${_base}/User`);
               }, 3000);
-            } else {
-              // Error case when status is not 1
-              toast.error(res?.payload?.data?.message, {
-                autoClose: 10000 // 10 seconds in milliseconds
-              });
             }
           } else {
             // Error case when status code is not 200
             toast.error('An unexpected error occurred. Please try again.', {
-              autoClose: 10000 // 10 seconds in milliseconds
+              autoClose: 5000 // 10 seconds in milliseconds
             });
           }
           setLoading(false);
@@ -466,7 +459,7 @@ function CreateUserComponent({ match }) {
       if (res?.status === 200) {
         if (res?.data?.status === 1) {
           setCustomerDrp(
-            res?.data.data
+            res?.data.data?.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({
                 value: d.id,
@@ -479,6 +472,7 @@ function CreateUserComponent({ match }) {
   }, [dispatch]);
 
   const handleDependentChange = (e, type) => {
+    if (!e || Object.entries(e).length === 0) return;
     if (type === 'COUNTRY') {
       setStateDropdownData(
         stateDropdown &&
@@ -585,6 +579,7 @@ function CreateUserComponent({ match }) {
     roleDropdown?.filter((d) => {
       return d.role.toLowerCase() === 'user';
     });
+
   const filterCutomerRole = customerSort
     ?.filter((d) => d.is_active === 1)
     .map((d) => ({
@@ -594,6 +589,14 @@ function CreateUserComponent({ match }) {
   const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
+  // console.log(orderedCustomerRoleData, "orderedCustomerRoleData")
+
+  const customerRolesData = [
+    {
+      label: 'User',
+      value: 0
+    }
+  ];
 
   const accountForChange = async (account_for) => {
     setSelctRole(null);
@@ -756,9 +759,13 @@ function CreateUserComponent({ match }) {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Create User" />
-      {Notify && <Alert alertData={Notify} />}
 
-      <form onSubmit={handleForm} ref={userForm} method="post">
+      <form
+        autoComplete="off"
+        onSubmit={handleForm}
+        ref={userForm}
+        method="post"
+      >
         <Tabs
           defaultActiveKey={tabKey}
           activeKey={tabKey}
@@ -832,7 +839,7 @@ function CreateUserComponent({ match }) {
                           id="first_name"
                           name="first_name"
                           placeholder="Please enter first name"
-                          maxLength={30}
+                          maxLength={50}
                           onKeyPress={(e) => {
                             Validation.Characters(e);
                           }}
@@ -865,7 +872,7 @@ function CreateUserComponent({ match }) {
                           id="middle_name"
                           name="middle_name"
                           placeholder="Middle Name"
-                          maxLength={30}
+                          maxLength={50}
                           onKeyPress={(e) => {
                             Validation.Characters(e);
                           }}
@@ -898,7 +905,7 @@ function CreateUserComponent({ match }) {
                           id="last_name"
                           name="last_name"
                           placeholder="Last Name"
-                          maxLength={30}
+                          maxLength={50}
                           onKeyPress={(e) => {
                             Validation.Characters(e);
                           }}
@@ -944,7 +951,8 @@ function CreateUserComponent({ match }) {
                             const email = event?.target?.value;
                             if (
                               !email.match(
-                                /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
+                                // /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
+                                /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/i
                               )
                             ) {
                               setInputState({
@@ -983,11 +991,12 @@ function CreateUserComponent({ match }) {
                           className="form-control"
                           id="user_name"
                           name="user_name"
+                          autoComplete="off"
                           placeholder="Username"
                           onKeyPress={(e) => {
                             Validation.CharactersNumbersOnly(e);
                           }}
-                          maxLength={30}
+                          maxLength={50}
                           onChange={(event) => {
                             if (event.target.value === '') {
                               setInputState({
@@ -1125,6 +1134,7 @@ function CreateUserComponent({ match }) {
                             onKeyPress={(e) => {
                               Validation.password(e);
                             }}
+                            autoComplete="new-password"
                             onChange={handlePasswordValidation}
                             onPaste={(e) => {
                               e.preventDefault();
@@ -1237,8 +1247,11 @@ function CreateUserComponent({ match }) {
                               ? orderedSelfRoleData
                               : orderedCustomerRoleData
                           }
+                          isClearable={true}
                           onChange={(e) => {
                             handleSelectRole(e);
+                            if (!e || Object.entries(e).length === 0) return;
+
                             if (e.value === '') {
                               setInputState({
                                 ...state,
@@ -1274,7 +1287,10 @@ function CreateUserComponent({ match }) {
                           id="designation_id"
                           name="designation_id"
                           options={sortDesignationDropdown}
+                          isClearable={true}
                           onChange={(event) => {
+                            if (!event || Object.entries(event).length === 0)
+                              return;
                             if (event.value === '') {
                               setInputState({
                                 ...state,
@@ -1314,8 +1330,10 @@ function CreateUserComponent({ match }) {
                           value={selectJobRole}
                           // options={filteredRoles}
                           options={jobRoleDropDown}
+                          isClearable={true}
                           onChange={(e) => {
                             handleSelectJobRole(e);
+                            if (!e || Object.entries(e).length === 0) return;
                             if (e.value === '') {
                               setInputState({
                                 ...state,
@@ -1357,9 +1375,9 @@ function CreateUserComponent({ match }) {
                           className="form-control form-control-sm"
                           id="address"
                           name="address"
-                          placeholder="Enter maximum 250 character"
+                          placeholder="Enter maximum 1000 character"
                           rows="4"
-                          maxLength={250}
+                          maxLength={1000}
                           // onKeyPress={(e) => {
                           //   Validation.addressFieldOnly(e);}}
                         />
@@ -1415,6 +1433,7 @@ function CreateUserComponent({ match }) {
                           options={CountryData}
                           name="country_id"
                           id="country_id"
+                          isClearable={true}
                           onChange={(e) => handleDependentChange(e, 'COUNTRY')}
                         />
                       </div>
@@ -1430,7 +1449,7 @@ function CreateUserComponent({ match }) {
                           //     ? stateDropdown
                           //     : []
                           // }
-
+                          isClearable={true}
                           options={stateDropdownData}
                           name="state_id"
                           id="state_id"
@@ -1453,6 +1472,7 @@ function CreateUserComponent({ match }) {
                           options={cityDropdownData && cityDropdownData}
                           name="city_id"
                           id="city_id"
+                          isClearable={true}
                           onChange={(e) => setCityName(e)}
                           defaultValue={cityName ? cityName : ''}
                         />
@@ -1519,19 +1539,19 @@ function CreateUserComponent({ match }) {
                             )}
                             required
                             style={{ zIndex: '100' }}
-                            onChange={(selectedOption) =>
-                              handleUserSelect(selectedOption, idx)
-                            }
+                            onChange={(selectedOption) => {
+                              handleUserSelect(selectedOption, idx);
+                            }}
                           />
                         </td>
                         <td>
                           <Select
                             options={options}
                             id={`ticket_show_type_id_` + idx}
-                            name="ticket_show_type[]"
-                            onChange={(e) =>
-                              handleCheckInput(e, idx, 'TICKET_SHOW')
-                            }
+                            name="ticket_show_type_id[]"
+                            onChange={(e) => {
+                              handleCheckInput(e, idx, 'TICKET_SHOW');
+                            }}
                             value={options.filter((d) =>
                               Array.isArray(item.ticket_show_type)
                                 ? item.ticket_show_type.includes(d.value)

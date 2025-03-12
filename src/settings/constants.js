@@ -3,7 +3,9 @@ import {
   REACT_APP_API_URL,
   REACT_APP_PIN_CODE_API_URL,
   REACT_APP_ATTACHMENT_URL,
-  REACT_APP_ROOT_URL
+  REACT_APP_ROOT_URL,
+  REACT_APP_API_REWAMP_BASE_URL,
+  REACT_APP_API_REWAMP_ATTACHMENT_URL
 } from '../config/envConfig';
 
 export const _ErrorMsg = 'Try After Some Time !!!';
@@ -12,15 +14,17 @@ export var dataFormat = { status: 0, message: null, data: null };
 
 export const _base = REACT_APP_ROOT_URL;
 export const _apiUrl = REACT_APP_API_URL;
+export const _rewampApiUrl = REACT_APP_API_REWAMP_BASE_URL;
 export const _attachmentUrl = REACT_APP_ATTACHMENT_URL;
+export const _rewampAttachmentUrl = REACT_APP_API_REWAMP_ATTACHMENT_URL;
 export const _pincodeUrl = REACT_APP_PIN_CODE_API_URL;
 
-export const loginURL = _apiUrl + 'login';
-export const fpURL = _apiUrl + 'reset/forgetPasswordOtp';
-export const otpURL = _apiUrl + 'reset/sendOtp';
-export const rpURL = _apiUrl + 'reset/resetPassword';
+export const loginURL = _rewampApiUrl + 'login';
+export const fpURL = _rewampApiUrl + 'reset/forgetPasswordOtp';
+export const otpURL = _rewampApiUrl + 'reset/sendOtp';
+export const rpURL = _rewampApiUrl + 'reset/resetPassword';
 
-export const attachmentUrl = _apiUrl + 'attachment';
+export const attachmentUrl = _rewampApiUrl + 'attachment';
 
 export const userSessionData = {
   tenantId: localStorage.getItem('tenant_id'),
@@ -64,30 +68,37 @@ export const userSessionData = {
 };
 
 export const menuUrl =
-  _apiUrl + 'getMenuByRoleId/' + localStorage.getItem('role_id');
+  _rewampApiUrl + 'getMenuByRoleId/' + localStorage.getItem('role_id');
 
 export const masterURL = {
-  user: _apiUrl + 'employeeMaster',
-  tenant: _apiUrl + 'tenantMaster',
-  customer: _apiUrl + 'customerMaster',
-  employee: _apiUrl + 'employeeMaster',
-  country: _apiUrl + 'countryMaster',
-  state: _apiUrl + 'stateMaster',
-  city: _apiUrl + 'cityMaster',
-  role: _apiUrl + 'roleMaster',
-  department: _apiUrl + 'departmentMaster',
-  designation: _apiUrl + 'designationMaster',
-  status: _apiUrl + 'statusMaster',
-  dynamicForm: _apiUrl + 'dynamicFormMaster',
-  template: _apiUrl + 'templateMaster',
-  customerType: _apiUrl + 'customerTypeMaster',
-  queryType: _apiUrl + 'queryTypeMaster',
-  departmentMapping: _apiUrl + 'departmentMapping',
+  user: _rewampApiUrl + 'employeeMaster/getData',
+  tenant: _rewampApiUrl + 'tenantMaster',
+  customer: _rewampApiUrl + 'customerMaster',
+  employee: _rewampApiUrl + 'employeeMaster',
+  country: _rewampApiUrl + 'countryMaster',
+  state: _rewampApiUrl + 'stateMaster',
+  city: _rewampApiUrl + 'cityMaster',
+  role: _rewampApiUrl + 'roleMaster',
+  department: _rewampApiUrl + 'departmentMaster',
+  designation: _rewampApiUrl + 'designationMaster',
+  status: _rewampApiUrl + 'statusMaster',
+  dynamicForm: _rewampApiUrl + 'dynamicFormMaster',
+  template: _rewampApiUrl + 'templateMaster',
+  customerType: _rewampApiUrl + 'customerTypeMaster',
+  queryType: _rewampApiUrl + 'queryTypeMaster/queryType',
+  queryTypeMapped: _rewampApiUrl + 'queryTypeMaster',
+
+  getAllQueryGroup: _rewampApiUrl + 'queryTypeMaster/queryGroup',
+
+  departmentMapping: _rewampApiUrl + 'departmentMapping',
   moduleSetting: _apiUrl + 'moduleSetting',
-  dynamicFormDropdownMaster: _apiUrl + 'dynamicFormDropdownMaster',
+  dynamicFormDropdownMaster: _rewampApiUrl + 'dynamicFormDropdownMaster',
   testingTypeMaster: _apiUrl + 'testingTypeMaster',
-  taskTicketTypeMaster: _apiUrl + 'taskticketTypeMaster',
-  sprintMaster: _apiUrl + 'sprintMaster'
+  taskTicketTypeMaster: _rewampApiUrl + 'taskTicketTypeMaster',
+  sprintMaster: _rewampApiUrl + 'sprintMaster',
+  projectMaster: _rewampApiUrl + 'projectMaster',
+  moduleMaster: _rewampApiUrl + 'moduleMaster',
+  subModuleMaster: _rewampApiUrl + 'subModuleMaster'
 };
 
 export const dynamicURL = {
@@ -97,7 +108,7 @@ export const dynamicURL = {
   employee: _apiUrl + 'employeeMaster',
   country: _apiUrl + 'countryMaster',
   state: _apiUrl + 'stateMaster',
-  city: _apiUrl + 'cityMaster',
+  city: _apiUrl + 'cityMaster/getData',
   role: _apiUrl + 'roleMaster',
   department: _apiUrl + 'departmentMaster/',
   designation: _apiUrl + 'designationMaster',
@@ -113,22 +124,26 @@ export const dynamicURL = {
 };
 
 export const ticketUrl = {
-  ticket: _apiUrl + 'ticketMaster',
+  ticket: _rewampApiUrl + 'ticketMaster',
   dynamicForm: _apiUrl + 'createForm',
   basket: _apiUrl + 'ticketBasket',
-  task: _apiUrl + 'ticketTask',
-  subtask: _apiUrl + 'ticketSubtask',
-  timerData: _apiUrl + 'timerData',
+  // task: _apiUrl + 'ticketTask',
+  subtask: _rewampApiUrl + 'ticketSubtask',
+  task: _rewampApiUrl + 'ticketTask',
+  regularization: _rewampApiUrl + 'ticketTask',
+  // subtask: _apiUrl + 'ticketSubtask',
+  timerData: _rewampApiUrl + 'timerData',
   postTimerDataGroupActivity: _apiUrl + 'postTimerDataGroupActivity',
   stopTimerDataGroupActivity: _apiUrl + 'stopTimerDataGroupActivity'
 };
 
 export const reportUrl = {
-  ticketReport: _apiUrl + 'report/ticketReport',
-  userTaskReport: _apiUrl + 'report/userTaskReport',
+  ticketReport: _rewampApiUrl + 'ticketMaster/ticketReport',
+  userTaskReport: _rewampApiUrl + 'report/userTaskReport',
+
   ticketTimelineReport: _apiUrl + 'report/ticketTimelineReport',
-  resourcePlanningReport: _apiUrl + 'report/resourcePlanning',
-  variantsReport: _apiUrl + 'report/variantsReport'
+  resourcePlanningReport: _rewampApiUrl + 'report/resourcePlanning',
+  variantsReport: _rewampApiUrl + 'report/variantsReport'
   // hoursWiseTaskRecord:_apiUrl + "hoursWiseTaskRecord",  //Asmita - New api for timeline report chart
 };
 
@@ -137,7 +152,7 @@ export const errorLogUrl = {
 };
 
 export const consolidateViewUrl = {
-  consolidateViewUrl: _apiUrl + 'consolidatedView'
+  consolidateViewUrl: _rewampApiUrl + 'consolidatedView'
 };
 
 export const projectManagementUrl = {
@@ -148,18 +163,18 @@ export const projectManagementUrl = {
 };
 
 export const menuManagementUrl = {
-  menusUrl: _apiUrl + 'menuManagement'
+  menusUrl: _rewampApiUrl + 'roleMaster'
 };
 
-export const dashboardUrl = _apiUrl + 'dashboard';
+export const dashboardUrl = _rewampApiUrl + 'dashboard';
 
-export const notificationUrl = _apiUrl + 'notification';
+export const notificationUrl = _rewampApiUrl + 'notification';
 
 export const settingMasterUrl = {
-  customerMapping: _apiUrl + 'customerMapping',
-  moduleSetting: _apiUrl + 'moduleSetting',
+  customerMapping: _rewampApiUrl + 'customerMapping',
+  moduleSetting: _rewampApiUrl + 'moduleSetting',
   getModuleSetting: _apiUrl + 'module',
-  getGeneralSetting: _apiUrl + 'consolidatedView'
+  getGeneralSetting: _rewampApiUrl + 'consolidatedView'
 };
 
 export const connectorUrl = {

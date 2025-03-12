@@ -152,7 +152,7 @@ function FunctionMasterComponent() {
     <div className="container-xxl">
       <div className="d-flex justify-content-between">
         <PageHeader headerTitle="Function Master" />
-        <div style={{ marginTop: '-30px' }}>
+        <div>
           <button
             className="btn btn-primary text-white "
             onClick={() =>
@@ -174,6 +174,7 @@ function FunctionMasterComponent() {
           <input
             type="search"
             name="interview_search"
+            id="functionmaster_functionsearch"
             value={searchValue}
             onChange={(e) => setSearchValue(e?.target?.value)}
             placeholder="Search function here..."

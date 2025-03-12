@@ -128,6 +128,7 @@ function GeneratePo() {
                       component={CustomReactSelect}
                       options={venderData}
                       name="vender_name"
+                      id="generatepo_vendorname"
                       label="Vendor Name :"
                       placeholder={getVenderList ? 'Loading...' : 'Select'}
                       requiredField
@@ -140,6 +141,7 @@ function GeneratePo() {
                       type="date"
                       name="delivery_date"
                       label="Delivery Date :"
+                      id="generatepo_deliverydate"
                       requiredField
                       min={new Date().toISOString().split('T')[0]}
                     />

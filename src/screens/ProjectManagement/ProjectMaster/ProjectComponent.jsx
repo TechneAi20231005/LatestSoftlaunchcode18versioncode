@@ -16,6 +16,7 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import { errorHandler } from '../../../utils';
 
 function ProjectComponent() {
   //initial state
@@ -68,7 +69,12 @@ function ProjectComponent() {
         </div>
       )
     },
-    { name: 'Sr', width: '5%', selector: (row) => row.counter, sortable: true },
+    {
+      name: 'Sr',
+      width: '5%',
+      selector: (row) => row.counter + 1,
+      sortable: true
+    },
     {
       name: 'Project Name',
       width: '10%',
@@ -187,34 +193,9 @@ function ProjectComponent() {
         </div>
       )
     },
+
     {
-      name: 'created at',
-      width: '200px',
-      selector: (row) => row.created_at,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.created_at && (
-            <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.created_at && row.created_at.length < 20
-                    ? row.created_at
-                    : row.created_at.substring(0, 20) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
-    },
-    {
-      name: 'created By',
+      name: 'Created By',
       width: '10%',
       selector: (row) => row.created_by,
       sortable: true,
@@ -232,6 +213,32 @@ function ProjectComponent() {
                   {row.created_by && row.created_by.length < 20
                     ? row.created_by
                     : row.created_by.substring(0, 20) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
+    },
+    {
+      name: 'Created at',
+      width: '200px',
+      selector: (row) => row.created_at,
+      sortable: true,
+      cell: (row) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row.created_at && (
+            <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row.created_at && row.created_at.length < 20
+                    ? row.created_at
+                    : row.created_at.substring(0, 20) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -306,8 +313,7 @@ function ProjectComponent() {
           // setShowLoaderModal(false);
 
           let counter = 0;
-          console.log(counter++);
-          const temp = res.data.data;
+          const temp = res.data.data?.data;
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -335,11 +341,11 @@ function ProjectComponent() {
 
               'Project Name': data[key].project_name,
               projectReviewer: data[key].projectReviewer,
-              is_active: data[key].is_active === 1 ? 'Active' : 'Deactive',
               description: data[key].description,
+              Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
               remark: data[key].remark,
-              created_at: data[key].created_at,
               created_by: data[key].created_by,
+              created_at: data[key].created_at,
               updated_at: data[key].updated_at,
               updated_by: data[key].updated_by
             });
@@ -348,14 +354,7 @@ function ProjectComponent() {
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'Project Master',
-          'Get_Project',
-          'INSERT',
-          errorObject.data.message
-        );
+        errorHandler(error);
       });
 
     dispatch(getRoles());
@@ -385,8 +384,6 @@ function ProjectComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader
         headerTitle="Project Master"
         renderRight={() => {
@@ -409,6 +406,7 @@ function ProjectComponent() {
 
       <SearchBoxHeader
         setSearchTerm={setSearchTerm}
+        searchTerm={searchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
         placeholder="Search by project name...."
@@ -441,65 +439,70 @@ function ProjectComponent() {
   );
 }
 
-function ProjectDropdown(props) {
+function ProjectDropdown({ field, form, ...props }) {
   const [data, setData] = useState(null);
+  const [deafultValue, setDeafultValue] = useState('');
   useEffect(() => {
     const tempData = [];
     new ProjectService().getProject().then((res) => {
       if (res.status === 200) {
         let counter = 1;
-        var data = res.data.data.filter((d) => d.is_active === 1);
-
-        data.filter((d) => d.is_active === 1);
-        for (const key in data) {
+        const activeData = res.data.data.data.filter((d) => d.is_active === 1);
+        for (const key in activeData) {
           tempData.push({
             counter: counter++,
-            id: data[key].id,
-            project_name: data[key].project_name
+            id: activeData[key].id,
+            project_name: activeData[key].project_name
           });
         }
-        setData(null);
+        const DeafultValue = tempData.find((d) => d.id === props.defaultValue);
+        if (DeafultValue) {
+          setDeafultValue(DeafultValue.id);
+        } else {
+          setDeafultValue('');
+        }
         setData(tempData);
       }
     });
   }, []);
 
+  const handleChange = (e) => {
+    console.log(e.target.value);
+    const value = e.target.value;
+    form.setFieldValue(field.name, value); // Update Formik value
+  };
+
+  const error = form.errors[field.name];
+  const touched = form.touched[field.name];
+
   return (
     <>
-      {data && (
+      {data ? (
         <select
           className="form-control form-control-sm"
           id={props.id}
-          name={props.name}
-          onChange={props.getChangeValue}
-          required={props.required ? true : false}
+          name={field.name}
+          value={field.value || deafultValue}
+          onChange={handleChange}
+          onBlur={field.onBlur}
         >
-          {props.defaultValue === 0 && (
-            <option value="" selected>
-              Select Project
+          {/* Default "Select Project" option */}
+          <option value="" disabled>
+            Select Project
+          </option>
+
+          {/* Options populated dynamically */}
+          {data.map((item, i) => (
+            <option key={i} value={item.id}>
+              {item.project_name}
             </option>
-          )}
-          {props.defaultValue !== 0 && <option value="">Select Project</option>}
-          {data.map(function (item, i) {
-            if (props.defaultValue && props.defaultValue === item.id) {
-              return (
-                <option key={i} value={item.id} selected>
-                  {item.project_name}
-                </option>
-              );
-            } else {
-              return (
-                <option key={i} value={item.id}>
-                  {item.project_name}
-                </option>
-              );
-            }
-          })}
+          ))}
         </select>
+      ) : (
+        <p>Loading...</p>
       )}
-      {!data && <p> Loading....</p>}
+      {touched && error && <div className="text-danger">{error}</div>}
     </>
   );
 }
-
 export { ProjectComponent, ProjectDropdown };

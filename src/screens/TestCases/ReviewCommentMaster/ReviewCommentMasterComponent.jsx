@@ -151,7 +151,7 @@ function ReviewCommentMasterComponent() {
     <div className="container-xxl">
       <div className="d-flex justify-content-between">
         <PageHeader headerTitle="Review Comment Master" />
-        <div style={{ marginTop: '-30px' }}>
+        <div>
           <button
             className="btn btn-primary text-white "
             onClick={() =>
@@ -171,6 +171,7 @@ function ReviewCommentMasterComponent() {
       <Row className="row_gap_3">
         <Col xs={12} md={7} xxl={8}>
           <input
+          id="reviewcommentmaster_reviewercommentsearch"
             type="search"
             name="interview_search"
             value={searchValue}

@@ -302,6 +302,7 @@ function PoHistory() {
                     options={venderData}
                     name="vender_name"
                     label="Vendor Name :"
+                    id="pohistory_vendorname"
                     placeholder={getVenderList ? 'Loading...' : 'Select'}
                     isSearchable
                     isMulti
@@ -313,6 +314,7 @@ function PoHistory() {
                     type="date"
                     name="order_date"
                     label="Order Date :"
+                    id="pohistory_orderdate"
                     placeholderText="dd/mm/yyyy"
                     dateFormat="dd/MM/yyy"
                     showMonthDropdown
@@ -330,6 +332,7 @@ function PoHistory() {
                     component={CustomReactDatePicker}
                     type="date"
                     name="delivery_date"
+                    id="pohistory_deliverydate"
                     placeholderText="dd/mm/yyyy"
                     dateFormat="dd/MM/yyy"
                     showMonthDropdown
