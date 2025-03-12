@@ -25,7 +25,6 @@ import { toast } from 'react-toastify';
 import { errorHandler } from '../../../../utils';
 
 export default function TaskModal(props) {
-  const [notify, setNotify] = useState();
   const [isDisabled, setIsDisabled] = useState(false);
   // const typeRef = useRef();
   // const [parent, setParent] = useState();
@@ -366,26 +365,17 @@ export default function TaskModal(props) {
     );
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active';
-    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-      if (res.status === 200) {
-        const data1 = res.data.data.data;
-        const data = data1.filter(
-          (d) => d.is_active === 1 && d.account_for === 'SELF'
-        );
-        for (const key in data) {
-          tempUserData.push({
-            value: data[key].id,
-            label:
-              data[key].first_name +
-              ' ' +
-              data[key].last_name +
-              ' (' +
-              data[key].id +
-              ')'
-          });
-          if (props.data && props.data.assign_to_user) {
-            if (props.data.assign_to_user.includes(data[key].id)) {
-              tempDefaultUserData.push({
+    await new UserService()
+      .getUserForMyTickets(inputRequired)
+      .then((res) => {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            const data1 = res?.data?.data?.data;
+            const data = data1?.filter(
+              (d) => d.is_active === 1 && d.account_for === 'SELF'
+            );
+            for (const key in data) {
+              tempUserData.push({
                 value: data[key].id,
                 label:
                   data[key].first_name +
@@ -395,16 +385,34 @@ export default function TaskModal(props) {
                   data[key].id +
                   ')'
               });
+              if (props.data && props.data.assign_to_user) {
+                if (props.data.assign_to_user.includes(data[key].id)) {
+                  tempDefaultUserData.push({
+                    value: data[key].id,
+                    label:
+                      data[key].first_name +
+                      ' ' +
+                      data[key].last_name +
+                      ' (' +
+                      data[key].id +
+                      ')'
+                  });
+                }
+              }
             }
+            setDefaultUserData(tempDefaultUserData);
+            const aa = tempUserData.sort(function (a, b) {
+              return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+            });
+            setUserData(aa);
+          } else {
+            toast.error(res?.data?.message);
           }
+        } else {
+          toast.error(res?.data?.message);
         }
-        setDefaultUserData(tempDefaultUserData);
-        const aa = tempUserData.sort(function (a, b) {
-          return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
-        });
-        setUserData(aa);
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
     // const allTask = props.allTaskList.filter(
     //   (task) => task.value != props.data.id
     // );
@@ -440,26 +448,42 @@ export default function TaskModal(props) {
     //   }
     // });
 
-    await new TaskTicketTypeService()?.getChildrenData('Task')?.then((res) => {
-      if (res?.status === 200) {
-        let filterData = res?.data?.data.data;
-        // res?.data?.data.data?.filter(
-        //   (item) => item?.is_active === 1
-        // );
-        setTaskData(filterData);
-      }
-    });
+    await new TaskTicketTypeService()
+      ?.getChildrenData('Task')
+      ?.then((res) => {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            let filterData = res?.data?.data?.data;
+            // res?.data?.data.data?.filter(
+            //   (item) => item?.is_active === 1
+            // );
+            setTaskData(filterData);
+          } else {
+            toast.error(res?.data?.message);
+          }
+        } else {
+          toast.error(res?.data?.message);
+        }
+      })
+      .catch((error) => errorHandler(error));
   }, [props.data, props?.taskDropdown]);
 
   const loadAttachment = async () => {
-    setNotify(null);
     if (props.data.id) {
-      await getAttachment(props.data.id, 'TASK').then((res) => {
-        if (res.status === 200) {
-          setAttachment(null);
-          setAttachment(res.data.data);
-        }
-      });
+      await getAttachment(props.data.id, 'TASK')
+        .then((res) => {
+          if (res?.status === 200) {
+            if (res?.data?.status === 1) {
+              setAttachment(null);
+              setAttachment(res.data.data);
+            } else {
+              toast.error(res?.data?.message);
+            }
+          } else {
+            toast.error(res?.data?.message);
+          }
+        })
+        .catch((error) => errorHandler(error));
     } else {
       setAttachment(null);
     }
@@ -584,18 +608,24 @@ export default function TaskModal(props) {
   };
   // const handleDeleteAttachment = (e, id) => {};
   const handleDeleteAttachment = (e, id) => {
-    deleteAttachment(id).then((res) => {
-      if (res.status === 200) {
-        setAttachments((prevAttachments) =>
-          prevAttachments.filter((attach) => attach.id !== id)
-        );
-        toast.success(res?.data?.message);
-      } else {
-        toast.error(res?.data?.message);
-      }
-      // props?.handleShowTaskModal();
-      // loadAttachment();
-    });
+    deleteAttachment(id)
+      .then((res) => {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            setAttachments((prevAttachments) =>
+              prevAttachments.filter((attach) => attach.id !== id)
+            );
+            toast.success(res?.data?.message);
+          } else {
+            toast.error(res?.data?.message);
+          }
+        } else {
+          toast.error(res?.data?.message);
+        }
+        // props?.handleShowTaskModal();
+        // loadAttachment();
+      })
+      .catch((error) => errorHandler(error));
   };
 
   const assignUserRef = useRef();
@@ -727,14 +757,12 @@ export default function TaskModal(props) {
               // formData.append("task_type_id", taskTypeId);
               await updateTask(props?.data?.id, formData)
                 .then((res) => {
-                  if (res.status === 200) {
+                  if (res?.status === 200) {
                     if (res?.data?.status === 1) {
                       // props.loadBasket();
                       toast.success(res?.data?.message);
-                      setTimeout(() => {
-                        handleClose();
-                        props.loadBasket();
-                      }, 1000);
+                      handleClose();
+                      props.loadBasket();
                     } else {
                       toast.error(res?.data?.message);
                     }
@@ -761,26 +789,21 @@ export default function TaskModal(props) {
                   : 'Primary'
               );
             }
-            await postTask(formData).then((res) => {
-              if (res?.status === 200) {
-                if (res?.data?.status === 1) {
-                  toast.success(res?.data?.message);
-                  handleClose();
-                  props.loadBasket();
+            await postTask(formData)
+              .then((res) => {
+                if (res?.status === 200) {
+                  if (res?.data?.status === 1) {
+                    toast.success(res?.data?.message);
+                    handleClose();
+                    props.loadBasket();
+                  } else {
+                    toast.error(res?.data?.message);
+                  }
                 } else {
                   toast.error(res?.data?.message);
                 }
-              } else {
-                setIsDisabled(false);
-                toast.error(res?.message);
-                new ErrorLogService().sendErrorLog(
-                  'Ticket',
-                  'Edit_Task',
-                  'INSERT',
-                  res?.message
-                );
-              }
-            });
+              })
+              .catch((error) => errorHandler(error));
           }
         }
       }
@@ -793,7 +816,7 @@ export default function TaskModal(props) {
   //     typeRef.current.clearValue();
   //   }
   //   await new TaskTicketTypeService().getAllType().then((res) => {
-  //     if (res.status === 200) {
+  //     if (res?.status === 200) {
   //       if (res?.data?.status === 1) {
   //         const temp = res.data.data;
   //         setTasktypeDropdown(
@@ -1481,8 +1504,6 @@ export default function TaskModal(props) {
                   <strong>Task Details</strong>
                 </Modal.Title>
               </Modal.Header>
-
-              {notify && <Alert alertData={notify} />}
 
               {/* <form onSubmit={handleForm} method="post" encType="multipart/form-data"> */}
               <Modal.Body>
