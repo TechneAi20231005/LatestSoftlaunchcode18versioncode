@@ -22,6 +22,7 @@ import ManageMenuService from '../../services/MenuManagementService/ManageMenuSe
 import DemoProfileImg from '../../assets/images/profile_av.png';
 import './style.scss';
 import { errorHandler } from '../../utils';
+import { toast } from 'react-toastify';
 
 export default function Header() {
   // // initial state
@@ -31,7 +32,6 @@ export default function Header() {
   const [tenantId, setTenantId] = useState();
   const [tenantDropdown, setTenantDropdown] = useState();
   const [showDropdown, setShowDropdown] = useState();
-  const [notify, setNotify] = useState(null);
   const [notifications, setNotifications] = useState([]);
   const [show, setShow] = useState(false);
   const [data, setData] = useState(null);
@@ -40,10 +40,10 @@ export default function Header() {
   const loadNotifcation = () => {
     getNotification()
       .then((res) => {
-        if (res.status === 200) {
+        if (res?.status === 200) {
           setNotifications([]);
 
-          if (res.data.data !== null) {
+          if (res?.data?.data !== null) {
             if (res?.data?.data?.result) {
               var length = res.data.data.result.length;
               var height = 0;
@@ -52,7 +52,11 @@ export default function Header() {
               if (parseInt(length) > 0 && parseInt(length) <= 5) {
               }
             }
+          } else {
+            errorHandler(res);
           }
+        } else {
+          errorHandler(res);
         }
       })
       .catch((error) => {
@@ -80,28 +84,41 @@ export default function Header() {
   };
 
   const loadData = async (e) => {
-    new UserService().getUserById(localStorage.getItem('id')).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setTenantId(res.data.data.data.tenant_id);
-          res.data.data.profile_picture =
-            'http://3.108.206.34/TSNewBackend/' + res.data.data.profile_picture;
-          setData(res.data.data);
+    new UserService()
+      .getUserById(localStorage.getItem('id'))
+      .then((res) => {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            setTenantId(res.data.data.data.tenant_id);
+            res.data.data.profile_picture =
+              'http://3.108.206.34/TSNewBackend/' +
+              res.data.data.profile_picture;
+            setData(res.data.data);
+          } else {
+            errorHandler(res);
+          }
         }
-      }
-    });
-    new TenantService().getTenant().then((res) => {
-      if (res.status === 200 && res.data.status === 1) {
-        const temp = res.data.data?.data?.filter((d) => d.is_active == 1);
-        setTenantDropdown(
-          temp.map((d) => ({ value: d.id, label: d.company_name }))
-        );
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
+
+    new TenantService()
+      .getTenant()
+      .then((res) => {
+        if (res?.status === 200 && res?.data?.status === 1) {
+          const temp = res.data.data?.data?.filter((d) => d.is_active == 1);
+          setTenantDropdown(
+            temp.map((d) => ({ value: d.id, label: d.company_name }))
+          );
+        } else {
+          errorHandler(res);
+        }
+      })
+      .catch((error) => errorHandler(error));
+
     await new ManageMenuService()
       .getRole(localStorage.getItem('role_id'))
       .then((res) => {
-        if (res.status === 200 && res.data.status === 1) {
+        if (res?.status === 200 && res?.data?.status === 1) {
           const temp = res.data.data.filter((d) => d.menu_id === 33);
 
           if (temp[0]?.can_read === 1) {
@@ -109,6 +126,8 @@ export default function Header() {
           } else {
             setShowDropdown(false);
           }
+        } else {
+          errorHandler(res);
         }
       })
       .catch((error) => {
@@ -118,16 +137,19 @@ export default function Header() {
 
   const handleTenantLogin = async (e) => {
     const form = { tenant_id: e.value };
-    await new TenantService().switchTenant(form).then((res) => {
-      if (res.status === 200 && res.data.status === 1) {
-        setNotify({ type: 'success', message: res.data.message });
-        setTimeout(() => {
-          window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
-        }, 1000);
-      } else {
-        setNotify({ type: 'danger', message: res.data.message });
-      }
-    });
+    await new TenantService()
+      .switchTenant(form)
+      .then((res) => {
+        if (res?.status === 200 && res?.data?.status === 1) {
+          toast.success(res?.data?.message);
+          setTimeout(() => {
+            window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+          }, 1000);
+        } else {
+          errorHandler(res);
+        }
+      })
+      .catch((error) => errorHandler(error));
   };
 
   // // life cycle
@@ -141,8 +163,6 @@ export default function Header() {
     <div className="header">
       <nav className="navbar pt-4">
         <div className="container-xxl">
-          {notify && <Alert alertData={notify} />}
-
           {/* hamburger menu */}
           <button
             className="navbar-toggler p-0 border-0 menu-toggle"

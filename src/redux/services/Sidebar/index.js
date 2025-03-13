@@ -4,6 +4,7 @@ import { errorHandler } from '../../../utils';
 import customAxios from '../../../http/axios';
 import { _rewampApiUrl } from '../../../settings/constants';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 export const getEmployeeListThunk = createAsyncThunk(
   'employeeMaster',
@@ -45,14 +46,14 @@ export const getMenuListThunk = createAsyncThunk(
         }
       });
 
-      // await customAxios.get(`/getMenuByRoleId/${role_id}`);
-      // await new TaskTicketTypeService()?.getTaskType('Task')
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };
         } else {
           errorHandler(response);
         }
+      } else {
+        errorHandler(response);
       }
     } catch (error) {
       errorHandler(error?.response);
