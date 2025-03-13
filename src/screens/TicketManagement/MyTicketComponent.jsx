@@ -911,26 +911,42 @@ export default function MyTicketComponent() {
     },
     {
       name: 'Type',
-      cell: (row) => row?.query_type?.query_type_name,
+      cell: (row) =>
+        row?.query_type ? row?.query_type?.query_type_name || '--' : '--',
       sortable: true
     },
     { name: 'Passed Status', cell: (row) => row.passed_status, sortable: true },
-    { name: 'Status', cell: (row) => row?.status?.status, sortable: true },
+    {
+      name: 'Status',
+      cell: (row) => (row?.status?.status ? row?.status?.status || '--' : '--'),
+      sortable: true
+    },
     {
       name: 'Assign To Dept',
-      cell: (row) => row.assign_to_department?.department,
+      cell: (row) =>
+        row?.assign_to_department
+          ? row?.assign_to_department?.department || '--'
+          : '--',
       sortable: true
     },
     {
       name: 'Assinged To',
       cell: (row) =>
-        row.assign_to_user?.first_name + ' ' + row?.assign_to_user?.last_name,
+        row?.assign_to_user
+          ? (row?.assign_to_user?.first_name || '--') +
+            ' ' +
+            (row?.assign_to_user?.last_name || '--')
+          : '--',
       sortable: true
     },
     {
       name: 'Created By',
       cell: (row) =>
-        row.created_by?.first_name + ' ' + row?.created_by?.last_name,
+        row?.created_by
+          ? (row?.created_by?.first_name || '--') +
+            ' ' +
+            (row?.created_by?.last_name || '--')
+          : '--',
       sortable: true
     },
     {
@@ -943,9 +959,12 @@ export default function MyTicketComponent() {
       name: 'Solved By',
       maxWidth: 'auto',
       selector: (row) =>
-        row.ticket_solved_by?.first_name +
-        ' ' +
-        row?.ticket_solved_by?.last_name,
+        row?.ticket_solved_by
+          ? (row?.ticket_solved_by?.first_name || '--') +
+            ' ' +
+            (row?.ticket_solved_by?.last_name || '--')
+          : '--',
+
       sortable: true
     }
   ];
