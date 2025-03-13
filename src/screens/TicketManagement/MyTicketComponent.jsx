@@ -44,9 +44,10 @@ export default function MyTicketComponent() {
   const [departmentData, setDepartmentData] = useState(null);
 
   const [searchResult, setSearchResult] = useState([]);
-  const [searchResultData, setSearchResultData] = useState();
+  const [searchResultData, setSearchResultData] = useState([]);
 
-  const [searchResultExport, setSearchResultExport] = useState();
+  const [searchResultExport, setSearchResultExport] = useState([]);
+  const [disabled, setDisabled] = useState(true);
 
   const [unpassedTickets, setUnpassedTickets] = useState([]);
 
@@ -908,16 +909,30 @@ export default function MyTicketComponent() {
       ),
       sortable: true
     },
-    { name: 'Type', cell: (row) => row.query_type_name, sortable: true },
-    { name: 'Passed Status', cell: (row) => row.passed_status, sortable: true },
-    { name: 'Status', cell: (row) => row.status_name, sortable: true },
     {
-      name: 'Assign To Dept',
-      cell: (row) => row.assign_to_department,
+      name: 'Type',
+      cell: (row) => row?.query_type?.query_type_name,
       sortable: true
     },
-    { name: 'Assinged To', cell: (row) => row.assign_to_user, sortable: true },
-    { name: 'Created By', cell: (row) => row.created_by_name, sortable: true },
+    { name: 'Passed Status', cell: (row) => row.passed_status, sortable: true },
+    { name: 'Status', cell: (row) => row?.status?.status, sortable: true },
+    {
+      name: 'Assign To Dept',
+      cell: (row) => row.assign_to_department?.department,
+      sortable: true
+    },
+    {
+      name: 'Assinged To',
+      cell: (row) =>
+        row.assign_to_user?.first_name + ' ' + row?.assign_to_user?.last_name,
+      sortable: true
+    },
+    {
+      name: 'Created By',
+      cell: (row) =>
+        row.created_by?.first_name + ' ' + row?.created_by?.last_name,
+      sortable: true
+    },
     {
       name: 'Solved Date',
       maxWidth: 'auto',
@@ -927,7 +942,10 @@ export default function MyTicketComponent() {
     {
       name: 'Solved By',
       maxWidth: 'auto',
-      selector: (row) => row.ticket_solved_by,
+      selector: (row) =>
+        row.ticket_solved_by?.first_name +
+        ' ' +
+        row?.ticket_solved_by?.last_name,
       sortable: true
     }
   ];
@@ -1956,6 +1974,7 @@ export default function MyTicketComponent() {
   const handleForm = async (e) => {
     if (isLoading) return;
     setIsLoading(true);
+    setDisabled(true);
     const payload = {
       assign_to_user_id: selectedUsers.map((user) => user.value),
       department_id: selectedDepartment.map((user) => user.value),
@@ -2037,6 +2056,8 @@ export default function MyTicketComponent() {
           const res = await new ReportService().getTicketReport(exportFormData);
           if (res.status === 200) {
             if (res.data.status === 1) {
+              setDisabled(false);
+
               const temp = res?.data?.data;
               var counter = 1;
               var searchResultExport = [];
@@ -2212,7 +2233,6 @@ export default function MyTicketComponent() {
             setSearchResultData(res.data.data);
             setIsLoading(false);
             const temp = res.data.data.data;
-
             var counter = 1;
             var searchResultExport = [];
             for (const key in temp) {
@@ -2290,9 +2310,95 @@ export default function MyTicketComponent() {
       } finally {
         setIsLoading(false);
       }
+      setDisabled(true);
+      try {
+        const payload = {
+          from_date: startDate,
+          to_date: toDate,
+          assign_to_department_id:
+            assignedDepartmentValue?.length > 0
+              ? assignedDepartmentValue?.map((user) => user.value)
+              : [],
+          assign_to_user_id:
+            assignedUser?.length > 0
+              ? assignedUser?.map((user) => user.value)
+              : [],
+          // assign_to_user_id:
+          //   assignedDepartmentValue?.length > 0
+          //     ? assignedDepartmentValue?.map((user) => user.value)
+          //     : [],
+          department_id: entryDepartment?.map((user) => user.value),
+          status_id:
+            statusValue?.length > 0
+              ? statusValue?.map((user) => user.value)
+              : [],
+          user_id:
+            entryUser?.length > 0 ? entryUser?.map((user) => user.value) : [],
+          ticket_id: ticket,
+          export: 'export'
+        };
+        const res = await new ReportService().getTicketReport(payload);
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setDisabled(false);
+
+            const temp = res?.data?.data;
+            var counter = 1;
+            var searchResultExport = [];
+            for (let key in temp) {
+              searchResultExport.push({
+                Sr: counter++,
+                TICKET_ID: temp[key].ticket_id,
+                TICKET_DATE: temp[key].ticket_date,
+                EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
+                ASSIGN_TO_DEPARTMENT: temp[key].assign_to_department,
+                ASSIGN_TO_USER: temp[key].assign_to_user,
+                QUERY_TYPE_NAME: temp[key].query_type_name,
+                PRIORITY: temp[key].priority,
+                STATUS: temp[key].status_name,
+                DESCRIPTION: temp[key].description,
+                CREATED_BY: temp[key].created_by_name,
+                Basket_Configured: temp[key].basket_configured,
+                Confirmation_Required: temp[key].confirmation_required
+                  ? 'YES'
+                  : 'NO',
+                Ref_id: temp[key].cuid,
+                from_department_name: temp[key].from_department_name,
+                id: temp[key].id,
+                Status: temp[key].is_active ? 'Active' : 'Deactive',
+                module_name: temp[key].module_name,
+                Passed_Status: temp[key].passed_status,
+                Passed_Status_Changed_At: temp[key].passed_status_changed_at,
+                Passed_Status_Changed_By_Name:
+                  temp[key].passed_status_changed_by_name,
+                Passed_Status_Remark: temp[key].passed_status_remark,
+                project_name: temp[key].project_name,
+                Status_name: temp[key].status_name,
+                sub_module_name: temp[key].sub_module_name,
+                Template_id: temp[key].template_id,
+                Tenant_id: temp[key].tenant_id,
+                ticket_solved_date: temp[key].ticket_solved_date,
+                ticket_solved_by: temp[key].ticket_solved_by
+              });
+              setSearchResultExport(searchResultExport);
+            }
+          } else {
+          }
+        } else {
+          new ErrorLogService().sendErrorLog(
+            'UserTask',
+            'Get_UserTask',
+            'INSERT',
+            res.message
+          );
+        }
+      } catch (error) {
+        errorHandler(error);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
-
   const handleAssignedDepartment = (e) => {
     const deptAssignedUser = [];
     for (let i = 0; i < e.length; i++) {
@@ -3311,6 +3417,7 @@ export default function MyTicketComponent() {
                               className="btn btn-sm btn-danger mt-3"
                               apiData={searchResultExport}
                               typeOf="SearchResult"
+                              disabled={disabled}
                               fileName={`Export Filter Result ${formattedDate} ${formattedTimeString}`}
                             />
                           )}
