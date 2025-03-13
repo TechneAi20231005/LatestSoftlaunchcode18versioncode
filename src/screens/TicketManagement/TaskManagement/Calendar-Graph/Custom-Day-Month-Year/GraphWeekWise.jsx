@@ -530,7 +530,7 @@ const GraphWeekWise = () => {
               const taskOwners = taskDetail?.taskOwners.join(' , ');
               return `
               <div>
-               <span className="mb-0"><strong>Sprint Name:</strong> ${
+               <span style='text-wrap: wrap;' className="mb-0 "><strong>Sprint Name:</strong> ${
                  taskDetail.sprint_name || '--'
                }</span></br>
                   <span className="mb-0"><strong>Task Name:</strong> ${
@@ -560,7 +560,7 @@ const GraphWeekWise = () => {
               <span className="mb-0"><strong>Actual Status:</strong> ${
                 taskDetail.task_actual_status || '--'
               }</span></br>
-                 <span className="mb-0"><strong>Task Owners:</strong> ${taskOwners}</span></br>
+                 <div style='text-wrap: ${taskDetail?.taskOwners?.length > 6 && 'wrap'};'><Strong>Task Owners:</Strong> ${taskOwners}</div></br>
               </div>
             `;
             }
