@@ -544,7 +544,7 @@ export default function TaskData(props) {
                   </Link>
                 </li>
               )}
-              {props && (
+              {/* {props && (
                 <li>
                   <Link
                     to={
@@ -559,7 +559,7 @@ export default function TaskData(props) {
                     </button>
                   </Link>
                 </li>
-              )}
+              )} */}
 
               <li onClick={handleSubtaskModal}>
                 <button className="btn btn-sm btn-info text-white w-100">

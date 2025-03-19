@@ -1102,13 +1102,13 @@ export default function TaskComponent() {
                             + Sprint
                           </button>
                         </li>
-                        <li>
+                        {/* <li>
                           <Link to={`/${_base}/getAllTestCases/` + ticketId}>
                             <button className="btn btn-sm btn-info text-white btn-custom w-100">
                               All Test Cases
                             </button>
                           </Link>
-                        </li>
+                        </li> */}
 
                         {/* <li>
                         {ownership && ownership !== "TASK" && (
@@ -1308,14 +1308,13 @@ export default function TaskComponent() {
                 </span>
               </div>
               <div className="fs-5">
-
                 <OverlayTrigger
                   placement="top"
                   overlay={
                     <Tooltip id="tooltip-calendar">Sprint Calendar</Tooltip>
                   }
                 >
-                <svg
+                  <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="28"
                     height="28"
@@ -1330,7 +1329,6 @@ export default function TaskComponent() {
                       fill="white"
                     />
                   </svg>
-
                 </OverlayTrigger>
 
                 <OverlayTrigger
@@ -1339,7 +1337,6 @@ export default function TaskComponent() {
                     <Tooltip id="tooltip-calendar">Sprint Graph</Tooltip>
                   }
                 >
-
                   <span>
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
@@ -1350,7 +1347,6 @@ export default function TaskComponent() {
                       fill="none"
                       onClick={() => goToSprintCalendarGraph('graph')}
                     >
-
                       <path
                         fill-rule="evenodd"
                         clip-rule="evenodd"
