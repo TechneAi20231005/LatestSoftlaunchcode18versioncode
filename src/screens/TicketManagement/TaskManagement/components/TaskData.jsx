@@ -528,7 +528,7 @@ export default function TaskData(props) {
                   </button>
                 </li>
               )}
-              {props && props.isReviewer === 0 && (
+              {/* {props && props.isReviewer === 0 && (
                 <li>
                   <Link
                     to={
@@ -543,7 +543,7 @@ export default function TaskData(props) {
                     </button>
                   </Link>
                 </li>
-              )}
+              )} */}
               {/* {props && (
                 <li>
                   <Link
