@@ -234,12 +234,12 @@ export default function MyTicketComponent() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {data.created_by === localStorage.getItem('id') ||
+              {data.created_by?.id === localStorage.getItem('id') ||
                 data.assign_to_user_id === localStorage.getItem('id') ||
-                (data.status_name !== 'Solved' &&
+                (data.status?.status !== 'Solved' &&
                   data.passed_status !== 'REJECT' &&
                   localStorage.getItem('account_for' === 'SELF')) ||
-                (data?.projectowner?.filter(
+                (data?.project?.owners?.filter(
                   (d) => d.user_id === localStorage.getItem('id')
                 ) && (
                   <li>
@@ -264,10 +264,10 @@ export default function MyTicketComponent() {
                 </Link>{' '}
               </li>
 
-              {data.created_by !== localStorage.getItem('id') &&
+              {data.created_by?.id !== localStorage.getItem('id') &&
                 data.basket_configured === 0 &&
                 localStorage.getItem('account_for') === 'SELF' &&
-                data.status_name !== 'Solved' &&
+                data?.status?.status !== 'Solved' &&
                 data.passed_status !== 'REJECT' &&
                 data.passed_status !== 'UNPASS' && (
                   <li>
@@ -281,11 +281,11 @@ export default function MyTicketComponent() {
                   </li>
                 )}
 
-              {(data.created_by !== localStorage.getItem('id') &&
+              {(data.created_by?.id !== localStorage.getItem('id') &&
                 data.basket_configured > 0 &&
-                data.status_name !== 'Solved' &&
+                data.status?.status !== 'Solved' &&
                 localStorage.getItem('account_for' === 'SELF')) ||
-                (data?.projectowner?.filter(
+                (data?.project?.owners?.filter(
                   (d) => d.user_id === localStorage.getItem('id')
                 ) && (
                   <li>
@@ -314,9 +314,9 @@ export default function MyTicketComponent() {
       } else {
         return (
           <div className="d-flex justify-content-between">
-            {data.created_by === localStorage.getItem('id') ||
+            {data?.created_by?.id === localStorage.getItem('id') ||
               (data.assign_to_user_id === localStorage.getItem('id') &&
-                data.status_name !== 'Solved' && (
+                data?.status?.status !== 'Solved' && (
                   <Link
                     to={`/${_base}/Ticket/Edit/` + data.id}
                     className="btn btn-sm btn-warning text-white"
