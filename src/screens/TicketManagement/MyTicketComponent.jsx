@@ -91,7 +91,6 @@ export default function MyTicketComponent() {
   const [assignUserDropdown, setAssignUserDropdown] = useState(null);
   const [toDateRequired, setToDateRequired] = useState(false);
   const showLoaderModal = false;
-  // const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [assignedToMeData, setAssignedToMeData] = useState();
   const [selectAllNames, setSelectAllNames] = useState(false);
   const [createdByMeData, setCreatedByMeData] = useState();
@@ -101,7 +100,6 @@ export default function MyTicketComponent() {
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectedDepartment, setSelectedDepartment] = useState([]);
   const [selectedStatus, setSelectedStatus] = useState([]);
-
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedRowss, setSelectedRowss] = useState([]);
   const [statusValue, setStatusValue] = useState('');
@@ -2086,34 +2084,45 @@ export default function MyTicketComponent() {
                   TICKET_ID: temp[key].ticket_id,
                   TICKET_DATE: temp[key].ticket_date,
                   EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
-                  ASSIGN_TO_DEPARTMENT: temp[key].assign_to_department,
-                  ASSIGN_TO_USER: temp[key].assign_to_user,
-                  QUERY_TYPE_NAME: temp[key].query_type_name,
+                  ASSIGN_TO_DEPARTMENT:
+                    temp[key].assign_to_department?.department,
+                  // ASSIGN_TO_USER: temp[key].assign_to_user ,
+                  ASSIGN_TO_USER:
+                    (temp[key].assign_to_user?.first_name || '--') +
+                    ' ' +
+                    (temp[key].assign_to_user?.last_name || '--'),
+                  QUERY_TYPE_NAME: temp[key].query_type?.query_type_name,
                   PRIORITY: temp[key].priority,
-                  STATUS: temp[key].status_name,
+                  STATUS_NAME: temp[key].status?.status,
                   DESCRIPTION: temp[key].description,
-                  CREATED_BY: temp[key].created_by_name,
+                  CREATED_BY:
+                    (temp[key].created_by?.first_name || '--') +
+                    ' ' +
+                    (temp[key].created_by?.last_name || '--'),
                   Basket_Configured: temp[key].basket_configured,
                   Confirmation_Required: temp[key].confirmation_required
                     ? 'YES'
                     : 'NO',
                   Ref_id: temp[key].cuid,
-                  from_department_name: temp[key].from_department_name,
+                  from_department_name: temp[key].from_department?.department,
                   id: temp[key].id,
                   Status: temp[key].is_active ? 'Active' : 'Deactive',
-                  module_name: temp[key].module_name,
+                  module_name: temp[key]?.module?.module_name,
                   Passed_Status: temp[key].passed_status,
                   Passed_Status_Changed_At: temp[key].passed_status_changed_at,
                   Passed_Status_Changed_By_Name:
                     temp[key].passed_status_changed_by_name,
                   Passed_Status_Remark: temp[key].passed_status_remark,
                   project_name: temp[key].project_name,
-                  Status_name: temp[key].status_name,
+                  // Status_name: temp[key].status_name,
                   sub_module_name: temp[key].sub_module_name,
-                  Template_id: temp[key].template_id,
+                  Template_id: temp[key].template?.template_name,
                   Tenant_id: temp[key].tenant_id,
                   ticket_solved_date: temp[key].ticket_solved_date,
-                  ticket_solved_by: temp[key].ticket_solved_by
+                  ticket_solved_by:
+                    (temp[key].ticket_solved_by?.first_name || '--') +
+                    ' ' +
+                    (temp[key].ticket_solved_by?.last_name || '--')
                 });
                 setSearchResultExport(searchResultExport);
               }
@@ -2196,6 +2205,7 @@ export default function MyTicketComponent() {
   };
 
   const handleFilterForm = async (e) => {
+    console.log('hello');
     e.preventDefault();
     if (isLoading) return;
     setIsLoading(true);
@@ -2217,7 +2227,8 @@ export default function MyTicketComponent() {
         statusValue?.length > 0 ? statusValue?.map((user) => user.value) : [],
       user_id:
         entryUser?.length > 0 ? entryUser?.map((user) => user.value) : [],
-      ticket_id: ticket
+      ticket_id: ticket,
+      filter: 'filter'
     };
 
     const formData = new FormData(e.target);
@@ -2281,35 +2292,45 @@ export default function MyTicketComponent() {
                 TICKET_ID: temp[key].ticket_id,
                 TICKET_DATE: temp[key].ticket_date,
                 EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
-                ASSIGN_TO_DEPARTMENT: temp[key].assign_to_department,
-                ASSIGN_TO_USER: temp[key].assign_to_user,
-                QUERY_TYPE_NAME: temp[key].query_type_name,
+                ASSIGN_TO_DEPARTMENT:
+                  temp[key].assign_to_department?.department,
+                // ASSIGN_TO_USER: temp[key].assign_to_user ,
+                ASSIGN_TO_USER:
+                  (temp[key].assign_to_user?.first_name || '--') +
+                  ' ' +
+                  (temp[key].assign_to_user?.last_name || '--'),
+                QUERY_TYPE_NAME: temp[key].query_type?.query_type_name,
                 PRIORITY: temp[key].priority,
-                STATUS: temp[key].status_name,
+                STATUS_NAME: temp[key].status?.status,
                 DESCRIPTION: temp[key].description,
-                CREATED_BY: temp[key].created_by_name,
-
+                CREATED_BY:
+                  (temp[key].created_by?.first_name || '--') +
+                  ' ' +
+                  (temp[key].created_by?.last_name || '--'),
                 Basket_Configured: temp[key].basket_configured,
                 Confirmation_Required: temp[key].confirmation_required
                   ? 'YES'
                   : 'NO',
                 Ref_id: temp[key].cuid,
-                from_department_name: temp[key].from_department_name,
+                from_department_name: temp[key].from_department?.department,
                 id: temp[key].id,
                 Status: temp[key].is_active ? 'Active' : 'Deactive',
-                module_name: temp[key].module_name,
+                module_name: temp[key]?.module?.module_name,
                 Passed_Status: temp[key].passed_status,
                 Passed_Status_Changed_At: temp[key].passed_status_changed_at,
                 Passed_Status_Changed_By_Name:
                   temp[key].passed_status_changed_by_name,
                 Passed_Status_Remark: temp[key].passed_status_remark,
                 project_name: temp[key].project_name,
-                Status_name: temp[key].status_name,
+                // Status_name: temp[key].status_name,
                 sub_module_name: temp[key].sub_module_name,
-                Template_id: temp[key].template_id,
+                Template_id: temp[key].template?.template_name,
+                Tenant_id: temp[key].tenant_id,
                 ticket_solved_date: temp[key].ticket_solved_date,
-                ticket_solved_by: temp[key].ticket_solved_by,
-                Tenant_id: temp[key].tenant_id
+                ticket_solved_by:
+                  (temp[key].ticket_solved_by?.first_name || '--') +
+                  ' ' +
+                  (temp[key].ticket_solved_by?.last_name || '--')
               });
             }
             setKey('Search_Result');
@@ -2354,7 +2375,8 @@ export default function MyTicketComponent() {
           user_id:
             entryUser?.length > 0 ? entryUser?.map((user) => user.value) : [],
           ticket_id: ticket,
-          export: 'export'
+          export: 'export',
+          filter: 'filter'
         };
         const res = await new ReportService().getTicketReport(payload);
         if (res.status === 200) {
@@ -2370,34 +2392,45 @@ export default function MyTicketComponent() {
                 TICKET_ID: temp[key].ticket_id,
                 TICKET_DATE: temp[key].ticket_date,
                 EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
-                ASSIGN_TO_DEPARTMENT: temp[key].assign_to_department,
-                ASSIGN_TO_USER: temp[key].assign_to_user,
-                QUERY_TYPE_NAME: temp[key].query_type_name,
+                ASSIGN_TO_DEPARTMENT:
+                  temp[key].assign_to_department?.department,
+                // ASSIGN_TO_USER: temp[key].assign_to_user ,
+                ASSIGN_TO_USER:
+                  (temp[key].assign_to_user?.first_name || '--') +
+                  ' ' +
+                  (temp[key].assign_to_user?.last_name || '--'),
+                QUERY_TYPE_NAME: temp[key].query_type?.query_type_name,
                 PRIORITY: temp[key].priority,
-                STATUS: temp[key].status_name,
+                STATUS_NAME: temp[key].status?.status,
                 DESCRIPTION: temp[key].description,
-                CREATED_BY: temp[key].created_by_name,
+                CREATED_BY:
+                  (temp[key].created_by?.first_name || '--') +
+                  ' ' +
+                  (temp[key].created_by?.last_name || '--'),
                 Basket_Configured: temp[key].basket_configured,
                 Confirmation_Required: temp[key].confirmation_required
                   ? 'YES'
                   : 'NO',
                 Ref_id: temp[key].cuid,
-                from_department_name: temp[key].from_department_name,
+                from_department_name: temp[key].from_department?.department,
                 id: temp[key].id,
                 Status: temp[key].is_active ? 'Active' : 'Deactive',
-                module_name: temp[key].module_name,
+                module_name: temp[key]?.module?.module_name,
                 Passed_Status: temp[key].passed_status,
                 Passed_Status_Changed_At: temp[key].passed_status_changed_at,
                 Passed_Status_Changed_By_Name:
                   temp[key].passed_status_changed_by_name,
                 Passed_Status_Remark: temp[key].passed_status_remark,
                 project_name: temp[key].project_name,
-                Status_name: temp[key].status_name,
+                // Status_name: temp[key].status_name,
                 sub_module_name: temp[key].sub_module_name,
-                Template_id: temp[key].template_id,
+                Template_id: temp[key].template?.template_name,
                 Tenant_id: temp[key].tenant_id,
                 ticket_solved_date: temp[key].ticket_solved_date,
-                ticket_solved_by: temp[key].ticket_solved_by
+                ticket_solved_by:
+                  (temp[key].ticket_solved_by?.first_name || '--') +
+                  ' ' +
+                  (temp[key].ticket_solved_by?.last_name || '--')
               });
               setSearchResultExport(searchResultExport);
             }
