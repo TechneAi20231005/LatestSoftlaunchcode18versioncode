@@ -16,6 +16,7 @@ import {
   editTestingTypeMasterThunk,
   getTestingTypeMasterListThunk
 } from '../../../redux/services/testCases/testingTypeMaster';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 
 function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
   const dispatch = useDispatch();
@@ -54,6 +55,24 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
       );
     }
   };
+  const fields = [
+    {
+      name: 'type_name',
+      label: 'Testing Type',
+      min: 3,
+      max: 100,
+      required: true,
+      alphaBet: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 255,
+      alphaNumeric: true
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
 
   return (
     <>
@@ -64,7 +83,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
       >
         <Formik
           initialValues={addEditTestingTypeInitialValue}
-          validationSchema={addTestingType}
+          validationSchema={validationSchema}
           onSubmit={(values) => {
             handleAddEditTestingType({ formData: values });
           }}

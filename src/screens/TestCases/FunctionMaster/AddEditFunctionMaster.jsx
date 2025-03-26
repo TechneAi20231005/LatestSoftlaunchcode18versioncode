@@ -16,6 +16,7 @@ import {
 } from '../../../redux/services/testCases/functionMaster';
 import { addFunctionMasterValidation } from './Validation/AddFunctionMaster';
 import CustomModal from '../../../components/custom/modal/CustomModal';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 
 function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
   const dispatch = useDispatch();
@@ -54,6 +55,25 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
     }
   };
 
+  const fields = [
+    {
+      name: 'function_name',
+      label: 'Function Title',
+      min: 3,
+      max: 100,
+      required: true,
+      alphaBet: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 255,
+      alphaNumeric: true
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
+
   return (
     <>
       <CustomModal
@@ -63,7 +83,7 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
       >
         <Formik
           initialValues={addEditFunctionInitialValue}
-          validationSchema={addFunctionMasterValidation}
+          validationSchema={validationSchema}
           onSubmit={(values) => {
             handleAddEditFunction({ formData: values });
           }}

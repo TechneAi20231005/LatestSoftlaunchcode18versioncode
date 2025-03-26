@@ -14,6 +14,7 @@ import {
   getReviewCommentMasterListThunk
 } from '../../../../redux/services/testCases/reviewCommentMaster';
 import { RenderIf } from '../../../../utils';
+import { CustomValidation } from '../../../../components/custom/CustomValidation/CustomValidation';
 
 function AddEditReviewCommentMaster({
   show,
@@ -30,12 +31,10 @@ function AddEditReviewCommentMaster({
       type === 'EDIT' ? currentReviewCommentData?.is_active?.toString() : 1
   };
 
-  // // local state
   const [openConfirmModal, setOpenConfirmModal] = useState({
     open: false,
     formData: ''
   });
-  // // function
 
   const handelAddEditReviewComment = ({ formData }) => {
     if (type === 'ADD') {
@@ -69,6 +68,24 @@ function AddEditReviewCommentMaster({
       );
     }
   };
+  const fields = [
+    {
+      name: 'reviewer_comment',
+      label: 'Reviewer Comment Title',
+      min: 3,
+      max: 100,
+      required: true,
+      alphaBet: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 255,
+      alphaNumeric: true
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
 
   return (
     <>
@@ -79,7 +96,7 @@ function AddEditReviewCommentMaster({
       >
         <Formik
           initialValues={addEditReviewCommentInitialValue}
-          validationSchema={addReviewCommentValidation}
+          validationSchema={validationSchema}
           onSubmit={(values) => {
             handelAddEditReviewComment({ formData: values });
           }}

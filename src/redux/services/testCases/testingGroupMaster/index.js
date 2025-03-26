@@ -2,13 +2,22 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import customAxios from '../../../../http/axios';
 import { errorHandler } from '../../../../utils';
+import axios from 'axios';
+import { REACT_APP_API_REWAMP_BASE_URL } from '../../../../config/envConfig';
 
 export const getTestingGroupMasterListThunk = createAsyncThunk(
   'testingGroupMaster/getTestingGroupMasterList',
   async () => {
     try {
-      const response = await customAxios.get(
-        `testCases/testingGroup/getTestingGroup/0`
+      const token = localStorage.getItem('jwt_token');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      };
+      const response = await axios.get(
+        `${REACT_APP_API_REWAMP_BASE_URL}testCases/getGroupTypeDetails`,
+        config
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
@@ -28,9 +37,16 @@ export const addTestingGroupMasterThunk = createAsyncThunk(
   'testingGroupMaster/addTestingGroup',
   async ({ formData, onSuccessHandler, onErrorHandler }) => {
     try {
+      const token = localStorage.getItem('jwt_token');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      };
       const response = await customAxios.post(
-        `testCases/testingGroup/addTestingGroup`,
-        formData
+        `${REACT_APP_API_REWAMP_BASE_URL}testCases/addGroupType`,
+        formData,
+        config
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
@@ -54,9 +70,16 @@ export const editTestingGroupMasterThunk = createAsyncThunk(
   'testingGroupMaster/editTestingGroup',
   async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
     try {
+      const token = localStorage.getItem('jwt_token');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      };
       const response = await customAxios.post(
-        `testCases/testingGroup/addTestingGroup/${currentId}`,
-        formData
+        `${REACT_APP_API_REWAMP_BASE_URL}testCases/addGroupType/${currentId}`,
+        formData,
+        config
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {

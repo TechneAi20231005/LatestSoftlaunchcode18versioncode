@@ -8,6 +8,7 @@ import { customSearchHandler } from '../../../utils/customFunction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import { getFunctionMasterListThunk } from '../../../redux/services/testCases/functionMaster';
 import AddEditFunctionMaster from './AddEditFunctionMaster';
+import { Tooltip } from 'react-tooltip';
 function FunctionMasterComponent() {
   const dispatch = useDispatch();
 
@@ -87,7 +88,19 @@ function FunctionMasterComponent() {
       name: 'Function Title',
       selector: (row) => row.function_name,
       sortable: false,
-      width: '200px'
+      width: '200px',
+      cell: (row) => (
+        <>
+          <a data-tooltip-id={`my-tooltip-click-${row?.id}`}>
+            <Tooltip
+              id={`my-tooltip-click-${row?.id}`}
+              content={row.function_name}
+              openOnClick
+            ></Tooltip>
+            {row?.function_name}
+          </a>
+        </>
+      )
     },
 
     {
@@ -99,20 +112,26 @@ function FunctionMasterComponent() {
 
     {
       name: 'Created By',
-      selector: (row) => row.created_by,
+      selector: (row) =>
+        (row?.created_by?.first_name || '-' + ' ') +
+        ' ' +
+        (row?.created_by?.last_name || '-'),
       sortable: false,
       width: '175px'
     },
     {
       name: 'Updated At',
-      selector: (row) => row.updated_at,
+      selector: (row) => row.updated_at || '- -',
       sortable: false,
       width: '175px'
     },
 
     {
       name: 'Updated By',
-      selector: (row) => row.updated_by,
+      selector: (row) =>
+        (row?.updated_by?.first_name || '-' + ' ') +
+        ' ' +
+        (row?.updated_by?.last_name || '-'),
       sortable: false,
       width: '175px'
     }
@@ -121,6 +140,15 @@ function FunctionMasterComponent() {
   const transformDataForExport = (data) => {
     return data.map((row) => ({
       ...row,
+      created_by:
+        (row?.created_by?.first_name || '-' + ' ') +
+        ' ' +
+        (row?.created_by?.last_name || '-'),
+
+      updated_by:
+        (row?.updated_by?.first_name || '-' + ' ') +
+        ' ' +
+        (row?.updated_by?.last_name || '-'),
       status: row.is_active == 1 ? 'Active' : 'Deactive'
     }));
   };

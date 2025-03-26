@@ -8,6 +8,7 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 import { getTestingGroupMasterListThunk } from '../../../redux/services/testCases/testingGroupMaster';
 import AddTestingGroupModal from './AddTestingGroupModal';
 import { Col, Row } from 'react-bootstrap';
+import { Tooltip } from 'react-tooltip';
 function TestingGroupMasterComponent() {
   const dispatch = useDispatch();
 
@@ -91,7 +92,19 @@ function TestingGroupMasterComponent() {
       name: 'Testing Group Title',
       selector: (row) => row.group_name,
       sortable: false,
-      width: '200px'
+      width: '200px',
+      cell: (row) => (
+        <>
+          <a data-tooltip-id={`my-tooltip-click-${row?.id}`}>
+            <Tooltip
+              id={`my-tooltip-click-${row?.id}`}
+              content={row.group_name}
+              openOnClick
+            ></Tooltip>
+            {row?.group_name}
+          </a>
+        </>
+      )
     },
 
     {
@@ -103,20 +116,26 @@ function TestingGroupMasterComponent() {
 
     {
       name: 'Created By',
-      selector: (row) => row.created_by,
+      selector: (row) =>
+        (row?.created_by?.first_name || '-' + ' ') +
+        ' ' +
+        (row?.created_by?.last_name || '-'),
       sortable: false,
       width: '175px'
     },
     {
       name: 'Updated At',
-      selector: (row) => row.updated_at,
+      selector: (row) => row.updated_at || '- -',
       sortable: false,
       width: '175px'
     },
 
     {
+      selector: (row) =>
+        (row?.updated_by?.first_name || '-' + ' ') +
+        ' ' +
+        (row?.updated_by?.last_name || '-'),
       name: 'Updated By',
-      selector: (row) => row.updated_by,
       sortable: false,
       width: '175px'
     }
@@ -125,6 +144,15 @@ function TestingGroupMasterComponent() {
   const transformDataForExport = (data) => {
     return data.map((row) => ({
       ...row,
+      created_by:
+        (row?.created_by?.first_name || '-' + ' ') +
+        ' ' +
+        (row?.created_by?.last_name || '-'),
+
+      updated_by:
+        (row?.updated_by?.first_name || '-' + ' ') +
+        ' ' +
+        (row?.updated_by?.last_name || '-'),
       status: row.is_active == 1 ? 'Active' : 'Deactive'
     }));
   };

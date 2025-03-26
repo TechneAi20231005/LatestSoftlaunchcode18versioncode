@@ -2,13 +2,22 @@ import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
 import customAxios from '../../../../http/axios';
 import { errorHandler } from '../../../../utils';
+import axios from 'axios';
+import { REACT_APP_API_REWAMP_BASE_URL } from '../../../../config/envConfig';
 
 export const getFunctionMasterListThunk = createAsyncThunk(
   'functionMaster/getFunctionMasterList',
   async () => {
     try {
-      const response = await customAxios.get(
-        `testCases/testingFunction/getTestingFunction/0`
+      const token = localStorage.getItem('jwt_token');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      };
+      const response = await axios.get(
+        `${REACT_APP_API_REWAMP_BASE_URL}testCases/getFunctionDetails`,
+        config
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
@@ -28,9 +37,16 @@ export const addFunctionMasterThunk = createAsyncThunk(
   'functionMaster/addFunction',
   async ({ formData, onSuccessHandler, onErrorHandler }) => {
     try {
-      const response = await customAxios.post(
-        `testCases/testingFunction/addTestingFunction`,
-        formData
+      const token = localStorage.getItem('jwt_token');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      };
+      const response = await axios.post(
+        `${REACT_APP_API_REWAMP_BASE_URL}testCases/addFunction`,
+        formData,
+        config
       );
 
       if (response?.status === 200 || response?.status === 201) {
@@ -55,9 +71,16 @@ export const editFunctionMasterThunk = createAsyncThunk(
   'functionMaster/editfunction',
   async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
     try {
-      const response = await customAxios.post(
-        `testCases/testingFunction/addTestingFunction/${currentId}`,
-        formData
+      const token = localStorage.getItem('jwt_token');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      };
+      const response = await axios.post(
+        `${REACT_APP_API_REWAMP_BASE_URL}testCases/addFunction/${currentId}`,
+        formData,
+        config
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {

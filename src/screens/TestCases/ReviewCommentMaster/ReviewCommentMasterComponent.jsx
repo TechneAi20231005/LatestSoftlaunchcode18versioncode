@@ -8,6 +8,7 @@ import { getReviewCommentMasterListThunk } from '../../../redux/services/testCas
 import { customSearchHandler } from '../../../utils/customFunction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import AddEditReviewCommentMaster from './Validation/AddEditReviewCommentMaster';
+import { Tooltip } from 'react-tooltip';
 function ReviewCommentMasterComponent() {
   const dispatch = useDispatch();
 
@@ -84,7 +85,19 @@ function ReviewCommentMasterComponent() {
       name: 'Reviewer Comment Title',
       selector: (row) => row.reviewer_comment,
       sortable: false,
-      width: '200px'
+      width: '200px',
+      cell: (row) => (
+        <>
+          <a data-tooltip-id={`my-tooltip-click-${row?.id}`}>
+            <Tooltip
+              id={`my-tooltip-click-${row?.id}`}
+              content={row.reviewer_comment}
+              openOnClick
+            ></Tooltip>
+            {row?.reviewer_comment}
+          </a>
+        </>
+      )
     },
 
     {
@@ -96,20 +109,26 @@ function ReviewCommentMasterComponent() {
 
     {
       name: 'Created By',
-      selector: (row) => row.created_by,
+      selector: (row) =>
+        (row?.created_by?.first_name || '-' + ' ') +
+        (row?.created_by?.last_name || '-'),
+      //row?.created_by?.first_name + ' ' + row?.created_by?.last_name || '--',
       sortable: false,
       width: '175px'
     },
     {
       name: 'Updated At',
-      selector: (row) => row.updated_at,
+      selector: (row) => row.updated_at || '- -',
       sortable: false,
       width: '175px'
     },
 
     {
       name: 'Updated By',
-      selector: (row) => row.updated_by,
+      selector: (row) =>
+        (row?.updated_by?.first_name || '-' + ' ') +
+        (row?.updated_by?.last_name || '-'),
+      // row?.updated_by?.first_name + ' ' + row?.updated_by?.last_name || '--',
       sortable: false,
       width: '175px'
     }
@@ -118,6 +137,13 @@ function ReviewCommentMasterComponent() {
   const transformDataForExport = (data) => {
     return data.map((row) => ({
       ...row,
+      created_by:
+        (row?.created_by?.first_name || '-' + ' ') +
+        (row?.created_by?.last_name || '-'),
+
+      updated_by:
+        (row?.updated_by?.first_name || '-' + ' ') +
+        (row?.updated_by?.last_name || '-'),
       status: row.is_active == 1 ? 'Active' : 'Deactive'
     }));
   };
@@ -171,7 +197,7 @@ function ReviewCommentMasterComponent() {
       <Row className="row_gap_3">
         <Col xs={12} md={7} xxl={8}>
           <input
-          id="reviewcommentmaster_reviewercommentsearch"
+            id="reviewcommentmaster_reviewercommentsearch"
             type="search"
             name="interview_search"
             value={searchValue}
@@ -209,6 +235,7 @@ function ReviewCommentMasterComponent() {
           />
         </Col>
       </Row>
+
       <DataTable
         columns={columns}
         data={filteredReviewCommentMasterList}
