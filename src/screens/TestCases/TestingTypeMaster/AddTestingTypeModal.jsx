@@ -67,8 +67,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
     {
       name: 'remark',
       label: 'Remark',
-      max: 255,
-      alphaNumeric: true
+      max: 255
     }
   ];
 

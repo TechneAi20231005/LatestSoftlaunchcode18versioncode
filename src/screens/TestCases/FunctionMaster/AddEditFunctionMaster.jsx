@@ -67,8 +67,7 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
     {
       name: 'remark',
       label: 'Remark',
-      max: 255,
-      alphaNumeric: true
+      max: 255
     }
   ];
 

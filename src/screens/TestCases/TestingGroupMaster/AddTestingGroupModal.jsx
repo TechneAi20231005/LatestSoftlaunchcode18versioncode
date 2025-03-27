@@ -64,8 +64,7 @@ function AddTestingGroupModal({ show, close, type, currentTestingGroupData }) {
     {
       name: 'remark',
       label: 'Remark',
-      max: 255,
-      alphaNumeric: true
+      max: 255
     }
   ];
   const validationSchema = CustomValidation(fields);

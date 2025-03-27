@@ -80,8 +80,7 @@ function AddEditReviewCommentMaster({
     {
       name: 'remark',
       label: 'Remark',
-      max: 255,
-      alphaNumeric: true
+      max: 255
     }
   ];
 
