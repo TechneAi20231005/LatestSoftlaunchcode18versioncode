@@ -1,24 +1,15 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
-import customAxios from '../../../../http/axios';
+import customAxios, { rewampAxios } from '../../../../http/axios';
 import { errorHandler } from '../../../../utils';
-import axios from 'axios';
-import { REACT_APP_API_REWAMP_BASE_URL } from '../../../../config/envConfig';
+// import axios from 'axios';
+// import { REACT_APP_API_REWAMP_BASE_URL } from '../../../../config/envConfig';
 
 export const getTestingGroupMasterListThunk = createAsyncThunk(
   'testingGroupMaster/getTestingGroupMasterList',
   async () => {
     try {
-      const token = localStorage.getItem('jwt_token');
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      };
-      const response = await axios.get(
-        `${REACT_APP_API_REWAMP_BASE_URL}testCases/getGroupTypeDetails`,
-        config
-      );
+      const response = await rewampAxios.get(`testCases/getGroupTypeDetails`);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };
@@ -37,16 +28,9 @@ export const addTestingGroupMasterThunk = createAsyncThunk(
   'testingGroupMaster/addTestingGroup',
   async ({ formData, onSuccessHandler, onErrorHandler }) => {
     try {
-      const token = localStorage.getItem('jwt_token');
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      };
-      const response = await customAxios.post(
-        `${REACT_APP_API_REWAMP_BASE_URL}testCases/addGroupType`,
-        formData,
-        config
+      const response = await rewampAxios.post(
+        `testCases/addGroupType`,
+        formData
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
@@ -70,16 +54,9 @@ export const editTestingGroupMasterThunk = createAsyncThunk(
   'testingGroupMaster/editTestingGroup',
   async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
     try {
-      const token = localStorage.getItem('jwt_token');
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      };
-      const response = await customAxios.post(
-        `${REACT_APP_API_REWAMP_BASE_URL}testCases/addGroupType/${currentId}`,
-        formData,
-        config
+      const response = await rewampAxios.post(
+        `testCases/addGroupType/${currentId}`,
+        formData
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {

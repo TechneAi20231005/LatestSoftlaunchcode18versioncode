@@ -1,24 +1,15 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
-import customAxios from '../../../../http/axios';
+import customAxios, { rewampAxios } from '../../../../http/axios';
 import { errorHandler } from '../../../../utils';
-import { REACT_APP_API_REWAMP_BASE_URL } from '../../../../config/envConfig';
-import axios from 'axios';
+// import { REACT_APP_API_REWAMP_BASE_URL } from '../../../../config/envConfig';
+// import axios from 'axios';
 
 export const getTestingTypeMasterListThunk = createAsyncThunk(
   'testingTypeMaster/getTestingTypeMasterList',
   async () => {
     try {
-      const token = localStorage.getItem('jwt_token');
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      };
-      const response = await customAxios.get(
-        `${REACT_APP_API_REWAMP_BASE_URL}testCases/getTestingTypeDetails`,
-        config
-      );
+      const response = await rewampAxios.get(`testCases/getTestingTypeDetails`);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };
@@ -37,16 +28,9 @@ export const addTestingTypeMasterThunk = createAsyncThunk(
   'testingTypeMaster/addTestingType',
   async ({ formData, onSuccessHandler, onErrorHandler }) => {
     try {
-      const token = localStorage.getItem('jwt_token');
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      };
-      const response = await axios.post(
-        `${REACT_APP_API_REWAMP_BASE_URL}testCases/addTestingType`,
-        formData,
-        config
+      const response = await rewampAxios.post(
+        `testCases/addTestingType`,
+        formData
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
@@ -70,16 +54,9 @@ export const editTestingTypeMasterThunk = createAsyncThunk(
   'testingTypeMaster/editTestingType',
   async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
     try {
-      const token = localStorage.getItem('jwt_token');
-      const config = {
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      };
-      const response = await axios.post(
-        `${REACT_APP_API_REWAMP_BASE_URL}testCases/addTestingType/${currentId}`,
-        formData,
-        config
+      const response = await rewampAxios.post(
+        `testCases/addTestingType/${currentId}`,
+        formData
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {

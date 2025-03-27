@@ -35,18 +35,23 @@ function AddEditReviewCommentMaster({
     open: false,
     formData: ''
   });
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handelAddEditReviewComment = ({ formData }) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     if (type === 'ADD') {
       dispatch(
         addReviewCommentMasterThunk({
           formData: formData,
           onSuccessHandler: () => {
+            setIsSubmitting(false);
             setOpenConfirmModal({ open: false });
             close();
             dispatch(getReviewCommentMasterListThunk());
           },
           onErrorHandler: () => {
+            setIsSubmitting(false);
             setOpenConfirmModal({ open: false });
           }
         })
@@ -57,11 +62,13 @@ function AddEditReviewCommentMaster({
           currentId: currentReviewCommentData?.id,
           formData: formData,
           onSuccessHandler: () => {
+            setIsSubmitting(false);
             setOpenConfirmModal({ open: false });
             close();
             dispatch(getReviewCommentMasterListThunk());
           },
           onErrorHandler: () => {
+            setIsSubmitting(false);
             setOpenConfirmModal({ open: false });
           }
         })
@@ -154,7 +161,7 @@ function AddEditReviewCommentMaster({
                 <button
                   className="btn btn-primary px-4"
                   type="submit"
-                  disabled={!dirty}
+                  disabled={isSubmitting}
                 >
                   {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>

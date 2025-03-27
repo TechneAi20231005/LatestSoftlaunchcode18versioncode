@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Row } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
@@ -20,6 +20,8 @@ import { CustomValidation } from '../../../components/custom/CustomValidation/Cu
 
 function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
   const dispatch = useDispatch();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const addEditFunctionInitialValue = {
     function_name: type === 'EDIT' ? currentFunctionData?.function_name : '',
     remark: type === 'EDIT' ? currentFunctionData?.remark || '' : '',
@@ -29,15 +31,20 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
   // // function
 
   const handleAddEditFunction = ({ formData }) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     if (type === 'ADD') {
       dispatch(
         addFunctionMasterThunk({
           formData: formData,
           onSuccessHandler: () => {
+            setIsSubmitting(false);
             close();
             dispatch(getFunctionMasterListThunk());
           },
-          onErrorHandler: () => {}
+          onErrorHandler: () => {
+            setIsSubmitting(false);
+          }
         })
       );
     } else {
@@ -46,10 +53,13 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
           currentId: currentFunctionData?.id,
           formData: formData,
           onSuccessHandler: () => {
+            setIsSubmitting(false);
             close();
             dispatch(getFunctionMasterListThunk());
           },
-          onErrorHandler: () => {}
+          onErrorHandler: () => {
+            setIsSubmitting(false);
+          }
         })
       );
     }
@@ -141,7 +151,7 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
                 <button
                   className="btn btn-primary px-4"
                   type="submit"
-                  disabled={!dirty}
+                  disabled={!dirty || isSubmitting}
                 >
                   {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>

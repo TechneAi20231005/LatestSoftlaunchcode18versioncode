@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Row } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
@@ -19,6 +19,7 @@ import { CustomValidation } from '../../../components/custom/CustomValidation/Cu
 
 function AddTestingGroupModal({ show, close, type, currentTestingGroupData }) {
   const dispatch = useDispatch();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const addEditTestingGroupInitialValue = {
     group_name: type === 'EDIT' ? currentTestingGroupData?.group_name : '',
     remark: type === 'EDIT' ? currentTestingGroupData?.remark || '' : '',
@@ -27,15 +28,20 @@ function AddTestingGroupModal({ show, close, type, currentTestingGroupData }) {
   };
 
   const handleAddEditTestingGroup = ({ formData }) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     if (type === 'ADD') {
       dispatch(
         addTestingGroupMasterThunk({
           formData: formData,
           onSuccessHandler: () => {
+            setIsSubmitting(false);
             close();
             dispatch(getTestingGroupMasterListThunk());
           },
-          onErrorHandler: () => {}
+          onErrorHandler: () => {
+            setIsSubmitting(false);
+          }
         })
       );
     } else {
@@ -44,10 +50,13 @@ function AddTestingGroupModal({ show, close, type, currentTestingGroupData }) {
           currentId: currentTestingGroupData?.id,
           formData: formData,
           onSuccessHandler: () => {
+            setIsSubmitting(false);
             close();
             dispatch(getTestingGroupMasterListThunk());
           },
-          onErrorHandler: () => {}
+          onErrorHandler: () => {
+            setIsSubmitting(false);
+          }
         })
       );
     }
@@ -136,7 +145,7 @@ function AddTestingGroupModal({ show, close, type, currentTestingGroupData }) {
                 <button
                   className="btn btn-primary px-4"
                   type="submit"
-                  disabled={!dirty}
+                  disabled={!dirty || isSubmitting}
                 >
                   {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>
