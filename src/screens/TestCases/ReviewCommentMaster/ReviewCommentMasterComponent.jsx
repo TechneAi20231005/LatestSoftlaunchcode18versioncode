@@ -111,8 +111,8 @@ function ReviewCommentMasterComponent() {
       name: 'Created By',
       selector: (row) =>
         (row?.created_by?.first_name || '-' + ' ') +
+        ' ' +
         (row?.created_by?.last_name || '-'),
-      //row?.created_by?.first_name + ' ' + row?.created_by?.last_name || '--',
       sortable: false,
       width: '175px'
     },
@@ -127,8 +127,8 @@ function ReviewCommentMasterComponent() {
       name: 'Updated By',
       selector: (row) =>
         (row?.updated_by?.first_name || '-' + ' ') +
+        ' ' +
         (row?.updated_by?.last_name || '-'),
-      // row?.updated_by?.first_name + ' ' + row?.updated_by?.last_name || '--',
       sortable: false,
       width: '175px'
     }
@@ -139,10 +139,12 @@ function ReviewCommentMasterComponent() {
       ...row,
       created_by:
         (row?.created_by?.first_name || '-' + ' ') +
+        ' ' +
         (row?.created_by?.last_name || '-'),
 
       updated_by:
         (row?.updated_by?.first_name || '-' + ' ') +
+        ' ' +
         (row?.updated_by?.last_name || '-'),
       status: row.is_active == 1 ? 'Active' : 'Deactive'
     }));
