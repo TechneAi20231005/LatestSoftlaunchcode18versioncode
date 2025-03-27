@@ -5,5 +5,7 @@ export const EMAIL_REGEX =
   /^[a-zA-Z0-9]+([._-]?[a-zA-Z0-9]+)*@[a-zA-Z0-9-]+(\.[a-zA-Z]{2,})+$/;
 export const SPECIAL_CHARACTER_REGEX =
   /^[a-zA-Z0-9\s\-_@!#$%^&*()+=[\]{}|;:'",<>.?/`~]+$/;
-export const UNDERSCORE_SPACE_SLASH_REGEX = /^[a-zA-Z\s_/]+$/;
+export const UNDERSCORE_SPACE_SLASH_REGEX = /^[a-zA-Z\s/-]+$/;
+
+export const UNDERSCORE_SPACE_REGEX = /^[a-zA-Z\s-]+$/;
 export const JOB_ROLE_REGEX = /^[a-zA-Z0-9\s@._\-&]+$/;

@@ -1,6 +1,10 @@
 // validation.js
 import * as Yup from 'yup';
-import { ALPHA_NUMERIC_REGEX } from '../../../utils/regexPool';
+import {
+  ALPHA_NUMERIC_REGEX,
+  UNDERSCORE_SPACE_SLASH_REGEX,
+  UNDERSCORE_SPACE_REGEX
+} from '../../../utils/regexPool';
 
 export const CustomValidation = (fields) => {
   return Yup.object(
@@ -104,6 +108,15 @@ export const CustomValidation = (fields) => {
         validator = validator.matches(
           ALPHA_NUMERIC_REGEX,
           `${field.label} must be alphanumeric`
+        );
+      }
+
+      if (field.alphaBet) {
+        validator = validator.matches(
+          field.name === 'type_name'
+            ? UNDERSCORE_SPACE_SLASH_REGEX
+            : UNDERSCORE_SPACE_REGEX,
+          `${field.label} must be alphabet`
         );
       }
 

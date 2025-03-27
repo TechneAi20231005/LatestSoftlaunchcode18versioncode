@@ -1,40 +1,47 @@
-import React from "react";
-import { Field, Form, Formik } from "formik";
-import { Col, Row } from "react-bootstrap";
-import { useDispatch } from "react-redux";
+import React, { useState } from 'react';
+import { Field, Form, Formik } from 'formik';
+import { Col, Row } from 'react-bootstrap';
+import { useDispatch } from 'react-redux';
 
-import CustomModal from "../../../components/custom/modal/CustomModal";
+import CustomModal from '../../../components/custom/modal/CustomModal';
 import {
   CustomInput,
-  CustomRadioButton,
-} from "../../../components/custom/inputs/CustomInputs";
-import { RenderIf } from "../../../utils";
+  CustomRadioButton
+} from '../../../components/custom/inputs/CustomInputs';
+import { RenderIf } from '../../../utils';
 import {
   addTestingGroupMasterThunk,
   editTestingGroupMasterThunk,
-  getTestingGroupMasterListThunk,
-} from "../../../redux/services/testCases/testingGroupMaster";
-import { addTestingGroupValidation } from "./Validation/AddTestingGroup";
+  getTestingGroupMasterListThunk
+} from '../../../redux/services/testCases/testingGroupMaster';
+import { addTestingGroupValidation } from './Validation/AddTestingGroup';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 
 function AddTestingGroupModal({ show, close, type, currentTestingGroupData }) {
   const dispatch = useDispatch();
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const addEditTestingGroupInitialValue = {
-    group_name: type === "EDIT" ? currentTestingGroupData?.group_name : "",
-    remark: type === "EDIT" ? currentTestingGroupData?.remark || "" : "",
+    group_name: type === 'EDIT' ? currentTestingGroupData?.group_name : '',
+    remark: type === 'EDIT' ? currentTestingGroupData?.remark || '' : '',
     is_active:
-      type === "EDIT" ? currentTestingGroupData?.is_active?.toString() : 1,
+      type === 'EDIT' ? currentTestingGroupData?.is_active?.toString() : 1
   };
 
   const handleAddEditTestingGroup = ({ formData }) => {
-    if (type === "ADD") {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
+    if (type === 'ADD') {
       dispatch(
         addTestingGroupMasterThunk({
           formData: formData,
           onSuccessHandler: () => {
+            setIsSubmitting(false);
             close();
             dispatch(getTestingGroupMasterListThunk());
           },
-          onErrorHandler: () => {},
+          onErrorHandler: () => {
+            setIsSubmitting(false);
+          }
         })
       );
     } else {
@@ -43,25 +50,43 @@ function AddTestingGroupModal({ show, close, type, currentTestingGroupData }) {
           currentId: currentTestingGroupData?.id,
           formData: formData,
           onSuccessHandler: () => {
+            setIsSubmitting(false);
             close();
             dispatch(getTestingGroupMasterListThunk());
           },
-          onErrorHandler: () => {},
+          onErrorHandler: () => {
+            setIsSubmitting(false);
+          }
         })
       );
     }
   };
-
+  const fields = [
+    {
+      name: 'group_name',
+      label: 'Testing Group',
+      min: 3,
+      max: 100,
+      required: true,
+      alphaBet: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 255
+    }
+  ];
+  const validationSchema = CustomValidation(fields);
   return (
     <>
       <CustomModal
         show={show}
-        title={`${type === "ADD" ? "Add" : "Edit"} Testing Group`}
+        title={`${type === 'ADD' ? 'Add' : 'Edit'} Testing Group`}
         width="md"
       >
         <Formik
           initialValues={addEditTestingGroupInitialValue}
-          validationSchema={addTestingGroupValidation}
+          validationSchema={validationSchema}
           onSubmit={(values) => {
             handleAddEditTestingGroup({ formData: values });
           }}
@@ -89,7 +114,7 @@ function AddTestingGroupModal({ show, close, type, currentTestingGroupData }) {
                   />
                 </Col>
 
-                <RenderIf render={type === "EDIT"}>
+                <RenderIf render={type === 'EDIT'}>
                   <div className="d-flex align-items-center mt-3">
                     <p className="mb-2 pe-2">
                       Status<span className="mendatory_sign">*</span> :
@@ -120,9 +145,9 @@ function AddTestingGroupModal({ show, close, type, currentTestingGroupData }) {
                 <button
                   className="btn btn-primary px-4"
                   type="submit"
-                  disabled={!dirty}
+                  disabled={!dirty || isSubmitting}
                 >
-                  {type === "ADD" ? "Submit" : "Update"}
+                  {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>
                 <button
                   onClick={() => close()}
