@@ -436,6 +436,7 @@ function EditCustomer() {
                               options={customerType}
                               name="customer_type_id"
                               component={Select}
+                              classNamePrefix="react-select"
                               id="customer_type_id"
                               isClearable={true}
                               onChange={(option) => {
