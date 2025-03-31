@@ -21144,8 +21144,8 @@ a {
 }
 
 .notifications {
-  z-index: 9999 !important;
-}
+  /* z-index: 9999 !important; */
+}  z-index: 1000 !important;
 
 .notifications .pulse,
 .notifications .pulse:focus {
@@ -23368,7 +23368,8 @@ body.rtl_mode
   -webkit-transition: ease 0.1s;
   transition: ease 0.1s;
   background: var(--primary-color);
-  z-index: 99999;
+  /* z-index: 99999; */
+  z-index: 1000;
   margin: 25px;
   height: calc(100vh - 50px);
   width: 260px;
@@ -23589,7 +23590,8 @@ body.rtl_mode
   text-align: center;
   padding: 1.5rem 0 !important;
   width: 100px;
-  z-index: 9999;
+  /* z-index: 9999; */
+  z-index: 1000;
 }
 
 @media only screen and (min-width: 1279px) {
