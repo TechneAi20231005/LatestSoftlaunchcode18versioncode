@@ -1,11 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import {
-  MaterialReactTable
-} from 'material-react-table';
-import { Box } from '@mui/material';
+import { MaterialReactTable } from 'material-react-table';
+import { Box, Button } from '@mui/material';
+import FileDownloadIcon from '@mui/icons-material/FileDownload';
 
-
-function MaterialTable({ columns, data, }) {
+function MaterialTable({
+  columns,
+  data,
+  enableSorting = true,
+  enablePagination = true,
+  enableFilters  = true,
+  enableStickyHeader  = true ,
+  enableGrouping  = true,
+  enableFullScreenToggle  = true,
+  enableColumnResizing  = true,
+  enableColumnOrdering  = true,
+  enableFacetedValues = true,
+}) {
   const handleMouseHover = (event) => {
     const clickedRow = event.currentTarget;
     const innerText = clickedRow.innerText;
@@ -16,11 +26,9 @@ function MaterialTable({ columns, data, }) {
     const rowData = rows.map((row) => row.original);
     console.log(rowData, 'rowData');
   };
-  const [columnFilters, setColumnFilters] = useState([]);
 
-  useEffect(()=> {
-   console.log(columnFilters, 'columnFilters')
-  },[columnFilters])
+  const handleExportData = () => {};
+  const [columnFilters, setColumnFilters] = useState([]);
 
   return (
     <Box
@@ -36,15 +44,15 @@ function MaterialTable({ columns, data, }) {
       <MaterialReactTable
         columns={columns}
         data={data}
-        enableSorting
-        enablePagination
-        enableFilters
-        enableStickyHeader
-        enableGrouping
-        enableFullScreenToggle={true}
-        enableColumnResizing
-        enableColumnOrdering={false}
-        enableFacetedValues
+        enableSorting ={enableSorting}
+        enablePagination ={enablePagination}
+        enableFilters={enableFilters}
+        enableStickyHeader={enableStickyHeader}
+        enableGrouping={enableGrouping}
+        enableFullScreenToggle={enableFullScreenToggle}
+        enableColumnResizing={enableColumnResizing}
+        enableColumnOrdering={enableColumnOrdering}
+        enableFacetedValues={enableFacetedValues}
         muiTableBodyCellProps={{
           onMouseOver: handleMouseHover
         }}
@@ -55,7 +63,7 @@ function MaterialTable({ columns, data, }) {
         //     typeof updater === "function" ? updater(prevFilters) : updater
         //   );
         // }}
-        state={{ isLoading: data?.length === 0  }}
+        state={{ isLoading: data?.length === 0 }}
         renderTopToolbarCustomActions={({ table }) => (
           <Box
             sx={{
@@ -65,19 +73,19 @@ function MaterialTable({ columns, data, }) {
               flexWrap: 'wrap'
             }}
           >
-            <button
-              className="btn btn-danger"
+            <Button onClick={handleExportData} startIcon={<FileDownloadIcon />}>
+              Export All Data
+            </Button>
+
+            <Button
+              disabled={data?.length === 0}
               onClick={() =>
                 handleExportRows(table.getPrePaginationRowModel().rows)
               }
-              disabled={data?.length === 0}
-              type="button"
+              startIcon={<FileDownloadIcon />}
             >
-              <>
-                <i className="icofont-download" />
-                {'Export'}
-              </>
-            </button>
+              Export All Rows
+            </Button>
           </Box>
         )}
       />

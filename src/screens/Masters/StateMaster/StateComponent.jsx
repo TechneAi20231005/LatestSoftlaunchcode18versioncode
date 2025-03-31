@@ -243,11 +243,11 @@ function StateComponent() {
       header: "Created By",
     },
     {
-      accessorKey: "updated_at",
+      accessorFn: (originalRow) => originalRow?.updated_at || "--",
       header: "Updated At",
     },
     {
-      accessorKey: "updated_by",
+      accessorFn: (originalRow) => originalRow?.updated_by || "--",
       header: "Updated By"
     }
   ];
