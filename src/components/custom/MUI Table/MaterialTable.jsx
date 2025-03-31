@@ -73,7 +73,7 @@ function MaterialTable({
               flexWrap: 'wrap'
             }}
           >
-            <Button onClick={handleExportData} startIcon={<FileDownloadIcon />}>
+            <Button disabled={data?.length === 0} onClick={handleExportData} startIcon={<FileDownloadIcon />}>
               Export All Data
             </Button>
 

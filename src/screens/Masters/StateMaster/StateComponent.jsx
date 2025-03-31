@@ -358,7 +358,7 @@ function StateComponent() {
 
   return (
     <div className="container-xxl">
-      <Container fluid>
+
         <PageHeader
           headerTitle="State Master"
           renderRight={() => {
@@ -419,7 +419,7 @@ function StateComponent() {
             // />
           )}
         </div>
-      </Container>
+
 
       <Modal centered show={modal.showModal}>
         <Formik
