@@ -16,6 +16,8 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import NotFound from '../../../components/NotFound';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
 
 function UserComponent() {
   //initial state
@@ -56,105 +58,100 @@ function UserComponent() {
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
-        <div className="btn-group" role="group">
-          {checkRole && checkRole[0]?.can_update === 1 ? (
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      accessorFn: (originalRow) => {
+        return (
+          <div className="btn-group" role="group">
             <Link
-              to={`/${_base}/User/Edit/` + row.id}
+              to={`/${_base}/User/Edit/` + originalRow?.id}
               className="btn btn-outline-secondary"
             >
               <i className="icofont-edit text-success"></i>
             </Link>
-          ) : (
-            ''
-          )}
-        </div>
-      )
+          </div>
+        );
+      }
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
-    },
-    { name: 'Account For', selector: (row) => row.account_for, sortable: true },
-    {
-      name: 'Customer',
-      selector: (row) => row.customer,
-      sortable: true,
-      width: '150px'
+      accessorFn: (originalRow) => originalRow?.counter || '--',
+      header: 'Sr',
+      size: 90,
+      enableColumnOrdering: false,
+      enableGrouping: false
     },
     {
-      name: 'Name',
-      selector: (row) => row.name,
-      sortable: true,
-      width: '150px'
+      accessorFn: (originalRow) => originalRow?.account_for || '--',
+      accessorKey: 'account_for',
+      header: 'Account For',
+      size: 190
     },
     {
-      name: 'Email',
-      selector: (row) => row.email_id,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.customer || '--',
+      accessorKey: 'customer',
+      header: 'Customer',
+      size: 180
     },
     {
-      name: 'Contact No',
-      selector: (row) => row.contact_no,
-      sortable: true,
-      width: '150px'
+      accessorFn: (originalRow) => originalRow?.name || '--',
+      header: 'Name',
+      size: 180
     },
     {
-      name: 'Username',
-      selector: (row) => row.user_name,
-      sortable: true,
-      width: '150px'
+      accessorFn: (originalRow) => originalRow?.email_id || '--',
+      header: 'Email',
+      size: 160
     },
     {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-
-          {row.is_active === 0 && (
-            <span className="badge bg-danger " style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      )
+      accessorFn: (originalRow) => originalRow?.contact_no || '--',
+      header: 'Contact No',
+      size: 190
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.user_name || '--',
+      header: 'Username'
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.is_active || '--',
+      header: 'Status',
+      size: 150,
+      Cell: ({ row }) => {
+        return (
+          <div>
+            {row?.original?.is_active === 1 ? (
+              <span className="badge bg-primary" style={{ width: '4rem' }}>
+                Active
+              </span>
+            ) : row?.original?.is_active === 0 ? (
+              <span className="badge bg-danger" style={{ width: '4rem' }}>
+                Deactive
+              </span>
+            ) : (
+              '--'
+            )}
+          </div>
+        );
+      }
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.created_at || '--',
+      header: 'Created At'
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.created_by || '--',
+      header: 'Created By'
+    },
+    {
+      accessorFn: (originalRow) => originalRow?.updated_at || '--',
+      header: 'Updated At'
+    },
+    {
+      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      header: 'Updated By',
+      size: 190
     }
   ];
 
@@ -164,7 +161,6 @@ function UserComponent() {
     await new UserService().getExportTicket().then((res) => {
       if (res.status === 200) {
         const temp = res?.data?.data?.data;
-        console.log('export data', temp);
         for (const i in temp) {
           exportTempData.push({
             SrNo: exportTempData.length + 1,
@@ -239,7 +235,7 @@ function UserComponent() {
   }, [searchTerm, handleSearch]);
 
   return (
-    <div className="container-xxl px-0">
+    <div className="container-xxl">
       <PageHeader
         headerTitle="User Master"
         renderRight={() => {
@@ -260,7 +256,7 @@ function UserComponent() {
         }}
       />
 
-      <SearchBoxHeader
+      {/* <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         searchTerm={searchTerm}
         handleSearch={handleSearch}
@@ -269,21 +265,10 @@ function UserComponent() {
         exportFileName="User Master Record"
         exportData={exportData}
         showExportButton={true}
-      />
+      /> */}
       <div className="card mt-2 px-0">
         {filteredData && (
-          <DataTable
-            columns={columns}
-            data={filteredData}
-            defaultSortField="title"
-            pagination
-            selectableRows={false}
-            noDataComponent={<NotFound />}
-            progressPending={isLoding}
-            progressComponent={<TableLoadingSkelton />}
-            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-            highlightOnHover={true}
-          />
+          <MaterialTable columns={columns} data={filteredData}></MaterialTable>
         )}
       </div>
     </div>
