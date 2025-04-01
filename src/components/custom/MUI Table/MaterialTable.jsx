@@ -8,13 +8,13 @@ function MaterialTable({
   data,
   enableSorting = true,
   enablePagination = true,
-  enableFilters  = true,
-  enableStickyHeader  = true ,
-  enableGrouping  = true,
-  enableFullScreenToggle  = true,
-  enableColumnResizing  = true,
-  enableColumnOrdering  = true,
-  enableFacetedValues = true,
+  enableFilters = true,
+  enableStickyHeader = true,
+  enableGrouping = true,
+  enableFullScreenToggle = true,
+  enableColumnResizing = true,
+  enableColumnOrdering = true,
+  enableFacetedValues = true
 }) {
   const handleMouseHover = (event) => {
     const clickedRow = event.currentTarget;
@@ -44,8 +44,8 @@ function MaterialTable({
       <MaterialReactTable
         columns={columns}
         data={data}
-        enableSorting ={enableSorting}
-        enablePagination ={enablePagination}
+        enableSorting={enableSorting}
+        enablePagination={enablePagination}
         enableFilters={enableFilters}
         enableStickyHeader={enableStickyHeader}
         enableGrouping={enableGrouping}
@@ -73,11 +73,17 @@ function MaterialTable({
               flexWrap: 'wrap'
             }}
           >
-            <Button disabled={data?.length === 0} onClick={handleExportData} startIcon={<FileDownloadIcon />}>
+            <Button
+              className="text-primary"
+              disabled={data?.length === 0}
+              onClick={handleExportData}
+              startIcon={<FileDownloadIcon />}
+            >
               Export All Data
             </Button>
 
             <Button
+              className="text-primary"
               disabled={data?.length === 0}
               onClick={() =>
                 handleExportRows(table.getPrePaginationRowModel().rows)
