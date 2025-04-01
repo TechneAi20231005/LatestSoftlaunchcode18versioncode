@@ -1,7 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import { Box, Button } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import NotFound from '../../NotFound';
 
 function MaterialTable({
   columns,
@@ -14,8 +17,13 @@ function MaterialTable({
   enableFullScreenToggle = true,
   enableColumnResizing = true,
   enableColumnOrdering = true,
-  enableFacetedValues = true
+  enableFacetedValues = true,
+  isLoading,
+  enableColumnFilter = true,
 }) {
+
+
+
   const handleMouseHover = (event) => {
     const clickedRow = event.currentTarget;
     const innerText = clickedRow.innerText;
@@ -28,7 +36,8 @@ function MaterialTable({
   };
 
   const handleExportData = () => {};
-  const [columnFilters, setColumnFilters] = useState([]);
+
+
 
   return (
     <Box
@@ -41,60 +50,63 @@ function MaterialTable({
         }
       }}
     >
-      <MaterialReactTable
-        columns={columns}
-        data={data}
-        enableSorting={enableSorting}
-        enablePagination={enablePagination}
-        enableFilters={enableFilters}
-        enableStickyHeader={enableStickyHeader}
-        enableGrouping={enableGrouping}
-        enableFullScreenToggle={enableFullScreenToggle}
-        enableColumnResizing={enableColumnResizing}
-        enableColumnOrdering={enableColumnOrdering}
-        enableFacetedValues={enableFacetedValues}
-        muiTableBodyCellProps={{
-          onMouseOver: handleMouseHover
-        }}
-        // manualFiltering
-        // onColumnFiltersChange={ setColumnFilters}
-        // onColumnFiltersChange={(updater) => {
-        //   setColumnFilters((prevFilters) =>
-        //     typeof updater === "function" ? updater(prevFilters) : updater
-        //   );
-        // }}
-        state={{ isLoading: data?.length === 0 }}
-        renderTopToolbarCustomActions={({ table }) => (
-          <Box
-            sx={{
-              display: 'flex',
-              gap: '16px',
-              padding: '8px',
-              flexWrap: 'wrap'
-            }}
-          >
-            <Button
-              className="text-primary"
-              disabled={data?.length === 0}
-              onClick={handleExportData}
-              startIcon={<FileDownloadIcon />}
-            >
-              Export All Data
-            </Button>
+     <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <MaterialReactTable
+          columns={columns}
+          data={data}
+          enableSorting={enableSorting}
+          enablePagination={enablePagination}
+          enableFilters={enableFilters}
+          localization={{
+            noRecordsToDisplay: <NotFound topMargin={0}/>,
+            noResultsFound: <NotFound topMargin={0} />,
 
-            <Button
-              className="text-primary"
-              disabled={data?.length === 0}
-              onClick={() =>
-                handleExportRows(table.getPrePaginationRowModel().rows)
-              }
-              startIcon={<FileDownloadIcon />}
+          }}
+          enableStickyHeader={enableStickyHeader}
+          enableGrouping={enableGrouping}
+          enableFullScreenToggle={data?.length > 0}
+          enableColumnResizing={enableColumnResizing}
+          enableColumnOrdering={enableColumnOrdering}
+          enableFacetedValues={enableFacetedValues}
+          enableColumnFilter={enableColumnFilter}
+          muiTableBodyCellProps={{
+            onMouseOver: handleMouseHover
+          }}
+          state={{ isLoading: isLoading}}
+          renderTopToolbarCustomActions={({ table }) => (
+            <Box
+              sx={{
+                display: 'flex',
+                gap: '16px',
+                padding: '8px',
+                flexWrap: 'wrap'
+              }}
             >
-              Export All Rows
-            </Button>
-          </Box>
-        )}
-      />
+              <Button
+                className="text-primary"
+                disabled={data?.length === 0}
+                onClick={handleExportData}
+                startIcon={<FileDownloadIcon />}
+              >
+                Export All Data
+              </Button>
+
+              <Button
+                className="text-primary"
+                disabled={data?.length === 0}
+                onClick={() =>
+                  handleExportRows(table.getPrePaginationRowModel().rows)
+                }
+                startIcon={<FileDownloadIcon />}
+              >
+                Export All Rows
+              </Button>
+            </Box>
+          )}
+        />
+        </LocalizationProvider>
+
+
     </Box>
   );
 }
