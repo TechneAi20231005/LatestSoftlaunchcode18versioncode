@@ -405,14 +405,12 @@ function StateComponent() {
 
         <div className="card mt-2">
           {stateData && (
-            //  <LocalizationProvider dateAdapter={AdapterDateFns}>
             <MaterialTable
               columns={columns}
               data={filteredData}
               isLoading={isLoading}
             >
               </MaterialTable>
-              // </LocalizationProvider>
             // <DataTable
             //   columns={columns}
             //   data={filteredData}
