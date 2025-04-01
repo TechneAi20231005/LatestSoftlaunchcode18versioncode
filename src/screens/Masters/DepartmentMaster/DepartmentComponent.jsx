@@ -21,6 +21,11 @@ import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
+import { MaterialReactTable } from 'material-react-table';
+import moment from 'moment';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 function DepartmentComponent() {
   //initial state
@@ -67,11 +72,13 @@ function DepartmentComponent() {
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <button
             type="button"
@@ -82,7 +89,7 @@ function DepartmentComponent() {
               dispatch(
                 handleModalOpen({
                   showModal: true,
-                  modalData: row,
+                  modalData: row?.original,
                   modalHeader: 'Edit Department'
                 })
               );
@@ -94,30 +101,30 @@ function DepartmentComponent() {
       )
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 90,
+      enableColumnOrdering: false,
+      enableGrouping: false
     },
     {
-      name: 'Department',
-      selector: (row) => row.department,
-      sortable: true,
-      width: '175px'
+      accessorKey: 'department',
+      header: 'Department',
+      filterVariant: 'autocomplete',
+      size: 185
     },
     {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      width: '150px',
-      cell: (row) => (
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      Cell: ({ row }) => (
         <div>
-          {row.is_active === 1 && (
+          {row?.original?.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active === 0 && (
+          {row?.original?.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -126,28 +133,32 @@ function DepartmentComponent() {
       )
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      header: 'Created At',
+      accessorKey: 'created_at',
+      filterVariant: 'date-range',
+      accessorFn: (row) => new Date(row.created_at),
+      Cell: ({ row }) =>
+        moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss'),
+      size: 350
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
+      accessorKey: 'created_by',
+      header: 'Created By',
+      size: 180
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorKey: 'updated_at',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      accessorFn: (row) => new Date(row.updated_at),
+      Cell: ({ row }) =>
+        moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss'),
+      size: 350
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By',
+      size: 185
     }
   ];
 
@@ -250,7 +261,7 @@ function DepartmentComponent() {
         }}
       />
 
-      <SearchBoxHeader
+      {/*   <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         searchTerm={searchTerm}
         handleSearch={handleSearch}
@@ -260,23 +271,13 @@ function DepartmentComponent() {
         exportData={exportData}
         showExportButton={true}
       />
-
+ */}
       <div className="card mt-2">
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
               {department && (
-                <DataTable
-                  columns={columns}
-                  data={filteredData}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                  progressPending={isLoading}
-                  progressComponent={<TableLoadingSkelton />}
-                />
+                <MaterialTable data={filteredData} columns={columns} />
               )}
             </div>
           </div>

@@ -22,6 +22,10 @@ import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 function DesignationComponent() {
   //initial state
@@ -59,7 +63,7 @@ function DesignationComponent() {
     setFilteredData(getDesignationData);
   };
 
-  const columns = [
+  /*   const columns = [
     {
       name: 'Action',
       selector: (row) => {},
@@ -142,6 +146,98 @@ function DesignationComponent() {
       selector: (row) => row.updated_by,
       sortable: true,
       width: '175px'
+    }
+  ]; */
+
+  const columns = [
+    {
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      Cell: ({ row }) => (
+        <div className="btn-group" role="group">
+          <button
+            type="button"
+            className="btn btn-outline-secondary"
+            data-bs-toggle="modal"
+            data-bs-target="#edit"
+            onClick={(e) => {
+              dispatch(
+                handleModalOpen({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: 'Edit Designation'
+                })
+              );
+            }}
+          >
+            <i className="icofont-edit text-success"></i>
+          </button>
+        </div>
+      )
+    },
+    {
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 80,
+      enableColumnOrdering: false,
+      enableGrouping: false
+    },
+    {
+      accessorKey: 'designation',
+      header: 'Designation',
+      size: 190
+    },
+    {
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      Cell: ({ row }) => (
+        <div>
+          {row?.original?.is_active === 1 && (
+            <span className="badge bg-primary" style={{ width: '4rem' }}>
+              Active
+            </span>
+          )}
+          {row?.original?.is_active === 0 && (
+            <span className="badge bg-danger" style={{ width: '4rem' }}>
+              Deactive
+            </span>
+          )}
+        </div>
+      )
+    },
+    {
+      accessorKey: 'created_at',
+      accessorFn: (originalRow) => {
+        return moment(originalRow.created_at).startOf('day').toDate();
+      },
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        moment(cell.row.original.created_at).format('MM/DD/YYYY HH:mm:ss'),
+      size: 180
+    },
+    {
+      accessorKey: 'created_by',
+      header: 'Created By',
+      size: 180
+    },
+    {
+      accessorKey: 'updated_at',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      accessorFn: (row) => new Date(row.updated_at),
+      Cell: ({ row }) =>
+        moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+    },
+    {
+      header: 'Updated By',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      size: 190
     }
   ];
 
@@ -330,7 +426,7 @@ function DesignationComponent() {
             );
           }}
         />
-        <SearchBoxHeader
+        {/*    <SearchBoxHeader
           setSearchTerm={setSearchTerm}
           searchTerm={searchTerm}
           handleSearch={handleSearch}
@@ -339,21 +435,11 @@ function DesignationComponent() {
           exportFileName="Designation Master Record"
           exportData={exportDesignation}
           showExportButton={true}
-        />
+        /> */}
 
         <div className="card mt-2">
           {getDesignationData && (
-            <DataTable
-              columns={columns}
-              data={filteredData}
-              defaultSortField="title"
-              pagination
-              selectableRows={false}
-              progressPending={isLoading}
-              progressComponent={<TableLoadingSkelton />}
-              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-              highlightOnHover={true}
-            />
+            <MaterialTable columns={columns} data={filteredData} />
           )}
         </div>
       </Container>

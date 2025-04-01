@@ -23,6 +23,10 @@ import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../../src/components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
+import moment from 'moment';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 function RoleComponent({ location }) {
   //initial state
   const dispatch = useDispatch();
@@ -71,11 +75,13 @@ function RoleComponent({ location }) {
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '15%',
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 160,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      Cell: ({ row }) => (
         <div className="btn-group-sm" role="group">
           {checkRole && checkRole[0]?.can_update === 1 ? (
             <button
@@ -87,7 +93,7 @@ function RoleComponent({ location }) {
                 dispatch(
                   handleModalOpen({
                     showModal: true,
-                    modalData: row,
+                    modalData: row?.original,
                     modalHeader: 'Edit Role'
                   })
                 );
@@ -100,7 +106,7 @@ function RoleComponent({ location }) {
           )}
           {checkRole && checkRole[0]?.can_create === 1 ? (
             <Link
-              to={`/${_base}/MenuManage/` + row.id}
+              to={`/${_base}/MenuManage/` + row?.original?.id}
               className="btn btn-primary"
               style={{
                 maxWidth: '100%',
@@ -118,26 +124,25 @@ function RoleComponent({ location }) {
     },
 
     {
-      name: 'Sr',
-      width: '150px',
-      selector: (row) => row.counter,
-      sortable: true
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 90,
+      enableColumnOrdering: false,
+      enableGrouping: false
     },
     {
-      name: 'Role',
-      id: 'role_id',
-      width: '170px',
-      sortable: true,
-      selector: (row) => {},
-      cell: (row) => (
+      accessorKey: 'role',
+      header: 'Role',
+      size: 130,
+      Cell: ({ row }) => (
         <div>
-          <OverlayTrigger overlay={<Tooltip>{row.role} </Tooltip>}>
+          <OverlayTrigger overlay={<Tooltip>{row?.original?.role} </Tooltip>}>
             <div>
-              {/* <span className="ms-1"> {row.role}</span> */}
+              {/* <span className="ms-1"> {row?.original?.role}</span> */}
               <span>
-                {row.role.length > 20
-                  ? row.role.substring(0, 20) + '...'
-                  : row.role}
+                {row?.original?.role.length > 20
+                  ? row?.original?.role.substring(0, 20) + '...'
+                  : row?.original?.role}
               </span>
             </div>
           </OverlayTrigger>
@@ -146,18 +151,17 @@ function RoleComponent({ location }) {
     },
 
     {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      width: '150px',
-      cell: (row) => (
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      Cell: ({ row }) => (
         <div>
-          {row.is_active === 1 && (
+          {row?.original?.is_active === 1 && (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
           )}
-          {row.is_active === 0 && (
+          {row?.original?.is_active === 0 && (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
@@ -166,28 +170,32 @@ function RoleComponent({ location }) {
       )
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorKey: 'created_at',
+      header: 'Created At',
+      filterVariant: 'date-range',
+      accessorFn: (row) => new Date(row.created_at),
+      Cell: ({ row }) =>
+        moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss'),
+      size: 350
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
+      accessorKey: 'created_by',
+      header: 'Created By',
+      size: 180
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorKey: 'updated_at',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      accessorFn: (row) => new Date(row.updated_at),
+      Cell: ({ row }) =>
+        moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss'),
+      size: 350
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By',
+      size: 190
     }
   ];
 
@@ -303,7 +311,7 @@ function RoleComponent({ location }) {
         }}
       />
 
-      <SearchBoxHeader
+      {/*  <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         searchTerm={searchTerm}
@@ -313,23 +321,13 @@ function RoleComponent({ location }) {
         exportData={exportData}
         showExportButton={true}
       />
-
+ */}
       <div className="card mt-2">
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
               {RoleMasterData && (
-                <DataTable
-                  columns={columns}
-                  data={filteredData}
-                  defaultSortField="role_id"
-                  pagination
-                  selectableRows={false}
-                  progressPending={isLoading}
-                  progressComponent={<TableLoadingSkelton />}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                />
+                <MaterialTable columns={columns} data={filteredData} />
               )}
             </div>
           </div>
