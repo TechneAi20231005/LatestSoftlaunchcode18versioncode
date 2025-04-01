@@ -46,7 +46,7 @@ export default function ViewTicketComponent({ match }) {
       setChartData(res.data.data['series']);
     });
     await new MyTicketService().getTicketById(ticketId).then((res) => {
-      setRows(res?.data?.data?.dynamic_form);
+      setRows(res?.data?.data?.dynamic_form?.dynamic_data);
       setShowLoaderModal(null);
 
       if (res.status === 200) {
@@ -238,6 +238,7 @@ export default function ViewTicketComponent({ match }) {
             <div className="card mt-2">
               <div className="card-body">
                 <div className="row">
+                  {console.log('rows in view component', rows)}
                   {rows?.map((data, index) => {
                     var range = '';
                     return (

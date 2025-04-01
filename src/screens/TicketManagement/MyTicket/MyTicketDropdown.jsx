@@ -24,6 +24,7 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
       id: 1,
       label: 'Edit',
       type: type,
+      redirectLink: `/${_base}/Ticket/Edit/` + data.id,
       className: 'btn btn-sm btn-warning text-white',
       icon: <i className="icofont-ui-edit"></i>,
       conditions: (type) => {
@@ -49,6 +50,7 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
       id: 2,
       label: 'View',
       type: type,
+      redirectLink: `/${_base}/Ticket/View/` + data.id,
       className: 'btn btn-sm btn-info text-white',
       icon: <i className="icofont-external-link "></i>,
       conditions: (type) => {
@@ -67,6 +69,7 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
       id: 3,
       label: 'Task',
       type: type,
+      redirectLink: `/${_base}/Ticket/Task/` + data.id,
       className: 'btn btn-sm btn-outline-primary',
       icon: <i className="icofont-tasks"></i>,
       conditions: (type) => {
@@ -98,6 +101,7 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
       id: 4,
       label: 'Basket',
       type: type,
+      redirectLink: `/${_base}/Ticket/Basket/` + data.id,
       className: 'btn btn-sm btn-primary text-white',
       icon: <i className="icofont-bucket2"></i>,
       conditions: (type) => {
@@ -122,6 +126,7 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
       id: 5,
       label: 'History',
       className: 'btn btn-sm btn-primary text-white',
+      redirectLink: `/${_base}/TicketHistory/` + data.id,
       icon: <i className="icofont-history"></i>,
       type: type,
       conditions: (type) => {
@@ -154,7 +159,7 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
               <RenderIf render={menuBtn.conditions(menuBtn.type)}>
                 <li>
                   <Link
-                    // to={`/${_base}/TicketHistory/` + data.id}
+                    to={menuBtn.redirectLink}
                     className={`d-flex justify-content-center align-items-center ${menuBtn.className}`}
                     style={{ width: '100%', zIndex: 100 }}
                   >

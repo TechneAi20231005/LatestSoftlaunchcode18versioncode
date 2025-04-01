@@ -190,7 +190,7 @@ const MyTicketFilters = ({
                       ))}
                     </div>
 
-                    <div className="text-end mt-2">
+                    <div className="text-end mt-0">
                       {myTicketButtons.map((item) => (
                         <button
                           type={item.name === 'Search' ? 'submit' : 'button'}
