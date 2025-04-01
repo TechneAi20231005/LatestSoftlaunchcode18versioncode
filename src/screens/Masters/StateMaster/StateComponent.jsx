@@ -203,6 +203,12 @@ function StateComponent() {
       header: "State",
       size: 160,
       filterVariant: 'autocomplete',
+      muiTableBodyCellProps: ({ cell }) => ({
+        sx: {
+          color: "#f19828",
+          fontWeight: 400
+        },
+      }),
     },
     {
       accessorKey: "country",
@@ -232,11 +238,11 @@ function StateComponent() {
     },
     {
       accessorFn: (originalRow) => {
-        return moment(originalRow.created_at).startOf("day").toDate();
+            return moment(originalRow.created_at).startOf("day").toDate();
       },
       header: "Created At",
       filterVariant: "date",
-      Cell: ({ cell }) => moment(cell.row.original.created_at).format("MM/DD/YYYY HH:mm:ss")
+      Cell: ({ cell }) => cell.row.original.created_at &&   moment(cell.row.original.created_at).format("MM/DD/YYYY HH:mm:ss")
     },
     {
       accessorKey: "created_by",
@@ -399,13 +405,12 @@ function StateComponent() {
 
         <div className="card mt-2">
           {stateData && (
-             <LocalizationProvider dateAdapter={AdapterDateFns}>
             <MaterialTable
               columns={columns}
               data={filteredData}
+              isLoading={isLoading}
             >
               </MaterialTable>
-              </LocalizationProvider>
             // <DataTable
             //   columns={columns}
             //   data={filteredData}
