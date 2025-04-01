@@ -15,6 +15,10 @@ function MaterialTable({
   enableColumnResizing  = true,
   enableColumnOrdering  = true,
   enableFacetedValues = true,
+  manualPagination = false,
+  manualFiltering= false,
+  onColumnFiltersChange= () => {},
+
 }) {
   const handleMouseHover = (event) => {
     const clickedRow = event.currentTarget;
@@ -30,12 +34,17 @@ function MaterialTable({
   const handleExportData = () => {};
   const [columnFilters, setColumnFilters] = useState([]);
 
+  useEffect(()=> {
+   console.log(columnFilters, 'columnFilters')
+  },[columnFilters])
+
   return (
     <Box
       sx={{
         '& tbody > .MuiTableRow-root': {
           height: 45
         },
+
         '& .MuiCircularProgress-root': {
           display: 'none'
         }
@@ -53,17 +62,18 @@ function MaterialTable({
         enableColumnResizing={enableColumnResizing}
         enableColumnOrdering={enableColumnOrdering}
         enableFacetedValues={enableFacetedValues}
+        manualPagination={manualPagination}
         muiTableBodyCellProps={{
           onMouseOver: handleMouseHover
         }}
-        // manualFiltering
-        // onColumnFiltersChange={ setColumnFilters}
+        manualFiltering={manualFiltering}
+        onColumnFiltersChange={ setColumnFilters}
         // onColumnFiltersChange={(updater) => {
         //   setColumnFilters((prevFilters) =>
         //     typeof updater === "function" ? updater(prevFilters) : updater
         //   );
         // }}
-        state={{ isLoading: data?.length === 0 }}
+        state={{ isLoading: data?.length === 0, columnFilters }}
         renderTopToolbarCustomActions={({ table }) => (
           <Box
             sx={{

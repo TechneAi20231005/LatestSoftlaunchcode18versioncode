@@ -31,11 +31,24 @@ import TableLoadingSkelton from '../../components/custom/loader/TableLoadingSkel
 import NotFound from '../../components/NotFound';
 import { errorHandler } from '../../utils';
 import { toast } from 'react-toastify';
+import MaterialTable from '../../components/custom/MUI Table/MaterialTable';
+import Button from '@mui/material/Button';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 export default function MyTicketComponent() {
   // const [data, setData] = useState(null);
   const [userDropdown, setUserDropdown] = useState(null);
   const [customerUserDropdown, setCustomerUserDropdown] = useState(null);
+
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClosed = () => {
+    setAnchorEl(null);
+  };
 
   const [user, setUser] = useState('');
 
@@ -219,6 +232,7 @@ export default function MyTicketComponent() {
   };
 
   const actionComponent = (data, type) => {
+    console.log(type,"type")
     if (type === 'SEARCH_RESULT') {
       if (searchResult && searchResult.length > 0) {
         return (
@@ -434,44 +448,58 @@ export default function MyTicketComponent() {
     if (type === 'ASSIGNED_TO_ME') {
       if (assignedToMe && assignedToMe.length > 0) {
         return (
-          <Dropdown className="d-inline-flex m-1" align>
-            <Dropdown.Toggle
-              as="button"
-              variant=""
-              id={`${'dropdown-basic_' + data.id}`}
-              className="btn btn-primary text-white"
-            >
-              <i className="icofont-listine-dots"></i>
-            </Dropdown.Toggle>
-            <Dropdown.Menu as="ul" className="border-0 shadow p-1">
+          <div >
+
+          <Button
+            id="basic-button"
+            style={{height:"30px", width:"20px",}}
+            className='btn btn-primary text-white'
+            // aria-controls={open ? 'basic-menu' : undefined}
+            aria-haspopup="true"
+            // aria-expanded={open ? 'true' : undefined}
+            onClick={ type === "ASSIGNED_TO_ME" && handleClick}
+          >
+           <i className="icofont-listine-dots"></i>
+          </Button>
+          <Menu
+            id="basic-menu"
+
+            sx={{'& .MuiPaper-root': {width: '120px'}}}
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClosed}
+            MenuListProps={{
+              'aria-labelledby': 'basic-button',
+            }}
+          >
               <li>
                 <Link
                   to={`/${_base}/Ticket/Edit/` + data.id}
                   className="btn btn-sm btn-warning text-white"
-                  style={{ width: '100%', zIndex: '100' }}
+                  style={{ width: '90%', zIndex: '100' }}
                 >
                   <i className="icofont-ui-edit"></i> Edit
                 </Link>
               </li>
-              {/* } */}
-              <li>
-                {' '}
-                <Link
+
+              <li style={{marginTop: '5px'}}>
+
+               <Link
                   to={`/${_base}/Ticket/View/` + data.id}
                   className="btn btn-sm btn-info text-white"
-                  style={{ width: '100%', zIndex: 100 }}
+                 style={{ width: '90%', zIndex: 100 }}
                 >
-                  <i className="icofont-external-link "></i> View
-                </Link>{' '}
-              </li>
+               <i className="icofont-external-link "></i> View
+               </Link>{' '}
+            </li>
 
-              <li>
+            <li style={{marginTop: '5px'}}>
                 <Link
                   to={`/${_base}/TicketHistory/` + data.id}
                   className="btn btn-sm btn-primary text-white"
-                  style={{ width: '100%', zIndex: 100 }}
-                >
-                  <i className="icofont-history"></i> History
+                style={{ width: '90%', zIndex: 100 }}
+               >
+               <i className="icofont-history"></i> History
                 </Link>
               </li>
 
@@ -480,34 +508,110 @@ export default function MyTicketComponent() {
                 (data.assign_to_user_id === localStorage.getItem('id') &&
                   data.basket_configured === 0)) &&
                 localStorage.getItem('account_for') === 'SELF' && (
-                  <li>
+                  <li style={{marginTop: '5px'}}>
                     <Link
                       to={`/${_base}/Ticket/Basket/` + data.id}
                       className="btn btn-sm btn-primary text-white"
-                      style={{ width: '100%', zIndex: 100 }}
+                      style={{ width: '90%', zIndex: 100 }}
                     >
                       <i className="icofont-bucket2"></i>Basket
                     </Link>
                   </li>
                 )}
 
-              {((data.created_by !== localStorage.getItem('id') &&
+{((data.created_by !== localStorage.getItem('id') &&
                 data.basket_configured > 0) ||
                 (data.assign_to_user_id === localStorage.getItem('id') &&
                   data.basket_configured > 0)) &&
                 localStorage.getItem('account_for') === 'SELF' && (
-                  <li>
+                  <li style={{marginTop: '5px'}}>
                     <Link
                       to={`/${_base}/Ticket/Task/` + data.id}
                       className="btn btn-sm btn-outline-primary"
-                      style={{ width: '100%', zIndex: 100 }}
+                      style={{ width: '90%', zIndex: 100 }}
                     >
                       <i className="icofont-tasks"></i> Task
                     </Link>
                   </li>
                 )}
-            </Dropdown.Menu>
-          </Dropdown>
+
+          </Menu>
+        </div>
+          // <Dropdown className="d-inline-flex m-1" align>
+          //   <Dropdown.Toggle
+          //     as="button"
+          //     variant=""
+
+          //     id={`${'dropdown-basic_' + data.id}`}
+          //     className="btn btn-primary text-white"
+          //   >
+          //     <i className="icofont-listine-dots"></i>
+          //   </Dropdown.Toggle>
+          //   <Dropdown.Menu as="ul" className="border-0 shadow p-1">
+          //     <li>
+          //       <Link
+          //         to={`/${_base}/Ticket/Edit/` + data.id}
+          //         className="btn btn-sm btn-warning text-white"
+          //         style={{ width: '100%', zIndex: '100' }}
+          //       >
+          //         <i className="icofont-ui-edit"></i> Edit
+          //       </Link>
+          //     </li>
+          //     {/* } */}
+          //     <li>
+          //       {' '}
+          //       <Link
+          //         to={`/${_base}/Ticket/View/` + data.id}
+          //         className="btn btn-sm btn-info text-white"
+          //         style={{ width: '100%', zIndex: 100 }}
+          //       >
+          //         <i className="icofont-external-link "></i> View
+          //       </Link>{' '}
+          //     </li>
+
+          //     <li>
+          //       <Link
+          //         to={`/${_base}/TicketHistory/` + data.id}
+          //         className="btn btn-sm btn-primary text-white"
+          //         style={{ width: '100%', zIndex: 100 }}
+          //       >
+          //         <i className="icofont-history"></i> History
+          //       </Link>
+          //     </li>
+
+              // {((data.created_by !== localStorage.getItem('id') &&
+              //   data.basket_configured === 0) ||
+              //   (data.assign_to_user_id === localStorage.getItem('id') &&
+              //     data.basket_configured === 0)) &&
+              //   localStorage.getItem('account_for') === 'SELF' && (
+              //     <li>
+              //       <Link
+              //         to={`/${_base}/Ticket/Basket/` + data.id}
+              //         className="btn btn-sm btn-primary text-white"
+              //         style={{ width: '100%', zIndex: 100 }}
+              //       >
+              //         <i className="icofont-bucket2"></i>Basket
+              //       </Link>
+              //     </li>
+              //   )}
+
+              // {((data.created_by !== localStorage.getItem('id') &&
+              //   data.basket_configured > 0) ||
+              //   (data.assign_to_user_id === localStorage.getItem('id') &&
+              //     data.basket_configured > 0)) &&
+              //   localStorage.getItem('account_for') === 'SELF' && (
+              //     <li>
+              //       <Link
+              //         to={`/${_base}/Ticket/Task/` + data.id}
+              //         className="btn btn-sm btn-outline-primary"
+              //         style={{ width: '100%', zIndex: 100 }}
+              //       >
+              //         <i className="icofont-tasks"></i> Task
+              //       </Link>
+              //     </li>
+              //   )}
+          //   </Dropdown.Menu>
+          // </Dropdown>
         );
       } else {
         return (
@@ -565,6 +669,7 @@ export default function MyTicketComponent() {
     if (type === 'ADDED_BY_ME') {
       if (createdByMe && createdByMe.length > 0) {
         return (
+
           <Dropdown className="d-inline-flex m-1">
             <Dropdown.Toggle
               drop="side"
@@ -1092,147 +1197,318 @@ export default function MyTicketComponent() {
     },
     { name: 'Created By', cell: (row) => row.created_by_name, sortable: true }
   ];
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(10); // Adjust
+
+  // const assignedToMeColumns = [
+  //   {
+  //     name: 'Action',
+  //     button: true,
+  //     // width: '80px',
+
+  //     width: `${
+  //       assignedToMe ? (assignedToMe.length > 0 ? '4rem' : '20.625rem') : 'auto'
+  //     }`,
+  //     cell: (row) => actionComponent(row, 'ASSIGNED_TO_ME')
+  //   },
+  //   {
+  //     name: 'Sr',
+  //     width: '80px',
+  //     // cell: (row, index) => index + 1
+  //     cell: (row, index) => (currentPage - 1) * itemsPerPage + index + 1
+  //   },
+  //   {
+  //     name: 'Ticket Id',
+  //     width: '150px',
+  //     cell: (row) => (
+  //       <Link to={`/${_base}/Ticket/View/` + row.id}>
+  //         <span className="fw-bold text-secondary">{row.ticket_id}</span>
+  //       </Link>
+  //     ),
+  //     sortable: true
+  //   },
+  //   {
+  //     name: 'Description',
+  //     width: '150px',
+  //     selector: (row) => {},
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         <div
+  //           onClick={(e) => {
+  //             handleModal({
+  //               showModal: true,
+  //               modalData: row,
+  //               modalHeader: 'Edit Country'
+  //             });
+  //           }}
+  //         >
+  //           {row.description && (
+  //             <OverlayTrigger overlay={<Tooltip>{row.description} </Tooltip>}>
+  //               <div>
+  //                 <span className="ms-1">
+  //                   {' '}
+  //                   {row.description && row.description.length < 20
+  //                     ? row.description
+  //                     : row.description.substring(0, 20) + '....'}
+  //                 </span>
+  //               </div>
+  //             </OverlayTrigger>
+  //           )}
+  //         </div>
+  //       </div>
+  //     )
+  //   },
+  //   {
+  //     name: 'Ticket Date',
+  //     selector: (row) => row.ticket_date,
+  //     sortable: true,
+  //     width: '150px'
+  //   },
+  //   {
+  //     name: 'Expected Solve Date',
+  //     width: '150px',
+  //     selector: (row) => row.expected_solve_date,
+  //     sortable: true
+  //   },
+  //   {
+  //     name: 'Priority',
+  //     width: '150px',
+  //     cell: (row) => (
+  //       <div>
+  //         {row.priority === 'Very High' && (
+  //           <span style={{ width: '60px' }} className="badge bg-danger">
+  //             {row.priority}
+  //           </span>
+  //         )}
+  //         {row.priority === 'High' && (
+  //           <span style={{ width: '60px' }} className="badge bg-warning">
+  //             {row.priority}
+  //           </span>
+  //         )}
+  //         {row.priority === 'Medium' && (
+  //           <span style={{ width: '60px' }} className="badge bg-info">
+  //             {row.priority}
+  //           </span>
+  //         )}
+  //         {row.priority === 'Low' && (
+  //           <span style={{ width: '60px' }} className="badge bg-success">
+  //             {row.priority}
+  //           </span>
+  //         )}
+  //       </div>
+  //     ),
+  //     sortable: true
+  //   },
+  //   {
+  //     name: 'Type',
+  //     width: '150px',
+  //     cell: (row) => row.query_type_name,
+  //     sortable: true
+  //   },
+  //   {
+  //     name: 'Status',
+  //     width: '150px',
+
+  //     cell: (row) => row.status_name,
+  //     sortable: true
+  //   },
+  //   {
+  //     name: 'Assign To Dept',
+  //     width: '150px',
+  //     cell: (row) => row.assign_to_department,
+  //     sortable: true
+  //   },
+  //   {
+  //     name: 'Assinged To',
+  //     width: '150px',
+
+  //     cell: (row) => row.assign_to_user,
+  //     sortable: true
+  //   },
+  //   {
+  //     name: 'Created By',
+  //     width: '150px',
+
+  //     cell: (row) => row.created_by_name,
+  //     sortable: true
+  //   }
+  // ];
 
   const assignedToMeColumns = [
     {
-      name: 'Action',
-      button: true,
-      // width: '80px',
+      accessorKey: "action", // Use a valid key
+      header: "Action",
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
 
-      width: `${
-        assignedToMe ? (assignedToMe.length > 0 ? '4rem' : '20.625rem') : 'auto'
-      }`,
-      cell: (row) => actionComponent(row, 'ASSIGNED_TO_ME')
+      Cell: ({ row }) => {
+        return actionComponent(row?.original, "ASSIGNED_TO_ME");
+      }
     },
     {
-      name: 'Sr',
-      width: '80px',
-      // cell: (row, index) => index + 1
-      cell: (row, index) => (currentPage - 1) * itemsPerPage + index + 1
+      accessorKey: "sr",
+      header: "Sr",
+      size: 70,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      Cell: ({ row }) => {
+        const page = currentPage ?? 0;
+        console.log(page,"page") // Ensure it defaults to 0
+        const perPage = itemsPerPage ?? 10; // Default to 10 if undefined
+        return page * perPage + row.index + 1;
+      }
     },
     {
-      name: 'Ticket Id',
-      width: '150px',
-      cell: (row) => (
-        <Link to={`/${_base}/Ticket/View/` + row.id}>
-          <span className="fw-bold text-secondary">{row.ticket_id}</span>
-        </Link>
-      ),
-      sortable: true
+      accessorKey: "ticket_id",
+      header: "Ticket Id",
+      size: 120,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      Cell: ({ row }) => {
+        return (
+          <Link to={`/${_base}/Ticket/View/` + row.original.id}>
+            <span className="fw-bold text-secondary">{row.original.ticket_id}</span>
+          </Link>
+        );
+      }
     },
     {
-      name: 'Description',
-      width: '150px',
-      selector: (row) => {},
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
+      accessorKey: "description",
+      header: "Description",
+      size: 150,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      Cell: ({ row }) => {
+        return (
           <div
-            onClick={(e) => {
-              handleModal({
-                showModal: true,
-                modalData: row,
-                modalHeader: 'Edit Country'
-              });
-            }}
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
           >
-            {row.description && (
-              <OverlayTrigger overlay={<Tooltip>{row.description} </Tooltip>}>
-                <div>
-                  <span className="ms-1">
-                    {' '}
-                    {row.description && row.description.length < 20
-                      ? row.description
-                      : row.description.substring(0, 20) + '....'}
-                  </span>
-                </div>
-              </OverlayTrigger>
-            )}
+            <div
+              onClick={(e) => {
+                handleModal({
+                  showModal: true,
+                  modalData: row.original,
+                  modalHeader: "Description"
+                });
+              }}
+            >
+              {row.original.description && (
+                <OverlayTrigger
+                  overlay={<Tooltip>{row.original.description} </Tooltip>}
+                >
+                  <div>
+                    <span className="ms-1">
+                      {row.original.description &&
+                      row.original.description.length < 20
+                        ? row.original.description
+                        : row.original.description.substring(0, 20) + "...."}
+                    </span>
+                  </div>
+                </OverlayTrigger>
+              )}
+            </div>
           </div>
-        </div>
-      )
+        );
+      }
     },
     {
-      name: 'Ticket Date',
-      selector: (row) => row.ticket_date,
-      sortable: true,
-      width: '150px'
+      accessorKey: "ticket_date",
+      header: "Ticket Date",
+      size: 150,
+      enableColumnOrdering: false,
+      enableGrouping: false
     },
     {
-      name: 'Expected Solve Date',
-      width: '150px',
-      selector: (row) => row.expected_solve_date,
-      sortable: true
+      accessorKey: "expected_solve_date",
+      header: "Expected Solve Date",
+      size: 150,
+      enableColumnOrdering: false,
+      enableGrouping: false
     },
     {
-      name: 'Priority',
-      width: '150px',
-      cell: (row) => (
-        <div>
-          {row.priority === 'Very High' && (
-            <span style={{ width: '60px' }} className="badge bg-danger">
-              {row.priority}
-            </span>
-          )}
-          {row.priority === 'High' && (
-            <span style={{ width: '60px' }} className="badge bg-warning">
-              {row.priority}
-            </span>
-          )}
-          {row.priority === 'Medium' && (
-            <span style={{ width: '60px' }} className="badge bg-info">
-              {row.priority}
-            </span>
-          )}
-          {row.priority === 'Low' && (
-            <span style={{ width: '60px' }} className="badge bg-success">
-              {row.priority}
-            </span>
-          )}
-        </div>
-      ),
-      sortable: true
-    },
-    {
-      name: 'Type',
-      width: '150px',
-      cell: (row) => row.query_type_name,
-      sortable: true
-    },
-    {
-      name: 'Status',
-      width: '150px',
+      accessorKey: "priority",
+      header: "Priority",
+      size: 150,
+      enableColumnOrdering: false,
+      enableGrouping: false,
 
-      cell: (row) => row.status_name,
-      sortable: true
+      Cell: ({ cell }) => {
+        const priority = cell.getValue();
+        let bgColor = "";
+        if (priority === "Very High") {
+          bgColor = "#dc3545";
+        } else if (priority === "High") {
+          bgColor = "#ffc107";
+        } else if (priority === "Medium") {
+          bgColor
+          = "#17a2b8";
+        } else if (priority === "Low") {
+          bgColor = "#28a745";
+        }
+        return (
+          <span
+            className="badge"
+            style={{ backgroundColor: bgColor, color: "#fff" }}
+          >
+            {priority}
+          </span>
+        );
+      }
     },
     {
-      name: 'Assign To Dept',
-      width: '150px',
-      cell: (row) => row.assign_to_department,
-      sortable: true
+      accessorKey: "query_type_name",
+      header: "Type",
+      size: 150,
+      enableColumnOrdering: false,
+      enableGrouping: false
     },
     {
-      name: 'Assinged To',
-      width: '150px',
-
-      cell: (row) => row.assign_to_user,
-      sortable: true
+      accessorKey: "passed_status",
+      header: "Passed Status",
+      size: 150,
+      enableColumnOrdering: false,
+      enableGrouping: false
     },
     {
-      name: 'Created By',
-      width: '150px',
-
-      cell: (row) => row.created_by_name,
-      sortable: true
+      accessorKey: "status_name",
+      header: "Status",
+      size: 150,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      filterVariant: 'multi-select',
+      filterSelectOptions: statusData
+    },
+    {
+      accessorKey: "assign_to_department",
+      header: "Assign To Dept",
+      size: 150,
+      enableColumnOrdering: false,
+      enableGrouping: false
+    },
+    {
+      accessorKey: "assign_to_user",
+      header: "Assigned To",
+      size: 150,
+      enableColumnOrdering: false,
+      enableGrouping: false
+    },
+    {
+      accessorKey: "created_by_name",
+      header: "Created By",
+      size: 150,
+      enableColumnOrdering: false,
+      enableGrouping: false
     }
-  ];
+  ]
 
   const createdByMeColumns = [
     {
@@ -3079,7 +3355,7 @@ export default function MyTicketComponent() {
       <PageHeader headerTitle="My Tickets" />
 
       {locationState && <Alert alertData={locationState} />}
-
+{/*
       <div className="card mt-2 " style={{ zIndex: 10 }}>
         <div className="card-body">
           <form onSubmit={handleForm} id="your_form_id">
@@ -3102,47 +3378,6 @@ export default function MyTicketComponent() {
                   }}
                 />
               </div>
-
-              {/* <div className="col-md-3">
-                <label className="">
-                  <b>Select User :</b>
-                </label>
-                {userData && (
-                  <Select
-                    options={userData}
-                    isMulti={true}
-                    id="assign_to_user_id[]"
-                    value={selectedUsers}
-                    name="assign_to_user_id[]"
-                    onChange={(selectedOptions) => {
-                      setSelectedUsers(selectedOptions);
-                    }}
-                  />
-                )}
-              </div> */}
-              {/* {localStorage.getItem('account_for') === 'SELF' && (
-                <>
-                  <div className="col-md-3">
-                    <label className="">
-                      <b>Select Department :</b>
-                    </label>
-                    {departmentData && (
-                      <Select
-                        options={departmentData}
-                        isMulti={true}
-                        value={selectedDepartment}
-                        id="assign_to_department_id[]"
-                        name="assign_to_department_id[]"
-                        onChange={(selectedOptions) => {
-                          setSelectedDepartment(selectedOptions);
-                        }}
-                      />
-                    )}
-                  </div>
-                </>
-              )} */}
-
-              {/* Select User - Only for SELF */}
               {localStorage.getItem('account_for') === 'SELF' && (
                 <div className="col-md-3">
                   <label>
@@ -3163,7 +3398,7 @@ export default function MyTicketComponent() {
                 </div>
               )}
 
-              {/* Select Department - Only for SELF */}
+
               {localStorage.getItem('account_for') === 'SELF' && (
                 <div className="col-md-3">
                   <label>
@@ -3184,7 +3419,7 @@ export default function MyTicketComponent() {
                 </div>
               )}
 
-              {/* Select Status */}
+
               <div className="col-md-3">
                 <label>
                   <b>Select Status :</b>
@@ -3207,7 +3442,7 @@ export default function MyTicketComponent() {
               <div className="row"></div>
             )}
 
-            {/* Buttons */}
+
             <div className="row mt-2">
               <div className="col-md-4">
                 <button
@@ -3243,7 +3478,7 @@ export default function MyTicketComponent() {
             </div>
           </form>
         </div>
-      </div>
+      </div> */}
 
       <Modal show={show} onHide={handleClose}>
         <Modal.Header closeButton>
@@ -3549,35 +3784,45 @@ export default function MyTicketComponent() {
                   <Tab eventKey="Assigned_To_Me" title="Assigned To me">
                     <div className="card mb-3 mt-3">
                       <div className="card-body">
-                        {assignedToMe?.length > 0 && (
+                        {/* {assignedToMe?.length > 0 && (
                           <ExportAllTicketsToExcel
                             className="btn btn-sm btn-danger mt-3"
                             fileName="Assign To Me"
                             typeOf="AssignToMe"
                           />
-                        )}
+                        )} */}
                         {isLoading && <TableLoadingSkelton />}
 
                         {
                           found && !isLoading && assignedToMe && (
-                            <DataTable
-                              // customStyles={customStyles}
-                              columns={assignedToMeColumns}
-                              onChangeRowsPerPage={(newPerPage, page) => {
-                                setItemsPerPage(newPerPage); // Update items per page
-                                setCurrentPage(page); // Reset current page state when items per page changes
-                              }}
-                              data={assignedToMe}
-                              defaultSortField="title"
-                              fixedHeader={true}
-                              noDataComponent={
-                                <NotFound topMargin={0} maxHeight={250} />
-                              }
-                              // fixedHeaderScrollHeight={'500px'}
-                              selectableRows={false}
-                              highlightOnHover={true}
-                              responsive={true}
-                            />
+
+                            <MaterialTable
+                            data={assignedToMe}
+                            columns={assignedToMeColumns}
+                            manualPagination={true}
+                            enablePagination={false}
+                            manualFiltering={true}
+                            >
+
+                            </MaterialTable>
+                            // <DataTable
+                            //   // customStyles={customStyles}
+                            //   columns={assignedToMeColumns}
+                            //   onChangeRowsPerPage={(newPerPage, page) => {
+                            //     setItemsPerPage(newPerPage); // Update items per page
+                            //     setCurrentPage(page); // Reset current page state when items per page changes
+                            //   }}
+                            //   data={assignedToMe}
+                            //   defaultSortField="title"
+                            //   fixedHeader={true}
+                            //   noDataComponent={
+                            //     <NotFound topMargin={0} maxHeight={250} />
+                            //   }
+                            //   // fixedHeaderScrollHeight={'500px'}
+                            //   selectableRows={false}
+                            //   highlightOnHover={true}
+                            //   responsive={true}
+                            // />
                           )
                           //  : (
                           // (
