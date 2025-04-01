@@ -23,6 +23,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
+import LoadingScreen from '../../../components/custom/LoadingScreen';
 
 export function getDateTime() {
   var now = new Date();
@@ -43,10 +45,10 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const dispatch = useDispatch();
 
   const useridDetail = useRef(null);
+  const [approach, setApproach] = useState('');
 
   const { id } = useParams();
   const mappingId = id;
-  const [notify, setNotify] = useState();
 
   const [customerTypeDropdown, setCustomerTypeDropdown] = useState();
 
@@ -71,6 +73,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 32)
   );
+  const [loading, setLoading] = useState(false);
 
   const [data, setData] = useState({
     approach: [],
@@ -105,6 +108,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const [statusData, setstatusData] = useState('');
   const [ratioData, setRatioData] = useState([]);
+  const [queryTypeId, setQueryTypeId] = useState('');
 
   const handleConfirmationChange = (e) => {
     setConfirmationRequired(Number(e?.target?.value));
@@ -138,12 +142,12 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       name: 'approach',
       label: 'approach',
       required: true
+    },
+    {
+      name: 'department_id',
+      label: 'department_id',
+      required: approach !== 'AU' && approach !== 'SELF' ? true : false
     }
-    // {
-    //   name: 'department_id',
-    //   label: 'department_id',
-    //   required: true
-    // }
   ];
 
   const validationSchema = CustomValidation(fields);
@@ -153,18 +157,23 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     : '';
 
   const loadData = useCallback(async () => {
+    setLoading(true);
     var tempData = '';
     await new CustomerMappingService()
       .getCustomerMappingById(mappingId)
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status === 1) {
+          if (res?.data?.status === 1) {
             tempData = res.data.data;
+            setApproach(tempData.approach);
+            // setSelectedCustomer(tempData?.customer_type_id?.length || 0)
+            setSelectedCustomer(tempData?.customer_type_id?.length || 0);
+            setQueryTypeId(tempData.query_type_id);
             setRatioData(
               tempData?.user_policy?.map((d) => ({
                 user_id: d.user_id,
                 ratio: d.ratio
-              }))
+              })) || []
             );
             setUserData(
               tempData?.user_policy2
@@ -205,59 +214,83 @@ export default function EditCustomerMappingComponentBackup({ match }) {
             setConfirmationRequired(res?.data?.data?.confirmation_required);
 
             setstatusData(res?.data?.data?.is_active === 1 ? 1 : 0);
+          } else {
+            toast.error(res?.data?.message);
           }
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
     dispatch(getRoles());
 
-    await new CustomerTypeService().getCustomerType().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const select = res.data.data.data
-            .filter((d) => d.is_active)
-            .map((d) => ({ value: d.id, label: d.type_name }));
+    await new CustomerTypeService()
+      .getCustomerType()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+            const select = res.data.data.data
+              .filter((d) => d.is_active)
+              .map((d) => ({ value: d.id, label: d.type_name }));
 
-          setCustomerTypeDropdown(select);
+            setCustomerTypeDropdown(select);
+          } else {
+            toast.error(res?.data?.message);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
 
-    await new CustomerMappingService().getPriorityDropdown().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
+    await new CustomerMappingService()
+      .getPriorityDropdown()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+          }
+        } else {
+          toast.error(res?.data?.message);
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
 
-    await new QueryTypeService().getQueryType().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const data = res.data.data.data.filter((d) => d.is_active === 1);
+    await new QueryTypeService()
+      .getQueryType()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+            const data = res.data.data.data.filter((d) => d.is_active === 1);
 
-          setQueryType(data);
-          setQueryTypeDropdown(
-            res.data.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({ value: d.id, label: d.query_type_name }))
-          );
+            setQueryType(data);
+            setQueryTypeDropdown(
+              res.data.data.data
+                .filter((d) => d.is_active === 1)
+                .map((d) => ({ value: d.id, label: d.query_type_name }))
+            );
+          } else {
+            toast.error(res?.data?.message);
+          }
         }
-      }
-    });
-
+      })
+      .catch((error) => errorHandler(error));
     await getDynamicForm();
 
-    await new TemplateService().getTemplate().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const select = res.data.data.data.map((d) => ({
-            value: d.id,
-            label: d.template_name
-          }));
+    await new TemplateService()
+      .getTemplate()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+            const select = res.data.data.data.map((d) => ({
+              value: d.id,
+              label: d.template_name
+            }));
 
-          setTemplateDropdown(select);
+            setTemplateDropdown(select);
+          } else {
+            toast.error(res?.data?.message);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
     await getDepartment();
 
     setUserDropdown(null);
@@ -272,49 +305,59 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       var sum = ratiowiseData?.reduce((result, number) => result + number, 0);
       setRatioTotal(sum);
     }
-    await new UserService().getUserWithMultipleDepartment().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          var placeholderOption = [{ value: ' ', label: 'Select User' }];
+    await new UserService()
+      .getUserWithMultipleDepartment()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+            var placeholderOption = [{ value: ' ', label: 'Select User' }];
 
-          const dropdown = res.data.data
-            .filter((d) => d.is_active === 1)
-            .filter((d) =>
-              d.multiple_department_id.includes(tempData.department_id)
-            )
-            .map((d) => ({
-              value: d.id,
-              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
-            }));
+            const dropdown = res.data.data
+              .filter((d) => d.is_active === 1)
+              .filter((d) =>
+                d.multiple_department_id.includes(tempData.department_id)
+              )
+              .map((d) => ({
+                value: d.id,
+                label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
+              }));
 
-          const finalDropdown =
-            tempData.approach === 'RW' ? dropdown : [...dropdown];
+            const finalDropdown =
+              tempData.approach === 'RW' ? dropdown : [...dropdown];
 
-          setUserDropdown(finalDropdown);
+            setUserDropdown(finalDropdown);
+          } else {
+            toast.error(res?.data?.message);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
+    setLoading(false);
   }, [dispatch, mappingId, ratiowiseData]);
 
   const getDynamicForm = async () => {
-    await new DynamicFormService().getDynamicForm().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const data = res.data.data.data.filter((d) => d.is_active === 1);
-          const select = res.data.data.data.map((d) => ({
-            value: d.id,
-            label: d.template_name
-          }));
-          setDynamicForm(data);
-          setDynamicFormDropdown(select);
+    await new DynamicFormService()
+      .getDynamicForm()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+            const data = res.data.data.data.filter((d) => d.is_active === 1);
+            const select = res.data.data.data.map((d) => ({
+              value: d.id,
+              label: d.template_name
+            }));
+            setDynamicForm(data);
+            setDynamicFormDropdown(select);
+          } else {
+            toast.error(res?.data?.message);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   };
 
   const handleQueryType = async (e) => {
     if (!e || Object.entries(e).length === 0) return;
-    setNotify(null);
     setDynamicForm(null);
     setDynamicFormDropdown(null);
     setSelectedDynamicForm(null);
@@ -323,8 +366,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     const queryTypeTemp = queryType.filter((d) => d.id === e.value);
 
     const dynamicFormDropdownTemp = dynamicForm
-      .filter((d) => d.id === queryTypeTemp[0].form_id)
-      .map((d) => ({ value: d.id, label: d.template_name }));
+      ?.filter((d) => d.id === queryTypeTemp[0]?.form_id)
+      ?.map((d) => ({ value: d.id, label: d.template_name }));
 
     if (dynamicFormDropdownTemp.length > 0) {
       setData((prev) => {
@@ -334,30 +377,32 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       });
       setSelectedDynamicForm(dynamicFormDropdownTemp);
     } else {
-      setNotify({
-        type: 'warning',
-        message: 'No Form is mapped but still you can map new form'
-      });
+      toast.warning('No Form is mapped but still you can map new form');
     }
   };
 
   const getDepartment = async () => {
-    await new DepartmentService().getDepartment().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          var defaultValue = [{ value: 0, label: 'Select Department' }];
-          var dropwdown = res.data.data.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({ value: d.id, label: d.department }));
-          defaultValue = [...defaultValue, ...dropwdown];
-          setDepartmentDropdown(defaultValue);
+    await new DepartmentService()
+      .getDepartment()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+            var defaultValue = [{ value: 0, label: 'Select Department' }];
+            var dropwdown = res.data.data.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({ value: d.id, label: d.department }));
+            defaultValue = [...defaultValue, ...dropwdown];
+            setDepartmentDropdown(defaultValue);
+          } else {
+            toast.error(res?.data?.message);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   };
 
   const handleAutoChanges = async (e, type, nameField) => {
-    if (!e || Object.entries(e).length === 0) return;
+    // if (!e || Object.entries(e).length === 0) return;
     if (type === 'Select2' && nameField === 'customer_type_id') {
       setSelectedCustomer(e?.length);
     }
@@ -491,8 +536,10 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   };
 
   const handleForm = async (values) => {
-    let userIds;
+    if (loading) return;
+    setLoading(true);
 
+    let userIds;
     if (Array?.isArray(values?.user_id)) {
       // Check if the first item is an object
       if (
@@ -534,6 +581,14 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     values.tenant_id = localStorage.getItem('tenant_id');
     values.created_by = userSessionData.userId;
     values.created_at = getDateTime();
+    values.query_type_id = queryTypeId;
+
+    // if (!values.department_id) {
+    //   delete values.department_id;
+    // }
+    // if(values?.user_id?.length === 0){
+    //   delete values.user_id;
+    // }
     let flag = 1;
     if (values?.approach === 'RW') {
       if (!ratioTotal || ratioTotal !== 100) {
@@ -543,36 +598,36 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     }
 
     if (flag === 1) {
-      await new CustomerMappingService()
-        .updateCustomerMapping(mappingId, values)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              history(
-                {
-                  pathname: `/${_base}/CustomerMapping`
-                },
-                {
-                  state: {
-                    alert: { type: 'success', message: res.data.message }
-                  }
+      try {
+        const res = await new CustomerMappingService().updateCustomerMapping(
+          mappingId,
+          values
+        );
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+            history(
+              {
+                pathname: `/${_base}/CustomerMapping`
+              },
+              {
+                state: {
+                  alert: toast.success(res?.data?.message)
                 }
-              );
-            } else {
-              setNotify({ type: 'danger', message: res.data.message });
-            }
-          } else {
-            setNotify({ type: 'danger', message: res.message });
-            new ErrorLogService().sendErrorLog(
-              'Customer',
-              'Create_Customer',
-              'INSERT',
-              res.message
+              }
             );
+          } else {
+            toast.error(res?.data?.message);
           }
-        })
-        .catch((error) => {});
+        } else {
+          toast.error(res.message);
+        }
+      } catch (error) {
+        errorHandler(error);
+      } finally {
+        setLoading(false);
+      }
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -597,7 +652,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Edit Customer Mapping" />
-      {notify && <Alert alertData={notify} />}
       <div className="row clearfix g-3">
         <div className="col-sm-12">
           <div className="card mt-2">
@@ -659,13 +713,13 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                 }
                 // validationSchema={validationSchema}
                 validationSchema={(values) => {
-                  if (data?.approach !== 'AU') {
-                    fields.push({
-                      name: 'department_id',
-                      label: 'Department ID',
-                      required: true
-                    });
-                  }
+                  // if (data?.approach !== 'AU') {
+                  //   fields.push({
+                  //     name: 'department_id',
+                  //     label: 'Department ID',
+                  //     required: true
+                  //   });
+                  // }
 
                   // Generate validation schema dynamically
                   return CustomValidation(fields);
@@ -675,7 +729,6 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                 }}
               >
                 {({
-                  isSubmitting,
                   setFieldValue,
                   values,
                   handleBlur,
@@ -715,6 +768,10 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                           (option) => option.value
                                         )
                                       : [];
+                                    data?.approach === 'SELF' &&
+                                      setTimeout(() => {
+                                        form.setFieldValue('approach', null);
+                                      }, 0);
 
                                     form.setFieldValue(
                                       'customer_type_id',
@@ -756,10 +813,11 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                   name="query_type_id"
                                   isClearable={true}
                                   onChange={(selectedOption) => {
-                                    form.setFieldValue(
-                                      'query_type_id',
-                                      selectedOption?.value || ''
-                                    );
+                                    const values = selectedOption
+                                      ? selectedOption?.value
+                                      : '';
+                                    setQueryTypeId(values);
+                                    form.setFieldValue('query_type_id', values);
                                     handleQueryType(selectedOption);
                                   }}
                                   defaultValue={
@@ -1096,10 +1154,20 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                   name="approach"
                                   options={options}
                                   defaultValue={options.filter(
-                                    (d) => data?.approach === d.value
+                                    (d) => data?.approach === d.value || null
                                   )}
+                                  value={
+                                    values?.approach
+                                      ? options.filter(
+                                          (item) =>
+                                            item.value === values.approach
+                                        )
+                                      : null
+                                  }
                                   isClearable={true}
                                   onChange={(selectedOption) => {
+                                    setFieldValue('department_id', '');
+                                    setApproach(selectedOption.value);
                                     const value = selectedOption
                                       ? selectedOption?.value
                                       : '';
@@ -1296,8 +1364,11 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                           </div>
                         )}
 
+                      {loading && <LoadingScreen showLoaderModal={loading} />}
+
                       <div className="mt-3 d-flex justify-content-end">
                         <button
+                          disabled={loading}
                           type="submit"
                           className="btn btn-primary btn-sm"
                         >

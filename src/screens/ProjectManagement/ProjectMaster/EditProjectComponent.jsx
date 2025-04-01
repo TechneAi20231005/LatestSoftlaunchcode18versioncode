@@ -17,6 +17,9 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import { Formik, Form, Field, ErrorMessage, isObject } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import Spinner from 'react-bootstrap/Spinner';
+import { errorHandler } from '../../../utils';
+import { toast } from 'react-toastify';
+import { _rewampAttachmentUrl } from '../../../settings/constants';
 
 export default function EditProjectComponent({ match }) {
   const history = useNavigate();
@@ -53,8 +56,8 @@ export default function EditProjectComponent({ match }) {
     await new UserService().getUser().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const user = res.data.data.filter((d) => d.is_active === 1);
-          const reviewers = res.data.data.filter(
+          const user = res.data.data?.data?.filter((d) => d.is_active === 1);
+          const reviewers = res.data.data?.data?.filter(
             (d) => d.is_active === 1 && d.account_for === 'SELF'
           );
 
@@ -94,37 +97,21 @@ export default function EditProjectComponent({ match }) {
         }
       })
       .catch((error) => {
-        if (error.response) {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-
-          // Continue handling the error as needed
-          setNotify({ type: 'danger', message: errorObject.data.message });
-          new ErrorLogService().sendErrorLog(
-            'Project',
-            'Edit_Project',
-            'INSERT',
-            errorObject.data.message
-          );
-        } else {
-          console.error(
-            "Error object does not contain expected 'response' property:",
-            error
-          );
-        }
+        errorHandler(error);
       });
 
     dispatch(getRoles());
   }, [dispatch, projectId]);
 
-  const handleForm = async (values) => {
+  const handleForm = async (values, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('customer_id', values.customer_id);
     formData.append('project_name', values.project_name);
     values?.project_owner.forEach((item) => {
       formData?.append('project_owner[]', item?.value);
     });
-    formData.append('logo', values.logo);
+    values?.logo && formData.append('logo', values.logo);
     if (values?.project_reviewer?.length > 0) {
       values.project_reviewer.forEach((item) => {
         formData.append('project_reviewer[]', item?.value);
@@ -140,53 +127,38 @@ export default function EditProjectComponent({ match }) {
     formData.append('git_url', values.git_url);
     formData.append('api_document_link', values.api_document_link);
     formData.append('remark', values.remark);
-    formData.append('is_active:', values.is_active);
+    formData.append('is_active', values.is_active);
     // e.preventDefault();
     // const formData = new FormData(e.target);
-
-    await new ProjectService()
-      .updateProject(projectId, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            history(
-              {
-                pathname: `/${_base}/Project`
-              },
-              {
-                state: { alert: { type: 'success', message: res.data.message } }
-              }
-            );
-          } else {
-            setNotify({ type: 'danger', message: res.data.message });
-          }
-        } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'Project',
-            'Edit_Project',
-            'INSERT',
-            res.message
+    try {
+      const res = await new ProjectService().updateProject(projectId, formData);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          history(
+            {
+              pathname: `/${_base}/Project`
+            },
+            {
+              state: { alert: toast.success(res.data.message) }
+            }
           );
+        } else {
+          toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        setNotify({ type: 'danger', message: errorObject.data.message });
-        new ErrorLogService().sendErrorLog(
-          'Project',
-          'Edit_Project',
-          'INSERT',
-          errorObject.data.message
-        );
-      });
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleShowLogo = (e) => {
     var URL =
-      'http://3.108.206.34/TSNewBackend/storage/app/Attachment/project/' +
-      data.logo;
+      `${_rewampAttachmentUrl}/storage/app/Attachment/project/` +
+      data?.logo;
     window.open(URL, '_blank');
   };
 
@@ -216,13 +188,13 @@ export default function EditProjectComponent({ match }) {
     customer_id: customerId?.value || '',
     project_name: data?.project_name || '',
     project_owner: projectOwner || [],
-    logo: null,
+    logo: data?.logo,
     project_reviewer: projectReviewer || [],
     description: data?.description || '',
     git_url: data?.git_url || '',
     api_document_link: data?.api_document_link || '',
     remark: data?.remark || '',
-    is_active: data?.is_active !== undefined ? String(data?.is_active) : '1'
+    is_active: String(data?.is_active) ?? "1"
   };
   const fields = [
     { name: 'customer_id', label: 'Customer Name', required: true },
@@ -267,21 +239,18 @@ export default function EditProjectComponent({ match }) {
   const validationSchema = CustomValidation(fields);
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader headerTitle="Edit Project" />
-
       <div className="row clearfix g-3">
         <div className="col-sm-12">
           {data ? (
             <Formik
               initialValues={initialValues}
               validationSchema={validationSchema}
-              onSubmit={(values) => {
-                handleForm(values);
+              onSubmit={(values, { setSubmitting }) => {
+                handleForm(values, { setSubmitting });
               }}
             >
-              {({ setFieldValue, values }) => (
+              {({ setFieldValue, values, isSubmitting }) => (
                 <Form>
                   {/* <form onSubmit={handleForm}> */}
                   <div className="card mt-2">
@@ -388,11 +357,20 @@ export default function EditProjectComponent({ match }) {
                             name="logo"
                             accept="image/*"
                             onChange={(event) =>
+                            {
+                              let file = event?.target?.files[0]
+                              if (file?.size > 2 * 1024 * 1024) {
+                                // File size exceeds 2MB, notify the user and clear the input field
+                                alert('File size must be less than 2MB.');
+                                event.target.value = null; // Clear the input field
+                              }
                               setFieldValue('logo', event?.target?.files[0])
                             }
+
+                            }
                           />
-                          <p>{data.logo}</p>
-                          {data && data.logo !== 'null' && (
+                          <p>{data.logo || ""}</p>
+                          {data && data.logo !== null && (
                             <i
                               title="Click to view logo"
                               onClick={handleShowLogo}
@@ -486,7 +464,7 @@ export default function EditProjectComponent({ match }) {
                       </div>
 
                       <div className="form-group row mt-3">
-                        <label className="col-sm-2 col-form-label">
+                        <label className="col-sm-2 col-form-label" style={{ whiteSpace: "nowrap" }}>
                           <b>API Document Link : </b>
                         </label>
                         <div className="col-sm-10">
@@ -527,7 +505,7 @@ export default function EditProjectComponent({ match }) {
 
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
-                          <b>Status : </b>
+                          <b>Status : <Astrick color="red" size="13px" /> </b>
                         </label>
                         <div className="col-sm-10">
                           <div className="row">
@@ -579,7 +557,11 @@ export default function EditProjectComponent({ match }) {
 
                   <div className="mt-3" style={{ textAlign: 'right' }}>
                     {checkRole && checkRole[0]?.can_update === 1 ? (
-                      <button type="submit" className="btn btn-sm btn-primary">
+                      <button
+                        disabled={isSubmitting}
+                        type="submit"
+                        className="btn btn-sm btn-primary"
+                      >
                         Update
                       </button>
                     ) : (

@@ -18,6 +18,7 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import { toast } from 'react-toastify';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { Field, Form, Formik, ErrorMessage } from 'formik';
+import { errorHandler } from '../../../utils';
 
 function EditCustomer() {
   const history = useNavigate();
@@ -46,88 +47,91 @@ function EditCustomer() {
   const [cityName, setCityName] = useState(null);
 
   const loadData = useCallback(async () => {
-    await new CustomerService()
-      .getCustomerById(customerId)
+    try {
+      const res = await new CustomerService().getCustomerById(customerId);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          console.log(res.data.data, 'res');
+          setData(res.data.data);
+        } else {
+          toast.error(res.data.message);
+        }
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
+
+    await new CustomerType()
+      .getCustomerType()
+      .then((res) => {
+        if (res.status === 200) {
+          const data = res.data.data?.data;
+          setCustomerType(
+            data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({ label: d.type_name, value: d.id }))
+          );
+        }
+      })
+      .catch((error) => errorHandler(error));
+
+    //  **************************Country load data**************************************
+    await new CountryService()
+      .getCountrySort()
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
-            console.log(res.data.data, 'res');
-            setData(res.data.data);
-          } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            setCountryDropdown(
+              res.data.data?.data
+                .filter((d) => d.is_active === 1)
+                .map((d) => ({ value: d.id, label: d.country }))
+            );
           }
-        } else {
-          setNotify({ type: 'danger', message: res.message });
         }
       })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'Customer',
-          'Get_Customer',
-          'INSERT',
-          errorObject.data.message
-        );
-      });
-
-    await new CustomerType().getCustomerType().then((res) => {
-      if (res.status === 200) {
-        const data = res.data.data?.data;
-        setCustomerType(
-          data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({ label: d.type_name, value: d.id }))
-        );
-      }
-    });
-
-    //  **************************Country load data**************************************
-    await new CountryService().getCountrySort().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setCountryDropdown(
-            res.data.data?.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({ value: d.id, label: d.country }))
-          );
-        }
-      }
-    });
+      .catch((error) => errorHandler(error));
     //  ************************** State load data**************************************
-    await new StateService().getStateSort().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setState(res.data.data?.data.filter((d) => d.is_active === 1));
-          setStateDropdown(
-            res.data.data?.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.state,
-                country_id: d.country_id
-              }))
-          );
+    await new StateService()
+      .getStateSort()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setState(res.data.data?.data.filter((d) => d.is_active === 1));
+            setStateDropdown(
+              res.data.data?.data
+                .filter((d) => d.is_active === 1)
+                .map((d) => ({
+                  value: d.id,
+                  label: d.state,
+                  country_id: d.country_id
+                }))
+            );
+          }
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
     //  ************************** city load data**************************************
-    await new CityService().getCity().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setCity(res.data.data?.data.filter((d) => d.is_active === 1));
-          setCityDropdown(
-            res.data.data?.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({
-                value: d.id,
-                label: d.city,
-                state_id: d.state_id
-              }))
-          );
+    await new CityService()
+      .getCity()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setCity(res.data.data?.data.filter((d) => d.is_active === 1));
+            setCityDropdown(
+              res.data.data?.data
+                .filter((d) => d.is_active === 1)
+                .map((d) => ({
+                  value: d.id,
+                  label: d.city,
+                  state_id: d.state_id
+                }))
+            );
+          }
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
 
     dispatch(getRoles());
   }, [customerId, dispatch]);
@@ -165,8 +169,9 @@ function EditCustomer() {
     }
   };
 
-  const handleForm = async (values) => {
+  const handleForm = async (values, { setSubmitting }) => {
     // e.preventDefault();
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('address', values.address);
     formData.append('city_id', values.city_id);
@@ -211,61 +216,34 @@ function EditCustomer() {
     // }
 
     // if (flag === 1) {
-    setNotify(null);
-    await new CustomerService()
-      .updateCustomer(customerId, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            toast.success(res.data.message, {
-              position: 'top-right'
-            });
-            history(
-              {
-                pathname: `/${_base}/Customer`
-              }
-              // {
-              //   state: {
-              //     type: 'success',
-              //     message: res.data.message
-              //   }
-              // }
-            );
-          } else {
-            toast.error(res.data.message, {
-              position: 'top-right'
-            });
-            // setNotify({ type: 'danger', message: res.data.message });
-          }
+    try {
+      const res = await new CustomerService().updateCustomer(
+        customerId,
+        formData
+      );
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          toast.success(res.data.message, {
+            position: 'top-right'
+          });
+          history({
+            pathname: `/${_base}/Customer`
+          });
         } else {
-          // setNotify({ type: 'danger', message: res.message });
           toast.error(res.data.message, {
             position: 'top-right'
           });
-          new ErrorLogService().sendErrorLog(
-            'Customer',
-            'Create_Customer',
-            'INSERT',
-            res.message
-          );
         }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        // setNotify({ type: 'danger', message: 'Request Error !!!' });
-        toast.error('Request Error !!!', {
+      } else {
+        toast.error(res.data.message, {
           position: 'top-right'
         });
-
-        new ErrorLogService().sendErrorLog(
-          'Customer',
-          'Create_Customer',
-          'INSERT',
-          errorObject.data.message
-        );
-      });
-    // }
+      }
+    } catch (error) {
+      toast.error('Request Error !!!');
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleCountryChange = (e) => {
@@ -388,7 +366,7 @@ function EditCustomer() {
       label: 'Remark',
       alphaNumeric: true,
       required: false,
-      max: 1000
+      max: 255
     }
   ];
 
@@ -396,8 +374,6 @@ function EditCustomer() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader headerTitle="Edit Customer" />
 
       <div className="row clearfix g-3">
@@ -406,9 +382,8 @@ function EditCustomer() {
             <Formik
               initialValues={initialValue}
               validationSchema={validationSchema}
-              onSubmit={(values) => {
-                console.log(values, 'values');
-                handleForm(values);
+              onSubmit={(values, { setSubmitting }) => {
+                handleForm(values, { setSubmitting });
                 // setOtpModal(true);
               }}
             >
@@ -434,12 +409,12 @@ function EditCustomer() {
                             id="name"
                             name="name"
                             placeholder="Customer Name"
-                            maxLength={30}
+                            // maxLength={30}
                             // required
                             // defaultValue={data ? data.name : null}
-                            onKeyPress={(e) => {
-                              Validation.CharactersOnly(e);
-                            }}
+                            // onKeyPress={(e) => {
+                            //   Validation.CharactersOnly(e);
+                            // }}
                           />
                           <ErrorMessage
                             name="name"
@@ -461,6 +436,7 @@ function EditCustomer() {
                               options={customerType}
                               name="customer_type_id"
                               component={Select}
+                              classNamePrefix="react-select"
                               id="customer_type_id"
                               isClearable={true}
                               onChange={(option) => {
@@ -855,7 +831,11 @@ function EditCustomer() {
 
                   <div className="mt-3" style={{ textAlign: 'right' }}>
                     {checkRole && checkRole[0]?.can_update === 1 ? (
-                      <button type="submit" className="btn btn-primary">
+                      <button
+                        disabled={isSubmitting}
+                        type="submit"
+                        className="btn btn-primary"
+                      >
                         Update
                       </button>
                     ) : (

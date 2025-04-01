@@ -5,16 +5,18 @@ import ManageMenuService from '../../../services/MenuManagementService/ManageMen
 import ErrorLogService from '../../../services/ErrorLogService';
 import Alert from '../../../components/Common/Alert';
 import PageHeader from '../../../components/Common/PageHeader';
-import { ProjectDropdown } from '../ProjectMaster/ProjectComponent';
+// import { ProjectDropdown } from '../ProjectMaster/ProjectComponent';
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
 import { _base } from '../../../settings/constants';
 import { Field, Form, Formik, ErrorMessage } from 'formik';
 import { moduleMasterValidation } from './validation/ModuleMaster';
+import { errorHandler } from '../../../utils';
+import { toast } from 'react-toastify';
+import ProjectService from '../../../services/ProjectManagementService/ProjectService';
 
 export default function EditModuleComponent({ match }) {
   const history = useNavigate();
-  const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
   const moduleId = id;
@@ -30,48 +32,57 @@ export default function EditModuleComponent({ match }) {
 
   const roleId = localStorage.getItem('role_id');
   const [checkRole, setCheckRole] = useState(null);
+  const [Projectdropdown, setProjectdropdown] = useState([]);
 
   const loadData = useCallback(async () => {
-    await new ManageMenuService().getRole(roleId).then((res) => {
+
+      await new ProjectService().getProject().then((res) => {
+          if (res.status === 200) {
+            if (res.data.status === 1) {
+              console.log(res.data.data.data, ">>>>>");
+              setProjectdropdown(
+                res.data.data.data
+                  .filter((d) => d.is_active === 1)
+                  .map((d) => ({ value: d.id, label: d.project_name }))
+              );
+            }
+          }
+        });
+    try {
+      const res = await new ManageMenuService().getRole(roleId);
       if (res.status === 200) {
         if (res.data.status === 1) {
           const getRoleId = sessionStorage.getItem('role_id');
           setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
         }
       }
-    });
-    await new ModuleService()
-      .getModuleById(moduleId)
-      .then((res) => {
-        if (res.status === 200) {
-          const data = res.data.data;
-          if (data) {
-            setData(null);
-            setData(data);
-          }
-        } else {
-          new ErrorLogService().sendErrorLog(
-            'Module',
-            'Get_Module',
-            'INSERT',
-            res.message
-          );
+    } catch (error) {
+      errorHandler(error);
+    }
+
+    try {
+      const res = await new ModuleService().getModuleById(moduleId);
+      if (res.status === 200) {
+        const data = res.data.data;
+        if (data) {
+          setData(null);
+          setData(data);
         }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
+      } else {
         new ErrorLogService().sendErrorLog(
           'Module',
           'Get_Module',
           'INSERT',
-          errorObject.data.message
+          res.message
         );
-      });
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
   }, [moduleId, roleId]);
 
-  const handleForm = async (values) => {
-    console.log(values, 'formData');
+  const handleForm = async (values, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('project_id', values.project_id);
     formData.append('module_name', values.module_name);
@@ -81,49 +92,33 @@ export default function EditModuleComponent({ match }) {
     // return false
     // e.preventDefault();
     // const formData = new FormData(e.target);
-    setNotify(null);
-
-    await new ModuleService()
-      .updateModule(moduleId, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-                setTimeout(() => {
-                          history({pathname:`/${_base}/Module`})
-                        }, 500);
-                        setNotify({ type: 'success', message: res.data.message });
-            // history(
-            //   {
-            //     pathname: `/${_base}/Module`
-            //   },
-            //   {
-            //     state: { alert: { type: 'success', message: res.data.message } }
-            //   }
-            // );
-          } else {
-            setNotify({ type: 'danger', message: res.data.message });
-          }
+    try {
+      const res = await new ModuleService().updateModule(moduleId, formData);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          setTimeout(() => {
+            history({ pathname: `/${_base}/Module` });
+          }, 500);
+          toast.success(res.data.message);
+          // history(
+          //   {
+          //     pathname: `/${_base}/Module`
+          //   },
+          //   {
+          //     state: { alert: { type: 'success', message: res.data.message } }
+          //   }
+          // );
         } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'Module',
-            'Edit_Module',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        setNotify({ type: 'danger', message: errorObject.data.message });
-        new ErrorLogService().sendErrorLog(
-          'Module',
-          'Edit_Module',
-          'INSERT',
-          errorObject.data.message
-        );
-      });
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -140,8 +135,6 @@ export default function EditModuleComponent({ match }) {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader headerTitle="Edit Module" />
 
       <div className="row clearfix g-3">
@@ -150,11 +143,11 @@ export default function EditModuleComponent({ match }) {
             <Formik
               initialValues={initialValue}
               validationSchema={moduleMasterValidation}
-              onSubmit={(values) => {
-                handleForm(values);
+              onSubmit={(values, { setSubmitting }) => {
+                handleForm(values, { setSubmitting });
               }}
             >
-              {({ values }) => (
+              {({ values, isSubmitting, setFieldValue }) => (
                 <Form>
                   <div className="card mt-2">
                     <div className="card-body">
@@ -165,7 +158,36 @@ export default function EditModuleComponent({ match }) {
                             Select Project : <Astrick color="red" size="13px" />
                           </b>
                         </label>
-                        <div className="col-sm-4">
+                           <div className="col-sm-4">
+                                                  <Field
+                                                    as="select"
+                                                    className="form-control form-control-sm"
+                                                    id="project_id"
+                                                    name="project_id"
+                                                    onChange={(e) => {
+                                                      setFieldValue('project_id', e?.target?.value);
+                                                    }} // Call handleChange on selection
+                                                    defaultValue={
+                                                      data &&
+                                                      Projectdropdown?.filter(
+                                                        (d) => d.value === data.project_id
+                                                      )
+                                                    }
+                                                  >
+                                                    <option value="" label="Select a project" />
+                                                    {Projectdropdown?.map((option) => (
+                                                      <option key={option.value} value={option.value}>
+                                                        {option.label}
+                                                      </option>
+                                                    ))}
+                                                  </Field>
+                                                  <ErrorMessage
+                                                    name="project_id"
+                                                    component="small"
+                                                    className="text-danger"
+                                                  />
+                                                </div>
+                        {/* <div className="col-sm-4">
                           <Field name="project_id">
                             {({ field, form }) => (
                               <ProjectDropdown
@@ -176,7 +198,7 @@ export default function EditModuleComponent({ match }) {
                               />
                             )}
                           </Field>
-                        </div>
+                        </div> */}
                       </div>
 
                       {/* Module Name */}
@@ -216,9 +238,9 @@ export default function EditModuleComponent({ match }) {
                             className="form-control form-control-sm"
                             name="description"
                             rows="6"
-                            onKeyPress={(e) => {
-                              Validation.addressFieldOnly(e);
-                            }}
+                            // onKeyPress={(e) => {
+                            //   Validation.addressFieldOnly(e);
+                            // }}
                           />
                           <ErrorMessage
                             name="description"
@@ -250,7 +272,9 @@ export default function EditModuleComponent({ match }) {
                       {/* Status */}
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
-                          <b>Status : </b>
+                          <b>
+                            Status : <Astrick color="red" size="13px" />{' '}
+                          </b>
                         </label>
                         <div className="col-sm-10">
                           <div className="row">
@@ -285,7 +309,11 @@ export default function EditModuleComponent({ match }) {
                   {/* Buttons */}
                   <div className="mt-3" style={{ textAlign: 'right' }}>
                     {checkRole && checkRole[0].can_update === 1 ? (
-                      <button type="submit" className="btn btn-sm btn-primary">
+                      <button
+                        disabled={isSubmitting}
+                        type="submit"
+                        className="btn btn-sm btn-primary"
+                      >
                         Update
                       </button>
                     ) : (

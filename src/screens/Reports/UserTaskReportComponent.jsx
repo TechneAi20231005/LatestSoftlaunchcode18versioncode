@@ -14,6 +14,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../Dashboard/DashboardAction';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { CustomValidation } from '../../components/custom/CustomValidation/CustomValidation';
+import NotFound from '../../components/NotFound';
 
 function UserTaskReportComponent() {
   const [showLoaderModal, setShowLoaderModal] = useState(false);
@@ -23,7 +24,7 @@ function UserTaskReportComponent() {
   );
 
   const [userData, setUserData] = useState(null);
-  const [data, setData] = useState(null);
+  const [data, setData] = useState([]);
 
   const [exportData, setExportData] = useState(null);
 
@@ -89,6 +90,7 @@ function UserTaskReportComponent() {
         });
         setUserData(aa);
       }
+      setShowLoaderModal(false);
     });
 
     dispatch(getRoles);
@@ -160,7 +162,7 @@ function UserTaskReportComponent() {
                 updated_at: temp[key].updated_at
               });
             }
-            setData(null);
+            setData([]);
             setData(tempData);
             let count = 1;
             for (const key in temp) {
@@ -180,6 +182,7 @@ function UserTaskReportComponent() {
             setExportData(null);
             setExportData(exportTempData);
           } else {
+            setData([]);
             new ErrorLogService().sendErrorLog(
               'UserTask',
               'Get_UserTask',
@@ -198,6 +201,7 @@ function UserTaskReportComponent() {
             errorObject.data.message
           );
         });
+        setShowLoaderModal(false);
     }
   };
 
@@ -225,20 +229,30 @@ function UserTaskReportComponent() {
       label: 'From Date',
       required: false,
       alphaNumeric: false,
-      dateRange: { startDate: 'from_date', endDate: 'to_date', startLabel: 'From Date' },
+      dateRange: {
+        startDate: 'from_date',
+        endDate: 'to_date',
+        startLabel: 'From Date'
+      }
     },
     {
       name: 'to_date',
       label: 'To Date',
       required: false,
       alphaNumeric: false,
-      dateRange: { startDate: 'from_date', endDate: 'to_date', startLabel: 'From Date' },
+      dateRange: {
+        startDate: 'from_date',
+        endDate: 'to_date',
+        startLabel: 'From Date'
+      }
     },
     {
       name: 'task_name',
       label: 'Task Name',
       required: false,
       alphaNumeric: true,
+      max: 100
+
     }
   ];
 
@@ -261,13 +275,11 @@ function UserTaskReportComponent() {
             initialValues={initialValues}
             validationSchema={validationSchema}
             onSubmit={(values) => {
-              // console.log(values, 'values');
               handleForm(values);
             }}
           >
             {({ setFieldValue, values }) => (
               <Form>
-                {/* <form onSubmit={handleForm}> */}
                 <div className="row">
                   <div className="col-md-3">
                     <label>
@@ -281,7 +293,6 @@ function UserTaskReportComponent() {
                       classNamePrefix="select"
                       options={userData}
                       onChange={(option) =>
-                        // console.log(option, "option")
                         setFieldValue('user_id', option || null)
                       }
                     />
@@ -293,9 +304,6 @@ function UserTaskReportComponent() {
                     <Field
                       type="text"
                       className="form-control form-control-sm"
-                      // onKeyPress={(e) => {
-                      //   Validation.CharactersNumbersOnly(e);
-                      // }}
                       onKeyDown={handleKeyDown}
                       name="task_name"
                     />
@@ -349,48 +357,41 @@ function UserTaskReportComponent() {
                     />
                   </div>
 
-                  <div className="col-md-2">
-                    <button
-                      className="btn btn-sm btn-warning text-white"
-                      type="submit"
-                      style={{ marginTop: '20px', fontWeight: '600' }}
-                    >
-                      <i className="icofont-search-1 "></i> Search
-                    </button>
-                    <button
-                      className="btn btn-sm btn-info text-white"
-                      type="button"
-                      onClick={() => window.location.reload(false)}
-                      style={{ marginTop: '20px', fontWeight: '600' }}
-                    >
-                      <i className="icofont-refresh text-white"></i> Reset
-                    </button>
+                  <div className="d-flex mt-3">
+                    <div className="d-flex  ms-md-auto">
+                      <button
+                        className="btn  btn-warning text-white"
+                        type="submit"
+                        style={{ fontWeight: '600' }}
+                      >
+                        <i className="icofont-search-1 "></i> Search
+                      </button>
+                      <button
+                        className="btn  btn-info text-white"
+                        type="button"
+                        onClick={() => window.location.reload(false)}
+                        style={{ fontWeight: '600' }}
+                      >
+                        <i className="icofont-refresh text-white"></i> Reset
+                      </button>
+                    </div>
+
+                    {exportData && (
+                      <ExportToExcel
+                        className="btn btn-sm btn-danger"
+                        apiData={exportData}
+                        fileName="User Task Report"
+                      />
+                    )}
                   </div>
                 </div>
-                {/* </form> */}
               </Form>
             )}
           </Formik>
-          {data && data.length > 0 && (
-            <div
-              className="col"
-              style={{
-                textAlign: 'right',
-                marginTop: '20px',
-                fontWeight: '600'
-              }}
-            >
-              <ExportToExcel
-                className="btn btn-sm btn-danger"
-                apiData={exportData}
-                fileName="User Task Report"
-              />
-            </div>
-          )}
         </div>
       </div>
 
-      {data && data.length > 0 && (
+      {data && (
         <div className="card mt-2">
           <div className="card-body">
             <div className="row clearfix g-3">
@@ -400,6 +401,7 @@ function UserTaskReportComponent() {
                   data={data}
                   defaultSortField="title"
                   pagination
+                  noDataComponent={<NotFound topMargin={0} />}
                   selectableRows={false}
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
@@ -408,7 +410,8 @@ function UserTaskReportComponent() {
             </div>
           </div>
         </div>
-      )}
+      )
+    }
       <Modal show={showLoaderModal} centered>
         <Modal.Body className="text-center">
           <Spinner animation="grow" variant="primary" />

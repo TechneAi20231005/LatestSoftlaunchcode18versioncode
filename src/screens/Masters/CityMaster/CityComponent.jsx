@@ -29,6 +29,7 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 import { customSearchHandler } from '../../../utils/customFunction';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { CustomValidation } from '../../../../src/components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
 function CityComponent() {
   // initial state
 
@@ -193,7 +194,7 @@ function CityComponent() {
     {
       name: 'remark',
       label: 'Remark',
-      max: 1000,
+      max: 255,
       required: false,
       alphaNumeric: true
     }
@@ -213,11 +214,12 @@ function CityComponent() {
     country_id: valueof?.value || '',
     state_id: stateValue?.value || '',
     city: modal.modalData?.city || '',
-    remark: modal.modalData?.remark || '',
+    remark: modal?.modalData?.remark || '',
     is_active: String(modal.modalData?.is_active) ?? '1'
   };
 
-  const handleForm = async (values, id) => {
+  const handleForm = async (values, id, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('country_id', values.country_id);
     formData.append('state_id', values.state_id);
@@ -230,17 +232,18 @@ function CityComponent() {
     editformdata.append('city', values.city);
     editformdata.append('remark', values.remark);
     editformdata.append('is_active', values.is_active);
-
-    if (!id) {
-      dispatch(postCityData(formData));
-      setTimeout(() => {
+    try {
+      if (!id) {
+        await dispatch(postCityData(formData));
         dispatch(getCityData());
-      }, 500);
-    } else {
-      dispatch(updateCityData({ id: id, payload: editformdata }));
-      setTimeout(() => {
+      } else {
+        await dispatch(updateCityData({ id: id, payload: editformdata }));
         dispatch(getCityData());
-      }, 500);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -325,7 +328,6 @@ function CityComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader
         headerTitle="City Master"
         renderRight={() => {
@@ -384,8 +386,10 @@ function CityComponent() {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(value) =>
-            handleForm(value, modal.modalData ? modal.modalData.id : '')
+          onSubmit={(value, { setSubmitting }) =>
+            handleForm(value, modal.modalData ? modal.modalData.id : '', {
+              setSubmitting
+            })
           }
         >
           {({ isSubmitting, setFieldValue, values }) => (

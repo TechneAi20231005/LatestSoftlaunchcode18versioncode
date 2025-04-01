@@ -27,6 +27,7 @@ import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
 
 function GeneralSettings() {
   //initial  state
@@ -43,9 +44,7 @@ function GeneralSettings() {
   const User = useSelector(
     (MyTicketComponentSlice) => MyTicketComponentSlice.myTicketComponent.user
   );
-  const Notify = useSelector(
-    (SettingSlice) => SettingSlice.generalSetting.notify
-  );
+
   const modal = useSelector(
     (SettingSlice) => SettingSlice.generalSetting.modal
   );
@@ -87,26 +86,34 @@ function GeneralSettings() {
 
     const roleId = localStorage.getItem('role_id');
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
+    await new ManageMenuService()
+      .getRole(roleId)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          const data = res.data.data.sort((a, b) => {
-            if (a.first_name && b.first_name) {
-              return a.first_name.localeCompare(b.first_name);
-            }
-            return 0;
-          });
+          const data = res.data.data?.data
+            ?.filter((i) => i.is_active === 1)
+            ?.sort((a, b) => {
+              if (a.first_name && b.first_name) {
+                return a.first_name.localeCompare(b.first_name);
+              }
+              return 0;
+            });
           setUser(
             data.map((d) => ({
               value: d.id,
-              label: d.first_name + ' ' + d.last_name
+              // label: d.first_name + ' ' + d.last_name
+              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
             }))
           );
         }
@@ -131,7 +138,7 @@ function GeneralSettings() {
       name: 'Action',
       selector: (row) => {},
       sortable: false,
-      width: '5%',
+      width: '8%',
       cell: (row) => (
         <div className="btn-group" role="group">
           <button
@@ -284,7 +291,7 @@ function GeneralSettings() {
     {
       name: 'remark',
       label: 'Remark',
-      max: 1000,
+      max: 255,
       required: false,
       alphaNumeric: true
     }
@@ -298,13 +305,14 @@ function GeneralSettings() {
 
   const initialValues = {
     setting_name: modal.modalData ? modal.modalData?.setting_name : '',
-    value: modal.modalData ? modal.modalData?.value : '',
+    value: modal?.modalData?.value || '',
     user_id: modal.modalData ? userData?.map((item) => item) : '',
     remark: modal.modalData?.remark || '',
-    is_active: String(modal?.modalData?.is_active) ?? "1"
+    is_active: String(modal?.modalData?.is_active) ?? '1'
   };
 
-  const handleForm = async (values, id) => {
+  const handleForm = async (values, id, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('setting_name', values.setting_name);
     formData.append('value', values.value);
@@ -323,19 +331,27 @@ function GeneralSettings() {
     });
     editformdata.append('remark', values.remark);
     editformdata.append('is_active', values.is_active);
-
-    if (!id) {
-      dispatch(postGeneralSettingData(formData));
-      setTimeout(() => {
-        loadData();
-      }, 500);
-    } else {
-      dispatch(updateGeneralSettingData({ id: id, payload: editformdata }));
-      setTimeout(() => {
-        loadData();
-      }, 500);
+    try {
+      if (!id) {
+        await dispatch(postGeneralSettingData(formData));
+        setTimeout(() => {
+          loadData();
+        }, 500);
+      } else {
+        await dispatch(
+          updateGeneralSettingData({ id: id, payload: editformdata })
+        );
+        setTimeout(() => {
+          loadData();
+        }, 500);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
     }
   };
+
   useEffect(() => {
     loadData();
   }, [loadData]);
@@ -348,12 +364,6 @@ function GeneralSettings() {
   }, [searchTerm, handleSearch]);
   return (
     <div className="container-xxl">
-      {Notify && (
-        <>
-          {' '}
-          <Alert alertData={Notify} />{' '}
-        </>
-      )}
       <PageHeader
         headerTitle="General Settings"
         renderRight={() => {
@@ -406,11 +416,13 @@ function GeneralSettings() {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(value) =>
-            handleForm(value, modal.modalData ? modal.modalData.id : '')
+          onSubmit={(value, { setSubmitting }) =>
+            handleForm(value, modal.modalData ? modal.modalData.id : '', {
+              setSubmitting
+            })
           }
         >
-          {({ values, setFieldValue }) => (
+          {({ values, setFieldValue, isSubmitting }) => (
             <Form>
               <Modal.Header
                 closeButton
@@ -440,7 +452,7 @@ function GeneralSettings() {
                         type="text"
                         name="setting_name"
                         className="form-control form-control-sm"
-                        // readOnly={!!modal.modalData}
+                        readOnly={!!modal.modalData}
                       />
                       <ErrorMessage
                         name="setting_name"
@@ -510,50 +522,57 @@ function GeneralSettings() {
                         className="text-danger small"
                       />
                     </div>
-                        {modal.modalData && (
-                                          <div className="col-sm-12">
-                                            <label className="form-label font-weight-bold">
-                                              Status :<Astrick color="red" size="13px" />
-                                            </label>
-                                            <div className="row">
-                                              <div className="col-md-2">
-                                                <label className="form-check">
-                                                  <Field
-                                                    id="is_active_1"
-                                                    type="radio"
-                                                    name="is_active"
-                                                    value="1"
-                                                    className="form-check-input"
-                                                  />
-                                                  Active
-                                                </label>
-                                              </div>
-                                              <div className="col-md-2">
-                                                <label className="form-check">
-                                                  <Field
-                                                    type="radio"
-                                                    name="is_active"
-                                                    value="0"
-                                                    id="is_active_0"
-                                                    className="form-check-input"
-                                                  />
-                                                  Deactive
-                                                </label>
-                                              </div>
-                                            </div>
-
-                                          </div>
-                                        )}
+                    {modal.modalData && (
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Status :<Astrick color="red" size="13px" />
+                        </label>
+                        <div className="row">
+                          <div className="col-md-2">
+                            <label className="form-check">
+                              <Field
+                                id="is_active_1"
+                                type="radio"
+                                name="is_active"
+                                value="1"
+                                className="form-check-input"
+                              />
+                              Active
+                            </label>
+                          </div>
+                          <div className="col-md-2">
+                            <label className="form-check">
+                              <Field
+                                type="radio"
+                                name="is_active"
+                                value="0"
+                                id="is_active_0"
+                                className="form-check-input"
+                              />
+                              Deactive
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 </div>
               </Modal.Body>
               <Modal.Footer>
                 {!modal.modalData ? (
-                  <button type="submit" className="btn btn-primary text-white">
+                  <button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-primary text-white"
+                  >
                     Submit
                   </button>
                 ) : (
-                  <button type="submit" className="btn btn-primary text-white">
+                  <button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-primary text-white"
+                  >
                     Update
                   </button>
                 )}

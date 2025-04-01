@@ -7,6 +7,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import Alert from '../Common/Alert';
 
 import { postLoginUser } from './AuthSices/loginAction';
+import { InputGroup } from 'react-bootstrap';
+import { errorHandler } from '../../utils';
 
 export default function SignIn() {
   const dispatch = useDispatch();
@@ -14,6 +16,7 @@ export default function SignIn() {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const [shouldNavigate, setShouldNavigate] = useState(false);
+  const [show, setShow] = useState(false);
 
   const notify = useSelector((loginSlice) => loginSlice.login.notify);
 
@@ -24,16 +27,19 @@ export default function SignIn() {
     }
     setIsLoading(true);
     const data = new FormData(e.target);
-    dispatch(postLoginUser(data)).then((success) => {
-      if (success.payload?.status === 1) {
-        const token = localStorage.getItem('jwt_token');
-        const tokenExpirationTime = decodeToken(token).exp * 1000;
-        localStorage.setItem('jwt_token_expiration', tokenExpirationTime);
-        window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
-      } else {
-        setIsLoading(false);
-      }
-    });
+
+    dispatch(postLoginUser(data))
+      .then((success) => {
+        if (success.payload?.status === 1) {
+          const token = localStorage.getItem('jwt_token');
+          const tokenExpirationTime = decodeToken(token).exp * 1000;
+          localStorage.setItem('jwt_token_expiration', tokenExpirationTime);
+          window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+        } else {
+          setIsLoading(false);
+        }
+      })
+      .catch((error) => errorHandler(error));
   };
 
   const decodeToken = (token) => {
@@ -89,8 +95,6 @@ export default function SignIn() {
       className="col-lg-6 d-flex justify-content-center align-items-center border-0 rounded-lg"
       style={{ marginTop: '0px', height: '200%' }}
     >
-      {notify && <Alert alertData={notify} />}
-
       <div
         className="w-100 p-3 p-md-5 card border-0 bg-dark text-light"
         style={{ maxWidth: '32rem' }}
@@ -128,19 +132,28 @@ export default function SignIn() {
                   </Link>
                 </span>
               </div>
-              <input
-                type="password"
-                className="form-control form-control-lg"
-                placeholder="***************"
-                id="password"
-                name="password"
-                required
-              />
+              <InputGroup>
+                <input
+                  type={show ? 'text' : 'password'}
+                  className="form-control form-control-lg"
+                  placeholder="***************"
+                  id="password"
+                  name="password"
+                  required
+                />
+                <InputGroup.Text>
+                  <i
+                    className="bi bi-eye-fill"
+                    onClick={() => setShow(!show)}
+                  ></i>
+                </InputGroup.Text>
+              </InputGroup>
             </div>
           </div>
 
           <div className="col-12 text-center mt-4">
             <button
+              disabled={isLoading}
               type="submit"
               className="btn btn-lg btn-block btn-light lift text-uppercase"
               atl="signin"

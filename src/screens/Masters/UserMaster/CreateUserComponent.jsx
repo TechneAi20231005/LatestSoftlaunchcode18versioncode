@@ -164,7 +164,6 @@ function CreateUserComponent({ match }) {
     departmentErr: '',
     jobRoleErr: ''
   });
-
   function checkingValidation(form) {
     var selectFirstName = form.getAll('first_name')[0];
     var selectMiddleName = form.getAll('middle_name')[0];
@@ -387,8 +386,7 @@ function CreateUserComponent({ match }) {
     if (loading) {
       return;
     }
-    setLoading(true); // Set loading state to true
-    // setNotify(null);
+    setLoading(true);
 
     const form = new FormData(e.target);
     var flag = 1;
@@ -431,7 +429,7 @@ function CreateUserComponent({ match }) {
             if (res?.payload?.data?.status === 1) {
               // Success case
               toast.success(res?.payload?.data?.message, {
-                autoClose: 10000 // 10 seconds in milliseconds
+                autoClose: 5000 // 10 seconds in milliseconds
               });
               navigate(`/${_base}/User`);
               dispatch(getEmployeeData());
@@ -440,16 +438,11 @@ function CreateUserComponent({ match }) {
               setTimeout(() => {
                 navigate(`/${_base}/User`);
               }, 3000);
-            } else {
-              // Error case when status is not 1
-              toast.error(res?.payload?.data?.message, {
-                autoClose: 10000 // 10 seconds in milliseconds
-              });
             }
           } else {
             // Error case when status code is not 200
             toast.error('An unexpected error occurred. Please try again.', {
-              autoClose: 10000 // 10 seconds in milliseconds
+              autoClose: 5000 // 10 seconds in milliseconds
             });
           }
           setLoading(false);
@@ -586,6 +579,7 @@ function CreateUserComponent({ match }) {
     roleDropdown?.filter((d) => {
       return d.role.toLowerCase() === 'user';
     });
+
   const filterCutomerRole = customerSort
     ?.filter((d) => d.is_active === 1)
     .map((d) => ({
@@ -595,6 +589,14 @@ function CreateUserComponent({ match }) {
   const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
+  // console.log(orderedCustomerRoleData, "orderedCustomerRoleData")
+
+  const customerRolesData = [
+    {
+      label: 'User',
+      value: 0
+    }
+  ];
 
   const accountForChange = async (account_for) => {
     setSelctRole(null);
@@ -757,9 +759,13 @@ function CreateUserComponent({ match }) {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Create User" />
-      {Notify && <Alert alertData={Notify} />}
 
-      <form onSubmit={handleForm} ref={userForm} method="post">
+      <form
+        autoComplete="off"
+        onSubmit={handleForm}
+        ref={userForm}
+        method="post"
+      >
         <Tabs
           defaultActiveKey={tabKey}
           activeKey={tabKey}
@@ -945,7 +951,8 @@ function CreateUserComponent({ match }) {
                             const email = event?.target?.value;
                             if (
                               !email.match(
-                                /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
+                                // /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/
+                                /^([a-z\d.-]+)@([a-z\d-]+)\.([a-z]{2,8})(\.[a-z]{2,8})?$/i
                               )
                             ) {
                               setInputState({
@@ -984,11 +991,12 @@ function CreateUserComponent({ match }) {
                           className="form-control"
                           id="user_name"
                           name="user_name"
+                          autoComplete="off"
                           placeholder="Username"
                           onKeyPress={(e) => {
                             Validation.CharactersNumbersOnly(e);
                           }}
-                          maxLength={30}
+                          maxLength={50}
                           onChange={(event) => {
                             if (event.target.value === '') {
                               setInputState({
@@ -1126,6 +1134,7 @@ function CreateUserComponent({ match }) {
                             onKeyPress={(e) => {
                               Validation.password(e);
                             }}
+                            autoComplete="new-password"
                             onChange={handlePasswordValidation}
                             onPaste={(e) => {
                               e.preventDefault();
@@ -1366,9 +1375,9 @@ function CreateUserComponent({ match }) {
                           className="form-control form-control-sm"
                           id="address"
                           name="address"
-                          placeholder="Enter maximum 250 character"
+                          placeholder="Enter maximum 1000 character"
                           rows="4"
-                          maxLength={250}
+                          maxLength={1000}
                           // onKeyPress={(e) => {
                           //   Validation.addressFieldOnly(e);}}
                         />

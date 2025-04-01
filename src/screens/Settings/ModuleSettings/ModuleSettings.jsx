@@ -5,6 +5,8 @@ import Select from 'react-select';
 import PageHeader from '../../../components/Common/PageHeader';
 import ErrorLogService from '../../../services/ErrorLogService';
 import Alert from '../../../components/Common/Alert';
+import { errorHandler } from '../../../utils';
+import { toast } from 'react-toastify';
 
 const ModuleSettings = ({ match }) => {
   const moduleRef = useRef();
@@ -18,21 +20,24 @@ const ModuleSettings = ({ match }) => {
   const [module, setModule] = useState(null);
   const [submodule, setSubmodule] = useState(null);
 
-  const [notify, setNotify] = useState();
-
   const loadData = () => {
-    new ModuleSetting().getAllModuleSetting().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setData(res.data.data);
-          const t = res.data.data.map((d) => ({
-            label: d.module_name,
-            value: d.module_name
-          }));
-          setModule(t);
+    new ModuleSetting()
+      .getAllModuleSetting()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setData(res.data.data);
+            const t = res.data.data.map((d) => ({
+              label: d.module_name,
+              value: d.module_name
+            }));
+            setModule(t);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
   const handleSubmoduleChange = (e) => {
@@ -41,14 +46,19 @@ const ModuleSettings = ({ match }) => {
 
     const url = selected.module_name + '/' + e.value;
 
-    new ModuleSetting().getModuleSetting(url).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setSettingData(null);
-          setSettingData(res.data.data);
+    new ModuleSetting()
+      .getModuleSetting(url)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setSettingData(null);
+            setSettingData(res.data.data);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
   const handleModuleChange = (e) => {
@@ -62,39 +72,28 @@ const ModuleSettings = ({ match }) => {
     setSubmodule(sub);
   };
 
+  const [submitting, setSubmitting] = useState(false);
   const handleForm = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
     const formData = new FormData(e.target);
-    setNotify(null);
-    await new ModuleSetting()
-      .updateAllModuleSetting(formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            setNotify(null);
-            setNotify({ type: 'success', message: res.data.message });
-          } else {
-            setNotify({ type: 'danger', message: res.data.message });
-          }
+    try {
+      const res = await new ModuleSetting().updateAllModuleSetting(formData);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          toast.success(res.data.message);
         } else {
-          new ErrorLogService().sendErrorLog(
-            'moduleSetting',
-            'Create_moduleSetting',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'moduleSetting',
-          'Create_moduleSetting',
-          'INSERT',
-          errorObject.data.message
-        );
-      });
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   useEffect(() => {
@@ -104,7 +103,6 @@ const ModuleSettings = ({ match }) => {
   return (
     <>
       <PageHeader headerTitle="Module Settings" />
-      {notify && <Alert alertData={notify} />}
       <form method="post" onSubmit={handleForm}>
         <div className="card mt-2">
           <div className="card-body">
@@ -197,7 +195,11 @@ const ModuleSettings = ({ match }) => {
               </table>
 
               <div className="d-flex justify-content-end">
-                <button type="submit" className="btn btn-primary text-white">
+                <button
+                  disabled={submitting}
+                  type="submit"
+                  className="btn btn-primary text-white"
+                >
                   Submit
                 </button>
               </div>

@@ -6,7 +6,6 @@ import ModuleService from '../../../services/ProjectManagementService/ModuleServ
 
 import { _base } from '../../../settings/constants';
 import ErrorLogService from '../../../services/ErrorLogService';
-import Alert from '../../../components/Common/Alert';
 import PageHeader from '../../../components/Common/PageHeader';
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
@@ -15,6 +14,8 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { SubModuleMasterValidation } from './Validation/SubModuleMasterValidation';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 export default function EditModuleComponent({ match }) {
   const history = useNavigate();
@@ -24,7 +25,6 @@ export default function EditModuleComponent({ match }) {
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 22)
   );
-  const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
   const subModuleId = id;
@@ -50,7 +50,7 @@ export default function EditModuleComponent({ match }) {
     sub_module_name: data?.sub_module_name ? data?.sub_module_name : '',
     description: data?.description ? data?.description : '',
     remark: data?.remark ? data?.remark : '',
-    is_active: data?.is_active !== undefined ? String(data?.is_active) : '1'
+    is_active: String(data?.is_active) ?? '1'
   };
   const loadData = async () => {
     await new SubModuleService()
@@ -82,6 +82,21 @@ export default function EditModuleComponent({ match }) {
         );
       });
 
+      await new ModuleService().getModule().then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setModules(res.data.data?.data.filter((d) => d.is_active === 1));
+
+            // setModulesDropdown(
+            //   res.data.data &&
+            //     res.data.data?.data
+            //       .filter((d) => d.is_active === 1)
+            //       .map((d) => ({ value: d.id, label: d.module_name }))
+            // );
+          }
+        }
+      });
+
     await new ProjectService().getProject().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
@@ -94,23 +109,27 @@ export default function EditModuleComponent({ match }) {
       }
     });
 
-    await new ModuleService().getModule().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setModules(res.data.data?.data.filter((d) => d.is_active === 1));
-          setModulesDropdown(
-            res.data.data &&
-              res.data.data?.data
-                .filter((d) => d.is_active === 1)
-                .map((d) => ({ value: d.id, label: d.module_name }))
-          );
-        }
-      }
-    });
+
     dispatch(getRoles());
   };
 
-  const handleForm = async (values) => {
+  useEffect(() => {
+    if (data && data?.project_id && modules?.length > 0) {
+      const filteredModules = modules.filter(
+        (d) => d.project_id === data.project_id
+      );
+
+      setModulesDropdown(
+        filteredModules?.map((d) => ({
+          value: d.id,
+          label: d.module_name,
+        }))
+      );
+    }
+  }, [data, modules]);
+
+  const handleForm = async (values, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData?.append('project_id', values?.project_id);
     formData?.append('module_id', values?.module_id);
@@ -119,43 +138,30 @@ export default function EditModuleComponent({ match }) {
     formData?.append('description', values?.description);
     formData?.append('remark', values?.remark);
     formData?.append('is_active', values?.is_active);
-    setNotify(null);
-
-    await new SubModuleService()
-      .updateSubModule(subModuleId, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            setNotify({ type: 'success', message: res.data.message });
-            setTimeout(() => {
-              history({
-                pathname: `/${_base}/SubModule`
-              });
-            }, 1000);
-          } else {
-            setNotify({ type: 'danger', message: res.data.message });
-          }
+    try {
+      const res = await new SubModuleService().updateSubModule(
+        subModuleId,
+        formData
+      );
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          toast.success(res.data.message);
+          setTimeout(() => {
+            history({
+              pathname: `/${_base}/SubModule`
+            });
+          }, 1000);
         } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'SubModule',
-            'Create_SubModule',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        setNotify({ type: 'danger', message: errorObject.data.message });
-        new ErrorLogService().sendErrorLog(
-          'SubModule',
-          'Create_SubModule',
-          'INSERT',
-          errorObject.data.message
-        );
-      });
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   useState(() => {
@@ -171,8 +177,6 @@ export default function EditModuleComponent({ match }) {
   }, [checkRole]);
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader headerTitle="Edit Sub-Module" />
 
       <div className="row clearfix g-3">
@@ -181,11 +185,11 @@ export default function EditModuleComponent({ match }) {
             <Formik
               initialValues={initialValue}
               validationSchema={SubModuleMasterValidation}
-              onSubmit={(values) => {
-                handleForm(values);
+              onSubmit={(values, { setSubmitting }) => {
+                handleForm(values, { setSubmitting });
               }}
             >
-              {({ values, setFieldValue }) => (
+              {({ values, setFieldValue, isSubmitting }) => (
                 <Form>
                   <div className="card mt-2">
                     <div className="card-body">
@@ -205,6 +209,7 @@ export default function EditModuleComponent({ match }) {
                             name="project_id"
                             onChange={(e) => {
                               setFieldValue('project_id', e?.target?.value);
+                              setFieldValue('module_id', null);
                               setModulesDropdown(
                                 modules &&
                                   modules
@@ -280,7 +285,10 @@ export default function EditModuleComponent({ match }) {
                       </div>
 
                       <div className="form-group row mt-2">
-                        <label className="col-sm-2 col-form-label">
+                        <label
+                          className="col-sm-2 col-form-label d-flex align-items-center"
+                          style={{ whiteSpace: 'nowrap' }}
+                        >
                           <b>
                             Sub Module Name :{' '}
                             <span style={{ color: 'red' }}>*</span>
@@ -390,8 +398,12 @@ export default function EditModuleComponent({ match }) {
 
                   {/* Buttons */}
                   <div className="mt-3" style={{ textAlign: 'right' }}>
-                    {checkRole && checkRole[0].can_update === 1 ? (
-                      <button type="submit" className="btn btn-sm btn-primary">
+                    {checkRole && checkRole[0]?.can_update === 1 ? (
+                      <button
+                        disabled={isSubmitting}
+                        type="submit"
+                        className="btn btn-sm btn-primary"
+                      >
                         Update
                       </button>
                     ) : (

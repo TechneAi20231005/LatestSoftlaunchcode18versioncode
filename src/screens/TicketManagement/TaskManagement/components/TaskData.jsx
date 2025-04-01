@@ -528,7 +528,7 @@ export default function TaskData(props) {
                   </button>
                 </li>
               )}
-              {props && props.isReviewer === 0 && (
+              {/* {props && props.isReviewer === 0 && (
                 <li>
                   <Link
                     to={
@@ -543,8 +543,8 @@ export default function TaskData(props) {
                     </button>
                   </Link>
                 </li>
-              )}
-              {props && (
+              )} */}
+              {/* {props && (
                 <li>
                   <Link
                     to={
@@ -559,7 +559,7 @@ export default function TaskData(props) {
                     </button>
                   </Link>
                 </li>
-              )}
+              )} */}
 
               <li onClick={handleSubtaskModal}>
                 <button className="btn btn-sm btn-info text-white w-100">

@@ -22,6 +22,7 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../../src/components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
 function RoleComponent({ location }) {
   //initial state
   const dispatch = useDispatch();
@@ -194,14 +195,14 @@ function RoleComponent({ location }) {
     {
       name: 'role',
       label: 'Role name',
-      max: 25,
+      max: 100,
       required: true,
       alphaNumeric: true
     },
     {
       name: 'remark',
       label: 'Remark',
-      max: 1000,
+      max: 255,
       required: false,
       alphaNumeric: false
     }
@@ -215,7 +216,8 @@ function RoleComponent({ location }) {
     is_active: String(modal.modalData?.is_active) ?? '1'
   };
 
-  const handleForm = async (values, id) => {
+  const handleForm = async (values, id, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('role', values.role);
     formData.append('remark', values.remark);
@@ -224,17 +226,22 @@ function RoleComponent({ location }) {
     editformdata.append('role', values.role);
     editformdata.append('remark', values.remark);
     editformdata.append('is_active', values.is_active);
-
-    if (!id) {
-      dispatch(postRole(formData));
-      setTimeout(() => {
-        dispatch(getRoleData());
-      }, 500);
-    } else {
-      dispatch(updatedRole({ id: id, payload: editformdata }));
-      setTimeout(() => {
-        dispatch(getRoleData());
-      }, 500);
+    try {
+      if (!id) {
+        await dispatch(postRole(formData));
+        setTimeout(() => {
+          dispatch(getRoleData());
+        }, 500);
+      } else {
+        await dispatch(updatedRole({ id: id, payload: editformdata }));
+        setTimeout(() => {
+          dispatch(getRoleData());
+        }, 500);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -268,7 +275,6 @@ function RoleComponent({ location }) {
 
   return (
     <div className="container-xxl">
-      {Notify && <Alert alertData={Notify} />}
       <PageHeader
         headerTitle="Role Master"
         renderRight={() => {
@@ -334,8 +340,10 @@ function RoleComponent({ location }) {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(value) =>
-            handleForm(value, modal.modalData ? modal.modalData.id : '')
+          onSubmit={(value, { setSubmitting }) =>
+            handleForm(value, modal.modalData ? modal.modalData.id : '', {
+              setSubmitting
+            })
           }
         >
           {({ isSubmitting }) => (
@@ -485,20 +493,25 @@ function RoleDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new RoleService().getRole().then((res) => {
-      if (res.status === 200) {
-        const data = res.data.data;
-        let counter = 1;
-        for (const key in data) {
-          tempData.push({
-            counter: counter++,
-            id: data[key].id,
-            role: data[key].role
-          });
+    new RoleService()
+      .getRole()
+      .then((res) => {
+        if (res.status === 200) {
+          const data = res.data.data;
+          let counter = 1;
+          for (const key in data) {
+            tempData.push({
+              counter: counter++,
+              id: data[key].id,
+              role: data[key].role
+            });
+          }
+          setData(tempData);
         }
-        setData(tempData);
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }, []);
 
   return (

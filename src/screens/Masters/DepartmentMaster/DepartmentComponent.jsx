@@ -20,6 +20,7 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
 
 function DepartmentComponent() {
   //initial state
@@ -161,7 +162,7 @@ function DepartmentComponent() {
     {
       name: 'remark',
       label: 'Remark',
-      max: 1000,
+      max: 255,
       required: false
     }
   ];
@@ -174,7 +175,8 @@ function DepartmentComponent() {
     is_active: String(modal.modalData?.is_active) ?? '1'
   };
 
-  const handleForm = async (values, id) => {
+  const handleForm = async (values, id, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('department', values.department);
     formData.append('remark', values.remark);
@@ -183,17 +185,22 @@ function DepartmentComponent() {
     editformdata.append('department', values.department);
     editformdata.append('remark', values.remark);
     editformdata.append('is_active', values.is_active);
-
-    if (!id) {
-      dispatch(postdepartment(formData));
-      setTimeout(() => {
-        dispatch(departmentData());
-      }, 500);
-    } else {
-      dispatch(updateDepartment({ id: id, payload: editformdata }));
-      setTimeout(() => {
-        dispatch(departmentData());
-      }, 500);
+    try {
+      if (!id) {
+        await dispatch(postdepartment(formData));
+        setTimeout(() => {
+          dispatch(departmentData());
+        }, 500);
+      } else {
+        await dispatch(updateDepartment({ id: id, payload: editformdata }));
+        setTimeout(() => {
+          dispatch(departmentData());
+        }, 500);
+      }
+    } catch (eror) {
+      errorHandler(eror);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -214,8 +221,6 @@ function DepartmentComponent() {
 
   return (
     <div className="container-xxl">
-      {Notify && <Alert alertData={Notify} />}
-
       <PageHeader
         headerTitle="Department Master"
         renderRight={() => {
@@ -282,8 +287,10 @@ function DepartmentComponent() {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(value) =>
-            handleForm(value, modal.modalData ? modal.modalData.id : '')
+          onSubmit={(value, { setSubmitting }) =>
+            handleForm(value, modal.modalData ? modal.modalData.id : '', {
+              setSubmitting
+            })
           }
         >
           {({ isSubmitting }) => (

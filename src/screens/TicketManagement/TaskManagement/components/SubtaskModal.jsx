@@ -36,7 +36,8 @@ export default function SubtaskModal(props) {
     await new SubtaskService().getSubtask(props.taskId).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          setData(res.data.data?.data);
+          let filterData = res.data.data?.data.filter((ele) => ele.is_active === 1);
+          setData(filterData);
         }
       }
     });

@@ -4,7 +4,12 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import Select from 'react-select';
 
 // // staic import
-import { _base, userSessionData } from '../../settings/constants';
+import {
+  _base,
+  userSessionData,
+  _attachmentUrl,
+  _rewampAttachmentUrl
+} from '../../settings/constants';
 import Alert from './Alert';
 import UserService from '../../services/MastersService/UserService';
 import {
@@ -16,6 +21,7 @@ import TenantService from '../../services/MastersService/TenantService';
 import ManageMenuService from '../../services/MenuManagementService/ManageMenuService';
 import DemoProfileImg from '../../assets/images/profile_av.png';
 import './style.scss';
+import { errorHandler } from '../../utils';
 
 export default function Header() {
   // // initial state
@@ -32,22 +38,26 @@ export default function Header() {
 
   // // all handler
   const loadNotifcation = () => {
-    getNotification().then((res) => {
-      if (res.status === 200) {
-        setNotifications([]);
+    getNotification()
+      .then((res) => {
+        if (res.status === 200) {
+          setNotifications([]);
 
-        if (res.data.data !== null) {
-          if (res?.data?.data?.result) {
-            var length = res.data.data.result.length;
-            var height = 0;
-            setNotifications(res.data.data.result);
+          if (res.data.data !== null) {
+            if (res?.data?.data?.result) {
+              var length = res.data.data.result.length;
+              var height = 0;
+              setNotifications(res.data.data.result);
 
-            if (parseInt(length) > 0 && parseInt(length) <= 5) {
+              if (parseInt(length) > 0 && parseInt(length) <= 5) {
+              }
             }
           }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
   const handleReadNotification = (e, id) => {
@@ -73,7 +83,7 @@ export default function Header() {
     new UserService().getUserById(localStorage.getItem('id')).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
-          setTenantId(res.data.data.tenant_id);
+          setTenantId(res.data.data.data.tenant_id);
           res.data.data.profile_picture =
             'http://3.108.206.34/TSNewBackend/' + res.data.data.profile_picture;
           setData(res.data.data);
@@ -100,6 +110,9 @@ export default function Header() {
             setShowDropdown(false);
           }
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
   };
 
@@ -254,11 +267,19 @@ export default function Header() {
                 className="nav-link dropdown-toggle pulse p-0"
               >
                 <img
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = DemoProfileImg;
+                  }}
                   className="avatar lg rounded-circle img-thumbnail"
-                  src={data?.profile_picture || DemoProfileImg}
+                  src={
+                    _rewampAttachmentUrl + data?.data?.profile_picture ||
+                    DemoProfileImg
+                  }
                   alt="profile"
                 />
               </Dropdown.Toggle>
+
               <Dropdown.Menu className="shadow border-0 dropdown-animation mt-5">
                 <div className="card border-0 w280">
                   <div className="card-body pb-0">
@@ -279,7 +300,14 @@ export default function Header() {
                     <div className="d-flex gap-2">
                       <img
                         className="avatar rounded-circle"
-                        src={data?.profile_picture}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = DemoProfileImg;
+                        }}
+                        src={
+                          data &&
+                          _rewampAttachmentUrl + data?.data?.profile_picture
+                        }
                         alt="profile"
                       />
                       <div className="flex-fill">

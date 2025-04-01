@@ -10,7 +10,6 @@ import { Card, CardBody, Dropdown, Modal } from 'react-bootstrap';
 import { toast } from 'react-toastify';
 import PageHeader from '../../../components/Common/PageHeader';
 import { userSessionData } from '../../../settings/constants';
-import Alert from '../../../components/Common/Alert';
 import ErrorLogService from '../../../services/ErrorLogService';
 import MyTicketService from '../../../services/TicketService/MyTicketService';
 import BasketService from '../../../services/TicketService/BasketService';
@@ -39,9 +38,10 @@ import SprintService from '../../../services/TicketService/SprintService';
 import DataTable from 'react-data-table-component';
 import CardLoadingSkeleton from '../../../components/custom/loader/CardLoadingSkeleton';
 import ManageTaskSkeleton from '../../../components/custom/loader/ManageTaskSkeleton';
+import { _rewampAttachmentUrl } from '../../../settings/constants';
+import { errorHandler } from '../../../utils';
 
 export default function TaskComponent() {
-  const [notify, setNotify] = useState(null);
   const { id } = useParams();
   const ticketId = id;
 
@@ -81,6 +81,7 @@ export default function TaskComponent() {
   const [sprintFirstDate, setSprintFirstDate] = useState('');
   const [sprintLastDate, setSprintLastDate] = useState('');
   const [minEndDate, setMinEndDate] = useState('');
+  const [submitting, setSubmitting] = useState(false);
   const getTicketData = useCallback(async () => {
     await new MyTicketService()
       .getTicketById(ticketId)
@@ -90,19 +91,15 @@ export default function TaskComponent() {
             setTicketData(res.data.data);
             setTicketStartDate(res.data.data.ticket_date);
             setExpectedSolveDate(res.data.data.expected_solve_date);
+          } else {
+            toast.error(res.data.message);
           }
+        } else {
+          toast.error(res.message);
         }
       })
       .catch((error) => {
-        const { response } = error;
-
-        // const { request, ...errorObject } = response;
-        // new ErrorLogService().sendErrorLog(
-        //   'Task',
-        //   'Get_Ticket',
-        //   'INSERT',
-        //   errorObject.data.message
-        // );
+        errorHandler(error);
       });
   }, [ticketId]);
 
@@ -121,18 +118,15 @@ export default function TaskComponent() {
               setBasketData(null);
               var temp = res?.data?.data;
               setBasketData(temp);
+            } else {
+              toast.error(res.data.message);
             }
+          } else {
+            toast.error(res.message);
           }
         })
         .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
-          new ErrorLogService().sendErrorLog(
-            'Task',
-            'Get_Basket',
-            'INSERT',
-            errorObject.data.message
-          );
+          errorHandler(error);
         });
     } else {
       setBasketData(null);
@@ -188,7 +182,7 @@ export default function TaskComponent() {
                 // setIsRegularised(res.data.is_regularized)
                 setData(null);
                 // res.data.data.sort(sortFunc);
-
+                console.log('ressss', res.data.data);
                 res.data.data.forEach((tasks, index) => {
                   setBasketStartDate(tasks.start_date);
                   tasks.taskData.forEach((d, i) => {
@@ -207,7 +201,7 @@ export default function TaskComponent() {
                       Basket_Name: tasks.basket_name,
                       taskOwnerNames: taskOwnerNames,
 
-                      task_type: d.parent_name
+                      task_type: d.task_type_name
                     });
                   });
                 });
@@ -229,26 +223,18 @@ export default function TaskComponent() {
                 setAllTaskList(tempAllTaskList);
 
                 setIsLoading(false); // Loading finished
+              } else {
+                toast.error(res.data.message);
               }
+            } else {
+              toast.error(res.message);
             }
+          })
+          .catch((error) => {
+            errorHandler(error);
           });
       } catch (error) {
-        // toast.update(toastId, {
-        //   render: 'Error fetching data!',
-        //   type: toast.TYPE.ERROR,
-        //   isLoading: false,
-        //   autoClose: 3000
-        // });
-      } finally {
-        // clearInterval(interval);
-        // if (toastId) {
-        //   toast.update(toastId, {
-        //     render: 'Data fetched successfully!',
-        //     type: toast.TYPE.SUCCESS,
-        //     isLoading: false,
-        //     autoClose: 3000
-        //   });
-        // }
+        errorHandler(error);
       }
     },
     [ticketId]
@@ -273,14 +259,22 @@ export default function TaskComponent() {
       parent_name: null
     };
     if (id) {
-      await getTaskData(id).then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            temp = res.data.data;
-            setTaskModalData(temp);
+      await getTaskData(id)
+        .then((res) => {
+          if (res.status === 200) {
+            if (res.data.status === 1) {
+              temp = res.data.data;
+              setTaskModalData(temp);
+            } else {
+              toast.error(res.data.message);
+            }
+          } else {
+            toast.error(res.message);
           }
-        }
-      });
+        })
+        .catch((error) => {
+          errorHandler(error);
+        });
 
       await getTaskHistory(id).then((res) => {
         if (res.status === 200) {
@@ -382,39 +376,65 @@ export default function TaskComponent() {
   };
 
   const loadData = useCallback(async () => {
-    await new ModuleSetting().getSettingByName('Ticket', 'Task').then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setModuleSetting(res.data.data);
+    await new ModuleSetting()
+      .getSettingByName('Ticket', 'Task')
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setModuleSetting(res.data.data);
+          } else {
+            toast.error(res.data.message);
+          }
+        } else {
+          toast.error(res.message);
         }
-      }
-    });
-    await new TestCasesService().getTaskBytTicket(ticketId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const temp = res.data.data;
-          setTaskDropdown(
-            temp.map((d) => ({ value: d.id, label: d.task_name }))
-          );
-        }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
 
-    await new SprintService().getSprintByTicketId(ticketId).then((res) => {
-      if (res?.data?.status === 1) {
-        const { data } = res?.data?.data;
-        const { first_sprint_start_date, last_sprint_end_date } =
-          res?.data?.sprint_date;
-        setSprintdata(data);
-        let temp = res?.data?.data?.data?.map((data) => ({
-          label: data.name,
-          value: data.id
-        }));
-        setSprintDropDown(temp);
-        setSprintFirstDate(first_sprint_start_date);
-        setSprintLastDate(last_sprint_end_date);
-      }
-    });
+    await new TestCasesService()
+      .getTaskBytTicket(ticketId)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            const temp = res.data.data;
+            setTaskDropdown(
+              temp.map((d) => ({ value: d.id, label: d.task_name }))
+            );
+          } else {
+            toast.error(res.data.message);
+          }
+        } else {
+          toast.error(res.message);
+        }
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
+
+    await new SprintService()
+      .getSprintByTicketId(ticketId)
+      .then((res) => {
+        if (res?.data?.status === 1) {
+          const { data } = res?.data?.data;
+          const { first_sprint_start_date, last_sprint_end_date } =
+            res?.data?.sprint_date;
+          setSprintdata(data);
+          let temp = res?.data?.data?.data?.map((data) => ({
+            label: data.name,
+            value: data.id
+          }));
+          setSprintDropDown(temp);
+          setSprintFirstDate(first_sprint_start_date);
+          setSprintLastDate(last_sprint_end_date);
+        } else {
+          toast.error(res.data.message);
+        }
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }, [ticketId]);
 
   const pushForward = async (basketIds) => {
@@ -444,20 +464,16 @@ export default function TaskComponent() {
     const { startDate, endDate } = sprintInput;
 
     if (!startDate || !endDate) {
-      setNotify({
-        type: 'danger',
-        message: 'Date is missing !!!'
-      });
+      toast.error('Date is missing !!!');
       return;
     }
 
     if (new Date(startDate) > new Date(endDate)) {
-      setNotify({
-        type: 'danger',
-        message: 'End Date should be greater than start date'
-      });
+      toast.error('End Date should be greater than start date');
       return;
     }
+    if (submitting) return;
+    setSubmitting(true);
 
     const payload = {
       tenant_id: tenantId,
@@ -471,12 +487,9 @@ export default function TaskComponent() {
     try {
       const res = await new SprintService().postSprintForTicket(payload);
       if (res?.data?.status) {
-        // setNotify({ type: 'success', message: res?.data?.message });
         toast.success(res?.data?.message, {
           position: 'top-right',
           autoClose: 5000
-
-          // transition: Bounce
         });
         setSprintModal({
           showModal: false,
@@ -496,7 +509,7 @@ export default function TaskComponent() {
           ticketId
         );
         if (sprintRes?.data?.status) {
-          setSprintdata(sprintRes?.data?.data);
+          setSprintdata(sprintRes?.data?.data?.data);
           const temp = sprintRes?.data?.data?.data?.map((data) => ({
             label: data.name,
             value: data.id
@@ -512,12 +525,9 @@ export default function TaskComponent() {
           });
         }
       } else {
-        // setNotify({ type: 'danger', message: res?.data?.message });
         toast.error(res?.data?.message, {
           position: 'top-right',
           autoClose: 5000
-          // theme: 'danger'
-          // transition: Bounce
         });
       }
     } catch (error) {
@@ -527,34 +537,57 @@ export default function TaskComponent() {
         // transition: Bounce
       });
     }
+    setSubmitting(false);
   };
-  const sprintDropDownHandler = async (selectedOption) => {
-    // setDisableNextBtn(false);
-    // setDisablePrevBtn(false);
-    setSprintCardData(sprintData);
-    setSelectedOption((prevStateOption) => {
-      if (selectedOption === prevStateOption) {
-        setSprintCardData([]);
-        getBasketData(0, currentTaskStatus);
-        return null;
-      }
-      setSprintCardData((prevState) => {
-        let filteredArray = prevState?.filter(
-          (sprint) => sprint.id === selectedOption?.value
-        );
-        return filteredArray;
-      });
+  const selectedOptionRef = useRef(null);
 
-      getBasketData(selectedOption?.value, currentTaskStatus);
-      return selectedOption;
-    });
+  // const sprintDropDownHandler = async (selectedOption) => {
+  //   // setDisableNextBtn(false);
+  //   // setDisablePrevBtn(false);
+  //   setSprintCardData(sprintData);
+  //   setSelectedOption((prevStateOption) => {
+  //     if (selectedOption === prevStateOption) {
+  //       setSprintCardData([]);
+  //       getBasketData(0, currentTaskStatus);
+  //       return null;
+  //     }
+  //     setSprintCardData((prevState) => {
+  //       let filteredArray = prevState?.filter(
+  //         (sprint) => sprint?.id === selectedOption?.value
+  //       );
+  //       return filteredArray;
+  //     });
+
+  //     getBasketData(selectedOption?.value, currentTaskStatus);
+  //     return selectedOption;
+  //   });
+  // };
+  const sprintDropDownHandler = async (selectedOption) => {
+    if (!selectedOption) return;
+    if (selectedOption?.value === selectedOptionRef.current?.value) {
+      setSprintCardData([]);
+      getBasketData(0, currentTaskStatus);
+      setSelectedOption(null);
+      selectedOptionRef.current = null;
+      return;
+    }
+
+    selectedOptionRef.current = selectedOption;
+
+    setSelectedOption(selectedOption);
+
+    const filteredArray = sprintData?.filter(
+      (sprint) => sprint?.id === selectedOption?.value
+    );
+    setSprintCardData(filteredArray);
+    getBasketData(selectedOption?.value, currentTaskStatus);
   };
 
   const showNext = async () => {
     // setDisableNextBtn(false);
     // setDisablePrevBtn(false);
     let currentSprintCard = [...sprintCardData];
-    let currentIndex = sprintData.findIndex(
+    let currentIndex = sprintData?.findIndex(
       (sprint) => sprint.id === currentSprintCard[0].id
     );
 
@@ -599,7 +632,7 @@ export default function TaskComponent() {
       .getSprintReportById(ticketId, sprintId)
       .then((res) => {
         if (res?.data?.status) {
-          let temp = res?.data?.data;
+          let temp = res?.data?.data?.data;
           setSprintReport(temp);
           setShowSprintReport(true);
           let exportSprintReport = [];
@@ -614,10 +647,10 @@ export default function TaskComponent() {
               'Sprint End Date': temp[i]?.sprint_end_date,
               'Task Name': temp[i]?.task_name,
               'Task Users': temp[i]?.task_owner,
-              'Task Start Date': temp[i]?.task_start_Date,
+              'Task Start Date': temp[i]?.task_start_date,
               'Task End Date': temp[i]?.task_delivery_scheduled,
               'Task actual completed date': temp[i]?.task_completed_at,
-              'Task scheduled hours': temp[i]?.task_scheduled_Hours,
+              'Task scheduled hours': temp[i]?.task_scheduled_hours,
               'Task actual hours played': temp[i]?.task_actual_worked,
               'Task status': temp[i]?.task_status,
               'Actual status': temp[i]?.task_actual_status
@@ -625,6 +658,9 @@ export default function TaskComponent() {
           }
           setExportSprintData([...exportSprintReport]);
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
   };
 
@@ -638,24 +674,21 @@ export default function TaskComponent() {
   };
 
   const updateSprint = async (sprintCard) => {
+    if (submitting) return;
+    setSubmitting(true);
     setShowSprintReport(false);
     const tenantId = localStorage.getItem('tenant_id');
     const ticket_id = data[0]?.ticket_id;
     let sprint_id = sprintModal?.modalData?.id;
     const { startDate, endDate } = sprintInput;
     if (!startDate || !endDate) {
-      setNotify({
-        type: 'danger',
-        message: 'Date is missing !!!'
-      });
+      toast.error('Date is missing !!!');
+
       return;
     }
 
     if (new Date(startDate) > new Date(endDate)) {
-      setNotify({
-        type: 'danger',
-        message: 'End Date should be greater than end date'
-      });
+      toast.error('End Date should be greater than end date');
       return;
     }
     const payload = {
@@ -671,7 +704,6 @@ export default function TaskComponent() {
       .updateSprintDetail(payload, sprint_id)
       .then(async (res) => {
         if (res?.data?.status === 1) {
-          // setNotify({ type: 'success', message: res?.data?.message });
           toast.success(res?.data?.message, {
             position: 'top-right',
             autoClose: 5000
@@ -703,11 +735,18 @@ export default function TaskComponent() {
                 );
                 setSprintCardData(showUpdatedData);
               }
+            })
+            .catch((error) => {
+              errorHandler(error);
             });
         } else {
-          setNotify({ type: 'danger', message: res?.data?.message });
+          toast.error(res?.data?.message);
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
+    setSubmitting(false);
   };
 
   const column = [
@@ -749,7 +788,7 @@ export default function TaskComponent() {
     },
     {
       name: 'Task Start Date',
-      selector: (row) => row?.task_start_Date,
+      selector: (row) => row?.task_start_date,
       sortable: true,
       width: '150px'
     },
@@ -768,7 +807,7 @@ export default function TaskComponent() {
     },
     {
       name: 'Task schedule hours',
-      selector: (row) => row?.task_scheduled_Hours,
+      selector: (row) => row?.task_scheduled_hours,
       sortable: true,
       width: '150px'
     },
@@ -786,7 +825,7 @@ export default function TaskComponent() {
     },
     {
       name: 'Task actual status',
-      selector: (row) => row?.task_actual_status,
+      selector: (row) => row?.actual_status,
       sortable: true,
       width: '150px'
     }
@@ -955,18 +994,16 @@ export default function TaskComponent() {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Manage Task" />
-      {/* {notify && <Alert alertData={notify} />} */}
-
       <div className="card mt-2">
         <div className="card-body">
           <div>
             <div className="d-flex align-items-center justify-content-between">
               <h5 className="col-3">
                 <strong>
-                  Ticket -{' '}
-                  {tasksData &&
+                  Ticket - {data?.[0]?.main_ticket_id}
+                  {/* {tasksData &&
                     tasksData?.length > 0 &&
-                    tasksData[0].ticket_id_name}
+                    tasksData[0].ticket_id_name} */}
                   <i onClick={detailsHandler} style={{ cursor: 'pointer' }}>
                     {showDetails ? (
                       <OverlayTrigger
@@ -1065,13 +1102,13 @@ export default function TaskComponent() {
                             + Sprint
                           </button>
                         </li>
-                        <li>
+                        {/* <li>
                           <Link to={`/${_base}/getAllTestCases/` + ticketId}>
                             <button className="btn btn-sm btn-info text-white btn-custom w-100">
                               All Test Cases
                             </button>
                           </Link>
-                        </li>
+                        </li> */}
 
                         {/* <li>
                         {ownership && ownership !== "TASK" && (
@@ -1150,7 +1187,7 @@ export default function TaskComponent() {
                                 <div className="d-flex justify-content-center p-0 mt-1">
                                   <a
                                     // href="/"
-                                    // href={`${_attachmentUrl}/${attachment.path}`}
+                                    href={`${_rewampAttachmentUrl}/${attachment.path}`}
                                     target="_blank"
                                     className="btn btn-primary btn-sm p-1"
                                   >
@@ -1271,137 +1308,182 @@ export default function TaskComponent() {
                 </span>
               </div>
               <div className="fs-5">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="28"
-                  height="28"
-                  viewBox="0 0 28 28"
-                  fill="none"
-                  onClick={() => goToSprintCalendarGraph('calendar')}
+                <OverlayTrigger
+                  placement="top"
+                  overlay={
+                    <Tooltip id="tooltip-calendar">Sprint Calendar</Tooltip>
+                  }
                 >
-                  <rect width="28" height="28" rx="8" fill="#484C7F" />
-                  <path
-                    d="M19.6 7.6H18V6.8C18 6.58783 17.9157 6.38434 17.7657 6.23431C17.6157 6.08429 17.4122 6 17.2 6C16.9878 6 16.7843 6.08429 16.6343 6.23431C16.4843 6.38434 16.4 6.58783 16.4 6.8V7.6H11.6V6.8C11.6 6.58783 11.5157 6.38434 11.3657 6.23431C11.2157 6.08429 11.0122 6 10.8 6C10.5878 6 10.3843 6.08429 10.2343 6.23431C10.0843 6.38434 10 6.58783 10 6.8V7.6H8.4C7.76348 7.6 7.15303 7.85286 6.70294 8.30294C6.25286 8.75303 6 9.36348 6 10V19.6C6 20.2365 6.25286 20.847 6.70294 21.2971C7.15303 21.7471 7.76348 22 8.4 22H19.6C20.2365 22 20.847 21.7471 21.2971 21.2971C21.7471 20.847 22 20.2365 22 19.6V10C22 9.36348 21.7471 8.75303 21.2971 8.30294C20.847 7.85286 20.2365 7.6 19.6 7.6ZM20.4 19.6C20.4 19.8122 20.3157 20.0157 20.1657 20.1657C20.0157 20.3157 19.8122 20.4 19.6 20.4H8.4C8.18783 20.4 7.98434 20.3157 7.83431 20.1657C7.68429 20.0157 7.6 19.8122 7.6 19.6V14H20.4V19.6ZM20.4 12.4H7.6V10C7.6 9.78783 7.68429 9.58434 7.83431 9.43431C7.98434 9.28429 8.18783 9.2 8.4 9.2H10V10C10 10.2122 10.0843 10.4157 10.2343 10.5657C10.3843 10.7157 10.5878 10.8 10.8 10.8C11.0122 10.8 11.2157 10.7157 11.3657 10.5657C11.5157 10.4157 11.6 10.2122 11.6 10V9.2H16.4V10C16.4 10.2122 16.4843 10.4157 16.6343 10.5657C16.7843 10.7157 16.9878 10.8 17.2 10.8C17.4122 10.8 17.6157 10.7157 17.7657 10.5657C17.9157 10.4157 18 10.2122 18 10V9.2H19.6C19.8122 9.2 20.0157 9.28429 20.1657 9.43431C20.3157 9.58434 20.4 9.78783 20.4 10V12.4Z"
-                    fill="white"
-                  />
-                </svg>
-
-                <span>
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
-                    width="34"
-                    height="34"
-                    viewBox="0 0 34 34"
+                    width="28"
+                    height="28"
+                    style={{ cursor: 'pointer' }}
+                    viewBox="0 0 28 28"
                     fill="none"
-                    onClick={() => goToSprintCalendarGraph('graph')}
+                    onClick={() => goToSprintCalendarGraph('calendar')}
                   >
+                    <rect width="28" height="28" rx="8" fill="#484C7F" />
                     <path
-                      fill-rule="evenodd"
-                      clip-rule="evenodd"
-                      d="M4.90734 4.90701C2.83334 6.98384 2.83334 10.3215 2.83334 16.9997C2.83334 23.6778 2.83334 27.0169 4.90734 29.0909C6.98417 31.1663 10.3218 31.1663 17 31.1663C23.6782 31.1663 27.0173 31.1663 29.0913 29.0909C31.1667 27.0183 31.1667 23.6778 31.1667 16.9997C31.1667 10.3215 31.1667 6.98242 29.0913 4.90701C27.0187 2.83301 23.6782 2.83301 17 2.83301C10.3218 2.83301 6.98275 2.83301 4.90734 4.90701ZM24.8993 14.8463C25.0717 14.6291 25.1523 14.353 25.1239 14.077C25.0955 13.8011 24.9603 13.5473 24.7472 13.3697C24.5341 13.1921 24.26 13.1049 23.9835 13.1267C23.707 13.1485 23.45 13.2776 23.2673 13.4863L20.7216 16.5407C20.1974 17.1711 19.873 17.555 19.6081 17.7944C19.5392 17.8621 19.4615 17.9202 19.3772 17.9673L19.3616 17.9743L19.3503 17.9687L19.346 17.9673C19.2612 17.9203 19.1831 17.8621 19.1137 17.7944C18.8488 17.5536 18.5258 17.1711 18.0002 16.5407L17.5865 16.0448C17.1218 15.4853 16.7011 14.9823 16.3101 14.6282C15.8837 14.2428 15.3468 13.9 14.6384 13.9C13.9301 13.9 13.3946 14.2428 12.9668 14.6282C12.5758 14.9823 12.1564 15.4853 11.6918 16.0448L9.09925 19.153C9.00995 19.2603 8.94265 19.3841 8.9012 19.5173C8.85974 19.6506 8.84493 19.7907 8.85763 19.9297C8.88327 20.2104 9.01936 20.4694 9.23596 20.6497C9.45257 20.8301 9.73194 20.917 10.0126 20.8913C10.2933 20.8657 10.5523 20.7296 10.7327 20.513L13.2784 17.4587C13.8026 16.8283 14.127 16.4443 14.3919 16.2049C14.4608 16.1373 14.5385 16.0791 14.6228 16.0321L14.6328 16.0278L14.6384 16.025L14.654 16.0321C14.7388 16.0791 14.817 16.1372 14.8863 16.2049C15.1513 16.4458 15.4743 16.8283 15.9998 17.4587L16.4135 17.9545C16.8796 18.5141 17.2989 19.017 17.6899 19.3712C18.1163 19.7565 18.6533 20.0993 19.3616 20.0993C20.0699 20.0993 20.6054 19.7565 21.0333 19.3712C21.4243 19.017 21.8436 18.5141 22.3083 17.9545L24.8993 14.8463Z"
-                      fill="#484C7F"
+                      d="M19.6 7.6H18V6.8C18 6.58783 17.9157 6.38434 17.7657 6.23431C17.6157 6.08429 17.4122 6 17.2 6C16.9878 6 16.7843 6.08429 16.6343 6.23431C16.4843 6.38434 16.4 6.58783 16.4 6.8V7.6H11.6V6.8C11.6 6.58783 11.5157 6.38434 11.3657 6.23431C11.2157 6.08429 11.0122 6 10.8 6C10.5878 6 10.3843 6.08429 10.2343 6.23431C10.0843 6.38434 10 6.58783 10 6.8V7.6H8.4C7.76348 7.6 7.15303 7.85286 6.70294 8.30294C6.25286 8.75303 6 9.36348 6 10V19.6C6 20.2365 6.25286 20.847 6.70294 21.2971C7.15303 21.7471 7.76348 22 8.4 22H19.6C20.2365 22 20.847 21.7471 21.2971 21.2971C21.7471 20.847 22 20.2365 22 19.6V10C22 9.36348 21.7471 8.75303 21.2971 8.30294C20.847 7.85286 20.2365 7.6 19.6 7.6ZM20.4 19.6C20.4 19.8122 20.3157 20.0157 20.1657 20.1657C20.0157 20.3157 19.8122 20.4 19.6 20.4H8.4C8.18783 20.4 7.98434 20.3157 7.83431 20.1657C7.68429 20.0157 7.6 19.8122 7.6 19.6V14H20.4V19.6ZM20.4 12.4H7.6V10C7.6 9.78783 7.68429 9.58434 7.83431 9.43431C7.98434 9.28429 8.18783 9.2 8.4 9.2H10V10C10 10.2122 10.0843 10.4157 10.2343 10.5657C10.3843 10.7157 10.5878 10.8 10.8 10.8C11.0122 10.8 11.2157 10.7157 11.3657 10.5657C11.5157 10.4157 11.6 10.2122 11.6 10V9.2H16.4V10C16.4 10.2122 16.4843 10.4157 16.6343 10.5657C16.7843 10.7157 16.9878 10.8 17.2 10.8C17.4122 10.8 17.6157 10.7157 17.7657 10.5657C17.9157 10.4157 18 10.2122 18 10V9.2H19.6C19.8122 9.2 20.0157 9.28429 20.1657 9.43431C20.3157 9.58434 20.4 9.78783 20.4 10V12.4Z"
+                      fill="white"
                     />
                   </svg>
-                </span>
+                </OverlayTrigger>
 
-                <button
-                  className="border-0 p-0 ms-1"
-                  disabled={ownership !== 'PROJECT'}
+                <OverlayTrigger
+                  placement="top"
+                  overlay={
+                    <Tooltip id="tooltip-calendar">Sprint Graph</Tooltip>
+                  }
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="28"
-                    height="28"
-                    viewBox="0 0 28 28"
-                    fill="none"
-                    role="button"
-                    // onClick={() => {
-                    //   setSprintInput({
-                    //     sprintName: sprintCardData[0]?.name,
-                    //     sprintDescription: sprintCardData[0]?.description,
-                    //     startDate: sprintCardData[0]?.start_date,
-                    //     endDate: sprintCardData[0]?.end_date
-                    //   });
-                    //   setSprintModal({
-                    //     showModal: true,
-                    //     modalData: sprintCardData[0],
-                    //     modalHeader: 'Update'
-                    //   });
-                    // }}
+                  <span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="34"
+                      height="34"
+                      viewBox="0 0 34 34"
+                      style={{ cursor: 'pointer' }}
+                      fill="none"
+                      onClick={() => goToSprintCalendarGraph('graph')}
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        clip-rule="evenodd"
+                        d="M4.90734 4.90701C2.83334 6.98384 2.83334 10.3215 2.83334 16.9997C2.83334 23.6778 2.83334 27.0169 4.90734 29.0909C6.98417 31.1663 10.3218 31.1663 17 31.1663C23.6782 31.1663 27.0173 31.1663 29.0913 29.0909C31.1667 27.0183 31.1667 23.6778 31.1667 16.9997C31.1667 10.3215 31.1667 6.98242 29.0913 4.90701C27.0187 2.83301 23.6782 2.83301 17 2.83301C10.3218 2.83301 6.98275 2.83301 4.90734 4.90701ZM24.8993 14.8463C25.0717 14.6291 25.1523 14.353 25.1239 14.077C25.0955 13.8011 24.9603 13.5473 24.7472 13.3697C24.5341 13.1921 24.26 13.1049 23.9835 13.1267C23.707 13.1485 23.45 13.2776 23.2673 13.4863L20.7216 16.5407C20.1974 17.1711 19.873 17.555 19.6081 17.7944C19.5392 17.8621 19.4615 17.9202 19.3772 17.9673L19.3616 17.9743L19.3503 17.9687L19.346 17.9673C19.2612 17.9203 19.1831 17.8621 19.1137 17.7944C18.8488 17.5536 18.5258 17.1711 18.0002 16.5407L17.5865 16.0448C17.1218 15.4853 16.7011 14.9823 16.3101 14.6282C15.8837 14.2428 15.3468 13.9 14.6384 13.9C13.9301 13.9 13.3946 14.2428 12.9668 14.6282C12.5758 14.9823 12.1564 15.4853 11.6918 16.0448L9.09925 19.153C9.00995 19.2603 8.94265 19.3841 8.9012 19.5173C8.85974 19.6506 8.84493 19.7907 8.85763 19.9297C8.88327 20.2104 9.01936 20.4694 9.23596 20.6497C9.45257 20.8301 9.73194 20.917 10.0126 20.8913C10.2933 20.8657 10.5523 20.7296 10.7327 20.513L13.2784 17.4587C13.8026 16.8283 14.127 16.4443 14.3919 16.2049C14.4608 16.1373 14.5385 16.0791 14.6228 16.0321L14.6328 16.0278L14.6384 16.025L14.654 16.0321C14.7388 16.0791 14.817 16.1372 14.8863 16.2049C15.1513 16.4458 15.4743 16.8283 15.9998 17.4587L16.4135 17.9545C16.8796 18.5141 17.2989 19.017 17.6899 19.3712C18.1163 19.7565 18.6533 20.0993 19.3616 20.0993C20.0699 20.0993 20.6054 19.7565 21.0333 19.3712C21.4243 19.017 21.8436 18.5141 22.3083 17.9545L24.8993 14.8463Z"
+                        fill="#484C7F"
+                      />
+                    </svg>
+                  </span>
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip id="tooltip-calendar">Sprint Edit</Tooltip>}
+                >
+                  <button
+                    onClick={() => {
+                      setSprintInput({
+                        sprintName: sprintCardData[0]?.name,
+                        sprintDescription: sprintCardData[0]?.description,
+                        startDate: sprintCardData[0]?.start_date,
+                        endDate: sprintCardData[0]?.end_date
+                      });
+                      setSprintModal({
+                        showModal: true,
+                        modalData: sprintCardData[0],
+                        modalHeader: 'Update'
+                      });
+                    }}
+                    className="border-0 p-0 ms-1"
+                    disabled={ownership !== 'PROJECT' ? true : false}
                   >
-                    <g clip-path="url(#clip0_399_8555)">
-                      <rect width="28" height="28" rx="8" fill="#484C7F" />
-                      <path
-                        d="M9.43889 10.251H8.62593C8.1947 10.251 7.78114 10.4223 7.47622 10.7272C7.1713 11.0321 6.99999 11.4457 6.99999 11.8769V19.1936C6.99999 19.6248 7.1713 20.0384 7.47622 20.3433C7.78114 20.6482 8.1947 20.8195 8.62593 20.8195H15.9426C16.3739 20.8195 16.7874 20.6482 17.0923 20.3433C17.3973 20.0384 17.5686 19.6248 17.5686 19.1936V18.3806"
-                        stroke="white"
-                        stroke-width="1.5098"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                      <path
-                        d="M16.7556 8.62602L19.1945 11.0649M20.3205 9.91457C20.6407 9.59439 20.8206 9.16013 20.8206 8.70732C20.8206 8.25451 20.6407 7.82025 20.3205 7.50006C20.0003 7.17988 19.566 7 19.1132 7C18.6604 7 18.2262 7.17988 17.906 7.50006L11.0649 14.3168V16.7557H13.5038L20.3205 9.91457Z"
-                        stroke="white"
-                        stroke-width="1.5098"
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                      />
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_399_8555">
-                        <rect width="28" height="28" rx="8" fill="white" />
-                      </clipPath>
-                    </defs>
-                  </svg>
-                </button>
-                <span className="ms-1">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="28"
-                    height="28"
-                    viewBox="0 0 28 28"
-                    fill="none"
-                    role="button"
-                    onClick={() => viewSprint(sprintCardData[0])}
-                  >
-                    <g clip-path="url(#clip0_399_8561)">
-                      <rect width="28" height="28" rx="8" fill="#484C7F" />
-                      <path
-                        d="M6.16 14.0005C6.89695 12.5549 8.01924 11.3412 9.40282 10.4935C10.7864 9.64588 12.3774 9.19727 14 9.19727C15.6226 9.19727 17.2136 9.64588 18.5972 10.4935C19.9808 11.3412 21.103 12.5549 21.84 14.0005C21.103 15.4461 19.9808 16.6597 18.5972 17.5074C17.2136 18.3551 15.6226 18.8037 14 18.8037C12.3774 18.8037 10.7864 18.3551 9.40282 17.5074C8.01924 16.6597 6.89695 15.4461 6.16 14.0005ZM14 17.2005C14.8487 17.2005 15.6626 16.8633 16.2627 16.2632C16.8629 15.6631 17.2 14.8492 17.2 14.0005C17.2 13.1518 16.8629 12.3378 16.2627 11.7377C15.6626 11.1376 14.8487 10.8005 14 10.8005C13.1513 10.8005 12.3374 11.1376 11.7373 11.7377C11.1371 12.3378 10.8 13.1518 10.8 14.0005C10.8 14.8492 11.1371 15.6631 11.7373 16.2632C12.3374 16.8633 13.1513 17.2005 14 17.2005ZM14 15.6005C13.5757 15.6005 13.1687 15.4319 12.8686 15.1318C12.5686 14.8318 12.4 14.4248 12.4 14.0005C12.4 13.5761 12.5686 13.1692 12.8686 12.8691C13.1687 12.569 13.5757 12.4005 14 12.4005C14.4243 12.4005 14.8313 12.569 15.1314 12.8691C15.4314 13.1692 15.6 13.5761 15.6 14.0005C15.6 14.4248 15.4314 14.8318 15.1314 15.1318C14.8313 15.4319 14.4243 15.6005 14 15.6005Z"
-                        fill="white"
-                      />
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_399_8561">
-                        <rect width="28" height="28" rx="8" fill="white" />
-                      </clipPath>
-                    </defs>
-                  </svg>
-                </span>
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="28"
+                      height="28"
+                      viewBox="0 0 28 28"
+                      fill="none"
+                      role="button"
+                      // onClick={() => {
+                      //   setSprintInput({
+                      //     sprintName: sprintCardData[0]?.name,
+                      //     sprintDescription: sprintCardData[0]?.description,
+                      //     startDate: sprintCardData[0]?.start_date,
+                      //     endDate: sprintCardData[0]?.end_date
+                      //   });
+                      //   setSprintModal({
+                      //     showModal: true,
+                      //     modalData: sprintCardData[0],
+                      //     modalHeader: 'Update'
+                      //   });
+                      // }}
+                    >
+                      <g clip-path="url(#clip0_399_8555)">
+                        <rect width="28" height="28" rx="8" fill="#484C7F" />
+                        <path
+                          d="M9.43889 10.251H8.62593C8.1947 10.251 7.78114 10.4223 7.47622 10.7272C7.1713 11.0321 6.99999 11.4457 6.99999 11.8769V19.1936C6.99999 19.6248 7.1713 20.0384 7.47622 20.3433C7.78114 20.6482 8.1947 20.8195 8.62593 20.8195H15.9426C16.3739 20.8195 16.7874 20.6482 17.0923 20.3433C17.3973 20.0384 17.5686 19.6248 17.5686 19.1936V18.3806"
+                          stroke="white"
+                          stroke-width="1.5098"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                        <path
+                          d="M16.7556 8.62602L19.1945 11.0649M20.3205 9.91457C20.6407 9.59439 20.8206 9.16013 20.8206 8.70732C20.8206 8.25451 20.6407 7.82025 20.3205 7.50006C20.0003 7.17988 19.566 7 19.1132 7C18.6604 7 18.2262 7.17988 17.906 7.50006L11.0649 14.3168V16.7557H13.5038L20.3205 9.91457Z"
+                          stroke="white"
+                          stroke-width="1.5098"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                        />
+                      </g>
+                      <defs>
+                        <clipPath id="clip0_399_8555">
+                          <rect width="28" height="28" rx="8" fill="white" />
+                        </clipPath>
+                      </defs>
+                    </svg>
+                  </button>
+                </OverlayTrigger>
 
-                <span className="ms-1">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="28"
-                    height="28"
-                    viewBox="0 0 28 28"
-                    fill="none"
-                    role="button"
-                    onClick={() => getSprintReport(sprintCardData[0]?.id)}
-                  >
-                    <g clip-path="url(#clip0_399_8568)">
-                      <rect width="28" height="28" rx="8" fill="#484C7F" />
-                      <path
-                        d="M14.8333 11.5003H19.4167L14.8333 6.91699V11.5003ZM9 5.66699H15.6667L20.6667 10.667V20.667C20.6667 21.109 20.4911 21.5329 20.1785 21.8455C19.8659 22.1581 19.442 22.3337 19 22.3337H9C8.55797 22.3337 8.13405 22.1581 7.82149 21.8455C7.50893 21.5329 7.33333 21.109 7.33333 20.667V7.33366C7.33333 6.40866 8.075 5.66699 9 5.66699ZM9.83333 20.667H11.5V15.667H9.83333V20.667ZM13.1667 20.667H14.8333V14.0003H13.1667V20.667ZM16.5 20.667H18.1667V17.3337H16.5V20.667Z"
-                        fill="white"
-                      />
-                    </g>
-                    <defs>
-                      <clipPath id="clip0_399_8568">
-                        <rect width="28" height="28" rx="8" fill="white" />
-                      </clipPath>
-                    </defs>
-                  </svg>
-                </span>
+                <OverlayTrigger
+                  placement="top"
+                  overlay={<Tooltip id="tooltip-calendar">Sprint View</Tooltip>}
+                >
+                  <span className="ms-1">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="28"
+                      height="28"
+                      viewBox="0 0 28 28"
+                      fill="none"
+                      role="button"
+                      onClick={() => viewSprint(sprintCardData[0])}
+                    >
+                      <g clip-path="url(#clip0_399_8561)">
+                        <rect width="28" height="28" rx="8" fill="#484C7F" />
+                        <path
+                          d="M6.16 14.0005C6.89695 12.5549 8.01924 11.3412 9.40282 10.4935C10.7864 9.64588 12.3774 9.19727 14 9.19727C15.6226 9.19727 17.2136 9.64588 18.5972 10.4935C19.9808 11.3412 21.103 12.5549 21.84 14.0005C21.103 15.4461 19.9808 16.6597 18.5972 17.5074C17.2136 18.3551 15.6226 18.8037 14 18.8037C12.3774 18.8037 10.7864 18.3551 9.40282 17.5074C8.01924 16.6597 6.89695 15.4461 6.16 14.0005ZM14 17.2005C14.8487 17.2005 15.6626 16.8633 16.2627 16.2632C16.8629 15.6631 17.2 14.8492 17.2 14.0005C17.2 13.1518 16.8629 12.3378 16.2627 11.7377C15.6626 11.1376 14.8487 10.8005 14 10.8005C13.1513 10.8005 12.3374 11.1376 11.7373 11.7377C11.1371 12.3378 10.8 13.1518 10.8 14.0005C10.8 14.8492 11.1371 15.6631 11.7373 16.2632C12.3374 16.8633 13.1513 17.2005 14 17.2005ZM14 15.6005C13.5757 15.6005 13.1687 15.4319 12.8686 15.1318C12.5686 14.8318 12.4 14.4248 12.4 14.0005C12.4 13.5761 12.5686 13.1692 12.8686 12.8691C13.1687 12.569 13.5757 12.4005 14 12.4005C14.4243 12.4005 14.8313 12.569 15.1314 12.8691C15.4314 13.1692 15.6 13.5761 15.6 14.0005C15.6 14.4248 15.4314 14.8318 15.1314 15.1318C14.8313 15.4319 14.4243 15.6005 14 15.6005Z"
+                          fill="white"
+                        />
+                      </g>
+                      <defs>
+                        <clipPath id="clip0_399_8561">
+                          <rect width="28" height="28" rx="8" fill="white" />
+                        </clipPath>
+                      </defs>
+                    </svg>
+                  </span>
+                </OverlayTrigger>
+                <OverlayTrigger
+                  placement="top"
+                  overlay={
+                    <Tooltip id="tooltip-calendar">Sprint Report</Tooltip>
+                  }
+                >
+                  <span className="ms-1">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      width="28"
+                      height="28"
+                      viewBox="0 0 28 28"
+                      fill="none"
+                      role="button"
+                      onClick={() => getSprintReport(sprintCardData[0]?.id)}
+                    >
+                      <g clip-path="url(#clip0_399_8568)">
+                        <rect width="28" height="28" rx="8" fill="#484C7F" />
+                        <path
+                          d="M14.8333 11.5003H19.4167L14.8333 6.91699V11.5003ZM9 5.66699H15.6667L20.6667 10.667V20.667C20.6667 21.109 20.4911 21.5329 20.1785 21.8455C19.8659 22.1581 19.442 22.3337 19 22.3337H9C8.55797 22.3337 8.13405 22.1581 7.82149 21.8455C7.50893 21.5329 7.33333 21.109 7.33333 20.667V7.33366C7.33333 6.40866 8.075 5.66699 9 5.66699ZM9.83333 20.667H11.5V15.667H9.83333V20.667ZM13.1667 20.667H14.8333V14.0003H13.1667V20.667ZM16.5 20.667H18.1667V17.3337H16.5V20.667Z"
+                          fill="white"
+                        />
+                      </g>
+                      <defs>
+                        <clipPath id="clip0_399_8568">
+                          <rect width="28" height="28" rx="8" fill="white" />
+                        </clipPath>
+                      </defs>
+                    </svg>
+                  </span>
+                </OverlayTrigger>
               </div>
             </div>
           </div>
@@ -1705,6 +1787,7 @@ export default function TaskComponent() {
                     moduleSetting={moduleSetting}
                     expectedSolveDate={expectedSolveDate}
                     ticketStartDate={ticketStartDate}
+                    handleShowTaskModal={handleShowTaskModal}
                   />
                 )}
                 {ticketData && (
@@ -1862,6 +1945,7 @@ export default function TaskComponent() {
                   </Modal.Body>
                   <Modal.Footer>
                     <button
+                      disabled={submitting}
                       className={
                         sprintModal?.modalHeader === 'View'
                           ? 'd-none'

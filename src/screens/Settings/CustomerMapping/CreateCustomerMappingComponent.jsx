@@ -5,7 +5,6 @@ import CustomerMappingService from '../../../services/SettingService/CustomerMap
 import { _base, userSessionData } from '../../../settings/constants';
 
 import PageHeader from '../../../components/Common/PageHeader';
-import Alert from '../../../components/Common/Alert';
 import Select from 'react-select';
 import { Astrick } from '../../../components/Utilities/Style';
 import { toast } from 'react-toastify';
@@ -27,6 +26,7 @@ import {
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
 import { ErrorMessage, Formik, Form, Field } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
 
 export function getDateTime() {
   var now = new Date();
@@ -46,7 +46,6 @@ export default function CreateCustomerMappingComponent() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const departmentDropdownRef = useRef();
-  const [notify, setNotify] = useState();
   const [userDropDownFilterData, setUserDropDownFilterData] = useState();
 
   const [dynamicForm, setDynamicForm] = useState();
@@ -83,6 +82,7 @@ export default function CreateCustomerMappingComponent() {
   } = useSelector(
     (CustomerMappingSlice) => CustomerMappingSlice.customerMaster
   );
+  const [approach, setApproach] = useState('');
 
   const [data, setData] = useState({
     approach: null,
@@ -119,7 +119,8 @@ export default function CreateCustomerMappingComponent() {
     },
     {
       name: 'dynamic_form_id',
-      label: 'Dynamic Form'
+      label: 'Dynamic Form',
+      required: false
     },
     {
       name: 'priority',
@@ -135,13 +136,19 @@ export default function CreateCustomerMappingComponent() {
       name: 'approach',
       label: 'approach',
       required: true
+    },
+    {
+      name: 'department_id',
+      label: 'department_id',
+      required: approach !== 'AU' && approach !== 'SELF' ? true : false
     }
     // {
-    //   name: 'department_id',
-    //   label: 'department_id',
-    //   required: true
+    //   name: 'user_id',
+    //   label: 'user_id',
+    //   required: approach !== "AU" || approach !== "SELF" || userDropDownFilterData?.length > 0 ? true : false
     // }
   ];
+  useEffect(() => {}, [userDropDownFilterData]);
 
   // Conditionally add 'department_id' field based on approach
 
@@ -155,20 +162,20 @@ export default function CreateCustomerMappingComponent() {
     priority: '',
     confirmation_required: '1',
     approach: '',
-    // department_id: '',
+    department_id: '',
     user_id: []
   };
 
-  if (initialValues.approach !== 'AU') {
-    fields.push({
-      name: 'department_id',
-      label: 'Department ID',
-      required: true
-    });
-  }
+  // if (initialValues.approach !== 'AU') {
+  //   fields.push({
+  //     name: 'department_id',
+  //     label: 'Department ID',
+  //     required: true
+  //   });
+  // }
   const getDynamicForm = useCallback(async () => {
     try {
-      const res = await new DynamicFormService().getDynamicForm();
+      const res = await new DynamicFormService().getDynamicFormForSelect();
       if (res?.status === 200) {
         if (res?.data?.status === 1) {
           const data = res?.data?.data.data.filter((d) => d.is_active === 1);
@@ -180,7 +187,7 @@ export default function CreateCustomerMappingComponent() {
         }
       }
     } catch (error) {
-      console.error('Error fetching dynamic form:', error);
+      errorHandler(error);
     }
   }, []);
 
@@ -191,7 +198,6 @@ export default function CreateCustomerMappingComponent() {
   const handleQueryType = async (selectedOption, form) => {
     if (!selectedOption || Object.entries(selectedOption).length === 0) return;
 
-    setNotify(null);
     setDynamicForm(null);
     setDynamicFormDropdown(null);
     setSelectedDynamicForm(null);
@@ -202,8 +208,8 @@ export default function CreateCustomerMappingComponent() {
     );
 
     const dynamicFormDropdownTemp = dynamicForm
-      .filter((d) => d.id === queryTypeTemp[0].form_id)
-      .map((d) => ({ value: d.id, label: d.template_name }));
+      ?.filter((d) => d.id === queryTypeTemp[0].form_id)
+      ?.map((d) => ({ value: d.id, label: d.template_name }));
 
     if (dynamicFormDropdownTemp?.length > 0) {
       setData((prev) => {
@@ -214,48 +220,52 @@ export default function CreateCustomerMappingComponent() {
       setSelectedDynamicForm(dynamicFormDropdownTemp);
       form.setFieldValue('dynamic_form_id', queryTypeTemp[0]?.form_id || '');
     } else {
-      setNotify({
-        type: 'warning',
-        message: 'No Form is mapped but still you can map new form'
-      });
+      toast.warning('No Form is mapped but still you can map new form');
     }
   };
 
   const getDepartment = async () => {
-    await new DepartmentService().getDepartment().then((res) => {
-      if (res?.status === 200) {
-        if (res?.data?.status === 1) {
-          var defaultValue = [{ value: 0, label: 'Select Department' }];
-          var dropwdown = res?.data?.data?.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({ value: d.id, label: d.department }));
-          defaultValue = [...defaultValue, ...dropwdown];
-          setDepartmentDropdown(defaultValue);
+    await new DepartmentService()
+      .getDepartment()
+      .then((res) => {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            var defaultValue = [{ value: 0, label: 'Select Department' }];
+            var dropwdown = res?.data?.data?.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({ value: d.id, label: d.department }));
+            defaultValue = [...defaultValue, ...dropwdown];
+            setDepartmentDropdown(defaultValue);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   };
 
   const getUser = useCallback(async () => {
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active';
-    dispatch(getUserForMyTicketsData(inputRequired)).then((res) => {
-      if (res?.payload?.status === 200) {
-        if (res?.payload?.data?.status === 1) {
-          var dropwdown = res?.payload?.data?.data.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({
-              value: d.id,
-              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
-            }));
-          setUserDropdown(dropwdown);
+    dispatch(getUserForMyTicketsData(inputRequired))
+      .then((res) => {
+        if (res?.payload?.status === 200) {
+          if (res?.payload?.data?.status === 1) {
+            var dropwdown = res?.payload?.data?.data.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({
+                value: d.id,
+                label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
+              }));
+            setUserDropdown(dropwdown);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }, [dispatch]);
 
   const handleAutoChanges = async (e, type, nameField) => {
-    if (!e || Object.entries(e).length === 0) return;
+    // if (!e || Object.entries(e).length === 0) return;
     if (type === 'Select2' && nameField === 'customer_type_id') {
       setSelectedCustomer(e?.length);
     }
@@ -361,7 +371,13 @@ export default function CreateCustomerMappingComponent() {
 
   const useridDetail = useRef();
 
-  const handleForm = async (values) => {
+  const handleForm = async (values, { setSubmitting }) => {
+    setSubmitting(true);
+    if (userDropDownFilterData && values?.approach !== 'RW') {
+      if (values?.user_id?.length === 0) {
+        return;
+      }
+    }
     // const userIds = values?.user_id?.map((user) => user.user_id) || [];
     let userIDs;
     if (Array?.isArray(useridDetail?.current?.props?.value)) {
@@ -390,6 +406,13 @@ export default function CreateCustomerMappingComponent() {
     values.created_by = userSessionData.userId;
     values.created_at = getDateTime();
 
+    // if (!values.department_id) {
+    //   delete values.department_id;
+    // }
+    if (values?.user_id?.length === 0) {
+      delete values.user_id;
+    }
+
     if (values.approach != 'AU') {
       values.department_id = values?.department_id;
     }
@@ -403,30 +426,32 @@ export default function CreateCustomerMappingComponent() {
     }
 
     if (flag === 1) {
-      await new CustomerMappingService()
-        .postCustomerMapping(values)
-        .then((res) => {
-          if (res?.status === 200) {
-            if (res?.data?.status === 1) {
-              toast.success(res?.data?.message);
+      try {
+        const res = await new CustomerMappingService().postCustomerMapping(
+          values
+        );
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            toast.success(res?.data?.message);
 
-              navigate(`/${_base}/CustomerMapping`);
-            } else {
-              toast.error(res?.data?.message);
-            }
+            navigate(`/${_base}/CustomerMapping`);
           } else {
             toast.error(res?.data?.message);
           }
-        })
-        .catch((res) => {
+        } else {
           toast.error(res?.data?.message);
-        });
+          setSubmitting(false);
+        }
+      } catch (error) {
+        errorHandler(error);
+      } finally {
+        setSubmitting(false);
+      }
     } else {
     }
   };
 
   useEffect(() => {
-    setNotify(null);
     dispatch(getTemplateData());
     loadData();
     getUser();
@@ -456,7 +481,6 @@ export default function CreateCustomerMappingComponent() {
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Create Customer Mapping" />
-      {notify && <Alert alertData={notify} />}
 
       <div className="row clearfix g-3">
         <div className="col-sm-12">
@@ -465,11 +489,12 @@ export default function CreateCustomerMappingComponent() {
               <Formik
                 initialValues={initialValues}
                 validationSchema={validationSchema}
-                onSubmit={(values) => {
-                  handleForm(values);
+                onSubmit={(values, { setSubmitting }) => {
+                  handleForm(values, { setSubmitting });
                 }}
               >
                 {({
+                  isSubmitting,
                   setFieldValue,
                   values,
                   field,
@@ -502,6 +527,8 @@ export default function CreateCustomerMappingComponent() {
                                       (option) => option.value
                                     )
                                   : [];
+                                approach === 'SELF' &&
+                                  form.setFieldValue('approach', null);
 
                                 form.setFieldValue('customer_type_id', values);
 
@@ -791,46 +818,75 @@ export default function CreateCustomerMappingComponent() {
                       </label>
                       <div className="col-sm-4">
                         <Field name="approach">
-                          {({ field, form }) => (
-                            <Select
-                              id="approach"
-                              name="approach"
-                              isClearable
-                              options={[
-                                { value: '', label: 'Select Approach' },
-                                {
-                                  value: 'RR',
-                                  label: 'Departmentwise Round Robin'
-                                },
-                                {
-                                  value: 'HLT',
-                                  label: 'User Having Less Ticket'
-                                },
-                                { value: 'SP', label: 'Single Person' },
-                                { value: 'RW', label: 'Ratio Wise' },
-                                ...(selectedCustomer === 0
-                                  ? [{ value: 'SELF', label: 'Self' }]
-                                  : []),
-                                { value: 'AU', label: 'Assign to user' }
-                              ]}
-                              value={
-                                field.value
-                                  ? { value: field.value, label: field.value }
-                                  : { value: '', label: 'Select approach' }
-                              }
-                              onChange={(option) => {
-                                form.setFieldValue(
-                                  'approach',
-                                  option ? option.value : ''
-                                );
-                                handleAutoChanges(
-                                  option,
-                                  'Select2',
-                                  'approach'
-                                );
-                              }}
-                            />
-                          )}
+                          {({ field, form }) => {
+                            const options = [
+                              { value: '', label: 'Select Approach' },
+                              {
+                                value: 'RR',
+                                label: 'Departmentwise Round Robin'
+                              },
+                              {
+                                value: 'HLT',
+                                label: 'User Having Less Ticket'
+                              },
+                              { value: 'SP', label: 'Single Person' },
+                              { value: 'RW', label: 'Ratio Wise' },
+                              ...(selectedCustomer === 0
+                                ? [{ value: 'SELF', label: 'Self' }]
+                                : []),
+                              { value: 'AU', label: 'Assign to user' }
+                            ];
+                            return (
+                              <Select
+                                id="approach"
+                                name="approach"
+                                placeholder="Select Approach"
+                                // isClearable
+                                options={[
+                                  { value: '', label: 'Select Approach' },
+                                  {
+                                    value: 'RR',
+                                    label: 'Departmentwise Round Robin'
+                                  },
+                                  {
+                                    value: 'HLT',
+                                    label: 'User Having Less Ticket'
+                                  },
+                                  { value: 'SP', label: 'Single Person' },
+                                  { value: 'RW', label: 'Ratio Wise' },
+                                  ...(selectedCustomer === 0
+                                    ? [{ value: 'SELF', label: 'Self' }]
+                                    : []),
+                                  { value: 'AU', label: 'Assign to user' }
+                                ]}
+                                value={
+                                  values?.approach
+                                    ? options.filter(
+                                        (item) => item.value === values.approach
+                                      )
+                                    : null
+                                }
+                                // value={
+                                //   field.value
+                                //     ? { value: field.value, label: field.value }
+                                //     : { value: '', label: 'Select approach' }
+                                // }
+                                onChange={(option) => {
+                                  setFieldValue('department_id', '');
+                                  setApproach(option?.value || '');
+                                  form.setFieldValue(
+                                    'approach',
+                                    option ? option?.value : ''
+                                  );
+                                  handleAutoChanges(
+                                    option,
+                                    'Select2',
+                                    'approach'
+                                  );
+                                }}
+                              />
+                            );
+                          }}
                         </Field>
                         <ErrorMessage
                           name="approach"
@@ -1004,7 +1060,11 @@ export default function CreateCustomerMappingComponent() {
                       )}
 
                     <div className="mt-3 d-flex justify-content-end">
-                      <button type="submit" className="btn btn-primary btn-sm">
+                      <button
+                        disabled={isSubmitting}
+                        type="submit"
+                        className="btn btn-primary btn-sm"
+                      >
                         Submit
                       </button>
 

@@ -24,6 +24,7 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
 
 function StateComponent() {
   //initial state
@@ -151,7 +152,8 @@ function StateComponent() {
     }
   ];
 
-  const handleForm = async (values, id) => {
+  const handleForm = async (values, id, { setSubmitting }) => {
+    setSubmitting(true);
     const formData = new FormData();
     formData.append('country_id', values.country_id);
     formData.append('state', values.state);
@@ -162,17 +164,22 @@ function StateComponent() {
     editformdata.append('state', values.state);
     editformdata.append('remark', values.remark);
     editformdata.append('is_active', values.is_active);
-
-    if (!id) {
-      dispatch(postStateData(formData));
-      setTimeout(() => {
-        dispatch(getStateData());
-      }, 500);
-    } else {
-      dispatch(updateStateData({ id: id, payload: editformdata }));
-      setTimeout(() => {
-        dispatch(getStateData());
-      }, 500);
+    try {
+      if (!id) {
+        await dispatch(postStateData(formData));
+        setTimeout(() => {
+          dispatch(getStateData());
+        }, 500);
+      } else {
+        await dispatch(updateStateData({ id: id, payload: editformdata }));
+        setTimeout(() => {
+          dispatch(getStateData());
+        }, 500);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -226,7 +233,7 @@ function StateComponent() {
     {
       name: 'remark',
       label: 'Remark',
-      max: 1000,
+      max: 255,
       required: false,
       alphaNumeric: true
     }
@@ -247,7 +254,6 @@ function StateComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <Container fluid>
         <PageHeader
           headerTitle="State Master"
@@ -307,11 +313,13 @@ function StateComponent() {
         <Formik
           initialValues={initialValues}
           validationSchema={validationSchema}
-          onSubmit={(values) => {
-            handleForm(values, modal.modalData ? modal.modalData.id : '');
+          onSubmit={(values, { setSubmitting }) => {
+            handleForm(values, modal.modalData ? modal.modalData.id : '', {
+              setSubmitting
+            });
           }}
         >
-          {({ setFieldValue, values }) => (
+          {({ setFieldValue, values, isSubmitting }) => (
             <Form>
               <Modal.Header
                 closeButton
@@ -460,6 +468,7 @@ function StateComponent() {
               <Modal.Footer>
                 {!modal.modalData ? (
                   <button
+                    disabled={isSubmitting}
                     type="submit"
                     className="btn btn-primary text-white"
                     style={{
@@ -474,6 +483,7 @@ function StateComponent() {
                   checkRole &&
                   checkRole[0]?.can_update === 1 && (
                     <button
+                      disabled={isSubmitting}
                       type="submit"
                       className="btn btn-primary text-white"
                       style={{ backgroundColor: '#484C7F' }}

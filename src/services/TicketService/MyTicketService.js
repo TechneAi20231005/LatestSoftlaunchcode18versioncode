@@ -176,7 +176,8 @@ export default class MyTicketService {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
-        Accept: 'application/json'
+        Accept: 'application/json',
+        'Content-Type': 'multipart/form-data'
         // Remove 'Content-Type' header so Axios can set it automatically
         // when using FormData, it will be set to multipart/form-data
       }

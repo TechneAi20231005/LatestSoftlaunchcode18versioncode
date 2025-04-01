@@ -17,6 +17,6 @@ export const moduleMasterValidation = Yup.object().shape({
 
   remark: Yup.string()
     //   .min(2, 'Remark must be at least 2 characters')
-    .max(1000, 'Remark must be at most 1000 characters')
+    .max(255, 'Remark must be at most 255 characters')
     .matches(ALPHA_NUMERIC_REGEX, 'Remark must be alphanumeric')
 });

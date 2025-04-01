@@ -9,7 +9,6 @@ import { Astrick } from '../../components/Utilities/Style';
 import * as Validation from '../../components/Utilities/Validation';
 import Select from 'react-select';
 
-import Alert from '../../components/Common/Alert';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getCityData,
@@ -23,6 +22,7 @@ import { handleError } from './TenantComponentSlice';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { TenantValidation } from './Validation/TenantMasterValidation';
 import { toast } from 'react-toastify';
+import { errorHandler } from '../../utils';
 
 export default function EditTenant() {
   const navigate = useNavigate();
@@ -35,9 +35,6 @@ export default function EditTenant() {
   const [toggleRadio, setToggleRadio] = useState(false);
   const [clearFlag, setClearFlag] = useState(false);
   const { id } = useParams();
-  const notify = useSelector(
-    (TenantComponentSlice) => TenantComponentSlice.tenantMaster.notify
-  );
 
   const stateDropdown = useSelector(
     (DashbordSlice) => DashbordSlice.dashboard.stateData
@@ -74,6 +71,8 @@ export default function EditTenant() {
   const state = null;
 
   const [errorMessage, setErrorMessage] = useState('');
+
+  const [isDisabled, setIsDisabled] = useState(false)
 
   const [inputState, setInputState] = useState({});
   const initialValues = {
@@ -165,21 +164,28 @@ export default function EditTenant() {
     dispatch(getRoles());
     dispatch(getStateDataSort());
 
-    await new TenantService().getTenantById(tenanatId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          if (res?.data?.data?.is_active === 1) {
-            setToggleRadio(true);
-          } else {
-            setToggleRadio(false);
+    await new TenantService()
+      .getTenantById(tenanatId)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            if (res?.data?.data?.is_active === 1) {
+              setToggleRadio(true);
+            } else {
+              setToggleRadio(false);
+            }
+            setData(res.data.data);
           }
-          setData(res.data.data);
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }, [dispatch, tenanatId]);
 
   const handleForm = async (values) => {
+    setIsDisabled(true)
+    if(isDisabled) return
     const formData = new FormData();
 
     formData.append('company_name', values.company_name);
@@ -199,16 +205,13 @@ export default function EditTenant() {
         if (res.payload.data.status === 1 && res.payload.status === 200) {
           navigate(`/${_base}/TenantMaster`);
           dispatch(getAllTenant());
-          toast.success(res.payload.data.message, {
-            autoClose: 10000
-          });
+          // toast.success(res.payload.data.message);
         } else {
-          toast.error(res.payload.data.message, {
-            autoClose: 10000
-          });
+          // toast.error(res.payload.data.message);
         }
       }
     );
+    setIsDisabled(false)
   };
 
   const handleKeyPress = (e) => {
@@ -260,7 +263,6 @@ export default function EditTenant() {
   }, [checkRole]);
   return (
     <div className="container-xxl">
-      {notify && notify?.type === 'danger' && <Alert alertData={notify} />}
       <PageHeader headerTitle="Edit Tenant" />
       {data && (
         <Formik
@@ -393,7 +395,12 @@ export default function EditTenant() {
                       name="email_id"
                       placeholder="Email Address"
                       required
-                      onKeyPress={(e) => Validation.emailOnly(e)}
+                      // onKeyPress={(e) => Validation.emailOnly(e)}
+                    />
+                    <ErrorMessage
+                      name="email_id"
+                      component="small"
+                      style={{ color: 'red' }}
                     />
                   </div>
                 </div>
@@ -442,6 +449,11 @@ export default function EditTenant() {
                         id="address"
                         name="address"
                       />
+                      <ErrorMessage
+                        name="address"
+                        component="small"
+                        style={{ color: 'red' }}
+                      />
                     </div>
                   </div>
 
@@ -477,6 +489,8 @@ export default function EditTenant() {
                             (option) => option.value === values.country_id
                           )}
                           onChange={(selectedOption) => {
+                            setFieldValue('state_id', '');
+                            setFieldValue('city_id', '');
                             setFieldValue(
                               'country_id',
                               selectedOption ? selectedOption.value : ''
@@ -561,13 +575,13 @@ export default function EditTenant() {
               </div>
 
               <div className="mt-3" style={{ textAlign: 'right' }}>
-                {checkRole && checkRole[0]?.can_update === 1 ? (
-                  <button type="submit" className="btn btn-primary">
-                    Update
-                  </button>
-                ) : (
+                {/* {checkRole && checkRole[0]?.can_update === 1 ? ( */}
+                <button disabled={isDisabled} type="submit" className="btn btn-primary">
+                  Update
+                </button>
+                {/* ) : (
                   ''
-                )}
+                )} */}
                 <Link
                   to={`/${_base}/TenantMaster`}
                   className="btn btn-danger text-white"

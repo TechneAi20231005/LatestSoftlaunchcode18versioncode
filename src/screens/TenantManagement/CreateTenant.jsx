@@ -25,6 +25,7 @@ import { handleError } from './TenantComponentSlice';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { TenantValidation } from './Validation/TenantMasterValidation';
 import { toast } from 'react-toastify';
+import LoadingScreen from '../../components/custom/LoadingScreen';
 
 export default function CreateTenant() {
   const dispatch = useDispatch();
@@ -44,15 +45,12 @@ export default function CreateTenant() {
   const AllcityDropDownData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.cityData
   );
-
-  const notify = useSelector(
-    (TenantComponentSlice) => TenantComponentSlice.tenantMaster.notify
-  );
+  const [isDisabled, setIsDisabled] = useState(false)
 
   const isMasterAdmin = localStorage.getItem('role_name');
   const companyType = [
     { label: 'Private Limited Company', value: 'Private Limited Company' },
-    { label: 'Public limited company', value: 'Public limited company' },
+    { label: 'Public Limited Company', value: 'Public Limited Company' },
     {
       label: 'Limited liability partnership ',
       value: 'Limited liability partnership '
@@ -164,6 +162,8 @@ export default function CreateTenant() {
     dispatch(getStateData());
   }, [dispatch]);
   const handleForm = async (values) => {
+    setIsDisabled(true)
+    // if(isDisabled) return
     const formData = new FormData();
 
     formData.append('company_name', values.company_name);
@@ -182,15 +182,13 @@ export default function CreateTenant() {
       if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
         navigate(`/${_base}/TenantMaster`);
         dispatch(getAllTenant());
-        toast.success(res.payload.data.message, {
-          autoClose: 10000 // 10 seconds in milliseconds
-        });
+        toast.success(res.payload.data.message);
       } else {
-        toast.error(res.payload.data.message, {
-          autoClose: 10000 // 10 seconds in milliseconds
-        });
+        setIsDisabled(false)
+        toast.error(res.payload.data.message);
       }
     });
+
   };
 
   const handleKeyPress = (e) => {
@@ -217,11 +215,6 @@ export default function CreateTenant() {
 
   return (
     <div className="container-xxl">
-      {notify?.type === 'danger' && (
-        <>
-          <Alert alertData={notify} />
-        </>
-      )}
       <PageHeader headerTitle="Add Tenant" />
 
       <Formik
@@ -528,10 +521,11 @@ export default function CreateTenant() {
                 </div>
               </div>
             </div>
+            {isDisabled && <LoadingScreen showLoaderModal={isDisabled}/> }
 
             <div className="card-footer">
               <div className="mt-3" style={{ textAlign: 'right' }}>
-                <button type="submit" className="btn btn-primary">
+                <button disabled={isDisabled} type="submit" className="btn btn-primary">
                   Submit
                 </button>
                 <Link

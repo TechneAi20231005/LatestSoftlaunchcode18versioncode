@@ -15,6 +15,7 @@ import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import NotFound from '../../../components/NotFound';
 
 function UserComponent() {
   //initial state
@@ -61,12 +62,16 @@ function UserComponent() {
       width: '80px',
       cell: (row) => (
         <div className="btn-group" role="group">
-          <Link
-            to={`/${_base}/User/Edit/` + row.id}
-            className="btn btn-outline-secondary"
-          >
-            <i className="icofont-edit text-success"></i>
-          </Link>
+          {checkRole && checkRole[0]?.can_update === 1 ? (
+            <Link
+              to={`/${_base}/User/Edit/` + row.id}
+              className="btn btn-outline-secondary"
+            >
+              <i className="icofont-edit text-success"></i>
+            </Link>
+          ) : (
+            ''
+          )}
         </div>
       )
     },
@@ -158,8 +163,8 @@ function UserComponent() {
 
     await new UserService().getExportTicket().then((res) => {
       if (res.status === 200) {
-        const temp = res.data.data?.data;
-
+        const temp = res?.data?.data?.data;
+        console.log('export data', temp);
         for (const i in temp) {
           exportTempData.push({
             SrNo: exportTempData.length + 1,
@@ -177,23 +182,26 @@ function UserComponent() {
             WhatsappNo: temp[i].whats_app_contact_no,
             User_Name: temp[i].user_name,
             Role: temp[i].role,
-            Job_Role: temp[i].job_role,
+            Job_Role: temp[i].jobRole,
             Designation: temp[i].designation,
             Address: temp[i].address,
             Pincode: temp[i].pincode,
             Country: temp[i].country,
             State: temp[i].state,
             City: temp[i].city,
-            Department: temp[i].department,
-            Ticket_Show_Type:
-              temp[i].ticket_show_type === 'MY_TICKETS'
-                ? 'My Tickets'
-                : 'Department Tickets',
+            Department: temp[i].department
+              ?.map((d) => d.department_name)
+              ?.join(','),
+            Ticket_Show_Type: temp[i].department
+              ?.map((d) => d.ticket_show_type)
+              ?.join(','),
 
-            Ticket_Passing_Authority: temp[i].ticket_passing_authority
-              ? 'Yes'
-              : 'No',
-            Make_Default: temp[i].is_default ? 'yes' : 'No',
+            Ticket_Passing_Authority: temp[i].department
+              ?.map((d) => (d.ticket_passing_authority ? 'Yes' : 'No'))
+              ?.join(','),
+            Make_Default: temp[i].department
+              ?.map((d) => (d.is_default ? 'Yes' : 'No'))
+              ?.join(','),
             Status: temp[i].is_active ? 'Active' : 'Deactive',
             created_at: temp[i].created_at,
             created_by: temp[i].created_by,
@@ -263,13 +271,14 @@ function UserComponent() {
         showExportButton={true}
       />
       <div className="card mt-2 px-0">
-        {employeeData && (
+        {filteredData && (
           <DataTable
             columns={columns}
             data={filteredData}
             defaultSortField="title"
             pagination
             selectableRows={false}
+            noDataComponent={<NotFound />}
             progressPending={isLoding}
             progressComponent={<TableLoadingSkelton />}
             className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"

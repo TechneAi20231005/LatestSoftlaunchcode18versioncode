@@ -14,7 +14,6 @@ const initialState = {
   queryTypeData: [],
   queryType: [],
 
-
   QueryGroupForm: [],
   notify: '',
   modal: {
@@ -115,7 +114,6 @@ export const queryTypeSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: 'success', message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
 
         let QueryGroupForm = payload.data.data;
@@ -124,7 +122,6 @@ export const queryTypeSlice = createSlice({
         state.showLoaderModal = false;
         state.QueryGroupForm = QueryGroupForm;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
       }
     });
     builder.addCase(QueryGroupForm.rejected, (state) => {
@@ -141,7 +138,6 @@ export const queryTypeSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: 'success', message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
 
         let QueryGroupFormUpdate = payload.data.data;
@@ -150,7 +146,6 @@ export const queryTypeSlice = createSlice({
         state.showLoaderModal = false;
         state.QueryGroupFormUpdate = QueryGroupFormUpdate;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
       }
     });
     builder.addCase(QueryGroupFormUpdate.rejected, (state) => {
@@ -167,7 +162,6 @@ export const queryTypeSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: 'success', message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
 
         let updateQueryTypeData = payload.data.data;
@@ -176,7 +170,6 @@ export const queryTypeSlice = createSlice({
         state.showLoaderModal = false;
         state.updateQueryTypeData = updateQueryTypeData;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
       }
     });
     builder.addCase(updateQueryTypeData.rejected, (state) => {
@@ -193,7 +186,6 @@ export const queryTypeSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: 'success', message: payload.data.message };
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
 
         let postqueryTypeForm = payload.data.data;
@@ -202,7 +194,6 @@ export const queryTypeSlice = createSlice({
         state.showLoaderModal = false;
         state.postqueryTypeForm = postqueryTypeForm;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
       }
     });
     builder.addCase(postqueryTypeForm.rejected, (state) => {

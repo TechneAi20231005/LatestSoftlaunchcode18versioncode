@@ -190,7 +190,9 @@ const _URLGetAllQueryType = masterURL.getAllQueryGroup;
 
 const _getAllQueryType = `${_URL}/getData?export=1`;
 // _URL + '/getAllQueryType1';
-const _getAllQueryGroup = `${_URLGetAllQueryType}/getData?export=1`;
+const _getAllQueryGroup = `${_URLGetAllQueryType}/getData?grid=1&export=1`;
+
+const _getQueryGroupForSelect = `${_URLGetAllQueryType}/getData?type=1`;
 //  _URL + '/getAllQueryGroup';
 const _postQueryType = `${_URL}/postData`;
 const _postQueryGroup = `${_URLGetAllQueryType}/postData`;
@@ -244,6 +246,19 @@ export default class QueryTypeService {
     } else {
       return axios.get(_getAllQueryGroup, config);
     }
+  }
+  getQueryGroupForSelect() {
+    const token = localStorage.getItem('jwt_token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+
+    return axios.get(_getQueryGroupForSelect, config);
   }
 
   getQueryTypeMapped(id) {

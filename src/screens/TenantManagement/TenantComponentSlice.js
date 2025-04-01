@@ -61,7 +61,7 @@ export const tenantmasterSlice = createSlice({
             Sr: sr++,
             TenantName: getAllTenant[i].company_name,
             TicketIDSeries: getAllTenant[i].series,
-
+            company_type: getAllTenant[i].company_type,
             Country: getAllTenant[i].country,
             State: getAllTenant[i].state,
             City: getAllTenant[i].city,

@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Modal, Table } from 'react-bootstrap';
 import ErrorLogService from '../../../../services/ErrorLogService';
-import { _attachmentUrl } from '../../../../settings/constants';
+import { _rewampAttachmentUrl } from '../../../../settings/constants';
 // import { UserDropdown } from '../../../../screens/Masters/UserMaster/UserComponent';
 import Select from 'react-select';
 import {
@@ -9,10 +9,10 @@ import {
   updateTask
   // getTaskUser
 } from '../../../../services/TicketService/TaskService';
-// import {
-//   getAttachment,
-//   deleteAttachment
-// } from '../../../../services/OtherService/AttachmentService';
+import {
+  getAttachment,
+  deleteAttachment
+} from '../../../../services/OtherService/AttachmentService';
 import Alert from '../../../../components/Common/Alert';
 // import * as Validation from '../../../../components/Utilities/Validation';
 import UserService from '../../../../services/MastersService/UserService';
@@ -22,9 +22,9 @@ import { Astrick } from '../../../../components/Utilities/Style';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { CustomValidation } from '../../../../components/custom/CustomValidation/CustomValidation';
 import { toast } from 'react-toastify';
+import { errorHandler } from '../../../../utils';
 
 export default function TaskModal(props) {
-  const [notify, setNotify] = useState();
   const [isDisabled, setIsDisabled] = useState(false);
   // const typeRef = useRef();
   // const [parent, setParent] = useState();
@@ -37,7 +37,7 @@ export default function TaskModal(props) {
   // const [allTask, setAllTask] = useState();
   const [userData, setUserData] = useState();
   const [defaultUserData, setDefaultUserData] = useState();
-  const attachment = [];
+  // const attachment = [];
   const [selectedFile, setSelectedFile] = useState([]);
 
   const fileInputRef = useRef(null);
@@ -46,6 +46,9 @@ export default function TaskModal(props) {
   const [selectedOption, setSelectedOption] = useState(null);
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [taskData, setTaskData] = useState([]);
+  const [attachment, setAttachment] = useState([]);
+
+  const [attachments, setAttachments] = useState(props.data.attachment || []);
 
   // const [todate, setTodate] = useState([]);
   const [fromdate, setFromdate] = useState([]);
@@ -63,7 +66,9 @@ export default function TaskModal(props) {
     {
       name: 'task_name',
       label: 'task_name',
-      required: true
+      required: true,
+      max: 100,
+      alphaNumeric: true
     },
     {
       name: 'start_date',
@@ -85,6 +90,12 @@ export default function TaskModal(props) {
       label: 'priority',
       required: true
     },
+    {
+      name: 'task_desc',
+      label: 'Description',
+      required: false,
+      max: 1000
+    }
     // {
     //   name: 'assign_to_user',
     //   label: 'assign_to_user',
@@ -97,6 +108,8 @@ export default function TaskModal(props) {
     // }
   ];
 
+  let item = [localStorage.getItem('id')];
+
   const validationSchema = CustomValidation(fields);
   const initialValues = {
     task_name: props?.data?.task_name || '',
@@ -104,8 +117,12 @@ export default function TaskModal(props) {
     end_date: props?.data?.end_date || '',
     task_hours: props?.data?.task_hours || '00:00',
     priority: props.data.priority ? props.data.priority : '',
-    dependent_task: props.data.dependentTaskId ? props.data.dependentTaskId : '',
-    assign_to_user: props.data.assign_to_user ? props.data.assign_to_user : '',
+    dependent_task: props.data.dependentTaskId
+      ? props.data.dependentTaskId
+      : '',
+    assign_to_user: props.data.assign_to_user
+      ? props.data.assign_to_user
+      : item,
     task_desc: props?.data?.task_desc || '',
     type: props.data?.type || 'TASK',
     status: props?.data?.status || 'TO_DO'
@@ -334,7 +351,7 @@ export default function TaskModal(props) {
 
     // await new TestCasesService().getTaskBytTicket(props.data.ticket_id).then((res) => {
     //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
+    //     if (res?.data?.status == 1) {
     //       const temp = res.data.data;
     //       setTaskDropdown(
     //         temp.map((d) => ({ value: d.id, label: d.task_name }))
@@ -348,26 +365,17 @@ export default function TaskModal(props) {
     );
     const inputRequired =
       'id,employee_id,first_name,last_name,middle_name,is_active';
-    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-      if (res.status === 200) {
-        const data1 = res.data.data.data;
-        const data = data1.filter(
-          (d) => d.is_active === 1 && d.account_for === 'SELF'
-        );
-        for (const key in data) {
-          tempUserData.push({
-            value: data[key].id,
-            label:
-              data[key].first_name +
-              ' ' +
-              data[key].last_name +
-              ' (' +
-              data[key].id +
-              ')'
-          });
-          if (props.data && props.data.assign_to_user) {
-            if (props.data.assign_to_user.includes(data[key].id)) {
-              tempDefaultUserData.push({
+    await new UserService()
+      .getUserForMyTickets(inputRequired)
+      .then((res) => {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            const data1 = res?.data?.data?.data;
+            const data = data1?.filter(
+              (d) => d.is_active === 1 && d.account_for === 'SELF'
+            );
+            for (const key in data) {
+              tempUserData.push({
                 value: data[key].id,
                 label:
                   data[key].first_name +
@@ -377,16 +385,34 @@ export default function TaskModal(props) {
                   data[key].id +
                   ')'
               });
+              if (props.data && props.data.assign_to_user) {
+                if (props.data.assign_to_user.includes(data[key].id)) {
+                  tempDefaultUserData.push({
+                    value: data[key].id,
+                    label:
+                      data[key].first_name +
+                      ' ' +
+                      data[key].last_name +
+                      ' (' +
+                      data[key].id +
+                      ')'
+                  });
+                }
+              }
             }
+            setDefaultUserData(tempDefaultUserData);
+            const aa = tempUserData.sort(function (a, b) {
+              return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+            });
+            setUserData(aa);
+          } else {
+            toast.error(res?.data?.message);
           }
+        } else {
+          toast.error(res?.data?.message);
         }
-        setDefaultUserData(tempDefaultUserData);
-        const aa = tempUserData.sort(function (a, b) {
-          return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
-        });
-        setUserData(aa);
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
     // const allTask = props.allTaskList.filter(
     //   (task) => task.value != props.data.id
     // );
@@ -395,7 +421,7 @@ export default function TaskModal(props) {
 
     // await new TaskTicketTypeService().getAllType().then((res) => {
     //   if (res.status === 200) {
-    //     if (res.data.status == 1) {
+    //     if (res?.data?.status == 1) {
     //       const temp = res.data.data;
     //       setTasktypeDropdown(
     //         temp
@@ -408,7 +434,7 @@ export default function TaskModal(props) {
 
     // await new TaskTicketTypeService().getParent().then((res) => {
     //   if (res.status === 200) {
-    //     if (res.data.status === 1) {
+    //     if (res?.data?.status === 1) {
     //       if (res.status === 200) {
     //         // const mappedData = res.data.data.map((d) => ({
     //         //   value: d.id,
@@ -422,26 +448,46 @@ export default function TaskModal(props) {
     //   }
     // });
 
-    await new TaskTicketTypeService()?.getTaskType('Task')?.then((res) => {
-      if (res?.status === 200) {
-        setTaskData(res?.data?.data.data);
-      }
-    });
+    await new TaskTicketTypeService()
+      ?.getChildrenData('Task')
+      ?.then((res) => {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            let filterData = res?.data?.data?.data;
+            // res?.data?.data.data?.filter(
+            //   (item) => item?.is_active === 1
+            // );
+            setTaskData(filterData);
+          } else {
+            toast.error(res?.data?.message);
+          }
+        } else {
+          toast.error(res?.data?.message);
+        }
+      })
+      .catch((error) => errorHandler(error));
   }, [props.data, props?.taskDropdown]);
 
-  // const loadAttachment = async () => {
-  //   setNotify(null);
-  //   if (props.data.id) {
-  //     await getAttachment(props.data.id, "TASK").then((res) => {
-  //       if (res.status === 200) {
-  //         setAttachment(null);
-  //         setAttachment(res.data.data);
-  //       }
-  //     });
-  //   } else {
-  //     setAttachment(null);
-  //   }
-  // };
+  const loadAttachment = async () => {
+    if (props.data.id) {
+      await getAttachment(props.data.id, 'TASK')
+        .then((res) => {
+          if (res?.status === 200) {
+            if (res?.data?.status === 1) {
+              setAttachment(null);
+              setAttachment(res.data.data);
+            } else {
+              toast.error(res?.data?.message);
+            }
+          } else {
+            toast.error(res?.data?.message);
+          }
+        })
+        .catch((error) => errorHandler(error));
+    } else {
+      setAttachment(null);
+    }
+  };
 
   // function transformData(taskData, hasPrimaryLabel = false) {
   //   // const primaryLabel = "Primary";
@@ -545,7 +591,8 @@ export default function TaskModal(props) {
         fileInputRef.current.value = '';
       }
     } else if (type === 'DELETE') {
-      let filteredFileArray = selectedFile.filter((index) => id !== index);
+      // let filteredFileArray = selectedFile.filter((index) => id !== index);
+      let filteredFileArray = selectedFile.filter((_, index) => id !== index);
       setSelectedFile(filteredFileArray);
     } else if (type === 'CUSTOMER') {
       file = selectedFile;
@@ -559,17 +606,32 @@ export default function TaskModal(props) {
       alert('Invalid Option');
     }
   };
-  const handleDeleteAttachment = (e, id) => {};
+  // const handleDeleteAttachment = (e, id) => {};
+  const handleDeleteAttachment = (e, id) => {
+    deleteAttachment(id)
+      .then((res) => {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            setAttachments((prevAttachments) =>
+              prevAttachments.filter((attach) => attach.id !== id)
+            );
+            toast.success(res?.data?.message);
+          } else {
+            toast.error(res?.data?.message);
+          }
+        } else {
+          toast.error(res?.data?.message);
+        }
+        // props?.handleShowTaskModal();
+        // loadAttachment();
+      })
+      .catch((error) => errorHandler(error));
+  };
 
   const assignUserRef = useRef();
   const handleForm = async (values) => {
-    console.log(values,"values")
-    // e.preventDefault();
-    // setIsDisabled(true);
-
-    // setLoading(true);
-    // const selectedOptions = assignUserRef.current?.getValue() || [];
-    // const selectedValues = selectedOptions.map((option) => option.value);
+    if (isDisabled) return;
+    setIsDisabled(true);
     const formData = new FormData();
     formData.append('ticket_id', props.data.ticket_id);
     formData.append('ticket_basket_id', props.data.ticket_basket_id);
@@ -581,8 +643,18 @@ export default function TaskModal(props) {
     formData.append('priority', values.priority);
     formData.append('status', values.status);
     formData.append('task_desc', values.task_desc);
-    formData.append('assign_to_user[]', values.assign_to_user);
-    formData.append('dependent_task[]', values.dependent_task);
+    // formData.append('assign_to_user[]', values.assign_to_user);
+    if (Array.isArray(values.assign_to_user)) {
+      values.assign_to_user.forEach((userId) => {
+        formData.append('assign_to_user[]', userId);
+      });
+    }
+    if (Array.isArray(values.dependent_task)) {
+      values.dependent_task.forEach((userId) => {
+        formData.append('dependent_task[]', userId);
+      });
+    }
+    // formData.append('dependent_task[]', values.dependent_task);
     // formData.append('parent_id', selectedOption);
     selectedFile.forEach((fileObj, index) => {
       // formData.append(`attachment`, fileObj.file);
@@ -602,7 +674,6 @@ export default function TaskModal(props) {
     } else {
       setParentTaskName(''); // Clear the error message if present
 
-      setNotify(null);
       //Appeding File in selected State
       formData.delete('attachment[]');
       formData.delete('show_to_customer[]');
@@ -686,44 +757,23 @@ export default function TaskModal(props) {
               // formData.append("task_type_id", taskTypeId);
               await updateTask(props?.data?.id, formData)
                 .then((res) => {
-                  if (res.status === 200) {
-                    if (res.data.status === 1) {
+                  if (res?.status === 200) {
+                    if (res?.data?.status === 1) {
                       // props.loadBasket();
-                      console.log(res.data.message,"res.data.message")
-                      setNotify({ type: 'success', message: res.data.message });
-                      // setLoading(false);
-
-                     setTimeout(() => {
+                      toast.success(res?.data?.message);
                       handleClose();
                       props.loadBasket();
-                     }, 1000);
                     } else {
-                      // setLoading(false);
-                      setNotify({ type: 'danger', message: res.data.message });
+                      toast.error(res?.data?.message);
                     }
                   } else {
-                    setIsDisabled(false);
-                    // setLoading(false);
-                    setNotify({ type: 'danger', message: res.message });
-                    new ErrorLogService().sendErrorLog(
-                      'Ticket',
-                      'Edit_Task',
-                      'INSERT',
-                      res.message
-                    );
+                    toast.error(res?.message);
                   }
                 })
                 .catch((error) => {
-                  // setLoading(false);
-                  const { response } = error;
-                  const { request, ...errorObject } = response;
-                  new ErrorLogService().sendErrorLog(
-                    'Task',
-                    'Edit_Task',
-                    'INSERT',
-                    errorObject.data.message
-                  );
-                });
+                  errorHandler(error);
+                })
+                .finally(() => setIsDisabled(false));
             }
           } else {
             if (selectedOptionId === 'Primary') {
@@ -739,37 +789,26 @@ export default function TaskModal(props) {
                   : 'Primary'
               );
             }
-            await postTask(formData).then((res) => {
-              if (res.status === 200) {
-                if (res.data.status === 1) {
-                  // setNotify({ type: 'success', message: res.data.message });
-                  toast.success(res?.data?.message);
-                  // setLoading(false);
-
-                  handleClose();
-                  props.loadBasket();
+            await postTask(formData)
+              .then((res) => {
+                if (res?.status === 200) {
+                  if (res?.data?.status === 1) {
+                    toast.success(res?.data?.message);
+                    handleClose();
+                    props.loadBasket();
+                  } else {
+                    toast.error(res?.data?.message);
+                  }
                 } else {
-                  // setLoading(false);
-                  // setNotify({ type: 'danger', message: res.data.message });
                   toast.error(res?.data?.message);
                 }
-              } else {
-                setIsDisabled(false);
-                // setLoading(false);
-                // setNotify({ type: 'danger', message: res.data.message });
-                toast.error(res?.data?.message);
-                new ErrorLogService().sendErrorLog(
-                  'Ticket',
-                  'Edit_Task',
-                  'INSERT',
-                  res.message
-                );
-              }
-            });
+              })
+              .catch((error) => errorHandler(error));
           }
         }
       }
     }
+    setIsDisabled(false);
   };
 
   // const handleParentchange = async (e) => {
@@ -777,8 +816,8 @@ export default function TaskModal(props) {
   //     typeRef.current.clearValue();
   //   }
   //   await new TaskTicketTypeService().getAllType().then((res) => {
-  //     if (res.status === 200) {
-  //       if (res.data.status === 1) {
+  //     if (res?.status === 200) {
+  //       if (res?.data?.status === 1) {
   //         const temp = res.data.data;
   //         setTasktypeDropdown(
   //           temp
@@ -1458,16 +1497,13 @@ export default function TaskModal(props) {
             handleForm(values);
           }}
         >
-          {({ setFieldValue, values }) =>   (
-
+          {({ setFieldValue, values }) => (
             <Form>
               <Modal.Header closeButton>
                 <Modal.Title id="example-custom-modal-styling-title">
                   <strong>Task Details</strong>
                 </Modal.Title>
               </Modal.Header>
-
-              {notify && <Alert alertData={notify} />}
 
               {/* <form onSubmit={handleForm} method="post" encType="multipart/form-data"> */}
               <Modal.Body>
@@ -1704,6 +1740,10 @@ export default function TaskModal(props) {
                         id="start_date"
                         name="start_date"
                         // onChange={handleFromDate}
+                        onChange={(option) => {
+                          setFromdate(option.target.value);
+                          setFieldValue('start_date', option.target.value);
+                        }}
                         min={props.ticketStartDate}
                       />
                     ) : (
@@ -1712,10 +1752,14 @@ export default function TaskModal(props) {
                         className="form-control form-control-sm"
                         id="start_date"
                         name="start_date"
-                        onChange={handleFromDate}
+                        // onChange={handleFromDate}
                         min={props.ticketStartDate}
                         defaultValue={props.data.start_date}
-                        required
+                        // required
+                        onChange={(option) => {
+                          setFromdate(option.target.value);
+                          setFieldValue('start_date', option.target.value);
+                        }}
                       />
                     )}
                     <ErrorMessage
@@ -1749,8 +1793,8 @@ export default function TaskModal(props) {
                         id="end_date"
                         name="end_date"
                         min={
-                          fromdate?.length > 0
-                            ? fromdate
+                          values.start_date?.length > 0
+                            ? values.start_date
                             : props.data.start_date
                         }
                       />
@@ -1803,14 +1847,14 @@ export default function TaskModal(props) {
                         defaultValue={undefined} // Remove this line, as Formik manages the value
                       />
                     ) : (
-                      <input
+                      <Field
                         type="text"
                         className="form-control form-control-sm"
                         name="task_hours"
                         defaultValue={
                           props.data.task_hours
                             ? props.data.task_hours
-                            : '00:00'
+                            : values.task_hours
                         }
                         required
                       />
@@ -1870,7 +1914,7 @@ export default function TaskModal(props) {
                         setFieldValue('priority', option ? option.value : '')
                       }
                     />
-                     <ErrorMessage
+                    <ErrorMessage
                       name="priority"
                       component="small"
                       className="text-danger"
@@ -1995,6 +2039,11 @@ export default function TaskModal(props) {
                       name="task_desc"
                       readOnly={props.data.status === 'COMPLETED'}
                     />
+                    <ErrorMessage
+                      name="task_desc"
+                      component="small"
+                      className="text-danger"
+                    />
                   </div>
                 </div>
 
@@ -2078,33 +2127,40 @@ export default function TaskModal(props) {
                         isClearable
                         id="assign_to_user[]"
                         name="assign_to_user[]"
-                        // value={userData.filter((option) =>
-                        //   values.assign_to_user?.includes(option.value)
+                        // value={userData.filter(
+                        //   (option) =>
+                        //     Array.isArray(values.assign_to_user)
+                        //       ? values.assign_to_user.includes(option.value) // Check for array
+                        //       : values.assign_to_user === option.value // Check for scalar
                         // )}
-                        value={userData.filter(
-                          (option) =>
-                            Array.isArray(values.assign_to_user)
-                              ? values.assign_to_user.includes(option.value) // Check for array
-                              : values.assign_to_user === option.value // Check for scalar
-                        )}
+
                         // onChange={(selectedOptions) =>
                         //   setFieldValue(
                         //     'assign_to_user',
-                        //     selectedOptions
-                        //       ? selectedOptions.map((option) => option.value)
+                        //     Array.isArray(selectedOptions)
+                        //       ? selectedOptions.length === 1
+                        //         ? selectedOptions[0].value // Single value: pass as scalar
+                        //         : selectedOptions.map((option) => option.value) // Multiple values: pass as array
                         //       : []
                         //   )
                         // }
-                        onChange={(selectedOptions) =>
-                          setFieldValue(
-                            'assign_to_user',
-                            Array.isArray(selectedOptions)
-                              ? selectedOptions.length === 1
-                                ? selectedOptions[0].value // Single value: pass as scalar
-                                : selectedOptions.map((option) => option.value) // Multiple values: pass as array
-                              : []
-                          )
-                        }
+                        // isMulti
+                        value={userData.filter(
+                          (option) =>
+                            Array.isArray(values.assign_to_user)
+                              ? values.assign_to_user.includes(
+                                  String(option.value)
+                                ) // Check for array
+                              : values.assign_to_user === option.value // Check for scalar
+                        )}
+                        onChange={(selectedOptions) => {
+                          const selectedValues = Array.isArray(selectedOptions)
+                            ? selectedOptions.map((option) =>
+                                String(option.value)
+                              ) // Map selected options to their values
+                            : [];
+                          setFieldValue('assign_to_user', selectedValues); // Update the form value
+                        }}
                         isMulti
                       />
                     )}
@@ -2145,20 +2201,30 @@ export default function TaskModal(props) {
                         // value={filteredOptions?.filter((option) =>
                         //   props.data.dependentTaskId?.includes(option.value)
                         // )}
-                        value={filteredOptions?.filter(
-                          (option) => option.value === values.dependent_task
+                        // value={filteredOptions?.filter(
+                        //   (option) => option.value === values.dependent_task
+                        // )}
+                        // onChange={(selectedOptions) =>
+                        //   setFieldValue(
+                        //     'dependent_task',
+                        //     Array.isArray(selectedOptions)
+                        //       ? selectedOptions.length === 1
+                        //         ? selectedOptions[0].value // Single value: pass as scalar
+                        //         : selectedOptions.map((option) => option.value) // Multiple values: pass as array
+                        //       : []
+                        //   )
+                        // }
+                        value={filteredOptions?.filter((option) =>
+                          values.dependent_task?.includes(option.value)
                         )}
                         onChange={(selectedOptions) =>
                           setFieldValue(
                             'dependent_task',
                             Array.isArray(selectedOptions)
-                              ? selectedOptions.length === 1
-                                ? selectedOptions[0].value // Single value: pass as scalar
-                                : selectedOptions.map((option) => option.value) // Multiple values: pass as array
+                              ? selectedOptions.map((option) => option.value)
                               : []
                           )
                         }
-
                       />
                     )}
                     {props.data.id == null && props.taskDropdown && (
@@ -2279,6 +2345,7 @@ export default function TaskModal(props) {
                                 className="btn btn-danger text-white btn-sm p-0 px-1 mt-0"
                                 type="button"
                                 onClick={(e) => {
+                                  // handleDeleteAttachment((e, 'DELETE', i));
                                   uploadAttachmentHandler(e, 'DELETE', i);
                                 }}
                               >
@@ -2299,8 +2366,8 @@ export default function TaskModal(props) {
                   className="d-flex justify-content-start mt-2"
                   style={{ overflowX: 'auto' }}
                 >
-                  {props?.data?.attachment &&
-                    props?.data?.attachment?.attachments?.map((attach, index) => {
+                  {attachments &&
+                    attachments?.map((attach, index) => {
                       return (
                         <div
                           className="justify-content-start"
@@ -2320,16 +2387,17 @@ export default function TaskModal(props) {
                               </p>
                               <div className="d-flex justify-content-end p-0">
                                 <a
-                                  href={`${
-                                    _attachmentUrl + attach.path
-                                  }`}
+                                  href={`${_rewampAttachmentUrl + attach.path}`}
                                   target="_blank"
                                   className="btn btn-warning btn-sm p-0 px-1"
                                   rel="noreferrer"
                                 >
                                   <i
                                     className="icofont-download"
-                                    style={{ fontSize: '12px', height: '15px' }}
+                                    style={{
+                                      fontSize: '12px',
+                                      height: '15px'
+                                    }}
                                   ></i>
                                 </a>
                                 <button

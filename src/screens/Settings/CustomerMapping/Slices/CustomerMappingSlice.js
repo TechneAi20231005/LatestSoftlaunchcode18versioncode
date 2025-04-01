@@ -6,6 +6,7 @@ import {
   getTemplateData,
   getcustomerTypeData
 } from './CustomerMappingAction';
+import { toast } from 'react-toastify';
 
 const initialState = {
   status: '',
@@ -55,7 +56,8 @@ export const CustomerMappingSlice = createSlice({
         state.status = 'succeded';
 
         let counter = 1;
-        const data = payload.data.data.data;
+        const data = payload.data.data;
+        console.log('dataaaaaaaaaaaaaaaaaaa', data);
         let customerMappingData = [];
         for (const key in data) {
           customerMappingData.push({
@@ -122,7 +124,8 @@ export const CustomerMappingSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let exportTempateData = payload.data.data.data;
+        let exportTempateData = payload.data.data;
+        console.log('exportTempateData', exportTempateData);
         state.isLoading.customerMappingList = false;
 
         state.status = 'succeded';
@@ -139,22 +142,26 @@ export const CustomerMappingSlice = createSlice({
             Sr: exportTempateData[i].counter,
             Query: exportTempateData[i].query_type_name,
             Template: exportTempateData[i].template_name,
+            'Dynamic Form Name': exportTempateData[i].dynamic_form_name,
+
             Department: exportTempateData[i].department_name,
             Priority: exportTempateData[i].priority,
             Approach: exportTempateData[i].approach,
             remark: exportTempateData[i].remark,
-            is_active:
-              exportTempateData[i].is_active == 1 ? 'Active' : 'Deactive',
-            created_at: exportTempateData[i].created_at,
-            created_by: exportTempateData[i].created_by,
-            updated_at: exportTempateData[i].updated_at,
-            updated_by: exportTempateData[i].updated_by,
+            'Customer Type Name': exportTempateData[i].customer_type_name,
+            'Assign User': exportTempateData[i]?.user_policy
+              ? exportTempateData[i]?.user_policy
+                  ?.map((user) => user?.user_name || '')
+                  .join(', ')
+              : '',
+            'Confirmation Required':
+              exportTempateData[i].confirmation_required == 1 ? 'Yes' : 'no',
+            Status: exportTempateData[i].is_active == 1 ? 'Active' : 'Deactive',
+            'Created At': exportTempateData[i].created_at,
+            'Created By': exportTempateData[i].created_by,
+            'Updated At': exportTempateData[i].updated_at,
+            'Updated By': exportTempateData[i].updated_by
             // confirmation_required:[i].confirmation_required,
-            dynamic_form_name: exportTempateData[i].dynamic_form_name,
-            customer_type_name: exportTempateData[i].customer_type_name,
-            'Assign User': exportTempateData[i].mapped_user,
-            confirmation_required:
-              exportTempateData[i].confirmation_required == 1 ? 'Yes' : 'no'
           });
           state.exportData = exportData;
         }
@@ -174,7 +181,6 @@ export const CustomerMappingSlice = createSlice({
       state.isLoading.customerMappingList = false;
       state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        console.log('data==', payload.data.data.data);
         const select = payload.data.data.data
 
           .filter((d) => d.is_active)
@@ -238,10 +244,9 @@ export const CustomerMappingSlice = createSlice({
         }));
         state.templateDropDownData = templateDropDownData;
         state.status = 'succeded';
-
-        state.notify = { type: 'success', message: payload.data.message };
+        // toast.success(payload.data.message);
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(getTemplateData.rejected, (state) => {

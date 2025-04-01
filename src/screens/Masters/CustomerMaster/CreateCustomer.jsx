@@ -21,6 +21,8 @@ import {
   getStateData,
   postCustomerData
 } from '../../Dashboard/DashboardAction';
+import { errorHandler } from '../../../utils';
+import { toast } from 'react-toastify';
 export default function CreateCustomer({ match }) {
   const [updateStatus, setUpdateStatus] = useState({});
 
@@ -58,6 +60,7 @@ export default function CreateCustomer({ match }) {
   const [cityDropdownData, setCityDropdownData] = useState(false);
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [email, setEmail] = useState('');
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const handleEmailChange = (e) => {
     const newEmail = e.target.value;
@@ -175,8 +178,11 @@ export default function CreateCustomer({ match }) {
   //   // }
   // };
 
-  const handleForm = async (values) => {
-    console.log(values, 'values');
+
+  const handleForm = async (values, { setSubmitting }) => {
+    setSubmitting(true);
+    setIsDisabled(true)
+    if(isDisabled) return;
 
     // Manually create FormData object
     const formData = new FormData();
@@ -191,28 +197,28 @@ export default function CreateCustomer({ match }) {
     formData.append('state_id', values.state_id);
     formData.append('is_active', values.is_active);
 
-    // Dispatch action with formData
-    dispatch(postCustomerData(formData)).then((res) => {
+    try {
+      const res = await dispatch(postCustomerData(formData));
       if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
         dispatch(getCustomerData());
         setTimeout(() => {
           navigate(`/${_base}/Customer`, {
             state: {
-              alert: {
-                type: 'success',
-                message: res?.payload?.data?.message
-              }
+              alert: toast.success(res?.payload?.data?.message)
             }
           });
         }, 3000);
       } else {
-        // Handle error message
-        console.error(
-          'Error submitting the form:',
-          res?.payload?.data?.message
-        );
+        toast.error(res?.payload?.data?.message);
       }
-    });
+
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+      setIsDisabled(false)
+    }
+
   };
 
   const handleCountryChange = (e) => {
@@ -259,7 +265,7 @@ export default function CreateCustomer({ match }) {
     dispatch(getCityData());
     dispatch(getStateData());
     dispatch(getCountryDataSort());
-    dispatch(getCityData());
+    // dispatch(getCityData());
     if (!customerType?.length) {
       dispatch(getCustomerType());
     }
@@ -327,8 +333,6 @@ export default function CreateCustomer({ match }) {
 
   return (
     <div className="container-xxl">
-      {Notify && <Alert alertData={Notify} />}
-
       <PageHeader headerTitle="Add Customer" />
 
       <div className="row clearfix g-3">
@@ -336,8 +340,8 @@ export default function CreateCustomer({ match }) {
           <Formik
             initialValues={initialValue}
             validationSchema={validationSchema}
-            onSubmit={(values) => {
-              handleForm(values);
+            onSubmit={(values, { setSubmitting }) => {
+              handleForm(values, { setSubmitting });
               // setOtpModal(true);
             }}
           >
@@ -664,7 +668,11 @@ export default function CreateCustomer({ match }) {
                 {/* CARD */}
 
                 <div className="mt-3" style={{ textAlign: 'right' }}>
-                  <button type="submit" className="btn btn-primary">
+                  <button
+                    disabled={isDisabled}
+                    type="submit"
+                    className="btn btn-primary"
+                  >
                     Submit
                   </button>
                   <Link

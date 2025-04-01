@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Row } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
@@ -16,8 +16,10 @@ import {
   editTestingTypeMasterThunk,
   getTestingTypeMasterListThunk
 } from '../../../redux/services/testCases/testingTypeMaster';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 
 function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
   const addEditTestingTypeInitialValue = {
     type_name: type === 'EDIT' ? currentTestingTypeData?.type_name : '',
@@ -29,15 +31,20 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
   // // function
 
   const handleAddEditTestingType = ({ formData }) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     if (type === 'ADD') {
       dispatch(
         addTestingTypeMasterThunk({
           formData: formData,
           onSuccessHandler: () => {
+            setIsSubmitting(false);
             close();
             dispatch(getTestingTypeMasterListThunk());
           },
-          onErrorHandler: () => {}
+          onErrorHandler: () => {
+            setIsSubmitting(false);
+          }
         })
       );
     } else {
@@ -46,14 +53,34 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
           currentId: currentTestingTypeData?.id,
           formData: formData,
           onSuccessHandler: () => {
+            setIsSubmitting(false);
             close();
             dispatch(getTestingTypeMasterListThunk());
           },
-          onErrorHandler: () => {}
+          onErrorHandler: () => {
+            setIsSubmitting(false);
+          }
         })
       );
     }
   };
+  const fields = [
+    {
+      name: 'type_name',
+      label: 'Testing Type',
+      min: 3,
+      max: 100,
+      required: true,
+      alphaBet: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 255
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
 
   return (
     <>
@@ -64,7 +91,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
       >
         <Formik
           initialValues={addEditTestingTypeInitialValue}
-          validationSchema={addTestingType}
+          validationSchema={validationSchema}
           onSubmit={(values) => {
             handleAddEditTestingType({ formData: values });
           }}
@@ -123,7 +150,7 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
                 <button
                   className="btn btn-primary px-4"
                   type="submit"
-                  disabled={!dirty}
+                  disabled={!dirty || isSubmitting}
                 >
                   {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>

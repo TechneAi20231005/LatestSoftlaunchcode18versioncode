@@ -121,9 +121,7 @@ function TenantComponent() {
         );
         return (
           <div>
-            {tenantCreatedBy[0]?.first_name
-              ? `${tenantCreatedBy[0]?.first_name}  ${tenantCreatedBy[0]?.last_name}`
-              : ''}
+            {row?.created_by || ""}
           </div>
         );
       },

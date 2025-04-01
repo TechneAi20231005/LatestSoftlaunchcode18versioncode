@@ -180,13 +180,11 @@ export const DashbordSlice = createSlice({
         state.showLoaderModal = false;
         state.postCity = postCity;
         state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        let notify = { type: 'danger', message: payload.data.message };
-        state.notify = null;
-        state.notify = notify;
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(postCityData.rejected, (state) => {
@@ -204,10 +202,9 @@ export const DashbordSlice = createSlice({
       const { payload } = action;
       state.notify = null;
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let updateCity = payload.data.data;
-        state.status = 'succeeded';
+        let updateCity = payload.data.message;
+        toast.success(updateCity);
         state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
         state.showLoaderModal = false;
 
         state.updateCity = updateCity;
@@ -215,7 +212,7 @@ export const DashbordSlice = createSlice({
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(updateCityData.rejected, (state) => {
@@ -301,14 +298,11 @@ export const DashbordSlice = createSlice({
 
         state.showLoaderModal = false;
         state.postCountry = postCountry;
-        state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        let notify = { type: 'danger', message: payload.data.message };
-        state.notify = null;
-        state.notify = notify;
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(postCountryData.rejected, (state) => {
@@ -331,7 +325,7 @@ export const DashbordSlice = createSlice({
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let updateCountry = payload.data.data;
         state.status = 'succeeded';
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         state.showLoaderModal = false;
 
         state.updateCountry = updateCountry;
@@ -339,7 +333,7 @@ export const DashbordSlice = createSlice({
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(updateCountryData.rejected, (state) => {
@@ -447,13 +441,11 @@ export const DashbordSlice = createSlice({
         let postState = payload.data.data;
         state.status = 'succeded';
         state.postState = postState;
-        state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        state.notify = null;
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(postStateData.rejected, (state) => {
@@ -474,8 +466,7 @@ export const DashbordSlice = createSlice({
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let updateState = payload.data.data;
         state.status = 'succeeded';
-        state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         state.showLoaderModal = false;
 
         state.updateState = updateState;
@@ -483,7 +474,7 @@ export const DashbordSlice = createSlice({
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(updateStateData.rejected, (state) => {
@@ -590,14 +581,11 @@ export const DashbordSlice = createSlice({
         let postUser = payload.data.data;
         state.status = 'succeded';
         state.postUSer = postUser;
-        state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        let notify = { type: 'danger', message: payload.data.message };
-        state.notify = null;
-        state.notify = notify;
+        toast.error(payload.data.message);
       }
       state.isLoading = false;
     });
@@ -619,8 +607,7 @@ export const DashbordSlice = createSlice({
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let updateUser = payload.data.data;
         state.status = 'succeeded';
-        // state.notify = null;
-        state.notify = { type: 'success', message: payload.data.message };
+        // toast.success(payload.data.message);
         state.showLoaderModal = false;
 
         state.updateUser = updateUser;
@@ -628,7 +615,7 @@ export const DashbordSlice = createSlice({
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        // toast.error(payload.data.message);
       }
     });
     builder.addCase(updateUserData.rejected, (state) => {
@@ -762,8 +749,8 @@ export const DashbordSlice = createSlice({
       for (const i in temp) {
         exportCustomerData.push({
           SrNo: temp[i].counter,
-          Name: temp[i].name,
-          Customer_Type: temp[i].type_name,
+          Customer_Name: temp[i].name,
+          Customer_Type: temp[i].customer_type,
           Email: temp[i].email_id,
           Contact_Number: temp[i].contact_no,
           Address: temp[i].address,
@@ -863,8 +850,7 @@ export const DashbordSlice = createSlice({
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let updateCustomer = payload.data.data;
-        state.status = 'succeeded';
-        state.notify = { type: 'success', message: payload.data.message };
+        toast.success(payload.data.message);
         state.showLoaderModal = false;
 
         state.updateCustomer = updateCustomer;
@@ -872,7 +858,7 @@ export const DashbordSlice = createSlice({
         let modal = { showModal: false, modalData: '', modalHeader: '' };
         state.modal = modal;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        toast.error(payload.data.message);
       }
     });
     builder.addCase(updateCustomerData.rejected, (state) => {

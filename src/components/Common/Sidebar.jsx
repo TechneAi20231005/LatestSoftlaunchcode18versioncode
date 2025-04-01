@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 // // static import
 import { _base } from '../../settings/constants';
 import {
-  getEmployeeListThunk,
+  // getEmployeeListThunk,
   getMenuListThunk
 } from '../../redux/services/Sidebar';
 
@@ -87,7 +87,7 @@ const Sidebar = ({ activekey }) => {
   }, [handleClickOutside]);
 
   useEffect(() => {
-    dispatch(getEmployeeListThunk({ user_id: user_id }));
+    // dispatch(getEmployeeListThunk({ user_id: user_id }));
     dispatch(getMenuListThunk({ role_id: role_id }));
     document.children[0]?.setAttribute('data-theme', 'light');
   }, [user_id, role_id]);
@@ -101,7 +101,7 @@ const Sidebar = ({ activekey }) => {
       }`}
     >
       <div className="d-flex flex-column h-100">
-        <a href="hr-dashboard" className="mb-0 brand-icon">
+        <a href="Dashboard" className="mb-0 brand-icon">
           <span className="logo-icon">
             <svg
               width="35"

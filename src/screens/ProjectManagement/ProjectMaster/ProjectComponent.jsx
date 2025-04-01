@@ -16,6 +16,7 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import { errorHandler } from '../../../utils';
 
 function ProjectComponent() {
   //initial state
@@ -68,7 +69,12 @@ function ProjectComponent() {
         </div>
       )
     },
-    { name: 'Sr', width: '5%', selector: (row) => row.counter, sortable: true },
+    {
+      name: 'Sr',
+      width: '5%',
+      selector: (row) => row.counter + 1,
+      sortable: true
+    },
     {
       name: 'Project Name',
       width: '10%',
@@ -338,8 +344,8 @@ function ProjectComponent() {
               description: data[key].description,
               Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
               remark: data[key].remark,
-              created_at: data[key].created_at,
               created_by: data[key].created_by,
+              created_at: data[key].created_at,
               updated_at: data[key].updated_at,
               updated_by: data[key].updated_by
             });
@@ -348,14 +354,7 @@ function ProjectComponent() {
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'Project Master',
-          'Get_Project',
-          'INSERT',
-          errorObject.data.message
-        );
+        errorHandler(error);
       });
 
     dispatch(getRoles());
@@ -385,8 +384,6 @@ function ProjectComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader
         headerTitle="Project Master"
         renderRight={() => {
@@ -444,7 +441,7 @@ function ProjectComponent() {
 
 function ProjectDropdown({ field, form, ...props }) {
   const [data, setData] = useState(null);
-
+  const [deafultValue, setDeafultValue] = useState('');
   useEffect(() => {
     const tempData = [];
     new ProjectService().getProject().then((res) => {
@@ -458,12 +455,19 @@ function ProjectDropdown({ field, form, ...props }) {
             project_name: activeData[key].project_name
           });
         }
+        const DeafultValue = tempData.find((d) => d.id === props.defaultValue);
+        if (DeafultValue) {
+          setDeafultValue(DeafultValue.id);
+        } else {
+          setDeafultValue('');
+        }
         setData(tempData);
       }
     });
   }, []);
 
   const handleChange = (e) => {
+    console.log(e.target.value);
     const value = e.target.value;
     form.setFieldValue(field.name, value); // Update Formik value
   };
@@ -478,7 +482,7 @@ function ProjectDropdown({ field, form, ...props }) {
           className="form-control form-control-sm"
           id={props.id}
           name={field.name}
-          value={field.value || props.defaultValue || ''} // Controlled by Formik or defaultValue
+          value={field.value || deafultValue}
           onChange={handleChange}
           onBlur={field.onBlur}
         >

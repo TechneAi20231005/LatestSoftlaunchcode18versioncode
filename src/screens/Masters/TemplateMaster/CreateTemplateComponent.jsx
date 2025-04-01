@@ -23,6 +23,8 @@ import { handleModalClose, handleModalOpen } from './TemplateComponetSlice';
 
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
 import TaskTicketTypeService from '../../../services/MastersService/TaskTicketTypeService';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 const CreateTemplateComponent = () => {
   const navigate = useNavigate();
@@ -45,7 +47,6 @@ const CreateTemplateComponent = () => {
   const editTaskModal = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.modal
   );
-  const [notify, setNotify] = useState(null);
 
   const [selectedBasket, setSelectedBasket] = useState();
   const [rows, setRows] = useState({
@@ -65,7 +66,7 @@ const CreateTemplateComponent = () => {
   const [taskData, setTaskData] = useState([]);
 
   const loadData = async () => {
-    await new TaskTicketTypeService()?.getChildrenData("TASK")?.then((res) => {
+    await new TaskTicketTypeService()?.getChildrenData('TASK')?.then((res) => {
       if (res?.status === 200) {
         setTaskData(res?.data?.data?.data);
       }
@@ -361,41 +362,47 @@ const CreateTemplateComponent = () => {
       });
     }
   };
-  const submitHandler = (e) => {
+  const [submitting, setSubmitting] = useState(false);
+  const submitHandler = async (e) => {
     e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+
     let a = 0;
-    rows.template_data.forEach((ele, id) => {
+    rows.template_data.forEach((ele) => {
       if (ele.basket_task.length === 0) {
         a++;
       }
     });
-    if (a > 0) {
-    } else {
-      dispatch(postTemplateData(rows)).then((res) => {
-        if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
-          setNotify({ type: 'success', message: res?.payload?.data?.message });
-          dispatch(templateData());
 
-          setTimeout(() => {
-            navigate(`/${_base}/Template`, {
-              state: {
-                alert: {
-                  type: 'success',
-                  message: res?.payload?.data?.message
-                }
-              }
-            });
-          }, 3000);
-        } else {
-          setNotify({ type: 'danger', message: res?.payload?.data?.message });
-        }
-      });
+    if (a > 0) {
+      setSubmitting(false);
+      return;
+    }
+
+    try {
+      const res = await dispatch(postTemplateData(rows));
+
+      if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
+        dispatch(templateData());
+
+        setTimeout(() => {
+          navigate(`/${_base}/Template`);
+        }, 3000);
+      } else {
+        // toast.error(res.payload.data.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
     }
   };
 
   const addTask = (e) => {
     e.preventDefault();
-
+    if (submitting) return;
+    setSubmitting(true);
     const hoursInput = document.getElementById('hours_add');
     const enteredValue = hoursInput.value.trim();
     const timeRegex = /^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/;
@@ -447,6 +454,7 @@ const CreateTemplateComponent = () => {
       document.getElementById('start_days').value = '';
     }
     setShow(false);
+    setSubmitting(false);
   };
 
   const handleCancelTask = (e) => {
@@ -506,7 +514,6 @@ const CreateTemplateComponent = () => {
   }, [checkRole]);
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Template Master" />
       <div className="row clearfix g-3">
         <div className="col-sm-12">
@@ -645,7 +652,11 @@ const CreateTemplateComponent = () => {
                 </div>
 
                 <div className="pull-right">
-                  <button type="submit" class="btn btn-sm btn-primary">
+                  <button
+                    disabled={submitting}
+                    type="submit"
+                    class="btn btn-sm btn-primary"
+                  >
                     Submit
                   </button>
                   <Link to={`/${_base}/Template`} class="btn btn-sm btn-danger">
@@ -729,9 +740,10 @@ const CreateTemplateComponent = () => {
                         <p className="p-0 m-0">
                           <b>Task Type Name : </b>
                           {
-                            taskTypeDropdown.find(
-                              (item) => item.value === task.task_type_id
-                            )?.label
+                            task?.task_type_id
+                            // taskTypeDropdown.find(
+                            //   (item) => item.value === task.task_type_id
+                            // )?.label
                           }
                         </p>
 
@@ -897,8 +909,8 @@ const CreateTemplateComponent = () => {
                                         handleSelectOptionClick(e)
                                       }
                                     >
-                                      {selectedOptions
-                                        ? selectedOptions
+                                      {editTaskModal?.modalData?.task_type_id
+                                        ? editTaskModal?.modalData?.task_type_id
                                         : 'Select an option'}
                                     </div>
                                     {isMenuOpen && (
@@ -1003,6 +1015,7 @@ const CreateTemplateComponent = () => {
                               <Modal.Footer>
                                 <div>
                                   <button
+                                    disabled={submitting}
                                     type="button"
                                     onClick={(e) => {
                                       // Validate the "Hours Required" field

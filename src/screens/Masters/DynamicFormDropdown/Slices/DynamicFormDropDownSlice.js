@@ -151,7 +151,7 @@ export const DynamicFormDropDownSlice = createSlice({
           value: d.id
         }));
         state.dropDownData = dropDownData;
-        let sortDropDown = payload.data.data;
+        let sortDropDown = payload.data.data.data;
         state.sortDropDown = sortDropDown;
       }
     });

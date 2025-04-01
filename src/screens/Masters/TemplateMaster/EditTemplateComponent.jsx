@@ -29,6 +29,8 @@ import { handleBasketModal, handleTaskModal } from './TemplateComponetSlice';
 
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
 import TaskTicketTypeService from '../../../services/MastersService/TaskTicketTypeService';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 const EditTemplateComponent = ({ match, props }) => {
   const navigate = useNavigate();
@@ -40,7 +42,6 @@ const EditTemplateComponent = ({ match, props }) => {
 
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [hoveredIndex, setHoveredIndex] = useState(null);
-
     const handleKeyDown = (e) => {
       if (e.key === 'Enter') {
         setOpenOptions(true);
@@ -264,7 +265,7 @@ const EditTemplateComponent = ({ match, props }) => {
       }
     });
 
-    await new TaskTicketTypeService().getChildrenData("TASK")?.then((res) => {
+    await new TaskTicketTypeService().getChildrenData('TASK')?.then((res) => {
       if (res?.status === 200) {
         setTaskData(res?.data?.data?.data);
       }
@@ -367,32 +368,36 @@ const EditTemplateComponent = ({ match, props }) => {
       }, 1000);
     }
   };
+  const [submitting, setSubmitting] = useState(false);
 
   const updateTemplate = async (e) => {
     e.preventDefault();
+    if (submitting) return; // Prevent multiple submissions
+    setSubmitting(true);
+
     const form = new FormData(e.target);
 
-    dispatch(updateTemplateData({ id: templateId, payload: form })).then(
-      (res) => {
-        if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
-          setNotify({ type: 'success', message: res?.payload?.data?.message });
-          dispatch(templateData());
+    try {
+      const res = await dispatch(
+        updateTemplateData({ id: templateId, payload: form })
+      );
 
-          setTimeout(() => {
-            navigate(`/${_base}/Template`, {
-              state: {
-                alert: {
-                  type: 'success',
-                  message: res?.payload?.data?.message
-                }
-              }
-            });
-          }, 3000);
-        } else {
-          setNotify({ type: 'danger', message: res?.payload?.data?.message });
-        }
+      if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
+        toast.success(res.payload.data.message);
+        dispatch(templateData());
+
+        setTimeout(() => {
+          navigate(`/${_base}/Template`);
+        }, 3000);
+      } else {
+        toast.error(res.payload.data.message);
       }
-    );
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      // Ensures submitting is reset in ALL cases
+    }
+    setSubmitting(false);
   };
 
   const handleAddTask = async (e) => {
@@ -410,9 +415,9 @@ const EditTemplateComponent = ({ match, props }) => {
     ).then((res) => {
       if (res.payload.data.status === 1) {
         loadData();
-        setNotify({ type: 'success', message: res.payload.data.message });
+        // setNotify({ type: 'success', message: res.payload.data.message });
       } else {
-        setNotify({ type: 'danger', message: res.payload.data.message });
+        // setNotify({ type: 'danger', message: res.payload.data.message });
         loadData();
       }
     });
@@ -447,7 +452,6 @@ const EditTemplateComponent = ({ match, props }) => {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Edit Template" />
       <div className="row clearfix g-3">
         <div className="card-body">
@@ -547,7 +551,11 @@ const EditTemplateComponent = ({ match, props }) => {
               </div>
             </div>
             <div className="pull-right mt-4">
-              <button type="submit" className="btn btn-sm btn-primary">
+              <button
+                disabled={submitting}
+                type="submit"
+                className="btn btn-sm btn-primary"
+              >
                 Submit
               </button>
             </div>

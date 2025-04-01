@@ -380,6 +380,7 @@ function BillCheckingTransaction() {
                 </Link>
               )}
           </>
+
         );
       }
     },
@@ -952,7 +953,7 @@ function BillCheckingTransaction() {
         if (res.data.status === 1) {
           setIsLoading(false);
 
-          const temp = res.data.data;
+          const temp = res.data.data.data;
 
           setUserDropdown(
             temp.map((d) => ({
