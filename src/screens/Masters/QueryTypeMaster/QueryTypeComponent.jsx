@@ -28,6 +28,9 @@ import { toast } from 'react-toastify';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { Field, Form, Formik, ErrorMessage } from 'formik';
 import { errorHandler } from '../../../utils';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 
 function QueryTypeComponent() {
   //initial state
@@ -142,11 +145,14 @@ function QueryTypeComponent() {
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <button
             type="button"
@@ -157,7 +163,7 @@ function QueryTypeComponent() {
               setNotify(null);
               handleModal({
                 showModal: true,
-                modalData: row,
+                modalData: row?.original,
                 modalHeader: 'Edit Query Type'
               });
             }}
@@ -167,82 +173,28 @@ function QueryTypeComponent() {
         </div>
       )
     },
+    { accessorKey: 'counter', header: 'Sr', size: 120 },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
-    },
-    {
-      name: 'Query Type Name',
-      selector: (row) => row.query_type_name,
-      sortable: true,
-      cell: (row) => (
+      accessorFn: (originalRow) => originalRow.query_type_name || '--',
+      header: 'Query Type Name',
+      size: 240,
+      Cell: ({ row }) => (
         <div
           className="btn-group"
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.query_type_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.query_type_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.query_type_name && row.query_type_name.length < 10
-                    ? row.query_type_name
-                    : row.query_type_name.substring(0, 10) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
-    },
-    {
-      name: 'Form Name',
-      selector: (row) => row.form_name,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.form_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.form_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.form_name && row.form_name.length < 10
-                    ? row.form_name
-                    : row.form_name.substring(0, 10) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
-    },
-    {
-      name: 'Query Group',
-      selector: (row) => row.query_group_name,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.query_group_name && (
+          {row?.original?.query_type_name && (
             <OverlayTrigger
-              overlay={<Tooltip>{row.query_group_name} </Tooltip>}
+              overlay={<Tooltip>{row?.original?.query_type_name} </Tooltip>}
             >
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.query_group_name && row.query_group_name.length < 10
-                    ? row.query_group_name
-                    : row.query_group_name.substring(0, 10) + '....'}
+                  {row?.original?.query_type_name &&
+                  row?.original?.query_type_name.length < 10
+                    ? row?.original?.query_type_name
+                    : row?.original?.query_type_name.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -251,47 +203,108 @@ function QueryTypeComponent() {
       )
     },
     {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
+      accessorFn: (originalRow) => originalRow.form_name || '--',
+      header: 'Form Name',
+      size: 190,
+      Cell: ({ row }) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row?.original?.form_name && (
+            <OverlayTrigger overlay={<Tooltip>{row.form_name} </Tooltip>}>
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row?.original?.form_name &&
+                  row?.original?.form_name.length < 10
+                    ? row?.original?.form_name
+                    : row?.original?.form_name.substring(0, 10) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
           )}
         </div>
       )
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow.query_group_name || '--',
+      header: 'Query Group',
+      size: 220,
+      Cell: ({ row }) => (
+        <div
+          className="btn-group"
+          role="group"
+          aria-label="Basic outlined example"
+        >
+          {row?.original?.query_group_name && (
+            <OverlayTrigger
+              overlay={<Tooltip>{row?.original?.query_group_name} </Tooltip>}
+            >
+              <div>
+                <span className="ms-1">
+                  {' '}
+                  {row?.original?.query_group_name &&
+                  row?.original?.query_group_name.length < 10
+                    ? row?.original?.query_group_name
+                    : row?.original?.query_group_name.substring(0, 10) + '....'}
+                </span>
+              </div>
+            </OverlayTrigger>
+          )}
+        </div>
+      )
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow.is_active || '--',
+      header: 'Status',
+      size: 160,
+      Cell: ({ row }) => (
+        <div>
+          {row?.original?.is_active === 1 ? (
+            <span className="badge bg-primary" style={{ width: '4rem' }}>
+              Active
+            </span>
+          ) : row?.original?.is_active === 0 ? (
+            <span className="badge bg-danger" style={{ width: '4rem' }}>
+              Deactive
+            </span>
+          ) : (
+            '--'
+          )}
+        </div>
+      )
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`,
+      size: 250
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow.created_by || '--',
+      header: 'Created By',
+      size: 180
+    },
+    {
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`,
+      size: 250
+    },
+    {
+      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      header: 'Updated By',
+      size: 190
     }
   ];
 
@@ -851,8 +864,6 @@ function QueryTypeComponent() {
 
   const validationSchema = CustomValidation(fields);
 
-  console.log(modalQueryGroup,"modalQueryGroup")
-
   const initialValueGroupName = {
     group_name: modalQueryGroup.modalDataQueryGroup
       ? modalQueryGroup.modalDataQueryGroup.group_name
@@ -866,7 +877,7 @@ function QueryTypeComponent() {
       required: true,
       alphaNumeric: true,
       max: 100,
-      min: 3,
+      min: 3
     }
   ];
   const validationSchemaGroupName = CustomValidation(fieldsGroupName);
@@ -900,7 +911,7 @@ function QueryTypeComponent() {
             );
           }}
         />
-        <SearchBoxHeader
+        {/* <SearchBoxHeader
           setSearchTerm={setSearchTerm}
           searchTerm={searchTerm}
           handleSearch={handleSearch}
@@ -909,22 +920,29 @@ function QueryTypeComponent() {
           exportFileName="Query Type Master Record"
           exportData={exportData}
           showExportButton={true}
-        />
+        /> */}
 
         <div className="card mt-2">
-          {isLoading && <TableLoadingSkelton />}
-          {!isLoading && data && (
-            <DataTable
-              columns={columns}
-              data={filteredData}
-              defaultSortField="title"
-              pagination
-              progressPending={isLoading}
-              progressComponent={<TableLoadingSkelton />}
-              selectableRows={false}
-              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-              highlightOnHover={true}
-            />
+          {/* {isLoading && <TableLoadingSkelton />} */}
+          {data && (
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <MaterialTable
+                isLoading={isLoading}
+                data={filteredData}
+                columns={columns}
+              />
+            </LocalizationProvider>
+            // <DataTable
+            //   columns={columns}
+            //   data={filteredData}
+            //   defaultSortField="title"
+            //   pagination
+            //   progressPending={isLoading}
+            //   progressComponent={<TableLoadingSkelton />}
+            //   selectableRows={false}
+            //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+            //   highlightOnHover={true}
+            // />
           )}
         </div>
 
@@ -1052,7 +1070,6 @@ function QueryTypeComponent() {
                             <Dropdown.Menu as="ul">
                               <li
                                 className="btn btn-sm btn-warning text-white"
-
                                 onClick={(e) => {
                                   if (!queryGroupData?.length) return;
                                   handleModalEditPopup({
@@ -1240,190 +1257,198 @@ function QueryTypeComponent() {
         }}
       >
         <Formik
-        initialValues={initialValueGroupName}
-        validationSchema={validationSchemaGroupName}
-        onSubmit={(value) =>
-          // console.log(value,"values")
-          handleFormQueryGroup(value, modalQueryGroup.modalDataQueryGroup ? modalQueryGroup.modalDataQueryGroup.id : '')
-        }
-      >
-         {({ isSubmitting, setFieldValue, values }) => (
-        <Form
-          // method="post"
-          // onSubmit={handleFormQueryGroup(
-          //   modalQueryGroup.modalDataQueryGroup
-          //     ? modalQueryGroup.modalDataQueryGroup.id
-          //     : ''
-          // )}
+          initialValues={initialValueGroupName}
+          validationSchema={validationSchemaGroupName}
+          onSubmit={(value) =>
+            // console.log(value,"values")
+            handleFormQueryGroup(
+              value,
+              modalQueryGroup.modalDataQueryGroup
+                ? modalQueryGroup.modalDataQueryGroup.id
+                : ''
+            )
+          }
         >
-          <Modal.Header closeButton>
-            <Modal.Title className="fw-bold">
-              {modalQueryGroup.modalHeaderQueryGroup}
-            </Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="deadline-form">
-              <div className="row g-3 mb-3">
-                <label className="form-label font-weight-bold">
-                  Query Group :<Astrick color="red" size="13px" />
-                </label>
-                <div className="col-sm-12">
-                  {modalQueryGroup.modalDataQueryGroup && (
-                    <Field
-                      type="text"
-                      style={{ height: '40px' }}
-                      id="group_name"
-                      name="group_name"
-                      placeholder=""
-                      defaultValue={
-                        modalQueryGroup.modalDataQueryGroup &&
-                        modalQueryGroup.modalDataQueryGroup &&
-                        modalQueryGroup.modalDataQueryGroup.group_name
-                          ? modalQueryGroup.modalDataQueryGroup.group_name
-                          : ''
-                      }
-                      // maxLength={50}
-                      // required
-                      // onKeyPress={(e) => {
-                      //   Validation.CharactersNumbersOnly(e);
-                      // }}
-                    />
-                  )}
-                     {/* <ErrorMessage
+          {({ isSubmitting, setFieldValue, values }) => (
+            <Form
+            // method="post"
+            // onSubmit={handleFormQueryGroup(
+            //   modalQueryGroup.modalDataQueryGroup
+            //     ? modalQueryGroup.modalDataQueryGroup.id
+            //     : ''
+            // )}
+            >
+              <Modal.Header closeButton>
+                <Modal.Title className="fw-bold">
+                  {modalQueryGroup.modalHeaderQueryGroup}
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="deadline-form">
+                  <div className="row g-3 mb-3">
+                    <label className="form-label font-weight-bold">
+                      Query Group :<Astrick color="red" size="13px" />
+                    </label>
+                    <div className="col-sm-12">
+                      {modalQueryGroup.modalDataQueryGroup && (
+                        <Field
+                          type="text"
+                          style={{ height: '40px' }}
+                          id="group_name"
+                          name="group_name"
+                          placeholder=""
+                          defaultValue={
+                            modalQueryGroup.modalDataQueryGroup &&
+                            modalQueryGroup.modalDataQueryGroup &&
+                            modalQueryGroup.modalDataQueryGroup.group_name
+                              ? modalQueryGroup.modalDataQueryGroup.group_name
+                              : ''
+                          }
+                          // maxLength={50}
+                          // required
+                          // onKeyPress={(e) => {
+                          //   Validation.CharactersNumbersOnly(e);
+                          // }}
+                        />
+                      )}
+                      {/* <ErrorMessage
                                           name="group_name"
                                           component="small"
                                           className="text-danger small"
                                         /> */}
 
-                  {!modalQueryGroup.modalDataQueryGroup && (
-                    <Field
-                      type="text"
-                      style={{ height: '40px' }}
-                      id="group_name"
+                      {!modalQueryGroup.modalDataQueryGroup && (
+                        <Field
+                          type="text"
+                          style={{ height: '40px' }}
+                          id="group_name"
+                          name="group_name"
+                          placeholder=""
+                          // maxLength={50}
+                          // required
+                          // onKeyPress={(e) => {
+                          //   Validation.CharactersNumbersOnly(e);
+                          // }}
+                        />
+                      )}
+                    </div>
+                    <ErrorMessage
                       name="group_name"
-                      placeholder=""
-                      // maxLength={50}
-                      // required
-                      // onKeyPress={(e) => {
-                      //   Validation.CharactersNumbersOnly(e);
-                      // }}
+                      component="small"
+                      className="text-danger small"
                     />
-                  )}
-
-                </div>
-                <ErrorMessage
-                                          name="group_name"
-                                          component="small"
-                                          className="text-danger small"
-                                        />
-              </div>
-
-              {modalQueryGroup.modalDataQueryGroup && (
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Status: <Astrick color="red" size="13px" />
-                  </label>
-                  <div className="row">
-                    <div className="col-md-2">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="is_active"
-                          id="is_active_1"
-                          value="1"
-                          onClick={(e) => handleIsActive(e)}
-                          defaultChecked={
-                            modalQueryGroup.modalDataQueryGroup &&
-                            modalQueryGroup.modalDataQueryGroup.is_active === 1
-                              ? true
-                              : !modalQueryGroup.modalDataQueryGroup
-                              ? true
-                              : false
-                          }
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="is_active_1"
-                        >
-                          Active
-                        </label>
-                      </div>
-                    </div>
-                    <div className="col-md-1">
-                      <div className="form-check">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          name="is_active"
-                          id="is_active_0"
-                          value="0"
-                          style={{ marginLeft: 'auto' }}
-                          readOnly={
-                            modalQueryGroup.modalDataQueryGroup ? false : true
-                          }
-                          onClick={(e) => handleIsActive(e)}
-                          defaultChecked={
-                            modalQueryGroup.modalDataQueryGroup &&
-                            modalQueryGroup.modalDataQueryGroup.is_active === 0
-                              ? true
-                              : false
-                          }
-                        />
-                        <label
-                          className="form-check-label"
-                          htmlFor="is_active_0"
-                        >
-                          Deactive
-                        </label>
-                      </div>
-                    </div>
                   </div>
+
+                  {modalQueryGroup.modalDataQueryGroup && (
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Status: <Astrick color="red" size="13px" />
+                      </label>
+                      <div className="row">
+                        <div className="col-md-2">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="is_active"
+                              id="is_active_1"
+                              value="1"
+                              onClick={(e) => handleIsActive(e)}
+                              defaultChecked={
+                                modalQueryGroup.modalDataQueryGroup &&
+                                modalQueryGroup.modalDataQueryGroup
+                                  .is_active === 1
+                                  ? true
+                                  : !modalQueryGroup.modalDataQueryGroup
+                                  ? true
+                                  : false
+                              }
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="is_active_1"
+                            >
+                              Active
+                            </label>
+                          </div>
+                        </div>
+                        <div className="col-md-1">
+                          <div className="form-check">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              name="is_active"
+                              id="is_active_0"
+                              value="0"
+                              style={{ marginLeft: 'auto' }}
+                              readOnly={
+                                modalQueryGroup.modalDataQueryGroup
+                                  ? false
+                                  : true
+                              }
+                              onClick={(e) => handleIsActive(e)}
+                              defaultChecked={
+                                modalQueryGroup.modalDataQueryGroup &&
+                                modalQueryGroup.modalDataQueryGroup
+                                  .is_active === 0
+                                  ? true
+                                  : false
+                              }
+                            />
+                            <label
+                              className="form-check-label"
+                              htmlFor="is_active_0"
+                            >
+                              Deactive
+                            </label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
                 </div>
-              )}
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            {!modalQueryGroup.modalDataQueryGroup && (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{
-                  backgroundColor: '#484C7F',
-                  width: '80px',
-                  padding: '8px'
-                }}
-              >
-                Add
-              </button>
-            )}
+              </Modal.Body>
+              <Modal.Footer>
+                {!modalQueryGroup.modalDataQueryGroup && (
+                  <button
+                    type="submit"
+                    className="btn btn-primary text-white"
+                    style={{
+                      backgroundColor: '#484C7F',
+                      width: '80px',
+                      padding: '8px'
+                    }}
+                  >
+                    Add
+                  </button>
+                )}
 
-            {modalQueryGroup.modalDataQueryGroup && (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{ backgroundColor: '#484C7F' }}
-              >
-                Update
-              </button>
-            )}
+                {modalQueryGroup.modalDataQueryGroup && (
+                  <button
+                    type="submit"
+                    className="btn btn-primary text-white"
+                    style={{ backgroundColor: '#484C7F' }}
+                  >
+                    Update
+                  </button>
+                )}
 
-            <button
-              type="button"
-              className="btn btn-danger text-white"
-              onClick={() => {
-                handleModalQueryGroup({
-                  showModalQueryGroup: false,
-                  modalDataQueryGroup: '',
-                  modalHeaderQueryGroup: ''
-                });
-              }}
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </Form>
-             )}
+                <button
+                  type="button"
+                  className="btn btn-danger text-white"
+                  onClick={() => {
+                    handleModalQueryGroup({
+                      showModalQueryGroup: false,
+                      modalDataQueryGroup: '',
+                      modalHeaderQueryGroup: ''
+                    });
+                  }}
+                >
+                  Cancel
+                </button>
+              </Modal.Footer>
+            </Form>
+          )}
         </Formik>
         {/* <form
           method="post"

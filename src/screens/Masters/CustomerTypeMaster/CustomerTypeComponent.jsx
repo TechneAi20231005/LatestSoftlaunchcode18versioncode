@@ -1,13 +1,13 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Modal } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
+// import DataTable from 'react-data-table-component';
 
 import CustomerType from '../../../services/MastersService/CustomerTypeService';
 import PageHeader from '../../../components/Common/PageHeader';
 
 import { Astrick } from '../../../components/Utilities/Style';
-import * as Validation from '../../../components/Utilities/Validation';
-import Alert from '../../../components/Common/Alert';
+// import * as Validation from '../../../components/Utilities/Validation';
+// import Alert from '../../../components/Common/Alert';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -20,12 +20,15 @@ import {
   handleModalClose,
   handleModalOpen
 } from './CustomerTypeComponentSlice';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { Field, Form, Formik, ErrorMessage } from 'formik';
 import { errorHandler } from '../../../utils';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 function CustomerTypeComponent() {
   const isActive1Ref = useRef();
@@ -82,11 +85,14 @@ function CustomerTypeComponent() {
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <button
             type="button"
@@ -97,7 +103,7 @@ function CustomerTypeComponent() {
               dispatch(
                 handleModalOpen({
                   showModal: true,
-                  modalData: row,
+                  modalData: row?.original,
                   modalHeader: 'Edit Customer Type'
                 })
               );
@@ -108,61 +114,61 @@ function CustomerTypeComponent() {
         </div>
       )
     },
+    { accessorKey: 'counter', header: 'Sr', size: 120 },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
+      accessorFn: (originalRow) => originalRow.type_name || '--',
+      header: 'Customer Type Name',
+      size: 260
     },
     {
-      name: 'Customer Type Name',
-      selector: (row) => row.type_name,
-      sortable: true,
-      width: '200px'
-    },
-    {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      width: '125px',
-      cell: (row) => (
+      accessorFn: (originalRow) => originalRow.is_active || '--',
+      header: 'Status',
+      size: 160,
+      Cell: ({ row }) => (
         <div>
-          {row.is_active === 1 && (
+          {row?.original?.is_active === 1 ? (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
-          )}
-          {row.is_active === 0 && (
+          ) : row?.original?.is_active === 0 ? (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
+          ) : (
+            '--'
           )}
         </div>
       )
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`,
+      size: 250
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow.created_by || '--',
+      header: 'Created By',
+      size: 180
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`,
+      size: 250
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      header: 'Updated By',
+      size: 190
     }
   ];
 
@@ -298,7 +304,7 @@ function CustomerTypeComponent() {
         }}
       />
 
-      <SearchBoxHeader
+      {/* <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         searchTerm={searchTerm}
         handleSearch={handleSearch}
@@ -307,24 +313,31 @@ function CustomerTypeComponent() {
         exportFileName="Customer type Record"
         exportData={exportData}
         showExportButton={true}
-      />
+      /> */}
 
       <div className="card mt-2">
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
               {customerData && (
-                <DataTable
-                  columns={columns}
-                  data={filteredData}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                  progressPending={isLoading}
-                  progressComponent={<TableLoadingSkelton />}
-                />
+                <LocalizationProvider dateAdapter={AdapterDateFns}>
+                  <MaterialTable
+                    isLoading={isLoading}
+                    data={filteredData}
+                    columns={columns}
+                  />
+                </LocalizationProvider>
+                // <DataTable
+                //   columns={columns}
+                //   data={filteredData}
+                //   defaultSortField="title"
+                //   pagination
+                //   selectableRows={false}
+                //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                //   highlightOnHover={true}
+                //   progressPending={isLoading}
+                //   progressComponent={<TableLoadingSkelton />}
+                // />
               )}
             </div>
           </div>
