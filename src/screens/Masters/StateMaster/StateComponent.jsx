@@ -253,8 +253,9 @@ function StateComponent() {
       header: 'Updated At',
       filterVariant: 'date-range',
       Cell: ({ cell }) =>
-        cell.row.original.updated_at &&
-        moment(cell.row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+        cell.row?.original?.updated_at?.trim()
+          ? moment(cell.row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow?.updated_by || '--',

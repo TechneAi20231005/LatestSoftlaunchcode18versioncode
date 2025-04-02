@@ -152,8 +152,9 @@ function DepartmentComponent() {
       filterVariant: 'date-range',
       accessorFn: (row) => new Date(row.updated_at),
       Cell: ({ row }) =>
-        moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss'),
-      size: 350
+        row?.original?.updated_at?.trim()
+          ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
