@@ -36,10 +36,8 @@ function MaterialTable({
 
   const [expandColumn, setExpandColumn] = useState(false);
 
-  const handleColumnMenuOpen = (filterVariant) => {
-    //if (filterVariant === 'date-range') {
+  const handleColumnMenuOpen = () => {
     setExpandColumn(true);
-    //}
   };
 
   const updatedColumns = useMemo(() => {
