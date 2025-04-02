@@ -27,6 +27,7 @@ import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 
 function CountryComponent() {
   //initial state
@@ -64,11 +65,13 @@ function CountryComponent() {
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '100px',
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      Cell: ({ row }) => (
         <div
           className="btn-group"
           role="group"
@@ -83,7 +86,7 @@ function CountryComponent() {
               dispatch(
                 handleModalInStore({
                   showModal: true,
-                  modalData: row,
+                  modalData: row?.original,
                   modalHeader: 'Edit Country'
                 })
               );
@@ -95,60 +98,54 @@ function CountryComponent() {
       )
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
+      accessorFn: (originalRow) => originalRow?.counter || '--',
+      header: 'Sr',
+      size: 120
     },
     {
-      name: 'Country',
-      selector: (row) => row.country,
-      sortable: true,
-      width: '125px'
+      accessorFn: (originalRow) => originalRow?.country || '--',
+      header: 'Country',
+      size: 160
     },
     {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      Cell: ({ row }) => (
         <div>
-          {row.is_active === 1 && (
+          {row?.original?.is_active === 1 ? (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
-          )}
-          {row.is_active === 0 && (
+          ) : row?.original?.is_active === 0 ? (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
+          ) : (
+            '--'
           )}
         </div>
-      ),
-      width: '100px'
+      )
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.created_at || '--',
+      header: 'Created At',
+      size: 180
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.created_by || '--',
+      header: 'Created By',
+      size: 180
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_at || '--',
+      header: 'Updated At',
+      size: 180
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      header: 'Updated By',
+      size: 200
     }
   ];
   const handleForm = async (values, id, { setSubmitting = false }) => {
@@ -262,7 +259,7 @@ function CountryComponent() {
           );
         }}
       />
-      <SearchBoxHeader
+      {/* <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         searchTerm={searchTerm}
         handleSearch={handleSearch}
@@ -271,22 +268,10 @@ function CountryComponent() {
         exportFileName="Country Master Record"
         exportData={exportCountryData}
         showExportButton={true}
-      />
+      /> */}
 
       <div className="mt-2">
-        {countryData && (
-          <DataTable
-            columns={columns}
-            data={filteredData}
-            defaultSortField="title"
-            pagination
-            selectableRows={false}
-            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-            highlightOnHover={true}
-            progressPending={isLoading}
-            progressComponent={<TableLoadingSkelton />}
-          />
-        )}
+        {countryData && <MaterialTable columns={columns} data={filteredData} />}
       </div>
       <Modal centered show={modal.showModal}>
         <Formik

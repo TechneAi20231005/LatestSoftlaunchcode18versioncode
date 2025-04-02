@@ -198,7 +198,7 @@ class MainIndex extends React.Component {
     // }
 
     return (
-      <div className="main px-lg-4 px-md-4">
+      <div className="main px-lg-2 px-md-2">
         <Header />
 
         <div className="body d-flex py-lg-3 py-md-2">

@@ -25,6 +25,11 @@ import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import moment from 'moment';
+
 
 function StateComponent() {
   //initial state
@@ -60,97 +65,200 @@ function StateComponent() {
     setFilteredData(stateData);
   };
 
+  // const columns = [
+
+  //     name: 'Action',
+  //     selector: (row) => {},
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div className="btn-group" role="group">
+  //         <button
+  //           type="button"
+  //           className="btn btn-outline-secondary"
+  //           data-bs-toggle="modal"
+  //           data-bs-target="#edit"
+  //           onClick={(e) => {
+  //             dispatch(
+  //               handleModalInStore({
+  //                 showModal: true,
+  //                 modalData: row,
+  //                 modalHeader: 'Edit State'
+  //               })
+  //             );
+  //           }}
+  //         >
+  //           <i className="icofont-edit text-success"></i>
+  //         </button>
+  //       </div>
+  //     ),
+  //     width: '80px'
+  //   },
+  //   {
+  //     name: 'Sr',
+  //     selector: (row) => row.counter,
+  //     sortable: true,
+  //     width: '60px'
+  //   },
+  //   {
+  //     name: 'State',
+  //     selector: (row) => row.state,
+  //     sortable: true,
+  //     width: '125px'
+  //   },
+  //   {
+  //     name: 'Country',
+  //     selector: (row) => row.country,
+  //     sortable: true,
+  //     width: '125px'
+  //   },
+  //   {
+  //     name: 'Status',
+  //     selector: (row) => row.is_active,
+  //     sortable: true,
+  //     cell: (row) => (
+  //       <div>
+  //         {row.is_active === 1 && (
+  //           <span className="badge bg-primary" style={{ width: '4rem' }}>
+  //             Active
+  //           </span>
+  //         )}
+  //         {row.is_active === 0 && (
+  //           <span className="badge bg-danger" style={{ width: '4rem' }}>
+  //             Deactive
+  //           </span>
+  //         )}
+  //       </div>
+  //     ),
+  //     width: '100px'
+  //   },
+  //   {
+  //     name: 'Created At',
+  //     selector: (row) => row.created_at,
+  //     sortable: true,
+  //     width: '175px'
+  //   },
+  //   {
+  //     name: 'Created By',
+  //     selector: (row) => row.created_by,
+  //     sortable: true,
+  //     width: '175px'
+  //   },
+  //   {
+  //     name: 'Updated At',
+  //     selector: (row) => row.updated_at,
+  //     sortable: true,
+  //     width: '175px'
+  //   },
+  //   {
+  //     name: 'Updated By',
+  //     selector: (row) => row.updated_by,
+  //     sortable: true,
+  //     width: '175px'
+  //   }
+  // ];
+
+
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      cell: (row) => (
-        <div className="btn-group" role="group">
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            data-bs-toggle="modal"
-            data-bs-target="#edit"
-            onClick={(e) => {
-              dispatch(
-                handleModalInStore({
-                  showModal: true,
-                  modalData: row,
-                  modalHeader: 'Edit State'
-                })
-              );
-            }}
-          >
-            <i className="icofont-edit text-success"></i>
-          </button>
-        </div>
-      ),
-      width: '80px'
+      accessorKey: "action", // Use a valid key
+      header: "Action",
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      Cell: ({ row }) => {
+        return (
+          <div className="btn-group" role="group">
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#edit"
+              onClick={() => {
+                dispatch(
+                  handleModalInStore({
+                    showModal: true,
+                    modalData: row?.original,
+                    modalHeader: "Edit State",
+                  })
+                );
+              }}
+            >
+              <i className="icofont-edit text-success"></i>
+            </button>
+          </div>
+        );
+      },
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
+      accessorKey: "counter",
+      header: "Sr",
+      size: 70,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+
     },
     {
-      name: 'State',
-      selector: (row) => row.state,
-      sortable: true,
-      width: '125px'
+      accessorKey: "state",
+      header: "State",
+      size: 160,
+      filterVariant: 'autocomplete',
+      muiTableBodyCellProps: ({ cell }) => ({
+        sx: {
+          color: "#f19828",
+          fontWeight: 400
+        },
+      }),
     },
     {
-      name: 'Country',
-      selector: (row) => row.country,
-      sortable: true,
-      width: '125px'
+      accessorKey: "country",
+      header: "Country",
+      size: 160,
     },
     {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      ),
-      width: '100px'
+      accessorKey: "is_active",
+      header: "Status",
+      size: 150,
+      Cell: ({ row }) => {
+        return (
+          <div>
+            {row?.original?.is_active === 1 && (
+              <span className="badge bg-primary" style={{ width: "4rem" }}>
+                Active
+              </span>
+            )}
+            {row?.original?.is_active === 0 && (
+              <span className="badge bg-danger" style={{ width: "4rem" }}>
+                Deactive
+              </span>
+            )}
+          </div>
+        );
+      },
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => {
+            return moment(originalRow.created_at).startOf("day").toDate();
+      },
+      header: "Created At",
+      filterVariant: "date",
+      Cell: ({ cell }) => cell.row.original.created_at &&   moment(cell.row.original.created_at).format("MM/DD/YYYY HH:mm:ss")
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
+      accessorKey: "created_by",
+      header: "Created By",
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_at || "--",
+      header: "Updated At",
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_by || "--",
+      header: "Updated By"
     }
   ];
+
+
 
   const handleForm = async (values, id, { setSubmitting }) => {
     setSubmitting(true);
@@ -206,6 +314,8 @@ function StateComponent() {
   ]);
 
   useEffect(() => {
+
+
     setFilteredData(stateData);
   }, [stateData]);
 
@@ -254,7 +364,7 @@ function StateComponent() {
 
   return (
     <div className="container-xxl">
-      <Container fluid>
+
         <PageHeader
           headerTitle="State Master"
           renderRight={() => {
@@ -281,7 +391,7 @@ function StateComponent() {
           }}
         />
 
-        <SearchBoxHeader
+        {/* <SearchBoxHeader
           setSearchTerm={setSearchTerm}
           searchTerm={searchTerm}
           handleSearch={handleSearch}
@@ -290,24 +400,31 @@ function StateComponent() {
           exportFileName="State Master Record"
           exportData={exportData}
           showExportButton={true}
-        />
+          clientSearch={true}
+        /> */}
 
         <div className="card mt-2">
           {stateData && (
-            <DataTable
+            <MaterialTable
               columns={columns}
               data={filteredData}
-              defaultSortField="title"
-              pagination
-              selectableRows={false}
-              progressPending={isLoading}
-              progressComponent={<TableLoadingSkelton />}
-              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-              highlightOnHover={true}
-            />
+              isLoading={isLoading}
+            >
+              </MaterialTable>
+            // <DataTable
+            //   columns={columns}
+            //   data={filteredData}
+            //   defaultSortField="title"
+            //   pagination
+            //   selectableRows={false}
+            //   progressPending={isLoading}
+            //   progressComponent={<TableLoadingSkelton />}
+            //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+            //   highlightOnHover={true}
+            // />
           )}
         </div>
-      </Container>
+
 
       <Modal centered show={modal.showModal}>
         <Formik

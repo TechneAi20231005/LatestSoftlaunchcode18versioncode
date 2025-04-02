@@ -16,6 +16,7 @@ import { getCustomerData, getRoles } from '../../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 
 function CustomerComponent() {
   //initial state
@@ -56,14 +57,16 @@ function CustomerComponent() {
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      accessorFn: ({ row }) => (
         <div className="btn-group" role="group">
           <Link
-            to={`/${_base}/Customer/Edit/` + row.id}
+            to={`/${_base}/Customer/Edit/` + row?.original?.id}
             className="btn btn-outline-secondary"
           >
             <i className="icofont-edit text-success"></i>
@@ -72,60 +75,62 @@ function CustomerComponent() {
       )
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
+      accessorFn: (originalRow) => originalRow?.counter || '--',
+      header: 'Sr',
+      size: 90,
+      enableColumnOrdering: false,
+      enableGrouping: false
     },
     {
-      name: 'Customer Name',
-      selector: (row) => row.name,
-      sortable: true,
-      width: '150px'
+      accessorFn: (originalRow) => originalRow?.name || '--',
+      header: 'Customer Name',
+      size: 220
     },
-    { name: 'Type', selector: (row) => row.customer_type, sortable: true },
     {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      cell: (row) => (
+      accessorFn: (originalRow) => originalRow?.customer_type || '--',
+      header: 'Type',
+      size: 160
+    },
+    {
+      accessorFn: (originalRow) => originalRow?.is_active || '--',
+      header: 'Status',
+      size: 150,
+
+      Cell: ({ row }) => (
         <div>
-          {row.is_active === 1 && (
+          {row?.original?.is_active === 1 ? (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
-          )}
-          {row.is_active === 0 && (
+          ) : row?.original?.is_active === 0 ? (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
+          ) : (
+            '--'
           )}
         </div>
-      ),
-      sortable: true
+      )
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.created_at || '--',
+      header: 'Created At',
+      size: 180
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.created_by || '--',
+      header: 'Created By',
+      size: 180
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_at || '--',
+      header: 'Updated At',
+      size: 180
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      header: 'Updated By',
+      size: 200
     }
   ];
 
@@ -180,7 +185,7 @@ function CustomerComponent() {
         }}
       />
 
-      <SearchBoxHeader
+      {/* <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         searchTerm={searchTerm}
         handleSearch={handleSearch}
@@ -189,25 +194,14 @@ function CustomerComponent() {
         exportFileName="customer Master Record"
         exportData={exportCustomerData}
         showExportButton={true}
-      />
+      /> */}
 
       <div className="card mt-2">
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
               {getAllCustomerData && (
-                <DataTable
-                  columns={columns}
-                  data={filteredData}
-                  defaultSortField="title"
-                  pagination
-                  progressPending={isLoading}
-                  progressComponent={<TableLoadingSkelton />}
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                  fileName="ABC"
-                />
+                <MaterialTable columns={columns} data={filteredData} />
               )}
             </div>
           </div>
