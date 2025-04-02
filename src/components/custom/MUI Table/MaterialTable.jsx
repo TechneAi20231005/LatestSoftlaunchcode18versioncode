@@ -19,11 +19,8 @@ function MaterialTable({
   enableColumnOrdering = true,
   enableFacetedValues = true,
   isLoading,
-  enableColumnFilter = true,
+  enableColumnFilter = true
 }) {
-
-
-
   const handleMouseHover = (event) => {
     const clickedRow = event.currentTarget;
     const innerText = clickedRow.innerText;
@@ -34,10 +31,9 @@ function MaterialTable({
     const rowData = rows.map((row) => row.original);
     console.log(rowData, 'rowData');
   };
+  console.log(isLoading, 'isLoading');
 
   const handleExportData = () => {};
-
-
 
   return (
     <Box
@@ -50,7 +46,7 @@ function MaterialTable({
         }
       }}
     >
-     <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
         <MaterialReactTable
           columns={columns}
           data={data}
@@ -58,9 +54,8 @@ function MaterialTable({
           enablePagination={enablePagination}
           enableFilters={enableFilters}
           localization={{
-            noRecordsToDisplay: <NotFound topMargin={0}/>,
-            noResultsFound: <NotFound topMargin={0} />,
-
+            noRecordsToDisplay: <NotFound topMargin={0} />,
+            noResultsFound: <NotFound topMargin={0} />
           }}
           enableStickyHeader={enableStickyHeader}
           enableGrouping={enableGrouping}
@@ -72,7 +67,7 @@ function MaterialTable({
           muiTableBodyCellProps={{
             onMouseOver: handleMouseHover
           }}
-          state={{ isLoading: isLoading}}
+          state={{ isLoading: isLoading }}
           renderTopToolbarCustomActions={({ table }) => (
             <Box
               sx={{
@@ -104,9 +99,7 @@ function MaterialTable({
             </Box>
           )}
         />
-        </LocalizationProvider>
-
-
+      </LocalizationProvider>
     </Box>
   );
 }

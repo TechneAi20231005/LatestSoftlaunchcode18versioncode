@@ -15,6 +15,10 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import { handleModalInStore } from '../../Dashboard/DashbordSlice';
+import moment from 'moment';
 
 function DynamicFormComponent() {
   //initial state
@@ -55,98 +59,177 @@ function DynamicFormComponent() {
     setFilteredData(data);
   };
 
+  // const columns = [
+  //   {
+  //     name: 'Action',
+  //     selector: (row) => {},
+  //     sortable: false,
+  //     width: '80px',
+  //     cell: (row) => (
+  //       <div className="btn-group" role="group">
+  //         <Link
+  //           to={`/${_base}/DynamicForm/Edit/` + row.id}
+  //           className="btn btn-outline-secondary"
+  //         >
+  //           <i className="icofont-edit text-success"></i>
+  //         </Link>
+  //       </div>
+  //     )
+  //   },
+  //   {
+  //     name: 'Sr',
+  //     selector: (row) => row.counter,
+  //     sortable: true,
+  //     width: '60px'
+  //   },
+
+  //   {
+  //     name: 'Form Name',
+  //     selector: (row) => row.template_name,
+  //     sortable: true,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.template_name && (
+  //           <OverlayTrigger overlay={<Tooltip>{row.template_name} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">
+  //                 {' '}
+  //                 {row.template_name && row.template_name.length < 10
+  //                   ? row.template_name
+  //                   : row.template_name.substring(0, 10) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: 'Status',
+  //     selector: (row) => row.is_active,
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div>
+  //         {row.is_active === 1 && (
+  //           <span className="badge bg-primary" style={{ width: '4rem' }}>
+  //             Active
+  //           </span>
+  //         )}
+  //         {row.is_active === 0 && (
+  //           <span className="badge bg-danger" style={{ width: '4rem' }}>
+  //             Deactive
+  //           </span>
+  //         )}
+  //       </div>
+  //     )
+  //   },
+  //   {
+  //     name: 'Created At',
+  //     selector: (row) => row.created_at,
+  //     sortable: true,
+  //     width: '175px'
+  //   },
+  //   {
+  //     name: 'Created By',
+  //     selector: (row) => row.created_by,
+  //     sortable: true,
+  //     width: '175px'
+  //   },
+  //   {
+  //     name: 'Updated At',
+  //     selector: (row) => row.updated_at,
+  //     sortable: true,
+  //     width: '175px'
+  //   },
+  //   {
+  //     name: 'Updated By',
+  //     selector: (row) => row.updated_by,
+  //     sortable: true,
+  //     width: '175px'
+  //   }
+  // ];
+
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
-        <div className="btn-group" role="group">
-          <Link
-            to={`/${_base}/DynamicForm/Edit/` + row.id}
-            className="btn btn-outline-secondary"
-          >
-            <i className="icofont-edit text-success"></i>
-          </Link>
-        </div>
-      )
+      accessorKey: 'action', // Use a valid key
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      Cell: ({ row }) => {
+        return (
+          <div className="btn-group" role="group">
+            <Link
+              to={`/${_base}/DynamicForm/Edit/` + row.original?.id}
+              className="btn btn-outline-secondary"
+            >
+              <i className="icofont-edit text-success"></i>
+            </Link>
+          </div>
+        );
+      }
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 70,
+      enableColumnOrdering: false,
+      enableGrouping: false
     },
-
     {
-      name: 'Form Name',
-      selector: (row) => row.template_name,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.template_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.template_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.template_name && row.template_name.length < 10
-                    ? row.template_name
-                    : row.template_name.substring(0, 10) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
+      accessorKey: 'template_name',
+      header: 'Form Name',
+      size: 160,
+      filterVariant: 'autocomplete'
     },
 
     {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: false,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      )
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      Cell: ({ row }) => {
+        return (
+          <div>
+            {row?.original?.is_active === 1 && (
+              <span className="badge bg-primary" style={{ width: '4rem' }}>
+                Active
+              </span>
+            )}
+            {row?.original?.is_active === 0 && (
+              <span className="badge bg-danger" style={{ width: '4rem' }}>
+                Deactive
+              </span>
+            )}
+          </div>
+        );
+      }
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => {
+        return moment(originalRow.created_at).startOf('day').toDate();
+      },
+      header: 'Created At',
+      filterVariant: 'date',
+      Cell: ({ cell }) =>
+        moment(cell.row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
+      accessorKey: 'created_by',
+      header: 'Created By'
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_at || '--',
+      header: 'Updated At'
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      header: 'Updated By'
     }
   ];
 
@@ -205,7 +288,7 @@ function DynamicFormComponent() {
           );
         }}
       />
-      <SearchBoxHeader
+      {/* <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         searchTerm={searchTerm}
         handleSearch={handleSearch}
@@ -214,10 +297,10 @@ function DynamicFormComponent() {
         exportFileName="Dynamic form Master Record"
         exportData={exportData}
         showExportButton={true}
-      />
+      /> */}
 
       <div className="card mt-2">
-        {data && (
+        {/* {data && (
           <DataTable
             columns={columns}
             data={filteredData}
@@ -229,6 +312,13 @@ function DynamicFormComponent() {
             className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
             highlightOnHover={true}
           />
+        )} */}
+        {data && (
+          <MaterialTable
+            isLoading={isLoading}
+            columns={columns}
+            data={filteredData}
+          ></MaterialTable>
         )}
       </div>
     </div>

@@ -18,6 +18,8 @@ import Tooltip from 'react-bootstrap/Tooltip';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import moment from 'moment';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 
 export default function DynamicFormDropdownComponent() {
   //initial state
@@ -53,71 +55,150 @@ export default function DynamicFormDropdownComponent() {
     setFilteredData(data);
   };
 
+  // const columns = [
+  //   {
+  //     name: 'Action',
+  //     selector: (row) => {},
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div className="btn-group" role="group">
+  //         <Link
+  //           to={`/${_base}/DynamicFormDropdown/Edit/` + row.id}
+  //           className="btn btn-outline-secondary"
+  //         >
+  //           <i className="icofont-edit text-success"></i>
+  //         </Link>
+  //       </div>
+  //     )
+  //   },
+  //   { name: 'Sr', selector: (row) => row.counter, sortable: true },
+
+  //   {
+  //     name: 'Dropdown Name',
+  //     selector: (row) => row.dropdown_name,
+  //     sortable: true,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row?.dropdown_name && (
+  //           <OverlayTrigger overlay={<Tooltip>{row?.dropdown_name} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">
+  //                 {' '}
+  //                 {row?.dropdown_name && row.dropdown_name?.length < 10
+  //                   ? row?.dropdown_name
+  //                   : row?.dropdown_name.substring(0, 10) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: 'Status',
+  //     selector: (row) => row.is_active,
+  //     sortable: true,
+  //     cell: (row) => (
+  //       <div>
+  //         {row.is_active === 1 && (
+  //           <span className="badge bg-primary">Active</span>
+  //         )}
+  //         {row.is_active === 0 && (
+  //           <span className="badge bg-danger">Deactive</span>
+  //         )}
+  //       </div>
+  //     )
+  //   },
+
+  //   { name: 'Created At', selector: (row) => row.created_at, sortable: true },
+  //   { name: 'Created By', selector: (row) => row.created_by, sortable: true },
+
+  //   { name: 'Updated At', selector: (row) => row.updated_at, sortable: true },
+  //   { name: 'Updated By', selector: (row) => row.updated_by, sortable: true }
+  // ];
+
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      cell: (row) => (
-        <div className="btn-group" role="group">
-          <Link
-            to={`/${_base}/DynamicFormDropdown/Edit/` + row.id}
-            className="btn btn-outline-secondary"
-          >
-            <i className="icofont-edit text-success"></i>
-          </Link>
-        </div>
-      )
+      accessorKey: 'action', // Use a valid key
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      Cell: ({ row }) => {
+        return (
+          <div className="btn-group" role="group">
+            <Link
+              to={`/${_base}/DynamicFormDropdown/Edit/` + row.original?.id}
+              className="btn btn-outline-secondary"
+            >
+              <i className="icofont-edit text-success"></i>
+            </Link>
+          </div>
+        );
+      }
     },
-    { name: 'Sr', selector: (row) => row.counter, sortable: true },
-
     {
-      name: 'Dropdown Name',
-      selector: (row) => row.dropdown_name,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.dropdown_name && (
-            <OverlayTrigger overlay={<Tooltip>{row?.dropdown_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row?.dropdown_name && row.dropdown_name?.length < 10
-                    ? row?.dropdown_name
-                    : row?.dropdown_name.substring(0, 10) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 70,
+      enableColumnOrdering: false,
+      enableGrouping: false
+    },
+    {
+      accessorKey: 'dropdown_name',
+      header: 'Dropdown Name',
+      size: 160,
+      filterVariant: 'autocomplete'
     },
 
     {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary">Active</span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger">Deactive</span>
-          )}
-        </div>
-      )
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      Cell: ({ row }) => {
+        return (
+          <div>
+            {row?.original?.is_active === 1 && (
+              <span className="badge bg-primary" style={{ width: '4rem' }}>
+                Active
+              </span>
+            )}
+            {row?.original?.is_active === 0 && (
+              <span className="badge bg-danger" style={{ width: '4rem' }}>
+                Deactive
+              </span>
+            )}
+          </div>
+        );
+      }
     },
-
-    { name: 'Created At', selector: (row) => row.created_at, sortable: true },
-    { name: 'Created By', selector: (row) => row.created_by, sortable: true },
-
-    { name: 'Updated At', selector: (row) => row.updated_at, sortable: true },
-    { name: 'Updated By', selector: (row) => row.updated_by, sortable: true }
+    {
+      accessorFn: (originalRow) => {
+        return moment(originalRow.created_at).startOf('day').toDate();
+      },
+      header: 'Created At',
+      filterVariant: 'date',
+      Cell: ({ cell }) =>
+        moment(cell.row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+    },
+    {
+      accessorKey: 'created_by',
+      header: 'Created By'
+    },
+    {
+      accessorFn: (originalRow) => originalRow?.updated_at || '--',
+      header: 'Updated At'
+    },
+    {
+      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      header: 'Updated By'
+    }
   ];
 
   const loadData = async () => {
@@ -220,7 +301,7 @@ export default function DynamicFormDropdownComponent() {
           );
         }}
       />
-      <SearchBoxHeader
+      {/* <SearchBoxHeader
         searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
@@ -229,14 +310,13 @@ export default function DynamicFormDropdownComponent() {
         exportFileName="Dropdown Master Record"
         exportData={exportData}
         showExportButton={true}
-      />
+      /> */}
 
       <div className="card mt-2">
         <div className="card-body">
           <div className="row clearfix g-3">
             <div className="col-sm-12">
-              {isLoading && <TableLoadingSkelton />}
-              {!isLoading && data && (
+              {/* {!isLoading && data && (
                 <DataTable
                   columns={columns}
                   data={filteredData}
@@ -246,6 +326,13 @@ export default function DynamicFormDropdownComponent() {
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
+              )} */}
+              {data && (
+                <MaterialTable
+                  columns={columns}
+                  data={filteredData}
+                  isLoading={isLoading}
+                ></MaterialTable>
               )}
             </div>
           </div>

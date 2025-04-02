@@ -463,6 +463,8 @@ function EditDynamicForm() {
     }
   };
 
+  console.log('formId', formId);
+
   const loadData = useCallback(async () => {
     dispatch(dynamicFormData());
     const dynamicFormService = new DynamicFormService();
