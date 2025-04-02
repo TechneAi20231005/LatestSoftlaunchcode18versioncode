@@ -129,28 +129,12 @@ function StatusComponent() {
     {
       accessorFn: (originalRow) => new Date(originalRow.created_at),
       header: 'Created At',
-      filterFn: 'between',
       filterVariant: 'date-range',
-      sortingFn: 'datetime',
-      Cell: ({ cell }) => {
-        const dateValue = cell.getValue();
-        return (
-          <div
-            style={{
-              display: 'flex',
-              justifyContent: 'space-between',
-              width: '100%'
-            }}
-          >
-            <span style={{ width: '50%' }}>
-              {dateValue.toLocaleDateString()}
-            </span>
-            <span style={{ width: '50%' }}>
-              {dateValue.toLocaleTimeString()}
-            </span>
-          </div>
-        );
-      }
+      size: 190,
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`
     },
     {
       accessorFn: (originalRow) => originalRow.created_by || '--',
@@ -161,7 +145,7 @@ function StatusComponent() {
       accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
       header: 'Updated At',
       filterVariant: 'date-range',
-      filterFn: 'between',
+      size: 190,
       Cell: ({ cell }) =>
         `${cell.getValue().toLocaleDateString()} ${cell
           .getValue()
