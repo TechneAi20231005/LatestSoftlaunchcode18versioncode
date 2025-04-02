@@ -1,10 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 
-import DataTable from 'react-data-table-component';
+// import DataTable from 'react-data-table-component';
 
 import PageHeader from '../../../components/Common/PageHeader';
-import Alert from '../../../components/Common/Alert';
+// import Alert from '../../../components/Common/Alert';
 
 import { _base } from '../../../settings/constants';
 
@@ -18,9 +18,12 @@ import {
 } from './Slices/CustomerMappingAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
 
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import { customSearchHandler } from '../../../utils/customFunction';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 export default function CustomerMappingComponent() {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -62,14 +65,17 @@ export default function CustomerMappingComponent() {
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <Link
-            to={`/${_base}/CustomerMapping/Edit/` + row.id}
+            to={`/${_base}/CustomerMapping/Edit/` + row?.original?.id}
             className="btn btn-outline-secondary"
           >
             <i className="icofont-edit text-success"></i>
@@ -78,32 +84,33 @@ export default function CustomerMappingComponent() {
       )
     },
     {
-      name: 'Sr.No',
-      selector: (row) => row.Sro,
-      sortable: true,
-      width: '100px'
+      accessorKey: 'Sro',
+      header: 'Sr',
+      size: 120
     },
-    // { name: 'Query', selector: row => row.query_type_name, sortable: true,width: "175px" },
+    // // { name: 'Query', selector: row => row.query_type_name, sortable: true,width: "175px" },
 
     {
-      name: 'Query',
-      selector: (row) => row['Query'],
-      sortable: true,
-      width: '150px',
-      cell: (row) => (
+      accessorFn: (originalRow) => originalRow.query_type_name || '--',
+      header: 'Query',
+      size: 160,
+      Cell: ({ row }) => (
         <div
           className="btn-group"
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.query_type_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.query_type_name} </Tooltip>}>
+          {row?.original?.query_type_name && (
+            <OverlayTrigger
+              overlay={<Tooltip>{row?.original?.query_type_name} </Tooltip>}
+            >
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.query_type_name && row.query_type_name.length < 15
-                    ? row.query_type_name
-                    : row.query_type_name.substring(0, 15) + '....'}
+                  {row?.original?.query_type_name &&
+                  row?.original?.query_type_name.length < 15
+                    ? row?.original?.query_type_name
+                    : row?.original?.query_type_name.substring(0, 15) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -111,75 +118,77 @@ export default function CustomerMappingComponent() {
         </div>
       )
     },
-
     {
-      name: 'Template',
-      selector: (row) => row.template_name,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow.template_name || '--',
+      header: 'Template',
+      size: 200
     },
     {
-      name: 'Form',
-      selector: (row) => row.dynamic_form_name,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow.dynamic_form_name || '--',
+      header: 'Form',
+      size: 180
     },
 
     {
-      name: 'Department',
-      selector: (row) => row.department_name,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow.department_name || '--',
+      header: 'Department',
+      size: 180
     },
-    { name: 'Priority', selector: (row) => row.priority, sortable: true },
+    { accessorKey: 'priority', header: 'Priority', size: 180 },
     {
-      name: 'Approach',
-      selector: (row) => row.approach,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow.approach || '--',
+      header: 'Approach',
+      size: 180
     },
     {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
+      accessorFn: (originalRow) => originalRow.is_active || '--',
+      header: 'Status',
+      size: 160,
+      Cell: ({ row }) => (
         <div>
-          {row.is_active === 1 && (
+          {row?.original?.is_active === 1 ? (
             <span className="badge bg-primary" style={{ width: '4rem' }}>
               Active
             </span>
-          )}
-          {row.is_active === 0 && (
+          ) : row?.original?.is_active === 0 ? (
             <span className="badge bg-danger" style={{ width: '4rem' }}>
               Deactive
             </span>
+          ) : (
+            '--'
           )}
         </div>
       )
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`,
+      size: 250
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow.created_by || '--',
+      header: 'Created By',
+      size: 180
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`,
+      size: 250
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      header: 'Updated By',
+      size: 190
     }
   ];
 
@@ -226,7 +235,7 @@ export default function CustomerMappingComponent() {
           );
         }}
       />
-      <SearchBoxHeader
+      {/* <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         searchTerm={searchTerm}
         handleSearch={handleSearch}
@@ -235,22 +244,29 @@ export default function CustomerMappingComponent() {
         exportFileName="Customer Mapping Master Record"
         exportData={exportData}
         showExportButton={true}
-      />
+      /> */}
 
       <div className=" mt-2">
         <div className="col-sm-12">
           {data && (
-            <DataTable
-              columns={columns}
-              data={filteredData}
-              defaultSortField="title"
-              pagination
-              selectableRows={false}
-              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-              highlightOnHover={true}
-              progressPending={isLoading}
-              progressComponent={<TableLoadingSkelton />}
-            />
+            <LocalizationProvider dateAdapter={AdapterDateFns}>
+              <MaterialTable
+                isLoading={isLoading}
+                data={filteredData}
+                columns={columns}
+              />
+            </LocalizationProvider>
+            // <DataTable
+            //   columns={columns}
+            //   data={filteredData}
+            //   defaultSortField="title"
+            //   pagination
+            //   selectableRows={false}
+            //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+            //   highlightOnHover={true}
+            //   progressPending={isLoading}
+            //   progressComponent={<TableLoadingSkelton />}
+            // />
           )}
         </div>
       </div>

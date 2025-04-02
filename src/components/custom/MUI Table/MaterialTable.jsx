@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import { Box, Button } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
@@ -35,20 +35,34 @@ function MaterialTable({
 
   const handleExportData = () => {};
 
+  const [expandColumn, setExpandColumn] = useState(false);
+
+  const handleColumnMenuOpen = () => {
+    setExpandColumn(true);
+  };
+
+  const updatedColumns = useMemo(() => {
+    return columns.map((col) => {
+      if (col?.filterVariant === 'date-range') {
+        return {
+          ...col,
+          size: expandColumn ? 350 : 180
+        };
+      }
+      return col;
+    });
+  }, [expandColumn]);
+
   return (
     <Box
       sx={{
-        '& tbody > .MuiTableRow-root': {
-          height: 45
-        },
-        '& .MuiCircularProgress-root': {
-          display: 'none'
-        }
+        '& tbody > .MuiTableRow-root': { height: 45 },
+        '& .MuiCircularProgress-root': { display: 'none' }
       }}
     >
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <MaterialReactTable
-          columns={columns}
+          columns={updatedColumns}
           data={data}
           enableSorting={enableSorting}
           enablePagination={enablePagination}
@@ -67,6 +81,12 @@ function MaterialTable({
           muiTableBodyCellProps={{
             onMouseOver: handleMouseHover
           }}
+          muiTableHeadCellProps={({ column }) => ({
+            onClick: () => {
+              handleColumnMenuOpen();
+            }
+          })}
+          render
           state={{ isLoading: isLoading }}
           renderTopToolbarCustomActions={({ table }) => (
             <Box

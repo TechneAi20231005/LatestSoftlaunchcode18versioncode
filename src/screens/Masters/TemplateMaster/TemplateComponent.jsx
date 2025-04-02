@@ -14,9 +14,13 @@ import { useDispatch, useSelector } from 'react-redux';
 import { exportTempateData, templateData } from './TemplateComponetAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
 
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+// import { original } from '@reduxjs/toolkit';
 
 function TemplateComponent() {
   const location = useLocation();
@@ -32,7 +36,6 @@ function TemplateComponent() {
   const exportData = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.exportData
   );
-
 
   const notify = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
@@ -59,14 +62,17 @@ function TemplateComponent() {
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <Link
-            to={`/${_base}/Template/Edit/` + row.id}
+            to={`/${_base}/Template/Edit/` + row?.original?.id}
             className="btn btn-outline-secondary"
           >
             <i className="icofont-edit text-success"></i>
@@ -75,31 +81,32 @@ function TemplateComponent() {
       )
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '80px'
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 100
     },
 
     {
-      name: 'Template Name',
-      selector: (row) => row['Template Name'],
-      sortable: true,
-      width: '150px',
-      cell: (row) => (
+      accessorFn: (originalRow) => originalRow.template_name || '--',
+      header: 'Template Name',
+      size: 220,
+      Cell: ({ row }) => (
         <div
           className="btn-group"
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.template_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.template_name} </Tooltip>}>
+          {row?.original?.template_name && (
+            <OverlayTrigger
+              overlay={<Tooltip>{row?.original?.template_name} </Tooltip>}
+            >
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.template_name && row.template_name.length < 10
-                    ? row.template_name
-                    : row.template_name.substring(0, 10) + '....'}
+                  {row?.original?.template_name &&
+                  row?.original.template_name.length < 10
+                    ? row?.original?.template_name
+                    : row?.original?.template_name.substring(0, 10) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -107,46 +114,55 @@ function TemplateComponent() {
         </div>
       )
     },
-
     {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: false,
-      width: '150px',
-      cell: (row) => (
+      accessorFn: (originalRow) => originalRow.is_active || '--',
+      header: 'Status',
+      size: 160,
+      Cell: ({ row }) => (
         <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary">Active</span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger">Deactive</span>
+          {row?.original?.is_active === 1 ? (
+            <span className="badge bg-primary" style={{ width: '4rem' }}>
+              Active
+            </span>
+          ) : row?.original?.is_active === 0 ? (
+            <span className="badge bg-danger" style={{ width: '4rem' }}>
+              Deactive
+            </span>
+          ) : (
+            '--'
           )}
         </div>
       )
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`,
+      size: 250
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '150px'
+      accessorFn: (originalRow) => originalRow.created_by || '--',
+      header: 'Created By',
+      size: 180
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`,
+      size: 250
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '150px'
+      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      header: 'Updated By',
+      size: 190
     }
   ];
 
@@ -198,7 +214,7 @@ function TemplateComponent() {
         }}
       />
 
-      <SearchBoxHeader
+      {/* <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         searchTerm={searchTerm}
         handleSearch={handleSearch}
@@ -207,21 +223,29 @@ function TemplateComponent() {
         exportFileName="Template Master Record"
         exportData={exportData}
         showExportButton={true}
-      />
+      /> */}
 
       <div className="card mt-2">
         {templatedata && (
-          <DataTable
-            columns={columns}
-            data={filteredData}
-            defaultSortField="title"
-            pagination
-            selectableRows={false}
-            progressPending={isLoading}
-            progressComponent={<TableLoadingSkelton />}
-            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-            highlightOnHover={true}
-          />
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <MaterialTable
+              isLoading={isLoading}
+              data={filteredData}
+              columns={columns}
+            />
+          </LocalizationProvider>
+
+          // <DataTable
+          //   columns={columns}
+          //   data={filteredData}
+          //   defaultSortField="title"
+          //   pagination
+          //   selectableRows={false}
+          //   progressPending={isLoading}
+          //   progressComponent={<TableLoadingSkelton />}
+          //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+          //   highlightOnHover={true}
+          // />
         )}
       </div>
     </div>
