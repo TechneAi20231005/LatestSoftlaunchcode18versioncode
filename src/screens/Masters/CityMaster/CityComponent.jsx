@@ -474,7 +474,13 @@ function CityComponent() {
         showExportButton={true}
       /> */}
       <div className="mt-2">
-        {cityData && <MaterialTable columns={columns} data={filteredData} />}
+        {cityData && (
+          <MaterialTable
+            columns={columns}
+            data={filteredData}
+            isLoading={isLoading}
+          />
+        )}
       </div>
       <Modal centered show={modal.showModal}>
         <Formik

@@ -439,7 +439,11 @@ function DesignationComponent() {
 
         <div className="card mt-2">
           {getDesignationData && (
-            <MaterialTable columns={columns} data={filteredData} />
+            <MaterialTable
+              columns={columns}
+              data={filteredData}
+              isLoading={isLoading}
+            />
           )}
         </div>
       </Container>

@@ -277,7 +277,11 @@ function DepartmentComponent() {
           <div className="row clearfix g-3">
             <div className="col-sm-12">
               {department && (
-                <MaterialTable data={filteredData} columns={columns} />
+                <MaterialTable
+                  data={filteredData}
+                  columns={columns}
+                  isLoading={isLoading}
+                />
               )}
             </div>
           </div>

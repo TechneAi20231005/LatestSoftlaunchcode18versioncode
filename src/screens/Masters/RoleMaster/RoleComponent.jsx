@@ -327,7 +327,11 @@ function RoleComponent({ location }) {
           <div className="row clearfix g-3">
             <div className="col-sm-12">
               {RoleMasterData && (
-                <MaterialTable columns={columns} data={filteredData} />
+                <MaterialTable
+                  columns={columns}
+                  data={filteredData}
+                  isLoading={isLoading}
+                />
               )}
             </div>
           </div>
