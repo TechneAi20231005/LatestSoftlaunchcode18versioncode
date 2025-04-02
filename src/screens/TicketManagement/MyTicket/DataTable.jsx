@@ -90,7 +90,7 @@ const DataTableCustom = React.memo(
         {
           name: 'Type',
           selector: (row) =>
-            Object.values(row).length > 0 ? row.query_type_name || '--' : '',
+            Object.values(row).length > 0 ? row?.query_type?.query_type_name || '--' : '',
           sortable: true,
           width: '150px'
         },
@@ -104,7 +104,7 @@ const DataTableCustom = React.memo(
         {
           name: 'Status',
           selector: (row) =>
-            Object.values(row).length > 0 ? row.status_name || '--' : '',
+            Object.values(row).length > 0 ? row.status?.status || '--' : '',
           sortable: true,
           width: '150px'
         },
@@ -112,7 +112,7 @@ const DataTableCustom = React.memo(
           name: 'Assign To Dept',
           selector: (row) =>
             Object.values(row).length > 0
-              ? row.assign_to_department || '--'
+              ? row.assign_to_department?.department || '--'
               : '',
           sortable: true,
           width: '180px'
@@ -120,14 +120,14 @@ const DataTableCustom = React.memo(
         {
           name: 'Assigned To',
           selector: (row) =>
-            Object.values(row).length > 0 ? row.assign_to_user || '--' : '',
+            Object.values(row).length > 0 ? (row.assignee?.first_name || '-') + (row.assignee?.first_name || '-') : '',
           sortable: true,
           width: '180px'
         },
         {
           name: 'Created By',
           selector: (row) =>
-            Object.values(row).length > 0 ? row.created_by_name || '--' : '',
+            Object.values(row).length > 0 ? (row.created_by?.first_name || '-') + (row.created_by?.first_name || '-') : '',
           sortable: true,
           width: '150px'
         },

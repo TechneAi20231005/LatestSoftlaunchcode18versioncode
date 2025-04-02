@@ -250,7 +250,7 @@ const MyTicketsTab = () => {
 
   return (
     <div className="">
-      <MyTicketFilters
+      {/* <MyTicketFilters
         setShowModal={setShowModal}
         allUsersData={allUsersData}
         allDepartmentData={allDepartmentData}
@@ -267,8 +267,8 @@ const MyTicketsTab = () => {
         activeTabAndData={activeTabAndData}
         setTotalRows={setTotalRows}
         handleSubmit={handleSearch}
-      />
-      <FilterModal
+      /> */}
+      {/* <FilterModal
         showModal={showModal}
         setShowModal={setShowModal}
         allUsersData={allUsersData}
@@ -276,7 +276,7 @@ const MyTicketsTab = () => {
         allStatusData={allStatusData}
         setAllUsersData={setAllUsersData}
         onSubmit={onFilter}
-      />
+      /> */}
       <Tabs
         transition={true}
         id="noanim-tab-example1"
@@ -302,7 +302,7 @@ const MyTicketsTab = () => {
                 </span>
               }
             >
-              {item.name === 'SearchResult' ? (
+              {/* {item.name === 'SearchResult' ? (
                 <ExportToExcel
                   className="btn btn-sm btn-danger mx-0"
                   apiData={item?.data}
@@ -315,7 +315,7 @@ const MyTicketsTab = () => {
                   fileName={item.name}
                   typeOf={item.name}
                 />
-              )}
+              )} */}
               <div>
                 <DataTableCustom
                   allTicketsData={item.data}
