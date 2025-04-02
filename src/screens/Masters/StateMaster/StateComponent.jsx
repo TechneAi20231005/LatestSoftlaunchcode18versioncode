@@ -30,7 +30,6 @@ import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import moment from 'moment';
 
-
 function StateComponent() {
   //initial state
   const dispatch = useDispatch();
@@ -157,11 +156,10 @@ function StateComponent() {
   //   }
   // ];
 
-
   const columns = [
     {
-      accessorKey: "action", // Use a valid key
-      header: "Action",
+      accessorKey: 'action', // Use a valid key
+      header: 'Action',
       size: 110,
       enableColumnOrdering: false,
       enableGrouping: false,
@@ -179,7 +177,7 @@ function StateComponent() {
                   handleModalInStore({
                     showModal: true,
                     modalData: row?.original,
-                    modalHeader: "Edit State",
+                    modalHeader: 'Edit State'
                   })
                 );
               }}
@@ -188,77 +186,82 @@ function StateComponent() {
             </button>
           </div>
         );
-      },
+      }
     },
     {
-      accessorKey: "counter",
-      header: "Sr",
+      accessorKey: 'counter',
+      header: 'Sr',
       size: 70,
       enableColumnOrdering: false,
-      enableGrouping: false,
-
+      enableGrouping: false
     },
     {
-      accessorKey: "state",
-      header: "State",
+      accessorKey: 'state',
+      header: 'State',
       size: 160,
       filterVariant: 'autocomplete',
       muiTableBodyCellProps: ({ cell }) => ({
         sx: {
-          color: "#f19828",
+          color: '#f19828',
           fontWeight: 400
-        },
-      }),
+        }
+      })
     },
     {
-      accessorKey: "country",
-      header: "Country",
-      size: 160,
+      accessorKey: 'country',
+      header: 'Country',
+      size: 160
     },
     {
-      accessorKey: "is_active",
-      header: "Status",
+      accessorKey: 'is_active',
+      header: 'Status',
       size: 150,
       Cell: ({ row }) => {
         return (
           <div>
             {row?.original?.is_active === 1 && (
-              <span className="badge bg-primary" style={{ width: "4rem" }}>
+              <span className="badge bg-primary" style={{ width: '4rem' }}>
                 Active
               </span>
             )}
             {row?.original?.is_active === 0 && (
-              <span className="badge bg-danger" style={{ width: "4rem" }}>
+              <span className="badge bg-danger" style={{ width: '4rem' }}>
                 Deactive
               </span>
             )}
           </div>
         );
-      },
+      }
     },
     {
       accessorFn: (originalRow) => {
-            return moment(originalRow.created_at).startOf("day").toDate();
+        return moment(originalRow.created_at).startOf('day').toDate();
       },
-      header: "Created At",
-      filterVariant: "date",
-      Cell: ({ cell }) => cell.row.original.created_at &&   moment(cell.row.original.created_at).format("MM/DD/YYYY HH:mm:ss")
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        cell.row.original.created_at &&
+        moment(cell.row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
     },
     {
-      accessorKey: "created_by",
-      header: "Created By",
+      accessorKey: 'created_by',
+      header: 'Created By'
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_at || "--",
-      header: "Updated At",
+      accessorFn: (originalRow) =>
+        moment(originalRow.updated_at).startOf('day').toDate(),
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        cell.row?.original?.updated_at?.trim()
+          ? moment(cell.row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_by || "--",
-      header: "Updated By"
+      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      header: 'Updated By'
     }
   ];
-
-
 
   const handleForm = async (values, id, { setSubmitting }) => {
     setSubmitting(true);
@@ -314,8 +317,6 @@ function StateComponent() {
   ]);
 
   useEffect(() => {
-
-
     setFilteredData(stateData);
   }, [stateData]);
 
@@ -364,34 +365,33 @@ function StateComponent() {
 
   return (
     <div className="container-xxl">
+      <PageHeader
+        headerTitle="State Master"
+        renderRight={() => {
+          return (
+            checkRole &&
+            checkRole[0]?.can_create === 1 && (
+              <button
+                className="btn btn-dark px-5"
+                onClick={() => {
+                  dispatch(
+                    handleModalInStore({
+                      showModal: true,
+                      modalData: null,
+                      modalHeader: 'Add State'
+                    })
+                  );
+                }}
+              >
+                <i className="icofont-plus-circle fs-6" />
+                Add State
+              </button>
+            )
+          );
+        }}
+      />
 
-        <PageHeader
-          headerTitle="State Master"
-          renderRight={() => {
-            return (
-              checkRole &&
-              checkRole[0]?.can_create === 1 && (
-                <button
-                  className="btn btn-dark px-5"
-                  onClick={() => {
-                    dispatch(
-                      handleModalInStore({
-                        showModal: true,
-                        modalData: null,
-                        modalHeader: 'Add State'
-                      })
-                    );
-                  }}
-                >
-                  <i className="icofont-plus-circle fs-6" />
-                  Add State
-                </button>
-              )
-            );
-          }}
-        />
-
-        {/* <SearchBoxHeader
+      {/* <SearchBoxHeader
           setSearchTerm={setSearchTerm}
           searchTerm={searchTerm}
           handleSearch={handleSearch}
@@ -403,28 +403,26 @@ function StateComponent() {
           clientSearch={true}
         /> */}
 
-        <div className="card mt-2">
-          {stateData && (
-            <MaterialTable
-              columns={columns}
-              data={filteredData}
-              isLoading={isLoading}
-            >
-              </MaterialTable>
-            // <DataTable
-            //   columns={columns}
-            //   data={filteredData}
-            //   defaultSortField="title"
-            //   pagination
-            //   selectableRows={false}
-            //   progressPending={isLoading}
-            //   progressComponent={<TableLoadingSkelton />}
-            //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-            //   highlightOnHover={true}
-            // />
-          )}
-        </div>
-
+      <div className="card mt-2">
+        {stateData && (
+          <MaterialTable
+            columns={columns}
+            data={filteredData}
+            isLoading={isLoading}
+          ></MaterialTable>
+          // <DataTable
+          //   columns={columns}
+          //   data={filteredData}
+          //   defaultSortField="title"
+          //   pagination
+          //   selectableRows={false}
+          //   progressPending={isLoading}
+          //   progressComponent={<TableLoadingSkelton />}
+          //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+          //   highlightOnHover={true}
+          // />
+        )}
+      </div>
 
       <Modal centered show={modal.showModal}>
         <Formik

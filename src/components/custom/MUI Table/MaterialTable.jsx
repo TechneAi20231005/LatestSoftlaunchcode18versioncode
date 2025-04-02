@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import { Box, Button } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
@@ -19,11 +19,8 @@ function MaterialTable({
   enableColumnOrdering = true,
   enableFacetedValues = true,
   isLoading,
-  enableColumnFilter = true,
+  enableColumnFilter = true
 }) {
-
-
-
   const handleMouseHover = (event) => {
     const clickedRow = event.currentTarget;
     const innerText = clickedRow.innerText;
@@ -37,30 +34,41 @@ function MaterialTable({
 
   const handleExportData = () => {};
 
+  const [expandColumn, setExpandColumn] = useState(false);
 
+  const handleColumnMenuOpen = () => {
+    setExpandColumn(true);
+  };
+
+  const updatedColumns = useMemo(() => {
+    return columns.map((col) => {
+      if (col?.filterVariant === 'date-range') {
+        return {
+          ...col,
+          size: expandColumn ? 350 : 180
+        };
+      }
+      return col;
+    });
+  }, [expandColumn]);
 
   return (
     <Box
       sx={{
-        '& tbody > .MuiTableRow-root': {
-          height: 45
-        },
-        '& .MuiCircularProgress-root': {
-          display: 'none'
-        }
+        '& tbody > .MuiTableRow-root': { height: 45 },
+        '& .MuiCircularProgress-root': { display: 'none' }
       }}
     >
-     <LocalizationProvider dateAdapter={AdapterDateFns}>
+      <LocalizationProvider dateAdapter={AdapterDateFns}>
         <MaterialReactTable
-          columns={columns}
+          columns={updatedColumns}
           data={data}
           enableSorting={enableSorting}
           enablePagination={enablePagination}
           enableFilters={enableFilters}
           localization={{
-            noRecordsToDisplay: <NotFound topMargin={0}/>,
-            noResultsFound: <NotFound topMargin={0} />,
-
+            noRecordsToDisplay: <NotFound topMargin={0} />,
+            noResultsFound: <NotFound topMargin={0} />
           }}
           enableStickyHeader={enableStickyHeader}
           enableGrouping={enableGrouping}
@@ -72,7 +80,13 @@ function MaterialTable({
           muiTableBodyCellProps={{
             onMouseOver: handleMouseHover
           }}
-          state={{ isLoading: isLoading}}
+          muiTableHeadCellProps={({ column }) => ({
+            onClick: () => {
+              handleColumnMenuOpen();
+            }
+          })}
+          render
+          state={{ isLoading: isLoading }}
           renderTopToolbarCustomActions={({ table }) => (
             <Box
               sx={{
@@ -104,9 +118,7 @@ function MaterialTable({
             </Box>
           )}
         />
-        </LocalizationProvider>
-
-
+      </LocalizationProvider>
     </Box>
   );
 }
