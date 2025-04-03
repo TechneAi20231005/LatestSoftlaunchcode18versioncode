@@ -53,7 +53,7 @@ function MaterialTable({
   const [expandColumn, setExpandColumn] = useState(false);
 
   const handleColumnMenuOpen = () => {
-    setExpandColumn(!expandColumn);
+    setExpandColumn(true);
   };
 
   useEffect(() => {
@@ -137,11 +137,6 @@ function MaterialTable({
             onMouseOver: handleMouseHover
           }}
           muiTableHeadCellProps={({ column }) => ({
-            onClick: () => {
-              handleColumnMenuOpen();
-            }
-          })}
-          muiTopToolbarProps={({ column }) => ({
             onClick: () => {
               handleColumnMenuOpen();
             }
