@@ -1,6 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
 
 import TemplateService from '../../../services/MastersService/TemplateService';
@@ -17,9 +16,8 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 // import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 // import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
-import { LocalizationProvider } from '@mui/x-date-pickers';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+
 // import { original } from '@reduxjs/toolkit';
 
 function TemplateComponent() {
@@ -115,24 +113,24 @@ function TemplateComponent() {
       )
     },
     {
-      accessorFn: (originalRow) => originalRow.is_active || '--',
       header: 'Status',
       size: 160,
-      Cell: ({ row }) => (
-        <div>
-          {row?.original?.is_active === 1 ? (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          ) : row?.original?.is_active === 0 ? (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          ) : (
-            '--'
-          )}
-        </div>
-      )
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
       accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
@@ -227,13 +225,11 @@ function TemplateComponent() {
 
       <div className="card mt-2">
         {templatedata && (
-          <LocalizationProvider dateAdapter={AdapterDateFns}>
-            <MaterialTable
-              isLoading={isLoading}
-              data={filteredData}
-              columns={columns}
-            />
-          </LocalizationProvider>
+          <MaterialTable
+            isLoading={isLoading}
+            data={filteredData}
+            columns={columns}
+          />
 
           // <DataTable
           //   columns={columns}

@@ -115,38 +115,49 @@ function UserComponent() {
       header: 'Username'
     },
     {
-      accessorFn: (originalRow) => originalRow?.is_active || '--',
+      accessorKey: 'is_active',
       header: 'Status',
       size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
       Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
         return (
-          <div>
-            {row?.original?.is_active === 1 ? (
-              <span className="badge bg-primary" style={{ width: '4rem' }}>
-                Active
-              </span>
-            ) : row?.original?.is_active === 0 ? (
-              <span className="badge bg-danger" style={{ width: '4rem' }}>
-                Deactive
-              </span>
-            ) : (
-              '--'
-            )}
-          </div>
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
         );
       }
     },
     {
-      accessorFn: (originalRow) => originalRow?.created_at || '--',
-      header: 'Created At'
+      accessorFn: (originalRow) => {
+        return moment(originalRow.created_at).startOf('day').toDate();
+      },
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        cell.row.original.created_at &&
+        moment(cell.row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
     },
     {
       accessorFn: (originalRow) => originalRow?.created_by || '--',
       header: 'Created By'
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_at || '--',
-      header: 'Updated At'
+      accessorFn: (originalRow) =>
+        moment(originalRow.updated_at).startOf('day').toDate(),
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        cell.row?.original?.updated_at?.trim()
+          ? moment(cell.row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow?.updated_by || '--',
@@ -268,7 +279,7 @@ function UserComponent() {
       /> */}
       <div className="card mt-2 px-0">
         {filteredData && (
-          <MaterialTable columns={columns} data={filteredData}></MaterialTable>
+          <MaterialTable columns={columns} data={filteredData} />
         )}
       </div>
     </div>
