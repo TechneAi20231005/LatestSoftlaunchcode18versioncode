@@ -1,11 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import DataTable from 'react-data-table-component';
+// import DataTable from 'react-data-table-component';
 
 import CustomerService from '../../../services/MastersService/CustomerService';
 
 import PageHeader from '../../../components/Common/PageHeader';
-import Alert from '../../../components/Common/Alert';
+// import Alert from '../../../components/Common/Alert';
 import { _base } from '../../../settings/constants';
 
 import 'react-data-table-component-extensions/dist/index.css';
@@ -13,10 +13,12 @@ import 'react-data-table-component-extensions/dist/index.css';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getCustomerData, getRoles } from '../../Dashboard/DashboardAction';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import { Box } from '@mui/material';
+import moment from 'moment';
 
 function CustomerComponent() {
   //initial state
@@ -41,11 +43,16 @@ function CustomerComponent() {
   const [notify, setNotify] = useState(null);
 
   const [filteredData, setFilteredData] = useState([]);
-
+  const [reset, setReset] = useState(false);
   //search function
+  const clearFilters = () => {
+    setReset(true);
+  };
 
   const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(getAllCustomerData, searchTerm);
+    clearFilters();
+
     setFilteredData(filteredList);
   }, [getAllCustomerData, searchTerm]);
 
@@ -63,6 +70,7 @@ function CustomerComponent() {
       enableColumnOrdering: false,
       enableGrouping: false,
       enableSorting: false,
+      enableColumnFilter: false,
       accessorFn: ({ row }) => (
         <div className="btn-group" role="group">
           <Link
@@ -84,7 +92,10 @@ function CustomerComponent() {
     {
       accessorFn: (originalRow) => originalRow?.name || '--',
       header: 'Customer Name',
-      size: 220
+      size: 220,
+      Cell: ({ row }) => (
+        <Box sx={{ color: '#f19828' }}>{row?.original?.name}</Box>
+      )
     },
     {
       accessorFn: (originalRow) => originalRow?.customer_type || '--',
@@ -92,45 +103,53 @@ function CustomerComponent() {
       size: 160
     },
     {
-      accessorFn: (originalRow) => originalRow?.is_active || '--',
       header: 'Status',
       size: 150,
 
-      Cell: ({ row }) => (
-        <div>
-          {row?.original?.is_active === 1 ? (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          ) : row?.original?.is_active === 0 ? (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          ) : (
-            '--'
-          )}
-        </div>
-      )
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
-      accessorFn: (originalRow) => originalRow?.created_at || '--',
+      accessorFn: (originalRow) => new Date(originalRow.created_at),
       header: 'Created At',
-      size: 180
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow?.created_by || '--',
+      accessorFn: (originalRow) => originalRow.created_by || '--',
       header: 'Created By',
-      size: 180
+      size: 190
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_at || '--',
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
       header: 'Updated At',
-      size: 180
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      accessorFn: (originalRow) => originalRow.updated_by || '--',
       header: 'Updated By',
-      size: 200
+      size: 190
     }
   ];
 
@@ -197,15 +216,14 @@ function CustomerComponent() {
       /> */}
 
       <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {getAllCustomerData && (
-                <MaterialTable columns={columns} data={filteredData} />
-              )}
-            </div>
-          </div>
-        </div>
+        {getAllCustomerData && (
+          <MaterialTable
+            columns={columns}
+            data={filteredData}
+            isLoading={isLoading}
+            reset={reset}
+          />
+        )}
       </div>
     </div>
   );

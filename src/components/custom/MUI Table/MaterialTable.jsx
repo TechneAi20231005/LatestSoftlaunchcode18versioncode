@@ -1,10 +1,19 @@
-import React, { useState, useMemo } from 'react';
-import { MaterialReactTable } from 'material-react-table';
-import { Box, Button } from '@mui/material';
+import React, { useState, useMemo, useEffect } from 'react';
+import {
+  MaterialReactTable,
+  MRT_ShowHideColumnsButton,
+  MRT_ToggleDensePaddingButton,
+  MRT_ToggleFiltersButton,
+  MRT_ToggleFullScreenButton,
+  MRT_ToggleGlobalFilterButton
+} from 'material-react-table';
+import { Box, Button, Tooltip } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import NotFound from '../../NotFound';
+import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
+import { grey } from '@mui/material/colors';
 
 function MaterialTable({
   columns,
@@ -19,8 +28,15 @@ function MaterialTable({
   enableColumnOrdering = true,
   enableFacetedValues = true,
   isLoading,
-  enableColumnFilter = true
+  enableColumnFilter = true,
+  reset = false
 }) {
+  const [columnFilters, setColumnFilters] = useState([]);
+  const [sorting, setSorting] = useState([]);
+  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
+  const [rowSelection, setRowSelection] = useState({});
+  const [columnVisibility, setColumnVisibility] = useState({});
+  const [groupBy, setGroupBy] = useState([]);
   const handleMouseHover = (event) => {
     const clickedRow = event.currentTarget;
     const innerText = clickedRow.innerText;
@@ -38,15 +54,41 @@ function MaterialTable({
   const [expandColumn, setExpandColumn] = useState(false);
 
   const handleColumnMenuOpen = () => {
-    setExpandColumn(true);
+    setExpandColumn(!expandColumn);
   };
+
+  useEffect(() => {
+    if (reset) {
+      setColumnFilters([]);
+      setSorting([]);
+      setPagination({ pageIndex: 0, pageSize: 10 });
+      setRowSelection({});
+      setColumnVisibility({});
+    }
+  }, [reset]);
 
   const updatedColumns = useMemo(() => {
     return columns.map((col) => {
       if (col?.filterVariant === 'date-range') {
         return {
           ...col,
-          size: expandColumn ? 350 : 180
+          size: expandColumn ? 350 : 190,
+          muiFilterTextFieldProps: (column) => ({
+            placeholder: column?.rangeFilterIndex === 0 ? 'From' : 'To'
+          }),
+          filterFn: (row, columnId, filterValues) => {
+            if (!filterValues[0] && !filterValues[1]) return true;
+
+            const rowDate = new Date(row.getValue(columnId));
+            const fromDate = filterValues[0] ? new Date(filterValues[0]) : null;
+            const toDate = filterValues[1] ? new Date(filterValues[1]) : null;
+            if (toDate) toDate.setHours(23, 59, 59, 999);
+
+            return (
+              (!fromDate || rowDate >= fromDate) &&
+              (!toDate || rowDate <= toDate)
+            );
+          }
         };
       }
       return col;
@@ -57,13 +99,27 @@ function MaterialTable({
     <Box
       sx={{
         '& tbody > .MuiTableRow-root': { height: 45 },
-        '& .MuiCircularProgress-root': { display: 'none' }
+        '& .MuiCircularProgress-root': { display: 'none' },
+        '& .css-wsew38': {
+          sm: { flexDirection: 'row' },
+          xs: { flexDirection: 'column' },
+          alignItems: 'center'
+        },
+        '& .css-1p0wbhh': {
+          marginY: 'auto'
+        }
       }}
     >
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <MaterialReactTable
           columns={updatedColumns}
           data={data}
+          muiSkeletonProps={{
+            animation: 'wave',
+            sx: {
+              backgroundColor: 'rgba(8, 2, 2, 0.5)'
+            }
+          }}
           enableSorting={enableSorting}
           enablePagination={enablePagination}
           enableFilters={enableFilters}
@@ -86,15 +142,79 @@ function MaterialTable({
               handleColumnMenuOpen();
             }
           })}
+          muiTopToolbarProps={({ column }) => ({
+            onClick: () => {
+              handleColumnMenuOpen();
+            }
+          })}
           render
-          state={{ isLoading: isLoading }}
+          state={{
+            isLoading: isLoading,
+            columnFilters,
+            sorting,
+            pagination,
+            rowSelection,
+            columnVisibility,
+            grouping: groupBy
+          }}
+          onGroupingChange={setGroupBy}
+          onColumnFiltersChange={setColumnFilters}
+          onSortingChange={setSorting}
+          onPaginationChange={setPagination}
+          onRowSelectionChange={setRowSelection}
+          onColumnVisibilityChange={setColumnVisibility}
+          renderToolbarInternalActions={({ table }) => (
+            <Box
+              sx={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '0.5rem',
+                md: { flexWrap: 'nowrap' },
+                sm: { flexWrap: 'wrap' },
+                marginY: 'auto'
+              }}
+            >
+              <MRT_ToggleGlobalFilterButton table={table} />
+              <Tooltip title="Clear Filters" arrow>
+                <FilterAltOffIcon
+                  role="button"
+                  sx={{
+                    color: grey[600]
+                  }}
+                  onClick={() => {
+                    table.setColumnFilters([]);
+                    table.resetSorting();
+                    table.resetPagination();
+                    table.resetRowSelection();
+                    table.resetColumnVisibility();
+                    table.resetGrouping();
+                    table.reset();
+                  }}
+                  disabled={
+                    table.getState().columnFilters.length === 0 &&
+                    table.getState().columnVisibility.length === 0 &&
+                    table.getState().rowSelection.length === 0 &&
+                    table.getState().pagination.length === 0 &&
+                    table.getState().sorting.length === 0
+                  }
+                />
+              </Tooltip>
+              <Box onClick={handleColumnMenuOpen}>
+                <MRT_ToggleFiltersButton table={table} />
+              </Box>
+              <MRT_ShowHideColumnsButton table={table} />
+              <MRT_ToggleFullScreenButton table={table} />
+            </Box>
+          )}
           renderTopToolbarCustomActions={({ table }) => (
             <Box
               sx={{
                 display: 'flex',
                 gap: '16px',
                 padding: '8px',
-                flexWrap: 'wrap'
+                flexWrap: 'wrap',
+                xs: { width: '100%' },
+                sm: { width: 'fit-content' }
               }}
             >
               <Button
