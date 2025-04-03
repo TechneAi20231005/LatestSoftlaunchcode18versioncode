@@ -245,18 +245,19 @@ function RoleComponent({ location }) {
         await dispatch(postRole(formData));
         setTimeout(() => {
           dispatch(getRoleData());
+          clearFilters();
         }, 500);
       } else {
         await dispatch(updatedRole({ id: id, payload: editformdata }));
         setTimeout(() => {
           dispatch(getRoleData());
+          clearFilters();
         }, 500);
       }
     } catch (error) {
       errorHandler(error);
     } finally {
       setSubmitting(false);
-      clearFilters();
     }
   };
 

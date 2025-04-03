@@ -277,18 +277,19 @@ function StateComponent() {
         await dispatch(postStateData(formData));
         setTimeout(() => {
           dispatch(getStateData());
+          clearFilters();
         }, 500);
       } else {
         await dispatch(updateStateData({ id: id, payload: editformdata }));
         setTimeout(() => {
           dispatch(getStateData());
+          clearFilters();
         }, 500);
       }
     } catch (error) {
       errorHandler(error);
     } finally {
       setSubmitting(false);
-      clearFilters();
     }
   };
 

@@ -37,6 +37,8 @@ function MaterialTable({
   const [columnVisibility, setColumnVisibility] = useState({});
   const [groupBy, setGroupBy] = useState([]);
   const [globalFilter, setGlobalFilter] = useState([]);
+  const [showGlobalFilter, setShowGlobalFilter] = useState(false);
+  const [showColumnFilters, setShowColumnFilters] = useState(false);
   const handleMouseHover = (event) => {
     const clickedRow = event.currentTarget;
     const innerText = clickedRow.innerText;
@@ -65,6 +67,8 @@ function MaterialTable({
       setColumnVisibility({});
       setGroupBy([]);
       setGlobalFilter([]);
+      setShowGlobalFilter(false);
+      setShowColumnFilters(false);
     }
   }, [reset]);
 
@@ -152,7 +156,9 @@ function MaterialTable({
             rowSelection,
             columnVisibility,
             globalFilter,
-            grouping: groupBy
+            grouping: groupBy,
+            showGlobalFilter,
+            showColumnFilters
           }}
           onGroupingChange={setGroupBy}
           onColumnFiltersChange={setColumnFilters}
@@ -161,6 +167,8 @@ function MaterialTable({
           onRowSelectionChange={setRowSelection}
           onColumnVisibilityChange={setColumnVisibility}
           onGlobalFilterChange={setGlobalFilter}
+          onShowGlobalFilterChange={setShowGlobalFilter}
+          onShowColumnFiltersChange={setShowColumnFilters}
           renderToolbarInternalActions={({ table }) => (
             <Box
               sx={{
@@ -176,10 +184,22 @@ function MaterialTable({
               <Tooltip title="Clear Filters" arrow>
                 <FilterAltOffIcon
                   role="button"
+                  disabled={
+                    table.getState().columnFilters?.length === 0 &&
+                    JSON.stringify(table.getState().rowSelection) === '{}' &&
+                    JSON.stringify(table.getState().columnVisibility) ===
+                      '{}' &&
+                    table.getState().pagination.pageIndex === 0 &&
+                    table.getState().pagination.pageSize === 10 &&
+                    table.getState().sorting?.length === 0 &&
+                    table.getState().globalFilter?.length === 0 &&
+                    table.getState().grouping?.length === 0
+                  }
                   sx={{
                     color: grey[600]
                   }}
                   onClick={() => {
+                    console.log('calling');
                     table.setColumnFilters([]);
                     table.resetSorting();
                     table.resetPagination();

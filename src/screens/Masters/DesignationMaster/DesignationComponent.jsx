@@ -358,11 +358,13 @@ function DesignationComponent() {
         await dispatch(updatedDesignationData({ id, payload: formData }));
         setTimeout(() => {
           dispatch(getDesignationDataListThunk());
+          clearFilters();
         }, 500);
       } else {
         await dispatch(postDesignationData(formData));
         setTimeout(() => {
           dispatch(getDesignationDataListThunk());
+          clearFilters();
         }, 500);
         handleModalClose({
           showModal: false,
@@ -374,7 +376,6 @@ function DesignationComponent() {
       errorHandler(error);
     } finally {
       setSubmitting(false);
-      clearFilters();
     }
     // Use a timeout to ensure data is refreshed after the action
   };
