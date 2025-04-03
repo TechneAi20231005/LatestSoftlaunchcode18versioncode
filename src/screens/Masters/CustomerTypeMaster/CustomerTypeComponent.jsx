@@ -26,9 +26,8 @@ import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { Field, Form, Formik, ErrorMessage } from 'formik';
 import { errorHandler } from '../../../utils';
-import { LocalizationProvider } from '@mui/x-date-pickers';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { Box } from '@mui/material';
 
 function CustomerTypeComponent() {
   const isActive1Ref = useRef();
@@ -118,7 +117,10 @@ function CustomerTypeComponent() {
     {
       accessorFn: (originalRow) => originalRow.type_name || '--',
       header: 'Customer Type Name',
-      size: 260
+      size: 260,
+      Cell: ({ row }) => (
+        <Box sx={{ color: '#f19828' }}>{row?.original?.type_name}</Box>
+      )
     },
     {
       accessorFn: (originalRow) => originalRow.is_active || '--',
@@ -147,8 +149,7 @@ function CustomerTypeComponent() {
       Cell: ({ cell }) =>
         `${cell.getValue().toLocaleDateString()} ${cell
           .getValue()
-          .toLocaleTimeString()}`,
-      size: 250
+          .toLocaleTimeString()}`
     },
     {
       accessorFn: (originalRow) => originalRow.created_by || '--',
@@ -162,8 +163,7 @@ function CustomerTypeComponent() {
       Cell: ({ cell }) =>
         `${cell.getValue().toLocaleDateString()} ${cell
           .getValue()
-          .toLocaleTimeString()}`,
-      size: 250
+          .toLocaleTimeString()}`
     },
     {
       accessorFn: (originalRow) => originalRow.updated_by || '--',
@@ -316,32 +316,24 @@ function CustomerTypeComponent() {
       /> */}
 
       <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {customerData && (
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <MaterialTable
-                    isLoading={isLoading}
-                    data={filteredData}
-                    columns={columns}
-                  />
-                </LocalizationProvider>
-                // <DataTable
-                //   columns={columns}
-                //   data={filteredData}
-                //   defaultSortField="title"
-                //   pagination
-                //   selectableRows={false}
-                //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                //   highlightOnHover={true}
-                //   progressPending={isLoading}
-                //   progressComponent={<TableLoadingSkelton />}
-                // />
-              )}
-            </div>
-          </div>
-        </div>
+        {customerData && (
+          <MaterialTable
+            isLoading={isLoading}
+            data={filteredData}
+            columns={columns}
+          />
+          // <DataTable
+          //   columns={columns}
+          //   data={filteredData}
+          //   defaultSortField="title"
+          //   pagination
+          //   selectableRows={false}
+          //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+          //   highlightOnHover={true}
+          //   progressPending={isLoading}
+          //   progressComponent={<TableLoadingSkelton />}
+          // />
+        )}
       </div>
 
       <Modal centered show={modal.showModal}>

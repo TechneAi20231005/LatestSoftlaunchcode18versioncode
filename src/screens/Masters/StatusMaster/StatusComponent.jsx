@@ -23,8 +23,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { DatePicker, LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { Box } from '@mui/material';
 
 function StatusComponent() {
   const dispatch = useDispatch();
@@ -104,7 +103,10 @@ function StatusComponent() {
     {
       accessorFn: (originalRow) => originalRow.status || '--',
       header: 'Status Name',
-      size: 200
+      size: 200,
+      Cell: ({ row }) => (
+        <Box sx={{ color: '#f19828' }}>{row?.original?.status}</Box>
+      )
     },
     {
       accessorFn: (originalRow) => originalRow.is_active || '--',
@@ -130,7 +132,6 @@ function StatusComponent() {
       accessorFn: (originalRow) => new Date(originalRow.created_at),
       header: 'Created At',
       filterVariant: 'date-range',
-      size: 190,
       Cell: ({ cell }) =>
         `${cell.getValue().toLocaleDateString()} ${cell
           .getValue()
@@ -145,7 +146,6 @@ function StatusComponent() {
       accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
       header: 'Updated At',
       filterVariant: 'date-range',
-      size: 190,
       Cell: ({ cell }) =>
         `${cell.getValue().toLocaleDateString()} ${cell
           .getValue()
@@ -277,33 +277,25 @@ function StatusComponent() {
       /> */}
 
       <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {statusData && (
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <MaterialTable
-                    isLoading={isLoading}
-                    data={filteredData}
-                    columns={columns}
-                  />
-                </LocalizationProvider>
+        {statusData && (
+          <MaterialTable
+            isLoading={isLoading}
+            data={filteredData}
+            columns={columns}
+          />
 
-                // <DataTable
-                //   columns={columns}
-                //   data={filteredData}
-                //   defaultSortField="title"
-                //   pagination
-                //   selectableRows={false}
-                //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                //   highlightOnHover={true}
-                //   progressPending={isLoading}
-                //   progressComponent={<TableLoadingSkelton />}
-                // />
-              )}
-            </div>
-          </div>
-        </div>
+          // <DataTable
+          //   columns={columns}
+          //   data={filteredData}
+          //   defaultSortField="title"
+          //   pagination
+          //   selectableRows={false}
+          //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+          //   highlightOnHover={true}
+          //   progressPending={isLoading}
+          //   progressComponent={<TableLoadingSkelton />}
+          // />
+        )}
       </div>
 
       <Modal

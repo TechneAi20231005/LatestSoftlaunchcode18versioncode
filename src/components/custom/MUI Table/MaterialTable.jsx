@@ -37,7 +37,7 @@ function MaterialTable({
   const [expandColumn, setExpandColumn] = useState(false);
 
   const handleColumnMenuOpen = () => {
-    setExpandColumn(true);
+    setExpandColumn(!expandColumn);
   };
 
   const updatedColumns = useMemo(() => {
@@ -45,7 +45,23 @@ function MaterialTable({
       if (col?.filterVariant === 'date-range') {
         return {
           ...col,
-          size: expandColumn ? 350 : 180
+          size: expandColumn ? 350 : 190,
+          muiFilterTextFieldProps: (column) => ({
+            placeholder: column?.rangeFilterIndex === 0 ? 'From' : 'To'
+          }),
+          filterFn: (row, columnId, filterValues) => {
+            if (!filterValues[0] && !filterValues[1]) return true;
+
+            const rowDate = new Date(row.getValue(columnId));
+            const fromDate = filterValues[0] ? new Date(filterValues[0]) : null;
+            const toDate = filterValues[1] ? new Date(filterValues[1]) : null;
+            if (toDate) toDate.setHours(23, 59, 59, 999);
+
+            return (
+              (!fromDate || rowDate >= fromDate) &&
+              (!toDate || rowDate <= toDate)
+            );
+          }
         };
       }
       return col;
@@ -63,6 +79,12 @@ function MaterialTable({
         <MaterialReactTable
           columns={updatedColumns}
           data={data}
+          muiSkeletonProps={{
+            animation: 'wave',
+            sx: {
+              backgroundColor: 'rgba(8, 2, 2, 0.5)'
+            }
+          }}
           enableSorting={enableSorting}
           enablePagination={enablePagination}
           enableFilters={enableFilters}
@@ -81,6 +103,11 @@ function MaterialTable({
             onMouseOver: handleMouseHover
           }}
           muiTableHeadCellProps={({ column }) => ({
+            onClick: () => {
+              handleColumnMenuOpen();
+            }
+          })}
+          muiTopToolbarProps={({ column }) => ({
             onClick: () => {
               handleColumnMenuOpen();
             }

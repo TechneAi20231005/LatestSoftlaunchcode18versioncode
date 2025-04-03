@@ -10,7 +10,7 @@ import DataTable from 'react-data-table-component';
 import ErrorLogService from '../../../services/ErrorLogService';
 import QueryTypeService from '../../../services/MastersService/QueryTypeService';
 import DynamicFormService from '../../../services/MastersService/DynamicFormService';
-import Alert from '../../../components/Common/Alert';
+// import Alert from '../../../components/Common/Alert';
 
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
@@ -21,16 +21,15 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import CustomerService from '../../../services/MastersService/CustomerService';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { toast } from 'react-toastify';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { Field, Form, Formik, ErrorMessage } from 'formik';
 import { errorHandler } from '../../../utils';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import { Box } from '@mui/material';
 
 function QueryTypeComponent() {
   //initial state
@@ -43,7 +42,6 @@ function QueryTypeComponent() {
 
   //local state
 
-  const [notify, setNotify] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [data, setData] = useState([]);
 
@@ -160,7 +158,6 @@ function QueryTypeComponent() {
             data-bs-toggle="modal"
             data-bs-target="#edit"
             onClick={(e) => {
-              setNotify(null);
               handleModal({
                 showModal: true,
                 modalData: row?.original,
@@ -188,7 +185,7 @@ function QueryTypeComponent() {
             <OverlayTrigger
               overlay={<Tooltip>{row?.original?.query_type_name} </Tooltip>}
             >
-              <div>
+              <Box sx={{ color: '#f19828' }}>
                 <span className="ms-1">
                   {' '}
                   {row?.original?.query_type_name &&
@@ -196,7 +193,7 @@ function QueryTypeComponent() {
                     ? row?.original?.query_type_name
                     : row?.original?.query_type_name.substring(0, 10) + '....'}
                 </span>
-              </div>
+              </Box>
             </OverlayTrigger>
           )}
         </div>
@@ -283,8 +280,7 @@ function QueryTypeComponent() {
       Cell: ({ cell }) =>
         `${cell.getValue().toLocaleDateString()} ${cell
           .getValue()
-          .toLocaleTimeString()}`,
-      size: 250
+          .toLocaleTimeString()}`
     },
     {
       accessorFn: (originalRow) => originalRow.created_by || '--',
@@ -298,8 +294,7 @@ function QueryTypeComponent() {
       Cell: ({ cell }) =>
         `${cell.getValue().toLocaleDateString()} ${cell
           .getValue()
-          .toLocaleTimeString()}`,
-      size: 250
+          .toLocaleTimeString()}`
     },
     {
       accessorFn: (originalRow) => originalRow.updated_by || '--',
@@ -523,7 +518,6 @@ function QueryTypeComponent() {
     // e.preventDefault();
     const form = new FormData();
     form.append('group_name', values.group_name);
-    setNotify(null);
     setNotifyy(null);
     if (!id) {
       try {
@@ -566,14 +560,6 @@ function QueryTypeComponent() {
           } else {
             toast.error(res.data.message);
           }
-        } else {
-          toast.error(res.data.message);
-          new ErrorLogService().sendErrorLog(
-            'QueryType',
-            'Update_QueryType',
-            'UPDATE',
-            res.message
-          );
         }
       } catch (error) {
         errorHandler(error);
@@ -731,25 +717,12 @@ function QueryTypeComponent() {
               // setShowLoaderModal(false);
               setModal({ showModal: false, modalData: '', modalHeader: '' });
               toast.success(res?.data?.message);
-
-              // setNotify({ type: 'success', message: res.data.message });
               loadData();
               setIsActive(1);
             } else {
               toast.error(res?.data?.message);
-              // setNotify({ type: 'danger', message: res.data.message });
             }
           }
-
-          // else {
-          //   setNotify({ type: 'danger', message: res.message });
-          //   new ErrorLogService().sendErrorLog(
-          //     'QueryType',
-          //     'Create_QueryType',
-          //     'INSERT',
-          //     res.message
-          //   );
-          // }
         } else {
           formData.delete('is_active');
           formData.append('is_active', values.is_active);
@@ -765,29 +738,14 @@ function QueryTypeComponent() {
               loadData();
               setIsActive(1);
             } else {
-              setNotify({ type: 'danger', message: res.data.message });
               toast.error(res.data.message);
             }
           } else {
             toast.error(res.data.message);
-            new ErrorLogService().sendErrorLog(
-              'QueryType',
-              'Edit_QueryType',
-              'INSERT',
-              res.message
-            );
           }
         }
       } catch (error) {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        errorHandler(error?.response);
-        new ErrorLogService().sendErrorLog(
-          'QueryType',
-          'Create_QueryType',
-          'INSERT',
-          errorObject.data.message
-        );
+        errorHandler(error);
       } finally {
         setSubmitting(false);
       }
@@ -808,7 +766,6 @@ function QueryTypeComponent() {
   useEffect(() => {
     loadData();
     loadDataEditPopup();
-    setNotify(null);
   }, [loadData]);
 
   useEffect(() => {
@@ -925,13 +882,11 @@ function QueryTypeComponent() {
         <div className="card mt-2">
           {/* {isLoading && <TableLoadingSkelton />} */}
           {data && (
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <MaterialTable
-                isLoading={isLoading}
-                data={filteredData}
-                columns={columns}
-              />
-            </LocalizationProvider>
+            <MaterialTable
+              isLoading={isLoading}
+              data={filteredData}
+              columns={columns}
+            />
             // <DataTable
             //   columns={columns}
             //   data={filteredData}
@@ -1704,23 +1659,26 @@ function QueryTypeDropdown(props) {
   // const [isLoading, setIsLoading] = useState(false);
   useEffect(() => {
     const tempData = [];
-    new QueryTypeService().getQueryType().then((res) => {
-      if (res.status === 200) {
-        let counter = 1;
-        const data = res.data.data;
-        for (const key in data) {
-          if (data[key].is_active === 1) {
-            tempData.push({
-              counter: counter++,
-              id: data[key].id,
-              query_type_name: data[key].query_type_name
-            });
+    new QueryTypeService()
+      .getQueryType()
+      .then((res) => {
+        if (res.status === 200) {
+          let counter = 1;
+          const data = res.data.data;
+          for (const key in data) {
+            if (data[key].is_active === 1) {
+              tempData.push({
+                counter: counter++,
+                id: data[key].id,
+                query_type_name: data[key].query_type_name
+              });
+            }
           }
+          setData(tempData);
+          // setIsLoading(false);
         }
-        setData(tempData);
-        // setIsLoading(false);
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   }, []);
 
   return (
