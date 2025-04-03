@@ -22,37 +22,20 @@ const DataTableCustom = React.memo(
     columnFilters,
   }) => {
 
-
     // console.log(allStatusData?.selectData, 'allStatusData');
 
 
 
-    const columns =
-       [
+    const columns = [
         {
           accessorKey: 'action',
           header: 'Action',
           size: 120,
-          Cell: ({ row }) => (
-            <MyTicketDropdown type={type} data={row.original} />
-          ),
+          Cell: ({ row }) => <MyTicketDropdown type={type} data={row.original} />,
           enableColumnOrdering: false,
           enableGrouping: false,
           enableSorting: false
         },
-        // {
-        //   accessorKey: 'sr_no',
-        //   header: 'Sr No',
-        //   size: 70,
-        //   Cell: ({ row }) => {
-        //     const pageIndex = pagination?.pageIndex || 0;
-        //     const pageSize = pagination?.pageSize || 10;
-        //     return pageIndex * pageSize + row.index + 1;
-        //   },
-        //   enableColumnOrdering: false,
-        //   enableGrouping: false,
-        //   enableSorting: false
-        // },
         {
           accessorKey: 'ticket_id',
           header: 'Ticket Id',
@@ -61,7 +44,6 @@ const DataTableCustom = React.memo(
         {
           accessorKey: 'description',
           header: 'Description'
-          // size: 150
         },
         {
           accessorKey: 'ticket_date',
@@ -79,18 +61,10 @@ const DataTableCustom = React.memo(
             const priority = cell.getValue();
             return (
               <div>
-                {priority === 'Very High' && (
-                  <span className="badge bg-danger">{priority}</span>
-                )}
-                {priority === 'High' && (
-                  <span className="badge bg-warning">{priority}</span>
-                )}
-                {priority === 'Medium' && (
-                  <span className="badge bg-info">{priority}</span>
-                )}
-                {priority === 'Low' && (
-                  <span className="badge bg-success">{priority}</span>
-                )}
+                {priority === 'Very High' && <span className="badge bg-danger">{priority}</span>}
+                {priority === 'High' && <span className="badge bg-warning">{priority}</span>}
+                {priority === 'Medium' && <span className="badge bg-info">{priority}</span>}
+                {priority === 'Low' && <span className="badge bg-success">{priority}</span>}
               </div>
             );
           }
@@ -98,56 +72,48 @@ const DataTableCustom = React.memo(
         {
           accessorKey: 'query_type.query_type_name',
           header: 'Type'
-          // size: 150,
         },
         {
           accessorKey: 'passed_status',
           header: 'Passed Status'
-          // size: 150,
         },
         {
-          accessorFn:(originalRows) => originalRows?.status?.status,
+          accessorFn: (originalRows) => originalRows?.status?.status,
           header: 'Status',
           filterVariant: 'multi-select',
           filterSelectOptions: allStatusData?.selectData,
-          size: 150,
+          size: 150
         },
         {
           accessorKey: 'assign_to_department.department',
           header: 'Assign To Dept',
-            filterVariant: 'multi-select',
-            filterSelectOptions: allDepartmentData?.selectData,
-          // size: 180,
+          filterVariant: 'multi-select',
+          filterSelectOptions: allDepartmentData?.selectData
         },
         {
-        //   accessorFn: (row) =>
-        //     `${row.assignee?.first_name || ''} ${
-        //       row.assignee?.last_name || ''
-        //     }`,
-        accessorFn:(originalRows) => `${originalRows?.assignee?.first_name || ''} ${originalRows?.assignee?.last_name || ''}`,
+          accessorFn: (originalRows) => `${originalRows?.assignee?.first_name || ''} ${originalRows?.assignee?.last_name || ''}`,
           header: 'Assigned To',
-            filterVariant: 'multi-select',
-            filterSelectOptions: allUsersData?.selectData,
-          // size: 180,
+          filterVariant: 'multi-select',
+          filterSelectOptions: allUsersData?.selectData
         },
         {
-        //   accessorFn: (row) =>
-        //     `${row.created_by?.first_name || ''} ${
-        //       row.created_by?.last_name || ''
-        //     }`,
-        accessorFn:(originalRows) => `${originalRows?.created_by?.first_name || ''} ${originalRows?.created_by?.last_name || ''}`,
+          accessorFn: (originalRows) => `${originalRows?.created_by?.first_name || ''} ${originalRows?.created_by?.last_name || ''}`,
           header: 'Created By'
-          // size: 150,
         },
-        {
-          accessorFn: (row) => row.ticket_solved_date || '--',
-          header: 'Solved Date'
-        },
-        {
-            accessorFn:(originalRows) => `${originalRows?.ticket_solved_by?.first_name || ''} ${originalRows?.ticket_solved_by?.last_name || ''}`,
-          header: 'Solved By'
-        }
+        ...(type === "UnPassed"
+          ? [
+              {
+                accessorFn: (row) => row.ticket_solved_date || '--',
+                header: 'Solved Date'
+              },
+              {
+                accessorFn: (originalRows) => `${originalRows?.ticket_solved_by?.first_name || ''} ${originalRows?.ticket_solved_by?.last_name || ''}`,
+                header: 'Solved By'
+              }
+            ]
+          : [])
       ];
+
 
 
 

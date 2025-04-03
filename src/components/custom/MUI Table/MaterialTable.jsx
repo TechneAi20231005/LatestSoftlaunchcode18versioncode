@@ -7,6 +7,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import NotFound from '../../NotFound';
 import { errorHandler } from '../../../utils';
 import ReportService from '../../../services/ReportService/ReportService';
+import { ExportAllTicketsToExcel } from '../../Utilities/Table/ExportAllTicketsToExcel';
 
 function MaterialTable({
   columns,
@@ -68,6 +69,8 @@ function MaterialTable({
     });
   }, [expandColumn]);
 
+  console.log(activeTab, "activeTab")
+
   return (
     <Box
       sx={{
@@ -121,7 +124,13 @@ function MaterialTable({
                 flexWrap: 'wrap'
               }}
             >
-              <Button
+
+               <ExportAllTicketsToExcel
+              className="btn btn-sm btn-danger mt-3"
+              fileName="Assign To Me"
+              typeOf={activeTab}
+               />
+              {/* <Button
                 className="text-primary"
                 disabled={data?.length === 0}
                 onClick={handleExportData}
@@ -139,7 +148,7 @@ function MaterialTable({
                 startIcon={<FileDownloadIcon />}
               >
                 Export All Rows
-              </Button>
+              </Button> */}
             </Box>
           )}
         />
