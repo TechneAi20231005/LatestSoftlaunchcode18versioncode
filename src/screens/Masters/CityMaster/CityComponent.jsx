@@ -355,16 +355,15 @@ function CityComponent() {
       if (!id) {
         await dispatch(postCityData(formData));
         dispatch(getCityData());
-        clearFilters();
       } else {
         await dispatch(updateCityData({ id: id, payload: editformdata }));
         dispatch(getCityData());
-        clearFilters();
       }
     } catch (error) {
       errorHandler(error);
     } finally {
       setSubmitting(false);
+      clearFilters();
     }
   };
 

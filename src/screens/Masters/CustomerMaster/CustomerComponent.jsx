@@ -43,15 +43,10 @@ function CustomerComponent() {
   const [notify, setNotify] = useState(null);
 
   const [filteredData, setFilteredData] = useState([]);
-  const [reset, setReset] = useState(false);
   //search function
-  const clearFilters = () => {
-    setReset(true);
-  };
 
   const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(getAllCustomerData, searchTerm);
-    clearFilters();
 
     setFilteredData(filteredList);
   }, [getAllCustomerData, searchTerm]);
@@ -221,7 +216,6 @@ function CustomerComponent() {
             columns={columns}
             data={filteredData}
             isLoading={isLoading}
-            reset={reset}
           />
         )}
       </div>
