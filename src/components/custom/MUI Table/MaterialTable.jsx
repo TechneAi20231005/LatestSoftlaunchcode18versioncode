@@ -63,6 +63,7 @@ function MaterialTable({
       setPagination({ pageIndex: 0, pageSize: 10 });
       setRowSelection({});
       setColumnVisibility({});
+      setGroupBy([]);
     }
   }, [reset]);
 
