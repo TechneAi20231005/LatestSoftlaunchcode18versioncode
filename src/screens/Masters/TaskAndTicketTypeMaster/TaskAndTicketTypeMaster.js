@@ -128,7 +128,7 @@ const CustomMenuList = ({ options, onSelect }) => {
 
   const filterOptions = (options, term) => {
     return options.filter((option) => {
-      const lowerCaseTerm = term.toLowerCase();
+      const lowerCaseTerm = term?.toLowerCase();
       const matchLabel = option?.label?.toLowerCase()?.includes(lowerCaseTerm);
       const matchChildOptions =
         option?.options && option?.options?.length > 0
