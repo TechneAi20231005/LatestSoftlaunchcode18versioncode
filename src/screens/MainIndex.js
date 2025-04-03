@@ -183,6 +183,7 @@ import PowerBidashboard from './Dashboard/PowerBidashboard';
 import JobRoleComponent from './Masters/JobRoleMaster/JobRoleComponent';
 import MenuComponent from './Masters/MenuMaster/MenuComponent';
 import DeleteRequisition from './PO/deleteRequisition/DeleteRequisition';
+import MyTicketRefactored from './TicketManagement/MyTicket/MyTicketFilters';
 
 class MainIndex extends React.Component {
   render() {
@@ -414,7 +415,7 @@ class MainIndex extends React.Component {
             <Route
               exact
               path={`/${_base}/Ticket`}
-              element={<MyTicketComponent />}
+              element={<MyTicketRefactored />}
             />
             <Route
               exact

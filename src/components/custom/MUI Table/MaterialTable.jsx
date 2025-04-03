@@ -1,10 +1,12 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { MaterialReactTable } from 'material-react-table';
 import { Box, Button } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import NotFound from '../../NotFound';
+import { errorHandler } from '../../../utils';
+import ReportService from '../../../services/ReportService/ReportService';
 
 function MaterialTable({
   columns,
@@ -19,7 +21,19 @@ function MaterialTable({
   enableColumnOrdering = true,
   enableFacetedValues = true,
   isLoading,
-  enableColumnFilter = true
+  enableColumnFilter = true,
+  manualPagination = false,
+  pagination,
+  setPagination,
+  totalRows,
+  manualFiltering = false,
+  filterSelectOptions,
+  onColumnFiltersChange = () => {},
+  setAllTicketsData,
+  activeTab,
+  setTotalRows,
+  setColumnFilters,
+  columnFilters
 }) {
   const handleMouseHover = (event) => {
     const clickedRow = event.currentTarget;
@@ -35,6 +49,8 @@ function MaterialTable({
   const handleExportData = () => {};
 
   const [expandColumn, setExpandColumn] = useState(false);
+
+  // const [columnFilters, setColumnFilters] = useState([]);
 
   const handleColumnMenuOpen = () => {
     setExpandColumn(true);
@@ -61,7 +77,7 @@ function MaterialTable({
     >
       <LocalizationProvider dateAdapter={AdapterDateFns}>
         <MaterialReactTable
-          columns={updatedColumns}
+          columns={columns}
           data={data}
           enableSorting={enableSorting}
           enablePagination={enablePagination}
@@ -70,13 +86,22 @@ function MaterialTable({
             noRecordsToDisplay: <NotFound topMargin={0} />,
             noResultsFound: <NotFound topMargin={0} />
           }}
+          rowCount={totalRows}
           enableStickyHeader={enableStickyHeader}
           enableGrouping={enableGrouping}
           enableFullScreenToggle={data?.length > 0}
           enableColumnResizing={enableColumnResizing}
+          manualFiltering={manualFiltering}
           enableColumnOrdering={enableColumnOrdering}
+          onColumnFiltersChange={setColumnFilters}
           enableFacetedValues={enableFacetedValues}
+          filterSelectOptions={filterSelectOptions}
           enableColumnFilter={enableColumnFilter}
+          manualPagination={manualPagination}
+          onPaginationChange={(newPagination) => {
+            setPagination(newPagination);
+          }}
+          enableRowNumbers={true}
           muiTableBodyCellProps={{
             onMouseOver: handleMouseHover
           }}
@@ -86,7 +111,7 @@ function MaterialTable({
             }
           })}
           render
-          state={{ isLoading: isLoading }}
+          state={{ isLoading: isLoading, pagination, columnFilters }}
           renderTopToolbarCustomActions={({ table }) => (
             <Box
               sx={{
