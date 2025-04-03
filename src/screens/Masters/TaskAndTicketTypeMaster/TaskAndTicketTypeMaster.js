@@ -411,7 +411,11 @@ function TaskAndTicketTypeMaster(props) {
   const [parentTaskName, setParentTaskName] = useState(null);
   const [parentTicketName, setParentTicketName] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [reset, setReset] = useState(false);
 
+  const clearFilters = () => {
+    setReset(true);
+  };
   const handleSelect = (label) => {
     setSelectedOption(selectedOption === label ? null : label);
     setSelectedOptionId(label);
@@ -893,20 +897,20 @@ function TaskAndTicketTypeMaster(props) {
       accessorKey: 'is_active',
       header: 'Status',
       size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
       Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
         return (
-          <div>
-            {row?.original?.is_active === 1 && (
-              <span className="badge bg-primary" style={{ width: '4rem' }}>
-                Active
-              </span>
-            )}
-            {row?.original?.is_active === 0 && (
-              <span className="badge bg-danger" style={{ width: '4rem' }}>
-                Deactive
-              </span>
-            )}
-          </div>
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
         );
       }
     },
@@ -985,7 +989,10 @@ function TaskAndTicketTypeMaster(props) {
           const res = await new TaskTicketTypeService().postType(form);
 
           if (res.status === 200) {
+            clearFilters();
             if (res.data.status === 1) {
+              clearFilters();
+
               toast.success(res.data.message);
               setModal({ showModal: false });
               loadData();
@@ -1018,6 +1025,7 @@ function TaskAndTicketTypeMaster(props) {
               toast.success(res.data.message);
               setModal({ showModal: false });
               loadData();
+              clearFilters();
             } else {
               toast.error(res.data.message);
             }
@@ -1527,6 +1535,7 @@ function TaskAndTicketTypeMaster(props) {
               <MaterialTable
                 columns={columns}
                 data={filteredData}
+                reset={reset}
               ></MaterialTable>
             )}
           </div>
