@@ -441,20 +441,22 @@ const DataTableCustom = React.memo(
           // size: 180,
         },
         {
-          accessorFn: (row) =>
-            `${row.assignee?.first_name || ''} ${
-              row.assignee?.last_name || ''
-            }`,
+        //   accessorFn: (row) =>
+        //     `${row.assignee?.first_name || ''} ${
+        //       row.assignee?.last_name || ''
+        //     }`,
+        accessorFn:(originalRows) => `${originalRows?.assignee?.first_name || ''} ${originalRows?.assignee?.last_name || ''}`,
           header: 'Assigned To',
             filterVariant: 'multi-select',
             filterSelectOptions: allUsersData?.selectData,
           // size: 180,
         },
         {
-          accessorFn: (row) =>
-            `${row.created_by?.first_name || ''} ${
-              row.created_by?.last_name || ''
-            }`,
+        //   accessorFn: (row) =>
+        //     `${row.created_by?.first_name || ''} ${
+        //       row.created_by?.last_name || ''
+        //     }`,
+        accessorFn:(originalRows) => `${originalRows?.created_by?.first_name || ''} ${originalRows?.created_by?.last_name || ''}`,
           header: 'Created By'
           // size: 150,
         },
@@ -463,7 +465,7 @@ const DataTableCustom = React.memo(
           header: 'Solved Date'
         },
         {
-          accessorFn: (row) => row.ticket_solved_by || '--',
+            accessorFn:(originalRows) => `${originalRows?.ticket_solved_by?.first_name || ''} ${originalRows?.ticket_solved_by?.last_name || ''}`,
           header: 'Solved By'
         }
       ];
