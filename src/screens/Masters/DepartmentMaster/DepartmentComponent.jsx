@@ -206,19 +206,18 @@ function DepartmentComponent() {
         await dispatch(postdepartment(formData));
         setTimeout(() => {
           dispatch(departmentData());
-          clearFilters();
         }, 500);
       } else {
         await dispatch(updateDepartment({ id: id, payload: editformdata }));
         setTimeout(() => {
           dispatch(departmentData());
-          clearFilters();
         }, 500);
       }
     } catch (eror) {
       errorHandler(eror);
     } finally {
       setSubmitting(false);
+      clearFilters();
     }
   };
 

@@ -2,7 +2,6 @@ import React, { useState, useMemo, useEffect } from 'react';
 import {
   MaterialReactTable,
   MRT_ShowHideColumnsButton,
-  MRT_ToggleDensePaddingButton,
   MRT_ToggleFiltersButton,
   MRT_ToggleFullScreenButton,
   MRT_ToggleGlobalFilterButton
@@ -37,6 +36,7 @@ function MaterialTable({
   const [rowSelection, setRowSelection] = useState({});
   const [columnVisibility, setColumnVisibility] = useState({});
   const [groupBy, setGroupBy] = useState([]);
+  const [globalFilter, setGlobalFilter] = useState([]);
   const handleMouseHover = (event) => {
     const clickedRow = event.currentTarget;
     const innerText = clickedRow.innerText;
@@ -64,6 +64,7 @@ function MaterialTable({
       setRowSelection({});
       setColumnVisibility({});
       setGroupBy([]);
+      setGlobalFilter([]);
     }
   }, [reset]);
 
@@ -150,6 +151,7 @@ function MaterialTable({
             pagination,
             rowSelection,
             columnVisibility,
+            globalFilter,
             grouping: groupBy
           }}
           onGroupingChange={setGroupBy}
@@ -158,6 +160,7 @@ function MaterialTable({
           onPaginationChange={setPagination}
           onRowSelectionChange={setRowSelection}
           onColumnVisibilityChange={setColumnVisibility}
+          onGlobalFilterChange={setGlobalFilter}
           renderToolbarInternalActions={({ table }) => (
             <Box
               sx={{
@@ -184,14 +187,10 @@ function MaterialTable({
                     table.resetColumnVisibility();
                     table.resetGrouping();
                     table.reset();
+                    table.resetGlobalFilter();
+                    table.setShowGlobalFilter(false);
+                    table.setShowColumnFilters(false);
                   }}
-                  disabled={
-                    table.getState().columnFilters.length === 0 &&
-                    table.getState().columnVisibility.length === 0 &&
-                    table.getState().rowSelection.length === 0 &&
-                    table.getState().pagination.length === 0 &&
-                    table.getState().sorting.length === 0
-                  }
                 />
               </Tooltip>
               <Box onClick={handleColumnMenuOpen}>

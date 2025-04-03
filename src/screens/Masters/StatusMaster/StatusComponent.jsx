@@ -203,20 +203,19 @@ function StatusComponent() {
         await dispatch(postStatusData(formData));
         setTimeout(() => {
           dispatch(getGridStatusData());
-          clearFilters();
         }, 500);
       } else {
         await dispatch(updateStatusData({ id: id, payload: editformdata }));
 
         setTimeout(() => {
           dispatch(getGridStatusData());
-          clearFilters();
         }, 500);
       }
     } catch (error) {
       errorHandler(error);
     } finally {
       setSubmitting(false);
+      clearFilters();
     }
   };
 
