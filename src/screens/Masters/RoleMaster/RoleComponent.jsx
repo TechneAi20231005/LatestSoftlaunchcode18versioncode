@@ -137,19 +137,19 @@ function RoleComponent({ location }) {
       accessorKey: 'role',
       header: 'Role',
       size: 130,
+      filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      }),
       Cell: ({ row }) => (
-        <div>
-          <OverlayTrigger overlay={<Tooltip>{row?.original?.role} </Tooltip>}>
-            <div>
-              {/* <span className="ms-1"> {row?.original?.role}</span> */}
-              <span>
-                {row?.original?.role.length > 20
-                  ? row?.original?.role.substring(0, 20) + '...'
-                  : row?.original?.role}
-              </span>
-            </div>
-          </OverlayTrigger>
-        </div>
+        <span>
+          {row?.original?.role.length > 20
+            ? row?.original?.role.substring(0, 20) + '...'
+            : row?.original?.role}
+        </span>
       )
     },
 

@@ -175,7 +175,6 @@ function MaterialTable({
               <Box onClick={handleColumnMenuOpen}>
                 <MRT_ToggleFiltersButton table={table} />
               </Box>
-              <MRT_ToggleDensePaddingButton table={table} />
               <MRT_ShowHideColumnsButton table={table} />
               <MRT_ToggleFullScreenButton table={table} />
             </Box>
@@ -187,7 +186,8 @@ function MaterialTable({
                 gap: '16px',
                 padding: '8px',
                 flexWrap: 'wrap',
-                width: '100%'
+                xs: { width: '100%' },
+                sm: { width: 'fit-content' }
               }}
             >
               <Button

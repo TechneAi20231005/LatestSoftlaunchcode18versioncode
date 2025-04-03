@@ -188,6 +188,13 @@ function DesignationComponent() {
     {
       accessorKey: 'designation',
       header: 'Designation',
+      filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      }),
       size: 190
     },
     {

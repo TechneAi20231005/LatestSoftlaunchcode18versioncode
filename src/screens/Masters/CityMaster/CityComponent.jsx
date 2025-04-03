@@ -218,6 +218,12 @@ function CityComponent() {
       accessorKey: 'city',
       header: 'City',
       filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      }),
       size: 125
     },
     {

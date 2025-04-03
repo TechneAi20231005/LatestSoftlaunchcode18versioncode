@@ -107,6 +107,12 @@ function DepartmentComponent() {
       accessorKey: 'department',
       header: 'Department',
       filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      }),
       size: 185
     },
     {
