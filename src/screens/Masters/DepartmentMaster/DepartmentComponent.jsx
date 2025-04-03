@@ -1,11 +1,9 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
 
 import DepartmentService from '../../../services/MastersService/DepartmentService';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import PageHeader from '../../../components/Common/PageHeader';
-import Alert from '../../../components/Common/Alert';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -16,16 +14,11 @@ import {
 
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { handleModalClose, handleModalOpen } from './DepartmentMasterSlice';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
-import { MaterialReactTable } from 'material-react-table';
 import moment from 'moment';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 function DepartmentComponent() {
   //initial state
@@ -56,7 +49,7 @@ function DepartmentComponent() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
-
+  const [reset, setReset] = useState(false);
   //search function
 
   const handleSearch = useCallback(() => {
@@ -70,6 +63,9 @@ function DepartmentComponent() {
     setFilteredData(department);
   };
 
+  const clearFilters = () => {
+    setReset(true);
+  };
   const columns = [
     {
       accessorKey: 'action',
@@ -111,26 +107,34 @@ function DepartmentComponent() {
       accessorKey: 'department',
       header: 'Department',
       filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      }),
       size: 185
     },
     {
       accessorKey: 'is_active',
       header: 'Status',
       size: 150,
-      Cell: ({ row }) => (
-        <div>
-          {row?.original?.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row?.original?.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      )
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
       header: 'Created At',
@@ -202,11 +206,13 @@ function DepartmentComponent() {
         await dispatch(postdepartment(formData));
         setTimeout(() => {
           dispatch(departmentData());
+          clearFilters();
         }, 500);
       } else {
         await dispatch(updateDepartment({ id: id, payload: editformdata }));
         setTimeout(() => {
           dispatch(departmentData());
+          clearFilters();
         }, 500);
       }
     } catch (eror) {
@@ -274,19 +280,14 @@ function DepartmentComponent() {
       />
  */}
       <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {department && (
-                <MaterialTable
-                  data={filteredData}
-                  columns={columns}
-                  isLoading={isLoading}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        {department && (
+          <MaterialTable
+            data={filteredData}
+            columns={columns}
+            isLoading={isLoading}
+            reset={reset}
+          />
+        )}
       </div>
 
       <Modal centered show={modal.showModal}>

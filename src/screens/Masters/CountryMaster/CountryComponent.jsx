@@ -29,10 +29,12 @@ import { CustomValidation } from '../../../components/custom/CustomValidation/Cu
 import { errorHandler } from '../../../utils';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 import { Box } from '@mui/material';
+import moment from 'moment/moment';
 
 function CountryComponent() {
   //initial state
   const dispatch = useDispatch();
+  const [reset, setReset] = useState(false);
 
   //redux state
 
@@ -116,21 +118,22 @@ function CountryComponent() {
       accessorKey: 'is_active',
       header: 'Status',
       size: 150,
-      Cell: ({ row }) => (
-        <div>
-          {row?.original?.is_active === 1 ? (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          ) : row?.original?.is_active === 0 ? (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          ) : (
-            '--'
-          )}
-        </div>
-      )
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
       accessorFn: (originalRow) => new Date(originalRow.created_at),
@@ -161,6 +164,9 @@ function CountryComponent() {
       size: 190
     }
   ];
+  const clearFilters = () => {
+    setReset(true);
+  };
   const handleForm = async (values, id, { setSubmitting = false }) => {
     setSubmitting(true);
 
@@ -190,6 +196,7 @@ function CountryComponent() {
       errorHandler(error);
     } finally {
       setSubmitting(false);
+      clearFilters();
     }
   };
 
@@ -286,9 +293,10 @@ function CountryComponent() {
       <div className="mt-2">
         {countryData && (
           <MaterialTable
-            isLoading={isLoading}
             columns={columns}
             data={filteredData}
+            isLoading={isLoading}
+            reset={reset}
           />
         )}
       </div>

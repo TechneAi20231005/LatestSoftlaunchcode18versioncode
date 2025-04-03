@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Container, Modal } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
 
 import DesignationService from '../../../services/MastersService/DesignationService';
 
@@ -17,15 +16,11 @@ import {
 } from './DesignationAction';
 import { handleModalClose, handleModalOpen } from './DesignationSlice';
 
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 import moment from 'moment';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 
 function DesignationComponent() {
   //initial state
@@ -35,7 +30,7 @@ function DesignationComponent() {
   const { getDesignationData, exportDesignation, modal, notify } = useSelector(
     (state) => state.designationMaster
   );
-
+  const [reset, setReset] = useState(false);
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice?.dashboard?.getRoles?.filter((d) => d.menu_id === 8)
   );
@@ -149,6 +144,10 @@ function DesignationComponent() {
     }
   ]; */
 
+  const clearFilters = () => {
+    setReset(true);
+  };
+
   const columns = [
     {
       accessorKey: 'action',
@@ -189,26 +188,35 @@ function DesignationComponent() {
     {
       accessorKey: 'designation',
       header: 'Designation',
+      filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      }),
       size: 190
     },
     {
       accessorKey: 'is_active',
       header: 'Status',
       size: 150,
-      Cell: ({ row }) => (
-        <div>
-          {row?.original?.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row?.original?.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      )
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
       accessorKey: 'created_at',
@@ -350,11 +358,13 @@ function DesignationComponent() {
         await dispatch(updatedDesignationData({ id, payload: formData }));
         setTimeout(() => {
           dispatch(getDesignationDataListThunk());
+          clearFilters();
         }, 500);
       } else {
         await dispatch(postDesignationData(formData));
         setTimeout(() => {
           dispatch(getDesignationDataListThunk());
+          clearFilters();
         }, 500);
         handleModalClose({
           showModal: false,
@@ -445,6 +455,7 @@ function DesignationComponent() {
               columns={columns}
               data={filteredData}
               isLoading={isLoading}
+              reset={reset}
             />
           )}
         </div>
