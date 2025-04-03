@@ -154,7 +154,13 @@ export default function DynamicFormDropdownComponent() {
       accessorKey: 'dropdown_name',
       header: 'Dropdown Name',
       size: 160,
-      filterVariant: 'autocomplete'
+      filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
 
     {
@@ -312,11 +318,11 @@ export default function DynamicFormDropdownComponent() {
         showExportButton={true}
       /> */}
 
-      <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {/* {!isLoading && data && (
+      {/* <div className="card mt-2"> */}
+      <div className="card-body">
+        <div className="row clearfix g-3">
+          <div className="col-sm-12">
+            {/* {!isLoading && data && (
                 <DataTable
                   columns={columns}
                   data={filteredData}
@@ -327,17 +333,17 @@ export default function DynamicFormDropdownComponent() {
                   highlightOnHover={true}
                 />
               )} */}
-              {data && (
-                <MaterialTable
-                  columns={columns}
-                  data={filteredData}
-                  isLoading={isLoading}
-                ></MaterialTable>
-              )}
-            </div>
+            {data && (
+              <MaterialTable
+                columns={columns}
+                data={filteredData}
+                isLoading={isLoading}
+              ></MaterialTable>
+            )}
           </div>
         </div>
       </div>
     </div>
+    // </div>
   );
 }

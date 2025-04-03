@@ -186,7 +186,13 @@ function DynamicFormComponent() {
       accessorKey: 'template_name',
       header: 'Form Name',
       size: 160,
-      filterVariant: 'autocomplete'
+      filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
 
     {

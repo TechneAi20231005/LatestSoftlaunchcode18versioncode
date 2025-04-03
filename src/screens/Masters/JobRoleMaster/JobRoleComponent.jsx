@@ -156,7 +156,13 @@ function JobRoleMasterComponent() {
       accessorKey: 'job_role',
       header: 'Job Role Title',
       size: 160,
-      filterVariant: 'autocomplete'
+      filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
 
     {
@@ -255,8 +261,8 @@ function JobRoleMasterComponent() {
           </button>
         </div>
       </div>
-
-      {/* <Row className="row_gap_3">
+      <div className="card mt-2">
+        {/* <Row className="row_gap_3">
         <Col xs={12} md={7} xxl={8}>
           <input
             type="search"
@@ -298,7 +304,7 @@ function JobRoleMasterComponent() {
           />
         </Col>
       </Row> */}
-      {/* <DataTable
+        {/* <DataTable
         columns={columns}
         data={filterJobRoleMasterList}
         defaultSortField="role_id"
@@ -309,14 +315,15 @@ function JobRoleMasterComponent() {
         progressPending={isLoading?.getJobRoleMasterList}
         progressComponent={<TableLoadingSkelton />}
       /> */}
-      {console.log('isloading==', isLoading)}
-      {filterJobRoleMasterList && (
-        <MaterialTable
-          columns={columns}
-          data={filterJobRoleMasterList}
-          isLoading={isLoading?.getJobRoleMasterList}
-        ></MaterialTable>
-      )}
+
+        {filterJobRoleMasterList && (
+          <MaterialTable
+            columns={columns}
+            data={filterJobRoleMasterList}
+            isLoading={isLoading?.getJobRoleMasterList}
+          ></MaterialTable>
+        )}
+      </div>
 
       <AddEditJobRoleMaster
         show={addEditJobRoleModal?.open}

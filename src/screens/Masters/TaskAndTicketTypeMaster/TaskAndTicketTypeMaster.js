@@ -279,11 +279,11 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
 
   const filterOptions = (options, term) => {
     return options.filter((option) => {
-      const lowerCaseTerm = term.toLowerCase();
-      const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+      const lowerCaseTerm = term?.toLowerCase();
+      const matchLabel = option?.label?.toLowerCase()?.includes(lowerCaseTerm);
       const matchChildOptions =
-        option.options && option.options.length > 0
-          ? filterOptions(option.options, term).length > 0
+        option?.options && option?.options?.length > 0
+          ? filterOptions(option?.options, term)?.length > 0
           : false;
 
       return matchLabel || matchChildOptions;
@@ -874,7 +874,13 @@ function TaskAndTicketTypeMaster(props) {
       accessorKey: 'type_name',
       header: 'Type Name',
       size: 160,
-      filterVariant: 'autocomplete'
+      filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
       accessorKey: 'parent_name',
@@ -1500,11 +1506,11 @@ function TaskAndTicketTypeMaster(props) {
         </Modal.Body>
       </Modal>
 
-      <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {/* {data && (
+      {/* <div className="card mt-2"> */}
+      <div className="card-body">
+        <div className="row clearfix g-3">
+          <div className="col-sm-12">
+            {/* {data && (
                 <DataTable
                   columns={columns}
                   data={filteredData}
@@ -1517,17 +1523,17 @@ function TaskAndTicketTypeMaster(props) {
                   highlightOnHover={true}
                 />
               )} */}
-              {data && (
-                <MaterialTable
-                  columns={columns}
-                  data={filteredData}
-                ></MaterialTable>
-              )}
-            </div>
+            {data && (
+              <MaterialTable
+                columns={columns}
+                data={filteredData}
+              ></MaterialTable>
+            )}
           </div>
         </div>
       </div>
     </div>
+    // </div>
   );
 }
 
