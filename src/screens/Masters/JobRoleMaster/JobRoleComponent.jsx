@@ -324,6 +324,7 @@ function JobRoleMasterComponent() {
             data={filterJobRoleMasterList}
             isLoading={isLoading?.getJobRoleMasterList}
             reset={reset}
+            setReset={setReset}
           ></MaterialTable>
         )}
       </div>

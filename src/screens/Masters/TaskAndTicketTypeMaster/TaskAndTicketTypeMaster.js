@@ -1536,6 +1536,7 @@ function TaskAndTicketTypeMaster(props) {
                 columns={columns}
                 data={filteredData}
                 reset={reset}
+                setReset={setReset}
               ></MaterialTable>
             )}
           </div>
