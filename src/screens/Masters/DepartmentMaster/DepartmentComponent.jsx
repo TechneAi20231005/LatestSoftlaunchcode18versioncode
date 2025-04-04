@@ -286,6 +286,7 @@ function DepartmentComponent() {
             columns={columns}
             isLoading={isLoading}
             reset={reset}
+            setReset={setReset}
           />
         )}
       </div>

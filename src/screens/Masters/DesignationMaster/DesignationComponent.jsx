@@ -456,6 +456,7 @@ function DesignationComponent() {
               data={filteredData}
               isLoading={isLoading}
               reset={reset}
+              setReset={setReset}
             />
           )}
         </div>

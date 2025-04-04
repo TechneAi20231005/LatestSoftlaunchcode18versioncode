@@ -28,7 +28,8 @@ function MaterialTable({
   enableFacetedValues = true,
   isLoading,
   enableColumnFilter = true,
-  reset = false
+  reset = false,
+  setReset = () => {}
 }) {
   const [columnFilters, setColumnFilters] = useState([]);
   const [sorting, setSorting] = useState([]);
@@ -69,6 +70,7 @@ function MaterialTable({
       setGlobalFilter([]);
       setShowGlobalFilter(false);
       setShowColumnFilters(false);
+      setReset(false);
     }
   }, [reset]);
 
