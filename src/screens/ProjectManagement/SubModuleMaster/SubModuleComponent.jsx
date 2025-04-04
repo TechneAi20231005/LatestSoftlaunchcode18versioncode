@@ -80,6 +80,12 @@ function SubModuleComponent() {
     {
       header: 'SubModule Name',
       size: 225,
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      }),
       accessorKey: 'sub_module_name'
     },
     {

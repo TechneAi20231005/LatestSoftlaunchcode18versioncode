@@ -173,6 +173,12 @@ function GeneralSettings() {
     {
       header: 'Setting Name',
       accessorKey: 'setting_name',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      }),
       size: 200
     },
     {
