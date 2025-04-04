@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
 import ErrorLogService from '../../../services/ErrorLogService';
 import SubModuleService from '../../../services/ProjectManagementService/SubModuleService';
@@ -10,10 +9,9 @@ import Alert from '../../../components/Common/Alert';
 
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import { customSearchHandler } from '../../../utils/customFunction';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { description } from 'platform';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
 
 function SubModuleComponent() {
   //initial state
@@ -54,14 +52,16 @@ function SubModuleComponent() {
 
   const columns = [
     {
-      name: 'Action',
-      width: '80px',
-      selector: (row) => {},
-      sortable: false,
-      cell: (row) => (
+      header: 'Action',
+      accessorKey: 'action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <Link
-            to={`/${_base}/SubModule/Edit/` + row.id}
+            to={`/${_base}/SubModule/Edit/` + row?.original?.id}
             className="btn btn-outline-secondary"
           >
             <i className="icofont-edit text-success"></i>
@@ -69,58 +69,92 @@ function SubModuleComponent() {
         </div>
       )
     },
-    { name: 'Sr',  width: '70px', selector: (row) => row.counter, sortable: true },
-    {
-      name: 'Sub Module Name',
-      width: '12%',
-      selector: (row) => row.sub_module_name,
-      sortable: true
-    },
-    { name: 'Module Name',      width: '12%', selector: (row) => row.module_name, sortable: true },
-    {
-      name: 'Project Name',
-      width: '10%',
-      selector: (row) => row.project_name,
-      sortable: true
-    },
-    {
-      name: 'Status',
-      width: '110px',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary">Active</span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger">Deactive</span>
-          )}
-        </div>
-      )
-    },
-    {
-      name: 'Description',
-      width: '120px',
-      selector: (row) => row.description,
-      sortable: true,
-    },
-    { name: 'Remark',       width: '120px', selector: (row) => row.remark, sortable: true },
-    {
-      name: 'Created At',
-      width: '12%',
-      selector: (row) => row.created_at,
-      sortable: true
-    },
-    {
-      name: 'Created By',
-      width: '10%',
-      selector: (row) => row.created_by,
-      sortable: true
-    },
-    { name: 'Updated At',      width: '12%', selector: (row) => row.updated_at, sortable: true },
 
-    { name: 'Updated By',      width: '12%',  selector: (row) => row.updated_by, sortable: true }
+    {
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 90,
+      enableColumnOrdering: false,
+      enableGrouping: false
+    },
+    {
+      header: 'SubModule Name',
+      size: 225,
+      accessorKey: 'sub_module_name'
+    },
+    {
+      header: 'Module Name',
+      size: 200,
+      accessorKey: 'module_name'
+    },
+    {
+      header: 'Project Name',
+      accessorKey: 'project_name',
+      size: 200
+    },
+    {
+      header: 'Status',
+      accessorKey: 'is_active',
+      size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
+    },
+    {
+      header: 'Description',
+      size: 190,
+      accessorKey: 'description'
+    },
+    {
+      header: 'Remark',
+      accessorKey: 'remark',
+      accessorFn: (originalRow) => originalRow?.remark?.trim() || '--',
+      size: 160
+    },
+    {
+      accessorKey: 'created_at',
+      header: 'Created At',
+      filterVariant: 'date-range',
+      accessorFn: (row) => new Date(row.created_at),
+      Cell: ({ row }) =>
+        moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss'),
+      size: 350
+    },
+    {
+      accessorKey: 'created_by',
+      header: 'Created By',
+      size: 180
+    },
+    {
+      accessorKey: 'updated_at',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      accessorFn: (row) => new Date(row.updated_at),
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
+    },
+
+    {
+      id: 'updated_by',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By',
+      size: 185
+    }
   ];
 
   const loadData = useCallback(async () => {
@@ -235,32 +269,9 @@ function SubModuleComponent() {
           );
         }}
       />
-      <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by submodule name...."
-        exportFileName="submodule Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      />
 
       <div className="mt-2">
-        <div className="col-sm-12">
-          {isLoading && <TableLoadingSkelton />}
-          {!isLoading && data && (
-            <DataTable
-              columns={columns}
-              data={filteredData}
-              defaultSortField="title"
-              pagination
-              selectableRows={false}
-              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-              highlightOnHover={true}
-            />
-          )}
-        </div>
+        <MaterialTable columns={columns} data={data} isLoading={isLoading} />
       </div>
     </div>
   );
