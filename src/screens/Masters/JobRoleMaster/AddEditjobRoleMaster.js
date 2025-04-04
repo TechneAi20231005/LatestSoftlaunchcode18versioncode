@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Row } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
@@ -18,7 +18,14 @@ import {
   getJobRoleMasterListThunk
 } from '../../../redux/services/jobRoleMaster';
 
-function AddEditJobRoleMaster({ show, close, type, currentJobRoleData }) {
+function AddEditJobRoleMaster({
+  show,
+  close,
+  type,
+  currentJobRoleData,
+  reset,
+  setReset
+}) {
   console.log(currentJobRoleData, 'data');
   const dispatch = useDispatch();
   const addEditJobRoleInitialValue = {
@@ -27,12 +34,16 @@ function AddEditJobRoleMaster({ show, close, type, currentJobRoleData }) {
     is_active: type === 'EDIT' ? currentJobRoleData?.is_active?.toString() : 1
   };
 
+  const clearFilters = () => {
+    setReset(true);
+  };
   const handleAddEditJobRole = ({ formData }) => {
     if (type === 'ADD') {
       dispatch(
         addJobRoleMasterThunk({
           formData: formData,
           onSuccessHandler: () => {
+            clearFilters();
             close();
             dispatch(getJobRoleMasterListThunk());
           },
@@ -45,6 +56,7 @@ function AddEditJobRoleMaster({ show, close, type, currentJobRoleData }) {
           currentId: currentJobRoleData?.id,
           formData: formData,
           onSuccessHandler: () => {
+            clearFilters();
             close();
             dispatch(getJobRoleMasterListThunk());
           },

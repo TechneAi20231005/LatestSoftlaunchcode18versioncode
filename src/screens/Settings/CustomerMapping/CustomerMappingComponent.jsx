@@ -21,12 +21,12 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 // import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import { customSearchHandler } from '../../../utils/customFunction';
 // import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import { Box } from '@mui/material';
 export default function CustomerMappingComponent() {
   const dispatch = useDispatch();
   const location = useLocation();
+
   const data = useSelector(
     (CustomerMappingSlice) =>
       CustomerMappingSlice.customerMaster.customerMappingData
@@ -56,7 +56,6 @@ export default function CustomerMappingComponent() {
     const filteredList = customSearchHandler(data, searchTerm);
     setFilteredData(filteredList);
   }, [data, searchTerm]);
-
   // Function to handle reset button click
   const handleReset = () => {
     setSearchTerm('');
@@ -104,7 +103,7 @@ export default function CustomerMappingComponent() {
             <OverlayTrigger
               overlay={<Tooltip>{row?.original?.query_type_name} </Tooltip>}
             >
-              <div>
+              <Box sx={{ color: '#f19828' }}>
                 <span className="ms-1">
                   {' '}
                   {row?.original?.query_type_name &&
@@ -112,7 +111,7 @@ export default function CustomerMappingComponent() {
                     ? row?.original?.query_type_name
                     : row?.original?.query_type_name.substring(0, 15) + '....'}
                 </span>
-              </div>
+              </Box>
             </OverlayTrigger>
           )}
         </div>
@@ -121,18 +120,27 @@ export default function CustomerMappingComponent() {
     {
       accessorFn: (originalRow) => originalRow.template_name || '--',
       header: 'Template',
-      size: 200
+      size: 200,
+      Cell: ({ row }) => (
+        <Box sx={{ color: '#f19828' }}>{row?.original?.template_name}</Box>
+      )
     },
     {
       accessorFn: (originalRow) => originalRow.dynamic_form_name || '--',
       header: 'Form',
-      size: 180
+      size: 180,
+      Cell: ({ row }) => (
+        <Box sx={{ color: '#f19828' }}>{row?.original?.dynamic_form_name}</Box>
+      )
     },
 
     {
       accessorFn: (originalRow) => originalRow.department_name || '--',
       header: 'Department',
-      size: 180
+      size: 180,
+      Cell: ({ row }) => (
+        <Box sx={{ color: '#f19828' }}>{row?.original?.department_name}</Box>
+      )
     },
     { accessorKey: 'priority', header: 'Priority', size: 180 },
     {
@@ -141,24 +149,24 @@ export default function CustomerMappingComponent() {
       size: 180
     },
     {
-      accessorFn: (originalRow) => originalRow.is_active || '--',
       header: 'Status',
       size: 160,
-      Cell: ({ row }) => (
-        <div>
-          {row?.original?.is_active === 1 ? (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          ) : row?.original?.is_active === 0 ? (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          ) : (
-            '--'
-          )}
-        </div>
-      )
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
       accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
@@ -167,8 +175,7 @@ export default function CustomerMappingComponent() {
       Cell: ({ cell }) =>
         `${cell.getValue().toLocaleDateString()} ${cell
           .getValue()
-          .toLocaleTimeString()}`,
-      size: 250
+          .toLocaleTimeString()}`
     },
     {
       accessorFn: (originalRow) => originalRow.created_by || '--',
@@ -182,8 +189,7 @@ export default function CustomerMappingComponent() {
       Cell: ({ cell }) =>
         `${cell.getValue().toLocaleDateString()} ${cell
           .getValue()
-          .toLocaleTimeString()}`,
-      size: 250
+          .toLocaleTimeString()}`
     },
     {
       accessorFn: (originalRow) => originalRow.updated_by || '--',
@@ -246,29 +252,25 @@ export default function CustomerMappingComponent() {
         showExportButton={true}
       /> */}
 
-      <div className=" mt-2">
-        <div className="col-sm-12">
-          {data && (
-            <LocalizationProvider dateAdapter={AdapterDateFns}>
-              <MaterialTable
-                isLoading={isLoading}
-                data={filteredData}
-                columns={columns}
-              />
-            </LocalizationProvider>
-            // <DataTable
-            //   columns={columns}
-            //   data={filteredData}
-            //   defaultSortField="title"
-            //   pagination
-            //   selectableRows={false}
-            //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-            //   highlightOnHover={true}
-            //   progressPending={isLoading}
-            //   progressComponent={<TableLoadingSkelton />}
-            // />
-          )}
-        </div>
+      <div className="card mt-2">
+        {data && (
+          <MaterialTable
+            isLoading={isLoading}
+            data={filteredData}
+            columns={columns}
+          />
+          // <DataTable
+          //   columns={columns}
+          //   data={filteredData}
+          //   defaultSortField="title"
+          //   pagination
+          //   selectableRows={false}
+          //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+          //   highlightOnHover={true}
+          //   progressPending={isLoading}
+          //   progressComponent={<TableLoadingSkelton />}
+          // />
+        )}
       </div>
     </div>
   );

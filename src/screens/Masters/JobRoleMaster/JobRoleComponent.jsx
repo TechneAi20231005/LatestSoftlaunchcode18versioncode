@@ -8,12 +8,17 @@ import { useDispatch, useSelector } from 'react-redux';
 import { customSearchHandler } from '../../../utils/customFunction';
 import AddEditJobRoleMaster from './AddEditjobRoleMaster';
 import { getJobRoleMasterListThunk } from '../../../redux/services/jobRoleMaster';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
+import { handleModalInStore } from '../../Dashboard/DashbordSlice';
 
 function JobRoleMasterComponent() {
   const dispatch = useDispatch();
   const { jobRoleMasterList, isLoading } = useSelector(
     (state) => state?.jobRoleMaster
   );
+  const [reset, setReset] = useState(false);
+
   const [searchValue, setSearchValue] = useState('');
   const [filterJobRoleMasterList, setFilterJobRoleMasterList] = useState([]);
   const [addEditJobRoleModal, setAddEditJobRoleModal] = useState({
@@ -21,6 +26,7 @@ function JobRoleMasterComponent() {
     data: '',
     open: false
   });
+
   const handleSearch = () => {
     const filterList = customSearchHandler(jobRoleMasterList, searchValue);
     setFilterJobRoleMasterList(filterList);
@@ -30,81 +36,178 @@ function JobRoleMasterComponent() {
     setFilterJobRoleMasterList(jobRoleMasterList);
   };
 
+  // const columns = [
+  //   {
+  //     name: 'action',
+  //     selector: (row) => (
+  //       <i
+  //         className="icofont-edit text-primary cp"
+  //         onClick={() =>
+  //           setAddEditJobRoleModal({
+  //             type: 'EDIT',
+  //             data: row,
+  //             open: true
+  //           })
+  //         }
+  //       />
+  //     ),
+  //     sortable: false,
+  //     width: '70px'
+  //   },
+
+  //   {
+  //     name: 'Sr.No.',
+  //     selector: (row, index) => index + 1,
+  //     sortable: false,
+  //     width: '70px'
+  //   },
+
+  //   {
+  //     name: 'Job Role Title',
+  //     selector: (row) => row.job_role,
+  //     sortable: false,
+  //     width: '200px'
+  //   },
+  //   {
+  //     name: 'Status',
+  //     selector: (row) => row.is_active,
+  //     sortable: true,
+  //     cell: (row) => (
+  //       <div>
+  //         {row.is_active == 1 && (
+  //           <span className="badge bg-primary" style={{ width: '4rem' }}>
+  //             Active
+  //           </span>
+  //         )}
+  //         {row.is_active == 0 && (
+  //           <span className="badge bg-danger" style={{ width: '4rem' }}>
+  //             Deactive
+  //           </span>
+  //         )}
+  //       </div>
+  //     ),
+  //     width: '100px'
+  //   },
+  //   {
+  //     name: 'Created At',
+  //     selector: (row) => row.created_at || '--',
+  //     sortable: false,
+  //     width: '175px'
+  //   },
+  //   {
+  //     name: 'Created By',
+  //     selector: (row) => row.created_by || '--',
+  //     sortable: false,
+  //     width: '175px'
+  //   },
+  //   {
+  //     name: 'Updated At',
+  //     selector: (row) => row.updated_at || '--',
+  //     sortable: false,
+  //     width: '175px'
+  //   },
+  //   {
+  //     name: 'Updated By',
+  //     selector: (row) => row.updated_by || '--',
+  //     sortable: false,
+  //     width: '175px'
+  //   }
+  // ];
+
   const columns = [
     {
-      name: 'action',
-      selector: (row) => (
-        <i
-          className="icofont-edit text-primary cp"
-          onClick={() =>
-            setAddEditJobRoleModal({
-              type: 'EDIT',
-              data: row,
-              open: true
-            })
-          }
-        />
-      ),
-      sortable: false,
-      width: '70px'
+      accessorKey: 'action', // Use a valid key
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      Cell: ({ row }) => {
+        return (
+          <div className="btn-group" role="group">
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#edit"
+              onClick={() => {
+                setAddEditJobRoleModal({
+                  type: 'EDIT',
+                  data: row?.original,
+                  open: true
+                });
+              }}
+            >
+              <i className="icofont-edit text-success"></i>
+            </button>
+          </div>
+        );
+      }
+    },
+    {
+      accessorKey: 'counter',
+      header: 'Sr',
+      // cell: (row, index) => {
+      //   return row?.index + 1;
+      // },
+      size: 70,
+      enableColumnOrdering: false,
+      enableGrouping: false
+    },
+    {
+      accessorKey: 'job_role',
+      header: 'Job Role Title',
+      size: 160,
+      filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
 
     {
-      name: 'Sr.No.',
-      selector: (row, index) => index + 1,
-      sortable: false,
-      width: '70px'
-    },
-
-    {
-      name: 'Job Role Title',
-      selector: (row) => row.job_role,
-      sortable: false,
-      width: '200px'
-    },
-    {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
-        <div>
-          {row.is_active == 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active == 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      ),
-      width: '100px'
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at || '--',
-      sortable: false,
-      width: '175px'
+      accessorFn: (originalRow) => {
+        return moment(originalRow.created_at).startOf('day').toDate();
+      },
+      header: 'Created At',
+      filterVariant: 'date',
+      Cell: ({ cell }) =>
+        moment(cell.row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by || '--',
-      sortable: false,
-      width: '175px'
+      accessorKey: 'created_by',
+      header: 'Created By'
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at || '--',
-      sortable: false,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_at || '--',
+      header: 'Updated At'
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by || '--',
-      sortable: false,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      header: 'Updated By'
     }
   ];
   const transformDataForExport = (data) => {
@@ -160,8 +263,8 @@ function JobRoleMasterComponent() {
           </button>
         </div>
       </div>
-
-      <Row className="row_gap_3">
+      <div className="card mt-2">
+        {/* <Row className="row_gap_3">
         <Col xs={12} md={7} xxl={8}>
           <input
             type="search"
@@ -202,8 +305,8 @@ function JobRoleMasterComponent() {
             disabled={!filterJobRoleMasterList?.length}
           />
         </Col>
-      </Row>
-      <DataTable
+      </Row> */}
+        {/* <DataTable
         columns={columns}
         data={filterJobRoleMasterList}
         defaultSortField="role_id"
@@ -213,11 +316,25 @@ function JobRoleMasterComponent() {
         highlightOnHover={true}
         progressPending={isLoading?.getJobRoleMasterList}
         progressComponent={<TableLoadingSkelton />}
-      />
+      /> */}
+
+        {filterJobRoleMasterList && (
+          <MaterialTable
+            columns={columns}
+            data={filterJobRoleMasterList}
+            isLoading={isLoading?.getJobRoleMasterList}
+            reset={reset}
+            setReset={setReset}
+          ></MaterialTable>
+        )}
+      </div>
+
       <AddEditJobRoleMaster
         show={addEditJobRoleModal?.open}
         type={addEditJobRoleModal?.type}
         currentJobRoleData={addEditJobRoleModal?.data}
+        reset={reset}
+        setReset={setReset}
         close={(prev) => setAddEditJobRoleModal({ ...prev, open: false })}
       />
     </div>

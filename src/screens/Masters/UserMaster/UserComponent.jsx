@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import DataTable from 'react-data-table-component';
+// import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
 
 import UserService from '../../../services/MastersService/UserService';
@@ -12,12 +12,12 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { getEmployeeData, getRoles } from '../../Dashboard/DashboardAction';
 import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
-import NotFound from '../../../components/NotFound';
+// import NotFound from '../../../components/NotFound';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import moment from 'moment';
+import { Box, colors } from '@mui/material';
 
 function UserComponent() {
   //initial state
@@ -63,6 +63,7 @@ function UserComponent() {
       enableColumnOrdering: false,
       enableGrouping: false,
       enableSorting: false,
+      enableColumnFilter: false,
       accessorFn: (originalRow) => {
         return (
           <div className="btn-group" role="group">
@@ -79,7 +80,7 @@ function UserComponent() {
     {
       accessorFn: (originalRow) => originalRow?.counter || '--',
       header: 'Sr',
-      size: 90,
+      size: 110,
       enableColumnOrdering: false,
       enableGrouping: false
     },
@@ -98,7 +99,10 @@ function UserComponent() {
     {
       accessorFn: (originalRow) => originalRow?.name || '--',
       header: 'Name',
-      size: 180
+      size: 180,
+      Cell: ({ row }) => (
+        <Box sx={{ color: '#f19828' }}>{row?.original?.name}</Box>
+      )
     },
     {
       accessorFn: (originalRow) => originalRow?.email_id || '--',
@@ -115,41 +119,51 @@ function UserComponent() {
       header: 'Username'
     },
     {
-      accessorFn: (originalRow) => originalRow?.is_active || '--',
+      accessorKey: 'is_active',
       header: 'Status',
       size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
       Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
         return (
-          <div>
-            {row?.original?.is_active === 1 ? (
-              <span className="badge bg-primary" style={{ width: '4rem' }}>
-                Active
-              </span>
-            ) : row?.original?.is_active === 0 ? (
-              <span className="badge bg-danger" style={{ width: '4rem' }}>
-                Deactive
-              </span>
-            ) : (
-              '--'
-            )}
-          </div>
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
         );
       }
     },
     {
-      accessorFn: (originalRow) => originalRow?.created_at || '--',
-      header: 'Created At'
+      accessorFn: (originalRow) => new Date(originalRow.created_at),
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow?.created_by || '--',
-      header: 'Created By'
+      accessorFn: (originalRow) => originalRow.created_by || '--',
+      header: 'Created By',
+      size: 190
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_at || '--',
-      header: 'Updated At'
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      accessorFn: (originalRow) => originalRow.updated_by || '--',
       header: 'Updated By',
       size: 190
     }
@@ -268,7 +282,11 @@ function UserComponent() {
       /> */}
       <div className="card mt-2 px-0">
         {filteredData && (
-          <MaterialTable columns={columns} data={filteredData}></MaterialTable>
+          <MaterialTable
+            isLoading={isLoding}
+            columns={columns}
+            data={filteredData}
+          />
         )}
       </div>
     </div>

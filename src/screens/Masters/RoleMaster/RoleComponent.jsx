@@ -56,7 +56,7 @@ function RoleComponent({ location }) {
 
   //Local state
   // const [notify, setNotify] = useState();
-
+  const [reset, setReset] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
 
@@ -67,6 +67,9 @@ function RoleComponent({ location }) {
     setFilteredData(filteredList);
   }, [RoleMasterData, searchTerm]);
 
+  const clearFilters = () => {
+    setReset(true);
+  };
   // Function to handle reset button click
   const handleReset = () => {
     setSearchTerm('');
@@ -134,19 +137,19 @@ function RoleComponent({ location }) {
       accessorKey: 'role',
       header: 'Role',
       size: 130,
+      filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      }),
       Cell: ({ row }) => (
-        <div>
-          <OverlayTrigger overlay={<Tooltip>{row?.original?.role} </Tooltip>}>
-            <div>
-              {/* <span className="ms-1"> {row?.original?.role}</span> */}
-              <span>
-                {row?.original?.role.length > 20
-                  ? row?.original?.role.substring(0, 20) + '...'
-                  : row?.original?.role}
-              </span>
-            </div>
-          </OverlayTrigger>
-        </div>
+        <span>
+          {row?.original?.role.length > 20
+            ? row?.original?.role.substring(0, 20) + '...'
+            : row?.original?.role}
+        </span>
       )
     },
 
@@ -154,20 +157,22 @@ function RoleComponent({ location }) {
       accessorKey: 'is_active',
       header: 'Status',
       size: 150,
-      Cell: ({ row }) => (
-        <div>
-          {row?.original?.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row?.original?.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      )
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
       accessorKey: 'created_at',
@@ -240,11 +245,13 @@ function RoleComponent({ location }) {
         await dispatch(postRole(formData));
         setTimeout(() => {
           dispatch(getRoleData());
+          clearFilters();
         }, 500);
       } else {
         await dispatch(updatedRole({ id: id, payload: editformdata }));
         setTimeout(() => {
           dispatch(getRoleData());
+          clearFilters();
         }, 500);
       }
     } catch (error) {
@@ -324,19 +331,15 @@ function RoleComponent({ location }) {
       />
  */}
       <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {RoleMasterData && (
-                <MaterialTable
-                  columns={columns}
-                  data={filteredData}
-                  isLoading={isLoading}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        {RoleMasterData && (
+          <MaterialTable
+            columns={columns}
+            data={filteredData}
+            isLoading={isLoading}
+            reset={reset}
+            setReset={setReset}
+          />
+        )}
       </div>
 
       <Modal centered show={modal.showModal}>
