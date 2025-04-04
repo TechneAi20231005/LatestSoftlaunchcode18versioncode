@@ -409,6 +409,7 @@ function StateComponent() {
             data={filteredData}
             isLoading={isLoading}
             reset={reset}
+            setReset={setReset}
           />
           // <DataTable
           //   columns={columns}

@@ -6,7 +6,7 @@ import {
   MRT_ToggleFullScreenButton,
   MRT_ToggleGlobalFilterButton
 } from 'material-react-table';
-import { Box, Button, Tooltip } from '@mui/material';
+import { Box, Button, IconButton, Tooltip } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -28,7 +28,8 @@ function MaterialTable({
   enableFacetedValues = true,
   isLoading,
   enableColumnFilter = true,
-  reset = false
+  reset = false,
+  setReset = () => {}
 }) {
   const [columnFilters, setColumnFilters] = useState([]);
   const [sorting, setSorting] = useState([]);
@@ -70,6 +71,7 @@ function MaterialTable({
       setGlobalFilter([]);
       setShowGlobalFilter(false);
       setShowColumnFilters(false);
+      setReset(false);
     }
   }, [reset]);
 
@@ -175,7 +177,6 @@ function MaterialTable({
               sx={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '0.5rem',
                 md: { flexWrap: 'nowrap' },
                 sm: { flexWrap: 'wrap' },
                 marginY: 'auto'
@@ -183,8 +184,7 @@ function MaterialTable({
             >
               <MRT_ToggleGlobalFilterButton table={table} />
               <Tooltip title="Clear Filters" arrow>
-                <FilterAltOffIcon
-                  role="button"
+                <IconButton
                   disabled={
                     table.getState().columnFilters?.length === 0 &&
                     JSON.stringify(table.getState().rowSelection) === '{}' &&
@@ -193,14 +193,11 @@ function MaterialTable({
                     table.getState().pagination.pageIndex === 0 &&
                     table.getState().pagination.pageSize === 10 &&
                     table.getState().sorting?.length === 0 &&
-                    table.getState().globalFilter?.length === 0 &&
+                    (table.getState().globalFilter === undefined ||
+                      table.getState().globalFilter?.length === 0) &&
                     table.getState().grouping?.length === 0
                   }
-                  sx={{
-                    color: grey[600]
-                  }}
                   onClick={() => {
-                    console.log('calling');
                     table.setColumnFilters([]);
                     table.resetSorting();
                     table.resetPagination();
@@ -212,8 +209,28 @@ function MaterialTable({
                     table.setShowGlobalFilter(false);
                     table.setShowColumnFilters(false);
                   }}
-                />
+                >
+                  <FilterAltOffIcon
+                    sx={{
+                      color:
+                        table.getState().columnFilters?.length === 0 &&
+                        JSON.stringify(table.getState().rowSelection) ===
+                          '{}' &&
+                        JSON.stringify(table.getState().columnVisibility) ===
+                          '{}' &&
+                        table.getState().pagination.pageIndex === 0 &&
+                        table.getState().pagination.pageSize === 10 &&
+                        table.getState().sorting?.length === 0 &&
+                        (table.getState().globalFilter === undefined ||
+                          table.getState().globalFilter?.length === 0) &&
+                        table.getState().grouping?.length === 0
+                          ? (theme) => theme.palette.action.disabled
+                          : grey[600]
+                    }}
+                  />
+                </IconButton>
               </Tooltip>
+
               <Box onClick={handleColumnMenuOpen}>
                 <MRT_ToggleFiltersButton table={table} />
               </Box>

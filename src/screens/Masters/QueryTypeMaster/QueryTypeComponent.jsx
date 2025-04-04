@@ -886,6 +886,7 @@ function QueryTypeComponent() {
               data={filteredData}
               columns={columns}
               reset={reset}
+              setReset={setReset}
             />
             // <DataTable
             //   columns={columns}

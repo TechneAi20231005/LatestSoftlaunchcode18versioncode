@@ -337,6 +337,7 @@ function RoleComponent({ location }) {
             data={filteredData}
             isLoading={isLoading}
             reset={reset}
+            setReset={setReset}
           />
         )}
       </div>

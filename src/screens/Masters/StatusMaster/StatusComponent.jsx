@@ -289,6 +289,7 @@ function StatusComponent() {
             data={filteredData}
             columns={columns}
             reset={reset}
+            setReset={setReset}
           />
 
           // <DataTable
