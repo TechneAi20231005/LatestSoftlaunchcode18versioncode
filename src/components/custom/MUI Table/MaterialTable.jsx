@@ -146,7 +146,14 @@ function MaterialTable({
           enableFacetedValues={enableFacetedValues}
           enableColumnFilter={enableColumnFilter}
           muiTableBodyCellProps={{
-            onMouseOver: handleMouseHover
+            onMouseOver: handleMouseHover,
+            style: {
+              display: '-webkit-box',
+              WebkitLineClamp: 0.5,
+              WebkitBoxOrient: 'vertical',
+              overflow: 'hidden',
+              lineHeight: '1.5rem'
+            }
           }}
           muiTableHeadCellProps={({ column }) => ({
             onClick: () => {
