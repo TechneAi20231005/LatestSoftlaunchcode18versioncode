@@ -60,18 +60,21 @@ function MaterialTable({
     setExpandColumn(true);
   };
 
+  const resetFilters = () => {
+    setColumnFilters([]);
+    setSorting([]);
+    setPagination({ pageIndex: 0, pageSize: 10 });
+    setRowSelection({});
+    setColumnVisibility({});
+    setGroupBy([]);
+    setGlobalFilter([]);
+    setShowGlobalFilter(false);
+    setShowColumnFilters(false);
+    setReset(false);
+  };
   useEffect(() => {
     if (reset) {
-      setColumnFilters([]);
-      setSorting([]);
-      setPagination({ pageIndex: 0, pageSize: 10 });
-      setRowSelection({});
-      setColumnVisibility({});
-      setGroupBy([]);
-      setGlobalFilter([]);
-      setShowGlobalFilter(false);
-      setShowColumnFilters(false);
-      setReset(false);
+      resetFilters();
     }
   }, [reset]);
 
@@ -197,18 +200,7 @@ function MaterialTable({
                       table.getState().globalFilter?.length === 0) &&
                     table.getState().grouping?.length === 0
                   }
-                  onClick={() => {
-                    table.setColumnFilters([]);
-                    table.resetSorting();
-                    table.resetPagination();
-                    table.resetRowSelection();
-                    table.resetColumnVisibility();
-                    table.resetGrouping();
-                    table.reset();
-                    table.resetGlobalFilter();
-                    table.setShowGlobalFilter(false);
-                    table.setShowColumnFilters(false);
-                  }}
+                  onClick={resetFilters}
                 >
                   <FilterAltOffIcon
                     sx={{
