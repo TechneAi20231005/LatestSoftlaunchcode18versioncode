@@ -47,7 +47,9 @@ function AddEditJobRoleMaster({
             close();
             dispatch(getJobRoleMasterListThunk());
           },
-          onErrorHandler: () => {}
+          onErrorHandler: () => {
+            clearFilters();
+          }
         })
       );
     } else {
@@ -60,7 +62,9 @@ function AddEditJobRoleMaster({
             close();
             dispatch(getJobRoleMasterListThunk());
           },
-          onErrorHandler: () => {}
+          onErrorHandler: () => {
+            clearFilters();
+          }
         })
       );
     }
