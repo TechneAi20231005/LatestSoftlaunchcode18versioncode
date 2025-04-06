@@ -8,6 +8,7 @@ import { errorHandler } from '../../../utils';
 import { fetchData } from '../../../utils/fetchData';
 import MyTicketService from '../../../services/TicketService/MyTicketService';
 import ReportService from '../../../services/ReportService/ReportService';
+import {useDebounce}  from '../../../hooks/useDebounce';
 
 const MyTicketsTab = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -33,6 +34,8 @@ const MyTicketsTab = () => {
     pageIndex: 0,
     pageSize: 10 //customize the default page size
   });
+
+  const [reset, setReset] = useState(false);
 
   const apiFetchData = [
     {
@@ -103,7 +106,7 @@ const MyTicketsTab = () => {
         label: 'Department Wise',
         color: 'success'
       },
-      { id: 5, name: 'YouTask', label: 'You Task', color: 'error' },
+      { id: 5, name: 'YouTask', label: 'Your Task', color: 'error' },
       { id: 6, name: 'UnPassed', label: 'UnPassed', color: 'warning' }
     ],
     [allTicketsData, isFormSubmitted]
@@ -113,6 +116,7 @@ const MyTicketsTab = () => {
     if (isLoading) return;
     setActiveTab(newValue);
     setColumnFilters([])
+    setReset(true)
     setPagination({ pageIndex: 0, pageSize: 10 });
     // setIsLoading(true);
 
@@ -151,59 +155,140 @@ const MyTicketsTab = () => {
 
   console.log(columnFilters,"columnFilters")
 
+  const ticketIdValue = columnFilters.find(f => f.id === 'ticket_id')?.value || '';
+
+
+  const debouncedTicketId = useDebounce(ticketIdValue, 1000);
   useEffect(() => {
     const fetchData = async () => {
-        if (isLoading) return;
-        setIsLoading(true);
+      if (isLoading) return;
+      setIsLoading(true);
 
-        const hasColumnFilters = columnFilters?.length > 0;
-        let payload;
+      const hasColumnFilters = columnFilters?.length > 0;
 
-        if (hasColumnFilters) {
-            payload = {
-                department_id: columnFilters.find(filter => filter.id === "assign_to_department.department")?.value || [],
-                status_id: columnFilters.find(filter => filter.id === "Status")?.value || [],
-                ticket_id: "",
-                assign_to_user_id: columnFilters.find(filter => filter.id === "Assigned To")?.value || [],
-                limit: pagination.pageSize,
-                page: pagination.pageIndex + 1,
-                typeOf: "SearchResult"
-            };
+      const payload = hasColumnFilters
+        ? {
+            department_id:
+              columnFilters.find(filter => filter.id === 'assign_to_department.department')?.value || [],
+            status_id: columnFilters.find(filter => filter.id === 'Status')?.value || [],
+            ticket_id: debouncedTicketId,
+            assign_to_user_id: columnFilters.find(filter => filter.id === 'Assigned To')?.value || [],
+            limit: pagination.pageSize,
+            page: pagination.pageIndex + 1,
+            typeOf: 'SearchResult'
+          }
+        : {
+            typeOf: activeTab,
+            limit: pagination.pageSize,
+            page: pagination.pageIndex + 1,
+            filter: ''
+          };
+
+      try {
+        const response = hasColumnFilters
+          ? await new ReportService().getTicketReport(payload)
+          : await new MyTicketService().getUserTicketsTest(payload);
+
+        if (response?.status === 200) {
+          const { status, data } = response?.data || {};
+          if (status === 1 && data) {
+            const { data: items = [], total = 0 } = data;
+            setAllTicketsData(prev => ({ ...prev, [activeTab]: items }));
+            setTotalRows(total);
+          } else {
+            setTotalRows(0);
+            setAllTicketsData(prev => ({ ...prev, [activeTab]: [] }));
+          }
         } else {
-            payload = {
-                typeOf: activeTab,
-                limit: pagination.pageSize,
-                page: pagination.pageIndex + 1,
-                filter: ''
-            };
+          errorHandler(response);
         }
-
-        try {
-            const response = hasColumnFilters
-                ? await new ReportService().getTicketReport(payload)
-                : await new MyTicketService().getUserTicketsTest(payload);
-
-            if (response?.status === 200) {
-                const { status, data } = response?.data || {};
-                if (status === 1 && data) {
-                    const { data: items = [], total = 0 } = data;
-                    setAllTicketsData(prev => ({ ...prev, [activeTab]: items }));
-                    setTotalRows(total);
-                } else {
-                    setAllTicketsData(prev => ({ ...prev, [activeTab]: [] }));
-                }
-            } else {
-                errorHandler(response);
-            }
-        } catch (error) {
-            console.error("Error fetching data:", error);
-        } finally {
-            setIsLoading(false);
-        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
 
-    fetchData();
-}, [activeTab, pagination.pageIndex, pagination.pageSize, columnFilters]);
+
+    if (!ticketIdValue || ticketIdValue === debouncedTicketId) {
+      fetchData();
+    }
+  }, [
+    activeTab,
+    pagination.pageIndex,
+    pagination.pageSize,
+    columnFilters,
+    debouncedTicketId
+  ]);
+
+
+  // useEffect(() => {
+  //   const fetchData = async () => {
+  //     if (isLoading) return;
+
+  //     const hasColumnFilters = columnFilters?.length > 0;
+  //     const ticketIdFilter = columnFilters.find(f => f.id === "ticket_id");
+  //     const ticketIdValue = ticketIdFilter?.value || "";
+
+  //     // only call API if either:
+  //     // 1. no ticket_id filter
+  //     // 2. OR ticket_id filter has exactly 7 characters
+  //     const shouldFetch =
+  //       !ticketIdFilter || (ticketIdValue && ticketIdValue.length === 7);
+
+  //     if (!shouldFetch) return;
+
+  //     setIsLoading(true);
+
+  //     let payload;
+
+  //     if (hasColumnFilters) {
+  //       payload = {
+  //         department_id: columnFilters.find(filter => filter.id === "assign_to_department.department")?.value || [],
+  //         status_id: columnFilters.find(filter => filter.id === "Status")?.value || [],
+  //         ticket_id: ticketIdValue,
+  //         assign_to_user_id: columnFilters.find(filter => filter.id === "Assigned To")?.value || [],
+  //         limit: pagination.pageSize,
+  //         page: pagination.pageIndex + 1,
+  //         typeOf: "SearchResult"
+  //       };
+  //     } else {
+  //       payload = {
+  //         typeOf: activeTab,
+  //         limit: pagination.pageSize,
+  //         page: pagination.pageIndex + 1,
+  //         filter: ''
+  //       };
+  //     }
+
+  //     try {
+  //       const response = hasColumnFilters
+  //         ? await new ReportService().getTicketReport(payload)
+  //         : await new MyTicketService().getUserTicketsTest(payload);
+
+  //       if (response?.status === 200) {
+  //         const { status, data } = response?.data || {};
+  //         if (status === 1 && data) {
+  //           const { data: items = [], total = 0 } = data;
+  //           setAllTicketsData(prev => ({ ...prev, [activeTab]: items }));
+  //           setTotalRows(total);
+  //         } else {
+  //           setTotalRows(0);
+  //           setAllTicketsData(prev => ({ ...prev, [activeTab]: [] }));
+  //         }
+  //       } else {
+  //         errorHandler(response);
+  //       }
+  //     } catch (error) {
+  //       console.error("Error fetching data:", error);
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   fetchData();
+  // }, [activeTab, pagination.pageIndex, pagination.pageSize, columnFilters]);
+
 
 
 
@@ -238,6 +323,8 @@ const MyTicketsTab = () => {
           setTotalRows={setTotalRows}
           setColumnFilters={setColumnFilters}
           columnFilters={columnFilters}
+          reset={reset}
+          setReset={setReset}
 
         />
       </Box>

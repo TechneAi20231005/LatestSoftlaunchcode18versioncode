@@ -28,7 +28,7 @@ export const fetchData = async (
         if (name === 'User') {
           selectData = filteredData.map((data) => ({
             value: data.id,
-            label: `${data.first_name} ${data.middle_name} ${data.last_name}`
+            label: `${data.first_name}  ${data.last_name}`
           }));
         } else {
           selectData = filteredData.map((data) => ({

@@ -171,7 +171,7 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
         anchorEl={anchorEl}
         open={open}
         onClose={handleClosed}
-        sx={{'& .MuiPaper-root': {width: '120px'}}}
+        sx={{'& .MuiPaper-root': {width: '140px'}}}
         // MenuListProps={{
         //   'aria-labelledby': 'basic-button',
         // }}

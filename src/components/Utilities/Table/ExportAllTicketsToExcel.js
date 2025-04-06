@@ -5,11 +5,19 @@ import MyTicketService from '../../../services/TicketService/MyTicketService';
 import { Button, LinearProgress } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ReportService from '../../../services/ReportService/ReportService';
 
-export const ExportAllTicketsToExcel = ({ fileName, typeOf }) => {
+export const ExportAllTicketsToExcel = ({
+  fileName,
+  typeOf,
+  columnFilters,
+  gridData = []
+}) => {
   const fileType =
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
   const fileExtension = '.xlsx';
+
+  console.log(columnFilters, 'columnFilters from ExportAllTicketsToExcel');
 
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -27,47 +35,74 @@ export const ExportAllTicketsToExcel = ({ fileName, typeOf }) => {
       });
     }, 500);
 
-    let type;
-    if (
-      [
-        'AssignToMe',
-        'CreatedByMe',
-        'DepartmentWise',
-        'YourTask',
-        'UnPassed'
-      ].includes(typeOf)
-    ) {
-      type = typeOf;
-    }
-
-    const form = { typeOf: type, filter: 'export' };
+    let dataToDownload = [];
 
     try {
-      const res = await new MyTicketService().getUserTicketsTest(form);
+      if (columnFilters && columnFilters.length > 0) {
+        const payload = {
+          department_id:
+            columnFilters.find(
+              (f) => f.id === 'assign_to_department.department'
+            )?.value || [],
+          status_id: columnFilters.find((f) => f.id === 'Status')?.value || [],
+          ticket_id:
+            columnFilters.find((filter) => filter.id === 'ticket_id')?.value ||
+            '',
+          assign_to_user_id:
+            columnFilters.find((f) => f.id === 'Assigned To')?.value || [],
+          export: 'export'
+        };
 
-      if (res.status === 200 && res.data.status === 1) {
-        let dataToDownload = res.data.data;
-        let tempExport = dataToDownload.map((item) => ({
+        const res = await new ReportService().getTicketReport(payload);
+
+        if (res.status === 200 && res.data.status === 1) {
+          dataToDownload = res.data.data;
+        }
+      } else {
+        let type;
+        if (
+          [
+            'AssignToMe',
+            'CreatedByMe',
+            'DepartmentWise',
+            'YourTask',
+            'UnPassed'
+          ].includes(typeOf)
+        ) {
+          type = typeOf;
+        }
+
+        const form = { typeOf: type, filter: 'export' };
+
+        const res = await new MyTicketService().getUserTicketsTest(form);
+
+        if (res.status === 200 && res.data.status === 1) {
+          dataToDownload = res.data.data;
+        }
+      }
+
+      if (dataToDownload.length > 0) {
+        const tempExport = dataToDownload.map((item) => ({
           TICKET_ID: item.ticket_id,
           TICKET_DATE: item.ticket_date,
           EXPECTED_SOLVE_DATE: item.expected_solve_date,
-          ASSIGN_TO_DEPARTMENT: item.assign_to_department,
+          ASSIGN_TO_DEPARTMENT: item.assign_to_department?.department,
           ASSIGN_TO_USER: item.assign_to_user,
-          QUERY_TYPE_NAME: item.query_type_name,
+          QUERY_TYPE_NAME: item?.query_type?.query_type_name,
           PRIORITY: item.priority,
           DESCRIPTION: item.description,
           CREATED_BY: item.created_by_name,
           Confirmation_Required: item.confirmation_required ? 'YES' : 'NO',
           Ref_id: item.cuid,
           from_department_name: item.from_department_name,
-          module_name: item.module_name,
+          module_name: item?.module?.module_name,
           Passed_Status: item.passed_status,
           Passed_Status_Changed_At: item.passed_status_changed_at,
           Passed_Status_Changed_By_Name: item.passed_status_changed_by_name,
           Passed_Status_Remark: item.passed_status_remark,
-          project_name: item.project_name,
-          Status_name: item.status_name,
-          sub_module_name: item.sub_module_name
+          project_name: item?.project?.project_name,
+          Status_name: item?.status?.status,
+          sub_module_name: item?.sub_module?.sub_module_name
         }));
 
         const ws = XLSX.utils.json_to_sheet(tempExport);
@@ -94,7 +129,7 @@ export const ExportAllTicketsToExcel = ({ fileName, typeOf }) => {
     <div>
       <Button
         className="text-primary"
-        disabled={loading}
+        disabled={loading || gridData.length === 0}
         onClick={exportToCSV}
         startIcon={
           completed ? (
@@ -111,7 +146,6 @@ export const ExportAllTicketsToExcel = ({ fileName, typeOf }) => {
           : 'Export All Data'}
       </Button>
 
-      {/* Show Progress Bar */}
       {loading && (
         <LinearProgress
           variant="determinate"
