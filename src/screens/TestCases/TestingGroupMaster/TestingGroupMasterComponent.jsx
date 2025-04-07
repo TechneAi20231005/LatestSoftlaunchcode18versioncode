@@ -195,7 +195,7 @@ function TestingGroupMasterComponent() {
 
   return (
     <div className="container-xxl">
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between gap-2 flex-wrap">
         <PageHeader headerTitle="Testing Group Master" />
         <div>
           <button
@@ -214,13 +214,17 @@ function TestingGroupMasterComponent() {
         </div>
       </div>
 
-      <MaterialTable
-        columns={columns}
-        data={filteredTestingGroupMasterList}
-        isLoading={isLoading?.getTestingGroupMasterList}
-        setReset={setReset}
-        reset={reset}
-      />
+      {filteredTestingGroupMasterList && (
+        <div className="card mt-2">
+          <MaterialTable
+            columns={columns}
+            data={filteredTestingGroupMasterList}
+            isLoading={isLoading?.getTestingGroupMasterList}
+            setReset={setReset}
+            reset={reset}
+          />
+        </div>
+      )}
       <AddTestingGroupModal
         show={addEditTestingGroupModal?.open}
         type={addEditTestingGroupModal?.type}

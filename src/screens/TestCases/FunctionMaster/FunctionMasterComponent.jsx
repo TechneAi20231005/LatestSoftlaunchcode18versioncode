@@ -193,7 +193,7 @@ function FunctionMasterComponent() {
 
   return (
     <div className="container-xxl">
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between gap-2 flex-wrap">
         <PageHeader headerTitle="Function Master" />
         <div>
           <button
@@ -212,13 +212,17 @@ function FunctionMasterComponent() {
         </div>
       </div>
 
-      <MaterialTable
-        data={filteredFunctionMasterList}
-        columns={columns}
-        setReset={setReset}
-        reset={reset}
-        isLoading={isLoading?.getFunctionMasterList}
-      />
+      {filteredFunctionMasterList && (
+        <div className="card mt-2">
+          <MaterialTable
+            data={filteredFunctionMasterList}
+            columns={columns}
+            setReset={setReset}
+            reset={reset}
+            isLoading={isLoading?.getFunctionMasterList}
+          />
+        </div>
+      )}
       <AddEditFunctionMaster
         show={addEditFunctionModal?.open}
         type={addEditFunctionModal?.type}
