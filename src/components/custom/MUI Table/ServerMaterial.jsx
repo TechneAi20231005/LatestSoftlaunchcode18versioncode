@@ -85,7 +85,7 @@ function ServerMaterial({
       }
       return col;
     });
-  }, [expandColumn, columns]);
+  }, [expandColumn, columns.length]);
 
   useEffect(() => {
     if (reset) {
@@ -112,7 +112,7 @@ function ServerMaterial({
       >
         <LocalizationProvider dateAdapter={AdapterDateFns}>
           <MaterialReactTable
-            columns={columns}
+            columns={updatedColumns}
             data={data}
             enableSorting={enableSorting}
             enablePagination={enablePagination}
