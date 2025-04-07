@@ -99,7 +99,13 @@ function FunctionMasterComponent() {
       header: 'Function Title',
       accessorKey: 'function_name',
       enableSorting: false,
-      width: '200px'
+      width: '200px',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
 
     {

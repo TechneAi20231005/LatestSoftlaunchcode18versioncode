@@ -101,6 +101,12 @@ function TestingGroupMasterComponent() {
       header: 'Testing Group Title',
       enableSorting: false,
       size: 220,
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      }),
       accessorKey: 'group_name'
     },
     {
