@@ -215,6 +215,7 @@ function StatusComponent() {
       }
     } catch (error) {
       errorHandler(error);
+      clearFilters();
     } finally {
       setSubmitting(false);
     }
