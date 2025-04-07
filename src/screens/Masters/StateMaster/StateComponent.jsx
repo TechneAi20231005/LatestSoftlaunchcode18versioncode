@@ -47,16 +47,16 @@ function StateComponent() {
 
   //search function
 
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(stateData, searchTerm);
-    setFilteredData(filteredList);
-  }, [stateData, searchTerm]);
+  // const handleSearch = useCallback(() => {
+  //   const filteredList = customSearchHandler(stateData, searchTerm);
+  //   setFilteredData(filteredList);
+  // }, [stateData, searchTerm]);
 
   //reset function
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(stateData);
-  };
+  // const handleReset = () => {
+  //   setSearchTerm('');
+  //   setFilteredData(stateData);
+  // };
 
   // const columns = [
 
@@ -315,14 +315,21 @@ function StateComponent() {
     checkRole.length,
     filteredCountryData.length
   ]);
+  const exportDataKeys = {
+    country: 'Country',
+    state: 'State',
+    is_active: 'Status',
+    created_by: 'Created By',
+    fileName: 'State Master Record'
+  };
 
   useEffect(() => {
     setFilteredData(stateData);
   }, [stateData]);
 
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
+  // useEffect(() => {
+  //   handleSearch();
+  // }, [searchTerm, handleSearch]);
 
   const fields = [
     // { name: 'project_id', label: 'Project name', required: true },
@@ -402,7 +409,7 @@ function StateComponent() {
           showExportButton={true}
           clientSearch={true}
         /> */}
-
+      {console.log('filteredData : ', filteredData)}
       <div className="card mt-2">
         {stateData && (
           <MaterialTable
@@ -411,6 +418,7 @@ function StateComponent() {
             isLoading={isLoading}
             reset={reset}
             setReset={setReset}
+            exportDataKeys={exportDataKeys}
           />
           // <DataTable
           //   columns={columns}
