@@ -18,7 +18,14 @@ import {
 } from '../../../redux/services/testCases/testingTypeMaster';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 
-function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
+function AddTestingTypeModal({
+  show,
+  close,
+  type,
+  currentTestingTypeData,
+  reset,
+  setReset
+}) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const dispatch = useDispatch();
   const addEditTestingTypeInitialValue = {
@@ -27,7 +34,9 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
     is_active:
       type === 'EDIT' ? currentTestingTypeData?.is_active?.toString() : 1
   };
-
+  const clearFilters = () => {
+    setReset(true);
+  };
   // // function
 
   const handleAddEditTestingType = ({ formData }) => {
@@ -38,6 +47,8 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
         addTestingTypeMasterThunk({
           formData: formData,
           onSuccessHandler: () => {
+            clearFilters();
+
             setIsSubmitting(false);
             close();
             dispatch(getTestingTypeMasterListThunk());
@@ -53,6 +64,8 @@ function AddTestingTypeModal({ show, close, type, currentTestingTypeData }) {
           currentId: currentTestingTypeData?.id,
           formData: formData,
           onSuccessHandler: () => {
+            clearFilters();
+
             setIsSubmitting(false);
             close();
             dispatch(getTestingTypeMasterListThunk());

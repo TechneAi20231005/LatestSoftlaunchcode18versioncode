@@ -82,7 +82,8 @@ function UserComponent() {
       header: 'Sr',
       size: 110,
       enableColumnOrdering: false,
-      enableGrouping: false
+      enableGrouping: false,
+      enableColumnFilter: false
     },
     {
       accessorFn: (originalRow) => originalRow?.account_for || '--',

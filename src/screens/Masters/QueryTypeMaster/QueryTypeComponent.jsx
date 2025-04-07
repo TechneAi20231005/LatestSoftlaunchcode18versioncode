@@ -168,7 +168,12 @@ function QueryTypeComponent() {
         </div>
       )
     },
-    { accessorKey: 'counter', header: 'Sr', size: 120 },
+    {
+      accessorKey: 'counter',
+      header: 'Sr',
+      enableColumnFilter: false,
+      size: 120
+    },
     {
       accessorFn: (originalRow) => originalRow.query_type_name || '--',
       header: 'Query Type Name',

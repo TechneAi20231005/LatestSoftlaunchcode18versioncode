@@ -84,8 +84,8 @@ function MaterialTable({
 
   const [expandColumn, setExpandColumn] = useState(false);
 
-  const handleColumnMenuOpen = () => {
-    setExpandColumn(true);
+  const handleColumnMenuToggle = () => {
+    setExpandColumn(!expandColumn);
   };
 
   const resetFilters = () => {
@@ -99,6 +99,7 @@ function MaterialTable({
     setShowGlobalFilter(false);
     setShowColumnFilters(false);
     setReset(false);
+    setExpandColumn(false);
   };
   useEffect(() => {
     if (reset) {
@@ -137,7 +138,7 @@ function MaterialTable({
   return (
     <Box
       sx={{
-        '& tbody > .MuiTableRow-root': { height: 45 },
+        '& tbody > .MuiTableRow-root': { height: 50 },
         '& .MuiCircularProgress-root': { display: 'none' },
         '& .css-wsew38': {
           sm: { flexDirection: 'row' },
@@ -178,16 +179,11 @@ function MaterialTable({
             style: {
               display: '-webkit-box',
               WebkitLineClamp: 0.5,
-              WebkitBoxOrient: 'vertical',
+              /*WebkitBoxOrient: 'vertical', */
               overflow: 'hidden',
               lineHeight: '1.5rem'
             }
           }}
-          muiTableHeadCellProps={({ column }) => ({
-            onClick: () => {
-              handleColumnMenuOpen();
-            }
-          })}
           render
           state={{
             isLoading: isLoading,
@@ -201,6 +197,16 @@ function MaterialTable({
             showGlobalFilter,
             showColumnFilters
           }}
+          muiTableHeadCellProps={({ column }) => ({
+            onClick: (event) => {
+              const isFilterIconClicked = event?.target?.innerText
+                ?.toLowerCase()
+                ?.startsWith('filter by ');
+              if (isFilterIconClicked && column.getCanFilter()) {
+                handleColumnMenuToggle();
+              }
+            }
+          })}
           onGroupingChange={setGroupBy}
           onColumnFiltersChange={setColumnFilters}
           onSortingChange={setSorting}
@@ -258,7 +264,7 @@ function MaterialTable({
                 </IconButton>
               </Tooltip>
 
-              <Box onClick={handleColumnMenuOpen}>
+              <Box onClick={handleColumnMenuToggle}>
                 <MRT_ToggleFiltersButton table={table} />
               </Box>
               <MRT_ShowHideColumnsButton table={table} />

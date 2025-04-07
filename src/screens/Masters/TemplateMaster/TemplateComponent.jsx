@@ -81,7 +81,8 @@ function TemplateComponent() {
     {
       accessorKey: 'counter',
       header: 'Sr',
-      size: 100
+      size: 100,
+      enableColumnFilter: false
     },
 
     {

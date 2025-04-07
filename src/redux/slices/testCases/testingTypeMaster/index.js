@@ -1,9 +1,9 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 import {
   addTestingTypeMasterThunk,
   editTestingTypeMasterThunk,
-  getTestingTypeMasterListThunk,
-} from "../../../services/testCases/testingTypeMaster";
+  getTestingTypeMasterListThunk
+} from '../../../services/testCases/testingTypeMaster';
 
 const initialState = {
   testingTypeMasterList: [],
@@ -12,23 +12,23 @@ const initialState = {
     getTestingTypeMasterList: false,
     addTestingTypeMaster: false,
     editTestingTypeMaster: false,
-    filterTestingTypeMasterList: false,
+    filterTestingTypeMasterList: false
   },
   errorMsg: {
-    getTestingTypeMasterList: "",
-    addTestingTypeMaster: "",
-    editTestingTypeMaster: "",
-    filterTestingTypeMasterList: "",
+    getTestingTypeMasterList: '',
+    addTestingTypeMaster: '',
+    editTestingTypeMaster: '',
+    filterTestingTypeMasterList: ''
   },
   successMsg: {
-    getTestingMasterList: "",
-    addTestingTypeMaster: "",
-    editTestingTypeMaster: "",
-    filterTestingTypeMasterList: "",
-  },
+    getTestingMasterList: '',
+    addTestingTypeMaster: '',
+    editTestingTypeMaster: '',
+    filterTestingTypeMasterList: ''
+  }
 };
 const testingTypeMasterSlice = createSlice({
-  name: "Testing Type master",
+  name: 'Testing Type master',
   initialState,
   reducers: {
     // ==> normal reducer functions go here
@@ -40,7 +40,13 @@ const testingTypeMasterSlice = createSlice({
       })
       .addCase(getTestingTypeMasterListThunk.fulfilled, (state, action) => {
         state.isLoading.getTestingTypeMasterList = false;
-        state.testingTypeMasterList = action?.payload?.data;
+        let updatdData = action?.payload?.data?.map((item, index) => {
+          return {
+            ...item,
+            counter: index + 1
+          };
+        });
+        state.testingTypeMasterList = updatdData;
         state.filterTestingTypeMasterList = action?.payload?.data
           ?.filter((d) => d.is_active === 1)
           .map((d) => ({ value: d.id, label: d.type_name }));
@@ -77,7 +83,7 @@ const testingTypeMasterSlice = createSlice({
         state.isLoading.editTestingTypeMaster = false;
         state.errorMsg.editTestingTypeMaster = action.error.message;
       });
-  },
+  }
 });
 
 export default testingTypeMasterSlice.reducer;

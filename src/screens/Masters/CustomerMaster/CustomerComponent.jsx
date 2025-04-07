@@ -66,10 +66,10 @@ function CustomerComponent() {
       enableGrouping: false,
       enableSorting: false,
       enableColumnFilter: false,
-      accessorFn: ({ row }) => (
+      accessorFn: (originalRow) => (
         <div className="btn-group" role="group">
           <Link
-            to={`/${_base}/Customer/Edit/` + row?.original?.id}
+            to={`/${_base}/Customer/Edit/` + originalRow?.id}
             className="btn btn-outline-secondary"
           >
             <i className="icofont-edit text-success"></i>
@@ -82,7 +82,8 @@ function CustomerComponent() {
       header: 'Sr',
       size: 90,
       enableColumnOrdering: false,
-      enableGrouping: false
+      enableGrouping: false,
+      enableColumnFilter: false
     },
     {
       accessorFn: (originalRow) => originalRow?.name || '--',
