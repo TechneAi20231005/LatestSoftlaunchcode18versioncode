@@ -84,19 +84,22 @@ function ModuleComponent() {
       size: 200
     },
     {
-      accessorFn: (originalRow) => originalRow.is_active || '--',
+      accessorKey: 'is_active',
       header: 'Status',
-      size: 160,
+      size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
       Cell: ({ row }) => (
-        <div>
-          <span
-            className={`badge ${
-              row?.original?.is_active === 1 ? 'bg-primary' : 'bg-danger'
-            }`}
-          >
-            {row?.original?.is_active === 1 ? 'Active' : 'Deactive'}
-          </span>
-        </div>
+        <span
+          className={`badge ${
+            row?.original?.is_active === 1 ? 'bg-primary' : 'bg-danger'
+          }`}
+        >
+          {row?.original?.is_active === 1 ? 'Active' : 'Deactive'}
+        </span>
       )
     },
     {
