@@ -26,9 +26,8 @@ import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { Field, Form, Formik, ErrorMessage } from 'formik';
 import { errorHandler } from '../../../utils';
-import { LocalizationProvider } from '@mui/x-date-pickers';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { Box } from '@mui/material';
 
 function CustomerTypeComponent() {
   const isActive1Ref = useRef();
@@ -63,7 +62,10 @@ function CustomerTypeComponent() {
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 12)
   );
-
+  const [reset, setReset] = useState(false);
+  const clearFilters = () => {
+    setReset(true);
+  };
   const isActive0Ref = useRef();
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -118,27 +120,30 @@ function CustomerTypeComponent() {
     {
       accessorFn: (originalRow) => originalRow.type_name || '--',
       header: 'Customer Type Name',
-      size: 260
+      size: 260,
+      Cell: ({ row }) => (
+        <Box sx={{ color: '#f19828' }}>{row?.original?.type_name}</Box>
+      )
     },
     {
-      accessorFn: (originalRow) => originalRow.is_active || '--',
       header: 'Status',
       size: 160,
-      Cell: ({ row }) => (
-        <div>
-          {row?.original?.is_active === 1 ? (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          ) : row?.original?.is_active === 0 ? (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          ) : (
-            '--'
-          )}
-        </div>
-      )
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
       accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
@@ -147,8 +152,7 @@ function CustomerTypeComponent() {
       Cell: ({ cell }) =>
         `${cell.getValue().toLocaleDateString()} ${cell
           .getValue()
-          .toLocaleTimeString()}`,
-      size: 250
+          .toLocaleTimeString()}`
     },
     {
       accessorFn: (originalRow) => originalRow.created_by || '--',
@@ -162,8 +166,7 @@ function CustomerTypeComponent() {
       Cell: ({ cell }) =>
         `${cell.getValue().toLocaleDateString()} ${cell
           .getValue()
-          .toLocaleTimeString()}`,
-      size: 250
+          .toLocaleTimeString()}`
     },
     {
       accessorFn: (originalRow) => originalRow.updated_by || '--',
@@ -217,6 +220,7 @@ function CustomerTypeComponent() {
       errorHandler(error);
     } finally {
       setSubmitting(false);
+      clearFilters();
     }
   };
 
@@ -316,32 +320,26 @@ function CustomerTypeComponent() {
       /> */}
 
       <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {customerData && (
-                <LocalizationProvider dateAdapter={AdapterDateFns}>
-                  <MaterialTable
-                    isLoading={isLoading}
-                    data={filteredData}
-                    columns={columns}
-                  />
-                </LocalizationProvider>
-                // <DataTable
-                //   columns={columns}
-                //   data={filteredData}
-                //   defaultSortField="title"
-                //   pagination
-                //   selectableRows={false}
-                //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                //   highlightOnHover={true}
-                //   progressPending={isLoading}
-                //   progressComponent={<TableLoadingSkelton />}
-                // />
-              )}
-            </div>
-          </div>
-        </div>
+        {customerData && (
+          <MaterialTable
+            isLoading={isLoading}
+            data={filteredData}
+            columns={columns}
+            reset={reset}
+            setReset={setReset}
+          />
+          // <DataTable
+          //   columns={columns}
+          //   data={filteredData}
+          //   defaultSortField="title"
+          //   pagination
+          //   selectableRows={false}
+          //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+          //   highlightOnHover={true}
+          //   progressPending={isLoading}
+          //   progressComponent={<TableLoadingSkelton />}
+          // />
+        )}
       </div>
 
       <Modal centered show={modal.showModal}>

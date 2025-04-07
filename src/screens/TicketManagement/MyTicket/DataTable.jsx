@@ -1,10 +1,10 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import MyTicketDropdown from './MyTicketDropdown';
-import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 import StatusService from '../../../services/MastersService/StatusService';
 import { errorHandler } from '../../../utils';
 import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
+import ServerMaterial from '../../../components/custom/MUI Table/ServerMaterial';
 
 const DataTableCustom = React.memo(
   ({
@@ -143,7 +143,7 @@ const DataTableCustom = React.memo(
     ];
 
     return (
-      <MaterialTable
+      <ServerMaterial
         columns={columns}
         data={allTicketsData || []}
         isLoading={isLoading}

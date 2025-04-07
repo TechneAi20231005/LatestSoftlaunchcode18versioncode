@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Container, Modal } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
+import { Modal } from 'react-bootstrap';
 
 import StateService from '../../../services/MastersService/StateService';
 import PageHeader from '../../../components/Common/PageHeader';
@@ -8,7 +7,6 @@ import Select from 'react-select';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
-import Alert from '../../../components/Common/Alert';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { handleModalClose } from '../../Dashboard/DashbordSlice';
@@ -20,14 +18,10 @@ import {
   updateStateData
 } from '../../Dashboard/DashboardAction';
 import { handleModalInStore } from '../../Dashboard/DashbordSlice';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import moment from 'moment';
 
 function StateComponent() {
@@ -155,7 +149,10 @@ function StateComponent() {
   //     width: '175px'
   //   }
   // ];
-
+  const [reset, setReset] = useState(false);
+  const clearFilters = () => {
+    setReset(true);
+  };
   const columns = [
     {
       accessorKey: 'action', // Use a valid key
@@ -200,7 +197,7 @@ function StateComponent() {
       header: 'State',
       size: 160,
       filterVariant: 'autocomplete',
-      muiTableBodyCellProps: ({ cell }) => ({
+      muiTableBodyCellProps: () => ({
         sx: {
           color: '#f19828',
           fontWeight: 400
@@ -216,20 +213,20 @@ function StateComponent() {
       accessorKey: 'is_active',
       header: 'Status',
       size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
       Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
         return (
-          <div>
-            {row?.original?.is_active === 1 && (
-              <span className="badge bg-primary" style={{ width: '4rem' }}>
-                Active
-              </span>
-            )}
-            {row?.original?.is_active === 0 && (
-              <span className="badge bg-danger" style={{ width: '4rem' }}>
-                Deactive
-              </span>
-            )}
-          </div>
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
         );
       }
     },
@@ -280,15 +277,18 @@ function StateComponent() {
         await dispatch(postStateData(formData));
         setTimeout(() => {
           dispatch(getStateData());
+          clearFilters();
         }, 500);
       } else {
         await dispatch(updateStateData({ id: id, payload: editformdata }));
         setTimeout(() => {
           dispatch(getStateData());
+          clearFilters();
         }, 500);
       }
     } catch (error) {
       errorHandler(error);
+      clearFilters();
     } finally {
       setSubmitting(false);
     }
@@ -409,7 +409,9 @@ function StateComponent() {
             columns={columns}
             data={filteredData}
             isLoading={isLoading}
-          ></MaterialTable>
+            reset={reset}
+            setReset={setReset}
+          />
           // <DataTable
           //   columns={columns}
           //   data={filteredData}

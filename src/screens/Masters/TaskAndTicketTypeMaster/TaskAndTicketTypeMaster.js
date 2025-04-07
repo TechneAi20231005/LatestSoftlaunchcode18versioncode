@@ -17,6 +17,10 @@ import { CustomValidation } from '../../../components/custom/CustomValidation/Cu
 import { toast } from 'react-toastify';
 // for task type created customoption function
 import errorHandler from '../../../utils/errorHandler';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
+import { useDispatch } from 'react-redux';
+import { handleModalInStore } from '../../Dashboard/DashbordSlice';
 const CustomOption = ({ label, options, onClick, closeDropdown }) => {
   const [expanded, setExpanded] = useState(false);
   const [openOptions, setOpenOptions] = useState([]);
@@ -275,11 +279,11 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
 
   const filterOptions = (options, term) => {
     return options.filter((option) => {
-      const lowerCaseTerm = term.toLowerCase();
-      const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+      const lowerCaseTerm = term?.toLowerCase();
+      const matchLabel = option?.label?.toLowerCase()?.includes(lowerCaseTerm);
       const matchChildOptions =
-        option.options && option.options.length > 0
-          ? filterOptions(option.options, term).length > 0
+        option?.options && option?.options?.length > 0
+          ? filterOptions(option?.options, term)?.length > 0
           : false;
 
       return matchLabel || matchChildOptions;
@@ -407,7 +411,11 @@ function TaskAndTicketTypeMaster(props) {
   const [parentTaskName, setParentTaskName] = useState(null);
   const [parentTicketName, setParentTicketName] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
+  const [reset, setReset] = useState(false);
 
+  const clearFilters = () => {
+    setReset(true);
+  };
   const handleSelect = (label) => {
     setSelectedOption(selectedOption === label ? null : label);
     setSelectedOptionId(label);
@@ -420,6 +428,7 @@ function TaskAndTicketTypeMaster(props) {
     // Logic to close all dropdowns
     // For example, you could set a state variable to trigger re-rendering
   };
+  const dispatch = useDispatch();
 
   const typeNameRef = useRef(null);
 
@@ -690,136 +699,241 @@ function TaskAndTicketTypeMaster(props) {
       });
   };
 
+  // const columns = [
+  //   {
+  //     name: 'Action',
+  //     selector: (row) => {},
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div className="btn-group" role="group">
+  //         <button
+  //           type="button"
+  //           className="btn btn-outline-secondary"
+  //           data-bs-toggle="modal"
+  //           data-bs-target="#edit"
+  //           onClick={(e) => {
+  //             setNotify(null);
+  //             const modalHeader =
+  //               selectedType === 'TASK' ? 'Edit Task Type' : 'Edit Ticket Type';
+  //             handleModal({
+  //               showModal: true,
+  //               modalData: row,
+  //               modalHeader: modalHeader
+  //             });
+  //           }}
+  //         >
+  //           <i className="icofont-edit text-success"></i>
+  //         </button>
+  //       </div>
+  //     )
+  //   },
+  //   {
+  //     name: 'Sr.No',
+  //     selector: (row) => row.counter,
+  //     sortable: true
+  //   },
+
+  //   {
+  //     name: 'Type Name',
+  //     width: '170px',
+  //     selector: (row) => row.type_name,
+  //     sortable: true,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.type_name && (
+  //           <OverlayTrigger overlay={<Tooltip>{row.type_name} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">
+  //                 {' '}
+  //                 {row.type_name && row.type_name.length < 20
+  //                   ? row.type_name
+  //                   : row.type_name.substring(0, 20) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: 'Parent Name',
+  //     width: '170px',
+  //     selector: (row) => row.parent_name,
+  //     sortable: true,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.parent_name && (
+  //           <OverlayTrigger overlay={<Tooltip>{row.parent_name} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">
+  //                 {' '}
+  //                 {row.parent_name && row.parent_name.length < 15
+  //                   ? row.parent_name
+  //                   : row.parent_name.substring(0, 15) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: 'Status',
+  //     selector: (row) => row.is_active,
+  //     sortable: true,
+  //     cell: (row) => (
+  //       <div>
+  //         {row.is_active === 1 && (
+  //           <span className="badge bg-primary" style={{ width: '4rem' }}>
+  //             Active
+  //           </span>
+  //         )}
+  //         {row.is_active === 0 && (
+  //           <span className="badge bg-danger" style={{ width: '4rem' }}>
+  //             Deactive
+  //           </span>
+  //         )}
+  //       </div>
+  //     )
+  //   },
+  //   {
+  //     name: 'Created At',
+  //     selector: (row) => row.created_at,
+  //     sortable: true,
+  //     width: '175px'
+  //   },
+  //   {
+  //     name: 'Created By',
+  //     selector: (row) => row.created_by,
+  //     sortable: true,
+  //     width: '150px'
+  //   },
+  //   {
+  //     name: 'Updated At',
+  //     selector: (row) => row.updated_at,
+  //     sortable: true,
+  //     width: '175px'
+  //   },
+  //   {
+  //     name: 'Updated By',
+  //     selector: (row) => row.updated_by,
+  //     sortable: true,
+  //     width: '150px'
+  //   }
+  // ];
+
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      cell: (row) => (
-        <div className="btn-group" role="group">
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            data-bs-toggle="modal"
-            data-bs-target="#edit"
-            onClick={(e) => {
-              setNotify(null);
-              const modalHeader =
-                selectedType === 'TASK' ? 'Edit Task Type' : 'Edit Ticket Type';
-              handleModal({
-                showModal: true,
-                modalData: row,
-                modalHeader: modalHeader
-              });
-            }}
+      accessorKey: 'action', // Use a valid key
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      Cell: ({ row }) => {
+        return (
+          <div className="btn-group" role="group">
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#edit"
+              onClick={(e) => {
+                setNotify(null);
+                const modalHeader =
+                  selectedType === 'TASK'
+                    ? 'Edit Task Type'
+                    : 'Edit Ticket Type';
+                handleModal({
+                  showModal: true,
+                  modalData: row?.original,
+                  modalHeader: modalHeader
+                });
+              }}
+            >
+              <i className="icofont-edit text-success"></i>
+            </button>
+          </div>
+        );
+      }
+    },
+    {
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 70,
+      enableColumnOrdering: false,
+      enableGrouping: false
+    },
+    {
+      accessorKey: 'type_name',
+      header: 'Type Name',
+      size: 160,
+      filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
+    },
+    {
+      accessorKey: 'parent_name',
+      header: 'Parent Name',
+      size: 160,
+      filterVariant: 'autocomplete'
+    },
+
+    {
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
           >
-            <i className="icofont-edit text-success"></i>
-          </button>
-        </div>
-      )
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
-      name: 'Sr.No',
-      selector: (row) => row.counter,
-      sortable: true
-    },
-
-    {
-      name: 'Type Name',
-      width: '170px',
-      selector: (row) => row.type_name,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.type_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.type_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.type_name && row.type_name.length < 20
-                    ? row.type_name
-                    : row.type_name.substring(0, 20) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
-    },
-
-    {
-      name: 'Parent Name',
-      width: '170px',
-      selector: (row) => row.parent_name,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.parent_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.parent_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.parent_name && row.parent_name.length < 15
-                    ? row.parent_name
-                    : row.parent_name.substring(0, 15) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
-    },
-
-    {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      )
+      accessorFn: (originalRow) => {
+        return moment(originalRow.created_at).startOf('day').toDate();
+      },
+      header: 'Created At',
+      filterVariant: 'date',
+      Cell: ({ cell }) =>
+        moment(cell.row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorKey: 'created_by',
+      header: 'Created By'
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '150px'
+      accessorFn: (originalRow) => originalRow?.updated_at || '--',
+      header: 'Updated At'
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
-    },
-    {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '150px'
+      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      header: 'Updated By'
     }
   ];
 
@@ -875,7 +989,10 @@ function TaskAndTicketTypeMaster(props) {
           const res = await new TaskTicketTypeService().postType(form);
 
           if (res.status === 200) {
+            clearFilters();
             if (res.data.status === 1) {
+              clearFilters();
+
               toast.success(res.data.message);
               setModal({ showModal: false });
               loadData();
@@ -908,6 +1025,7 @@ function TaskAndTicketTypeMaster(props) {
               toast.success(res.data.message);
               setModal({ showModal: false });
               loadData();
+              clearFilters();
             } else {
               toast.error(res.data.message);
             }
@@ -1010,7 +1128,7 @@ function TaskAndTicketTypeMaster(props) {
         }}
       />
 
-      <SearchBoxHeader
+      {/* <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         searchTerm={searchTerm}
         handleSearch={handleSearch}
@@ -1019,7 +1137,7 @@ function TaskAndTicketTypeMaster(props) {
         exportFileName="Task And Ticket Type Master Record"
         exportData={exportData}
         showExportButton={true}
-      />
+      /> */}
 
       <div className="col-sm-8 mt-3">
         <div className="row">
@@ -1396,11 +1514,11 @@ function TaskAndTicketTypeMaster(props) {
         </Modal.Body>
       </Modal>
 
-      <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {data && (
+      {/* <div className="card mt-2"> */}
+      <div className="card-body">
+        <div className="row clearfix g-3">
+          <div className="col-sm-12">
+            {/* {data && (
                 <DataTable
                   columns={columns}
                   data={filteredData}
@@ -1412,12 +1530,20 @@ function TaskAndTicketTypeMaster(props) {
                   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
                   highlightOnHover={true}
                 />
-              )}
-            </div>
+              )} */}
+            {data && (
+              <MaterialTable
+                columns={columns}
+                data={filteredData}
+                reset={reset}
+                setReset={setReset}
+              ></MaterialTable>
+            )}
           </div>
         </div>
       </div>
     </div>
+    // </div>
   );
 }
 

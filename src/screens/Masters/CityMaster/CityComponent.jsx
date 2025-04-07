@@ -37,6 +37,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 function CityComponent() {
   // initial state
 
+  const [reset, setReset] = useState(false);
   const dispatch = useDispatch();
 
   //redux state
@@ -173,6 +174,9 @@ function CityComponent() {
   //     width: '150px'
   //   }
   // ];
+  const clearFilters = () => {
+    setReset(true);
+  };
   const columns = [
     {
       header: 'Action',
@@ -214,6 +218,12 @@ function CityComponent() {
       accessorKey: 'city',
       header: 'City',
       filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      }),
       size: 125
     },
     {
@@ -230,20 +240,22 @@ function CityComponent() {
       accessorKey: 'is_active',
       header: 'Status',
       size: 150,
-      Cell: ({ row }) => (
-        <div>
-          {row?.original?.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row?.original?.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      )
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
       accessorKey: 'created_at',
@@ -351,6 +363,7 @@ function CityComponent() {
       errorHandler(error);
     } finally {
       setSubmitting(false);
+      clearFilters();
     }
   };
 
@@ -480,6 +493,8 @@ function CityComponent() {
             columns={columns}
             data={filteredData}
             isLoading={isLoading}
+            reset={reset}
+            setReset={setReset}
           />
         )}
       </div>

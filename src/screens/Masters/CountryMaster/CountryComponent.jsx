@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
+// import DataTable from 'react-data-table-component';
 
 import CountryService from '../../../services/MastersService/CountryService';
 
@@ -8,7 +8,7 @@ import PageHeader from '../../../components/Common/PageHeader';
 
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
-import Alert from '../../../components/Common/Alert';
+// import Alert from '../../../components/Common/Alert';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
@@ -22,16 +22,19 @@ import {
   handleModalInStore,
   handleModalClose
 } from '../../Dashboard/DashbordSlice';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import { Box } from '@mui/material';
+import moment from 'moment/moment';
 
 function CountryComponent() {
   //initial state
   const dispatch = useDispatch();
+  const [reset, setReset] = useState(false);
 
   //redux state
 
@@ -71,6 +74,7 @@ function CountryComponent() {
       enableColumnOrdering: false,
       enableGrouping: false,
       enableSorting: false,
+      enableColumnFilter: false,
       Cell: ({ row }) => (
         <div
           className="btn-group"
@@ -105,49 +109,64 @@ function CountryComponent() {
     {
       accessorFn: (originalRow) => originalRow?.country || '--',
       header: 'Country',
-      size: 160
+      size: 160,
+      Cell: ({ row }) => (
+        <Box sx={{ color: '#f19828' }}>{row?.original?.country}</Box>
+      )
     },
     {
       accessorKey: 'is_active',
       header: 'Status',
       size: 150,
-      Cell: ({ row }) => (
-        <div>
-          {row?.original?.is_active === 1 ? (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          ) : row?.original?.is_active === 0 ? (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          ) : (
-            '--'
-          )}
-        </div>
-      )
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
-      accessorFn: (originalRow) => originalRow?.created_at || '--',
+      accessorFn: (originalRow) => new Date(originalRow.created_at),
       header: 'Created At',
-      size: 180
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow?.created_by || '--',
+      accessorFn: (originalRow) => originalRow.created_by || '--',
       header: 'Created By',
-      size: 180
+      size: 190
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_at || '--',
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
       header: 'Updated At',
-      size: 180
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      accessorFn: (originalRow) => originalRow.updated_by || '--',
       header: 'Updated By',
-      size: 200
+      size: 190
     }
   ];
+  const clearFilters = () => {
+    setReset(true);
+  };
   const handleForm = async (values, id, { setSubmitting = false }) => {
     setSubmitting(true);
 
@@ -177,6 +196,7 @@ function CountryComponent() {
       errorHandler(error);
     } finally {
       setSubmitting(false);
+      clearFilters();
     }
   };
 
@@ -271,7 +291,15 @@ function CountryComponent() {
       /> */}
 
       <div className="mt-2">
-        {countryData && <MaterialTable columns={columns} data={filteredData} />}
+        {countryData && (
+          <MaterialTable
+            columns={columns}
+            data={filteredData}
+            isLoading={isLoading}
+            reset={reset}
+            setReset={setReset}
+          />
+        )}
       </div>
       <Modal centered show={modal.showModal}>
         <Formik
