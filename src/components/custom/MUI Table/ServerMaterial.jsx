@@ -100,7 +100,7 @@ function ServerMaterial({
   const handleRemarkModal = (data) => {
     setRemarkModal(data);
   };
-console.log(columnFilters,"columnFilters")
+
   // console.log(totalRows,"totalRows");
 
   return (

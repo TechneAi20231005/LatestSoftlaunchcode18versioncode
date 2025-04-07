@@ -109,8 +109,8 @@ const DataTableCustom = React.memo(
       },
       {
         accessorFn: (originalRows) =>
-          `${originalRows?.assignee?.first_name || ''} ${
-            originalRows?.assignee?.last_name || ''
+          `${originalRows?.assignee?.first_name || '--'} ${
+            originalRows?.assignee?.last_name || '--'
           }`,
         header: 'Assigned To',
         filterVariant: 'multi-select',
@@ -118,8 +118,8 @@ const DataTableCustom = React.memo(
       },
       {
         accessorFn: (originalRows) =>
-          `${originalRows?.created_by?.first_name || ''} ${
-            originalRows?.created_by?.last_name || ''
+          `${originalRows?.created_by?.first_name || '--'} ${
+            originalRows?.created_by?.last_name || '--'
           }`,
         header: 'Created By',
         enableColumnFilter: false
