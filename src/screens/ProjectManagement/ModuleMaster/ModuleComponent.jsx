@@ -266,7 +266,7 @@ function ModuleComponent() {
       /> */}
 
       <div className="mt-2">
-        {!isLoading && data && (
+        {data && (
           <MaterialTable
             isLoading={isLoading}
             columns={columns}

@@ -282,22 +282,11 @@ function ProjectComponent() {
       /> */}
 
       <div className="card mt-2">
-        {!isLoading && data && (
+        {data && (
           <MaterialTable
             isLoading={isLoading}
             columns={columns}
             data={filteredData}
-            muiTooltipProps={{
-              arrow: true,
-              enterDelay: 300,
-              leaveDelay: 100,
-              sx: {
-                fontSize: '0.9rem',
-                backgroundColor: 'rgba(60, 60, 60, 0.9)',
-                color: '#fff',
-                padding: '8px 12px'
-              }
-            }}
           />
 
           // <DataTable
