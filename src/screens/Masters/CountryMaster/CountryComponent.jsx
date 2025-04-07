@@ -104,7 +104,8 @@ function CountryComponent() {
     {
       accessorFn: (originalRow) => originalRow?.counter || '--',
       header: 'Sr',
-      size: 120
+      size: 120,
+      enableColumnFilter: false
     },
     {
       accessorFn: (originalRow) => originalRow?.country || '--',

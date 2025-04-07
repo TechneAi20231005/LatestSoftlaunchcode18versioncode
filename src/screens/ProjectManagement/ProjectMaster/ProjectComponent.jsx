@@ -78,7 +78,8 @@ function ProjectComponent() {
     {
       accessorFn: (originalRow) => originalRow?.counter || '--',
       header: 'Sr',
-      size: 120
+      size: 120,
+      enableColumnFilter: false
     },
     {
       accessorFn: (originalRow) => originalRow?.project_name || '--',
