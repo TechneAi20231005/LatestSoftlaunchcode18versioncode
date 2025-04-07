@@ -78,14 +78,6 @@ function RoleComponent({ location }) {
 
   const columns = [
     {
-      accessorKey: 'counter',
-      header: 'Sr',
-      size: 90,
-      enableColumnOrdering: false,
-      enableGrouping: false,
-      enableColumnFilter: false
-    },
-    {
       accessorKey: 'action',
       header: 'Action',
       size: 160,
@@ -133,6 +125,14 @@ function RoleComponent({ location }) {
           )}
         </div>
       )
+    },
+    {
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 90,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableColumnFilter: false
     },
     {
       accessorKey: 'role',

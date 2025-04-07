@@ -150,14 +150,6 @@ function DesignationComponent() {
 
   const columns = [
     {
-      accessorKey: 'counter',
-      header: 'Sr',
-      size: 80,
-      enableColumnOrdering: false,
-      enableGrouping: false,
-      enableColumnFilter: false
-    },
-    {
       accessorKey: 'action',
       header: 'Action',
       size: 110,
@@ -186,6 +178,14 @@ function DesignationComponent() {
           </button>
         </div>
       )
+    },
+    {
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 80,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableColumnFilter: false
     },
     {
       accessorKey: 'designation',

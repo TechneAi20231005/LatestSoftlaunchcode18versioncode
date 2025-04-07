@@ -68,14 +68,6 @@ function DepartmentComponent() {
   };
   const columns = [
     {
-      accessorKey: 'counter',
-      header: 'Sr',
-      size: 90,
-      enableColumnOrdering: false,
-      enableGrouping: false,
-      enableColumnFilter: false
-    },
-    {
       accessorKey: 'action',
       header: 'Action',
       size: 110,
@@ -104,6 +96,14 @@ function DepartmentComponent() {
           </button>
         </div>
       )
+    },
+    {
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 90,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableColumnFilter: false
     },
     {
       accessorKey: 'department',

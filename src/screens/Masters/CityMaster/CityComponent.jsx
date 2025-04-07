@@ -179,14 +179,6 @@ function CityComponent() {
   };
   const columns = [
     {
-      accessorKey: 'counter',
-      header: 'Sr',
-      size: 90,
-      enableColumnOrdering: false,
-      enableGrouping: false,
-      enableColumnFilter: false
-    },
-    {
       header: 'Action',
       accessorKey: 'action',
       size: 110,
@@ -215,6 +207,14 @@ function CityComponent() {
           </button>
         </div>
       )
+    },
+    {
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 90,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableColumnFilter: false
     },
     {
       accessorKey: 'city',
