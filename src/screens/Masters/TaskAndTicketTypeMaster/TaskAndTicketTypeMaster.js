@@ -1514,11 +1514,8 @@ function TaskAndTicketTypeMaster(props) {
         </Modal.Body>
       </Modal>
 
-      {/* <div className="card mt-2"> */}
-      <div className="card-body">
-        <div className="row clearfix g-3">
-          <div className="col-sm-12">
-            {/* {data && (
+      <div className="card mt-2">
+        {/* {data && (
                 <DataTable
                   columns={columns}
                   data={filteredData}
@@ -1531,19 +1528,16 @@ function TaskAndTicketTypeMaster(props) {
                   highlightOnHover={true}
                 />
               )} */}
-            {data && (
-              <MaterialTable
-                columns={columns}
-                data={filteredData}
-                reset={reset}
-                setReset={setReset}
-              ></MaterialTable>
-            )}
-          </div>
-        </div>
+        {data && (
+          <MaterialTable
+            columns={columns}
+            data={filteredData}
+            reset={reset}
+            setReset={setReset}
+          ></MaterialTable>
+        )}
       </div>
     </div>
-    // </div>
   );
 }
 
