@@ -162,6 +162,8 @@ function DynamicFormComponent() {
       enableColumnOrdering: false,
       enableGrouping: false,
       enableSorting: false,
+      enableColumnFilter: false,
+
       Cell: ({ row }) => {
         return (
           <div className="btn-group" role="group">
@@ -180,7 +182,8 @@ function DynamicFormComponent() {
       header: 'Sr',
       size: 70,
       enableColumnOrdering: false,
-      enableGrouping: false
+      enableGrouping: false,
+      enableColumnFilter: false
     },
     {
       accessorKey: 'template_name',

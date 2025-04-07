@@ -2,16 +2,18 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
-import ErrorLogService from '../../../services/ErrorLogService';
+// import ErrorLogService from '../../../services/ErrorLogService';
 import ModuleService from '../../../services/ProjectManagementService/ModuleService';
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 import PageHeader from '../../../components/Common/PageHeader';
-import Alert from '../../../components/Common/Alert';
+// import Alert from '../../../components/Common/Alert';
 
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { errorHandler } from '../../../utils';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import { Box } from '@mui/material';
 function ModuleComponent() {
   //initial state
   const location = useLocation();
@@ -45,14 +47,17 @@ function ModuleComponent() {
 
   const columns = [
     {
-      name: 'Action',
-      width: '80px',
-      selector: (row) => {},
-      sortable: false,
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 120,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <Link
-            to={`/${_base}/Module/Edit/` + row.id}
+            to={`/${_base}/Module/Edit/` + row?.original?.id}
             className="btn btn-outline-secondary"
           >
             <i className="icofont-edit text-success"></i>
@@ -61,75 +66,81 @@ function ModuleComponent() {
       )
     },
     {
-      name: 'Sr',
-      width: '70px',
-      selector: (row) => row.counter,
-      sortable: true
+      accessorFn: (originalRow) => originalRow.counter || '--',
+      header: 'Sr',
+      size: 120,
+      enableColumnFilter: false
     },
     {
-      name: 'Module Name',
-      width: '13%',
-      selector: (row) => row.module_name,
-      sortable: true
-    },
-    {
-      name: 'Project Name',
-      width: '13%',
-      selector: (row) => row.project_name,
-      sortable: true
-    },
-    {
-      name: 'Status',
-      width: '100px',
-      selector: (row) => row.is_active,
-      sortable: false,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary">Active</span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger">Deactive</span>
-          )}
-        </div>
+      accessorFn: (originalRow) => originalRow.module_name || '--',
+      header: 'Module Name',
+      size: 200,
+      Cell: ({ row }) => (
+        <Box sx={{ color: '#f19828' }}>{row?.original?.module_name}</Box>
       )
     },
     {
-      name: 'Description',
-      width: '120px',
-      selector: (row) => row.description,
-      sortable: true
+      accessorFn: (originalRow) => originalRow.project_name || '--',
+      header: 'Project Name',
+      size: 200
     },
     {
-      name: 'Remark',
-      width: '120px',
-      selector: (row) => row.remark,
-      sortable: true
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => (
+        <span
+          className={`badge ${
+            row?.original?.is_active === 1 ? 'bg-primary' : 'bg-danger'
+          }`}
+        >
+          {row?.original?.is_active === 1 ? 'Active' : 'Deactive'}
+        </span>
+      )
+    },
+    {
+      accessorFn: (originalRow) => originalRow.description || '--',
+      header: 'Description',
+      size: 190
+    },
+    {
+      accessorFn: (originalRow) => originalRow.remark || '--',
+      header: 'Remark',
+      size: 160
     },
 
     {
-      name: 'Created By',
-      width: '10%',
-      selector: (row) => row.created_by,
-      sortable: true
+      accessorFn: (originalRow) => new Date(originalRow.created_at),
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`
     },
     {
-      name: 'Created At',
-      width: '10%',
-      selector: (row) => row.created_at,
-      sortable: true
+      accessorFn: (originalRow) => originalRow.created_by || '--',
+      header: 'Created By',
+      size: 190
     },
     {
-      name: 'Updated By',
-      width: '10%',
-      selector: (row) => row.updated_by,
-      sortable: true
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`
     },
     {
-      name: 'Updated At',
-      width: '10%',
-      selector: (row) => row.updated_at,
-      sortable: true
+      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      header: 'Updated By',
+      size: 190
     }
   ];
 
@@ -176,7 +187,7 @@ function ModuleComponent() {
               created_by: temp[key].created_by,
               created_at: temp[key].created_at,
               updated_by: data[key].updated_by,
-              updated_at: data[key].updated_at,
+              updated_at: data[key].updated_at
             });
           }
           setExportData(exportData);
@@ -244,7 +255,7 @@ function ModuleComponent() {
           );
         }}
       />
-      <SearchBoxHeader
+      {/* <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         searchTerm={searchTerm}
         handleSearch={handleSearch}
@@ -253,23 +264,25 @@ function ModuleComponent() {
         exportFileName="Module Master Record"
         exportData={exportData}
         showExportButton={true}
-      />
+      /> */}
 
       <div className="mt-2">
-        <div className="col-sm-12">
-          {isLoading && <TableLoadingSkelton />}
-          {!isLoading && data && (
-            <DataTable
-              columns={columns}
-              data={filteredData}
-              defaultSortField="title"
-              pagination
-              selectableRows={false}
-              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-              highlightOnHover={true}
-            />
-          )}
-        </div>
+        {data && (
+          <MaterialTable
+            isLoading={isLoading}
+            columns={columns}
+            data={filteredData}
+          />
+          // <DataTable
+          //   columns={columns}
+          //   data={filteredData}
+          //   defaultSortField="title"
+          //   pagination
+          //   selectableRows={false}
+          //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+          //   highlightOnHover={true}
+          // />
+        )}
       </div>
     </div>
   );

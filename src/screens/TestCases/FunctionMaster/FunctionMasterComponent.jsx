@@ -9,6 +9,8 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 import { getFunctionMasterListThunk } from '../../../redux/services/testCases/functionMaster';
 import AddEditFunctionMaster from './AddEditFunctionMaster';
 import { Tooltip } from 'react-tooltip';
+import moment from 'moment';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 function FunctionMasterComponent() {
   const dispatch = useDispatch();
 
@@ -16,6 +18,7 @@ function FunctionMasterComponent() {
   const { functionMasterList, isLoading } = useSelector(
     (state) => state?.functionMaster
   );
+  const [reset, setReset] = useState(false);
   const [searchValue, setSearchValue] = useState('');
 
   const [filteredFunctionMasterList, setFilterFunctionMasterList] = useState(
@@ -40,104 +43,112 @@ function FunctionMasterComponent() {
 
   const columns = [
     {
-      name: 'Sr. No.',
-      selector: (row, index) => index + 1,
-      sortable: false,
-      width: '70px'
+      accessorKey: 'counter',
+      header: 'Sr. No.',
+      size: 90,
+      accessorFn: (row, index) => index + 1,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableColumnFilter: false
     },
     {
-      name: 'Action',
-      selector: (row) => (
+      header: 'Action',
+      accessorKey: 'action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => (
         <i
           className="icofont-edit text-primary cp"
           onClick={() =>
             setAddEditFunctionModal({
               type: 'EDIT',
-              data: row,
+              data: row?.original,
               open: true
             })
           }
         />
-      ),
-      sortable: false,
-      width: '70px'
-    },
-
-    {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
-        <div>
-          {row.is_active == 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active == 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      ),
-      width: '100px'
-    },
-
-    {
-      name: 'Function Title',
-      selector: (row) => row.function_name,
-      sortable: false,
-      width: '200px',
-      cell: (row) => (
-        <>
-          <a data-tooltip-id={`my-tooltip-click-${row?.id}`}>
-            <Tooltip
-              id={`my-tooltip-click-${row?.id}`}
-              content={row.function_name}
-              openOnClick
-            ></Tooltip>
-            {row?.function_name}
-          </a>
-        </>
       )
     },
 
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: false,
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
+    },
+
+    {
+      header: 'Function Title',
+      accessorKey: 'function_name',
+      enableSorting: false,
+      width: '200px',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
+    },
+
+    {
+      accessorKey: 'created_at',
+      header: 'Created At',
+      filterVariant: 'date-range',
+      accessorFn: (row) => new Date(row.created_at),
+      Cell: ({ row }) =>
+        moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss'),
+      size: 350
+    },
+
+    {
+      accessorKey: 'created_by',
+      header: 'Created By',
+      accessorFn: (originalRow) =>
+        originalRow?.updated_by?.first_name?.trim() +
+        originalRow?.updated_by?.last_name?.trim()
+          ? originalRow?.updated_by?.first_name?.trim() +
+            ' ' +
+            originalRow?.updated_by?.last_name?.trim()
+          : '--',
+      size: 180
+    },
+
+    {
+      header: 'Updated At',
+      accessorFn: (row) => row.updated_at || '--',
+      enableSorting: false,
       width: '175px'
     },
 
     {
-      name: 'Created By',
-      selector: (row) =>
-        (row?.created_by?.first_name || '-' + ' ') +
-        ' ' +
-        (row?.created_by?.last_name || '-'),
-      sortable: false,
-      width: '175px'
-    },
-    {
-      name: 'Updated At',
-      selector: (row) => row.updated_at || '- -',
-      sortable: false,
-      width: '175px'
-    },
-
-    {
-      name: 'Updated By',
-      selector: (row) =>
-        (row?.updated_by?.first_name || '-' + ' ') +
-        ' ' +
-        (row?.updated_by?.last_name || '-'),
-      sortable: false,
-      width: '175px'
+      id: 'updated_by',
+      accessorFn: (originalRow) =>
+        originalRow?.updated_by?.first_name?.trim() +
+          originalRow?.updated_by?.last_name?.trim() || '--',
+      header: 'Updated By',
+      size: 185
     }
   ];
 
-  const transformDataForExport = (data) => {
+  /* const transformDataForExport = (data) => {
     return data.map((row) => ({
       ...row,
       created_by:
@@ -163,6 +174,10 @@ function FunctionMasterComponent() {
     { title: 'Updated At', field: 'updated_at' },
     { title: 'Updated By', field: 'updated_by' }
   ];
+ */
+  const clearFilters = () => {
+    setReset(true);
+  };
 
   useEffect(() => {
     dispatch(getFunctionMasterListThunk());
@@ -178,7 +193,7 @@ function FunctionMasterComponent() {
 
   return (
     <div className="container-xxl">
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between gap-2 flex-wrap">
         <PageHeader headerTitle="Function Master" />
         <div>
           <button
@@ -197,64 +212,23 @@ function FunctionMasterComponent() {
         </div>
       </div>
 
-      <Row className="row_gap_3">
-        <Col xs={12} md={7} xxl={8}>
-          <input
-            type="search"
-            name="interview_search"
-            id="functionmaster_functionsearch"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e?.target?.value)}
-            placeholder="Search function here..."
-            className="form-control"
+      {filteredFunctionMasterList && (
+        <div className="card mt-2">
+          <MaterialTable
+            data={filteredFunctionMasterList}
+            columns={columns}
+            setReset={setReset}
+            reset={reset}
+            isLoading={isLoading?.getFunctionMasterList}
           />
-        </Col>
-        <Col
-          xs={12}
-          md={5}
-          xxl={4}
-          className="d-flex justify-content-sm-end btn_container"
-        >
-          <button
-            className="btn btn-warning text-white"
-            type="button"
-            onClick={handleSearch}
-          >
-            <i className="icofont-search-1 " /> Search
-          </button>
-          <button
-            className="btn btn-info text-white"
-            type="button"
-            onClick={handleReset}
-          >
-            <i className="icofont-refresh text-white" /> Reset
-          </button>
-          <ExportToExcel
-            className="btn btn-danger"
-            apiData={transformedData}
-            columns={exportColumns}
-            fileName="Function Master Records"
-            disabled={!filteredFunctionMasterList?.length}
-          />
-        </Col>
-      </Row>
-
-      <DataTable
-        columns={columns}
-        data={filteredFunctionMasterList}
-        defaultSortField="role_id"
-        pagination
-        selectableRows={false}
-        className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-        highlightOnHover={true}
-        progressPending={isLoading?.getFunctionMasterList}
-        progressComponent={<TableLoadingSkelton />}
-      />
+        </div>
+      )}
       <AddEditFunctionMaster
         show={addEditFunctionModal?.open}
         type={addEditFunctionModal?.type}
         currentFunctionData={addEditFunctionModal?.data}
         close={(prev) => setAddEditFunctionModal({ ...prev, open: false })}
+        clearFilters={clearFilters}
       />
     </div>
   );

@@ -20,7 +20,9 @@ function AddEditReviewCommentMaster({
   show,
   close,
   type,
-  currentReviewCommentData
+  currentReviewCommentData,
+  reset,
+  setReset
 }) {
   const dispatch = useDispatch();
   const addEditReviewCommentInitialValue = {
@@ -36,7 +38,9 @@ function AddEditReviewCommentMaster({
     formData: ''
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
-
+  const clearFilters = () => {
+    setReset(true);
+  };
   const handelAddEditReviewComment = ({ formData }) => {
     if (isSubmitting) return;
     setIsSubmitting(true);
@@ -45,6 +49,8 @@ function AddEditReviewCommentMaster({
         addReviewCommentMasterThunk({
           formData: formData,
           onSuccessHandler: () => {
+            clearFilters();
+
             setIsSubmitting(false);
             setOpenConfirmModal({ open: false });
             close();
@@ -62,6 +68,8 @@ function AddEditReviewCommentMaster({
           currentId: currentReviewCommentData?.id,
           formData: formData,
           onSuccessHandler: () => {
+            clearFilters();
+
             setIsSubmitting(false);
             setOpenConfirmModal({ open: false });
             close();

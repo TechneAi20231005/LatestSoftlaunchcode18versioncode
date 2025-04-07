@@ -13,6 +13,8 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import NotFound from '../../NotFound';
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { grey } from '@mui/material/colors';
+import * as FileSaver from 'file-saver';
+import * as XLSX from 'xlsx';
 
 function MaterialTable({
   columns,
@@ -29,6 +31,7 @@ function MaterialTable({
   isLoading,
   enableColumnFilter = true,
   reset = false,
+  exportDataKeys,
   setReset = () => {}
 }) {
   const [columnFilters, setColumnFilters] = useState([]);
@@ -48,16 +51,41 @@ function MaterialTable({
 
   const handleExportRows = (rows) => {
     const rowData = rows.map((row) => row.original);
-    console.log(rowData, 'rowData');
   };
-  console.log(isLoading, 'isLoading');
 
-  const handleExportData = () => {};
+  const handleExportData = (exportData) => {
+    const dataToExport = [];
+    for (let i = 0; i < exportData.length; i++) {
+      const payload = {};
+      const eachRow = exportData[i]?.original;
+      for (let key in exportDataKeys) {
+        payload['Sr no'] = i + 1;
+        if (eachRow[key]) {
+          if (key === 'is_active') {
+            payload[exportDataKeys[key]] =
+              eachRow[key] == 1 ? 'Active' : 'Inactive';
+          } else {
+            payload[exportDataKeys[key]] = eachRow[key];
+          }
+        }
+      }
+      dataToExport.push(payload);
+    }
+    const fileType =
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
+    const fileExtension = '.xlsx';
+    const ws = XLSX.utils.json_to_sheet(dataToExport);
+    const wb = { Sheets: { data: ws }, SheetNames: ['data'] };
+    const excelBuffer = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+    const data = new Blob([excelBuffer], { type: fileType });
+
+    FileSaver.saveAs(data, exportDataKeys.fileName + fileExtension);
+  };
 
   const [expandColumn, setExpandColumn] = useState(false);
 
-  const handleColumnMenuOpen = () => {
-    setExpandColumn(true);
+  const handleColumnMenuToggle = () => {
+    setExpandColumn(!expandColumn);
   };
 
   const resetFilters = () => {
@@ -71,6 +99,7 @@ function MaterialTable({
     setShowGlobalFilter(false);
     setShowColumnFilters(false);
     setReset(false);
+    setExpandColumn(false);
   };
   useEffect(() => {
     if (reset) {
@@ -109,7 +138,7 @@ function MaterialTable({
   return (
     <Box
       sx={{
-        '& tbody > .MuiTableRow-root': { height: 45 },
+        '& tbody > .MuiTableRow-root': { height: 50 },
         '& .MuiCircularProgress-root': { display: 'none' },
         '& .css-wsew38': {
           sm: { flexDirection: 'row' },
@@ -150,16 +179,11 @@ function MaterialTable({
             style: {
               display: '-webkit-box',
               WebkitLineClamp: 0.5,
-              WebkitBoxOrient: 'vertical',
+              /*WebkitBoxOrient: 'vertical', */
               overflow: 'hidden',
               lineHeight: '1.5rem'
             }
           }}
-          muiTableHeadCellProps={({ column }) => ({
-            onClick: () => {
-              handleColumnMenuOpen();
-            }
-          })}
           render
           state={{
             isLoading: isLoading,
@@ -173,6 +197,16 @@ function MaterialTable({
             showGlobalFilter,
             showColumnFilters
           }}
+          muiTableHeadCellProps={({ column }) => ({
+            onClick: (event) => {
+              const isFilterIconClicked = event?.target?.innerText
+                ?.toLowerCase()
+                ?.startsWith('filter by ');
+              if (isFilterIconClicked && column.getCanFilter()) {
+                handleColumnMenuToggle();
+              }
+            }
+          })}
           onGroupingChange={setGroupBy}
           onColumnFiltersChange={setColumnFilters}
           onSortingChange={setSorting}
@@ -230,45 +264,49 @@ function MaterialTable({
                 </IconButton>
               </Tooltip>
 
-              <Box onClick={handleColumnMenuOpen}>
+              <Box onClick={handleColumnMenuToggle}>
                 <MRT_ToggleFiltersButton table={table} />
               </Box>
               <MRT_ShowHideColumnsButton table={table} />
               <MRT_ToggleFullScreenButton table={table} />
             </Box>
           )}
-          renderTopToolbarCustomActions={({ table }) => (
-            <Box
-              sx={{
-                display: 'flex',
-                gap: '16px',
-                padding: '8px',
-                flexWrap: 'wrap',
-                xs: { width: '100%' },
-                sm: { width: 'fit-content' }
-              }}
-            >
-              <Button
-                className="text-primary"
-                disabled={data?.length === 0}
-                onClick={handleExportData}
-                startIcon={<FileDownloadIcon />}
+          renderTopToolbarCustomActions={({ table }) => {
+            return (
+              <Box
+                sx={{
+                  display: 'flex',
+                  gap: '16px',
+                  padding: '8px',
+                  flexWrap: 'wrap',
+                  xs: { width: '100%' },
+                  sm: { width: 'fit-content' }
+                }}
               >
-                Export All Data
-              </Button>
+                <Button
+                  className="text-primary"
+                  disabled={data?.length === 0}
+                  onClick={() =>
+                    handleExportData(table.getFilteredRowModel()['rows'])
+                  }
+                  startIcon={<FileDownloadIcon />}
+                >
+                  Export All Data
+                </Button>
 
-              <Button
-                className="text-primary"
-                disabled={data?.length === 0}
-                onClick={() =>
-                  handleExportRows(table.getPrePaginationRowModel().rows)
-                }
-                startIcon={<FileDownloadIcon />}
-              >
-                Export All Rows
-              </Button>
-            </Box>
-          )}
+                {/* <Button
+                  className="text-primary"
+                  disabled={data?.length === 0}
+                  onClick={() =>
+                    handleExportRows(table.getPrePaginationRowModel().rows)
+                  }
+                  startIcon={<FileDownloadIcon />}
+                >
+                  Export All Rows
+                </Button> */}
+              </Box>
+            );
+          }}
         />
       </LocalizationProvider>
     </Box>
