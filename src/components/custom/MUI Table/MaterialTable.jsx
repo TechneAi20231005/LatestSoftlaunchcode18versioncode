@@ -171,9 +171,9 @@ function MaterialTable({
           }}
           muiTableHeadCellProps={({ column }) => ({
             onClick: (event) => {
-              const isFilterIconClicked = event.target.innerText
-                .toLowerCase()
-                .startsWith('filter by ');
+              const isFilterIconClicked = event?.target?.innerText
+                ?.toLowerCase()
+                ?.startsWith('filter by ');
               if (isFilterIconClicked && column.getCanFilter()) {
                 handleColumnMenuToggle();
               }
