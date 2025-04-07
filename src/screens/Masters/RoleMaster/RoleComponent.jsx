@@ -256,6 +256,7 @@ function RoleComponent({ location }) {
       }
     } catch (error) {
       errorHandler(error);
+      clearFilters();
     } finally {
       setSubmitting(false);
     }

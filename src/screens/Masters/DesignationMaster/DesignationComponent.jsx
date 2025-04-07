@@ -374,6 +374,7 @@ function DesignationComponent() {
       }
     } catch (error) {
       errorHandler(error);
+      clearFilters();
     } finally {
       setSubmitting(false);
     }

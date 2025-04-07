@@ -288,6 +288,7 @@ function StateComponent() {
       }
     } catch (error) {
       errorHandler(error);
+      clearFilters();
     } finally {
       setSubmitting(false);
     }
