@@ -217,6 +217,7 @@ function DepartmentComponent() {
       }
     } catch (eror) {
       errorHandler(eror);
+      clearFilters();
     } finally {
       setSubmitting(false);
     }
