@@ -78,12 +78,21 @@ function RoleComponent({ location }) {
 
   const columns = [
     {
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 90,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableColumnFilter: false
+    },
+    {
       accessorKey: 'action',
       header: 'Action',
       size: 160,
       enableColumnOrdering: false,
       enableGrouping: false,
       enableSorting: false,
+      enableColumnFilter: false,
       Cell: ({ row }) => (
         <div className="btn-group-sm" role="group">
           {checkRole && checkRole[0]?.can_update === 1 ? (
@@ -124,14 +133,6 @@ function RoleComponent({ location }) {
           )}
         </div>
       )
-    },
-
-    {
-      accessorKey: 'counter',
-      header: 'Sr',
-      size: 90,
-      enableColumnOrdering: false,
-      enableGrouping: false
     },
     {
       accessorKey: 'role',
@@ -184,7 +185,7 @@ function RoleComponent({ location }) {
       size: 350
     },
     {
-      accessorKey: 'created_by',
+      accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
       header: 'Created By',
       size: 180
     },

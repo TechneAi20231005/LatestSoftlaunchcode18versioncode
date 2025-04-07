@@ -17,7 +17,13 @@ import {
 import { addTestingGroupValidation } from './Validation/AddTestingGroup';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 
-function AddTestingGroupModal({ show, close, type, currentTestingGroupData }) {
+function AddTestingGroupModal({
+  show,
+  close,
+  type,
+  currentTestingGroupData,
+  clearFilters
+}) {
   const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const addEditTestingGroupInitialValue = {
@@ -38,6 +44,7 @@ function AddTestingGroupModal({ show, close, type, currentTestingGroupData }) {
             setIsSubmitting(false);
             close();
             dispatch(getTestingGroupMasterListThunk());
+            clearFilters();
           },
           onErrorHandler: () => {
             setIsSubmitting(false);
@@ -53,6 +60,7 @@ function AddTestingGroupModal({ show, close, type, currentTestingGroupData }) {
             setIsSubmitting(false);
             close();
             dispatch(getTestingGroupMasterListThunk());
+            clearFilters();
           },
           onErrorHandler: () => {
             setIsSubmitting(false);

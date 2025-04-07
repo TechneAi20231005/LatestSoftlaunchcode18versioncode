@@ -179,12 +179,21 @@ function CityComponent() {
   };
   const columns = [
     {
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 90,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableColumnFilter: false
+    },
+    {
       header: 'Action',
       accessorKey: 'action',
       size: 110,
       enableColumnOrdering: false,
       enableGrouping: false,
       enableSorting: false,
+      enableColumnFilter: false,
       Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <button
@@ -206,13 +215,6 @@ function CityComponent() {
           </button>
         </div>
       )
-    },
-    {
-      accessorKey: 'counter',
-      header: 'Sr',
-      size: 90,
-      enableColumnOrdering: false,
-      enableGrouping: false
     },
     {
       accessorKey: 'city',
@@ -267,7 +269,7 @@ function CityComponent() {
       size: 350
     },
     {
-      accessorKey: 'created_by',
+      accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
       header: 'Created By',
       size: 180
     },

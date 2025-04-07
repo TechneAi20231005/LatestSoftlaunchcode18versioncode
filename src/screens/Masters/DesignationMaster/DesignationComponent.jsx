@@ -150,12 +150,21 @@ function DesignationComponent() {
 
   const columns = [
     {
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 80,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableColumnFilter: false
+    },
+    {
       accessorKey: 'action',
       header: 'Action',
       size: 110,
       enableColumnOrdering: false,
       enableGrouping: false,
       enableSorting: false,
+      enableColumnFilter: false,
       Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <button
@@ -167,7 +176,7 @@ function DesignationComponent() {
               dispatch(
                 handleModalOpen({
                   showModal: true,
-                  modalData: row,
+                  modalData: row?.original,
                   modalHeader: 'Edit Designation'
                 })
               );
@@ -177,13 +186,6 @@ function DesignationComponent() {
           </button>
         </div>
       )
-    },
-    {
-      accessorKey: 'counter',
-      header: 'Sr',
-      size: 80,
-      enableColumnOrdering: false,
-      enableGrouping: false
     },
     {
       accessorKey: 'designation',
@@ -230,7 +232,7 @@ function DesignationComponent() {
       size: 180
     },
     {
-      accessorKey: 'created_by',
+      accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
       header: 'Created By',
       size: 180
     },
