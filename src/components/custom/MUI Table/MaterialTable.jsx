@@ -146,16 +146,17 @@ function MaterialTable({
           enableColumnOrdering={enableColumnOrdering}
           enableFacetedValues={enableFacetedValues}
           enableColumnFilter={enableColumnFilter}
-          muiTableBodyCellProps={{
+          muiTableBodyCellProps={({ row, column }) => ({
             onMouseOver: handleMouseHover,
             style: {
               display: '-webkit-box',
-              WebkitLineClamp: 0.5,
-              /*WebkitBoxOrient: 'vertical', */
+              WebkitLineClamp: 2,
+              WebkitBoxOrient:
+                row.getValue(column.id)?.length > 30 ? 'vertical' : 'unset',
               overflow: 'hidden',
-              lineHeight: '1.5rem'
+              lineHeight: '1rem'
             }
-          }}
+          })}
           render
           state={{
             isLoading: isLoading,
