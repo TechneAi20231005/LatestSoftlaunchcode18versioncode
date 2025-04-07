@@ -48,6 +48,12 @@ export const ExportAllTicketsToExcel = ({
             '',
           assign_to_user_id:
             columnFilters.find((f) => f.id === 'Assigned To')?.value || [],
+          // from_date:
+          //   columnFilters.find((filter) => filter.id === 'ticket_date')
+          //     ?.value?.[0] || '',
+          // to_date:
+          //   columnFilters.find((filter) => filter.id === 'ticket_date')
+          //     ?.value?.[1] || '',
           export: 'export'
         };
 

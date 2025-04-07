@@ -23,8 +23,6 @@ const DataTableCustom = React.memo(
     reset = false,
     setReset = () => {}
   }) => {
-    // console.log(allStatusData?.selectData, 'allStatusData');
-
     const columns = [
       {
         accessorKey: 'action',
@@ -40,15 +38,13 @@ const DataTableCustom = React.memo(
         accessorKey: 'ticket_id',
         header: 'Ticket Id',
         size: 170,
-        Cell: ({ row }) => {
-          return (
-            <Link to={`/${_base}/Ticket/View/` + row?.original?.id}>
-              <span className="fw-bold text-secondary">
-                {row?.original?.ticket_id}
-              </span>
-            </Link>
-          );
-        }
+        Cell: ({ row }) => (
+          <Link to={`/${_base}/Ticket/View/${row?.original?.id}`}>
+            <span className="fw-bold text-secondary">
+              {row?.original?.ticket_id}
+            </span>
+          </Link>
+        )
       },
       {
         accessorKey: 'description',
@@ -58,7 +54,7 @@ const DataTableCustom = React.memo(
       {
         accessorKey: 'ticket_date',
         header: 'Ticket Raised Date',
-        filterVariant: 'date-range'
+        filterVariant: 'date-range',
       },
       {
         accessorKey: 'expected_solve_date',
@@ -71,21 +67,18 @@ const DataTableCustom = React.memo(
         enableColumnFilter: false,
         Cell: ({ cell }) => {
           const priority = cell.getValue();
+          const badgeColors = {
+            'Very High': 'danger',
+            High: 'warning',
+            Medium: 'info',
+            Low: 'success'
+          };
           return (
-            <div>
-              {priority === 'Very High' && (
-                <span className="badge bg-danger">{priority}</span>
-              )}
-              {priority === 'High' && (
-                <span className="badge bg-warning">{priority}</span>
-              )}
-              {priority === 'Medium' && (
-                <span className="badge bg-info">{priority}</span>
-              )}
-              {priority === 'Low' && (
-                <span className="badge bg-success">{priority}</span>
-              )}
-            </div>
+            <span
+              className={`badge bg-${badgeColors[priority] || 'secondary'}`}
+            >
+              {priority}
+            </span>
           );
         }
       },
@@ -101,7 +94,7 @@ const DataTableCustom = React.memo(
         enableColumnFilter: false
       },
       {
-        accessorFn: (originalRows) => originalRows?.status?.status,
+        accessorFn: (originalRows) => originalRows?.status?.status || '--',
         header: 'Status',
         filterVariant: 'multi-select',
         filterSelectOptions: allStatusData?.selectData,

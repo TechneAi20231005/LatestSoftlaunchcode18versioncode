@@ -9,6 +9,7 @@ import { fetchData } from '../../../utils/fetchData';
 import MyTicketService from '../../../services/TicketService/MyTicketService';
 import ReportService from '../../../services/ReportService/ReportService';
 import { useDebounce } from '../../../hooks/useDebounce';
+import moment from 'moment/moment';
 
 const MyTicketsTab = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -21,7 +22,7 @@ const MyTicketsTab = () => {
     AssignToMe: [],
     CreatedByMe: [],
     DepartmentWise: [],
-    YouTask: [],
+    YourTask: [],
     UnPassed: []
   });
 
@@ -98,7 +99,7 @@ const MyTicketsTab = () => {
         label: 'Department Wise',
         color: 'success'
       },
-      { id: 5, name: 'YouTask', label: 'Your Task', color: 'error' },
+      { id: 5, name: 'YourTask', label: 'Your Task', color: 'error' },
       { id: 6, name: 'UnPassed', label: 'UnPassed', color: 'warning' }
     ],
     [allTicketsData, isFormSubmitted]
@@ -126,6 +127,9 @@ const MyTicketsTab = () => {
       setIsLoading(true);
 
       const hasColumnFilters = columnFilters?.length > 0;
+      // const getFormattedDate = (date) => (date ? moment(date).format('YYYY-MM-DD') : '');
+      // const fromDateRaw = columnFilters.find((f) => f.id === 'ticket_date')?.value?.[0];
+      // const toDateRaw = columnFilters.find((f) => f.id === 'ticket_date')?.value?.[1];
 
       const payload = hasColumnFilters
         ? {
@@ -140,6 +144,8 @@ const MyTicketsTab = () => {
             assign_to_user_id:
               columnFilters.find((filter) => filter.id === 'Assigned To')
                 ?.value || [],
+            // from_date: getFormattedDate(fromDateRaw),
+            // to_date: getFormattedDate(toDateRaw),
             limit: pagination.pageSize,
             page: pagination.pageIndex + 1,
             typeOf: 'SearchResult'
@@ -198,7 +204,7 @@ const MyTicketsTab = () => {
         aria-label="ticket tabs"
       >
         {tabList?.map((tab) => (
-          <Tab key={tab.id} value={tab.name} label={tab.label} />
+          <Tab  key={tab.id} value={tab.name} label={tab.label} />
         ))}
       </Tabs>
 

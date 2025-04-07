@@ -1,6 +1,5 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import PageHeader from '../../../components/Common/PageHeader';
-import MyTicketFilters from './MyTicketFilters';
 import MyTicketsTab from './MyTicketsTab';
 
 const MyTicketRefactored = () => {

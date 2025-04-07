@@ -68,8 +68,8 @@ function ServerMaterial({
 
   // const [columnFilters, setColumnFilters] = useState([]);
 
-  const handleColumnMenuOpen = () => {
-    setExpandColumn(true);
+  const handleColumnMenuToggle = () => {
+    setExpandColumn(!expandColumn);
   };
 
   const updatedColumns = useMemo(() => {
@@ -93,13 +93,14 @@ function ServerMaterial({
       setGlobalFilter([]);
       setShowGlobalFilter(false);
       setReset(false);
+      setExpandColumn(false);
     }
   }, [reset]);
 
   const handleRemarkModal = (data) => {
     setRemarkModal(data);
   };
-
+console.log(columnFilters,"columnFilters")
   // console.log(totalRows,"totalRows");
 
   return (
@@ -115,6 +116,12 @@ function ServerMaterial({
             columns={updatedColumns}
             data={data}
             enableSorting={enableSorting}
+            muiSkeletonProps={{
+              animation: 'wave',
+              sx: {
+                backgroundColor: 'rgba(8, 2, 2, 0.5)'
+              }
+            }}
             enablePagination={enablePagination}
             enableFilters={enableFilters}
             localization={{
@@ -140,13 +147,24 @@ function ServerMaterial({
             onRowSelectionChange={setRowSelection}
             enableRowNumbers={true}
             muiTableBodyCellProps={{
-              onMouseOver: handleMouseHover
+              onMouseOver: handleMouseHover,
+              style: {
+                display: '-webkit-box',
+                WebkitLineClamp: 0.5,
+                overflow: 'hidden',
+                lineHeight: '1.5rem'
+              }
             }}
             getRowId={(originalRow) => originalRow.ticket_id}
             onGlobalFilterChange={setGlobalFilter}
             muiTableHeadCellProps={({ column }) => ({
-              onClick: () => {
-                handleColumnMenuOpen();
+              onClick: (event) => {
+                const isFilterIconClicked = event.target.innerText
+                  ?.toLowerCase()
+                  ?.startsWith('filter by ');
+                if (isFilterIconClicked && column.getCanFilter()) {
+                  handleColumnMenuToggle();
+                }
               }
             })}
             render
@@ -218,7 +236,7 @@ function ServerMaterial({
                   </IconButton>
                 </Tooltip>
 
-                <Box onClick={handleColumnMenuOpen}>
+                <Box onClick={handleColumnMenuToggle}>
                   <MRT_ToggleFiltersButton table={table} />
                 </Box>
                 <MRT_ShowHideColumnsButton table={table} />
