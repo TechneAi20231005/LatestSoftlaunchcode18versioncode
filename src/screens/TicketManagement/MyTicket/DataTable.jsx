@@ -1,7 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import MyTicketDropdown from './MyTicketDropdown';
-import StatusService from '../../../services/MastersService/StatusService';
-import { errorHandler } from '../../../utils';
 import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import ServerMaterial from '../../../components/custom/MUI Table/ServerMaterial';
@@ -27,7 +25,6 @@ const DataTableCustom = React.memo(
   }) => {
     // console.log(allStatusData?.selectData, 'allStatusData');
 
-
     const columns = [
       {
         accessorKey: 'action',
@@ -46,7 +43,9 @@ const DataTableCustom = React.memo(
         Cell: ({ row }) => {
           return (
             <Link to={`/${_base}/Ticket/View/` + row?.original?.id}>
-              <span className="fw-bold text-secondary">{row?.original?.ticket_id}</span>
+              <span className="fw-bold text-secondary">
+                {row?.original?.ticket_id}
+              </span>
             </Link>
           );
         }
@@ -54,11 +53,12 @@ const DataTableCustom = React.memo(
       {
         accessorKey: 'description',
         header: 'Description',
+        enableColumnFilter: false
       },
       {
         accessorKey: 'ticket_date',
         header: 'Ticket Raised Date',
-        filterVariant: 'date-range',
+        filterVariant: 'date-range'
       },
       {
         accessorKey: 'expected_solve_date',
@@ -68,6 +68,7 @@ const DataTableCustom = React.memo(
         accessorKey: 'priority',
         header: 'Priority',
         size: 120,
+        enableColumnFilter: false,
         Cell: ({ cell }) => {
           const priority = cell.getValue();
           return (
@@ -89,12 +90,15 @@ const DataTableCustom = React.memo(
         }
       },
       {
-        accessorKey: 'query_type.query_type_name',
-        header: 'Type'
+        accessorFn: (originalRows) =>
+          originalRows?.query_type?.query_type_name || '--',
+        header: 'Type',
+        enableColumnFilter: false
       },
       {
-        accessorKey: 'passed_status',
-        header: 'Passed Status'
+        accessorFn: (originalRows) => originalRows?.passed_status || '--',
+        header: 'Passed Status',
+        enableColumnFilter: false
       },
       {
         accessorFn: (originalRows) => originalRows?.status?.status,
@@ -104,7 +108,8 @@ const DataTableCustom = React.memo(
         size: 150
       },
       {
-        accessorKey: 'assign_to_department.department',
+        accessorFn: (originalRows) =>
+          originalRows?.assign_to_department?.department || '--',
         header: 'Assign To Dept',
         filterVariant: 'multi-select',
         filterSelectOptions: allDepartmentData?.selectData
@@ -123,7 +128,8 @@ const DataTableCustom = React.memo(
           `${originalRows?.created_by?.first_name || ''} ${
             originalRows?.created_by?.last_name || ''
           }`,
-        header: 'Created By'
+        header: 'Created By',
+        enableColumnFilter: false
       },
       ...(type === 'UnPassed'
         ? [

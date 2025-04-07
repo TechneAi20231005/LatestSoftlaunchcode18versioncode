@@ -17,8 +17,6 @@ export const ExportAllTicketsToExcel = ({
     'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8';
   const fileExtension = '.xlsx';
 
-  console.log(columnFilters, 'columnFilters from ExportAllTicketsToExcel');
-
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
   const [completed, setCompleted] = useState(false);

@@ -7,8 +7,12 @@ import { toast } from 'react-toastify'
 const UnPassModal = ({
   remarkModal,
   handleRemarkModal,
-  setPagination=() => {}
+  setPagination=() => {},
+  setColumnFilters = () => {},
+  setRowSelection = () => {},
 }) => {
+
+  console.log("hello from unpass modal")
 
   const handlePassTicketForm = async (e) => {
     try{
@@ -32,6 +36,8 @@ const UnPassModal = ({
           modalHeader: '',
         })
          toast.success(message);
+         setColumnFilters([])
+         setRowSelection({})
          setPagination({
           pageIndex: 0,
           pageSize: 10

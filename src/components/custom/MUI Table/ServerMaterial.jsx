@@ -23,7 +23,6 @@ function ServerMaterial({
   enableFilters = true,
   enableStickyHeader = true,
   enableGrouping = true,
-  enableFullScreenToggle = true,
   enableColumnResizing = true,
   enableColumnOrdering = true,
   enableFacetedValues = true,
@@ -237,7 +236,7 @@ function ServerMaterial({
               >
                 <ExportAllTicketsToExcel
                   className="btn btn-sm btn-danger mt-3"
-                  fileName="Assign To Me"
+                  fileName={activeTab?.replace(/([A-Z])/g, ' $1')?.trim()}
                   typeOf={activeTab}
                   columnFilters={columnFilters}
                   gridData={data}
@@ -280,11 +279,15 @@ function ServerMaterial({
           />
         </LocalizationProvider>
       </Box>
-      <UnPassModal
+      {
+        remarkModal.showModal && <UnPassModal
         remarkModal={remarkModal}
         handleRemarkModal={handleRemarkModal}
         setPagination={setPagination}
+        setColumnFilters={setColumnFilters}
+        setRowSelection={setRowSelection}
       />
+      }
     </>
   );
 }
