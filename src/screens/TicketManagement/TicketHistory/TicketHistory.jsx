@@ -272,7 +272,7 @@ const TicketHistory = ({ match }) => {
         </div>
         <div className="card mt-2">
           {data && (
-            <MaterialTable columns={columns} data={data} />
+            <MaterialTable isExportData={false} columns={columns} data={data} />
             // <DataTable
             //   columns={columns}
             //   data={data}
