@@ -125,11 +125,7 @@ function MaterialTable({
   };
 
   const globalFilterToggler = () => {
-    if (showGlobalFilter) {
-      setShowGlobalFilter(false);
-    } else {
-      setShowGlobalFilter(true);
-    }
+    setShowGlobalFilter(showGlobalFilter ? false : true);
   };
 
   const resetFilters = () => {
