@@ -228,8 +228,10 @@ function DesignationComponent() {
         },
         header: 'Created At',
         filterVariant: 'date-range',
-        Cell: ({ cell }) =>
-          moment(cell.row.original.created_at).format('MM/DD/YYYY HH:mm:ss'),
+        Cell: ({ row }) =>
+          row.original.created_at
+            ? moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--',
         size: 180
       },
       {

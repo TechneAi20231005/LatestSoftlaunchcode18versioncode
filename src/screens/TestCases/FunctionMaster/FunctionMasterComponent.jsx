@@ -115,7 +115,9 @@ function FunctionMasterComponent() {
         filterVariant: 'date-range',
         accessorFn: (row) => new Date(row.created_at),
         Cell: ({ row }) =>
-          moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss'),
+          row.original.created_at
+            ? moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--',
         size: 350
       },
 
@@ -127,10 +129,14 @@ function FunctionMasterComponent() {
       },
 
       {
+        accessorKey: 'updated_at',
         header: 'Updated At',
-        accessorFn: (row) => row?.updated_at?.trim() || '--',
-        enableSorting: false,
-        width: '175px'
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.updated_at),
+        Cell: ({ row }) =>
+          row?.original?.updated_at?.trim()
+            ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--'
       },
 
       {

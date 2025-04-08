@@ -266,7 +266,9 @@ function CityComponent() {
         filterVariant: 'date-range',
         accessorFn: (row) => new Date(row.created_at),
         Cell: ({ row }) =>
-          moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss'),
+          row.original.created_at
+            ? moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--',
         size: 350
       },
       {
