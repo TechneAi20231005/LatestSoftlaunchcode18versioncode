@@ -42,7 +42,6 @@ function UserComponent() {
   const [searchTerm, setSearchTerm] = useState('');
 
   const [filteredData, setFilteredData] = useState([]);
-
   //search function
 
   const handleSearch = useCallback(() => {
@@ -54,6 +53,33 @@ function UserComponent() {
   const handleReset = () => {
     setSearchTerm('');
     setFilteredData(employeeData);
+  };
+  const exportDataKeys = {
+    account_for: 'Account_For',
+    customer: 'Customer Name',
+    name: 'Name',
+    email_id: 'Email',
+    contact_no: 'Contact_No',
+    whats_app_contact_no: 'WhatsappNo',
+    user_name: 'User_Name',
+    role: 'Role',
+    jobRole: 'Job Role',
+    designation: 'Designation',
+    address: 'Address',
+    pincode: 'Pincode',
+    country: 'Country',
+    state: 'State',
+    city: 'City',
+    department: 'Department',
+    Ticket_Show_Type: 'Ticket Show Type',
+    Ticket_Passing_Authority: 'Ticket Passing Authority',
+    Make_Default: 'Make Default',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'User Master Record'
   };
 
   const columns = [
@@ -284,6 +310,7 @@ function UserComponent() {
       <div className="card mt-2 px-0">
         {filteredData && (
           <MaterialTable
+            exportDataKeys={exportDataKeys}
             isLoading={isLoding}
             columns={columns}
             data={filteredData}

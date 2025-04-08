@@ -71,6 +71,15 @@ export const CustomerMappingSlice = createSlice({
             sub_module_name: data[key].sub_module_name,
             department_name: data[key].department_name,
             priority: data[key].priority,
+            remark: data[key].remark,
+            'Customer Type Name': data[key].customer_type_name,
+            'Assign User': data[key]?.user_policy
+              ? data[key]?.user_policy
+                  ?.map((user) => user?.user_name || '')
+                  .join(', ')
+              : '',
+            'Confirmation Required':
+              data[key].confirmation_required == 1 ? 'Yes' : 'no',
             approach: data[key].approach,
             is_default: data[key].is_default,
             is_active: data[key].is_active,

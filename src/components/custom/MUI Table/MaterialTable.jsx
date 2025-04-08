@@ -82,16 +82,17 @@ function MaterialTable({
         const eachRow = exportData[i]?.original;
         for (let key in exportDataKeys) {
           payload['Sr no'] = i + 1;
-          console.log('eachRow[key]', eachRow[key]);
-          if (eachRow[key]) {
-            if (key === 'is_active') {
-              payload[exportDataKeys[key]] =
-                eachRow[key] == 1 ? 'Active' : 'Deactive';
+          if (key.toLowerCase() !== 'filename') {
+            if (eachRow[key]) {
+              if (key === 'is_active') {
+                payload[exportDataKeys[key]] =
+                  eachRow[key] == 1 ? 'Active' : 'Deactive';
+              } else {
+                payload[exportDataKeys[key]] = eachRow[key] || '--';
+              }
             } else {
-              payload[exportDataKeys[key]] = eachRow[key] || '--';
+              payload[exportDataKeys[key]] = '--';
             }
-          } else {
-            payload[exportDataKeys[key]] = '--';
           }
         }
         dataToExport.push(payload);

@@ -306,6 +306,18 @@ function QueryTypeComponent() {
     }
   ];
 
+  const exportDataKeys = {
+    query_type_name: 'Query Type Name',
+    query_group_name: 'Query Group Name',
+    form_name: 'Form Name',
+    Status: 'Status',
+    Remark: 'Remark',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Query Type Master Record'
+  };
   // ************************************Edit & View Popup**********************************
 
   const columnsEditPopup = [
@@ -887,6 +899,7 @@ function QueryTypeComponent() {
           {/* {isLoading && <TableLoadingSkelton />} */}
           {data && (
             <MaterialTable
+              exportDataKeys={exportDataKeys}
               isLoading={isLoading}
               data={filteredData}
               columns={columns}

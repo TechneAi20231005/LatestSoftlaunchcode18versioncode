@@ -48,14 +48,14 @@ function TemplateComponent() {
   //search function
 
   const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(templatedata, searchTerm);
+    const filteredList = customSearchHandler(exportData, searchTerm);
     setFilteredData(filteredList);
   }, [templatedata, searchTerm]);
 
   // Function to handle reset button click
   const handleReset = () => {
     setSearchTerm('');
-    setFilteredData(templatedata);
+    setFilteredData(exportData);
   };
 
   const columns = [
@@ -152,9 +152,11 @@ function TemplateComponent() {
       header: 'Updated At',
       filterVariant: 'date-range',
       Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+        cell?.row?.original?.updated_at
+          ? `${cell.getValue().toLocaleDateString()} ${cell
+              .getValue()
+              .toLocaleTimeString()}`
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow.updated_by || '--',
@@ -163,6 +165,24 @@ function TemplateComponent() {
     }
   ];
 
+  const exportDataKeys = {
+    template_name: 'Template Name',
+    calculate_from: 'Calculate From',
+    basket_name: 'Basket Name',
+    'Assign To': 'Assign To',
+    task: 'Task',
+    'Day Required': 'Day Required',
+    'Hours Required': 'Hours Required',
+    start_days: 'Start Days',
+    end_days: 'End Days',
+    remark: 'Remark',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Template Master Record'
+  };
   useEffect(() => {
     dispatch(exportTempateData());
     dispatch(templateData());
@@ -187,7 +207,6 @@ function TemplateComponent() {
   useEffect(() => {
     handleSearch();
   }, [handleSearch, searchTerm]);
-
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
@@ -223,8 +242,9 @@ function TemplateComponent() {
       /> */}
 
       <div className="card mt-2">
-        {templatedata && (
+        {exportData && (
           <MaterialTable
+            exportDataKeys={exportDataKeys}
             isLoading={isLoading}
             data={filteredData}
             columns={columns}

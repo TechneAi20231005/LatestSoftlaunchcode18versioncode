@@ -104,7 +104,7 @@ export default function CustomerMappingComponent() {
             <OverlayTrigger
               overlay={<Tooltip>{row?.original?.query_type_name} </Tooltip>}
             >
-              <Box sx={{ color: '#f19828' }}>
+              <Box>
                 <span className="ms-1">
                   {' '}
                   {row?.original?.query_type_name &&
@@ -122,26 +122,20 @@ export default function CustomerMappingComponent() {
       accessorFn: (originalRow) => originalRow.template_name || '--',
       header: 'Template',
       size: 200,
-      Cell: ({ row }) => (
-        <Box sx={{ color: '#f19828' }}>{row?.original?.template_name}</Box>
-      )
+      Cell: ({ row }) => <Box>{row?.original?.template_name}</Box>
     },
     {
       accessorFn: (originalRow) => originalRow.dynamic_form_name || '--',
       header: 'Form',
       size: 180,
-      Cell: ({ row }) => (
-        <Box sx={{ color: '#f19828' }}>{row?.original?.dynamic_form_name}</Box>
-      )
+      Cell: ({ row }) => <Box>{row?.original?.dynamic_form_name}</Box>
     },
 
     {
       accessorFn: (originalRow) => originalRow.department_name || '--',
       header: 'Department',
       size: 180,
-      Cell: ({ row }) => (
-        <Box sx={{ color: '#f19828' }}>{row?.original?.department_name}</Box>
-      )
+      Cell: ({ row }) => <Box>{row?.original?.department_name}</Box>
     },
     { accessorKey: 'priority', header: 'Priority', size: 180 },
     {
@@ -198,6 +192,25 @@ export default function CustomerMappingComponent() {
       size: 190
     }
   ];
+
+  const exportDataKeys = {
+    query_type_name: 'Query',
+    template_name: 'Template',
+    dynamic_form_name: 'Dynamic Form Name',
+    department_name: 'Department',
+    priority: 'priority',
+    approach: 'approach',
+    remark: 'remark',
+    'Customer Type Name': 'Customer Type Name',
+    'Assign User': 'Assign User',
+    'Confirmation Required': 'Confirmation Required',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Customer Mapping Master Record'
+  };
 
   useEffect(() => {
     dispatch(getCustomerMappingData());
@@ -256,6 +269,7 @@ export default function CustomerMappingComponent() {
       <div className="card mt-2">
         {data && (
           <MaterialTable
+            exportDataKeys={exportDataKeys}
             isLoading={isLoading}
             data={filteredData}
             columns={columns}
