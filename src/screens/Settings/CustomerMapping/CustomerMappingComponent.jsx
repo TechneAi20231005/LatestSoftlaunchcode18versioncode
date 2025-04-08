@@ -85,7 +85,8 @@ export default function CustomerMappingComponent() {
     {
       accessorKey: 'Sro',
       header: 'Sr',
-      size: 120
+      size: 120,
+      enableColumnFilter: false
     },
     // // { name: 'Query', selector: row => row.query_type_name, sortable: true,width: "175px" },
 

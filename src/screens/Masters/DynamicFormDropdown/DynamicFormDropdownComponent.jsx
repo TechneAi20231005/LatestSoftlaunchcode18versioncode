@@ -130,6 +130,8 @@ export default function DynamicFormDropdownComponent() {
       enableColumnOrdering: false,
       enableGrouping: false,
       enableSorting: false,
+      enableColumnFilter: false,
+
       Cell: ({ row }) => {
         return (
           <div className="btn-group" role="group">
@@ -148,7 +150,8 @@ export default function DynamicFormDropdownComponent() {
       header: 'Sr',
       size: 70,
       enableColumnOrdering: false,
-      enableGrouping: false
+      enableGrouping: false,
+      enableColumnFilter: false
     },
     {
       accessorKey: 'dropdown_name',
@@ -319,10 +322,8 @@ export default function DynamicFormDropdownComponent() {
       /> */}
 
       {/* <div className="card mt-2"> */}
-      <div className="card-body">
-        <div className="row clearfix g-3">
-          <div className="col-sm-12">
-            {/* {!isLoading && data && (
+      <div className="card mt-2">
+        {/* {!isLoading && data && (
                 <DataTable
                   columns={columns}
                   data={filteredData}
@@ -333,17 +334,16 @@ export default function DynamicFormDropdownComponent() {
                   highlightOnHover={true}
                 />
               )} */}
-            {data && (
-              <MaterialTable
-                columns={columns}
-                data={filteredData}
-                isLoading={isLoading}
-              ></MaterialTable>
-            )}
-          </div>
-        </div>
+        {data && (
+          <MaterialTable
+            columns={columns}
+            data={filteredData}
+            isLoading={isLoading}
+          ></MaterialTable>
+        )}
       </div>
     </div>
+
     // </div>
   );
 }

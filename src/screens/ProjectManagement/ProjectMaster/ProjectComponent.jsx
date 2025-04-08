@@ -1,22 +1,24 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import DataTable from 'react-data-table-component';
+// import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
-import ErrorLogService from '../../../services/ErrorLogService';
+// import ErrorLogService from '../../../services/ErrorLogService';
 import ProjectService from '../../../services/ProjectManagementService/ProjectService';
 
 import PageHeader from '../../../components/Common/PageHeader';
-import Alert from '../../../components/Common/Alert';
+// import Alert from '../../../components/Common/Alert';
 
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+// import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+// import Tooltip from 'react-bootstrap/Tooltip';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { customSearchHandler } from '../../../utils/customFunction';
 import { errorHandler } from '../../../utils';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import { Box } from '@mui/material';
 
 function ProjectComponent() {
   //initial state
@@ -55,13 +57,17 @@ function ProjectComponent() {
   //Data Table columns
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <Link
-            to={`/${_base}/Project/Edit/` + row.id}
+            to={`/${_base}/Project/Edit/` + row?.original?.id}
             className="btn btn-outline-secondary"
           >
             <i className="icofont-edit text-success"></i>
@@ -70,234 +76,95 @@ function ProjectComponent() {
       )
     },
     {
-      name: 'Sr',
-      width: '5%',
-      selector: (row) => row.counter + 1,
-      sortable: true
+      accessorFn: (originalRow) => originalRow?.counter || '--',
+      header: 'Sr',
+      size: 120,
+      enableColumnFilter: false
     },
     {
-      name: 'Project Name',
-      width: '10%',
-      selector: (row) => row.project_name,
-      sortable: true,
-
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.project_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.project_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.project_name && row.project_name.length < 10
-                    ? row.project_name
-                    : row.project_name.substring(0, 10) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
+      accessorFn: (originalRow) => originalRow?.project_name || '--',
+      header: 'Project Name',
+      size: 200,
+      Cell: ({ row }) => {
+        return (
+          <Box sx={{ color: '#f19828' }}>{row?.original?.project_name}</Box>
+        );
+      }
     },
     {
-      name: 'Project Reviewer',
-      width: '10%',
-      selector: (row) => row.projectReviewer,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.projectReviewer && (
-            <OverlayTrigger overlay={<Tooltip>{row.projectReviewer} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.projectReviewer && row.projectReviewer.length < 10
-                    ? row.projectReviewer
-                    : row.projectReviewer.substring(0, 10) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
+      accessorFn: (originalRow) => originalRow?.projectReviewer || '--',
+      header: 'Project Reviewer',
+      size: 220
     },
 
     {
-      name: 'Description',
-      width: '170px',
-      selector: (row) => row.description,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
+      accessorFn: (originalRow) => originalRow?.description || '--',
+      header: 'Description',
+      size: 190
+
+      // Cell: ({ cell }) => {
+      //   return (
+      //     <div className="btn-group" role="group" aria-label="Project Name">
+      //       <OverlayTrigger overlay={<Tooltip>{cell.getValue()}</Tooltip>}>
+      //       <span>{cell.getValue()}</span>
+      //       </OverlayTrigger>
+      //     </div>
+      //   );
+      // }
+    },
+    {
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => (
+        <span
+          className={
+            'badge bg-' +
+            (row?.original?.is_active === 1 ? 'primary' : 'danger')
+          }
         >
-          {row.description && (
-            <OverlayTrigger overlay={<Tooltip>{row.description} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.description && row.description.length < 20
-                    ? row.description
-                    : row.description.substring(0, 20) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
+          {row?.original?.is_active === 1 ? `Active` : `Deactive`}
+        </span>
       )
     },
     {
-      name: 'Status',
-      width: '10%',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary">Active</span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger">Deactive</span>
-          )}
-        </div>
-      )
+      accessorFn: (originalRow) => originalRow?.remark || '--',
+      header: 'Remark',
+      size: 160
+    },
+    {
+      accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`
+    },
+    {
+      accessorFn: (originalRow) => originalRow?.created_by || '--',
+      header: 'Created By',
+      size: 190
     },
 
     {
-      name: 'Remark',
-      width: '10%',
-      selector: (row) => row.remark,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.remark && (
-            <OverlayTrigger overlay={<Tooltip>{row.remark} </Tooltip>}>
-              <div>
-                <span className="ms-1"> {row.remark ? row.remark : ''}</span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
-    },
-
-    {
-      name: 'Created By',
-      width: '10%',
-      selector: (row) => row.created_by,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.created_by && (
-            <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.created_by && row.created_by.length < 20
-                    ? row.created_by
-                    : row.created_by.substring(0, 20) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`
     },
     {
-      name: 'Created at',
-      width: '200px',
-      selector: (row) => row.created_at,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.created_at && (
-            <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.created_at && row.created_at.length < 20
-                    ? row.created_at
-                    : row.created_at.substring(0, 20) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
-    },
-    {
-      name: 'Updated By',
-      width: '10%',
-      selector: (row) => row.updated_by,
-      sortable: true,
-
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.updated_by && (
-            <OverlayTrigger overlay={<Tooltip>{row.updated_by} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.updated_by && row.updated_by.length < 20
-                    ? row.updated_by
-                    : row.updated_by.substring(0, 10) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
-    },
-    {
-      name: 'Updated At',
-      width: '12%',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.updated_at && (
-            <OverlayTrigger overlay={<Tooltip>{row.updated_at} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.updated_at && row.updated_at.length < 20
-                    ? row.updated_at
-                    : row.updated_at.substring(0, 10) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
+      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      header: 'Updated By',
+      size: 190
     }
   ];
 
@@ -312,7 +179,7 @@ function ProjectComponent() {
         if (res.status === 200) {
           // setShowLoaderModal(false);
 
-          let counter = 0;
+          let counter = 1;
           const temp = res.data.data?.data;
           for (const key in temp) {
             data.push({
@@ -404,7 +271,7 @@ function ProjectComponent() {
         }}
       />
 
-      <SearchBoxHeader
+      {/* <SearchBoxHeader
         setSearchTerm={setSearchTerm}
         searchTerm={searchTerm}
         handleSearch={handleSearch}
@@ -413,27 +280,26 @@ function ProjectComponent() {
         exportFileName="Project Master Record"
         exportData={exportData}
         showExportButton={true}
-      />
+      /> */}
 
       <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            {isLoading && <TableLoadingSkelton />}
-            <div className="col-sm-12">
-              {!isLoading && data && (
-                <DataTable
-                  columns={columns}
-                  data={filteredData}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        {data && (
+          <MaterialTable
+            isLoading={isLoading}
+            columns={columns}
+            data={filteredData}
+          />
+
+          // <DataTable
+          //   columns={columns}
+          //   data={filteredData}
+          //   defaultSortField="title"
+          //   pagination
+          //   selectableRows={false}
+          //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+          //   highlightOnHover={true}
+          // />
+        )}
       </div>
     </div>
   );

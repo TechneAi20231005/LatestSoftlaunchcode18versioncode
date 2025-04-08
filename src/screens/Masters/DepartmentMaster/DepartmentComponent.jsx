@@ -74,6 +74,7 @@ function DepartmentComponent() {
       enableColumnOrdering: false,
       enableGrouping: false,
       enableSorting: false,
+      enableColumnFilter: false,
       Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <button
@@ -101,7 +102,8 @@ function DepartmentComponent() {
       header: 'Sr',
       size: 90,
       enableColumnOrdering: false,
-      enableGrouping: false
+      enableGrouping: false,
+      enableColumnFilter: false
     },
     {
       accessorKey: 'department',
@@ -146,7 +148,7 @@ function DepartmentComponent() {
       size: 350
     },
     {
-      accessorKey: 'created_by',
+      accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
       header: 'Created By',
       size: 180
     },

@@ -102,7 +102,8 @@ function StatusComponent() {
     {
       accessorKey: 'counter',
       header: 'Sr',
-      size: 120
+      size: 120,
+      enableColumnFilter: false
     },
     {
       accessorFn: (originalRow) => originalRow.status || '--',

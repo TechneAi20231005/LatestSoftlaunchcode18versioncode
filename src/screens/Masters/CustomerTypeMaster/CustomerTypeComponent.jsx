@@ -116,7 +116,12 @@ function CustomerTypeComponent() {
         </div>
       )
     },
-    { accessorKey: 'counter', header: 'Sr', size: 120 },
+    {
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 120,
+      enableColumnFilter: false
+    },
     {
       accessorFn: (originalRow) => originalRow.type_name || '--',
       header: 'Customer Type Name',
