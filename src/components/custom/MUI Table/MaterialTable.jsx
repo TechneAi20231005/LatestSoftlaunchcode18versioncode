@@ -168,7 +168,7 @@ function MaterialTable({
       }
       return col;
     });
-  }, [expandColumn]);
+  }, [expandColumn, columns]);
 
   return (
     <Box

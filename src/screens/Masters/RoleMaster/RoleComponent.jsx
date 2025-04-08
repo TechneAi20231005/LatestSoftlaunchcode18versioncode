@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 
@@ -76,135 +76,138 @@ function RoleComponent({ location }) {
     setFilteredData(RoleMasterData);
   };
 
-  const columns = [
-    {
-      accessorKey: 'action',
-      header: 'Action',
-      size: 160,
-      enableColumnOrdering: false,
-      enableGrouping: false,
-      enableSorting: false,
-      enableColumnFilter: false,
-      Cell: ({ row }) => (
-        <div className="btn-group-sm" role="group">
-          {checkRole && checkRole[0]?.can_update === 1 ? (
-            <button
-              type="button"
-              className="btn btn-outline-secondary"
-              data-bs-toggle="modal"
-              data-bs-target="#edit"
-              onClick={(e) => {
-                dispatch(
-                  handleModalOpen({
-                    showModal: true,
-                    modalData: row?.original,
-                    modalHeader: 'Edit Role'
-                  })
-                );
-              }}
-            >
-              <i className="icofont-edit text-success"></i>
-            </button>
-          ) : (
-            ''
-          )}
-          {checkRole && checkRole[0]?.can_create === 1 ? (
-            <Link
-              to={`/${_base}/MenuManage/` + row?.original?.id}
-              className="btn btn-primary"
-              style={{
-                maxWidth: '100%',
-                fontSize: '0.75rem',
-                borderRadius: '1rem'
-              }}
-            >
-              Add Access
-            </Link>
-          ) : (
-            ''
-          )}
-        </div>
-      )
-    },
-    {
-      accessorKey: 'counter',
-      header: 'Sr',
-      size: 90,
-      enableColumnOrdering: false,
-      enableGrouping: false,
-      enableColumnFilter: false
-    },
-    {
-      accessorKey: 'role',
-      header: 'Role',
-      size: 130,
-      filterVariant: 'autocomplete',
-      muiTableBodyCellProps: () => ({
-        sx: {
-          color: '#f19828',
-          fontWeight: 400
-        }
-      }),
-      Cell: ({ row }) => (
-        <span>
-          {row?.original?.role.length > 20
-            ? row?.original?.role.substring(0, 20) + '...'
-            : row?.original?.role}
-        </span>
-      )
-    },
-
-    {
-      accessorKey: 'is_active',
-      header: 'Status',
-      size: 150,
-      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
-      filterFn: (row, id, filterValue) => {
-        const status = row.getValue(id);
-        return status.toLowerCase().includes(filterValue.toLowerCase());
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'action',
+        header: 'Action',
+        size: 160,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableSorting: false,
+        enableColumnFilter: false,
+        Cell: ({ row }) => (
+          <div className="btn-group-sm" role="group">
+            {checkRole && checkRole[0]?.can_update === 1 ? (
+              <button
+                type="button"
+                className="btn btn-outline-secondary"
+                data-bs-toggle="modal"
+                data-bs-target="#edit"
+                onClick={(e) => {
+                  dispatch(
+                    handleModalOpen({
+                      showModal: true,
+                      modalData: row?.original,
+                      modalHeader: 'Edit Role'
+                    })
+                  );
+                }}
+              >
+                <i className="icofont-edit text-success"></i>
+              </button>
+            ) : (
+              ''
+            )}
+            {checkRole && checkRole[0]?.can_create === 1 ? (
+              <Link
+                to={`/${_base}/MenuManage/` + row?.original?.id}
+                className="btn btn-primary"
+                style={{
+                  maxWidth: '100%',
+                  fontSize: '0.75rem',
+                  borderRadius: '1rem'
+                }}
+              >
+                Add Access
+              </Link>
+            ) : (
+              ''
+            )}
+          </div>
+        )
       },
-      Cell: ({ row }) => {
-        const isActive = row?.original?.is_active;
-        return (
-          <span
-            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
-            style={{ width: '4rem' }}
-          >
-            {isActive ? 'Active' : 'Deactive'}
+      {
+        accessorKey: 'counter',
+        header: 'Sr',
+        size: 90,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableColumnFilter: false
+      },
+      {
+        accessorKey: 'role',
+        header: 'Role',
+        size: 130,
+        filterVariant: 'autocomplete',
+        muiTableBodyCellProps: () => ({
+          sx: {
+            color: '#f19828',
+            fontWeight: 400
+          }
+        }),
+        Cell: ({ row }) => (
+          <span>
+            {row?.original?.role.length > 20
+              ? row?.original?.role.substring(0, 20) + '...'
+              : row?.original?.role}
           </span>
-        );
+        )
+      },
+
+      {
+        accessorKey: 'is_active',
+        header: 'Status',
+        size: 150,
+        accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+        filterFn: (row, id, filterValue) => {
+          const status = row.getValue(id);
+          return status.toLowerCase().includes(filterValue.toLowerCase());
+        },
+        Cell: ({ row }) => {
+          const isActive = row?.original?.is_active;
+          return (
+            <span
+              className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+              style={{ width: '4rem' }}
+            >
+              {isActive ? 'Active' : 'Deactive'}
+            </span>
+          );
+        }
+      },
+      {
+        accessorKey: 'created_at',
+        header: 'Created At',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.created_at),
+        Cell: ({ row }) =>
+          moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss'),
+        size: 350
+      },
+      {
+        accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
+        header: 'Created By',
+        size: 180
+      },
+      {
+        accessorKey: 'updated_at',
+        header: 'Updated At',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.updated_at),
+        Cell: ({ row }) =>
+          row?.original?.updated_at?.trim()
+            ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--'
+      },
+      {
+        accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+        header: 'Updated By',
+        size: 190
       }
-    },
-    {
-      accessorKey: 'created_at',
-      header: 'Created At',
-      filterVariant: 'date-range',
-      accessorFn: (row) => new Date(row.created_at),
-      Cell: ({ row }) =>
-        moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss'),
-      size: 350
-    },
-    {
-      accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
-      header: 'Created By',
-      size: 180
-    },
-    {
-      accessorKey: 'updated_at',
-      header: 'Updated At',
-      filterVariant: 'date-range',
-      accessorFn: (row) => new Date(row.updated_at),
-      Cell: ({ row }) =>
-        row?.original?.updated_at?.trim()
-          ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
-          : '--'
-    },
-    {
-      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
-      header: 'Updated By',
-      size: 190
-    }
-  ];
+    ],
+    [checkRole, dispatch]
+  );
 
   const fields = [
     {

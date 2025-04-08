@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
 
 import DepartmentService from '../../../services/MastersService/DepartmentService';
@@ -66,108 +66,111 @@ function DepartmentComponent() {
   const clearFilters = () => {
     setReset(true);
   };
-  const columns = [
-    {
-      accessorKey: 'action',
-      header: 'Action',
-      size: 110,
-      enableColumnOrdering: false,
-      enableGrouping: false,
-      enableSorting: false,
-      enableColumnFilter: false,
-      Cell: ({ row }) => (
-        <div className="btn-group" role="group">
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            data-bs-toggle="modal"
-            data-bs-target="#edit"
-            onClick={(e) => {
-              dispatch(
-                handleModalOpen({
-                  showModal: true,
-                  modalData: row?.original,
-                  modalHeader: 'Edit Department'
-                })
-              );
-            }}
-          >
-            <i className="icofont-edit text-success"></i>
-          </button>
-        </div>
-      )
-    },
-    {
-      accessorKey: 'counter',
-      header: 'Sr',
-      size: 90,
-      enableColumnOrdering: false,
-      enableGrouping: false,
-      enableColumnFilter: false
-    },
-    {
-      accessorKey: 'department',
-      header: 'Department',
-      filterVariant: 'autocomplete',
-      muiTableBodyCellProps: () => ({
-        sx: {
-          color: '#f19828',
-          fontWeight: 400
-        }
-      }),
-      size: 185
-    },
-    {
-      accessorKey: 'is_active',
-      header: 'Status',
-      size: 150,
-      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
-      filterFn: (row, id, filterValue) => {
-        const status = row.getValue(id);
-        return status.toLowerCase().includes(filterValue.toLowerCase());
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'action',
+        header: 'Action',
+        size: 110,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableSorting: false,
+        enableColumnFilter: false,
+        Cell: ({ row }) => (
+          <div className="btn-group" role="group">
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#edit"
+              onClick={(e) => {
+                dispatch(
+                  handleModalOpen({
+                    showModal: true,
+                    modalData: row?.original,
+                    modalHeader: 'Edit Department'
+                  })
+                );
+              }}
+            >
+              <i className="icofont-edit text-success"></i>
+            </button>
+          </div>
+        )
       },
-      Cell: ({ row }) => {
-        const isActive = row?.original?.is_active;
-        return (
-          <span
-            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
-            style={{ width: '4rem' }}
-          >
-            {isActive ? 'Active' : 'Deactive'}
-          </span>
-        );
+      {
+        accessorKey: 'counter',
+        header: 'Sr',
+        size: 90,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableColumnFilter: false
+      },
+      {
+        accessorKey: 'department',
+        header: 'Department',
+        filterVariant: 'autocomplete',
+        muiTableBodyCellProps: () => ({
+          sx: {
+            color: '#f19828',
+            fontWeight: 400
+          }
+        }),
+        size: 185
+      },
+      {
+        accessorKey: 'is_active',
+        header: 'Status',
+        size: 150,
+        accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+        filterFn: (row, id, filterValue) => {
+          const status = row.getValue(id);
+          return status.toLowerCase().includes(filterValue.toLowerCase());
+        },
+        Cell: ({ row }) => {
+          const isActive = row?.original?.is_active;
+          return (
+            <span
+              className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+              style={{ width: '4rem' }}
+            >
+              {isActive ? 'Active' : 'Deactive'}
+            </span>
+          );
+        }
+      },
+      {
+        header: 'Created At',
+        accessorKey: 'created_at',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.created_at),
+        Cell: ({ row }) =>
+          moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss'),
+        size: 350
+      },
+      {
+        accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
+        header: 'Created By',
+        size: 180
+      },
+      {
+        accessorKey: 'updated_at',
+        header: 'Updated At',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.updated_at),
+        Cell: ({ row }) =>
+          row?.original?.updated_at?.trim()
+            ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--'
+      },
+      {
+        accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+        header: 'Updated By',
+        size: 185
       }
-    },
-    {
-      header: 'Created At',
-      accessorKey: 'created_at',
-      filterVariant: 'date-range',
-      accessorFn: (row) => new Date(row.created_at),
-      Cell: ({ row }) =>
-        moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss'),
-      size: 350
-    },
-    {
-      accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
-      header: 'Created By',
-      size: 180
-    },
-    {
-      accessorKey: 'updated_at',
-      header: 'Updated At',
-      filterVariant: 'date-range',
-      accessorFn: (row) => new Date(row.updated_at),
-      Cell: ({ row }) =>
-        row?.original?.updated_at?.trim()
-          ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
-          : '--'
-    },
-    {
-      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
-      header: 'Updated By',
-      size: 185
-    }
-  ];
+    ],
+    [dispatch]
+  );
 
   const fields = [
     {
