@@ -1,4 +1,10 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo
+} from 'react';
 import { Modal } from 'react-bootstrap';
 
 import Select from 'react-select';
@@ -133,147 +139,152 @@ function GeneralSettings() {
     setReset(true);
   };
   //columns
-  const columns = [
-    {
-      header: 'Action',
-      accessorKey: 'action',
-      size: 110,
-      enableColumnOrdering: false,
-      enableGrouping: false,
-      enableSorting: false,
-      Cell: ({ row }) => (
-        <div className="btn-group" role="group">
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            data-bs-toggle="modal"
-            data-bs-target="#edit"
-            onClick={(e) => {
-              dispatch(
-                handleGeneralModal({
-                  showModal: true,
-                  modalData: row?.original,
-                  modalHeader: 'Edit Settings'
-                })
-              );
-            }}
-          >
-            <i className="icofont-edit text-success"></i>
-          </button>
-        </div>
-      )
-    },
-    {
-      accessorKey: 'counter',
-      header: 'Sr',
-      size: 90,
-      enableColumnOrdering: false,
-      enableGrouping: false
-    },
-    {
-      header: 'Setting Name',
-      accessorKey: 'setting_name',
-      muiTableBodyCellProps: () => ({
-        sx: {
-          color: '#f19828',
-          fontWeight: 400
-        }
-      }),
-      size: 200
-    },
-    {
-      header: 'Assigned User',
-      accessorKey: 'assigned_user',
-      accessorFn: (row) => {
-        let arr = [];
-        User.forEach((el) => {
-          if (row?.user_id?.includes(el.value)) {
-            arr.push(el.label);
-          }
-        });
-        return arr.join(', ')?.trim();
+  const columns = useMemo(
+    () => [
+      {
+        header: 'Action',
+        accessorKey: 'action',
+        size: 110,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <div className="btn-group" role="group">
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#edit"
+              onClick={(e) => {
+                dispatch(
+                  handleGeneralModal({
+                    showModal: true,
+                    modalData: row?.original,
+                    modalHeader: 'Edit Settings'
+                  })
+                );
+              }}
+            >
+              <i className="icofont-edit text-success"></i>
+            </button>
+          </div>
+        )
       },
-      filterFn: (row, columnId, filterValue) => {
-        const val = row.getValue(columnId);
-        return val?.toLowerCase().includes(filterValue.toLowerCase());
+      {
+        accessorKey: 'counter',
+        header: 'Sr',
+        size: 90,
+        enableColumnOrdering: false,
+        enableGrouping: false
       },
-      Cell: ({ row }) => {
-        let arr = [];
-        User.forEach((el) => {
-          if (row?.original?.user_id?.includes(el.value)) {
-            arr.push(el.label);
+      {
+        header: 'Setting Name',
+        accessorKey: 'setting_name',
+        muiTableBodyCellProps: () => ({
+          sx: {
+            color: '#f19828',
+            fontWeight: 400
           }
-        });
+        }),
+        size: 200
+      },
+      {
+        header: 'Assigned User',
+        accessorKey: 'assigned_user',
+        accessorFn: (row) => {
+          let arr = [];
+          User.forEach((el) => {
+            if (row?.user_id?.includes(el.value)) {
+              arr.push(el.label);
+            }
+          });
+          return arr.join(', ')?.trim();
+        },
+        filterFn: (row, columnId, filterValue) => {
+          const val = row.getValue(columnId);
+          return val?.toLowerCase().includes(filterValue.toLowerCase());
+        },
+        Cell: ({ row }) => {
+          let arr = [];
+          User.forEach((el) => {
+            if (row?.original?.user_id?.includes(el.value)) {
+              arr.push(el.label);
+            }
+          });
 
-        return (
-          <span className="ms-1">
-            {arr?.length > 2
-              ? `${arr[0]}, ${arr[1]}...`
-              : arr.length === 0
-              ? '--'
-              : arr.join(', ')}
-          </span>
-        );
+          return (
+            <span className="ms-1">
+              {arr?.length > 2
+                ? `${arr[0]}, ${arr[1]}...`
+                : arr.length === 0
+                ? '--'
+                : arr.join(', ')}
+            </span>
+          );
+        },
+        size: 210
       },
-      size: 210
-    },
-    {
-      header: 'Status',
-      accessorKey: 'is_active',
-      size: 150,
-      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
-      filterFn: (row, id, filterValue) => {
-        const status = row.getValue(id);
-        return status.toLowerCase().includes(filterValue.toLowerCase());
+      {
+        header: 'Status',
+        accessorKey: 'is_active',
+        size: 150,
+        accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+        filterFn: (row, id, filterValue) => {
+          const status = row.getValue(id);
+          return status.toLowerCase().includes(filterValue.toLowerCase());
+        },
+        Cell: ({ row }) => {
+          const isActive = row?.original?.is_active;
+          return (
+            <span
+              className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+              style={{ width: '4rem' }}
+            >
+              {isActive ? 'Active' : 'Deactive'}
+            </span>
+          );
+        }
       },
-      Cell: ({ row }) => {
-        const isActive = row?.original?.is_active;
-        return (
-          <span
-            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
-            style={{ width: '4rem' }}
-          >
-            {isActive ? 'Active' : 'Deactive'}
-          </span>
-        );
+      {
+        header: 'Remark',
+        size: 160,
+        accessorFn: (row) => row.remark?.trim() || '--'
+      },
+      {
+        accessorKey: 'created_at',
+        header: 'Created At',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.created_at),
+        Cell: ({ row }) =>
+          row.original.created_at
+            ? moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--',
+        size: 350
+      },
+      {
+        accessorKey: 'created_by',
+        header: 'Created By',
+        size: 180
+      },
+      {
+        accessorKey: 'updated_at',
+        header: 'Updated At',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.updated_at),
+        Cell: ({ row }) =>
+          row?.original?.updated_at?.trim()
+            ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--'
+      },
+      {
+        id: 'updated_by',
+        accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+        header: 'Updated By',
+        size: 185
       }
-    },
-    {
-      header: 'Remark',
-      size: 160,
-      accessorFn: (row) => row.remark?.trim() || '--'
-    },
-    {
-      accessorKey: 'created_at',
-      header: 'Created At',
-      filterVariant: 'date-range',
-      accessorFn: (row) => new Date(row.created_at),
-      Cell: ({ row }) =>
-        moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss'),
-      size: 350
-    },
-    {
-      accessorKey: 'created_by',
-      header: 'Created By',
-      size: 180
-    },
-    {
-      accessorKey: 'updated_at',
-      header: 'Updated At',
-      filterVariant: 'date-range',
-      accessorFn: (row) => new Date(row.updated_at),
-      Cell: ({ row }) =>
-        row?.original?.updated_at?.trim()
-          ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
-          : '--'
-    },
-    {
-      id: 'updated_by',
-      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
-      header: 'Updated By',
-      size: 185
-    }
-  ];
+    ],
+    [dispatch, User]
+  );
 
   const fields = [
     {
@@ -407,6 +418,7 @@ function GeneralSettings() {
           data={filteredData}
           reset={reset}
           setReset={setReset}
+          isExportData={false}
         />
       </div>
 
