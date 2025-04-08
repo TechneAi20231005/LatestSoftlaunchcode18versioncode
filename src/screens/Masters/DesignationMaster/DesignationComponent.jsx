@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Container, Modal } from 'react-bootstrap';
 
 import DesignationService from '../../../services/MastersService/DesignationService';
@@ -148,110 +148,115 @@ function DesignationComponent() {
     setReset(true);
   };
 
-  const columns = [
-    {
-      accessorKey: 'action',
-      header: 'Action',
-      size: 110,
-      enableColumnOrdering: false,
-      enableGrouping: false,
-      enableSorting: false,
-      enableColumnFilter: false,
-      Cell: ({ row }) => (
-        <div className="btn-group" role="group">
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            data-bs-toggle="modal"
-            data-bs-target="#edit"
-            onClick={(e) => {
-              dispatch(
-                handleModalOpen({
-                  showModal: true,
-                  modalData: row?.original,
-                  modalHeader: 'Edit Designation'
-                })
-              );
-            }}
-          >
-            <i className="icofont-edit text-success"></i>
-          </button>
-        </div>
-      )
-    },
-    {
-      accessorKey: 'counter',
-      header: 'Sr',
-      size: 80,
-      enableColumnOrdering: false,
-      enableGrouping: false,
-      enableColumnFilter: false
-    },
-    {
-      accessorKey: 'designation',
-      header: 'Designation',
-      filterVariant: 'autocomplete',
-      muiTableBodyCellProps: () => ({
-        sx: {
-          color: '#f19828',
-          fontWeight: 400
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'action',
+        header: 'Action',
+        size: 110,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableSorting: false,
+        enableColumnFilter: false,
+        Cell: ({ row }) => (
+          <div className="btn-group" role="group">
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#edit"
+              onClick={(e) => {
+                dispatch(
+                  handleModalOpen({
+                    showModal: true,
+                    modalData: row?.original,
+                    modalHeader: 'Edit Designation'
+                  })
+                );
+              }}
+            >
+              <i className="icofont-edit text-success"></i>
+            </button>
+          </div>
+        )
+      },
+      {
+        accessorKey: 'counter',
+        header: 'Sr',
+        size: 80,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableColumnFilter: false
+      },
+      {
+        accessorKey: 'designation',
+        header: 'Designation',
+        filterVariant: 'autocomplete',
+        muiTableBodyCellProps: () => ({
+          sx: {
+            color: '#f19828',
+            fontWeight: 400
+          }
+        }),
+        size: 190
+      },
+      {
+        accessorKey: 'is_active',
+        header: 'Status',
+        size: 150,
+        accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+        filterFn: (row, id, filterValue) => {
+          const status = row.getValue(id);
+          return status.toLowerCase().includes(filterValue.toLowerCase());
+        },
+        Cell: ({ row }) => {
+          const isActive = row?.original?.is_active;
+          return (
+            <span
+              className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+              style={{ width: '4rem' }}
+            >
+              {isActive ? 'Active' : 'Deactive'}
+            </span>
+          );
         }
-      }),
-      size: 190
-    },
-    {
-      accessorKey: 'is_active',
-      header: 'Status',
-      size: 150,
-      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
-      filterFn: (row, id, filterValue) => {
-        const status = row.getValue(id);
-        return status.toLowerCase().includes(filterValue.toLowerCase());
       },
-      Cell: ({ row }) => {
-        const isActive = row?.original?.is_active;
-        return (
-          <span
-            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
-            style={{ width: '4rem' }}
-          >
-            {isActive ? 'Active' : 'Deactive'}
-          </span>
-        );
+      {
+        accessorKey: 'created_at',
+        accessorFn: (originalRow) => {
+          return moment(originalRow.created_at).startOf('day').toDate();
+        },
+        header: 'Created At',
+        filterVariant: 'date-range',
+        Cell: ({ row }) =>
+          row.original.created_at
+            ? moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--',
+        size: 180
+      },
+      {
+        accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
+        header: 'Created By',
+        size: 180
+      },
+      {
+        accessorKey: 'updated_at',
+        header: 'Updated At',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.updated_at),
+        Cell: ({ row }) =>
+          row?.original?.updated_at?.trim()
+            ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--'
+      },
+      {
+        header: 'Updated By',
+        accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+        size: 190
       }
-    },
-    {
-      accessorKey: 'created_at',
-      accessorFn: (originalRow) => {
-        return moment(originalRow.created_at).startOf('day').toDate();
-      },
-      header: 'Created At',
-      filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        moment(cell.row.original.created_at).format('MM/DD/YYYY HH:mm:ss'),
-      size: 180
-    },
-    {
-      accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
-      header: 'Created By',
-      size: 180
-    },
-    {
-      accessorKey: 'updated_at',
-      header: 'Updated At',
-      filterVariant: 'date-range',
-      accessorFn: (row) => new Date(row.updated_at),
-      Cell: ({ row }) =>
-        row?.original?.updated_at?.trim()
-          ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
-          : '--'
-    },
-    {
-      header: 'Updated By',
-      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
-      size: 190
-    }
-  ];
+    ],
+    [dispatch]
+  );
 
   const fields = [
     {
@@ -348,7 +353,16 @@ function DesignationComponent() {
   //     }, 500);
   //   }
   // }}
-
+  const exportDataKeys = {
+    designation: 'Designation',
+    remark: 'Remark',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    is_active: 'Status',
+    fileName: 'Designation Master Record'
+  };
   const handleForm = async (values, id, { setSubmitting }) => {
     setSubmitting(true);
     const formData = new FormData();
@@ -460,6 +474,7 @@ function DesignationComponent() {
               isLoading={isLoading}
               reset={reset}
               setReset={setReset}
+              exportDataKeys={exportDataKeys}
             />
           )}
         </div>
