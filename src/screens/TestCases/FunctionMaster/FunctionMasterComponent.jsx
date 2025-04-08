@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import PageHeader from '../../../components/Common/PageHeader';
 import { Col, Row } from 'react-bootstrap';
@@ -41,104 +41,107 @@ function FunctionMasterComponent() {
     setFilterFunctionMasterList(functionMasterList);
   };
 
-  const columns = [
-    {
-      accessorKey: 'counter',
-      header: 'Sr. No.',
-      size: 90,
-      accessorFn: (row, index) => index + 1,
-      enableColumnOrdering: false,
-      enableGrouping: false,
-      enableColumnFilter: false
-    },
-    {
-      header: 'Action',
-      accessorKey: 'action',
-      size: 110,
-      enableColumnOrdering: false,
-      enableGrouping: false,
-      enableSorting: false,
-      enableColumnFilter: false,
-      Cell: ({ row }) => (
-        <i
-          className="icofont-edit text-primary cp"
-          onClick={() =>
-            setAddEditFunctionModal({
-              type: 'EDIT',
-              data: row?.original,
-              open: true
-            })
-          }
-        />
-      )
-    },
-
-    {
-      accessorKey: 'is_active',
-      header: 'Status',
-      size: 150,
-      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
-      filterFn: (row, id, filterValue) => {
-        const status = row.getValue(id);
-        return status.toLowerCase().includes(filterValue.toLowerCase());
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'counter',
+        header: 'Sr. No.',
+        size: 90,
+        accessorFn: (row, index) => index + 1,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableColumnFilter: false
       },
-      Cell: ({ row }) => {
-        const isActive = row?.original?.is_active;
-        return (
-          <span
-            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
-            style={{ width: '4rem' }}
-          >
-            {isActive ? 'Active' : 'Deactive'}
-          </span>
-        );
-      }
-    },
+      {
+        header: 'Action',
+        accessorKey: 'action',
+        size: 110,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableSorting: false,
+        enableColumnFilter: false,
+        Cell: ({ row }) => (
+          <i
+            className="icofont-edit text-primary cp"
+            onClick={() =>
+              setAddEditFunctionModal({
+                type: 'EDIT',
+                data: row?.original,
+                open: true
+              })
+            }
+          />
+        )
+      },
 
-    {
-      header: 'Function Title',
-      accessorKey: 'function_name',
-      enableSorting: false,
-      width: '200px',
-      muiTableBodyCellProps: () => ({
-        sx: {
-          color: '#f19828',
-          fontWeight: 400
+      {
+        accessorKey: 'is_active',
+        header: 'Status',
+        size: 150,
+        accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+        filterFn: (row, id, filterValue) => {
+          const status = row.getValue(id);
+          return status.toLowerCase().includes(filterValue.toLowerCase());
+        },
+        Cell: ({ row }) => {
+          const isActive = row?.original?.is_active;
+          return (
+            <span
+              className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+              style={{ width: '4rem' }}
+            >
+              {isActive ? 'Active' : 'Deactive'}
+            </span>
+          );
         }
-      })
-    },
+      },
 
-    {
-      accessorKey: 'created_at',
-      header: 'Created At',
-      filterVariant: 'date-range',
-      accessorFn: (row) => new Date(row.created_at),
-      Cell: ({ row }) =>
-        moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss'),
-      size: 350
-    },
+      {
+        header: 'Function Title',
+        accessorKey: 'function_name',
+        enableSorting: false,
+        width: '200px',
+        muiTableBodyCellProps: () => ({
+          sx: {
+            color: '#f19828',
+            fontWeight: 400
+          }
+        })
+      },
 
-    {
-      accessorKey: 'created_by',
-      header: 'Created By',
-      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
-      size: 180
-    },
+      {
+        accessorKey: 'created_at',
+        header: 'Created At',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.created_at),
+        Cell: ({ row }) =>
+          moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss'),
+        size: 350
+      },
 
-    {
-      header: 'Updated At',
-      accessorFn: (row) => row?.updated_at?.trim() || '--',
-      enableSorting: false,
-      width: '175px'
-    },
+      {
+        accessorKey: 'created_by',
+        header: 'Created By',
+        accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
+        size: 180
+      },
 
-    {
-      id: 'updated_by',
-      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
-      header: 'Updated By',
-      size: 185
-    }
-  ];
+      {
+        header: 'Updated At',
+        accessorFn: (row) => row?.updated_at?.trim() || '--',
+        enableSorting: false,
+        width: '175px'
+      },
+
+      {
+        id: 'updated_by',
+        accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+        header: 'Updated By',
+        size: 185
+      }
+    ],
+    []
+  );
 
   const transformDataForExport = (data) => {
     return data.map((row) => ({
