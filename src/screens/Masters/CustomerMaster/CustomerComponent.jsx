@@ -51,6 +51,23 @@ function CustomerComponent() {
     setFilteredData(filteredList);
   }, [getAllCustomerData, searchTerm]);
 
+  const exportDataKeys = {
+    name: 'Customer Name',
+    customer_type: 'Customer Type',
+    email_id: 'Email',
+    contact_no: 'Contact No',
+    address: 'Address',
+    pincode: 'Pincode',
+    country: 'Country',
+    state: 'State',
+    city: 'City',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Customer Master Record'
+  };
   // Function to handle reset button click
   const handleReset = () => {
     setSearchTerm('');
@@ -214,6 +231,7 @@ function CustomerComponent() {
       <div className="card mt-2">
         {getAllCustomerData && (
           <MaterialTable
+            exportDataKeys={exportDataKeys}
             columns={columns}
             data={filteredData}
             isLoading={isLoading}

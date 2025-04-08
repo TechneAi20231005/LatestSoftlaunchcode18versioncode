@@ -168,6 +168,19 @@ function ProjectComponent() {
     }
   ];
 
+  const exportDataKeys = {
+    project_name: 'Project Name',
+    projectReviewer: 'Project Reviewer',
+    description: 'Description',
+    is_active: 'Status',
+    remark: 'Remark',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Project Master Record'
+  };
+
   const loadData = useCallback(async () => {
     // setShowLoaderModal(null);
     // setShowLoaderModal(true);
@@ -285,6 +298,7 @@ function ProjectComponent() {
       <div className="card mt-2">
         {data && (
           <MaterialTable
+            exportDataKeys={exportDataKeys}
             isLoading={isLoading}
             columns={columns}
             data={filteredData}
