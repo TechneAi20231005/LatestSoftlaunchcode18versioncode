@@ -210,6 +210,16 @@ export default function DynamicFormDropdownComponent() {
     }
   ];
 
+  const exportDataKeys = {
+    dropdown_name: 'Dropdown Name',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Dynamic Form Dropdown Master'
+  };
+
   const loadData = async () => {
     setIsLoading(true); // Set loading state to true when starting data fetching
 
@@ -254,7 +264,6 @@ export default function DynamicFormDropdownComponent() {
         setExportData(exportTempData);
       }
     } catch (error) {
-      console.error('Error occurred while fetching data:', error);
       const { response } = error;
 
       if (response) {
@@ -339,6 +348,7 @@ export default function DynamicFormDropdownComponent() {
             columns={columns}
             data={filteredData}
             isLoading={isLoading}
+            exportDataKeys={exportDataKeys}
           ></MaterialTable>
         )}
       </div>
