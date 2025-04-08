@@ -121,26 +121,18 @@ function TestingGroupMasterComponent() {
     {
       accessorKey: 'created_by',
       header: 'Created By',
-      accessorFn: (originalRow) =>
-        originalRow?.updated_by?.first_name?.trim() +
-        originalRow?.updated_by?.last_name?.trim()
-          ? originalRow?.updated_by?.first_name?.trim() +
-            ' ' +
-            originalRow?.updated_by?.last_name?.trim()
-          : '--',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       size: 180
     },
     {
       header: 'Updated At',
-      accessorFn: (row) => row.updated_at || '--',
+      accessorFn: (row) => row.updated_at?.trim() || '--',
       enableSorting: false,
       width: '175px'
     },
     {
       id: 'updated_by',
-      accessorFn: (originalRow) =>
-        originalRow?.updated_by?.first_name?.trim() +
-          originalRow?.updated_by?.last_name?.trim() || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 185
     }
@@ -149,7 +141,7 @@ function TestingGroupMasterComponent() {
   const clearFilters = () => {
     setReset(true);
   };
-  /* const transformDataForExport = (data) => {
+  const transformDataForExport = (data) => {
     return data.map((row) => ({
       ...row,
       created_by:
@@ -169,15 +161,16 @@ function TestingGroupMasterComponent() {
     filteredTestingGroupMasterList
   );
 
-  const exportColumns = [
-    { title: 'Testing Group Title', field: 'group_name' },
-    { title: 'Status', field: 'status' },
-
-    { title: 'Created At', field: 'created_at' },
-    { title: 'Created By', field: 'created_by' },
-    { title: 'Updated At', field: 'updated_at' },
-    { title: 'Updated By', field: 'updated_by' }
-  ]; */
+  const exportDataKeys = {
+    group_name: 'Testing Group Title',
+    remark: 'Remark',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Testing Group Master Record'
+  };
 
   useEffect(() => {
     dispatch(getTestingGroupMasterListThunk());
@@ -218,10 +211,11 @@ function TestingGroupMasterComponent() {
         <div className="card mt-2">
           <MaterialTable
             columns={columns}
-            data={filteredTestingGroupMasterList}
+            data={transformedData}
             isLoading={isLoading?.getTestingGroupMasterList}
             setReset={setReset}
             reset={reset}
+            exportDataKeys={exportDataKeys}
           />
         </div>
       )}

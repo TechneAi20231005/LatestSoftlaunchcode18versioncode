@@ -39,7 +39,8 @@ function MaterialTable({
   enableColumnFilter = true,
   reset = false,
   exportDataKeys,
-  setReset = () => {}
+  setReset = () => {},
+  isExportData = true
 }) {
   const [columnFilters, setColumnFilters] = useState([]);
   const [sorting, setSorting] = useState([]);

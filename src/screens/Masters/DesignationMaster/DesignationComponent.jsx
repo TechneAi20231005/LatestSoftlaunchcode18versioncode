@@ -351,7 +351,16 @@ function DesignationComponent() {
   //     }, 500);
   //   }
   // }}
-
+  const exportDataKeys = {
+    designation: 'Designation',
+    remark: 'Remark',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    is_active: 'Status',
+    fileName: 'Designation Master Record'
+  };
   const handleForm = async (values, id, { setSubmitting }) => {
     setSubmitting(true);
     const formData = new FormData();
@@ -463,6 +472,7 @@ function DesignationComponent() {
               isLoading={isLoading}
               reset={reset}
               setReset={setReset}
+              exportDataKeys={exportDataKeys}
             />
           )}
         </div>

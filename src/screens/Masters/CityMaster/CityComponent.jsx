@@ -323,6 +323,18 @@ function CityComponent() {
       alphaNumeric: true
     }
   ];
+  const exportDataKeys = {
+    city: 'City',
+    state: 'State',
+    country: 'Country',
+    remark: 'Remark',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'City Master Record'
+  };
 
   const validationSchema = CustomValidation(fields);
 
@@ -500,6 +512,7 @@ function CityComponent() {
             isLoading={isLoading}
             reset={reset}
             setReset={setReset}
+            exportDataKeys={exportDataKeys}
           />
         )}
       </div>

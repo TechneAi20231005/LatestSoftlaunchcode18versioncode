@@ -188,6 +188,17 @@ function DepartmentComponent() {
     }
   ];
 
+  const exportDataKeys = {
+    department: 'Department',
+    remark: 'Remark',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Department Master Record'
+  };
+
   const validationSchema = CustomValidation(fields);
 
   const initialValues = {
@@ -293,6 +304,7 @@ function DepartmentComponent() {
             isLoading={isLoading}
             reset={reset}
             setReset={setReset}
+            exportDataKeys={exportDataKeys}
           />
         )}
       </div>

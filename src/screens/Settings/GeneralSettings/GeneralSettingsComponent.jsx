@@ -407,6 +407,7 @@ function GeneralSettings() {
           data={filteredData}
           reset={reset}
           setReset={setReset}
+          isExportData={false}
         />
       </div>
 

@@ -141,6 +141,7 @@ function SubModuleComponent() {
     },
     {
       accessorKey: 'created_by',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By',
       size: 180
     },
@@ -162,6 +163,20 @@ function SubModuleComponent() {
       size: 185
     }
   ];
+
+  const exportDataKeys = {
+    sub_module_name: 'Sub Module Name',
+    module_name: 'Module Name',
+    project_name: 'Project Name',
+    description: 'Description',
+    remark: 'Remark',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Submodule Master Record'
+  };
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
@@ -277,7 +292,12 @@ function SubModuleComponent() {
       />
 
       <div className="mt-2">
-        <MaterialTable columns={columns} data={data} isLoading={isLoading} />
+        <MaterialTable
+          columns={columns}
+          data={data}
+          isLoading={isLoading}
+          exportDataKeys={exportDataKeys}
+        />
       </div>
     </div>
   );

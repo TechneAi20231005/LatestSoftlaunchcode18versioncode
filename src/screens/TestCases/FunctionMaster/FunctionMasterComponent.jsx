@@ -121,34 +121,26 @@ function FunctionMasterComponent() {
     {
       accessorKey: 'created_by',
       header: 'Created By',
-      accessorFn: (originalRow) =>
-        originalRow?.updated_by?.first_name?.trim() +
-        originalRow?.updated_by?.last_name?.trim()
-          ? originalRow?.updated_by?.first_name?.trim() +
-            ' ' +
-            originalRow?.updated_by?.last_name?.trim()
-          : '--',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       size: 180
     },
 
     {
       header: 'Updated At',
-      accessorFn: (row) => row.updated_at || '--',
+      accessorFn: (row) => row?.updated_at?.trim() || '--',
       enableSorting: false,
       width: '175px'
     },
 
     {
       id: 'updated_by',
-      accessorFn: (originalRow) =>
-        originalRow?.updated_by?.first_name?.trim() +
-          originalRow?.updated_by?.last_name?.trim() || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 185
     }
   ];
 
-  /* const transformDataForExport = (data) => {
+  const transformDataForExport = (data) => {
     return data.map((row) => ({
       ...row,
       created_by:
@@ -165,16 +157,7 @@ function FunctionMasterComponent() {
   };
 
   const transformedData = transformDataForExport(filteredFunctionMasterList);
-  const exportColumns = [
-    { title: 'Function Title', field: 'function_name' },
-    { title: 'Status', field: 'status' },
 
-    { title: 'Created At', field: 'created_at' },
-    { title: 'Created By', field: 'created_by' },
-    { title: 'Updated At', field: 'updated_at' },
-    { title: 'Updated By', field: 'updated_by' }
-  ];
- */
   const clearFilters = () => {
     setReset(true);
   };
@@ -190,6 +173,17 @@ function FunctionMasterComponent() {
   useEffect(() => {
     handleSearch();
   }, [searchValue]);
+
+  const exportDataKeys = {
+    function_name: 'Function Title',
+    remark: 'Remark',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Function Master Record'
+  };
 
   return (
     <div className="container-xxl">
@@ -215,11 +209,12 @@ function FunctionMasterComponent() {
       {filteredFunctionMasterList && (
         <div className="card mt-2">
           <MaterialTable
-            data={filteredFunctionMasterList}
+            data={transformedData}
             columns={columns}
             setReset={setReset}
             reset={reset}
             isLoading={isLoading?.getFunctionMasterList}
+            exportDataKeys={exportDataKeys}
           />
         </div>
       )}
