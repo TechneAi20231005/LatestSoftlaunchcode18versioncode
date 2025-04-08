@@ -512,6 +512,19 @@ export const DashbordSlice = createSlice({
           const lastName = employeeData[i].last_name || '';
           employeeData[i].name =
             `${firstName} ${middleName} ${lastName}`.trim();
+
+          employeeData[i]['Ticket_Show_Type'] = employeeData[i].department
+            ?.map((d) => d.ticket_show_type)
+            ?.join(',');
+
+          employeeData[i]['Ticket_Passing_Authority'] = employeeData[
+            i
+          ].department
+            ?.map((d) => (d.ticket_passing_authority ? 'Yes' : 'No'))
+            ?.join(',');
+          employeeData[i]['Make_Default'] = employeeData[i].department
+            ?.map((d) => (d.is_default ? 'Yes' : 'No'))
+            ?.join(',');
         }
 
         state.employeeData = [...employeeData];

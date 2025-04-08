@@ -199,6 +199,25 @@ export default function CustomerMappingComponent() {
     }
   ];
 
+  const exportDataKeys = {
+    query_type_name: 'Query',
+    template_name: 'Template',
+    dynamic_form_name: 'Dynamic Form Name',
+    department_name: 'Department',
+    priority: 'priority',
+    approach: 'approach',
+    remark: 'remark',
+    'Customer Type Name': 'Customer Type Name',
+    'Assign User': 'Assign User',
+    'Confirmation Required': 'Confirmation Required',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Customer Mapping Master Record'
+  };
+
   useEffect(() => {
     dispatch(getCustomerMappingData());
     dispatch(exportCustomerMappingData());
@@ -256,6 +275,7 @@ export default function CustomerMappingComponent() {
       <div className="card mt-2">
         {data && (
           <MaterialTable
+            exportDataKeys={exportDataKeys}
             isLoading={isLoading}
             data={filteredData}
             columns={columns}

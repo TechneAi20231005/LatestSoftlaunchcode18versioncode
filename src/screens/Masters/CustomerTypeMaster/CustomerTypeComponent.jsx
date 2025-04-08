@@ -180,6 +180,16 @@ function CustomerTypeComponent() {
     }
   ];
 
+  const exportDataKeys = {
+    type_name: 'Customer Type Name',
+    is_active: 'Status',
+    remark: 'Remark',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Customer Type Record'
+  };
   const loadData = async () => {
     // setShowLoaderModal(null);
   };
@@ -327,6 +337,7 @@ function CustomerTypeComponent() {
       <div className="card mt-2">
         {customerData && (
           <MaterialTable
+            exportDataKeys={exportDataKeys}
             isLoading={isLoading}
             data={filteredData}
             columns={columns}

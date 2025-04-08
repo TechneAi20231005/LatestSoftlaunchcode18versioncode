@@ -244,6 +244,16 @@ function StatusComponent() {
     handleSearch();
   }, [searchTerm, handleSearch]);
 
+  const exportDataKeys = {
+    status: 'Status Name',
+    is_active: 'Status',
+    remark: 'Remark',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Status Master Record'
+  };
   return (
     <div className="container-xxl">
       <PageHeader
@@ -287,6 +297,7 @@ function StatusComponent() {
       <div className="card mt-2">
         {statusData && (
           <MaterialTable
+            exportDataKeys={exportDataKeys}
             isLoading={isLoading}
             data={filteredData}
             columns={columns}
