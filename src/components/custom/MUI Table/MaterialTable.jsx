@@ -126,7 +126,6 @@ function MaterialTable({
 
   const globalFilterToggler = () => {
     if (showGlobalFilter) {
-      setGlobalFilter([]);
       setShowGlobalFilter(false);
     } else {
       setShowGlobalFilter(true);
