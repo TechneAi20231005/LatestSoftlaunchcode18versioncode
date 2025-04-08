@@ -39,7 +39,8 @@ function MaterialTable({
   enableColumnFilter = true,
   reset = false,
   exportDataKeys,
-  setReset = () => {}
+  setReset = () => {},
+  isExportData = true
 }) {
   const [columnFilters, setColumnFilters] = useState([]);
   const [sorting, setSorting] = useState([]);
@@ -123,6 +124,10 @@ function MaterialTable({
     setExpandColumn(!expandColumn);
   };
 
+  const globalFilterToggler = () => {
+    setShowGlobalFilter(showGlobalFilter ? false : true);
+  };
+
   const resetFilters = () => {
     setColumnFilters([]);
     setSorting([]);
@@ -168,7 +173,7 @@ function MaterialTable({
       }
       return col;
     });
-  }, [expandColumn]);
+  }, [expandColumn, columns]);
 
   return (
     <Box
@@ -261,7 +266,11 @@ function MaterialTable({
                 marginY: 'auto'
               }}
             >
-              <MRT_ToggleGlobalFilterButton table={table} />
+              <MRT_ToggleGlobalFilterButton
+                table={table}
+                onClick={globalFilterToggler}
+                disabled={false}
+              />
               <Tooltip title="Clear Filters" arrow>
                 <IconButton
                   disabled={
