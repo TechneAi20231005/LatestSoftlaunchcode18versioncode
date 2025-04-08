@@ -124,6 +124,15 @@ function MaterialTable({
     setExpandColumn(!expandColumn);
   };
 
+  const globalFilterToggler = () => {
+    if (showGlobalFilter) {
+      setGlobalFilter([]);
+      setShowGlobalFilter(false);
+    } else {
+      setShowGlobalFilter(true);
+    }
+  };
+
   const resetFilters = () => {
     setColumnFilters([]);
     setSorting([]);
@@ -262,7 +271,11 @@ function MaterialTable({
                 marginY: 'auto'
               }}
             >
-              <MRT_ToggleGlobalFilterButton table={table} disabled={false} />
+              <MRT_ToggleGlobalFilterButton
+                table={table}
+                onClick={globalFilterToggler}
+                disabled={false}
+              />
               <Tooltip title="Clear Filters" arrow>
                 <IconButton
                   disabled={
