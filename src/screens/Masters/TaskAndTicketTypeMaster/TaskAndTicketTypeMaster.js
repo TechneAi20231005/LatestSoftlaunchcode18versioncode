@@ -132,11 +132,11 @@ const CustomMenuList = ({ options, onSelect }) => {
 
   const filterOptions = (options, term) => {
     return options.filter((option) => {
-      const lowerCaseTerm = term.toLowerCase();
-      const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+      const lowerCaseTerm = term?.toLowerCase();
+      const matchLabel = option?.label?.toLowerCase()?.includes(lowerCaseTerm);
       const matchChildOptions =
-        option.options && option.options.length > 0
-          ? filterOptions(option.options, term).length > 0
+        option?.options && option?.options?.length > 0
+          ? filterOptions(option?.options, term)?.length > 0
           : false;
 
       return matchLabel || matchChildOptions;

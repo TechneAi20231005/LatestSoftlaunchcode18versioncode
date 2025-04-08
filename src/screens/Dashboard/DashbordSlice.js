@@ -823,7 +823,6 @@ export const DashbordSlice = createSlice({
       if (payload?.data?.status === 1) {
         state.status = 'succeded';
         state.notify = null;
-        // state.notify = { type: 'success', message: payload.data.message };
         toast.success(payload.data.message, {
           position: 'top-right'
         });
@@ -831,7 +830,6 @@ export const DashbordSlice = createSlice({
         state.modal = modal;
       } else {
         state.notify = null;
-        // state.notify = { type: 'danger', message: payload.data.message };
         toast.error(payload.data.message, {
           position: 'top-right'
         });
