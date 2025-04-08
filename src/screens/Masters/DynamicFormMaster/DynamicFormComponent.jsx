@@ -154,6 +154,16 @@ function DynamicFormComponent() {
   //   }
   // ];
 
+  const exportDataKeys = {
+    template_name: 'Form Name',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Dynamic Form Master'
+  };
+
   const columns = [
     {
       accessorKey: 'action', // Use a valid key
@@ -322,11 +332,13 @@ function DynamicFormComponent() {
             highlightOnHover={true}
           />
         )} */}
+
         {data && (
           <MaterialTable
             isLoading={isLoading}
             columns={columns}
             data={filteredData}
+            exportDataKeys={exportDataKeys}
           ></MaterialTable>
         )}
       </div>

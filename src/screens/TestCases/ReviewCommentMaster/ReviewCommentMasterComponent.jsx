@@ -245,6 +245,16 @@ function ReviewCommentMasterComponent() {
     }
   ];
 
+  const exportDataKeys = {
+    reviewer_comment: 'Reviewer Comment Title',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Reviewer Comment Master'
+  };
+
   const transformDataForExport = (data) => {
     return data.map((row) => ({
       ...row,
@@ -368,6 +378,7 @@ function ReviewCommentMasterComponent() {
             isLoading={isLoading?.filteredReviewCommentMasterList}
             reset={reset}
             setReset={setReset}
+            exportDataKeys={exportDataKeys}
           ></MaterialTable>
         )}
         <AddEditReviewCommentMaster
