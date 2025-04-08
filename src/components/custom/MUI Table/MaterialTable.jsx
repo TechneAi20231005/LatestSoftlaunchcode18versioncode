@@ -262,7 +262,7 @@ function MaterialTable({
                 marginY: 'auto'
               }}
             >
-              <MRT_ToggleGlobalFilterButton table={table} />
+              <MRT_ToggleGlobalFilterButton table={table} disabled={false} />
               <Tooltip title="Clear Filters" arrow>
                 <IconButton
                   disabled={
