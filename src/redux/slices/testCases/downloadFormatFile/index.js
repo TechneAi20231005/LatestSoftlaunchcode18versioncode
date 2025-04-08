@@ -104,7 +104,7 @@ const downloadFormatSlice = createSlice({
         state.getProjectModuleList = action?.payload?.data
           .filter((project) => project.is_active === 1)
           .map((project) => ({
-            value: project.id,
+            value: project.project_name,
             label: project.project_name
           }));
         state.successMsg.getProjectModuleList = action.payload;
@@ -125,7 +125,10 @@ const downloadFormatSlice = createSlice({
         );
         state.getModuleList = action?.payload?.data
           .filter((module) => module.is_active === 1)
-          .map((module) => ({ value: module.id, label: module.module_name }));
+          .map((module) => ({
+            value: module.module_name,
+            label: module.module_name
+          }));
 
         state.successMsg.getModuleList = action.payload;
       })
@@ -148,7 +151,7 @@ const downloadFormatSlice = createSlice({
         state.getSubModuleList = action?.payload?.data
           .filter((submodule) => submodule.is_active === 1)
           .map((submodule) => ({
-            value: submodule.id,
+            value: submodule.sub_module_name,
             label: submodule.sub_module_name
           }));
         state.successMsg.getSubModuleList = action?.payload;

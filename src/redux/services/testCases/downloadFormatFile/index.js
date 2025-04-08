@@ -62,22 +62,23 @@ export const getSubModuleMasterThunk = createAsyncThunk(
 );
 export const downloadFormatFileThunk = createAsyncThunk(
   'downloadFormatFile',
-  async ({ project_id, module_id, submodule_id, onSuccessHandler }) => {
+  async ({ project_name, module_name, submodule_name, onSuccessHandler }) => {
     try {
-      let endpoint = `draftFile/getTestdraftBulkFormat?project_id=${project_id}&module_id=${module_id}`;
+      let endpoint = `draftFile/getTestdraftBulkFormat?project_name=${project_name}&module_name=${module_name}`;
 
       // Append submodule_id parameters if they are provided
-      if (submodule_id && submodule_id.length >= 0) {
-        const submoduleQueryParam = submodule_id
-          .map((id) => `submodule_id[]=${id}`)
+      if (submodule_name && submodule_name.length >= 0) {
+        const submoduleQueryParam = submodule_name
+          .map((id) => `submodule_name[]=${id}`)
           .join('&');
         endpoint += `&${submoduleQueryParam}`;
       }
 
       const response = await customAxios.get(endpoint);
       if (response?.status === 200 || response?.status === 201) {
-        window.open(`${_apiUrl}${endpoint}`, '_parent').focus();
-        toast.success('File Downloaded Successfully');
+        return false;
+        // window.open(`${_apiUrl}${endpoint}`, '_parent').focus();
+        // toast.success('File Downloaded Successfully');
         // if (response?.data?.status === 1) {
         //   onSuccessHandler();
         //   toast.success(response?.data?.message);
