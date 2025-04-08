@@ -32,7 +32,7 @@ function MaterialTable({
   enableStickyHeader = true,
   enableGrouping = true,
   enableFullScreenToggle = true,
-  isExportData = true,
+  // isExportData = true,
   enableColumnResizing = true,
   enableColumnOrdering = true,
   enableFacetedValues = true,
@@ -82,13 +82,16 @@ function MaterialTable({
         const eachRow = exportData[i]?.original;
         for (let key in exportDataKeys) {
           payload['Sr no'] = i + 1;
+          console.log('eachRow[key]', eachRow[key]);
           if (eachRow[key]) {
             if (key === 'is_active') {
               payload[exportDataKeys[key]] =
-                eachRow[key] == 1 ? 'Active' : 'Inactive';
+                eachRow[key] == 1 ? 'Active' : 'Deactive';
             } else {
-              payload[exportDataKeys[key]] = eachRow[key];
+              payload[exportDataKeys[key]] = eachRow[key] || '--';
             }
+          } else {
+            payload[exportDataKeys[key]] = '--';
           }
         }
         dataToExport.push(payload);

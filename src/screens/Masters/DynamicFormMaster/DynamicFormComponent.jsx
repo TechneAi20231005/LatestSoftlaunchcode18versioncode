@@ -259,7 +259,7 @@ function DynamicFormComponent() {
   useEffect(() => {
     // loadData();
     dispatch(dynamicFormData());
-    dispatch(dynamicFormData());
+    // dispatch(dynamicFormData());
     if (location && location.state) {
       // setNotify(location.state.alert);
     }

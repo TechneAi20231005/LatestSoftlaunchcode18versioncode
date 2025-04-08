@@ -46,8 +46,6 @@ export const DynamicFormDropDownSlice = createSlice({
     });
     builder.addCase(dynamicFormDropDownData.fulfilled, (state, action) => {
       const { payload } = action;
-      state.isLoading.dyanamicFormList = false;
-
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.status = 'succeded';
         let counter = 1;
@@ -82,6 +80,7 @@ export const DynamicFormDropDownSlice = createSlice({
           });
         }
         state.exportDynamicFormData = exportDynamicFormData;
+        state.isLoading.dyanamicFormList = false;
       }
     });
     builder.addCase(dynamicFormDropDownData.rejected, (state) => {
@@ -95,7 +94,7 @@ export const DynamicFormDropDownSlice = createSlice({
     });
     builder.addCase(dynamicFormData.fulfilled, (state, action) => {
       const { payload } = action;
-      state.isLoading.dyanamicFormList = false;
+      // state.isLoading.dyanamicFormList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         state.status = 'succeded';
@@ -129,6 +128,7 @@ export const DynamicFormDropDownSlice = createSlice({
           });
         }
         state.getDynamicFormData = getDynamicFormData;
+        state.isLoading.dyanamicFormList = false;
       }
     });
     builder.addCase(dynamicFormData.rejected, (state) => {
