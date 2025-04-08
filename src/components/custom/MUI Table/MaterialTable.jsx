@@ -82,7 +82,6 @@ function MaterialTable({
         const eachRow = exportData[i]?.original;
         for (let key in exportDataKeys) {
           payload['Sr no'] = i + 1;
-          console.log('eachRow[key]', eachRow[key]);
           if (key.toLowerCase() !== 'filename') {
             if (eachRow[key]) {
               if (key === 'is_active') {
