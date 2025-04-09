@@ -12,7 +12,7 @@ const UnPassModal = ({
   setRowSelection = () => {},
 }) => {
 
-  console.log("hello from unpass modal")
+  console.log("hello from unpass modal", remarkModal)
 
   const handlePassTicketForm = async (e) => {
     try{
@@ -83,8 +83,8 @@ const UnPassModal = ({
                     className="form-control form-control-sm"
                     value={
                       Array.isArray(remarkModal.modalData)
-                        ? remarkModal.modalData.join(', ')
-                        : remarkModal.modalData?.id
+                        ? remarkModal?.modalData?.join(', ')
+                        : remarkModal.modalData?.ticket_id
                     }
                       readOnly={
                       remarkModal?.modalData?.length <= 0 ? false : true

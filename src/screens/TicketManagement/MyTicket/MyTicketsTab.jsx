@@ -10,6 +10,7 @@ import MyTicketService from '../../../services/TicketService/MyTicketService';
 import ReportService from '../../../services/ReportService/ReportService';
 import { useDebounce } from '../../../hooks/useDebounce';
 import moment from 'moment/moment';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 
 const MyTicketsTab = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -218,6 +219,10 @@ const MyTicketsTab = () => {
   return (
     <Box mt={1}>
       <Tabs
+        sx={{
+          '& .MuiTabs-indicator': { backgroundColor: '#484c7f' },
+          '& .MuiTab-root.Mui-selected': { color: '#484c7f' }
+        }}
         value={activeTab}
         onChange={handleTabChange}
         textColor="secondary"
@@ -225,7 +230,16 @@ const MyTicketsTab = () => {
         aria-label="ticket tabs"
       >
         {tabList?.map((tab) => (
-          <Tab key={tab.id} value={tab.name} label={tab.label} />
+          <Tab
+            icon={
+              <AssignmentTurnedInIcon
+                sx={{ color: activeTab === tab.name ? '#198754' : 'inherit' }}
+              />
+            }
+            key={tab.id}
+            value={tab.name}
+            label={tab.label}
+          />
         ))}
       </Tabs>
 

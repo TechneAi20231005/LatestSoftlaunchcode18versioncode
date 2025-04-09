@@ -1,12 +1,13 @@
-import React from 'react';
+import React, {useState} from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { RenderIf } from '../../../utils';
 import { _base } from '../../../settings/constants';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, MenuItem, Button } from '@mui/material';
+import UnPassModal from './UnPassModal';
 
-const MyTicketDropdown = React.memo(({ type, data }) => {
+const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilters }) => {
   // Edit Button
   const currentUser = localStorage.getItem('id');
   const ticketCreatedBy = Number(data.created_by?.id) === currentUser;
@@ -28,6 +29,16 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
    const handleClosed = () => {
      setAnchorEl(null);
    };
+
+   const handleRemarkModal = (data) => {
+    setRemarkModal(data);
+  };
+
+     const [remarkModal, setRemarkModal] = useState({
+       showModal: false,
+       modalData: '',
+       modalHeader: ''
+     });
 
   const menuBtns = [
     {
@@ -71,6 +82,8 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
         } else if (type === 'DepartmentWise') {
           return false;
         } else if (type === 'CreatedByMe') {
+          return true;
+        }else if (type === 'UnPassed') {
           return true;
         }
       }
@@ -150,7 +163,38 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
           return true;
         }
       }
+    },
+     {
+      id: 5,
+      label: 'Pass',
+     className:"btn btn-success text-white",
+      redirectLink: '' ,
+      icon: <i className="icofont-checked"></i>,
+      type: type,
+      isModal: true,
+      status: 'PASS',
+      conditions: (type) => {
+        if(type === "UnPassed"){
+          return true;
+      }else return false;
     }
+    },
+    {
+      id: 5,
+      label: 'Reject',
+     className:"btn btn-danger  text-white",
+      redirectLink: '',
+      icon:   <i className="icofont-close-squared-alt"></i>,
+      type: type,
+      status: 'Reject',
+      isModal: true,
+      conditions: (type) => {
+        if(type === "UnPassed"){
+          return true;
+      }else return false;
+    }
+    },
+
   ];
 
   return (
@@ -179,7 +223,23 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
         {menuBtns.map((menuBtn, idx) => (
           menuBtn.conditions(menuBtn.type) && (
             <MenuItem key={idx} onClick={handleClosed}>
-              <Link
+              {
+                menuBtn.isModal ?
+                <button
+                  className={menuBtn.className}
+                  style={{ width: '100%', }}
+                  onClick={() =>
+                    handleRemarkModal({
+                      showModal: true,
+                      modalData: data,
+                      modalHeader: 'Enter Remark',
+                      status: menuBtn.status
+                    })
+                  }
+                >
+                  {menuBtn.icon} {menuBtn.label}
+                </button> :
+                <Link
                 to={menuBtn.redirectLink}
                 className={menuBtn.className}
                 style={{  width: '100%' }}
@@ -187,10 +247,23 @@ const MyTicketDropdown = React.memo(({ type, data }) => {
                 {menuBtn.icon}
                 {menuBtn.label}
               </Link>
+              }
             </MenuItem>
           )
         ))}
       </Menu>
+
+      {
+              remarkModal.showModal && <UnPassModal
+              remarkModal={remarkModal}
+              handleRemarkModal={handleRemarkModal}
+              setPagination={setPagination}
+              setColumnFilters={setColumnFilters}
+              // setPagination={setPagination}
+              // setColumnFilters={setColumnFilters}
+              // setRowSelection={setRowSelection}
+            />
+            }
       {/* <Dropdown className="d-inline-flex m-1">
         <Dropdown.Toggle
           as="button"

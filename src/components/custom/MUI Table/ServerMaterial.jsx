@@ -95,6 +95,7 @@ function ServerMaterial({
       setGlobalFilter([]);
       setShowGlobalFilter(false);
       setShowColumnFilters(false)
+      setRowSelection({});
       setReset(false);
       setExpandColumn(false);
     }
@@ -104,7 +105,7 @@ function ServerMaterial({
     setRemarkModal(data);
   };
 
-  // console.log(totalRows,"totalRows");
+  console.log(rowSelection,"setRowSelection");
 
   return (
     <>
@@ -139,7 +140,10 @@ function ServerMaterial({
             manualFiltering={manualFiltering}
             enableColumnOrdering={enableColumnOrdering}
             onGroupingChange={setGroupBy}
-            onColumnFiltersChange={setColumnFilters}
+            onColumnFiltersChange={(data) => {
+              setPagination({ pageIndex: 0, pageSize: 10 });
+              setColumnFilters(data);
+            }}
             enableFacetedValues={enableFacetedValues}
             filterSelectOptions={filterSelectOptions}
             enableRowSelection={enableRowSelection}
@@ -159,7 +163,9 @@ function ServerMaterial({
                 lineHeight: '1.5rem'
               }
             }}
-            getRowId={(originalRow) => originalRow.ticket_id}
+            getRowId={(originalRow) => originalRow?.ticket_id}
+            // getSubRows={(originalRow) => console.log(originalRow, 'originalRow')}
+            getSelectedRowModel={(row) => console.log(row, 'originalRow')}
             onGlobalFilterChange={setGlobalFilter}
             muiTableHeadCellProps={({ column }) => ({
               onClick: (event) => {

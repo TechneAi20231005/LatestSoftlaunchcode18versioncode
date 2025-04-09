@@ -28,7 +28,7 @@ const DataTableCustom = React.memo(
         accessorKey: 'action',
         header: 'Action',
         size: 120,
-        Cell: ({ row }) => <MyTicketDropdown type={type} data={row.original} />,
+        Cell: ({ row }) => <MyTicketDropdown setColumnFilters={setColumnFilters} setPagination={setPagination} type={type} data={row.original} />,
         enableColumnOrdering: false,
         enableGrouping: false,
         enableSorting: false,
