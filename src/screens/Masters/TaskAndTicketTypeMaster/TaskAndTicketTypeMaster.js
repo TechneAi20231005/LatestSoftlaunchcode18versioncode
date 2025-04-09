@@ -132,11 +132,11 @@ const CustomMenuList = ({ options, onSelect }) => {
 
   const filterOptions = (options, term) => {
     return options.filter((option) => {
-      const lowerCaseTerm = term.toLowerCase();
-      const matchLabel = option.label.toLowerCase().includes(lowerCaseTerm);
+      const lowerCaseTerm = term?.toLowerCase();
+      const matchLabel = option?.label?.toLowerCase()?.includes(lowerCaseTerm);
       const matchChildOptions =
-        option.options && option.options.length > 0
-          ? filterOptions(option.options, term).length > 0
+        option?.options && option?.options?.length > 0
+          ? filterOptions(option?.options, term)?.length > 0
           : false;
 
       return matchLabel || matchChildOptions;
@@ -937,6 +937,19 @@ function TaskAndTicketTypeMaster(props) {
     }
   ];
 
+  const exportDataKeys = {
+    type: 'Type',
+    parent_name: 'Parent Name',
+    type_name: 'Type Name',
+    remark: 'Remark',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Task And Ticket Type Master'
+  };
+
   const handleButtonClick = (e) => {
     setModal({ showModal: false });
   };
@@ -1534,6 +1547,7 @@ function TaskAndTicketTypeMaster(props) {
             data={filteredData}
             reset={reset}
             setReset={setReset}
+            exportDataKeys={exportDataKeys}
           ></MaterialTable>
         )}
       </div>

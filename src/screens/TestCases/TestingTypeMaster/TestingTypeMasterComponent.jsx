@@ -250,6 +250,16 @@ function TestingTypeMasterComponent() {
       header: 'Updated By'
     }
   ];
+
+  const exportDataKeys = {
+    type_name: 'Testing Type Title',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Testing Type Master'
+  };
   const transformDataForExport = (data) => {
     return data.map((row) => ({
       ...row,
@@ -372,6 +382,7 @@ function TestingTypeMasterComponent() {
             isLoading={isLoading?.filteredTestingTypeMasterList}
             reset={reset}
             setReset={setReset}
+            exportDataKeys={exportDataKeys}
           ></MaterialTable>
         )}
         <AddTestingTypeModal

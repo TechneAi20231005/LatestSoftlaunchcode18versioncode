@@ -512,6 +512,19 @@ export const DashbordSlice = createSlice({
           const lastName = employeeData[i].last_name || '';
           employeeData[i].name =
             `${firstName} ${middleName} ${lastName}`.trim();
+
+          employeeData[i]['Ticket_Show_Type'] = employeeData[i].department
+            ?.map((d) => d.ticket_show_type)
+            ?.join(',');
+
+          employeeData[i]['Ticket_Passing_Authority'] = employeeData[
+            i
+          ].department
+            ?.map((d) => (d.ticket_passing_authority ? 'Yes' : 'No'))
+            ?.join(',');
+          employeeData[i]['Make_Default'] = employeeData[i].department
+            ?.map((d) => (d.is_default ? 'Yes' : 'No'))
+            ?.join(',');
         }
 
         state.employeeData = [...employeeData];
@@ -823,7 +836,6 @@ export const DashbordSlice = createSlice({
       if (payload?.data?.status === 1) {
         state.status = 'succeded';
         state.notify = null;
-        // state.notify = { type: 'success', message: payload.data.message };
         toast.success(payload.data.message, {
           position: 'top-right'
         });
@@ -831,7 +843,6 @@ export const DashbordSlice = createSlice({
         state.modal = modal;
       } else {
         state.notify = null;
-        // state.notify = { type: 'danger', message: payload.data.message };
         toast.error(payload.data.message, {
           position: 'top-right'
         });

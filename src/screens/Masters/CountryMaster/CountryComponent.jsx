@@ -65,6 +65,16 @@ function CountryComponent() {
     setSearchTerm('');
     setFilteredData(countryData);
   };
+  const exportDataKeys = {
+    country: 'Country',
+    is_active: 'Status',
+    remark: 'Remark',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Country Master Record'
+  };
 
   const columns = [
     {
@@ -294,6 +304,7 @@ function CountryComponent() {
       <div className="mt-2">
         {countryData && (
           <MaterialTable
+            exportDataKeys={exportDataKeys}
             columns={columns}
             data={filteredData}
             isLoading={isLoading}

@@ -148,9 +148,7 @@ function JobRoleMasterComponent() {
     {
       accessorKey: 'counter',
       header: 'Sr',
-      // cell: (row, index) => {
-      //   return row?.index + 1;
-      // },
+
       size: 70,
       enableColumnOrdering: false,
       enableGrouping: false,
@@ -212,6 +210,16 @@ function JobRoleMasterComponent() {
       header: 'Updated By'
     }
   ];
+
+  const exportDataKeys = {
+    job_role: 'job Role',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Job Role Master'
+  };
   const transformDataForExport = (data) => {
     return data.map((row) => ({
       jobRole: row.job_role || '--',
@@ -327,6 +335,7 @@ function JobRoleMasterComponent() {
             isLoading={isLoading?.getJobRoleMasterList}
             reset={reset}
             setReset={setReset}
+            exportDataKeys={exportDataKeys}
           ></MaterialTable>
         )}
       </div>

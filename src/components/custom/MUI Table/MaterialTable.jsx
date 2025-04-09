@@ -32,6 +32,7 @@ function MaterialTable({
   enableStickyHeader = true,
   enableGrouping = true,
   enableFullScreenToggle = true,
+  // isExportData = true,
   enableColumnResizing = true,
   enableColumnOrdering = true,
   enableFacetedValues = true,
@@ -81,12 +82,16 @@ function MaterialTable({
         const eachRow = exportData[i]?.original;
         for (let key in exportDataKeys) {
           payload['Sr no'] = i + 1;
-          if (eachRow[key]) {
-            if (key === 'is_active') {
-              payload[exportDataKeys[key]] =
-                eachRow[key] == 1 ? 'Active' : 'Inactive';
+          if (key.toLowerCase() !== 'filename') {
+            if (eachRow[key]) {
+              if (key === 'is_active') {
+                payload[exportDataKeys[key]] =
+                  eachRow[key] == 1 ? 'Active' : 'Deactive';
+              } else {
+                payload[exportDataKeys[key]] = eachRow[key] || '--';
+              }
             } else {
-              payload[exportDataKeys[key]] = eachRow[key];
+              payload[exportDataKeys[key]] = '--';
             }
           }
         }
@@ -208,6 +213,7 @@ function MaterialTable({
             noResultsFound: <NotFound topMargin={0} />
           }}
           enableStickyHeader={enableStickyHeader}
+          isExportData={isExportData}
           enableGrouping={enableGrouping}
           enableFullScreenToggle={data?.length > 0}
           enableColumnResizing={enableColumnResizing}
@@ -327,26 +333,28 @@ function MaterialTable({
                   sm: { width: 'fit-content' }
                 }}
               >
-                <Button
-                  className="text-primary"
-                  disabled={data.length === 0 || loading}
-                  onClick={() =>
-                    handleExportData(table.getFilteredRowModel()['rows'])
-                  }
-                  startIcon={
-                    completed ? (
-                      <CheckCircleIcon style={{ color: 'green' }} />
-                    ) : (
-                      <FileDownloadIcon />
-                    )
-                  }
-                >
-                  {completed
-                    ? 'Download Complete'
-                    : loading
-                    ? `Downloading... ${progress}%`
-                    : 'Export All Data'}
-                </Button>
+                {isExportData && (
+                  <Button
+                    className="text-primary"
+                    disabled={data.length === 0 || loading}
+                    onClick={() =>
+                      handleExportData(table.getFilteredRowModel()['rows'])
+                    }
+                    startIcon={
+                      completed ? (
+                        <CheckCircleIcon style={{ color: 'green' }} />
+                      ) : (
+                        <FileDownloadIcon />
+                      )
+                    }
+                  >
+                    {completed
+                      ? 'Download Complete'
+                      : loading
+                      ? `Downloading... ${progress}%`
+                      : 'Export All Data'}
+                  </Button>
+                )}
 
                 {loading && (
                   <LinearProgress
@@ -355,7 +363,6 @@ function MaterialTable({
                     style={{ marginTop: 10 }}
                   />
                 )}
-
                 {/* <Button
                   className="text-primary"
                   disabled={data?.length === 0}

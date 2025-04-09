@@ -144,6 +144,19 @@ function ModuleComponent() {
     }
   ];
 
+  const exportDataKeys = {
+    module_name: 'Module Name',
+    project_name: 'Project Name',
+    description: 'Description',
+    remark: 'Remark',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Module Master Record'
+  };
+
   const loadData = useCallback(async () => {
     setIsLoading(true);
 
@@ -269,6 +282,7 @@ function ModuleComponent() {
       <div className="mt-2">
         {data && (
           <MaterialTable
+            exportDataKeys={exportDataKeys}
             isLoading={isLoading}
             columns={columns}
             data={filteredData}
