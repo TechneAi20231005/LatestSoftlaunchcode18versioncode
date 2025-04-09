@@ -35,24 +35,24 @@ function ProjectComponent() {
   const [notify, setNotify] = useState('');
   const [data, setData] = useState([]);
   const [exportData, setExportData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   // const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
+  // const [filteredData, setFilteredData] = useState([]);
 
   //search function
 
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(data, searchTerm);
-    setFilteredData(filteredList);
-  }, [data, searchTerm]);
+  // const handleSearch = useCallback(() => {
+  //   const filteredList = customSearchHandler(data, searchTerm);
+  //   setFilteredData(filteredList);
+  // }, [data, searchTerm]);
 
   // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(data);
-  };
+  // const handleReset = () => {
+  //   setSearchTerm('');
+  //   setFilteredData(data);
+  // };
 
   //Data Table columns
   const columns = [
@@ -101,16 +101,6 @@ function ProjectComponent() {
       accessorFn: (originalRow) => originalRow?.description || '--',
       header: 'Description',
       size: 190
-
-      // Cell: ({ cell }) => {
-      //   return (
-      //     <div className="btn-group" role="group" aria-label="Project Name">
-      //       <OverlayTrigger overlay={<Tooltip>{cell.getValue()}</Tooltip>}>
-      //       <span>{cell.getValue()}</span>
-      //       </OverlayTrigger>
-      //     </div>
-      //   );
-      // }
     },
     {
       accessorKey: 'is_active',
@@ -147,7 +137,7 @@ function ProjectComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow?.created_by || '--',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By',
       size: 190
     },
@@ -162,7 +152,7 @@ function ProjectComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 190
     }
@@ -184,7 +174,6 @@ function ProjectComponent() {
   const loadData = useCallback(async () => {
     // setShowLoaderModal(null);
     // setShowLoaderModal(true);
-    setIsLoading(true);
     const data = [];
     await new ProjectService()
       .getProject()
@@ -211,7 +200,6 @@ function ProjectComponent() {
           }
           setData(null);
           setData(data);
-          setIsLoading(false);
 
           let exportData = [];
           let count = 1;
@@ -235,6 +223,9 @@ function ProjectComponent() {
       })
       .catch((error) => {
         errorHandler(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
 
     dispatch(getRoles());
@@ -254,13 +245,13 @@ function ProjectComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-  useEffect(() => {
-    setFilteredData(data);
-  }, [data]);
+  // useEffect(() => {
+  //   setFilteredData(data);
+  // }, [data]);
 
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
+  // useEffect(() => {
+  //   handleSearch();
+  // }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -301,7 +292,7 @@ function ProjectComponent() {
             exportDataKeys={exportDataKeys}
             isLoading={isLoading}
             columns={columns}
-            data={filteredData}
+            data={data}
           />
 
           // <DataTable

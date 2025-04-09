@@ -47,20 +47,20 @@ export default function CustomerMappingComponent() {
 
   // const [showLoaderModal, setShowLoaderModal] = useState(false);
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
+  // const [searchTerm, setSearchTerm] = useState('');
+  // const [filteredData, setFilteredData] = useState([]);
 
   //search function
 
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(data, searchTerm);
-    setFilteredData(filteredList);
-  }, [data, searchTerm]);
+  // const handleSearch = useCallback(() => {
+  //   const filteredList = customSearchHandler(data, searchTerm);
+  //   setFilteredData(filteredList);
+  // }, [data, searchTerm]);
   // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(data);
-  };
+  // const handleReset = () => {
+  //   setSearchTerm('');
+  //   setFilteredData(data);
+  // };
 
   const columns = [
     {
@@ -93,49 +93,57 @@ export default function CustomerMappingComponent() {
     {
       accessorFn: (originalRow) => originalRow.query_type_name || '--',
       header: 'Query',
-      size: 160,
+      size: 180,
       Cell: ({ row }) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.original?.query_type_name && (
-            <OverlayTrigger
-              overlay={<Tooltip>{row?.original?.query_type_name} </Tooltip>}
-            >
-              <Box>
-                <span className="ms-1">
-                  {' '}
-                  {row?.original?.query_type_name &&
-                  row?.original?.query_type_name.length < 15
-                    ? row?.original?.query_type_name
-                    : row?.original?.query_type_name.substring(0, 15) + '....'}
-                </span>
-              </Box>
-            </OverlayTrigger>
+        <>
+          {row?.original?.query_type_name ? (
+            <span className="ms-1">
+              {' '}
+              {row?.original?.query_type_name &&
+              row?.original?.query_type_name.length < 20
+                ? row?.original?.query_type_name
+                : row?.original?.query_type_name.substring(0, 20) + '....'}
+            </span>
+          ) : (
+            '--'
           )}
-        </div>
+        </>
       )
     },
     {
       accessorFn: (originalRow) => originalRow.template_name || '--',
       header: 'Template',
       size: 200,
-      Cell: ({ row }) => <Box>{row?.original?.template_name}</Box>
+      Cell: ({ row }) => (
+        <Box>
+          {row?.original?.template_name ? row?.original?.template_name : '--'}
+        </Box>
+      )
     },
     {
       accessorFn: (originalRow) => originalRow.dynamic_form_name || '--',
       header: 'Form',
       size: 180,
-      Cell: ({ row }) => <Box>{row?.original?.dynamic_form_name}</Box>
+      Cell: ({ row }) => (
+        <Box>
+          {row?.original?.dynamic_form_name
+            ? row?.original?.dynamic_form_name
+            : '--'}
+        </Box>
+      )
     },
 
     {
       accessorFn: (originalRow) => originalRow.department_name || '--',
       header: 'Department',
       size: 180,
-      Cell: ({ row }) => <Box>{row?.original?.department_name}</Box>
+      Cell: ({ row }) => (
+        <Box>
+          {row?.original?.department_name
+            ? row?.original?.department_name
+            : '--'}
+        </Box>
+      )
     },
     { accessorKey: 'priority', header: 'Priority', size: 180 },
     {
@@ -173,7 +181,7 @@ export default function CustomerMappingComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.created_by || '--',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By',
       size: 180
     },
@@ -187,7 +195,7 @@ export default function CustomerMappingComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 190
     }
@@ -226,12 +234,12 @@ export default function CustomerMappingComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
-  useEffect(() => {
-    setFilteredData(data);
-  }, [data]);
+  // useEffect(() => {
+  //   handleSearch();
+  // }, [searchTerm, handleSearch]);
+  // useEffect(() => {
+  //   setFilteredData(data);
+  // }, [data]);
 
   return (
     <div className="container-xxl">
@@ -271,7 +279,7 @@ export default function CustomerMappingComponent() {
           <MaterialTable
             exportDataKeys={exportDataKeys}
             isLoading={isLoading}
-            data={filteredData}
+            data={data}
             columns={columns}
           />
           // <DataTable

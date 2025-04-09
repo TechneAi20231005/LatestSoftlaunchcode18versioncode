@@ -57,7 +57,6 @@ export const CustomerMappingSlice = createSlice({
 
         let counter = 1;
         const data = payload.data.data;
-        console.log('dataaaaaaaaaaaaaaaaaaa', data);
         let customerMappingData = [];
         for (const key in data) {
           customerMappingData.push({

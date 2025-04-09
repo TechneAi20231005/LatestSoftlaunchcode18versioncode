@@ -15,10 +15,10 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getCustomerData, getRoles } from '../../Dashboard/DashboardAction';
 // import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 // import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
+// import { customSearchHandler } from '../../../utils/customFunction';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 import { Box } from '@mui/material';
-import moment from 'moment';
+// import moment from 'moment';
 
 function CustomerComponent() {
   //initial state
@@ -26,9 +26,7 @@ function CustomerComponent() {
   const dispatch = useDispatch();
   const location = useLocation();
   //redux state
-  const { getAllCustomerData, exportCustomerData } = useSelector(
-    (state) => state.dashboard
-  );
+  const { getAllCustomerData } = useSelector((state) => state.dashboard);
 
   const isLoading = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.isLoading.getCustomerList
@@ -39,17 +37,16 @@ function CustomerComponent() {
   );
 
   //local state
-  const [searchTerm, setSearchTerm] = useState('');
+  // const [searchTerm, setSearchTerm] = useState('');
   const [notify, setNotify] = useState(null);
 
-  const [filteredData, setFilteredData] = useState([]);
   //search function
 
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(getAllCustomerData, searchTerm);
+  // const handleSearch = useCallback(() => {
+  //   const filteredList = customSearchHandler(getAllCustomerData, searchTerm);
 
-    setFilteredData(filteredList);
-  }, [getAllCustomerData, searchTerm]);
+  //   setFilteredData(filteredList);
+  // }, [getAllCustomerData, searchTerm]);
 
   const exportDataKeys = {
     name: 'Customer Name',
@@ -69,10 +66,10 @@ function CustomerComponent() {
     fileName: 'Customer Master Record'
   };
   // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(getAllCustomerData);
-  };
+  // const handleReset = () => {
+  //   setSearchTerm('');
+  //   setFilteredData(getAllCustomerData);
+  // };
 
   const columns = [
     {
@@ -146,7 +143,7 @@ function CustomerComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.created_by || '--',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By',
       size: 190
     },
@@ -160,7 +157,7 @@ function CustomerComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 190
     }
@@ -178,7 +175,7 @@ function CustomerComponent() {
     return () => {
       setNotify(null);
     };
-  }, [checkRole.length, dispatch, location]);
+  }, [checkRole.length, location]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -186,13 +183,13 @@ function CustomerComponent() {
     }
   }, [checkRole]);
 
-  useEffect(() => {
-    setFilteredData(getAllCustomerData);
-  }, [getAllCustomerData]);
+  // useEffect(() => {
+  //   setFilteredData(getAllCustomerData);
+  // }, [getAllCustomerData]);
 
-  useEffect(() => {
-    handleSearch();
-  }, [handleSearch, searchTerm]);
+  // useEffect(() => {
+  //   handleSearch();
+  // }, [handleSearch, searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -233,7 +230,7 @@ function CustomerComponent() {
           <MaterialTable
             exportDataKeys={exportDataKeys}
             columns={columns}
-            data={filteredData}
+            data={getAllCustomerData}
             isLoading={isLoading}
           />
         )}

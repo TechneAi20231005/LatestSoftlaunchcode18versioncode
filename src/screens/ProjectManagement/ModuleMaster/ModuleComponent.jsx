@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import DataTable from 'react-data-table-component';
+// import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
 // import ErrorLogService from '../../../services/ErrorLogService';
 import ModuleService from '../../../services/ProjectManagementService/ModuleService';
@@ -8,9 +8,9 @@ import ManageMenuService from '../../../services/MenuManagementService/ManageMen
 import PageHeader from '../../../components/Common/PageHeader';
 // import Alert from '../../../components/Common/Alert';
 
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
+// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
+// import { customSearchHandler } from '../../../utils/customFunction';
 import { errorHandler } from '../../../utils';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 import { Box } from '@mui/material';
@@ -24,24 +24,24 @@ function ModuleComponent() {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState([]);
   const [exportData, setExportData] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [checkRole, setCheckRole] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
+  // const [filteredData, setFilteredData] = useState([]);
 
   //search function
 
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(data, searchTerm);
-    setFilteredData(filteredList);
-  }, [data, searchTerm]);
+  // const handleSearch = useCallback(() => {
+  //   const filteredList = customSearchHandler(data, searchTerm);
+  //   setFilteredData(filteredList);
+  // }, [data, searchTerm]);
 
   // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(data);
-  };
+  // const handleReset = () => {
+  //   setSearchTerm('');
+  //   setFilteredData(data);
+  // };
 
   //Data Table columns
 
@@ -124,7 +124,7 @@ function ModuleComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.created_by || '--',
+      accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
       header: 'Created By',
       size: 190
     },
@@ -138,7 +138,7 @@ function ModuleComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      accessorFn: (originalRow) => originalRow.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 190
     }
@@ -158,8 +158,6 @@ function ModuleComponent() {
   };
 
   const loadData = useCallback(async () => {
-    setIsLoading(true);
-
     const data = [];
     await new ModuleService()
       .getModule()
@@ -186,7 +184,6 @@ function ModuleComponent() {
 
           setData(null);
           setData(data);
-          setIsLoading(false);
 
           let exportData = [];
           for (const key in data) {
@@ -208,7 +205,8 @@ function ModuleComponent() {
       })
       .catch((error) => {
         errorHandler(error);
-      });
+      })
+      .finally(() => setIsLoading(false));
 
     await new ManageMenuService()
       .getRole(roleId)
@@ -239,13 +237,13 @@ function ModuleComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-  useEffect(() => {
-    setFilteredData(data);
-  }, [data]);
+  // useEffect(() => {
+  //   setFilteredData(data);
+  // }, [data]);
 
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
+  // useEffect(() => {
+  //   handleSearch();
+  // }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -285,7 +283,7 @@ function ModuleComponent() {
             exportDataKeys={exportDataKeys}
             isLoading={isLoading}
             columns={columns}
-            data={filteredData}
+            data={data}
           />
           // <DataTable
           //   columns={columns}

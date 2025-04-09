@@ -197,7 +197,7 @@ export default function DynamicFormDropdownComponent() {
         moment(cell.row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
     },
     {
-      accessorKey: 'created_by',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By'
     },
     {
@@ -205,7 +205,7 @@ export default function DynamicFormDropdownComponent() {
       header: 'Updated At'
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By'
     }
   ];
