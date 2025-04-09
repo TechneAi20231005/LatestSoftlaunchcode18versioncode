@@ -76,13 +76,19 @@ const MyTicketsTab = () => {
   ];
 
   const fetchDataList = async () => {
-    const fetchPromises = apiFetchData.map(item =>
-      fetchData(item.service, item.inputRequired, item.isLoading, item.setIsLoading, item.errorHandler, item.filterObj, item.name)
-        .then(res => item.setState({ ...res }))
+    const fetchPromises = apiFetchData.map((item) =>
+      fetchData(
+        item.service,
+        item.inputRequired,
+        item.isLoading,
+        item.setIsLoading,
+        item.errorHandler,
+        item.filterObj,
+        item.name
+      ).then((res) => item.setState({ ...res }))
     );
     await Promise.all(fetchPromises);
   };
-
 
   const tabList = useMemo(
     () => [
@@ -125,11 +131,27 @@ const MyTicketsTab = () => {
     const getData = async () => {
       if (isLoading) return;
       setIsLoading(true);
+      const fromDateRaw = columnFilters.find((f) => f.id === 'ticket_date')
+        ?.value?.[0];
+      const toDateRaw = columnFilters.find((f) => f.id === 'ticket_date')
+        ?.value?.[1];
 
-      const hasColumnFilters = columnFilters?.length > 0;
-      // const getFormattedDate = (date) => (date ? moment(date).format('YYYY-MM-DD') : '');
-      // const fromDateRaw = columnFilters.find((f) => f.id === 'ticket_date')?.value?.[0];
-      // const toDateRaw = columnFilters.find((f) => f.id === 'ticket_date')?.value?.[1];
+      const hasColumnFilters = columnFilters?.some((filter) => {
+        const value = filter?.value;
+
+        if (filter.id === 'ticket_date' && Array.isArray(value)) {
+          return value[0] || value[1];
+        }
+
+        if (Array.isArray(value)) {
+          return value.some((v) => v);
+        }
+
+        return !!value;
+      });
+
+      const getFormattedDate = (date) =>
+        date ? moment(date).format('YYYY-MM-DD') : '';
 
       const payload = hasColumnFilters
         ? {
@@ -144,8 +166,8 @@ const MyTicketsTab = () => {
             assign_to_user_id:
               columnFilters.find((filter) => filter.id === 'Assigned To')
                 ?.value || [],
-            // from_date: getFormattedDate(fromDateRaw),
-            // to_date: getFormattedDate(toDateRaw),
+            from_date: getFormattedDate(fromDateRaw),
+            to_date: getFormattedDate(toDateRaw),
             limit: pagination.pageSize,
             page: pagination.pageIndex + 1,
             typeOf: 'SearchResult'
@@ -190,9 +212,8 @@ const MyTicketsTab = () => {
     pagination.pageIndex,
     pagination.pageSize,
     columnFilters,
-    debouncedTicketId,
+    debouncedTicketId
   ]);
-
 
   return (
     <Box mt={1}>
@@ -204,7 +225,7 @@ const MyTicketsTab = () => {
         aria-label="ticket tabs"
       >
         {tabList?.map((tab) => (
-          <Tab  key={tab.id} value={tab.name} label={tab.label} />
+          <Tab key={tab.id} value={tab.name} label={tab.label} />
         ))}
       </Tabs>
 

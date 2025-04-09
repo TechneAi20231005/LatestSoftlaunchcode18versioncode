@@ -6,6 +6,7 @@ import { Button, LinearProgress } from '@mui/material';
 import FileDownloadIcon from '@mui/icons-material/FileDownload';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import ReportService from '../../../services/ReportService/ReportService';
+import moment from 'moment';
 
 export const ExportAllTicketsToExcel = ({
   fileName,
@@ -35,8 +36,28 @@ export const ExportAllTicketsToExcel = ({
 
     let dataToDownload = [];
 
+    const hasColumnFilters = columnFilters?.some((filter) => {
+      const value = filter?.value;
+
+      if (filter.id === 'ticket_date' && Array.isArray(value)) {
+        return value[0] || value[1];
+      }
+
+      if (Array.isArray(value)) {
+        return value.some((v) => v);
+      }
+
+      return !!value;
+    });
+
     try {
-      if (columnFilters && columnFilters.length > 0) {
+      if (hasColumnFilters) {
+        const fromDateRaw = columnFilters.find((f) => f.id === 'ticket_date')
+          ?.value?.[0];
+        const toDateRaw = columnFilters.find((f) => f.id === 'ticket_date')
+          ?.value?.[1];
+        const getFormattedDate = (date) =>
+          date ? moment(date).format('YYYY-MM-DD') : '';
         const payload = {
           department_id:
             columnFilters.find(
@@ -48,12 +69,8 @@ export const ExportAllTicketsToExcel = ({
             '',
           assign_to_user_id:
             columnFilters.find((f) => f.id === 'Assigned To')?.value || [],
-          // from_date:
-          //   columnFilters.find((filter) => filter.id === 'ticket_date')
-          //     ?.value?.[0] || '',
-          // to_date:
-          //   columnFilters.find((filter) => filter.id === 'ticket_date')
-          //     ?.value?.[1] || '',
+          from_date: getFormattedDate(fromDateRaw),
+          to_date: getFormattedDate(toDateRaw),
           export: 'export'
         };
 
