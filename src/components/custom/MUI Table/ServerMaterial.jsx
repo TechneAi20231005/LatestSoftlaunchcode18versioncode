@@ -56,6 +56,8 @@ function ServerMaterial({
 
   const [globalFilter, setGlobalFilter] = useState([]);
 
+    const [showColumnFilters, setShowColumnFilters] = useState(false);
+
   const [showGlobalFilter, setShowGlobalFilter] = useState(false);
 
   const [rowSelection, setRowSelection] = useState({});
@@ -92,6 +94,7 @@ function ServerMaterial({
       setGroupBy([]);
       setGlobalFilter([]);
       setShowGlobalFilter(false);
+      setShowColumnFilters(false)
       setReset(false);
       setExpandColumn(false);
     }
@@ -145,6 +148,7 @@ function ServerMaterial({
             onShowGlobalFilterChange={setShowGlobalFilter}
             onPaginationChange={setPagination}
             onRowSelectionChange={setRowSelection}
+            onShowColumnFiltersChange={setShowColumnFilters}
             enableRowNumbers={true}
             muiTableBodyCellProps={{
               onMouseOver: handleMouseHover,
@@ -172,6 +176,7 @@ function ServerMaterial({
               isLoading: isLoading,
               pagination,
               columnFilters,
+              showColumnFilters,
               grouping: groupBy,
               globalFilter,
               showGlobalFilter,
