@@ -223,11 +223,9 @@ function MaterialTable({
           muiTableBodyCellProps={{
             onMouseOver: handleMouseHover,
             style: {
-              display: '-webkit-box',
-              WebkitLineClamp: 0.5,
-              /*WebkitBoxOrient: 'vertical', */
+              whiteSpace: 'nowrap',
               overflow: 'hidden',
-              lineHeight: '1.5rem'
+              textOverflow: 'ellipsis'
             }
           }}
           render
