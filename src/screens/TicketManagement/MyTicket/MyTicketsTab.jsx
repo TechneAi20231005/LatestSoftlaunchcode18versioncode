@@ -14,7 +14,8 @@ import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 
 const MyTicketsTab = () => {
   const [isLoading, setIsLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('AssignToMe');
+  let user = localStorage.getItem('account_for') === 'SELF' ? true : false;
+  const [activeTab, setActiveTab] = useState( user ? 'AssignToMe' : 'CreatedByMe');
   const [allUsersData, setAllUsersData] = useState({});
   const [allDepartmentData, setAllDepartmentData] = useState({});
   const [allStatusData, setAllStatusData] = useState({});
@@ -28,13 +29,15 @@ const MyTicketsTab = () => {
   });
 
   const [totalRows, setTotalRows] = useState(0);
-  const [isFormSubmitted, setIsFormSubmitted] = useState(false);
+
+
+
 
   const [columnFilters, setColumnFilters] = useState([]);
 
   const [pagination, setPagination] = useState({
     pageIndex: 0,
-    pageSize: 10 //customize the default page size
+    pageSize: 10
   });
 
   const [reset, setReset] = useState(false);
@@ -93,23 +96,25 @@ const MyTicketsTab = () => {
 
   const tabList = useMemo(
     () => [
-      { id: 2, name: 'AssignToMe', label: 'Assign To Me', color: 'primary' },
+      { id: 2, name: 'AssignToMe', label: 'Assign To Me', color: 'primary', user: user },
       {
         id: 3,
         name: 'CreatedByMe',
         label: 'Created By Me',
-        color: 'secondary'
+        color: 'secondary',
+
       },
       {
         id: 4,
         name: 'DepartmentWise',
         label: 'Department Wise',
-        color: 'success'
+        color: 'success',
+        user: user
       },
-      { id: 5, name: 'YourTask', label: 'Your Task', color: 'error' },
+      { id: 5, name: 'YourTask', label: 'Your Task', color: 'error', user: user },
       { id: 6, name: 'UnPassed', label: 'UnPassed', color: 'warning' }
     ],
-    [allTicketsData, isFormSubmitted]
+    [allTicketsData, user]
   );
 
   const handleTabChange = async (event, newValue) => {
@@ -215,21 +220,21 @@ const MyTicketsTab = () => {
     columnFilters,
     debouncedTicketId
   ]);
-
+  const tabStyles = {
+    '& .MuiTabs-indicator': { backgroundColor: '#484c7f' },
+    '& .MuiTab-root.Mui-selected': { color: '#484c7f' }
+  };
   return (
     <Box mt={1}>
       <Tabs
-        sx={{
-          '& .MuiTabs-indicator': { backgroundColor: '#484c7f' },
-          '& .MuiTab-root.Mui-selected': { color: '#484c7f' }
-        }}
+        sx={tabStyles}
         value={activeTab}
         onChange={handleTabChange}
         textColor="secondary"
         indicatorColor="secondary"
         aria-label="ticket tabs"
       >
-        {tabList?.map((tab) => (
+        {tabList?.filter((item) => item?.user !== false)?.map((tab) => (
           <Tab
             icon={
               <AssignmentTurnedInIcon
@@ -255,6 +260,7 @@ const MyTicketsTab = () => {
           allDepartmentData={allDepartmentData}
           allUsersData={allUsersData}
           setAllTicketsData={setAllTicketsData}
+          user={user}
           activeTab={activeTab}
           setTotalRows={setTotalRows}
           setColumnFilters={setColumnFilters}

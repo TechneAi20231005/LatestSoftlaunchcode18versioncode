@@ -74,6 +74,10 @@ function ServerMaterial({
     setExpandColumn(!expandColumn);
   };
 
+  const globalFilterToggler = () => {
+    setShowGlobalFilter(showGlobalFilter ? false : true);
+  };
+
   const updatedColumns = useMemo(() => {
     return columns.map((col) => {
       if (col?.filterVariant === 'date-range') {
@@ -82,7 +86,7 @@ function ServerMaterial({
           muiFilterTextFieldProps: (column) => ({
             placeholder: column?.rangeFilterIndex === 0 ? 'From' : 'To'
           }),
-          size: expandColumn ? 350 : 180
+          size: expandColumn ? 350 : 185
         };
       }
       return col;
@@ -157,10 +161,9 @@ function ServerMaterial({
             muiTableBodyCellProps={{
               onMouseOver: handleMouseHover,
               style: {
-                display: '-webkit-box',
-                WebkitLineClamp: 0.5,
+                whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                lineHeight: '1.5rem'
+                textOverflow: 'ellipsis'
               }
             }}
             getRowId={(originalRow) => originalRow?.ticket_id}
@@ -198,7 +201,7 @@ function ServerMaterial({
                   marginY: 'auto'
                 }}
               >
-                <MRT_ToggleGlobalFilterButton table={table} />
+                <MRT_ToggleGlobalFilterButton onClick={globalFilterToggler} disabled={false} table={table} />
                 <Tooltip title="Clear Filters" arrow>
                   <IconButton
                     // disabled={

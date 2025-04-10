@@ -21,7 +21,8 @@ const DataTableCustom = React.memo(
     setColumnFilters,
     columnFilters,
     reset = false,
-    setReset = () => {}
+    setReset = () => {},
+    user,
   }) => {
     const columns = [
       {
@@ -56,6 +57,7 @@ const DataTableCustom = React.memo(
         accessorKey: 'ticket_date',
         header: 'Ticket Date',
         filterVariant: 'date-range',
+        enableColumnFilter: user,
       },
       {
         accessorKey: 'expected_solve_date',
@@ -90,17 +92,22 @@ const DataTableCustom = React.memo(
         header: 'Type',
         enableColumnFilter: false
       },
-      {
-        accessorFn: (originalRows) => originalRows?.passed_status || '--',
-        header: 'Passed Status',
-        enableColumnFilter: false
-      },
+      ...(type === "CreatedByMe"
+        ? [
+            {
+              accessorFn: (originalRows) => originalRows?.passed_status || '--',
+              header: 'Passed Status',
+              enableColumnFilter: false,
+              size: 205,
+            }
+          ]
+        : []),
       {
         accessorFn: (originalRows) => originalRows?.status?.status || '--',
         header: 'Status',
         filterVariant: 'multi-select',
         filterSelectOptions: allStatusData?.selectData,
-        size: 150
+        size: 150,
       },
       {
         accessorFn: (originalRows) =>
@@ -108,7 +115,8 @@ const DataTableCustom = React.memo(
         header: 'Assign To Dept',
         size: 220,
         filterVariant: 'multi-select',
-        filterSelectOptions: allDepartmentData?.selectData
+        filterSelectOptions: allDepartmentData?.selectData,
+        enableColumnFilter: user,
       },
       {
         accessorFn: (originalRows) =>
@@ -118,7 +126,8 @@ const DataTableCustom = React.memo(
         header: 'Assigned To',
         size: 220,
         filterVariant: 'multi-select',
-        filterSelectOptions: allUsersData?.selectData
+        filterSelectOptions: allUsersData?.selectData,
+        enableColumnFilter: user,
       },
       {
         accessorFn: (originalRows) =>
@@ -132,14 +141,17 @@ const DataTableCustom = React.memo(
         ? [
             {
               accessorFn: (row) => row.ticket_solved_date || '--',
-              header: 'Solved Date'
+              header: 'Solved Date',
+              size: 190,
+              enableColumnFilter: false,
             },
             {
               accessorFn: (originalRows) =>
                 `${originalRows?.ticket_solved_by?.first_name || ''} ${
                   originalRows?.ticket_solved_by?.last_name || ''
                 }`,
-              header: 'Solved By'
+              header: 'Solved By',
+              enableColumnFilter: false,
             }
           ]
         : [])
