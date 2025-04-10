@@ -19,7 +19,8 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
   //   (item) => item.user_id === currentUser
   // );
   const isUserProjectOwner = false;
-  console.log('My ticket hamburger rendered');
+  // console.log('My ticket hamburger rendered');
+  console.log(type,"type")
 
   const [anchorEl, setAnchorEl] = React.useState(null);
    const open = Boolean(anchorEl);
@@ -47,6 +48,7 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
       type: type,
       redirectLink: `/${_base}/Ticket/Edit/` + data.id,
       className: 'btn btn-sm btn-warning text-white',
+      isModal: false,
       icon: <i className="icofont-ui-edit"></i>,
       conditions: (type) => {
         if (type === 'AssignToMe') {
@@ -56,7 +58,7 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
             (checkNotSolvedAndNotReject && userAccountFor === 'SELF') ||
             isUserProjectOwner
           );
-        } else if (type === 'YouTask') {
+        } else if (type === 'YourTask') {
           return (
             currentUser === ticketCreatedBy || currentUser === tickedtAssignedto
           );
@@ -72,12 +74,13 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
       label: 'View',
       type: type,
       redirectLink: `/${_base}/Ticket/View/` + data.id,
+      isModal: false,
       className: 'btn btn-sm btn-info text-white',
       icon: <i className="icofont-external-link "></i>,
       conditions: (type) => {
         if (type === 'AssignToMe') {
           return true;
-        } else if (type === 'YouTask') {
+        } else if (type === 'YourTask') {
           return true;
         } else if (type === 'DepartmentWise') {
           return false;
@@ -95,6 +98,7 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
       redirectLink: `/${_base}/Ticket/Task/` + data.id,
       className: 'btn btn-sm btn-outline-primary',
       icon: <i className="icofont-tasks"></i>,
+      isModal: false,
       conditions: (type) => {
         if (type === 'AssignToMe') {
           return (
@@ -103,7 +107,7 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
                 data.basket_configured > 0)) &&
             userAccountFor === 'SELF'
           );
-        } else if (type === 'YouTask') {
+        } else if (type === 'YourTask') {
           return (
             ticketCreatedBy !== currentUser &&
             userAccountFor === 'SELF' &&
@@ -126,6 +130,7 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
       type: type,
       redirectLink: `/${_base}/Ticket/Basket/` + data.id,
       className: 'btn btn-sm btn-primary text-white',
+      isModal: false,
       icon: <i className="icofont-bucket2"></i>,
       conditions: (type) => {
         if (type === 'AssignToMe') {
@@ -136,7 +141,7 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
                 data.basket_configured === 0)) &&
             userAccountFor === 'SELF'
           );
-        } else if (type === 'YouTask') {
+        } else if (type === 'YourTask') {
           return false;
         } else if (type === 'DepartmentWise') {
           return false;
@@ -152,10 +157,11 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
       redirectLink: `/${_base}/TicketHistory/` + data.id,
       icon: <i className="icofont-history"></i>,
       type: type,
+      isModal: false,
       conditions: (type) => {
         if (type === 'AssignToMe') {
           return true;
-        } else if (type === 'YouTask') {
+        } else if (type === 'YourTask') {
           return false;
         } else if (type === 'DepartmentWise') {
           return true;
@@ -180,7 +186,7 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
     }
     },
     {
-      id: 5,
+      id: 6,
       label: 'Reject',
      className:"btn btn-danger  text-white",
       redirectLink: '',
@@ -220,14 +226,18 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
         //   'aria-labelledby': 'basic-button',
         // }}
       >
+        {menuBtns.filter((btn) => btn.conditions(type)).length === 0 && (
+  <MenuItem disabled>No actions available</MenuItem>
+)}
         {menuBtns.map((menuBtn, idx) => (
           menuBtn.conditions(menuBtn.type) && (
             <MenuItem key={idx} onClick={handleClosed}>
               {
-                menuBtn.isModal ?
+                 type === "UnPassed" ?
                 <button
                   className={menuBtn.className}
                   style={{ width: '100%', }}
+                  disabled={data?.passed_status !== "UNPASS"}
                   onClick={() =>
                     handleRemarkModal({
                       showModal: true,
@@ -238,7 +248,8 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
                   }
                 >
                   {menuBtn.icon} {menuBtn.label}
-                </button> :
+                </button>
+                :
                 <Link
                 to={menuBtn.redirectLink}
                 className={menuBtn.className}
@@ -259,9 +270,6 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
               handleRemarkModal={handleRemarkModal}
               setPagination={setPagination}
               setColumnFilters={setColumnFilters}
-              // setPagination={setPagination}
-              // setColumnFilters={setColumnFilters}
-              // setRowSelection={setRowSelection}
             />
             }
       {/* <Dropdown className="d-inline-flex m-1">

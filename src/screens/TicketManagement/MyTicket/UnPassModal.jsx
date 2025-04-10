@@ -19,8 +19,8 @@ const UnPassModal = ({
       e.preventDefault()
       const formData = new FormData(e.target)
       if (remarkModal && Array.isArray(remarkModal.modalData)) {
-        remarkModal.modalData.forEach((id, index) => {
-          formData.append(`id[${index}]`, id);
+        remarkModal.modalData.forEach((row, index) => {
+          formData.append(`id[${index}]`, row?.id);
         });
       } else {
         formData.append('id[]', remarkModal.modalData.id);
@@ -83,7 +83,7 @@ const UnPassModal = ({
                     className="form-control form-control-sm"
                     value={
                       Array.isArray(remarkModal.modalData)
-                        ? remarkModal?.modalData?.join(', ')
+                        ? remarkModal.modalData?.map((row) => row.ticket_id).join(', ')
                         : remarkModal.modalData?.ticket_id
                     }
                       readOnly={

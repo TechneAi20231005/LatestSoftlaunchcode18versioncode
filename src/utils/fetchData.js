@@ -8,8 +8,8 @@ export const fetchData = async (
   name
 ) => {
   try {
-    if (isLoading) return;
-    setIsLoading(true);
+    // if (isLoading) return;
+    // setIsLoading(true);
     const response = await callApi(inputRequired);
     if (response.status === 200 && response.statusText === 'OK') {
       if (response?.data?.status === 1) {
@@ -57,6 +57,6 @@ export const fetchData = async (
   } catch (error) {
     errorHandler(error.response);
   } finally {
-    setIsLoading(false);
+    // setIsLoading(false);
   }
 };

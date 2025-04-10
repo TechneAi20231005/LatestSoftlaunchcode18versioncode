@@ -13,7 +13,7 @@ import moment from 'moment/moment';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 
 const MyTicketsTab = () => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('AssignToMe');
   const [allUsersData, setAllUsersData] = useState({});
   const [allDepartmentData, setAllDepartmentData] = useState({});
@@ -113,7 +113,7 @@ const MyTicketsTab = () => {
   );
 
   const handleTabChange = async (event, newValue) => {
-    if (isLoading) return;
+    // if (isLoading) return;
     setActiveTab(newValue);
     setColumnFilters([]);
     setReset(true);
@@ -130,7 +130,7 @@ const MyTicketsTab = () => {
   const debouncedTicketId = useDebounce(ticketIdValue, 1000);
   useEffect(() => {
     const getData = async () => {
-      if (isLoading) return;
+      // if (isLoading) return;
       setIsLoading(true);
       const fromDateRaw = columnFilters.find((f) => f.id === 'ticket_date')
         ?.value?.[0];

@@ -105,7 +105,7 @@ function ServerMaterial({
     setRemarkModal(data);
   };
 
-  console.log(rowSelection,"setRowSelection");
+  // console.log(rowSelection,"setRowSelection");
 
   return (
     <>
@@ -273,17 +273,23 @@ function ServerMaterial({
 
                 {activeTab === 'UnPassed' && (
                   <>
+
                     <button
                       className="btn btn-success btn-block text-white"
                       onClick={(e) => {
+                        const selectedRows = table.getSelectedRowModel().rows.map(row => row.original);
+                        console.log(selectedRows, 'selectedRows');
                         handleRemarkModal({
                           showModal: true,
-                          modalData: Object.keys(rowSelection),
+                          modalData: selectedRows,
                           modalHeader: 'Enter Remark',
                           status: 'PASS'
                         });
                       }}
-                      disabled={Object.keys(rowSelection)?.length === 0}
+                      disabled={Object.keys(rowSelection)?.length === 0 ||
+                        table
+                          .getSelectedRowModel()
+                          .rows?.some(row => row?.original?.passed_status !== "UNPASS")  }
                     >
                       <i className="icofont-checked"></i> Pass
                     </button>
@@ -297,7 +303,10 @@ function ServerMaterial({
                           status: 'Reject'
                         });
                       }}
-                      disabled={Object.keys(rowSelection)?.length === 0}
+                      disabled={Object.keys(rowSelection)?.length === 0 ||
+                        table
+                          .getSelectedRowModel()
+                          .rows?.some(row => row?.original?.passed_status !== "UNPASS")  }
                     >
                       <i className="icofont-close-squared-alt"></i> Reject
                     </button>
