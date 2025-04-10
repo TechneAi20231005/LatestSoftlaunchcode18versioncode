@@ -12,6 +12,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { customSearchHandler } from '../../../utils/customFunction';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 import moment from 'moment';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 function SubModuleComponent() {
   //initial state
@@ -28,7 +30,7 @@ function SubModuleComponent() {
   const notify = null;
 
   const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [exportData, setExportData] = useState(null);
 
@@ -212,7 +214,6 @@ function SubModuleComponent() {
           }
           setData(null);
           setData(data);
-          setIsLoading(false);
 
           for (const key in temp) {
             exportTempData.push({
@@ -232,25 +233,15 @@ function SubModuleComponent() {
           }
 
           setExportData(exportTempData);
+          setIsLoading(false);
         } else {
-          new ErrorLogService().sendErrorLog(
-            'SubModule Master',
-            'Get_SubModule',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.data.message);
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'SubModule Master',
-          'Get_SubModule',
-          'INSERT',
-          errorObject.data.message
-        );
-      });
+        errorHandler(error);
+      })
+      .finally(() => setIsLoading(false));
     dispatch(getRoles());
   }, [dispatch]);
 
