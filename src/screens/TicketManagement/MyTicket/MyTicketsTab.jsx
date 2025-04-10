@@ -260,7 +260,6 @@ const MyTicketsTab = () => {
           allDepartmentData={allDepartmentData}
           allUsersData={allUsersData}
           setAllTicketsData={setAllTicketsData}
-          user={user}
           activeTab={activeTab}
           setTotalRows={setTotalRows}
           setColumnFilters={setColumnFilters}

@@ -22,7 +22,6 @@ const DataTableCustom = React.memo(
     columnFilters,
     reset = false,
     setReset = () => {},
-    user,
   }) => {
     const columns = [
       {
@@ -57,7 +56,6 @@ const DataTableCustom = React.memo(
         accessorKey: 'ticket_date',
         header: 'Ticket Date',
         filterVariant: 'date-range',
-        enableColumnFilter: user,
       },
       {
         accessorKey: 'expected_solve_date',
@@ -116,7 +114,6 @@ const DataTableCustom = React.memo(
         size: 220,
         filterVariant: 'multi-select',
         filterSelectOptions: allDepartmentData?.selectData,
-        enableColumnFilter: user,
       },
       {
         accessorFn: (originalRows) =>
@@ -127,7 +124,6 @@ const DataTableCustom = React.memo(
         size: 220,
         filterVariant: 'multi-select',
         filterSelectOptions: allUsersData?.selectData,
-        enableColumnFilter: user,
       },
       {
         accessorFn: (originalRows) =>
