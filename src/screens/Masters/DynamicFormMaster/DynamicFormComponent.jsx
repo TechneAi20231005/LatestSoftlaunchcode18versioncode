@@ -190,7 +190,7 @@ function DynamicFormComponent() {
     {
       accessorKey: 'counter',
       header: 'Sr',
-      size: 70,
+      size: 90,
       enableColumnOrdering: false,
       enableGrouping: false,
       enableColumnFilter: false
@@ -198,7 +198,7 @@ function DynamicFormComponent() {
     {
       accessorKey: 'template_name',
       header: 'Form Name',
-      size: 160,
+      size: 200,
       filterVariant: 'autocomplete',
       muiTableBodyCellProps: () => ({
         sx: {
@@ -256,7 +256,8 @@ function DynamicFormComponent() {
     },
     {
       accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
-      header: 'Updated By'
+      header: 'Updated By',
+      size: 200
     }
   ];
 

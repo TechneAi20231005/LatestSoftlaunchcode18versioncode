@@ -126,9 +126,12 @@ function CustomerTypeComponent() {
       accessorFn: (originalRow) => originalRow.type_name || '--',
       header: 'Customer Type Name',
       size: 260,
-      Cell: ({ row }) => (
-        <Box sx={{ color: '#f19828' }}>{row?.original?.type_name}</Box>
-      )
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
       header: 'Status',

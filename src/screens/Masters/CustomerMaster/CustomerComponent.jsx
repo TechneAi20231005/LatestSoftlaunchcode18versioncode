@@ -103,9 +103,12 @@ function CustomerComponent() {
       accessorFn: (originalRow) => originalRow?.name || '--',
       header: 'Customer Name',
       size: 220,
-      Cell: ({ row }) => (
-        <Box sx={{ color: '#f19828' }}>{row?.original?.name}</Box>
-      )
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
       accessorFn: (originalRow) => originalRow?.customer_type || '--',
@@ -165,7 +168,9 @@ function CustomerComponent() {
 
   useEffect(() => {
     dispatch(getCustomerData());
+  }, []);
 
+  useEffect(() => {
     if (!checkRole.length) {
       dispatch(getRoles());
     }

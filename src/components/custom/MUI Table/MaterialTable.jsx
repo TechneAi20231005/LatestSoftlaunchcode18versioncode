@@ -183,6 +183,7 @@ function MaterialTable({
   const isFilterNotApplied =
     (columnFilters?.length === 0 ||
       (Array.isArray(columnFilters) &&
+        Array.isArray(columnFilters?.[0]?.value) &&
         columnFilters?.[0]?.value?.every((value) => !value))) &&
     JSON.stringify(rowSelection) === '{}' &&
     JSON.stringify(columnVisibility) === '{}' &&

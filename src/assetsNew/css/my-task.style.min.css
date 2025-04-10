@@ -21145,7 +21145,8 @@ a {
 
 .notifications {
   /* z-index: 9999 !important; */
-}  z-index: 1000 !important;
+}
+z-index: 1000 !important;
 
 .notifications .pulse,
 .notifications .pulse:focus {
@@ -22271,7 +22272,7 @@ body.rtl_mode
 
 .btn.btn-outline-secondary:hover {
   color: #fff;
-  background-color: var(--secondary-color);
+  background-color: var(--secondary-color) !important;
 }
 
 .btn.btn-outline-secondary:hover i {
@@ -24455,6 +24456,5 @@ abbr[title] {
     transform: rotate(360deg);
   }
 }
-
 
 /* Add more media queries for other screen sizes as needed */

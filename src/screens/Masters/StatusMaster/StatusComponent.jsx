@@ -109,9 +109,12 @@ function StatusComponent() {
       accessorFn: (originalRow) => originalRow.status || '--',
       header: 'Status Name',
       size: 200,
-      Cell: ({ row }) => (
-        <Box sx={{ color: '#f19828' }}>{row?.original?.status}</Box>
-      )
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
       header: 'Status',

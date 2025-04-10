@@ -174,65 +174,25 @@ function QueryTypeComponent() {
       size: 120
     },
     {
-      accessorFn: (originalRow) => originalRow?.query_type_name?.trim() || '--',
+      accessorFn: (originalRow) => originalRow?.query_type_name || '--',
       header: 'Query Type Name',
       size: 240,
-      Cell: ({ row }) => (
-        <>
-          {row?.original?.query_type_name ? (
-            <Box sx={{ color: '#f19828' }}>
-              <span className="ms-1">
-                {' '}
-                {row?.original?.query_type_name &&
-                row?.original?.query_type_name.length < 25
-                  ? row?.original?.query_type_name
-                  : row?.original?.query_type_name.substring(0, 25) + '....'}
-              </span>
-            </Box>
-          ) : (
-            '--'
-          )}
-        </>
-      )
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
       accessorFn: (originalRow) => originalRow?.form_name || '--',
       header: 'Form Name',
-      size: 190,
-      Cell: ({ row }) => (
-        <>
-          {row?.original?.form_name ? (
-            <span className="ms-1">
-              {' '}
-              {row?.original?.form_name && row?.original?.form_name.length < 25
-                ? row?.original?.form_name
-                : row?.original?.form_name.substring(0, 25) + '....'}
-            </span>
-          ) : (
-            '--'
-          )}
-        </>
-      )
+      size: 190
     },
     {
       accessorFn: (originalRow) => originalRow?.query_group_name,
       header: 'Query Group',
-      size: 220,
-      Cell: ({ row }) => (
-        <>
-          {row?.original?.query_group_name ? (
-            <span className="ms-1">
-              {' '}
-              {row?.original?.query_group_name &&
-              row?.original?.query_group_name.length < 25
-                ? row?.original?.query_group_name
-                : row?.original?.query_group_name.substring(0, 25) + '....'}
-            </span>
-          ) : (
-            '--'
-          )}
-        </>
-      )
+      size: 220
     },
     {
       header: 'Status',
@@ -336,20 +296,7 @@ function QueryTypeComponent() {
     {
       accessorFn: (originalRow) => originalRow?.group_name || '--',
       header: 'Query Group',
-      size: 200,
-      Cell: ({ row }) => {
-        const groupName = row?.original?.group_name;
-
-        return groupName ? (
-          <span className="ms-1">
-            {groupName.length < 150
-              ? groupName
-              : `${groupName.substring(0, 25)}....`}
-          </span>
-        ) : (
-          '--'
-        );
-      }
+      size: 200
     },
     {
       accessorKey: 'is_active',
