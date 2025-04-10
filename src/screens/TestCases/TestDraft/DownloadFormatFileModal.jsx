@@ -40,10 +40,7 @@ function DownloadFormatFileModal({ show, close }) {
     submodule_id: []
   };
 
-  console.log(getModuleData,'getModuleData')
-
   const handleProjectChange = async (e, setFieldValue) => {
-    console.log(e?.target?.value,"<<<<<")
     setFieldValue('project_id', e.target.value);
     setFieldValue('module_id', '');
     setFieldValue('submodule_id', '');
@@ -51,7 +48,6 @@ function DownloadFormatFileModal({ show, close }) {
     const filteredModules = getModuleData
       .filter((d) => d.project_name === e.target.value)
       .map((d) => ({ value: d.module_name, label: d.module_name }));
-  // console.log(filteredModules,"filter")
     setModuleDropdown(filteredModules);
   };
 
@@ -67,7 +63,6 @@ function DownloadFormatFileModal({ show, close }) {
   };
 
   const handleDownloadFormatFile = ({ formData }) => {
-    console.log(formData,"formdata")
     const { project_id, module_id, submodule_id } = formData;
     // return false
     dispatch(

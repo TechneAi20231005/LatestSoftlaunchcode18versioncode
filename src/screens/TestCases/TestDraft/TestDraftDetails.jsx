@@ -1369,9 +1369,9 @@ function TestDraftDetails(props) {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row?.created_by && row?.created_by?.length < 20
+                  {/* {row?.created_by && row?.created_by?.length < 20
                     ? row?.created_by
-                    : row?.created_by?.substring(0, 50) + '....'}
+                    : row?.created_by?.substring(0, 50) + '....'} */}
                 </span>
               </div>
             </OverlayTrigger>
@@ -1463,9 +1463,9 @@ function TestDraftDetails(props) {
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row?.updated_by && row?.updated_by?.length < 20
+                  {/* {row?.updated_by && row?.updated_by?.length < 20
                     ? row?.updated_by
-                    : row?.updated_by?.substring(0, 50) + '....'}
+                    : row?.updated_by?.substring(0, 50) + '....'} */}
                 </span>
               </div>
             </OverlayTrigger>
