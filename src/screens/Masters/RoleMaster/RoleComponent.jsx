@@ -145,14 +145,7 @@ function RoleComponent({ location }) {
             color: '#f19828',
             fontWeight: 400
           }
-        }),
-        Cell: ({ row }) => (
-          <span>
-            {row?.original?.role.length > 20
-              ? row?.original?.role.substring(0, 20) + '...'
-              : row?.original?.role}
-          </span>
-        )
+        })
       },
 
       {

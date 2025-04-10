@@ -121,9 +121,12 @@ function CountryComponent() {
       accessorFn: (originalRow) => originalRow?.country || '--',
       header: 'Country',
       size: 160,
-      Cell: ({ row }) => (
-        <Box sx={{ color: '#f19828' }}>{row?.original?.country}</Box>
-      )
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
       accessorKey: 'is_active',

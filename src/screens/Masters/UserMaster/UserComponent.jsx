@@ -126,9 +126,12 @@ function UserComponent() {
       accessorFn: (originalRow) => originalRow?.name || '--',
       header: 'Name',
       size: 180,
-      Cell: ({ row }) => (
-        <Box sx={{ color: '#f19828' }}>{row?.original?.name}</Box>
-      )
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
       accessorFn: (originalRow) => originalRow?.email_id || '--',
