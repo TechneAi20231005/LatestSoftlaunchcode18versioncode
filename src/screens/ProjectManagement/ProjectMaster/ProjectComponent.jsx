@@ -219,6 +219,7 @@ function ProjectComponent() {
             });
           }
           setExportData(exportData);
+          setIsLoading(false);
         }
       })
       .catch((error) => {

@@ -201,6 +201,7 @@ function ModuleComponent() {
             });
           }
           setExportData(exportData);
+          setIsLoading(false);
         }
       })
       .catch((error) => {

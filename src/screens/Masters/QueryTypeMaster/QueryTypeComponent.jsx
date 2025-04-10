@@ -597,6 +597,8 @@ function QueryTypeComponent() {
       }
     } catch (error) {
       errorHandler(error);
+    } finally {
+      setIsLoading(false);
     }
 
     try {
