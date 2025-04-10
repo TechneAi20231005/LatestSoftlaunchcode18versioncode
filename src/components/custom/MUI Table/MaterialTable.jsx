@@ -180,6 +180,18 @@ function MaterialTable({
     });
   }, [expandColumn, columns]);
 
+  const isFilterNotApplied =
+    (columnFilters?.length === 0 ||
+      (Array.isArray(columnFilters) &&
+        columnFilters?.[0]?.value?.every((value) => !value))) &&
+    JSON.stringify(rowSelection) === '{}' &&
+    JSON.stringify(columnVisibility) === '{}' &&
+    pagination.pageIndex === 0 &&
+    pagination.pageSize === 10 &&
+    sorting?.length === 0 &&
+    (globalFilter === undefined || globalFilter?.length === 0) &&
+    groupBy?.length === 0;
+
   return (
     <Box
       sx={{
@@ -223,11 +235,9 @@ function MaterialTable({
           muiTableBodyCellProps={{
             onMouseOver: handleMouseHover,
             style: {
-              display: '-webkit-box',
-              WebkitLineClamp: 0.5,
-              /*WebkitBoxOrient: 'vertical', */
+              whiteSpace: 'nowrap',
               overflow: 'hidden',
-              lineHeight: '1.5rem'
+              textOverflow: 'ellipsis'
             }
           }}
           render
@@ -279,36 +289,14 @@ function MaterialTable({
               />
               <Tooltip title="Clear Filters" arrow>
                 <IconButton
-                  disabled={
-                    table.getState().columnFilters?.length === 0 &&
-                    JSON.stringify(table.getState().rowSelection) === '{}' &&
-                    JSON.stringify(table.getState().columnVisibility) ===
-                      '{}' &&
-                    table.getState().pagination.pageIndex === 0 &&
-                    table.getState().pagination.pageSize === 10 &&
-                    table.getState().sorting?.length === 0 &&
-                    (table.getState().globalFilter === undefined ||
-                      table.getState().globalFilter?.length === 0) &&
-                    table.getState().grouping?.length === 0
-                  }
+                  disabled={isFilterNotApplied}
                   onClick={resetFilters}
                 >
                   <FilterAltOffIcon
                     sx={{
-                      color:
-                        table.getState().columnFilters?.length === 0 &&
-                        JSON.stringify(table.getState().rowSelection) ===
-                          '{}' &&
-                        JSON.stringify(table.getState().columnVisibility) ===
-                          '{}' &&
-                        table.getState().pagination.pageIndex === 0 &&
-                        table.getState().pagination.pageSize === 10 &&
-                        table.getState().sorting?.length === 0 &&
-                        (table.getState().globalFilter === undefined ||
-                          table.getState().globalFilter?.length === 0) &&
-                        table.getState().grouping?.length === 0
-                          ? (theme) => theme.palette.action.disabled
-                          : grey[600]
+                      color: isFilterNotApplied
+                        ? (theme) => theme.palette.action.disabled
+                        : grey[600]
                     }}
                   />
                 </IconButton>
