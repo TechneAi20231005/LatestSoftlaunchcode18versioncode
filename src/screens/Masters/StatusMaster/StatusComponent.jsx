@@ -34,9 +34,9 @@ function StatusComponent() {
     (statusMasterSlice) => statusMasterSlice.statusMaster.isLoading.statusData
   );
 
-  const exportData = useSelector(
-    (statusMasterSlice) => statusMasterSlice.statusMaster.exportStatusData
-  );
+  // const exportData = useSelector(
+  //   (statusMasterSlice) => statusMasterSlice.statusMaster.exportStatusData
+  // );
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 11)
   );
@@ -109,9 +109,12 @@ function StatusComponent() {
       accessorFn: (originalRow) => originalRow.status || '--',
       header: 'Status Name',
       size: 200,
-      Cell: ({ row }) => (
-        <Box sx={{ color: '#f19828' }}>{row?.original?.status}</Box>
-      )
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
       header: 'Status',
@@ -143,7 +146,7 @@ function StatusComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.created_by || '--',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By',
       size: 180
     },
@@ -157,7 +160,7 @@ function StatusComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 190
     }

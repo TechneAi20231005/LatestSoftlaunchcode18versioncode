@@ -88,8 +88,6 @@ export const templateSlice = createSlice({
 
     builder.addCase(templateData.fulfilled, (state, action) => {
       const { payload } = action;
-      state.isLoading.templateDataList = false;
-
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let templateData = payload.data.data?.data;
 
@@ -100,6 +98,7 @@ export const templateSlice = createSlice({
           templateData[i].counter = count++;
         }
         state.templateData = [...templateData];
+        state.isLoading.templateDataList = false;
       }
     });
     builder.addCase(templateData.rejected, (state) => {
@@ -119,7 +118,6 @@ export const templateSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let exportTempateData = payload.data.data?.data;
-        state.isLoading.templateDataList = false;
 
         state.status = 'succeded';
         state.showLoaderModal = false;
@@ -155,6 +153,7 @@ export const templateSlice = createSlice({
           });
           state.exportData = exportData;
         }
+        state.isLoading.templateDataList = false;
       }
     });
     builder.addCase(exportTempateData.rejected, (state) => {

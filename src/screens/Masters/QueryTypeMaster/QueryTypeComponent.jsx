@@ -1,18 +1,18 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Modal } from 'react-bootstrap';
-import Tooltip from 'react-bootstrap/Tooltip';
+// import Tooltip from 'react-bootstrap/Tooltip';
 
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
+// import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 
 import PageHeader from '../../../components/Common/PageHeader';
 import Select from 'react-select';
-import DataTable from 'react-data-table-component';
-import ErrorLogService from '../../../services/ErrorLogService';
+// import DataTable from 'react-data-table-component';
+// import ErrorLogService from '../../../services/ErrorLogService';
 import QueryTypeService from '../../../services/MastersService/QueryTypeService';
 import DynamicFormService from '../../../services/MastersService/DynamicFormService';
 
 import { Astrick } from '../../../components/Utilities/Style';
-import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
+// import { ExportToExcel } from '../../../components/Utilities/Table/ExportToExcel';
 
 import Dropdown from 'react-bootstrap/Dropdown';
 
@@ -38,13 +38,12 @@ function QueryTypeComponent() {
 
   //local state
 
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
 
   // const [dataa, setDataa] = useState(null);
   const [isActive, setIsActive] = useState(1);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
+  // const [searchTerm, setSearchTerm] = useState('');
 
   const [modal, setModal] = useState({
     showModal: false,
@@ -124,16 +123,16 @@ function QueryTypeComponent() {
 
   //search function
 
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(data, searchTerm);
-    setFilteredData(filteredList);
-  }, [data, searchTerm]);
+  // const handleSearch = useCallback(() => {
+  //   const filteredList = customSearchHandler(data, searchTerm);
+  //   setFilteredData(filteredList);
+  // }, [data, searchTerm]);
 
   // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(data);
-  };
+  // const handleReset = () => {
+  //   setSearchTerm('');
+  //   setFilteredData(data);
+  // };
 
   const handleModal = (data) => {
     setModal(data);
@@ -175,86 +174,25 @@ function QueryTypeComponent() {
       size: 120
     },
     {
-      accessorFn: (originalRow) => originalRow.query_type_name || '--',
+      accessorFn: (originalRow) => originalRow?.query_type_name || '--',
       header: 'Query Type Name',
       size: 240,
-      Cell: ({ row }) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.original?.query_type_name && (
-            <OverlayTrigger
-              overlay={<Tooltip>{row?.original?.query_type_name} </Tooltip>}
-            >
-              <Box sx={{ color: '#f19828' }}>
-                <span className="ms-1">
-                  {' '}
-                  {row?.original?.query_type_name &&
-                  row?.original?.query_type_name.length < 10
-                    ? row?.original?.query_type_name
-                    : row?.original?.query_type_name.substring(0, 10) + '....'}
-                </span>
-              </Box>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
-      accessorFn: (originalRow) => originalRow.form_name || '--',
+      accessorFn: (originalRow) => originalRow?.form_name || '--',
       header: 'Form Name',
-      size: 190,
-      Cell: ({ row }) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.original?.form_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.form_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row?.original?.form_name &&
-                  row?.original?.form_name.length < 10
-                    ? row?.original?.form_name
-                    : row?.original?.form_name.substring(0, 10) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
+      size: 190
     },
     {
-      accessorFn: (originalRow) => originalRow.query_group_name || '--',
+      accessorFn: (originalRow) => originalRow?.query_group_name,
       header: 'Query Group',
-      size: 220,
-      Cell: ({ row }) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.original?.query_group_name && (
-            <OverlayTrigger
-              overlay={<Tooltip>{row?.original?.query_group_name} </Tooltip>}
-            >
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row?.original?.query_group_name &&
-                  row?.original?.query_group_name.length < 10
-                    ? row?.original?.query_group_name
-                    : row?.original?.query_group_name.substring(0, 10) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
+      size: 220
     },
     {
       header: 'Status',
@@ -286,7 +224,7 @@ function QueryTypeComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.created_by || '--',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By',
       size: 180
     },
@@ -300,7 +238,7 @@ function QueryTypeComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 190
     }
@@ -310,8 +248,8 @@ function QueryTypeComponent() {
     query_type_name: 'Query Type Name',
     query_group_name: 'Query Group Name',
     form_name: 'Form Name',
-    Status: 'Status',
-    Remark: 'Remark',
+    is_active: 'Status',
+    remark: 'Remark',
     created_at: 'Created At',
     created_by: 'Created By',
     updated_at: 'Updated At',
@@ -322,17 +260,14 @@ function QueryTypeComponent() {
 
   const columnsEditPopup = [
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
-    },
-    {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <button
             type="button"
@@ -342,7 +277,7 @@ function QueryTypeComponent() {
             onClick={(e) => {
               handleModalQueryGroup({
                 showModalQueryGroup: true,
-                modalDataQueryGroup: row,
+                modalDataQueryGroup: row?.original,
                 modalHeaderQueryGroup: ' Edit Query Group'
               });
             }}
@@ -352,114 +287,77 @@ function QueryTypeComponent() {
         </div>
       )
     },
-
     {
-      name: 'Query Group',
-      width: '250px',
-      selector: (row) => row.group_name,
-      sortable: true,
-
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.group_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.group_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.group_name && row.group_name.length < 123
-                    ? row.group_name
-                    : row.group_name.substring(0, 123) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
-    },
-
-    {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span
-              className="badge"
-              style={{ width: '4rem', backgroundColor: '#484c7f' }}
-            >
-              Active
-            </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      )
-    },
-
-    {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px',
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {/* <button
-            href="#"
-            onClick={(e) => {
-              handleFormQueryGroup({
-                showModalQueryGroup: true,
-                modalQueryGroup: row,
-                modalHeaderQueryGroup: ''
-              });
-            }}
-          > */}
-          {row.created_at && (
-            <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.created_at && row.created_at.length < 123
-                    ? row.created_at
-                    : row.created_at.substring(0, 123) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-          {/* </button> */}
-        </div>
-      )
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 120,
+      enableColumnFilter: false
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '150px'
+      accessorFn: (originalRow) => originalRow?.group_name || '--',
+      header: 'Query Group',
+      size: 200
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '150px'
+      accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`
+    },
+    {
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
+      header: 'Created By',
+      size: 190
+    },
+    {
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        `${cell.getValue().toLocaleDateString()} ${cell
+          .getValue()
+          .toLocaleTimeString()}`
+    },
+    {
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By',
+      size: 190
     }
   ];
+
+  const exportQueryGroupDataKeys = {
+    group_name: 'Query Group Name',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Query Group Type Master Record'
+  };
 
   const loadDataEditPopup = async () => {
     const data = [];
@@ -624,7 +522,6 @@ function QueryTypeComponent() {
 
         setData(data);
         // setDataa(data);
-        setIsLoading(false);
 
         for (const i in data) {
           exportTempData.push({
@@ -643,9 +540,12 @@ function QueryTypeComponent() {
 
         setExportData(null);
         setExportData(exportTempData);
+        setIsLoading(false);
       }
     } catch (error) {
       errorHandler(error);
+    } finally {
+      setIsLoading(false);
     }
 
     try {
@@ -784,13 +684,13 @@ function QueryTypeComponent() {
     loadDataEditPopup();
   }, [loadData]);
 
-  useEffect(() => {
-    setFilteredData(data);
-  }, [data]);
+  // useEffect(() => {
+  //   setFilteredData(data);
+  // }, [data]);
 
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
+  // useEffect(() => {
+  //   handleSearch();
+  // }, [searchTerm, handleSearch]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -901,7 +801,7 @@ function QueryTypeComponent() {
             <MaterialTable
               exportDataKeys={exportDataKeys}
               isLoading={isLoading}
-              data={filteredData}
+              data={data}
               columns={columns}
               reset={reset}
               setReset={setReset}
@@ -1609,8 +1509,7 @@ function QueryTypeComponent() {
           <Modal.Title centered>View & Edit Query Group</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <div className="container-xxl">
-            <div className="row">
+          {/* <div className="row">
               <div className="col-sm-6">
                 <input
                   type="text"
@@ -1644,26 +1543,26 @@ function QueryTypeComponent() {
                   fileName="Group Query Type master Records"
                 />
               </div>
-            </div>
-            <div className="card mt-2">
-              <div className="card-body">
-                <div className="row clearfix g-3">
-                  <div className="col-sm-12">
-                    {data && (
-                      <DataTable
-                        columns={columnsEditPopup}
-                        data={queryGroupData}
-                        defaultSortField="title"
-                        pagination
-                        selectableRows={false}
-                        className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                        highlightOnHover={true}
-                      />
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
+            </div> */}
+          <div className="card mt-2">
+            {data && (
+              <MaterialTable
+                exportDataKeys={exportQueryGroupDataKeys}
+                columns={columnsEditPopup}
+                data={queryGroupData}
+                reset={reset}
+                setReset={setReset}
+              />
+              // <DataTable
+              //   columns={columnsEditPopup}
+              //   data={queryGroupData}
+              //   defaultSortField="title"
+              //   pagination
+              //   selectableRows={false}
+              //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+              //   highlightOnHover={true}
+              // />
+            )}
           </div>
         </Modal.Body>
         <Modal.Footer></Modal.Footer>

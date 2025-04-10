@@ -121,9 +121,12 @@ function CountryComponent() {
       accessorFn: (originalRow) => originalRow?.country || '--',
       header: 'Country',
       size: 160,
-      Cell: ({ row }) => (
-        <Box sx={{ color: '#f19828' }}>{row?.original?.country}</Box>
-      )
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
       accessorKey: 'is_active',
@@ -156,7 +159,7 @@ function CountryComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.created_by || '--',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By',
       size: 190
     },
@@ -170,7 +173,7 @@ function CountryComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 190
     }

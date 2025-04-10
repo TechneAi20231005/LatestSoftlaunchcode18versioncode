@@ -190,7 +190,7 @@ function DynamicFormComponent() {
     {
       accessorKey: 'counter',
       header: 'Sr',
-      size: 70,
+      size: 90,
       enableColumnOrdering: false,
       enableGrouping: false,
       enableColumnFilter: false
@@ -198,7 +198,7 @@ function DynamicFormComponent() {
     {
       accessorKey: 'template_name',
       header: 'Form Name',
-      size: 160,
+      size: 200,
       filterVariant: 'autocomplete',
       muiTableBodyCellProps: () => ({
         sx: {
@@ -230,25 +230,34 @@ function DynamicFormComponent() {
       }
     },
     {
-      accessorFn: (originalRow) => {
-        return moment(originalRow.created_at).startOf('day').toDate();
-      },
       header: 'Created At',
-      filterVariant: 'date',
-      Cell: ({ cell }) =>
-        moment(cell.row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+      accessorKey: 'created_at',
+      filterVariant: 'date-range',
+      accessorFn: (row) => new Date(row.created_at),
+      Cell: ({ row }) =>
+        row.original.created_at
+          ? moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--',
+      size: 350
     },
     {
-      accessorKey: 'created_by',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By'
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_at || '--',
-      header: 'Updated At'
+      accessorKey: 'updated_at',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      accessorFn: (row) => new Date(row.updated_at),
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_by || '--',
-      header: 'Updated By'
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By',
+      size: 200
     }
   ];
 

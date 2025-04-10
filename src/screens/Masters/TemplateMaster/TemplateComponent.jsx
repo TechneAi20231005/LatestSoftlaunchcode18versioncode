@@ -7,18 +7,12 @@ import PageHeader from '../../../components/Common/PageHeader';
 
 import Alert from '../../../components/Common/Alert';
 
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-
 import { useDispatch, useSelector } from 'react-redux';
 import { exportTempateData, templateData } from './TemplateComponetAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
 
-// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 import { Box } from '@mui/material';
-// import { original } from '@reduxjs/toolkit';
 
 function TemplateComponent() {
   const location = useLocation();
@@ -31,10 +25,6 @@ function TemplateComponent() {
       TemplateComponetSlice.tempateMaster.isLoading.templateDataList
   );
 
-  const exportData = useSelector(
-    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.exportData
-  );
-
   const notify = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
   );
@@ -44,19 +34,6 @@ function TemplateComponent() {
 
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(exportData, searchTerm);
-    setFilteredData(filteredList);
-  }, [templatedata, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(exportData);
-  };
 
   const columns = [
     {
@@ -89,29 +66,12 @@ function TemplateComponent() {
       accessorFn: (originalRow) => originalRow.template_name || '--',
       header: 'Template Name',
       size: 220,
-      Cell: ({ row }) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.original?.template_name && (
-            <OverlayTrigger
-              overlay={<Tooltip>{row?.original?.template_name} </Tooltip>}
-            >
-              <Box sx={{ color: '#f19828' }}>
-                <span className="ms-1">
-                  {' '}
-                  {row?.original?.template_name &&
-                  row?.original.template_name.length < 10
-                    ? row?.original?.template_name
-                    : row?.original?.template_name.substring(0, 10) + '....'}
-                </span>
-              </Box>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
       header: 'Status',
@@ -143,7 +103,7 @@ function TemplateComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.created_by || '--',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By',
       size: 180
     },
@@ -159,7 +119,7 @@ function TemplateComponent() {
           : '--'
     },
     {
-      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 190
     }
@@ -184,9 +144,7 @@ function TemplateComponent() {
     fileName: 'Template Master Record'
   };
   useEffect(() => {
-    dispatch(exportTempateData());
     dispatch(templateData());
-
     if (!templatedata.length) {
       dispatch(getRoles());
     }
@@ -204,9 +162,6 @@ function TemplateComponent() {
     setFilteredData(templatedata);
   }, [templatedata]);
 
-  useEffect(() => {
-    handleSearch();
-  }, [handleSearch, searchTerm]);
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
@@ -230,37 +185,14 @@ function TemplateComponent() {
         }}
       />
 
-      {/* <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by template name...."
-        exportFileName="Template Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      /> */}
-
       <div className="card mt-2">
-        {exportData && (
+        {filteredData && (
           <MaterialTable
             exportDataKeys={exportDataKeys}
             isLoading={isLoading}
             data={filteredData}
             columns={columns}
           />
-
-          // <DataTable
-          //   columns={columns}
-          //   data={filteredData}
-          //   defaultSortField="title"
-          //   pagination
-          //   selectableRows={false}
-          //   progressPending={isLoading}
-          //   progressComponent={<TableLoadingSkelton />}
-          //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-          //   highlightOnHover={true}
-          // />
         )}
       </div>
     </div>

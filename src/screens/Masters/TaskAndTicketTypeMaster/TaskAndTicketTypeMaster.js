@@ -401,8 +401,8 @@ function TaskAndTicketTypeMaster(props) {
   // const [parent, setParent] = useState();
   const [taskData, setTaskData] = useState([]);
   const [ticketData, setTicketData] = useState([]);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  // const [searchTerm, setSearchTerm] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
 
   const [exportData, setExportData] = useState(null);
   // const [isOpen, setIsOpen] = useState(false);
@@ -443,21 +443,19 @@ function TaskAndTicketTypeMaster(props) {
 
   //search function
 
-  const handleSearch = useCallback(() => {
-    setNotify(null);
-    const filteredList = customSearchHandler(data, searchTerm);
-    setFilteredData(filteredList);
-  }, [data, searchTerm]);
+  // const handleSearch = useCallback(() => {
+  //   setNotify(null);
+  //   const filteredList = customSearchHandler(data, searchTerm);
+  //   setFilteredData(filteredList);
+  // }, [data, searchTerm]);
 
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(data);
-  };
+  // // Function to handle reset button click
+  // const handleReset = () => {
+  //   setSearchTerm('');
+  //   setFilteredData(data);
+  // };
   const loadData = async () => {
     const exportTempData = [];
-    setIsLoading(true);
-
     await new TaskTicketTypeService()
       .getAllTaskTicketType(selectedType)
       .then((res) => {
@@ -486,9 +484,7 @@ function TaskAndTicketTypeMaster(props) {
                 updated_by: temp[key].updated_by
               });
             }
-            setData(null);
             setData(tempData);
-            setIsLoading(false);
             for (const i in temp) {
               exportTempData.push({
                 SrNo: exportTempData.length + 1,
@@ -517,7 +513,9 @@ function TaskAndTicketTypeMaster(props) {
             setExportData(exportTempData);
           }
         }
-      });
+      })
+      .catch((error) => errorHandler(error))
+      .finally(() => setIsLoading(false));
 
     // await new TaskTicketTypeService().getParent().then((res) => {
     //   if (res.status === 200) {
@@ -536,7 +534,8 @@ function TaskAndTicketTypeMaster(props) {
         if (res?.status === 200) {
           setTaskData(res?.data?.data?.data);
         }
-      });
+      })
+      .catch((error) => errorHandler(error));
 
     // await new TaskTicketTypeService()?.getTaskType()?.then((res) => {
     //   if (res?.status === 200) {
@@ -633,6 +632,7 @@ function TaskAndTicketTypeMaster(props) {
 
   const [selectedType, setSelectedType] = useState('TASK'); // State to track selected type
   const handleType = async (e) => {
+    setIsLoading(true);
     setData([]);
     setSelectedType(e.target.value); // Update the selected type when a radio button is clicked
 
@@ -642,7 +642,9 @@ function TaskAndTicketTypeMaster(props) {
         if (res?.status === 200) {
           setTicketData(res?.data?.data?.data);
         }
-      });
+      })
+      .catch((error) => errorHandler(error));
+    // .finally(() => setIsLoading(false));
     await new TaskTicketTypeService()
       .getAllTaskTicketType(e.target.value)
       .then((res) => {
@@ -696,7 +698,9 @@ function TaskAndTicketTypeMaster(props) {
             setExportData(exportTempData);
           }
         }
-      });
+      })
+      .catch((error) => errorHandler(error))
+      .finally(() => setIsLoading(false));
   };
 
   // const columns = [
@@ -915,24 +919,33 @@ function TaskAndTicketTypeMaster(props) {
       }
     },
     {
-      accessorFn: (originalRow) => {
-        return moment(originalRow.created_at).startOf('day').toDate();
-      },
       header: 'Created At',
-      filterVariant: 'date',
-      Cell: ({ cell }) =>
-        moment(cell.row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+      accessorKey: 'created_at',
+      filterVariant: 'date-range',
+      accessorFn: (row) => new Date(row.created_at),
+      Cell: ({ row }) =>
+        row.original.created_at
+          ? moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--',
+      size: 350
     },
     {
-      accessorKey: 'created_by',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By'
     },
+
     {
-      accessorFn: (originalRow) => originalRow?.updated_at || '--',
-      header: 'Updated At'
+      accessorKey: 'updated_at',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      accessorFn: (row) => new Date(row.updated_at),
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By'
     }
   ];
@@ -1059,13 +1072,13 @@ function TaskAndTicketTypeMaster(props) {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  useEffect(() => {
-    setFilteredData(data);
-  }, [data]);
+  // useEffect(() => {
+  //   setFilteredData(data);
+  // }, [data]);
 
-  useEffect(() => {
-    handleSearch();
-  }, [handleSearch, searchTerm]);
+  // useEffect(() => {
+  //   handleSearch();
+  // }, [handleSearch, searchTerm]);
 
   useEffect(() => {
     // Check if the modal is closed
@@ -1544,8 +1557,9 @@ function TaskAndTicketTypeMaster(props) {
         {data && (
           <MaterialTable
             columns={columns}
-            data={filteredData}
+            data={data}
             reset={reset}
+            isLoading={isLoading}
             setReset={setReset}
             exportDataKeys={exportDataKeys}
           ></MaterialTable>

@@ -490,7 +490,6 @@ export const DashbordSlice = createSlice({
     });
 
     builder.addCase(getEmployeeData.fulfilled, (state, action) => {
-      state.isLoading.employeeDataList = false;
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let employeeData = payload.data.data?.data;
@@ -569,6 +568,7 @@ export const DashbordSlice = createSlice({
           });
         }
         state.exportUserData = exportUserData;
+        state.isLoading.employeeDataList = false;
       }
     });
     builder.addCase(getEmployeeData.rejected, (state) => {
@@ -741,13 +741,13 @@ export const DashbordSlice = createSlice({
       // state.notify=null
     });
     builder.addCase(getCustomerData.fulfilled, (state, action) => {
-      state.isLoading.getCustomerList = false;
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getAllCustomerData = payload.data.data?.data;
         let getCustomerData = payload.data.data?.data
           .filter((d) => d.is_active == 1)
           .map((d) => ({ value: d.id, label: d.name }));
+
         state.status = 'succeded';
         state.showLoaderModal = false;
         let count = 1;
@@ -779,6 +779,7 @@ export const DashbordSlice = createSlice({
         });
       }
       state.exportCustomerData = exportCustomerData;
+      state.isLoading.getCustomerList = false;
     });
     builder.addCase(getCustomerData.rejected, (state) => {
       state.status = 'rejected';

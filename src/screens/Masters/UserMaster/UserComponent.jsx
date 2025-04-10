@@ -35,25 +35,24 @@ function UserComponent() {
   const employeeData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.employeeData
   );
-  const isLoding = useSelector(
+  const isLoading = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.isLoading.employeeDataList
   );
   //local state
-  const [searchTerm, setSearchTerm] = useState('');
+  // const [searchTerm, setSearchTerm] = useState('');
 
-  const [filteredData, setFilteredData] = useState([]);
   //search function
 
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(employeeData, searchTerm);
-    setFilteredData(filteredList);
-  }, [employeeData, searchTerm]);
+  // const handleSearch = useCallback(() => {
+  //   const filteredList = customSearchHandler(employeeData, searchTerm);
+  //   setFilteredData(filteredList);
+  // }, [employeeData, searchTerm]);
 
   // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(employeeData);
-  };
+  // const handleReset = () => {
+  //   setSearchTerm('');
+  //   setFilteredData(employeeData);
+  // };
   const exportDataKeys = {
     account_for: 'Account_For',
     customer: 'Customer Name',
@@ -127,9 +126,12 @@ function UserComponent() {
       accessorFn: (originalRow) => originalRow?.name || '--',
       header: 'Name',
       size: 180,
-      Cell: ({ row }) => (
-        <Box sx={{ color: '#f19828' }}>{row?.original?.name}</Box>
-      )
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
       accessorFn: (originalRow) => originalRow?.email_id || '--',
@@ -267,13 +269,13 @@ function UserComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-  useEffect(() => {
-    setFilteredData(employeeData);
-  }, [employeeData]);
+  // useEffect(() => {
+  //   setFilteredData(employeeData);
+  // }, [employeeData]);
 
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
+  // useEffect(() => {
+  //   handleSearch();
+  // }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -308,12 +310,12 @@ function UserComponent() {
         showExportButton={true}
       /> */}
       <div className="card mt-2 px-0">
-        {filteredData && (
+        {employeeData && (
           <MaterialTable
             exportDataKeys={exportDataKeys}
-            isLoading={isLoding}
+            isLoading={isLoading}
             columns={columns}
-            data={filteredData}
+            data={employeeData}
           />
         )}
       </div>

@@ -25,7 +25,6 @@ import {
 
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
 import { handleModalClose, handleGeneralModal } from '../SettingSlice';
-import { customSearchHandler } from '../../../utils/customFunction';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
@@ -52,36 +51,9 @@ function GeneralSettings() {
     (SettingSlice) => SettingSlice.generalSetting.modal
   );
 
-  //local state
-  const data = null;
-  const exportData = null;
   const [user, setUser] = useState(null);
   const [reset, setReset] = useState(false);
-  const userDetail = useRef();
 
-  const userValue = useRef();
-
-  const useSetting = useRef();
-  const useRemark = useRef();
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(
-      getAllgeneralSettingData,
-      searchTerm
-    );
-    setFilteredData(filteredList);
-  }, [getAllgeneralSettingData, searchTerm]);
-
-  const handleReset = () => {
-    setSearchTerm('');
-  };
-
-  //Data Table columns
   const loadData = useCallback(async () => {
     const inputRequired = 'id,employee_id,first_name,last_name';
     dispatch(getGeneralSettingData());
@@ -101,44 +73,46 @@ function GeneralSettings() {
         errorHandler(error);
       });
 
-    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const data = res.data.data?.data
-            ?.filter((i) => i.is_active === 1)
-            ?.sort((a, b) => {
-              if (a.first_name && b.first_name) {
-                return a.first_name.localeCompare(b.first_name);
-              }
-              return 0;
-            });
-          setUser(
-            data.map((d) => ({
-              value: d.id,
-              // label: d.first_name + ' ' + d.last_name
-              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
-            }))
-          );
-        }
-      }
-    });
-    await new GeneralSettingService().getGeneralSetting().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          let data = [...res.data.data.data];
-          let count = 1;
-          for (let i = 0; i < data?.length; i++) {
-            data[i].counter = count++;
+    await new UserService()
+      .getUserForMyTickets(inputRequired)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            const data = res.data.data?.data
+              ?.filter((i) => i.is_active === 1)
+              ?.sort((a, b) => {
+                if (a.first_name && b.first_name) {
+                  return a.first_name.localeCompare(b.first_name);
+                }
+                return 0;
+              });
+            setUser(
+              data.map((d) => ({
+                value: d.id,
+                // label: d.first_name + ' ' + d.last_name
+                label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
+              }))
+            );
           }
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
+    await new GeneralSettingService()
+      .getGeneralSetting()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            let data = [...res.data.data.data];
+            let count = 1;
+            for (let i = 0; i < data?.length; i++) {
+              data[i].counter = count++;
+            }
+          }
+        }
+      })
+      .catch((error) => errorHandler(error));
   }, [dispatch]);
 
-  const clearFilters = () => {
-    setReset(true);
-  };
-  //columns
   const columns = useMemo(
     () => [
       {
@@ -148,6 +122,7 @@ function GeneralSettings() {
         enableColumnOrdering: false,
         enableGrouping: false,
         enableSorting: false,
+        enableColumnFilter: false,
         Cell: ({ row }) => (
           <div className="btn-group" role="group">
             <button
@@ -175,7 +150,8 @@ function GeneralSettings() {
         header: 'Sr',
         size: 90,
         enableColumnOrdering: false,
-        enableGrouping: false
+        enableGrouping: false,
+        enableColumnFilter: false
       },
       {
         header: 'Setting Name',
@@ -356,7 +332,6 @@ function GeneralSettings() {
         await dispatch(postGeneralSettingData(formData));
         setTimeout(() => {
           loadData();
-          clearFilters();
         }, 500);
       } else {
         await dispatch(
@@ -364,12 +339,10 @@ function GeneralSettings() {
         );
         setTimeout(() => {
           loadData();
-          clearFilters();
         }, 500);
       }
     } catch (error) {
       errorHandler(error);
-      clearFilters();
     } finally {
       setSubmitting(false);
     }
@@ -378,13 +351,7 @@ function GeneralSettings() {
   useEffect(() => {
     loadData();
   }, [loadData]);
-  useEffect(() => {
-    setFilteredData(getAllgeneralSettingData);
-  }, [getAllgeneralSettingData]);
 
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
   return (
     <div className="container-xxl">
       <PageHeader
@@ -415,7 +382,7 @@ function GeneralSettings() {
         <MaterialTable
           columns={columns}
           isLoading={isLoading}
-          data={filteredData}
+          data={getAllgeneralSettingData}
           reset={reset}
           setReset={setReset}
           isExportData={false}

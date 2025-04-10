@@ -1,19 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
-// import ErrorLogService from '../../../services/ErrorLogService';
 import ModuleService from '../../../services/ProjectManagementService/ModuleService';
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 import PageHeader from '../../../components/Common/PageHeader';
-// import Alert from '../../../components/Common/Alert';
-
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
 import { errorHandler } from '../../../utils';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { Box } from '@mui/material';
 function ModuleComponent() {
   //initial state
   const location = useLocation();
@@ -24,26 +16,9 @@ function ModuleComponent() {
   const [notify, setNotify] = useState(null);
   const [data, setData] = useState([]);
   const [exportData, setExportData] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [checkRole, setCheckRole] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(data, searchTerm);
-    setFilteredData(filteredList);
-  }, [data, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(data);
-  };
-
-  //Data Table columns
 
   const columns = [
     {
@@ -75,9 +50,12 @@ function ModuleComponent() {
       accessorFn: (originalRow) => originalRow.module_name || '--',
       header: 'Module Name',
       size: 200,
-      Cell: ({ row }) => (
-        <Box sx={{ color: '#f19828' }}>{row?.original?.module_name}</Box>
-      )
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
       accessorFn: (originalRow) => originalRow.project_name || '--',
@@ -124,7 +102,7 @@ function ModuleComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.created_by || '--',
+      accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
       header: 'Created By',
       size: 190
     },
@@ -138,7 +116,7 @@ function ModuleComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      accessorFn: (originalRow) => originalRow.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 190
     }
@@ -158,8 +136,6 @@ function ModuleComponent() {
   };
 
   const loadData = useCallback(async () => {
-    setIsLoading(true);
-
     const data = [];
     await new ModuleService()
       .getModule()
@@ -186,7 +162,6 @@ function ModuleComponent() {
 
           setData(null);
           setData(data);
-          setIsLoading(false);
 
           let exportData = [];
           for (const key in data) {
@@ -204,11 +179,13 @@ function ModuleComponent() {
             });
           }
           setExportData(exportData);
+          setIsLoading(false);
         }
       })
       .catch((error) => {
         errorHandler(error);
-      });
+      })
+      .finally(() => setIsLoading(false));
 
     await new ManageMenuService()
       .getRole(roleId)
@@ -239,13 +216,6 @@ function ModuleComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-  useEffect(() => {
-    setFilteredData(data);
-  }, [data]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -268,16 +238,6 @@ function ModuleComponent() {
           );
         }}
       />
-      {/* <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by module name...."
-        exportFileName="Module Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      /> */}
 
       <div className="mt-2">
         {data && (
@@ -285,17 +245,8 @@ function ModuleComponent() {
             exportDataKeys={exportDataKeys}
             isLoading={isLoading}
             columns={columns}
-            data={filteredData}
+            data={data}
           />
-          // <DataTable
-          //   columns={columns}
-          //   data={filteredData}
-          //   defaultSortField="title"
-          //   pagination
-          //   selectableRows={false}
-          //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-          //   highlightOnHover={true}
-          // />
         )}
       </div>
     </div>

@@ -18,7 +18,6 @@ import {
   updateStateData
 } from '../../Dashboard/DashboardAction';
 import { handleModalInStore } from '../../Dashboard/DashbordSlice';
-import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
@@ -41,114 +40,6 @@ function StateComponent() {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 6)
   );
 
-  //local state
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  // const handleSearch = useCallback(() => {
-  //   const filteredList = customSearchHandler(stateData, searchTerm);
-  //   setFilteredData(filteredList);
-  // }, [stateData, searchTerm]);
-
-  //reset function
-  // const handleReset = () => {
-  //   setSearchTerm('');
-  //   setFilteredData(stateData);
-  // };
-
-  // const columns = [
-
-  //     name: 'Action',
-  //     selector: (row) => {},
-  //     sortable: false,
-  //     cell: (row) => (
-  //       <div className="btn-group" role="group">
-  //         <button
-  //           type="button"
-  //           className="btn btn-outline-secondary"
-  //           data-bs-toggle="modal"
-  //           data-bs-target="#edit"
-  //           onClick={(e) => {
-  //             dispatch(
-  //               handleModalInStore({
-  //                 showModal: true,
-  //                 modalData: row,
-  //                 modalHeader: 'Edit State'
-  //               })
-  //             );
-  //           }}
-  //         >
-  //           <i className="icofont-edit text-success"></i>
-  //         </button>
-  //       </div>
-  //     ),
-  //     width: '80px'
-  //   },
-  //   {
-  //     name: 'Sr',
-  //     selector: (row) => row.counter,
-  //     sortable: true,
-  //     width: '60px'
-  //   },
-  //   {
-  //     name: 'State',
-  //     selector: (row) => row.state,
-  //     sortable: true,
-  //     width: '125px'
-  //   },
-  //   {
-  //     name: 'Country',
-  //     selector: (row) => row.country,
-  //     sortable: true,
-  //     width: '125px'
-  //   },
-  //   {
-  //     name: 'Status',
-  //     selector: (row) => row.is_active,
-  //     sortable: true,
-  //     cell: (row) => (
-  //       <div>
-  //         {row.is_active === 1 && (
-  //           <span className="badge bg-primary" style={{ width: '4rem' }}>
-  //             Active
-  //           </span>
-  //         )}
-  //         {row.is_active === 0 && (
-  //           <span className="badge bg-danger" style={{ width: '4rem' }}>
-  //             Deactive
-  //           </span>
-  //         )}
-  //       </div>
-  //     ),
-  //     width: '100px'
-  //   },
-  //   {
-  //     name: 'Created At',
-  //     selector: (row) => row.created_at,
-  //     sortable: true,
-  //     width: '175px'
-  //   },
-  //   {
-  //     name: 'Created By',
-  //     selector: (row) => row.created_by,
-  //     sortable: true,
-  //     width: '175px'
-  //   },
-  //   {
-  //     name: 'Updated At',
-  //     selector: (row) => row.updated_at,
-  //     sortable: true,
-  //     width: '175px'
-  //   },
-  //   {
-  //     name: 'Updated By',
-  //     selector: (row) => row.updated_by,
-  //     sortable: true,
-  //     width: '175px'
-  //   }
-  // ];
   const [reset, setReset] = useState(false);
   const clearFilters = () => {
     setReset(true);
@@ -161,6 +52,7 @@ function StateComponent() {
       enableColumnOrdering: false,
       enableGrouping: false,
       enableSorting: false,
+      enableColumnFilter: false,
       Cell: ({ row }) => {
         return (
           <div className="btn-group" role="group">
@@ -190,7 +82,8 @@ function StateComponent() {
       header: 'Sr',
       size: 70,
       enableColumnOrdering: false,
-      enableGrouping: false
+      enableGrouping: false,
+      enableColumnFilter: false
     },
     {
       accessorKey: 'state',
@@ -241,7 +134,7 @@ function StateComponent() {
         moment(cell.row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
     },
     {
-      accessorKey: 'created_by',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By'
     },
     {
@@ -255,7 +148,7 @@ function StateComponent() {
           : '--'
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By'
     }
   ];
@@ -323,16 +216,7 @@ function StateComponent() {
     fileName: 'State Master Record'
   };
 
-  useEffect(() => {
-    setFilteredData(stateData);
-  }, [stateData]);
-
-  // useEffect(() => {
-  //   handleSearch();
-  // }, [searchTerm, handleSearch]);
-
   const fields = [
-    // { name: 'project_id', label: 'Project name', required: true },
     {
       name: 'country_id',
       label: 'Country name',
@@ -398,39 +282,16 @@ function StateComponent() {
         }}
       />
 
-      {/* <SearchBoxHeader
-          setSearchTerm={setSearchTerm}
-          searchTerm={searchTerm}
-          handleSearch={handleSearch}
-          handleReset={handleReset}
-          placeholder="Search by state name...."
-          exportFileName="State Master Record"
-          exportData={exportData}
-          showExportButton={true}
-          clientSearch={true}
-        /> */}
-      {console.log('filteredData : ', filteredData)}
       <div className="card mt-2">
         {stateData && (
           <MaterialTable
             columns={columns}
-            data={filteredData}
+            data={stateData}
             isLoading={isLoading}
             reset={reset}
             setReset={setReset}
             exportDataKeys={exportDataKeys}
           />
-          // <DataTable
-          //   columns={columns}
-          //   data={filteredData}
-          //   defaultSortField="title"
-          //   pagination
-          //   selectableRows={false}
-          //   progressPending={isLoading}
-          //   progressComponent={<TableLoadingSkelton />}
-          //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-          //   highlightOnHover={true}
-          // />
         )}
       </div>
 

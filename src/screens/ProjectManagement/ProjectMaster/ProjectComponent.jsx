@@ -1,24 +1,14 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-// import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
-// import ErrorLogService from '../../../services/ErrorLogService';
 import ProjectService from '../../../services/ProjectManagementService/ProjectService';
 
 import PageHeader from '../../../components/Common/PageHeader';
-// import Alert from '../../../components/Common/Alert';
-
-// import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-// import Tooltip from 'react-bootstrap/Tooltip';
 
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
-// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
 import { errorHandler } from '../../../utils';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { Box } from '@mui/material';
 
 function ProjectComponent() {
   //initial state
@@ -30,31 +20,11 @@ function ProjectComponent() {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 20)
   );
 
-  //local state
-
   const [notify, setNotify] = useState('');
   const [data, setData] = useState([]);
   const [exportData, setExportData] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // const [showLoaderModal, setShowLoaderModal] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(data, searchTerm);
-    setFilteredData(filteredList);
-  }, [data, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(data);
-  };
-
-  //Data Table columns
   const columns = [
     {
       accessorKey: 'action',
@@ -85,11 +55,12 @@ function ProjectComponent() {
       accessorFn: (originalRow) => originalRow?.project_name || '--',
       header: 'Project Name',
       size: 200,
-      Cell: ({ row }) => {
-        return (
-          <Box sx={{ color: '#f19828' }}>{row?.original?.project_name}</Box>
-        );
-      }
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
       accessorFn: (originalRow) => originalRow?.projectReviewer || '--',
@@ -101,16 +72,6 @@ function ProjectComponent() {
       accessorFn: (originalRow) => originalRow?.description || '--',
       header: 'Description',
       size: 190
-
-      // Cell: ({ cell }) => {
-      //   return (
-      //     <div className="btn-group" role="group" aria-label="Project Name">
-      //       <OverlayTrigger overlay={<Tooltip>{cell.getValue()}</Tooltip>}>
-      //       <span>{cell.getValue()}</span>
-      //       </OverlayTrigger>
-      //     </div>
-      //   );
-      // }
     },
     {
       accessorKey: 'is_active',
@@ -147,7 +108,7 @@ function ProjectComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow?.created_by || '--',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By',
       size: 190
     },
@@ -162,7 +123,7 @@ function ProjectComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 190
     }
@@ -182,9 +143,6 @@ function ProjectComponent() {
   };
 
   const loadData = useCallback(async () => {
-    // setShowLoaderModal(null);
-    // setShowLoaderModal(true);
-    setIsLoading(true);
     const data = [];
     await new ProjectService()
       .getProject()
@@ -211,7 +169,6 @@ function ProjectComponent() {
           }
           setData(null);
           setData(data);
-          setIsLoading(false);
 
           let exportData = [];
           let count = 1;
@@ -231,10 +188,14 @@ function ProjectComponent() {
             });
           }
           setExportData(exportData);
+          setIsLoading(false);
         }
       })
       .catch((error) => {
         errorHandler(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
 
     dispatch(getRoles());
@@ -249,18 +210,9 @@ function ProjectComponent() {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-      // alert("Rushi")
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-  useEffect(() => {
-    setFilteredData(data);
-  }, [data]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -284,35 +236,14 @@ function ProjectComponent() {
         }}
       />
 
-      {/* <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by project name...."
-        exportFileName="Project Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      /> */}
-
       <div className="card mt-2">
         {data && (
           <MaterialTable
             exportDataKeys={exportDataKeys}
             isLoading={isLoading}
             columns={columns}
-            data={filteredData}
+            data={data}
           />
-
-          // <DataTable
-          //   columns={columns}
-          //   data={filteredData}
-          //   defaultSortField="title"
-          //   pagination
-          //   selectableRows={false}
-          //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-          //   highlightOnHover={true}
-          // />
         )}
       </div>
     </div>

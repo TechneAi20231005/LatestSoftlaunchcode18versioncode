@@ -219,7 +219,6 @@ function CreateUserComponent({ match }) {
         ...state,
         passwordErr: ' Please maintain password length 6 to 20 characters'
       });
-      alert('Please maintain password length 6 to 20 characters');
 
       flag = 1;
     } else if (selectPassword.length > 20) {
@@ -227,7 +226,6 @@ function CreateUserComponent({ match }) {
         ...state,
         passwordErr: ' Please maintain password length 6 to 20 characters'
       });
-      alert('Please maintain password length 6 to 20 characters');
 
       flag = 1;
     } else if (selectContactNo.length < 10) {
@@ -243,13 +241,10 @@ function CreateUserComponent({ match }) {
       });
       flag = 1;
     } else if (contactValid === true) {
-      alert('Enter valid Contact Number');
       flag = 1;
     } else if (whatsappValid === true) {
-      alert('Enter valid Whatsapp Number');
       flag = 1;
     } else if (mailError === true) {
-      alert('Invalid Email');
       flag = 1;
     }
     return flag;
@@ -405,15 +400,12 @@ function CreateUserComponent({ match }) {
     }
 
     if (confirmPasswordError === true) {
-      alert('Password Does not Match');
       setLoading(false); // Reset loading state
       return false;
     } else if (mailError === true) {
-      alert('Enter valid email');
       setLoading(false); // Reset loading state
       return false;
     } else if (pincodeValid === true) {
-      alert('Enter valid Pincode');
       setLoading(false); // Reset loading state
       return false;
     } else if (
