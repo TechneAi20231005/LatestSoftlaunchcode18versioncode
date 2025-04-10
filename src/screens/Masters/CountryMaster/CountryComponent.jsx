@@ -156,7 +156,7 @@ function CountryComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.created_by || '--',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By',
       size: 190
     },
@@ -170,7 +170,7 @@ function CountryComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 190
     }

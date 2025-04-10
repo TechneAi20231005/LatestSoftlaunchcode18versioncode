@@ -1,126 +1,27 @@
-import React, { useCallback, useEffect, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
-import DataTable from 'react-data-table-component';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
-import ErrorLogService from '../../../services/ErrorLogService';
-
 import DynamicFormDropdownMasterService from '../../../services/MastersService/DynamicFormDropdownMasterService';
 import PageHeader from '../../../components/Common/PageHeader';
-
 import Alert from '../../../components/Common/Alert';
-
 import 'react-data-table-component-extensions/dist/index.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
-
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
 import moment from 'moment';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import { errorHandler } from '../../../utils';
 
 export default function DynamicFormDropdownComponent() {
   //initial state
-  const location = useLocation();
   const dispatch = useDispatch();
-
-  //redux state
-  const checkRole = useSelector((DashbordSlice) =>
-    DashbordSlice?.dashboard?.getRoles.filter((d) => d.menu_id === 35)
-  );
-
-  //local state
+  const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
 
   const [notify, setNotify] = useState();
-  const [isLoading, setIsLoading] = useState(false);
 
-  const [exportData, setExportData] = useState(null);
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(data, searchTerm);
-    setFilteredData(filteredList);
-  }, [data, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(data);
-  };
-
-  // const columns = [
-  //   {
-  //     name: 'Action',
-  //     selector: (row) => {},
-  //     sortable: false,
-  //     cell: (row) => (
-  //       <div className="btn-group" role="group">
-  //         <Link
-  //           to={`/${_base}/DynamicFormDropdown/Edit/` + row.id}
-  //           className="btn btn-outline-secondary"
-  //         >
-  //           <i className="icofont-edit text-success"></i>
-  //         </Link>
-  //       </div>
-  //     )
-  //   },
-  //   { name: 'Sr', selector: (row) => row.counter, sortable: true },
-
-  //   {
-  //     name: 'Dropdown Name',
-  //     selector: (row) => row.dropdown_name,
-  //     sortable: true,
-  //     cell: (row) => (
-  //       <div
-  //         className="btn-group"
-  //         role="group"
-  //         aria-label="Basic outlined example"
-  //       >
-  //         {row?.dropdown_name && (
-  //           <OverlayTrigger overlay={<Tooltip>{row?.dropdown_name} </Tooltip>}>
-  //             <div>
-  //               <span className="ms-1">
-  //                 {' '}
-  //                 {row?.dropdown_name && row.dropdown_name?.length < 10
-  //                   ? row?.dropdown_name
-  //                   : row?.dropdown_name.substring(0, 10) + '....'}
-  //               </span>
-  //             </div>
-  //           </OverlayTrigger>
-  //         )}
-  //       </div>
-  //     )
-  //   },
-
-  //   {
-  //     name: 'Status',
-  //     selector: (row) => row.is_active,
-  //     sortable: true,
-  //     cell: (row) => (
-  //       <div>
-  //         {row.is_active === 1 && (
-  //           <span className="badge bg-primary">Active</span>
-  //         )}
-  //         {row.is_active === 0 && (
-  //           <span className="badge bg-danger">Deactive</span>
-  //         )}
-  //       </div>
-  //     )
-  //   },
-
-  //   { name: 'Created At', selector: (row) => row.created_at, sortable: true },
-  //   { name: 'Created By', selector: (row) => row.created_by, sortable: true },
-
-  //   { name: 'Updated At', selector: (row) => row.updated_at, sortable: true },
-  //   { name: 'Updated By', selector: (row) => row.updated_by, sortable: true }
-  // ];
+  const checkRole = useSelector((DashbordSlice) =>
+    DashbordSlice?.dashboard?.getRoles.filter((d) => d.menu_id === 35)
+  );
 
   const columns = [
     {
@@ -199,7 +100,7 @@ export default function DynamicFormDropdownComponent() {
       size: 350
     },
     {
-      accessorKey: 'created_by',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By'
     },
     {
@@ -213,7 +114,7 @@ export default function DynamicFormDropdownComponent() {
           : '--'
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By'
     }
   ];
@@ -229,86 +130,43 @@ export default function DynamicFormDropdownComponent() {
   };
 
   const loadData = async () => {
-    setIsLoading(true); // Set loading state to true when starting data fetching
-
     try {
-      const res =
+      setIsLoading(true);
+
+      const response =
         await new DynamicFormDropdownMasterService().getAllDynamicFormDropdown();
 
-      if (res.status === 200) {
-        let counter = 1;
-        const temp = res.data.data?.data;
-        const data = [];
-        const exportTempData = [];
-
-        for (const key in temp) {
-          data.push({
-            counter: counter++,
-            id: temp[key].id,
-            dropdown_name: temp[key].dropdown_name,
-            is_active: temp[key].is_active,
-            updated_at: temp[key].updated_at,
-            created_at: temp[key].created_at,
-            created_by: temp[key].created_by,
-            updated_by: temp[key].updated_by
-          });
-        }
-
-        setData(data);
-        // setDataa(data);
-
-        for (const key in data) {
-          exportTempData.push({
-            Sr: data[key].counter,
-            Dropdown: data[key].dropdown_name,
-            Status: data[key].is_active ? 'Active' : 'Deactive',
-            created_at: temp[key].created_at,
-            created_by: temp[key].created_by,
-            updated_at: data[key].updated_at,
-            updated_by: data[key].updated_by
-          });
-        }
-
-        setExportData(exportTempData);
+      if (response.status === 200) {
+        const temp = response?.data?.data?.data || [];
+        const formattedData = temp.map((item, index) => ({
+          counter: index + 1,
+          id: item.id,
+          dropdown_name: item.dropdown_name,
+          is_active: item.is_active,
+          updated_at: item.updated_at,
+          created_at: item.created_at,
+          created_by: item.created_by,
+          updated_by: item.updated_by
+        }));
+        setData(formattedData);
+        setIsLoading(false);
       }
     } catch (error) {
-      const { response } = error;
-
-      if (response) {
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'Status',
-          'Get_Status',
-          'INSERT',
-          errorObject.data.message
-        );
-      }
+      errorHandler(error);
     } finally {
       setIsLoading(false);
     }
   };
-
   useEffect(() => {
     loadData();
-    if (location && location?.state) {
-      setNotify(location?.state?.alert);
-    }
-    if (!checkRole?.length) {
-      dispatch(getRoles());
-    }
-  }, [checkRole.length, dispatch, location]);
-  useEffect(() => {
-    if (checkRole && checkRole[0]?.can_read === 0) {
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
-    }
-  }, [checkRole]);
-  useEffect(() => {
-    setFilteredData(data);
-  }, [data]);
+  }, []);
 
   useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
+    if (checkRole?.length === 0) {
+      dispatch(getRoles());
+    }
+  }, [checkRole.length]);
+
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
@@ -327,41 +185,17 @@ export default function DynamicFormDropdownComponent() {
           );
         }}
       />
-      {/* <SearchBoxHeader
-        searchTerm={searchTerm}
-        setSearchTerm={setSearchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by dropdown name...."
-        exportFileName="Dropdown Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      /> */}
 
-      {/* <div className="card mt-2"> */}
       <div className="card mt-2">
-        {/* {!isLoading && data && (
-                <DataTable
-                  columns={columns}
-                  data={filteredData}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                />
-              )} */}
         {data && (
           <MaterialTable
             columns={columns}
-            data={filteredData}
             isLoading={isLoading}
+            data={data}
             exportDataKeys={exportDataKeys}
           ></MaterialTable>
         )}
       </div>
     </div>
-
-    // </div>
   );
 }

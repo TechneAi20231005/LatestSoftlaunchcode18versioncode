@@ -241,7 +241,7 @@ function DynamicFormComponent() {
       size: 350
     },
     {
-      accessorKey: 'created_by',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By'
     },
     {
@@ -255,7 +255,7 @@ function DynamicFormComponent() {
           : '--'
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By'
     }
   ];

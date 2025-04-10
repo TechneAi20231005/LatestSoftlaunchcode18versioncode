@@ -30,10 +30,14 @@ function TemplateComponent() {
     (TemplateComponetSlice) =>
       TemplateComponetSlice.tempateMaster.isLoading.templateDataList
   );
-
-  const exportData = useSelector(
-    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.exportData
-  );
+  // const exportIsLoading = useSelector(
+  //   (TemplateComponetSlice) =>
+  //     TemplateComponetSlice.tempateMaster.isLoading.exportTempateDataList
+  // );
+  // console.log('isloading', isLoading, exportIsLoading);
+  // const exportData = useSelector(
+  //   (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.exportData
+  // );
 
   const notify = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
@@ -47,16 +51,16 @@ function TemplateComponent() {
 
   //search function
 
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(exportData, searchTerm);
-    setFilteredData(filteredList);
-  }, [templatedata, searchTerm]);
+  // const handleSearch = useCallback(() => {
+  //   const filteredList = customSearchHandler(exportData, searchTerm);
+  //   setFilteredData(filteredList);
+  // }, [templatedata, searchTerm]);
 
   // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(exportData);
-  };
+  // const handleReset = () => {
+  //   setSearchTerm('');
+  //   setFilteredData(exportData);
+  // };
 
   const columns = [
     {
@@ -90,27 +94,19 @@ function TemplateComponent() {
       header: 'Template Name',
       size: 220,
       Cell: ({ row }) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
+        <>
           {row?.original?.template_name && (
-            <OverlayTrigger
-              overlay={<Tooltip>{row?.original?.template_name} </Tooltip>}
-            >
-              <Box sx={{ color: '#f19828' }}>
-                <span className="ms-1">
-                  {' '}
-                  {row?.original?.template_name &&
-                  row?.original.template_name.length < 10
-                    ? row?.original?.template_name
-                    : row?.original?.template_name.substring(0, 10) + '....'}
-                </span>
-              </Box>
-            </OverlayTrigger>
+            <Box sx={{ color: '#f19828' }}>
+              <span className="ms-1">
+                {' '}
+                {row?.original?.template_name &&
+                row?.original.template_name.length < 25
+                  ? row?.original?.template_name
+                  : row?.original?.template_name.substring(0, 25) + '....'}
+              </span>
+            </Box>
           )}
-        </div>
+        </>
       )
     },
     {
@@ -143,7 +139,7 @@ function TemplateComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.created_by || '--',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By',
       size: 180
     },
@@ -159,7 +155,7 @@ function TemplateComponent() {
           : '--'
     },
     {
-      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 190
     }
@@ -184,9 +180,7 @@ function TemplateComponent() {
     fileName: 'Template Master Record'
   };
   useEffect(() => {
-    dispatch(exportTempateData());
     dispatch(templateData());
-
     if (!templatedata.length) {
       dispatch(getRoles());
     }
@@ -204,9 +198,9 @@ function TemplateComponent() {
     setFilteredData(templatedata);
   }, [templatedata]);
 
-  useEffect(() => {
-    handleSearch();
-  }, [handleSearch, searchTerm]);
+  // useEffect(() => {
+  //   handleSearch();
+  // }, [handleSearch, searchTerm]);
   return (
     <div className="container-xxl">
       {notify && <Alert alertData={notify} />}
@@ -242,7 +236,7 @@ function TemplateComponent() {
       /> */}
 
       <div className="card mt-2">
-        {exportData && (
+        {filteredData && (
           <MaterialTable
             exportDataKeys={exportDataKeys}
             isLoading={isLoading}
