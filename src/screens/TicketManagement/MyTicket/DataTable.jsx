@@ -49,21 +49,23 @@ const DataTableCustom = React.memo(
       {
         accessorKey: 'description',
         header: 'Description',
-        enableColumnFilter: false
+        enableColumnFilter: false,
+        size: 250,
       },
       {
         accessorKey: 'ticket_date',
-        header: 'Ticket Raised Date',
+        header: 'Ticket Date',
         filterVariant: 'date-range',
       },
       {
         accessorKey: 'expected_solve_date',
-        header: 'Expected Solve Date'
+        header: 'Expected Solve Date',
+        enableColumnFilter: false
       },
       {
         accessorKey: 'priority',
         header: 'Priority',
-        size: 120,
+        size: 160,
         enableColumnFilter: false,
         Cell: ({ cell }) => {
           const priority = cell.getValue();
@@ -104,6 +106,7 @@ const DataTableCustom = React.memo(
         accessorFn: (originalRows) =>
           originalRows?.assign_to_department?.department || '--',
         header: 'Assign To Dept',
+        size: 220,
         filterVariant: 'multi-select',
         filterSelectOptions: allDepartmentData?.selectData
       },
@@ -113,6 +116,7 @@ const DataTableCustom = React.memo(
             originalRows?.assignee?.last_name || '--'
           }`,
         header: 'Assigned To',
+        size: 220,
         filterVariant: 'multi-select',
         filterSelectOptions: allUsersData?.selectData
       },
