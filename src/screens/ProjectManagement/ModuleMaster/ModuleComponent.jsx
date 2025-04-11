@@ -13,9 +13,7 @@ function ModuleComponent() {
 
   //local state
 
-  const [notify, setNotify] = useState(null);
   const [data, setData] = useState([]);
-  const [exportData, setExportData] = useState();
   const [isLoading, setIsLoading] = useState(true);
 
   const [checkRole, setCheckRole] = useState(null);
@@ -140,9 +138,9 @@ function ModuleComponent() {
     await new ModuleService()
       .getModule()
       .then((res) => {
-        if (res.status === 200) {
+        if (res?.status === 200) {
           let counter = 1;
-          const temp = res.data.data.data;
+          const temp = res?.data?.data?.data;
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -162,23 +160,6 @@ function ModuleComponent() {
 
           setData(null);
           setData(data);
-
-          let exportData = [];
-          for (const key in data) {
-            exportData.push({
-              SrNo: exportData.length + 1,
-              module_name: data[key].module_name,
-              project_name: data[key].project_name,
-              description: data[key].description,
-              remark: data[key].remark,
-              Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
-              created_by: temp[key].created_by,
-              created_at: temp[key].created_at,
-              updated_by: data[key].updated_by,
-              updated_at: data[key].updated_at
-            });
-          }
-          setExportData(exportData);
           setIsLoading(false);
         }
       })
@@ -190,10 +171,10 @@ function ModuleComponent() {
     await new ManageMenuService()
       .getRole(roleId)
       .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
             const getRoleId = sessionStorage.getItem('role_id');
-            setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
+            setCheckRole(res?.data?.data?.filter((d) => d.menu_id === 21));
           }
         }
       })
@@ -204,10 +185,7 @@ function ModuleComponent() {
 
   useEffect(() => {
     loadData();
-    if (location && location.state) {
-      setNotify(location.state.alert);
-    }
-  }, [loadData, location]);
+  }, [loadData]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -258,9 +236,9 @@ function ModuleDropdown(props) {
   useEffect(() => {
     const tempData = [];
     new ModuleService().getModule().then((res) => {
-      if (res.status === 200) {
+      if (res?.status === 200) {
         let counter = 1;
-        const data = res.data.data;
+        const data = res?.data?.data;
         for (const key in data) {
           tempData.push({
             counter: counter++,

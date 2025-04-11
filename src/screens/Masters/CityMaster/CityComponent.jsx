@@ -1,6 +1,5 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
 import Select from 'react-select';
 
 import { useSelector, useDispatch } from 'react-redux';
@@ -9,7 +8,6 @@ import CityService from '../../../services/MastersService/CityService';
 
 import PageHeader from '../../../components/Common/PageHeader';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import Alert from '../../../components/Common/Alert';
 
 import {
   handleModalInStore,
@@ -25,15 +23,10 @@ import {
   updateCityData
 } from '../../Dashboard/DashboardAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import { customSearchHandler } from '../../../utils/customFunction';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import { CustomValidation } from '../../../../src/components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
 import moment from 'moment';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 function CityComponent() {
   // initial state
 
@@ -44,12 +37,10 @@ function CityComponent() {
 
   const {
     cityData,
-    notify,
     modal,
     filteredStateData,
     filteredCountryData,
-    activeState,
-    exportCityData
+    activeState
   } = useSelector((state) => state?.dashboard);
   const isLoading = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.isLoading.getCityDataList
@@ -58,122 +49,9 @@ function CityComponent() {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 7)
   );
   //local state
-  const [isClearable, setIsClearable] = useState(true);
   const [stateDropdownData, setStateDropdownData] = useState([]);
   const [updateStatus, setUpdateStatus] = useState({});
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(cityData, searchTerm);
-    setFilteredData(filteredList);
-  }, [cityData, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(cityData);
-  };
-
-  //columns
-  // const columns = [
-  //   {
-  //     name: 'Action',
-  //     selector: (row) => {},
-  //     sortable: false,
-  //     cell: (row) => (
-  //       <div className="btn-group" role="group">
-  //         <button
-  //           type="button"
-  //           className="btn btn-outline-secondary"
-  //           data-bs-toggle="modal"
-  //           data-bs-target="#edit"
-  //           onClick={(e) => {
-  //             dispatch(
-  //               handleModalInStore({
-  //                 showModal: true,
-  //                 modalData: row,
-  //                 modalHeader: 'Edit City'
-  //               })
-  //             );
-  //           }}
-  //         >
-  //           <i className="icofont-edit text-success"></i>
-  //         </button>
-  //       </div>
-  //     )
-  //   },
-  //   {
-  //     name: 'Sr',
-  //     selector: (row) => row.counter,
-  //     sortable: true,
-  //     width: '60px'
-  //   },
-  //   {
-  //     name: 'City',
-  //     selector: (row) => row.city,
-  //     sortable: true,
-  //     width: '125px'
-  //   },
-  //   {
-  //     name: 'State',
-  //     selector: (row) => row.state,
-  //     sortable: true,
-  //     width: '125px'
-  //   },
-  //   {
-  //     name: 'Country',
-  //     selector: (row) => row.country,
-  //     sortable: true,
-  //     width: '125px'
-  //   },
-  //   {
-  //     name: 'Status',
-  //     selector: (row) => row.is_active,
-  //     sortable: true,
-  //     cell: (row) => (
-  //       <div>
-  //         {row.is_active === 1 && (
-  //           <span className="badge bg-primary" style={{ width: '4rem' }}>
-  //             Active
-  //           </span>
-  //         )}
-  //         {row.is_active === 0 && (
-  //           <span className="badge bg-danger" style={{ width: '4rem' }}>
-  //             Deactive
-  //           </span>
-  //         )}
-  //       </div>
-  //     )
-  //   },
-  //   {
-  //     name: 'Created At',
-  //     selector: (row) => row.created_at,
-  //     sortable: true,
-  //     width: '175px'
-  //   },
-  //   {
-  //     name: 'Created By',
-  //     selector: (row) => row.created_by,
-  //     sortable: true,
-  //     width: '150px'
-  //   },
-  //   {
-  //     name: 'Updated At',
-  //     selector: (row) => row.updated_at,
-  //     sortable: true,
-  //     width: '175px'
-  //   },
-  //   {
-  //     name: 'Updated By',
-  //     selector: (row) => row.updated_by,
-  //     sortable: true,
-  //     width: '150px'
-  //   }
-  // ];
   const clearFilters = () => {
     setReset(true);
   };
@@ -423,33 +301,8 @@ function CityComponent() {
   ]);
 
   useEffect(() => {
-    setFilteredData(cityData);
-  }, [cityData]);
-
-  useEffect(() => {
     dispatch(getCityData());
   }, [dispatch]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
-
-  // useEffect(() => {
-  //   if (dependent.country_id !== null) {
-  //     const newStates = [...copyState];
-
-  //     const filterNewState = newStates.filter((state) => {
-  //       if (state.country_id === dependent.country_id) {
-  //         return {
-  //           value: state.id,
-  //           label: state.state,
-  //           country_id: state.country_id
-  //         };
-  //       }
-  //     });
-  //     setStateDropdownData(filterNewState);
-  //   }
-  // }, [dependent, copyState]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -496,21 +349,11 @@ function CityComponent() {
           );
         }}
       />
-      {/* <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by city name...."
-        exportFileName="City Master Record"
-        exportData={exportCityData}
-        showExportButton={true}
-      /> */}
       <div className="mt-2">
         {cityData && (
           <MaterialTable
             columns={columns}
-            data={filteredData}
+            data={cityData}
             isLoading={isLoading}
             reset={reset}
             setReset={setReset}
