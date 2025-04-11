@@ -143,8 +143,8 @@ const DataTableCustom = React.memo(
             },
             {
               accessorFn: (originalRows) =>
-                `${originalRows?.ticket_solved_by?.first_name || ''} ${
-                  originalRows?.ticket_solved_by?.last_name || ''
+                `${originalRows?.ticket_solved_by?.first_name || '--'} ${
+                  originalRows?.ticket_solved_by?.last_name || '--'
                 }`,
               header: 'Solved By',
               enableColumnFilter: false,
@@ -152,6 +152,8 @@ const DataTableCustom = React.memo(
           ]
         : [])
     ];
+
+
 
     return (
       <ServerMaterial

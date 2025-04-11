@@ -281,7 +281,6 @@ function ServerMaterial({
                       className="btn btn-success btn-block text-white"
                       onClick={(e) => {
                         const selectedRows = table.getSelectedRowModel().rows.map(row => row.original);
-                        console.log(selectedRows, 'selectedRows');
                         handleRemarkModal({
                           showModal: true,
                           modalData: selectedRows,
@@ -299,9 +298,10 @@ function ServerMaterial({
                     <button
                       className="btn btn-danger btn-block text-white"
                       onClick={(e) => {
+                        const selectedRows = table.getSelectedRowModel().rows.map(row => row.original);
                         handleRemarkModal({
                           showModal: true,
-                          modalData: Object.keys(rowSelection),
+                          modalData: selectedRows,
                           modalHeader: 'Enter Remark',
                           status: 'Reject'
                         });
