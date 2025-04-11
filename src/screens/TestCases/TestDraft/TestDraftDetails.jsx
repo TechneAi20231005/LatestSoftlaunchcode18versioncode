@@ -1233,7 +1233,7 @@ function TestDraftDetails(props) {
           />
         </div>
       ),
-      selector: (row) => row.status,
+      selector: (row) => row.tai_bc_status_conventions?.convention_name,
       width: '7rem',
       sortable: false,
       cell: (row) => (
@@ -1242,14 +1242,24 @@ function TestDraftDetails(props) {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row?.status && (
-            <OverlayTrigger overlay={<Tooltip>{row.status} </Tooltip>}>
+          {row.tai_bc_status_conventions?.convention_name && (
+            <OverlayTrigger
+              overlay={
+                <Tooltip>
+                  {row.tai_bc_status_conventions?.convention_name}{' '}
+                </Tooltip>
+              }
+            >
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row?.status && row?.status?.length < 20
-                    ? row?.status
-                    : row?.status?.substring(0, 50) + '....'}
+                  {row.tai_bc_status_conventions?.convention_name &&
+                  row.tai_bc_status_conventions?.convention_name?.length < 20
+                    ? row.tai_bc_status_conventions?.convention_name
+                    : row.tai_bc_status_conventions?.convention_name?.substring(
+                        0,
+                        50
+                      ) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
