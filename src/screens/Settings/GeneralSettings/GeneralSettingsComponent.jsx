@@ -6,16 +6,11 @@ import React, {
   useMemo
 } from 'react';
 import { Modal } from 'react-bootstrap';
-
 import Select from 'react-select';
-
-import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 import PageHeader from '../../../components/Common/PageHeader';
 import { Astrick } from '../../../components/Utilities/Style';
-
 import UserService from '../../../services/MastersService/UserService';
 import GeneralSettingService from '../../../services/SettingService/GeneralSettingService';
-
 import { useSelector, useDispatch } from 'react-redux';
 import {
   getGeneralSettingData,
@@ -61,24 +56,24 @@ function GeneralSettings() {
 
     const roleId = localStorage.getItem('role_id');
 
-    await new ManageMenuService()
-      .getRole(roleId)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-          }
-        }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
+    // await new ManageMenuService()
+    //   .getRole(roleId)
+    //   .then((res) => {
+    //     if (res?.status === 200) {
+    //       if (res.data.status === 1) {
+    //       }
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     errorHandler(error);
+    //   });
 
     await new UserService()
       .getUserForMyTickets(inputRequired)
       .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            const data = res.data.data?.data
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            const data = res?.data?.data?.data
               ?.filter((i) => i.is_active === 1)
               ?.sort((a, b) => {
                 if (a.first_name && b.first_name) {
@@ -100,9 +95,9 @@ function GeneralSettings() {
     await new GeneralSettingService()
       .getGeneralSetting()
       .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            let data = [...res.data.data.data];
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            let data = [...res?.data?.data?.data];
             let count = 1;
             for (let i = 0; i < data?.length; i++) {
               data[i].counter = count++;
@@ -238,7 +233,7 @@ function GeneralSettings() {
         size: 350
       },
       {
-        accessorKey: 'created_by',
+        accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
         header: 'Created By',
         size: 180
       },
