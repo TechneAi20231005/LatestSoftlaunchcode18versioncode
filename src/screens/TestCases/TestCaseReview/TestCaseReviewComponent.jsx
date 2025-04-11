@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from 'react';
-import { Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
+import { Container, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import DataTable from 'react-data-table-component';
 import { Link } from 'react-router-dom';
@@ -8,6 +8,8 @@ import PageHeader from '../../../components/Common/PageHeader';
 import { getTestCaseReviewListThunk } from '../../../redux/services/testCases/testCaseReview';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import CustomFilterModal from '../Modal/CustomFilterModal';
+import { Astrick } from '../../../components/Utilities/Style';
+import Select from 'react-select';
 
 const initialState = {
   filterType: '',
@@ -431,6 +433,33 @@ function TestCaseReviewComponent() {
       selector: (row, index) => index + 1,
       sortable: false,
       width: '70px'
+    },
+    {
+      name: 'Action',
+      selector: (row) => {
+        if (!row || row.tc_id === null || row.status === null) return null;
+        return (
+          <div className="d-flex align-items-center">
+            <i
+              // disabled={row.status !== 'DRAFT'}
+              className={
+                'icofont-edit text-primary btn btn-outline-secondary cp '
+              }
+              onClick={() => {
+                handleSendToReviewerModal({
+                  showModal: true,
+                  modalData: '',
+                  modalHeader: 'Send To Reviewer Modal'
+                });
+              }}
+            />
+            <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.id}`}>
+              <i class="icofont-history cp btn btn-outline-secondary fw-bold  " />
+            </Link>
+          </div>
+        );
+      },
+      sortable: false
     },
 
     {
@@ -888,7 +917,11 @@ function TestCaseReviewComponent() {
   ];
 
   const [clearData, setClearData] = useState(false);
-
+  const [sendToReviewerModal, setSendToReviewerModal] = useState({
+    showModal: false,
+    modalData: '',
+    modalHeader: ''
+  });
   const handleButtonClick = () => {
     setIsFilterApplied(false);
 
@@ -906,6 +939,11 @@ function TestCaseReviewComponent() {
         type: 'reviewer'
       })
     );
+  };
+
+  const handleSendToReviewerModal = (currentData) => {
+    setSendToReviewerModal(currentData);
+    // dispatch(getEmployeeData());
   };
 
   useEffect(() => {
@@ -1077,6 +1115,78 @@ function TestCaseReviewComponent() {
           selectedValue={selectedValue}
         />
       )}
+
+      <Modal
+        centered
+        show={sendToReviewerModal.showModal}
+        size="sm"
+        onHide={(e) => {
+          handleSendToReviewerModal({
+            showModal: true,
+            modalData: '',
+            modalHeader: 'Send To Reviewer Modal'
+          });
+        }}
+      >
+        {' '}
+        <Modal.Body>
+          <label>
+            <b>
+              Reviewer : <Astrick color="red" size="13px" />
+            </b>
+          </label>
+          {/* {filterTestData?.length > 0 && ( */}
+          <Select
+            type="text"
+            className="form-control form-control-sm"
+            id="reviewer_id"
+            name="reviewer_id"
+            // options={filterTestData}
+            required
+            onChange={(e) => {
+              const selectedId = e?.value;
+              localDispatch({ type: 'SET_REVIEWER_ID', payload: selectedId });
+              // setReviewerError('');
+            }}
+            placeholder="select..."
+          />
+          {/* )} */}
+          {/* {reviewerError && (
+            <p
+              style={{
+                color: 'red'
+              }}
+            >
+              {reviewerError}
+            </p>
+          )} */}
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            type="submit"
+            className="btn btn-sm btn bg-success text-white"
+            // onClick={() => handleSubmit()}
+            // disabled={disable}
+          >
+            <i class="icofont-paper-plane "></i> {''}
+            Send To Reviewer
+          </button>
+
+          <button
+            type="button"
+            className="btn btn bg-white shadow p-2 text-black"
+            onClick={() => {
+              handleSendToReviewerModal({
+                showModal: false,
+                modalData: '',
+                modalHeader: 'Send To Reviewer Modal'
+              });
+            }}
+          >
+            Cancel
+          </button>
+        </Modal.Footer>
+      </Modal>
     </>
   );
 }

@@ -9,6 +9,7 @@ import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import { getEmployeeData } from '../../Dashboard/DashboardAction';
 import {
   getDraftTestCaseList,
+  getTestCaseStatusDataList,
   sendTestCaseReviewerThunk
 } from '../../../redux/services/testCases/downloadFormatFile';
 import { Astrick } from '../../../components/Utilities/Style';
@@ -98,9 +99,9 @@ function TestDraftDetails(props) {
     allDraftListData,
     allDraftTestListData,
     isLoading,
-    filterData
+    filterData,
+    testCasesStatusDataList
   } = useSelector((state) => state?.downloadFormat);
-
   const testerData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.getAllTesterDataList
   );
@@ -600,7 +601,7 @@ function TestDraftDetails(props) {
               type="checkbox"
               checked={selectedRows.includes(row.id)}
               onChange={() => handleCheckboxChange(row)}
-              disabled={row.status !== 'DRAFT'}
+              // disabled={row.status !== 'DRAFT'}
             />
           </div>
         );
@@ -1543,9 +1544,11 @@ function TestDraftDetails(props) {
     } else {
       formData = {
         testcase_id: testCasesData,
-        reviewer_id: reviewerId
+        reviewer_id: reviewerId,
+        status_id: testCasesStatusDataList?.id
       };
     }
+
     setDisable(true);
     dispatch(
       sendTestCaseReviewerThunk({
@@ -1697,6 +1700,15 @@ function TestDraftDetails(props) {
     // }
   }, [searchTerm, localDispatch]);
 
+  useEffect(() => {
+    dispatch(
+      getTestCaseStatusDataList({
+        limit: props?.paginationData?.rowPerPage,
+        page: props?.paginationData?.currentPage
+      })
+    );
+  }, [props?.paginationData.rowPerPage, props?.paginationData.currentPage]);
+
   return (
     <>
       <Container fluid className="employee_joining_details_container">
@@ -1736,11 +1748,11 @@ function TestDraftDetails(props) {
               modalHeader: 'Send To Reviewer Modal'
             });
           }}
-          disabled={
-            !getDraftTestListData ||
-            getDraftTestListData?.filter((item) => item.status === 'DRAFT')
-              .length === 0
-          }
+          // disabled={
+          //   !getDraftTestListData ||
+          //   getDraftTestListData?.filter((item) => item.status === 'DRAFT')
+          //     .length === 0
+          // }
         >
           <i class="icofont-paper-plane fs-0.8"></i> {''}
           Send To Reviewer

@@ -11,6 +11,7 @@ import {
   getModuleMasterThunk,
   getProjectModuleMasterThunk,
   getSubModuleMasterThunk,
+  getTestCaseStatusDataList,
   importTestDraftThunk,
   sendTestCaseReviewerThunk,
   testDraftDetailsHistoryThunk
@@ -38,6 +39,7 @@ const initialState = {
   filterData: false,
   editTestCase: false,
   sendTestCasesReviewer: false,
+  testCasesStatusDataList: [],
 
   isLoading: {
     downloadFormatFile: false,
@@ -59,7 +61,8 @@ const initialState = {
     editTestCase: false,
     sendTestCasesReviewer: false,
     testDraftHistory: false,
-    exportAllReviewDraftTestListData: false
+    exportAllReviewDraftTestListData: false,
+    testCasesStatusDataList: false
   },
   errorMsg: {
     getProjectModuleList: '',
@@ -71,7 +74,8 @@ const initialState = {
     allReviewDraftTestListData: '',
     allReviewDraftTestListDataByID: '',
     filterReviewedDraftTestList: '',
-    exportAllReviewDraftTestListData: ''
+    exportAllReviewDraftTestListData: '',
+    testCasesStatusDataList: ''
   },
   successMsg: {
     getProjectModuleList: '',
@@ -84,7 +88,8 @@ const initialState = {
     allReviewDraftTestListDataByID: '',
     testDraftHistory: false,
     filterReviewedDraftTestList: '',
-    exportAllReviewDraftTestListData: ''
+    exportAllReviewDraftTestListData: '',
+    testCasesStatusDataList: ''
   }
 };
 const downloadFormatSlice = createSlice({
@@ -314,6 +319,24 @@ const downloadFormatSlice = createSlice({
       .addCase(testDraftDetailsHistoryThunk.rejected, (state, action) => {
         state.isLoading.testDraftHistory = false;
         state.errorMsg.testDraftHistory = action?.error?.message;
+      })
+
+      ////test cases status data
+
+      .addCase(getTestCaseStatusDataList.pending, (state, action) => {
+        state.isLoading.testCasesStatusDataList = true;
+      })
+      .addCase(getTestCaseStatusDataList.fulfilled, (state, action) => {
+        state.isLoading.testCasesStatusDataList = false;
+        state.successMsg.testCasesStatusDataList = action?.payload;
+        state.testCasesStatusDataList = action?.payload?.data?.data?.find(
+          (d) => d.convention_name === 'PENDING'
+        );
+        // .map((i) => i.id);
+      })
+      .addCase(getTestCaseStatusDataList.rejected, (state, action) => {
+        state.isLoading.testCasesStatusDataList = false;
+        state.errorMsg.testCasesStatusDataList = action?.error?.message;
       });
   }
 });

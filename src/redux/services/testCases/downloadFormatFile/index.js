@@ -185,7 +185,7 @@ export const sendTestCaseReviewerThunk = createAsyncThunk(
   'sendTestCaseReviewer',
   async ({ formData, onSuccessHandler, onErrorHandler, type, id }) => {
     try {
-      const response = await customAxios.post(
+      const response = await rewampAxios.post(
         `testCases/send/sendTestCasesReviewer/${type}/${id}`,
         formData
       );
@@ -322,6 +322,33 @@ export const testDraftDetailsHistoryThunk = createAsyncThunk(
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };
+        } else {
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
+);
+
+export const getTestCaseStatusDataList = createAsyncThunk(
+  'getTestCaseStatusDataList/getTestCaseStatusData',
+  async ({ limit, page }) => {
+    try {
+      const response = await rewampAxios.get(
+        `testCases/getTestCaseStatusData`,
+        {
+          params: {
+            limit: limit,
+            page: page
+          }
+        }
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          return { data: response?.data, msg: response?.data?.message };
         } else {
           errorHandler(response);
         }
