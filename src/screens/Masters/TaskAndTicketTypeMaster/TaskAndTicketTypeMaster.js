@@ -4,14 +4,6 @@ import PageHeader from '../../../components/Common/PageHeader';
 import { Modal } from 'react-bootstrap';
 import { Astrick } from '../../../components/Utilities/Style';
 import TaskTicketTypeService from '../../../services/MastersService/TaskTicketTypeService';
-import Alert from '../../../components/Common/Alert';
-import DataTable from 'react-data-table-component';
-
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { toast } from 'react-toastify';
@@ -20,7 +12,7 @@ import errorHandler from '../../../utils/errorHandler';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
-import { handleModalInStore } from '../../Dashboard/DashbordSlice';
+
 const CustomOption = ({ label, options, onClick, closeDropdown }) => {
   const [expanded, setExpanded] = useState(false);
   const [openOptions, setOpenOptions] = useState([]);
@@ -105,7 +97,6 @@ const CustomOptionTicket = ({ label, options, onClick, closeDropdown }) => {
 const CustomMenuList = ({ options, onSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [openOptions, setOpenOptions] = useState([]);
-  // const [selectedOption, setSelectedOption] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -252,7 +243,6 @@ const CustomMenuList = ({ options, onSelect }) => {
 const CustomMenuListTicket = ({ options, onSelect }) => {
   const [searchTerm, setSearchTerm] = useState('');
   const [openOptions, setOpenOptions] = useState([]);
-  // const [selectedOption, setSelectedOption] = useState(null);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [hoveredIndex, setHoveredIndex] = useState(null);
 
@@ -395,17 +385,12 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
 };
 
 function TaskAndTicketTypeMaster(props) {
-  // const [selectedValue, setSelectedValue] = useState('');
-  const [notify, setNotify] = useState();
   const [data, setData] = useState([]);
-  // const [parent, setParent] = useState();
   const [taskData, setTaskData] = useState([]);
   const [ticketData, setTicketData] = useState([]);
-  // const [searchTerm, setSearchTerm] = useState('');
   const [isLoading, setIsLoading] = useState(true);
 
   const [exportData, setExportData] = useState(null);
-  // const [isOpen, setIsOpen] = useState(false);
   // const selectedOption = null;
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [parentTaskName, setParentTaskName] = useState(null);
@@ -438,22 +423,6 @@ function TaskAndTicketTypeMaster(props) {
     modalHeader: ''
   });
 
-  // const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  // const handleSearch = useCallback(() => {
-  //   setNotify(null);
-  //   const filteredList = customSearchHandler(data, searchTerm);
-  //   setFilteredData(filteredList);
-  // }, [data, searchTerm]);
-
-  // // Function to handle reset button click
-  // const handleReset = () => {
-  //   setSearchTerm('');
-  //   setFilteredData(data);
-  // };
   const loadData = async () => {
     const exportTempData = [];
     await new TaskTicketTypeService()
@@ -644,15 +613,14 @@ function TaskAndTicketTypeMaster(props) {
         }
       })
       .catch((error) => errorHandler(error));
-    // .finally(() => setIsLoading(false));
     await new TaskTicketTypeService()
       .getAllTaskTicketType(e.target.value)
       .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
             let counter = 1;
             var tempData = [];
-            const temp = res.data.data?.data;
+            const temp = res?.data?.data?.data;
             for (const key in temp) {
               tempData.push({
                 counter: counter++,
@@ -674,167 +642,12 @@ function TaskAndTicketTypeMaster(props) {
             }
             setData(null);
             setData(tempData);
-            let exportTempData = [];
-            for (const i in temp) {
-              exportTempData.push({
-                SrNo: exportTempData.length + 1,
-
-                id: temp[i].id,
-                type: temp[i].type,
-
-                parent_name: temp[i].parent_name,
-                type_name: temp[i].type_name,
-                remark: temp[i].remark,
-                status: temp[i].is_active === 1 ? 'Active' : 'Deactive',
-                created_at: temp[i].created_at,
-                created_by: temp[i].created_by,
-                updated_at: temp[i].updated_at,
-                updated_by: temp[i].updated_by
-              });
-            }
-
-            setExportData(null);
-
-            setExportData(exportTempData);
           }
         }
       })
       .catch((error) => errorHandler(error))
       .finally(() => setIsLoading(false));
   };
-
-  // const columns = [
-  //   {
-  //     name: 'Action',
-  //     selector: (row) => {},
-  //     sortable: false,
-  //     cell: (row) => (
-  //       <div className="btn-group" role="group">
-  //         <button
-  //           type="button"
-  //           className="btn btn-outline-secondary"
-  //           data-bs-toggle="modal"
-  //           data-bs-target="#edit"
-  //           onClick={(e) => {
-  //             setNotify(null);
-  //             const modalHeader =
-  //               selectedType === 'TASK' ? 'Edit Task Type' : 'Edit Ticket Type';
-  //             handleModal({
-  //               showModal: true,
-  //               modalData: row,
-  //               modalHeader: modalHeader
-  //             });
-  //           }}
-  //         >
-  //           <i className="icofont-edit text-success"></i>
-  //         </button>
-  //       </div>
-  //     )
-  //   },
-  //   {
-  //     name: 'Sr.No',
-  //     selector: (row) => row.counter,
-  //     sortable: true
-  //   },
-
-  //   {
-  //     name: 'Type Name',
-  //     width: '170px',
-  //     selector: (row) => row.type_name,
-  //     sortable: true,
-  //     cell: (row) => (
-  //       <div
-  //         className="btn-group"
-  //         role="group"
-  //         aria-label="Basic outlined example"
-  //       >
-  //         {row.type_name && (
-  //           <OverlayTrigger overlay={<Tooltip>{row.type_name} </Tooltip>}>
-  //             <div>
-  //               <span className="ms-1">
-  //                 {' '}
-  //                 {row.type_name && row.type_name.length < 20
-  //                   ? row.type_name
-  //                   : row.type_name.substring(0, 20) + '....'}
-  //               </span>
-  //             </div>
-  //           </OverlayTrigger>
-  //         )}
-  //       </div>
-  //     )
-  //   },
-
-  //   {
-  //     name: 'Parent Name',
-  //     width: '170px',
-  //     selector: (row) => row.parent_name,
-  //     sortable: true,
-  //     cell: (row) => (
-  //       <div
-  //         className="btn-group"
-  //         role="group"
-  //         aria-label="Basic outlined example"
-  //       >
-  //         {row.parent_name && (
-  //           <OverlayTrigger overlay={<Tooltip>{row.parent_name} </Tooltip>}>
-  //             <div>
-  //               <span className="ms-1">
-  //                 {' '}
-  //                 {row.parent_name && row.parent_name.length < 15
-  //                   ? row.parent_name
-  //                   : row.parent_name.substring(0, 15) + '....'}
-  //               </span>
-  //             </div>
-  //           </OverlayTrigger>
-  //         )}
-  //       </div>
-  //     )
-  //   },
-
-  //   {
-  //     name: 'Status',
-  //     selector: (row) => row.is_active,
-  //     sortable: true,
-  //     cell: (row) => (
-  //       <div>
-  //         {row.is_active === 1 && (
-  //           <span className="badge bg-primary" style={{ width: '4rem' }}>
-  //             Active
-  //           </span>
-  //         )}
-  //         {row.is_active === 0 && (
-  //           <span className="badge bg-danger" style={{ width: '4rem' }}>
-  //             Deactive
-  //           </span>
-  //         )}
-  //       </div>
-  //     )
-  //   },
-  //   {
-  //     name: 'Created At',
-  //     selector: (row) => row.created_at,
-  //     sortable: true,
-  //     width: '175px'
-  //   },
-  //   {
-  //     name: 'Created By',
-  //     selector: (row) => row.created_by,
-  //     sortable: true,
-  //     width: '150px'
-  //   },
-  //   {
-  //     name: 'Updated At',
-  //     selector: (row) => row.updated_at,
-  //     sortable: true,
-  //     width: '175px'
-  //   },
-  //   {
-  //     name: 'Updated By',
-  //     selector: (row) => row.updated_by,
-  //     sortable: true,
-  //     width: '150px'
-  //   }
-  // ];
 
   const columns = [
     {
@@ -853,7 +666,6 @@ function TaskAndTicketTypeMaster(props) {
               data-bs-toggle="modal"
               data-bs-target="#edit"
               onClick={(e) => {
-                setNotify(null);
                 const modalHeader =
                   selectedType === 'TASK'
                     ? 'Edit Task Type'
@@ -881,7 +693,7 @@ function TaskAndTicketTypeMaster(props) {
     {
       accessorKey: 'type_name',
       header: 'Type Name',
-      size: 160,
+      size: 180,
       filterVariant: 'autocomplete',
       muiTableBodyCellProps: () => ({
         sx: {
@@ -893,7 +705,7 @@ function TaskAndTicketTypeMaster(props) {
     {
       accessorKey: 'parent_name',
       header: 'Parent Name',
-      size: 160,
+      size: 200,
       filterVariant: 'autocomplete'
     },
 
@@ -946,7 +758,8 @@ function TaskAndTicketTypeMaster(props) {
     },
     {
       accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
-      header: 'Updated By'
+      header: 'Updated By',
+      size: 200
     }
   ];
 
@@ -980,8 +793,6 @@ function TaskAndTicketTypeMaster(props) {
       setSubmitting(false);
       return;
     }
-
-    setNotify(null);
     const form = new FormData();
 
     if (!selectedOption && !id) {
@@ -1011,19 +822,18 @@ function TaskAndTicketTypeMaster(props) {
           form.append('is_active', value?.is_active);
           form.append('type', selectedType);
 
-          setNotify(null);
           const res = await new TaskTicketTypeService().postType(form);
 
-          if (res.status === 200) {
+          if (res?.status === 200) {
             clearFilters();
-            if (res.data.status === 1) {
+            if (res?.data?.status === 1) {
               clearFilters();
 
-              toast.success(res.data.message);
+              toast.success(res?.data?.message);
               setModal({ showModal: false });
               loadData();
             } else {
-              toast.error(res.data.message);
+              toast.error(res?.data?.message);
             }
           }
         } else {
@@ -1046,17 +856,17 @@ function TaskAndTicketTypeMaster(props) {
 
           const res = await new TaskTicketTypeService()._updateType(id, form);
 
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              toast.success(res.data.message);
+          if (res?.status === 200) {
+            if (res?.data?.status === 1) {
+              toast.success(res?.data?.message);
               setModal({ showModal: false });
               loadData();
               clearFilters();
             } else {
-              toast.error(res.data.message);
+              toast.error(res?.data?.message);
             }
           } else {
-            toast.error(res.data.message);
+            toast.error(res?.data?.message);
           }
         }
       } catch (error) {
@@ -1071,14 +881,6 @@ function TaskAndTicketTypeMaster(props) {
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-
-  // useEffect(() => {
-  //   setFilteredData(data);
-  // }, [data]);
-
-  // useEffect(() => {
-  //   handleSearch();
-  // }, [handleSearch, searchTerm]);
 
   useEffect(() => {
     // Check if the modal is closed
@@ -1132,7 +934,6 @@ function TaskAndTicketTypeMaster(props) {
                     alert('Please select a type first');
                     return; // Exit the function if selectedType is not selected
                   }
-                  setNotify(null);
                   const modalHeader =
                     selectedType === 'TASK'
                       ? 'Add Task Type'
@@ -1153,17 +954,6 @@ function TaskAndTicketTypeMaster(props) {
           );
         }}
       />
-
-      {/* <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by task and ticket type name...."
-        exportFileName="Task And Ticket Type Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      /> */}
 
       <div className="col-sm-8 mt-3">
         <div className="row">
@@ -1541,19 +1331,6 @@ function TaskAndTicketTypeMaster(props) {
       </Modal>
 
       <div className="card mt-2">
-        {/* {data && (
-                <DataTable
-                  columns={columns}
-                  data={filteredData}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  progressPending={isLoading}
-                  progressComponent={<TableLoadingSkelton />}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                />
-              )} */}
         {data && (
           <MaterialTable
             columns={columns}

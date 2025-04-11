@@ -3,7 +3,6 @@ import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import DynamicFormDropdownMasterService from '../../../services/MastersService/DynamicFormDropdownMasterService';
 import PageHeader from '../../../components/Common/PageHeader';
-import Alert from '../../../components/Common/Alert';
 import 'react-data-table-component-extensions/dist/index.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
@@ -16,8 +15,6 @@ export default function DynamicFormDropdownComponent() {
   const dispatch = useDispatch();
   const [isLoading, setIsLoading] = useState(true);
   const [data, setData] = useState([]);
-
-  const [notify, setNotify] = useState();
 
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice?.dashboard?.getRoles.filter((d) => d.menu_id === 35)
@@ -132,11 +129,10 @@ export default function DynamicFormDropdownComponent() {
   const loadData = async () => {
     try {
       setIsLoading(true);
-
       const response =
         await new DynamicFormDropdownMasterService().getAllDynamicFormDropdown();
 
-      if (response.status === 200) {
+      if (response?.status === 200) {
         const temp = response?.data?.data?.data || [];
         const formattedData = temp.map((item, index) => ({
           counter: index + 1,
@@ -169,7 +165,6 @@ export default function DynamicFormDropdownComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader
         headerTitle="Dropdown Master"
         renderRight={() => {
