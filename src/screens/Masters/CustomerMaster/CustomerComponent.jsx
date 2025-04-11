@@ -1,11 +1,8 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-// import DataTable from 'react-data-table-component';
-
 import CustomerService from '../../../services/MastersService/CustomerService';
 
 import PageHeader from '../../../components/Common/PageHeader';
-// import Alert from '../../../components/Common/Alert';
 import { _base } from '../../../settings/constants';
 
 import 'react-data-table-component-extensions/dist/index.css';
@@ -13,12 +10,8 @@ import 'react-data-table-component-extensions/dist/index.css';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getCustomerData, getRoles } from '../../Dashboard/DashboardAction';
-// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-// import { customSearchHandler } from '../../../utils/customFunction';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { Box } from '@mui/material';
-// import moment from 'moment';
+import { errorHandler } from '../../../utils';
 
 function CustomerComponent() {
   //initial state
@@ -37,16 +30,6 @@ function CustomerComponent() {
   );
 
   //local state
-  // const [searchTerm, setSearchTerm] = useState('');
-  const [notify, setNotify] = useState(null);
-
-  //search function
-
-  // const handleSearch = useCallback(() => {
-  //   const filteredList = customSearchHandler(getAllCustomerData, searchTerm);
-
-  //   setFilteredData(filteredList);
-  // }, [getAllCustomerData, searchTerm]);
 
   const exportDataKeys = {
     name: 'Customer Name',
@@ -65,11 +48,6 @@ function CustomerComponent() {
     updated_by: 'Updated By',
     fileName: 'Customer Master Record'
   };
-  // Function to handle reset button click
-  // const handleReset = () => {
-  //   setSearchTerm('');
-  //   setFilteredData(getAllCustomerData);
-  // };
 
   const columns = [
     {
@@ -174,27 +152,13 @@ function CustomerComponent() {
     if (!checkRole.length) {
       dispatch(getRoles());
     }
-    if (location && location.state) {
-      setNotify(location.state);
-    }
-    return () => {
-      setNotify(null);
-    };
-  }, [checkRole.length, location]);
+  }, [checkRole.length]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-
-  // useEffect(() => {
-  //   setFilteredData(getAllCustomerData);
-  // }, [getAllCustomerData]);
-
-  // useEffect(() => {
-  //   handleSearch();
-  // }, [handleSearch, searchTerm]);
 
   return (
     <div className="container-xxl">
@@ -219,17 +183,6 @@ function CustomerComponent() {
         }}
       />
 
-      {/* <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by customer name...."
-        exportFileName="customer Master Record"
-        exportData={exportCustomerData}
-        showExportButton={true}
-      /> */}
-
       <div className="card mt-2">
         {getAllCustomerData && (
           <MaterialTable
@@ -249,19 +202,22 @@ function CustomerDropdown(props) {
   useEffect(() => {
     const tempData = [];
 
-    new CustomerService().getCustomer().then((res) => {
-      if (res.status === 200) {
-        var data = res?.data?.data;
-        // var data = data.filter((d) => d.is_active === 1);
-        for (const key in data) {
-          tempData.push({
-            id: data[key].id,
-            name: data[key].name
-          });
+    new CustomerService()
+      .getCustomer()
+      .then((res) => {
+        if (res?.status === 200) {
+          var data = res?.data?.data;
+          // var data = data.filter((d) => d.is_active === 1);
+          for (const key in data) {
+            tempData.push({
+              id: data[key].id,
+              name: data[key].name
+            });
+          }
         }
-      }
-      setData(tempData);
-    });
+        setData(tempData);
+      })
+      .catch((error) => errorHandler(error));
   }, []);
 
   return (

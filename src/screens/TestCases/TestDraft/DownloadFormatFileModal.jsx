@@ -46,9 +46,8 @@ function DownloadFormatFileModal({ show, close }) {
     setFieldValue('submodule_id', '');
     setModuleDropdown(null);
     const filteredModules = getModuleData
-      .filter((d) => d.project_id === parseInt(e.target.value))
-      .map((d) => ({ value: d.id, label: d.module_name }));
-
+      .filter((d) => d.project_name === e.target.value)
+      .map((d) => ({ value: d.module_name, label: d.module_name }));
     setModuleDropdown(filteredModules);
   };
 
@@ -57,19 +56,20 @@ function DownloadFormatFileModal({ show, close }) {
     setFieldValue('submodule_id', '');
 
     const data = getSubModuleData
-      ?.filter((d) => d.module_id === parseInt(e.target.value))
-      .map((d) => ({ value: d.id, label: d.sub_module_name }));
+      ?.filter((d) => d.module_name === e.target.value)
+      .map((d) => ({ value: d.sub_module_name, label: d.sub_module_name }));
 
     setSubModuleDropdown(data);
   };
 
   const handleDownloadFormatFile = ({ formData }) => {
     const { project_id, module_id, submodule_id } = formData;
+    // return false
     dispatch(
       downloadFormatFileThunk({
-        project_id,
-        module_id,
-        submodule_id
+        project_name: project_id,
+        module_name: module_id,
+        submodule_name: submodule_id
       })
     ).then((res) => {
       if (res?.meta?.requestStatus === 'fulfilled') {

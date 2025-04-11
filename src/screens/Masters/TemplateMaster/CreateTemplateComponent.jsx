@@ -381,17 +381,15 @@ const CreateTemplateComponent = () => {
     }
 
     try {
+      setSubmitting(true);
       const res = await dispatch(postTemplateData(rows));
 
       if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
-        dispatch(templateData());
-
-        setTimeout(() => {
-          navigate(`/${_base}/Template`);
-        }, 3000);
+        navigate(`/${_base}/Template`);
       } else {
         // toast.error(res.payload.data.message);
       }
+      setSubmitting(false);
     } catch (error) {
       errorHandler(error);
     } finally {
