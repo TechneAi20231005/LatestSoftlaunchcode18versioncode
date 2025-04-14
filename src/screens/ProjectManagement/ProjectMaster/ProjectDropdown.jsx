@@ -48,6 +48,7 @@ export default function ProjectDropdown(props) {
         <span>
           Here
           <Select
+            classNamePrefix="react-select"
             defaultValue={value}
             options={data}
             id={props.id}
@@ -62,6 +63,7 @@ export default function ProjectDropdown(props) {
 
       {
         <Select
+          classNamePrefix="react-select"
           options={data}
           id={props.id}
           name={props.name}

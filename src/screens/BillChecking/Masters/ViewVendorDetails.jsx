@@ -156,6 +156,7 @@ const ViewVendorDetails = ({ match }) => {
                     </label>
                     <Select
                       id="country"
+                      classNamePrefix="react-select"
                       options={CountryDropdown}
                       name="country"
                       isDisabled
@@ -172,6 +173,7 @@ const ViewVendorDetails = ({ match }) => {
                     <Select
                       id="state"
                       name="state"
+                      classNamePrefix="react-select"
                       options={stateDropdown}
                       defaultValue={
                         data &&
@@ -187,6 +189,7 @@ const ViewVendorDetails = ({ match }) => {
                     <Select
                       id="city"
                       name="city"
+                      classNamePrefix="react-select"
                       options={cityDropdown}
                       defaultValue={
                         data && cityDropdown.filter((d) => d.value == data.city)
@@ -631,6 +634,7 @@ const ViewVendorDetails = ({ match }) => {
                     <Select
                       id="payment_template"
                       name="payment_template"
+                      classNamePrefix="react-select"
                       options={paymentDropdown}
                       defaultValue={
                         data &&

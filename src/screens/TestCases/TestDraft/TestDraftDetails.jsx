@@ -1777,6 +1777,7 @@ function TestDraftDetails(props) {
           </label>
           {filterTestData?.length > 0 && (
             <Select
+              classNamePrefix="react-select"
               type="text"
               className="form-control form-control-sm"
               id="reviewer_id"

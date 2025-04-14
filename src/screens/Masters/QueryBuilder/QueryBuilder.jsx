@@ -138,16 +138,19 @@ const QueryBuilder = () => {
                                 <td className="">{i + 1}</td>
                                 <td className="col-md-12 d-flex">
                                   <Select
+                                    classNamePrefix="react-select"
                                     options={tables}
                                     name="tables[]"
                                     className="form-control-sm col-md-4"
                                   />
                                   <Select
+                                    classNamePrefix="react-select"
                                     className="form-control-sm col-md-4"
                                     options={joinFrom}
                                     name="joinTo[]"
                                   />
                                   <Select
+                                    classNamePrefix="react-select"
                                     className="form-control-sm col-md-4"
                                     options={joinTo}
                                     name="joinFrom[]"
@@ -155,6 +158,7 @@ const QueryBuilder = () => {
                                 </td>
                                 <td className="col-md-3">
                                   <Select
+                                    classNamePrefix="react-select"
                                     closeMenuOnSelect={false}
                                     isMulti
                                     options={fields}
@@ -166,11 +170,13 @@ const QueryBuilder = () => {
                                     return (
                                       <div className="d-flex col-12" key={j}>
                                         <Select
+                                          classNamePrefix="react-select"
                                           className="form-control-sm col-md-4"
                                           options={keys}
                                           name={`keys[${i}][]`}
                                         />
                                         <Select
+                                          classNamePrefix="react-select"
                                           className="form-control-sm col-md-2"
                                           options={operator}
                                           name={`operators[${i}][]`}

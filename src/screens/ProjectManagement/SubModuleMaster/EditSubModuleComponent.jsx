@@ -82,20 +82,20 @@ export default function EditModuleComponent({ match }) {
         );
       });
 
-      await new ModuleService().getModule().then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            setModules(res.data.data?.data.filter((d) => d.is_active === 1));
+    await new ModuleService().getModule().then((res) => {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          setModules(res.data.data?.data.filter((d) => d.is_active === 1));
 
-            // setModulesDropdown(
-            //   res.data.data &&
-            //     res.data.data?.data
-            //       .filter((d) => d.is_active === 1)
-            //       .map((d) => ({ value: d.id, label: d.module_name }))
-            // );
-          }
+          // setModulesDropdown(
+          //   res.data.data &&
+          //     res.data.data?.data
+          //       .filter((d) => d.is_active === 1)
+          //       .map((d) => ({ value: d.id, label: d.module_name }))
+          // );
         }
-      });
+      }
+    });
 
     await new ProjectService().getProject().then((res) => {
       if (res.status === 200) {
@@ -109,7 +109,6 @@ export default function EditModuleComponent({ match }) {
       }
     });
 
-
     dispatch(getRoles());
   };
 
@@ -122,7 +121,7 @@ export default function EditModuleComponent({ match }) {
       setModulesDropdown(
         filteredModules?.map((d) => ({
           value: d.id,
-          label: d.module_name,
+          label: d.module_name
         }))
       );
     }
@@ -204,6 +203,7 @@ export default function EditModuleComponent({ match }) {
                         <div className="col-sm-4">
                           <Field
                             as="select"
+                            classNamePrefix="react-select"
                             className="form-control form-control-sm"
                             id="project_id"
                             name="project_id"
@@ -258,6 +258,7 @@ export default function EditModuleComponent({ match }) {
                         <div className="col-sm-4">
                           <Field
                             as="select"
+                            classNamePrefix="react-select"
                             className="form-control form-control-sm"
                             id="module_id"
                             name="module_id"

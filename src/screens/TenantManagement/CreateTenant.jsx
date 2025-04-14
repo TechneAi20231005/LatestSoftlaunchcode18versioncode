@@ -45,7 +45,7 @@ export default function CreateTenant() {
   const AllcityDropDownData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.cityData
   );
-  const [isDisabled, setIsDisabled] = useState(false)
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const isMasterAdmin = localStorage.getItem('role_name');
   const companyType = [
@@ -162,7 +162,7 @@ export default function CreateTenant() {
     dispatch(getStateData());
   }, [dispatch]);
   const handleForm = async (values) => {
-    setIsDisabled(true)
+    setIsDisabled(true);
     // if(isDisabled) return
     const formData = new FormData();
 
@@ -184,11 +184,10 @@ export default function CreateTenant() {
         dispatch(getAllTenant());
         toast.success(res.payload.data.message);
       } else {
-        setIsDisabled(false)
+        setIsDisabled(false);
         toast.error(res.payload.data.message);
       }
     });
-
   };
 
   const handleKeyPress = (e) => {
@@ -280,6 +279,7 @@ export default function CreateTenant() {
                   <div className="row">
                     <div className="col-sm-6">
                       <Field
+                        classNamePrefix="react-select"
                         name="company_type"
                         component={Select}
                         options={companyType}
@@ -411,6 +411,7 @@ export default function CreateTenant() {
                   </label>
                   <div className="col-sm-4">
                     <Field
+                      classNamePrefix="react-select"
                       name="country_id"
                       component={Select}
                       options={CountryData}
@@ -447,6 +448,7 @@ export default function CreateTenant() {
                   <div className="col-sm-4">
                     {stateDropdownData && (
                       <Field
+                        classNamePrefix="react-select"
                         name="state_id"
                         component={Select}
                         options={stateDropdownData}
@@ -487,6 +489,7 @@ export default function CreateTenant() {
                   <div className="col-sm-4">
                     {cityDropdownData && (
                       <Field
+                        classNamePrefix="react-select"
                         name="city_id"
                         component={Select}
                         options={cityDropdownData}
@@ -521,11 +524,15 @@ export default function CreateTenant() {
                 </div>
               </div>
             </div>
-            {isDisabled && <LoadingScreen showLoaderModal={isDisabled}/> }
+            {isDisabled && <LoadingScreen showLoaderModal={isDisabled} />}
 
             <div className="card-footer">
               <div className="mt-3" style={{ textAlign: 'right' }}>
-                <button disabled={isDisabled} type="submit" className="btn btn-primary">
+                <button
+                  disabled={isDisabled}
+                  type="submit"
+                  className="btn btn-primary"
+                >
                   Submit
                 </button>
                 <Link

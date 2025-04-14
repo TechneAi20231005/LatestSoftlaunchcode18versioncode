@@ -121,6 +121,7 @@ function GeneratePoErrorFileModal({ open, close }) {
               <Row className="row_gap_3">
                 <Col sm={12}>
                   <Field
+                    classNamePrefix="react-select"
                     component={CustomReactSelect}
                     options={venderData}
                     name="vender_name"
@@ -133,6 +134,7 @@ function GeneratePoErrorFileModal({ open, close }) {
                 </Col>
                 <Col sm={12}>
                   <Field
+                    classNamePrefix="react-select"
                     component={CustomReactSelect}
                     options={venderUnixCode}
                     name="unix_code"

@@ -1,24 +1,24 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { Astrick } from "../../../components/Utilities/Style";
-import PageHeader from "../../../components/Common/PageHeader";
-import * as Validation from "../../../components/Utilities/Validation";
-import Select from "react-select";
+import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Astrick } from '../../../components/Utilities/Style';
+import PageHeader from '../../../components/Common/PageHeader';
+import * as Validation from '../../../components/Utilities/Validation';
+import Select from 'react-select';
 
 function CreateShiftMaster() {
   const options = [
-    { value: "Select Shift Type", label: "Select Shift Type" },
-    { value: "Fixed", label: "Fixed" },
-    { value: "Fixed Days", label: "Fixed Days" },
-    { value: "Flexi", label: "Flexi" },
+    { value: 'Select Shift Type', label: 'Select Shift Type' },
+    { value: 'Fixed', label: 'Fixed' },
+    { value: 'Fixed Days', label: 'Fixed Days' },
+    { value: 'Flexi', label: 'Flexi' }
   ];
   const weekoffOption = [
-    { value: "Sunday", label: "Sunday" },
-    { value: "Monday", label: "Monday" },
-    { value: "Tuesday", label: "Tuesday" },
-    { value: "Wednesday", label: "Wednesday" },
-    { value: "Thursday", label: "Thursday" },
-    { value: "Friday", label: "Friday" },
+    { value: 'Sunday', label: 'Sunday' },
+    { value: 'Monday', label: 'Monday' },
+    { value: 'Tuesday', label: 'Tuesday' },
+    { value: 'Wednesday', label: 'Wednesday' },
+    { value: 'Thursday', label: 'Thursday' },
+    { value: 'Friday', label: 'Friday' }
   ];
   const [selectedOption, setSelectedOption] = useState(options[0]);
 
@@ -415,6 +415,7 @@ function CreateShiftMaster() {
                       </div>
                       <div className="col-md-6">
                         <Select
+                          classNamePrefix="react-select"
                           options={weekoffOption}
                           name="from_department_id"
                           id="from_department_id"
@@ -439,6 +440,7 @@ function CreateShiftMaster() {
                       </div>
                       <div className="col">
                         <Select
+                          classNamePrefix="react-select"
                           options={options}
                           name="from_department_id"
                           id="from_department_id"
@@ -447,13 +449,13 @@ function CreateShiftMaster() {
                           required={true}
                         />
                       </div>
-                      {selectedOption.value === "Fixed" && (
+                      {selectedOption.value === 'Fixed' && (
                         <div className="co-md-6">
                           <div className="row mt-2">
                             <div className="col-md-6">
                               <label>
                                 <b>
-                                  Start Time:{" "}
+                                  Start Time:{' '}
                                   <Astrick color="red" size="13px" />
                                 </b>
                               </label>
@@ -485,12 +487,12 @@ function CreateShiftMaster() {
                           </div>
                         </div>
                       )}
-                      {selectedOption.value === "Flexi" && (
+                      {selectedOption.value === 'Flexi' && (
                         <div className="co-md-6">
                           <div className="row mt-3">
                             <div className="col-md-6">
                               <label>
-                                {" "}
+                                {' '}
                                 <b>
                                   No of Working Hours :
                                   <Astrick color="red" size="15px" />
