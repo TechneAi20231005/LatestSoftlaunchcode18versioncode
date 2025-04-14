@@ -1901,6 +1901,7 @@ export default function TaskModal(props) {
                       })}
                     </select> */}
                     <Select
+                      classNamePrefix="react-select"
                       options={priority}
                       isClearable
                       id="priority"
@@ -2073,6 +2074,7 @@ export default function TaskModal(props) {
                       // />
 
                       <Select
+                        classNamePrefix="react-select"
                         options={userData}
                         isClearable
                         isMulti // Add this if you want multi-selection
@@ -2123,6 +2125,7 @@ export default function TaskModal(props) {
                       //   isClearable
                       // />
                       <Select
+                        classNamePrefix="react-select"
                         options={userData}
                         isClearable
                         id="assign_to_user[]"
@@ -2189,6 +2192,7 @@ export default function TaskModal(props) {
                       // />
 
                       <Select
+                        classNamePrefix="react-select"
                         options={
                           filteredOptions && filteredOptions
                             ? filteredOptions
@@ -2238,6 +2242,7 @@ export default function TaskModal(props) {
                       //   }
                       // />
                       <Select
+                        classNamePrefix="react-select"
                         options={
                           filteredOptions && filteredOptions
                             ? filteredOptions

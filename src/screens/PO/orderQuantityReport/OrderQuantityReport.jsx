@@ -262,6 +262,7 @@ function OrderQuantityReport() {
                 <Row className="align-items-md-end row_gap_3">
                   <Col sm={6} md={4} lg={3}>
                     <Field
+                      classNamePrefix="react-select"
                       component={CustomReactSelect}
                       options={venderData}
                       name="vender_name"
@@ -278,7 +279,7 @@ function OrderQuantityReport() {
                       type="date"
                       name="order_date"
                       label="Order Date :"
-                        id="orderqtyreport_orderdate"
+                      id="orderqtyreport_orderdate"
                       placeholderText="dd/mm/yyyy"
                       dateFormat="dd/MM/yyy"
                       showMonthDropdown
@@ -297,7 +298,7 @@ function OrderQuantityReport() {
                       type="date"
                       name="delivery_date"
                       label="Delivery Date :"
-                        id="orderqtyreport_deliverydate"
+                      id="orderqtyreport_deliverydate"
                       placeholderText="dd/mm/yyyy"
                       dateFormat="dd/MM/yyy"
                       showMonthDropdown

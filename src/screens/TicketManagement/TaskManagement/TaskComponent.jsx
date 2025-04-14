@@ -1034,6 +1034,7 @@ export default function TaskComponent() {
                 <div className=" col-10">
                   {sprintDropDown?.length > 0 && !showSprintReport && (
                     <Select
+                      classNamePrefix="react-select"
                       className=""
                       name="sprint_data"
                       id="sprint_data"

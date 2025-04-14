@@ -1997,6 +1997,7 @@ function VendorMaster({ match }) {
                       <Select
                         id="country"
                         name="country"
+                        classNamePrefix="react-select"
                         options={CountryDropdown}
                         ref={countryRef}
                         onChange={handleCountryChange}
@@ -2025,6 +2026,7 @@ function VendorMaster({ match }) {
                       <Select
                         id="state"
                         name="state"
+                        classNamePrefix="react-select"
                         options={stateDropdown}
                         onChange={handleStateChange}
                         ref={stateRef}
@@ -2051,6 +2053,7 @@ function VendorMaster({ match }) {
                       <Select
                         id="city"
                         name="city"
+                        classNamePrefix="react-select"
                         ref={cityRef}
                         options={cityDropdown}
                         defaultValue={
@@ -3642,6 +3645,7 @@ function VendorMaster({ match }) {
                       <Select
                         id="payment_template"
                         name="payment_template"
+                        classNamePrefix="react-select"
                         options={paymentDropdown}
                         ref={considerInRef}
                         defaultValue={

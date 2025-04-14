@@ -1,28 +1,27 @@
-import React, {useState} from 'react';
+import React, { useState } from 'react';
 import Select from 'react-select';
 import { Astrick } from '../../../components/Utilities/Style';
 
 function TabContent({ userData, key, name, onChange, updateTabData }) {
-  const [ selectedusers, setSelectedUsers] = useState()
+  const [selectedusers, setSelectedUsers] = useState();
   const handleTabContentChange = (selectedOption, action) => {
-
-    const value = selectedOption
-    setSelectedUsers(value)
-      if (action.name === 'employee_id') {
+    const value = selectedOption;
+    setSelectedUsers(value);
+    if (action.name === 'employee_id') {
       const employeeIds = selectedOption.map((option) => option.value);
       const requiredUsers = selectedOption.map((option) => option.label);
 
       // Update the data in the state
       updateTabData(name, {
         employee_id: employeeIds,
-        required_users: requiredUsers,
+        required_users: requiredUsers
       });
     } else if (action.name === 'required_users') {
       const requiredUsers = selectedOption.map((option) => option.label);
 
       // Update the data in the state
       updateTabData(name, {
-        required_users: requiredUsers,
+        required_users: requiredUsers
       });
     }
   };
@@ -32,7 +31,7 @@ function TabContent({ userData, key, name, onChange, updateTabData }) {
 
     // Update the data in the state
     updateTabData(name, {
-      required_numbers: value,
+      required_numbers: value
     });
   };
 
@@ -50,6 +49,7 @@ function TabContent({ userData, key, name, onChange, updateTabData }) {
                 options={userData}
                 id="employee_id"
                 name="employee_id"
+                classNamePrefix="react-select"
                 required={true}
                 onChange={handleTabContentChange}
               />
@@ -65,6 +65,7 @@ function TabContent({ userData, key, name, onChange, updateTabData }) {
                 options={selectedusers}
                 id="required_users"
                 name="required_users"
+                classNamePrefix="react-select"
                 required={true}
                 // onChange={handleTabContentChange}
               />

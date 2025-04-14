@@ -331,6 +331,7 @@ function StateComponent() {
                         Select Country :<Astrick color="red" size="13px" />
                       </label>
                       <Select
+                        classNamePrefix="react-select"
                         options={filteredCountryData}
                         isClearable
                         id="country_id"

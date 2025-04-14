@@ -269,6 +269,7 @@ function JobOfferOnBoarding() {
                   <Row className="row_gap_3 ">
                     <Col sm={6} md={6} lg={4}>
                       <Field
+                        classNamePrefix="react-select"
                         options={preferredDesignationDropdown}
                         component={CustomReactSelect}
                         name="designation_id"
@@ -286,6 +287,7 @@ function JobOfferOnBoarding() {
 
                     <Col sm={6} md={6} lg={4}>
                       <Field
+                        classNamePrefix="react-select"
                         options={preferredLocationDropdown}
                         component={CustomReactSelect}
                         name="location_id"
@@ -322,6 +324,7 @@ function JobOfferOnBoarding() {
                     </Col>
                     <Col sm={6} md={6} lg={4}>
                       <Field
+                        classNamePrefix="react-select"
                         data={experienceLevel}
                         component={CustomDropdown}
                         name="experience_level"

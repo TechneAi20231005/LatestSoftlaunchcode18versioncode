@@ -1026,6 +1026,7 @@ export default function EditTicketComponent({ match }) {
                       </label>
                       {queryType && (
                         <Select
+                          classNamePrefix="react-select"
                           id="query_type_id"
                           name="query_type_id"
                           options={queryType}
@@ -1155,6 +1156,7 @@ export default function EditTicketComponent({ match }) {
                       </label>
                       {departmentDropdown && (
                         <Select
+                          classNamePrefix="react-select"
                           id="assign_to_department_id"
                           name="assign_to_department_id"
                           options={departmentDropdown}
@@ -1176,6 +1178,7 @@ export default function EditTicketComponent({ match }) {
 
                       {userDrp && (
                         <Select
+                          classNamePrefix="react-select"
                           options={userDropdown}
                           defaultValue={userDrp.filter(
                             (d) => d.value === data?.created_by
@@ -1286,6 +1289,7 @@ export default function EditTicketComponent({ match }) {
                       </label>
                       {projectDropdown && data && (
                         <Select
+                          classNamePrefix="react-select"
                           id="project_id"
                           name="project_id"
                           required
@@ -1305,6 +1309,7 @@ export default function EditTicketComponent({ match }) {
                       </label>
                       {moduleDropdown && data && (
                         <Select
+                          classNamePrefix="react-select"
                           id="module_id"
                           name="module_id"
                           options={moduleDropdown}
@@ -1328,6 +1333,7 @@ export default function EditTicketComponent({ match }) {
                       </label>
                       {subModuleDropdown && (
                         <Select
+                          classNamePrefix="react-select"
                           options={subModuleDropdown}
                           id="submodule_id"
                           name="submodule_id"
@@ -1346,6 +1352,7 @@ export default function EditTicketComponent({ match }) {
                         <b>Reviewer :</b>
                       </label>
                       <Select
+                        classNamePrefix="react-select"
                         name="ticket_reviewer"
                         id="ticket_reviewer"
                         options={reviewerData}
@@ -1376,6 +1383,7 @@ export default function EditTicketComponent({ match }) {
                       </label>
                       {departmentDropdown && (
                         <Select
+                          classNamePrefix="react-select"
                           id="assign_to_department_id"
                           name="assign_to_department_id"
                           options={departmentDropdown}
@@ -1397,6 +1405,7 @@ export default function EditTicketComponent({ match }) {
                       </label>
                       {userDropdown?.length > 0 && (
                         <Select
+                          classNamePrefix="react-select"
                           ref={userSelectRef}
                           id="assign_to_user_id"
                           name="assign_to_user_id"
@@ -1445,6 +1454,7 @@ export default function EditTicketComponent({ match }) {
 
                       {statusData && (
                         <Select
+                          classNamePrefix="react-select"
                           id="status_id"
                           name="status_id"
                           options={statusData}

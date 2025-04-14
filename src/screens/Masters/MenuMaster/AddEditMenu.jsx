@@ -17,16 +17,15 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
   let obj = {
     label: data?.value?.parent_name,
     value: data?.value?.id || 0
-
   };
 
   const initialValues = {
     parent_id: data?.case === 'Edit' ? obj?.value : '',
     add_parent_menu: '',
-    name:  data?.case === 'Edit' ? data?.value?.name :   '',
+    name: data?.case === 'Edit' ? data?.value?.name : '',
     remark: data?.value?.remark || '',
     is_active:
-    data?.value?.is_active !== undefined
+      data?.value?.is_active !== undefined
         ? String(data?.value?.is_active)
         : '1'
   };
@@ -64,7 +63,7 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
           onSuccessHandler: () => {
             dispatch(getMenuMasterList());
             // setIcon(false);
-           icon ? setIcon(false) :  onClose();
+            icon ? setIcon(false) : onClose();
           },
           onErrorHandler: () => {}
         })
@@ -160,6 +159,7 @@ const AddMenuForm = ({ onClose, show, data, optionData }) => {
                     </div>
                     <div className="col-md-12">
                       <Field
+                        classNamePrefix="react-select"
                         component={Select}
                         id="parent_id"
                         name="parent_id"

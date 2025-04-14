@@ -10,7 +10,12 @@ import {
 } from 'react-router-dom';
 import ConsolidatedService from '../../services/ProjectManagementService/ConsolidatedService';
 import GeneralSettingService from '../../services/SettingService/GeneralSettingService';
-import { _apiUrl, _attachmentUrl, _base , _rewampAttachmentUrl} from '../../settings/constants';
+import {
+  _apiUrl,
+  _attachmentUrl,
+  _base,
+  _rewampAttachmentUrl
+} from '../../settings/constants';
 
 import DataTable from 'react-data-table-component';
 import Select from 'react-select';
@@ -76,7 +81,6 @@ export default function ProjectwiseModule() {
   const submoduleRef = useRef(null);
   const moduleRef = useRef(null);
   const ModuleID = moduleId?.length > 0 ? moduleId : null;
-
 
   const loadData = async () => {
     const userId = localStorage.getItem('id');
@@ -249,7 +253,8 @@ export default function ProjectwiseModule() {
               setDocList(tempData);
               setFilterData(
                 tempData?.filter(
-                  (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
+                  (i) =>
+                    i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
                 )
               );
             }
@@ -291,7 +296,8 @@ export default function ProjectwiseModule() {
               setDocList(tempData);
               setFilterData(
                 tempData?.filter(
-                  (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
+                  (i) =>
+                    i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
                 )
               );
             }
@@ -566,7 +572,8 @@ export default function ProjectwiseModule() {
                 setDocList(tempData);
                 setFilterData(
                   tempData?.filter(
-                    (i) => i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
+                    (i) =>
+                      i?.uploaded_by_id == parseInt(localStorage.getItem('id'))
                   )
                 );
               }
@@ -624,10 +631,7 @@ export default function ProjectwiseModule() {
   };
 
   const renderTooltip = (text) => (
-    <OverlayTrigger
-      placement="top"
-      overlay={<Tooltip>{text}</Tooltip>}
-    >
+    <OverlayTrigger placement="top" overlay={<Tooltip>{text}</Tooltip>}>
       <span style={{ cursor: 'pointer' }}>{text}</span>
     </OverlayTrigger>
   );
@@ -763,22 +767,26 @@ export default function ProjectwiseModule() {
       selector: (row) => row.project_name,
       sortable: true,
       width: '15%',
-      cell: (row) => renderTooltip(row.project_name),
+      cell: (row) => renderTooltip(row.project_name)
     },
     {
       name: 'Module Name',
       selector: (row) => (row.module_name ? row.module_name : 'No Module'),
       sortable: true,
       width: '15%',
-      cell: (row) => renderTooltip(row.module_name ? row.module_name : 'No Module'),
+      cell: (row) =>
+        renderTooltip(row.module_name ? row.module_name : 'No Module')
     },
     {
       name: 'SubModule Name',
       selector: (row) =>
         row.sub_module_name ? row.sub_module_name : 'No SubModule',
-       sortable: true,
-       width: '15%',
-       cell: (row) => renderTooltip(row.sub_module_name ? row.sub_module_name : 'No SubModule'),
+      sortable: true,
+      width: '15%',
+      cell: (row) =>
+        renderTooltip(
+          row.sub_module_name ? row.sub_module_name : 'No SubModule'
+        )
     }
   ];
 
@@ -958,9 +966,12 @@ export default function ProjectwiseModule() {
     docList &&
     docList?.filter(
       (i) =>
-        i?.uploaded_by_id === parseInt(localStorage.getItem("id")) || i?.show_to_all === 1
+        i?.uploaded_by_id === parseInt(localStorage.getItem('id')) ||
+        i?.show_to_all === 1
     );
-    {console.log('FilterData', FilterData)}
+  {
+    console.log('FilterData', FilterData);
+  }
 
   useEffect(() => {
     loadData();
@@ -1066,6 +1077,7 @@ export default function ProjectwiseModule() {
                   </label>
                   {(moduleDropdown || projectWiseModuleDropdown) && (
                     <Select
+                      classNamePrefix="react-select"
                       className="w-100"
                       options={
                         parseInt(ModuleID)?.length > 0
@@ -1093,6 +1105,7 @@ export default function ProjectwiseModule() {
                       SubModule:
                     </label>
                     <Select
+                      classNamePrefix="react-select"
                       className="w-100"
                       options={
                         subModuleDropdown.length > 0
@@ -1340,7 +1353,7 @@ export default function ProjectwiseModule() {
               >
                 3) Please Select Module or Submodule to Filter The Documents
               </span>
-              {console.log(authorityCheck,"?>>>>")}
+              {console.log(authorityCheck, '?>>>>')}
               <DataTable
                 columns={columns}
                 data={

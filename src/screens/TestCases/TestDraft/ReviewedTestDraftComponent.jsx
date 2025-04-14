@@ -1660,6 +1660,7 @@ function ReviewedTestDraftComponent() {
             </b>
           </label>
           <Select
+            classNamePrefix="react-select"
             id="reviewer_id"
             name="reviewer_id"
             options={filterTestData}

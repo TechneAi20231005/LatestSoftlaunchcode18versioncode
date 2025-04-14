@@ -73,9 +73,7 @@ function GenerateFormAndQrMaster() {
   };
 
   const removeId = addQrCodeData?.id;
-  let tenateId = localStorage.getItem("actual_tenant_id")
-
-
+  let tenateId = localStorage.getItem('actual_tenant_id');
 
   const resetFormRef = useRef(null);
 
@@ -170,13 +168,13 @@ ${currentDate}
       formDatas?.append('designations[]', designation);
     });
 
-     formDatas.append('tenant_id', tenateId);
+    formDatas.append('tenant_id', tenateId);
     formDatas.append(
       'company_name',
       values.branding_type === 'text' ? values?.company_name : ''
     );
 
-    formDatas.append('qr_color', qrStyleData.qrColor)
+    formDatas.append('qr_color', qrStyleData.qrColor);
 
     // formDatas.append('qr_scanner', pngUrl);
 
@@ -275,10 +273,8 @@ ${currentDate}
                   <Formik
                     initialValues={formData}
                     enableReinitialize
-
                     validationSchema={generateFormValidation}
                     onSubmit={(values, errors) => {
-
                       handleAddQrCode(values);
                       setFormData(values);
                       // setFormData(values)
@@ -294,9 +290,8 @@ ${currentDate}
                       resetForm
                     }) => {
                       resetFormRef.current = resetForm;
-                      console.log(values,"values")
+                      console.log(values, 'values');
                       // setFormData(values);
-
 
                       return (
                         <Form>
@@ -314,7 +309,6 @@ ${currentDate}
                                   inputClassName="me-1"
                                   className="ms-0"
                                   onChange={() => {
-
                                     setFieldValue('company_name', '');
                                   }}
                                 />
@@ -328,8 +322,6 @@ ${currentDate}
                                   disabled={success}
                                   inputClassName="me-1"
                                   onChange={() => {
-
-
                                     setQrStyleData({ logoPath: '' });
                                     setFieldValue('logo', '');
                                   }}
@@ -356,7 +348,6 @@ ${currentDate}
                                   ref={fileInputRef}
                                   disabled={success}
                                   onChange={(event) => {
-
                                     setFieldValue(
                                       'logo',
                                       event.target.files[0]
@@ -392,6 +383,7 @@ ${currentDate}
                             </div>
 
                             <Field
+                              classNamePrefix="react-select"
                               options={sourceData}
                               component={CustomReactSelect}
                               name="source_name"
@@ -400,9 +392,9 @@ ${currentDate}
                               disabled={success}
                               placeholder="Select"
                               requiredField
-
                             />
                             <Field
+                              classNamePrefix="react-select"
                               options={jobOpeningData}
                               component={CustomReactSelect}
                               name="job_opening_id"
@@ -414,6 +406,7 @@ ${currentDate}
                               isMulti
                             />
                             <Field
+                              classNamePrefix="react-select"
                               options={locationData}
                               component={CustomReactSelect}
                               name="branch_id"
@@ -569,11 +562,11 @@ ${currentDate}
                       Download
                     </button>
                     <Select
+                      classNamePrefix="react-select"
                       options={qrStyleOptions}
                       className="w-100 pe-none"
                       onChange={(e) => setQrStyleData({ qrType: e.value })}
                       defaultValue={qrStyleOptions[0]}
-
                     />
                     <label>
                       <input
@@ -594,12 +587,12 @@ ${currentDate}
 
       {!show && (
         <>
-          <div className='custom-margin'>
-               <PageHeader
-            isremove
-            handleBack={() => setShow(true)}
-            headerTitle=""
-          />
+          <div className="custom-margin">
+            <PageHeader
+              isremove
+              handleBack={() => setShow(true)}
+              headerTitle=""
+            />
             {/* <button style={{ background: 'none', border: 0 }}>
               <i
                 className="icofont-simple-left fs-2 back_icon_btn cp"

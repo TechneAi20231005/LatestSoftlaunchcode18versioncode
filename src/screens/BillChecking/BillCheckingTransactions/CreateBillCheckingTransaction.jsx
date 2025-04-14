@@ -403,7 +403,10 @@ export default function CreateBillCheckingTransaction({ match }) {
         if (res.data.status == 1) {
           setDepartment(res.data.data?.data);
           setDepartmentDropdown(
-            res.data.data?.data.map((d) => ({ value: d.id, label: d.department }))
+            res.data.data?.data.map((d) => ({
+              value: d.id,
+              label: d.department
+            }))
           );
         }
       }
@@ -885,6 +888,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         }}
                         id="bill_type"
                         name="bill_type"
+                        classNamePrefix="react-select"
                         placeholder="Bill Type"
                         required
                       />
@@ -905,6 +909,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         id="assign_to"
                         name="assign_to"
                         placeholder="Assign To"
+                        classNamePrefix="react-select"
                         required
                         isClearable={true}
                       />
@@ -924,6 +929,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         id="vendor_name"
                         name="vendor_name"
                         options={vendorDropdown}
+                        classNamePrefix="react-select"
                         required
                         isClearable={true}
                       />
@@ -1520,6 +1526,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           className="form-control form-control-sm"
                           id="tds_section"
                           name="tds_section"
+                          classNamePrefix="react-select"
                           options={sectionDropdown}
                           ref={sectionRef}
                           required
@@ -1542,6 +1549,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             <Select
                               id="tds_constitution"
                               name="tds_constitution"
+                              classNamePrefix="react-select"
                               options={
                                 constitutionDropdown
                                   ? constitutionDropdown
@@ -1559,6 +1567,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             <Select
                               type="text"
                               className="form-control form-control-sm"
+                              classNamePrefix="react-select"
                               id="tds_constitution"
                               name="tds_constitution"
                               isDisabled={

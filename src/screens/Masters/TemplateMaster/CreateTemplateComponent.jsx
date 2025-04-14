@@ -600,6 +600,7 @@ const CreateTemplateComponent = () => {
                             <td>
                               {userData && (
                                 <Select
+                                  classNamePrefix="react-select"
                                   required={true}
                                   options={userData}
                                   id="basket_owner"
