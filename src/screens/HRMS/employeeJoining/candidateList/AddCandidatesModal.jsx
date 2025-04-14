@@ -106,6 +106,7 @@ function AddCandidatesModal({ show, close }) {
                 <Row className="row_gap_3">
                   <Col sm={6} md={6}>
                     <Field
+                      classNamePrefix="react-select"
                       options={sourceDropdown}
                       component={CustomReactSelect}
                       name="source_id"
@@ -151,6 +152,7 @@ function AddCandidatesModal({ show, close }) {
                   </Col>
                   <Col sm={6} md={6}>
                     <Field
+                      classNamePrefix="react-select"
                       options={preferredDesignationDropdown}
                       component={CustomReactSelect}
                       name="designation_id"
@@ -167,6 +169,7 @@ function AddCandidatesModal({ show, close }) {
                   </Col>
                   <Col sm={6} md={6}>
                     <Field
+                      classNamePrefix="react-select"
                       options={preferredLocationDropdown}
                       component={CustomReactSelect}
                       name="location_id"
@@ -204,6 +207,7 @@ function AddCandidatesModal({ show, close }) {
                   </Col>
                   <Col sm={6} md={6}>
                     <Field
+                      classNamePrefix="react-select"
                       data={experienceLevel}
                       component={CustomDropdown}
                       name="relevant_experience"

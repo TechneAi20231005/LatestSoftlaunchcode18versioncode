@@ -105,6 +105,7 @@ function DownloadFormatFileModal({ show, close }) {
               <Row className="row_gap_3">
                 <Col md={4} lg={4}>
                   <Field
+                    classNamePrefix="react-select"
                     data={getProjectModuleList}
                     component={CustomDropdown}
                     name="project_id"
@@ -118,6 +119,7 @@ function DownloadFormatFileModal({ show, close }) {
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
+                    classNamePrefix="react-select"
                     data={moduleDropdown}
                     component={CustomDropdown}
                     name="module_id"
@@ -132,6 +134,7 @@ function DownloadFormatFileModal({ show, close }) {
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
+                    classNamePrefix="react-select"
                     options={subModuleDropdown}
                     component={CustomReactSelect}
                     name="submodule_id"

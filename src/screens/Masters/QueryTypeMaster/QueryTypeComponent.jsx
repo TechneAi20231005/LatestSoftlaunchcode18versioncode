@@ -712,6 +712,7 @@ function QueryTypeComponent() {
                         </label>
                         {dynamicFormDropdown && (
                           <Select
+                            classNamePrefix="react-select"
                             options={dynamicFormDropdown}
                             id="form_id"
                             name="form_id"
@@ -747,6 +748,7 @@ function QueryTypeComponent() {
                             Query Group: <Astrick color="red" size="13px" />
                           </label>
                           <Select
+                            classNamePrefix="react-select"
                             options={queryGroupDropdown}
                             id="query_group_data"
                             name="query_group_data"

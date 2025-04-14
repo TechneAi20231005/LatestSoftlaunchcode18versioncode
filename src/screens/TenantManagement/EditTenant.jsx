@@ -72,7 +72,7 @@ export default function EditTenant() {
 
   const [errorMessage, setErrorMessage] = useState('');
 
-  const [isDisabled, setIsDisabled] = useState(false)
+  const [isDisabled, setIsDisabled] = useState(false);
 
   const [inputState, setInputState] = useState({});
   const initialValues = {
@@ -184,8 +184,8 @@ export default function EditTenant() {
   }, [dispatch, tenanatId]);
 
   const handleForm = async (values) => {
-    setIsDisabled(true)
-    if(isDisabled) return
+    setIsDisabled(true);
+    if (isDisabled) return;
     const formData = new FormData();
 
     formData.append('company_name', values.company_name);
@@ -211,7 +211,7 @@ export default function EditTenant() {
         }
       }
     );
-    setIsDisabled(false)
+    setIsDisabled(false);
   };
 
   const handleKeyPress = (e) => {
@@ -342,6 +342,7 @@ export default function EditTenant() {
                     <div className="row">
                       <div className="col-sm-6">
                         <Field
+                          classNamePrefix="react-select"
                           name="company_type"
                           component={Select}
                           options={companyType}
@@ -482,6 +483,7 @@ export default function EditTenant() {
                     <div className="col-sm-4">
                       {CountryData && data && (
                         <Field
+                          classNamePrefix="react-select"
                           name="country_id"
                           component={Select}
                           options={CountryData}
@@ -513,6 +515,7 @@ export default function EditTenant() {
                     </label>
                     <div className="col-sm-4">
                       <Field
+                        classNamePrefix="react-select"
                         name="state_id"
                         component={Select}
                         options={stateDropdownData}
@@ -546,6 +549,7 @@ export default function EditTenant() {
                     <div className="col-sm-4">
                       {AllcityDropDownData && data && (
                         <Field
+                          classNamePrefix="react-select"
                           name="city_id"
                           component={Select}
                           options={cityDropdownData}
@@ -576,7 +580,11 @@ export default function EditTenant() {
 
               <div className="mt-3" style={{ textAlign: 'right' }}>
                 {/* {checkRole && checkRole[0]?.can_update === 1 ? ( */}
-                <button disabled={isDisabled} type="submit" className="btn btn-primary">
+                <button
+                  disabled={isDisabled}
+                  type="submit"
+                  className="btn btn-primary"
+                >
                   Update
                 </button>
                 {/* ) : (

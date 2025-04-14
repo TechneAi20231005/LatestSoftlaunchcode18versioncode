@@ -298,6 +298,7 @@ function PoHistory() {
               <Row className="align-items-md-end row_gap_3">
                 <Col sm={6} md={4} lg={3}>
                   <Field
+                    classNamePrefix="react-select"
                     component={CustomReactSelect}
                     options={venderData}
                     name="vender_name"

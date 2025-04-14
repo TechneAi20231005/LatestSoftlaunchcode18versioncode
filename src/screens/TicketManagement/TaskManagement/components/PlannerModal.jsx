@@ -602,6 +602,7 @@ function PlannerModal(props) {
                                                 onKeyPress={(e)=>{Validation.NumbersSpeicalOnly(e);handleChange(e,index)}}
                                                 /> */}
                               <Select
+                                classNamePrefix="react-select"
                                 options={times}
                                 defaultValue={times
                                   .filter((d) => d.value === ele.total_hours)

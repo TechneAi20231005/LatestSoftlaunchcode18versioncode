@@ -206,6 +206,7 @@ export default function DeleteRequisition() {
           <Col sm={6} md={4} lg={3}>
             <label className="form-label font-weight-bold">Item:</label>
             <Select
+              classNamePrefix="react-select"
               isMulti
               options={filterItemCategoryList}
               value={filterItemCategoryList.filter((option) =>
@@ -220,6 +221,7 @@ export default function DeleteRequisition() {
           <Col sm={6} md={4} lg={3}>
             <label className="form-label font-weight-bold">Category:</label>
             <Select
+              classNamePrefix="react-select"
               isMulti
               options={filteredCategories}
               value={filteredCategories?.filter((option) =>

@@ -157,8 +157,7 @@ export default function EditProjectComponent({ match }) {
 
   const handleShowLogo = (e) => {
     var URL =
-      `${_rewampAttachmentUrl}/storage/app/Attachment/project/` +
-      data?.logo;
+      `${_rewampAttachmentUrl}/storage/app/Attachment/project/` + data?.logo;
     window.open(URL, '_blank');
   };
 
@@ -194,7 +193,7 @@ export default function EditProjectComponent({ match }) {
     git_url: data?.git_url || '',
     api_document_link: data?.api_document_link || '',
     remark: data?.remark || '',
-    is_active: String(data?.is_active) ?? "1"
+    is_active: String(data?.is_active) ?? '1'
   };
   const fields = [
     { name: 'customer_id', label: 'Customer Name', required: true },
@@ -264,6 +263,7 @@ export default function EditProjectComponent({ match }) {
                         </label>
                         <div className="col-sm-4">
                           <Select
+                            classNamePrefix="react-select"
                             id="customer_id"
                             name="customer_id"
                             required={true}
@@ -323,6 +323,7 @@ export default function EditProjectComponent({ match }) {
                         <div className="col-sm-4">
                           {users && (
                             <Select
+                              classNamePrefix="react-select"
                               options={users}
                               id="project_owner"
                               name="project_owner"
@@ -356,20 +357,17 @@ export default function EditProjectComponent({ match }) {
                             id="logo"
                             name="logo"
                             accept="image/*"
-                            onChange={(event) =>
-                            {
-                              let file = event?.target?.files[0]
+                            onChange={(event) => {
+                              let file = event?.target?.files[0];
                               if (file?.size > 2 * 1024 * 1024) {
                                 // File size exceeds 2MB, notify the user and clear the input field
                                 alert('File size must be less than 2MB.');
                                 event.target.value = null; // Clear the input field
                               }
-                              setFieldValue('logo', event?.target?.files[0])
-                            }
-
-                            }
+                              setFieldValue('logo', event?.target?.files[0]);
+                            }}
                           />
-                          <p>{data.logo || ""}</p>
+                          <p>{data.logo || ''}</p>
                           {data && data.logo !== null && (
                             <i
                               title="Click to view logo"
@@ -399,6 +397,7 @@ export default function EditProjectComponent({ match }) {
                         {ba && (
                           <div className="col-sm-4">
                             <Select
+                              classNamePrefix="react-select"
                               id="project_reviewer"
                               name="project_reviewer"
                               options={ba}
@@ -464,7 +463,10 @@ export default function EditProjectComponent({ match }) {
                       </div>
 
                       <div className="form-group row mt-3">
-                        <label className="col-sm-2 col-form-label" style={{ whiteSpace: "nowrap" }}>
+                        <label
+                          className="col-sm-2 col-form-label"
+                          style={{ whiteSpace: 'nowrap' }}
+                        >
                           <b>API Document Link : </b>
                         </label>
                         <div className="col-sm-10">
@@ -505,7 +507,9 @@ export default function EditProjectComponent({ match }) {
 
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
-                          <b>Status : <Astrick color="red" size="13px" /> </b>
+                          <b>
+                            Status : <Astrick color="red" size="13px" />{' '}
+                          </b>
                         </label>
                         <div className="col-sm-10">
                           <div className="row">

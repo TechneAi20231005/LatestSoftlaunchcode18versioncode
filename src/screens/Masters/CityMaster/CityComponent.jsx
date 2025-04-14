@@ -398,6 +398,7 @@ function CityComponent() {
                         Select Country: <span style={{ color: 'red' }}>*</span>
                       </label>
                       <Select
+                        classNamePrefix="react-select"
                         options={filteredCountryData}
                         id="country_id"
                         name="country_id"
@@ -429,6 +430,7 @@ function CityComponent() {
                         Select State: <span style={{ color: 'red' }}>*</span>
                       </label>
                       <Select
+                        classNamePrefix="react-select"
                         options={stateDropdownData && stateDropdownData}
                         name="state_id"
                         id="state_id"
