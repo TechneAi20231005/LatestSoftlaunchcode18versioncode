@@ -6,6 +6,7 @@ import ManageMenuService from '../../../services/MenuManagementService/ManageMen
 import PageHeader from '../../../components/Common/PageHeader';
 import { errorHandler } from '../../../utils';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
 function ModuleComponent() {
   //initial state
   const location = useLocation();
@@ -94,10 +95,10 @@ function ModuleComponent() {
       accessorFn: (originalRow) => new Date(originalRow.created_at),
       header: 'Created At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row?.original?.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
@@ -108,10 +109,10 @@ function ModuleComponent() {
       accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
       header: 'Updated At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow.updated_by?.trim() || '--',

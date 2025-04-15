@@ -16,6 +16,7 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
 
 function StatusComponent() {
   const dispatch = useDispatch();
@@ -110,10 +111,10 @@ function StatusComponent() {
       accessorFn: (originalRow) => new Date(originalRow.created_at),
       header: 'Created At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row?.original?.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
@@ -124,10 +125,10 @@ function StatusComponent() {
       accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
       header: 'Updated At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
