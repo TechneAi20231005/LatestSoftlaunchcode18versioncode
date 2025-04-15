@@ -41,6 +41,8 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
        modalHeader: ''
      });
 
+
+
   const menuBtns = [
     {
       id: 1,
@@ -102,16 +104,16 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
       conditions: (type) => {
         if (type === 'AssignToMe') {
           return (
-            ((ticketCreatedBy !== currentUser && data.basket_configured > 0) ||
+            ((ticketCreatedBy !== currentUser && data?.basket_configured?.length > 0) ||
               (tickedtAssignedto === currentUser &&
-                data.basket_configured > 0)) &&
+                data?.basket_configured?.length > 0)) &&
             userAccountFor === 'SELF'
           );
         } else if (type === 'YourTask') {
           return (
             ticketCreatedBy !== currentUser &&
             userAccountFor === 'SELF' &&
-            data.basket_configured > 0
+            data?.basket_configured?.length > 0
           );
         } else if (type === 'DepartmentWise') {
           return true;
@@ -119,7 +121,7 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
           return (
             ticketCreatedBy !== currentUser &&
             userAccountFor === 'SELF' &&
-            data.basket_configured > 0
+            data?.basket_configured?.length > 0
           );
         }
       }
@@ -136,9 +138,9 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
         if (type === 'AssignToMe') {
           return (
             ((ticketCreatedBy !== currentUser &&
-              data.basket_configured === 0) ||
+              data?.basket_configured?.length === 0) ||
               (tickedtAssignedto === currentUser &&
-                data.basket_configured === 0)) &&
+                data?.basket_configured?.length === 0)) &&
             userAccountFor === 'SELF'
           );
         } else if (type === 'YourTask') {
