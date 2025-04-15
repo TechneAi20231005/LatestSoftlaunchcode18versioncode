@@ -96,7 +96,7 @@ ${currentDate}
     {
       accessorFn: (originalRow) => originalRow?.logo_image || '--',
       header: 'Logo',
-      size: 150,
+      size: 240,
       Cell: ({ row }) => (
         <a
           href="#"
@@ -145,7 +145,7 @@ ${currentDate}
     {
       accessorFn: (originalRow) => originalRow?.designation_name || '--',
       header: 'Openings',
-      size: 180,
+      size: 200,
       Cell: ({ row }) =>
         row?.original?.designations?.length > 0
           ? row?.original?.designations
