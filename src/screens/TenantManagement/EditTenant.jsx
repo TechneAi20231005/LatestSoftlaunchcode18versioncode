@@ -184,8 +184,8 @@ export default function EditTenant() {
   }, [dispatch, tenanatId]);
 
   const handleForm = async (values) => {
-    setIsDisabled(true);
     if (isDisabled) return;
+    setIsDisabled(true);
     const formData = new FormData();
 
     formData.append('company_name', values.company_name);
@@ -200,8 +200,8 @@ export default function EditTenant() {
     formData.append('state_id', values.state_id);
     formData.append('city_id', values.city_id);
     formData.append('is_active', toggleRadio ? 1 : 0);
-    dispatch(updatetenantData({ id: tenanatId, payload: formData })).then(
-      (res) => {
+    dispatch(updatetenantData({ id: tenanatId, payload: formData }))
+      .then((res) => {
         if (res.payload.data.status === 1 && res.payload.status === 200) {
           navigate(`/${_base}/TenantMaster`);
           dispatch(getAllTenant());
@@ -209,9 +209,9 @@ export default function EditTenant() {
         } else {
           // toast.error(res.payload.data.message);
         }
-      }
-    );
-    setIsDisabled(false);
+      })
+      .catch((error) => errorHandler(error))
+      .finally(() => setIsDisabled(false));
   };
 
   const handleKeyPress = (e) => {
@@ -219,13 +219,6 @@ export default function EditTenant() {
       setErrorMessage('');
     } else {
       setErrorMessage('Only capital letters are allowed');
-    }
-  };
-  const handleRadios = (e) => {
-    if (e === 'active') {
-      setToggleRadio(true);
-    } else {
-      setToggleRadio(false);
     }
   };
 
@@ -272,14 +265,8 @@ export default function EditTenant() {
             handleForm(values);
           }}
         >
-          {({
-            values,
-            handleChange,
-            handleBlur,
-            handleSubmit,
-            setFieldValue
-          }) => (
-            <Form onSubmit={handleSubmit}>
+          {({ values, handleChange, setFieldValue }) => (
+            <Form>
               <div className="card card-body">
                 {/* Tenant Name */}
                 <div className="form-group row">

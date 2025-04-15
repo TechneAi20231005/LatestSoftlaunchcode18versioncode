@@ -35,6 +35,7 @@ function GenerateFormAndQrMaster() {
   const { getDesignationData } = useSelector(
     (state) => state.designationMaster
   );
+  const { isLoading } = useSelector((state) => state.qrCodeMaster);
   const { branchMasterList } = useSelector((state) => state?.branchMaster);
   const qrRef = useRef(null);
   const fileInputRef = useRef(null);
@@ -153,6 +154,7 @@ ${currentDate}
   };
 
   const handleAddQrCode = (values) => {
+    if (isLoading?.addQrCodeMasterList) return;
     const canvas = qrRef.current?.canvasRef?.current;
     const pngUrl = canvas?.toDataURL('image/png');
     const formDatas = new FormData();
@@ -202,7 +204,6 @@ ${currentDate}
       removeQrCodeList({
         currentId: removeId,
         onSuccessHandler: () => {
-          console.log('removed sucessfully');
           setIsGenerate(false);
           // setsuccess(true);
         }
@@ -235,10 +236,8 @@ ${currentDate}
           }
         })
       );
-      console.log('calling a api');
     } else {
       window.history.back();
-      console.log('going back ');
     }
   };
   const handleViewIframe = () => {
@@ -290,8 +289,6 @@ ${currentDate}
                       resetForm
                     }) => {
                       resetFormRef.current = resetForm;
-                      console.log(values, 'values');
-                      // setFormData(values);
 
                       return (
                         <Form>
