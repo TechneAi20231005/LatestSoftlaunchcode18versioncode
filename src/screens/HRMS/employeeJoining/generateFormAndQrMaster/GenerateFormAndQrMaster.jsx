@@ -151,8 +151,11 @@ ${currentDate}
     };
     img.src = url;
   };
+  const [submitApi, setSubmitApi] = useState(false);
 
   const handleAddQrCode = (values) => {
+    if (submitApi) return;
+    setSubmitApi(true);
     const canvas = qrRef.current?.canvasRef?.current;
     const pngUrl = canvas?.toDataURL('image/png');
     const formDatas = new FormData();
@@ -189,8 +192,10 @@ ${currentDate}
         onSuccessHandler: () => {
           setsuccess(true);
           setIsGenerate(true);
+          setSubmitApi(false);
         },
         onErrorHandler: () => {
+          setSubmitApi(false);
           setsuccess(false);
         }
       })

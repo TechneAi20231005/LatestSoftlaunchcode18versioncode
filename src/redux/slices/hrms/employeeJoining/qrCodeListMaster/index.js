@@ -39,7 +39,7 @@ const qrCodeMasterSlice = createSlice({
       .addCase(getQrCodeList.fulfilled, (state, action) => {
         console.log(action.payload, 'action');
         state.isLoading.getQrCodeMasterList = false;
-        state.qrCodeMasterList = action?.payload?.data;
+        state.qrCodeMasterList = action?.payload?.data?.data;
         if (action.payload.data.status === 0) {
           state.notify = {
             type: 'danger',

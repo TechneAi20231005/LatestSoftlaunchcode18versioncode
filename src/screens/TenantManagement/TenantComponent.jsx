@@ -1,11 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
-import DataTable from 'react-data-table-component';
 import PageHeader from '../../components/Common/PageHeader';
-
 import { _base } from '../../settings/constants';
-import Alert from '../../components/Common/Alert';
-
 import { Spinner } from 'react-bootstrap';
 import { Modal } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -13,66 +9,40 @@ import { getAllTenant } from './TenantConponentAction';
 
 import { getEmployeeData, getRoles } from '../Dashboard/DashboardAction';
 
-import { ExportToExcel } from '../../components/Utilities/Table/ExportToExcel';
+import MaterialTable from '../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
 
 function TenantComponent() {
   const dispatch = useDispatch();
   const getAllTenantData = useSelector(
     (TenantComponentSlice) => TenantComponentSlice.tenantMaster.getAllTenant
   );
+
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 33)
   );
   const getAllEmployeeData = useSelector(
     (DashboardSlice) => DashboardSlice.dashboard.employeeData
   );
-  const exportAllTenantData = useSelector(
-    (TenantComponentSlice) =>
-      TenantComponentSlice.tenantMaster.exportAllTenantData
+  const isLoading = useSelector(
+    (TenantComponentSlice) => TenantComponentSlice.tenantMaster.isLoading
   );
-  const [data, setData] = useState(null);
-  // const [notify, setNotify] = useState(null);
-  const notify = useSelector(
-    (TenantComponentSlice) => TenantComponentSlice.tenantMaster.notify
-  );
-
   const isMasterAdmin = localStorage.getItem('role_name');
-  // const [checkRole, setCheckRole] = useState(null);
   const showLoaderModal = false;
-  const [searchTerm, setSearchTerm] = useState('');
-  const searchRef = useRef();
-  function SearchInputData(data, search) {
-    const lowercaseSearch = search.toLowerCase();
-
-    return data.filter((d) => {
-      for (const key in d) {
-        if (
-          typeof d[key] === 'string' &&
-          d[key].toLowerCase().includes(lowercaseSearch)
-        ) {
-          return true;
-        }
-      }
-      return false;
-    });
-  }
-
-  const handleSearch = () => {
-    const SearchValue = searchRef.current.value;
-    const result = SearchInputData(data, SearchValue);
-    setData(result);
-  };
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '100px',
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <Link
-            to={`/${_base}/TenantMaster/Edit/` + row.id}
+            to={`/${_base}/TenantMaster/Edit/` + row?.original?.id}
             className="btn btn-outline-secondary"
           >
             <i className="icofont-edit text-success"></i>
@@ -80,65 +50,93 @@ function TenantComponent() {
         </div>
       )
     },
-
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '100px'
+      accessorFn: (originalRow, i) => i + 1 || '--',
+      header: 'Sr',
+      size: 120,
+      enableColumnFilter: false
     },
-    { name: 'Name', selector: (row) => row.company_name, sortable: true },
-    { name: 'Ticket ID Series', selector: (row) => row.series, sortable: true },
-
-    { name: 'Type', selector: (row) => row.company_type, sortable: true },
     {
-      name: 'Status',
-      //   selector: (row) => row.is_active,
-      sortable: false,
-      width: '100px',
+      accessorFn: (originalRow) => originalRow?.company_name || '--',
+      header: 'Name',
+      size: 180
+    },
+    {
+      accessorFn: (originalRow) => originalRow?.series || '--',
+      header: 'Ticket ID Series',
+      size: 220
+    },
 
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary">Active</span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger">Deactive</span>
-          )}
-        </div>
+    {
+      accessorFn: (originalRow) => originalRow?.company_type || '--',
+      header: 'Type',
+      size: 200
+    },
+    {
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => (
+        <span
+          className={
+            'badge bg-' +
+            (row?.original?.is_active === 1 ? 'primary' : 'danger')
+          }
+        >
+          {row?.original?.is_active === 1 ? `Active` : `Deactive`}
+        </span>
       )
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true
+      accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Created By',
-      cell: (row) => {
-        let tenantCreatedBy = getAllEmployeeData?.filter(
-          (filterEmployee) => filterEmployee.id === row.created_by
-        );
-        return (
-          <div>
-            {row?.created_by || ""}
-          </div>
-        );
-      },
-      sortable: true
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
+      header: 'Created By',
+      size: 190
+    },
+
+    {
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true
-      // width: "100px",
-    },
-    {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By',
+      size: 190
     }
   ];
+
+  const exportDataKeys = {
+    company_name: 'Tenant Name',
+    series: 'TicketID Series',
+    company_type: 'Company Type',
+    country: 'Country',
+    state: 'State',
+    city: 'City',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Tenant Master Record'
+  };
 
   useEffect(() => {
     dispatch(getEmployeeData());
@@ -151,16 +149,12 @@ function TenantComponent() {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-      // alert("Rushi")
-
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
 
   return (
     <div className="container-xxl">
-      {notify?.type === 'success' && <Alert alertData={notify} />}
-
       <PageHeader
         headerTitle="Tenant Master"
         renderRight={() => {
@@ -187,72 +181,15 @@ function TenantComponent() {
         }}
       />
 
-      <div className="card card-body">
-        <div className="row">
-          <div className="col-md-9">
-            <input
-              type="text"
-              className="form-control"
-              placeholder="Search...."
-              ref={searchRef}
-              onChange={(e) => setSearchTerm(e.target.value)}
-            />
-          </div>
-          <div className="col-md-3">
-            <button
-              className="btn btn-sm btn-warning text-white"
-              type="button"
-              onClick={handleSearch}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-search-1 "></i> Search
-            </button>
-            <button
-              className="btn btn-sm btn-info text-white"
-              type="button"
-              onClick={() => window.location.reload(false)}
-              style={{ marginTop: '0px', fontWeight: '600' }}
-            >
-              <i className="icofont-refresh text-white"></i> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-sm btn-danger"
-              apiData={exportAllTenantData}
-              fileName="Tenant Master"
-            />
-          </div>
-        </div>
-      </div>
-
-      <div className="row clearfix g-3">
-        <div className="col-sm-12">
-          {getAllTenantData && (
-            <DataTable
-              columns={columns}
-              data={getAllTenantData.filter((customer) => {
-                if (typeof searchTerm === 'string') {
-                  if (typeof customer === 'string') {
-                    return customer
-                      .toLowerCase()
-                      .includes(searchTerm.toLowerCase());
-                  } else if (typeof customer === 'object') {
-                    return Object.values(customer).some(
-                      (value) =>
-                        typeof value === 'string' &&
-                        value.toLowerCase().includes(searchTerm.toLowerCase())
-                    );
-                  }
-                }
-                return false;
-              })}
-              defaultSortField="title"
-              pagination
-              selectableRows={false}
-              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-              highlightOnHover={true}
-            />
-          )}
-        </div>
+      <div className="card mt-2">
+        {getAllTenantData && (
+          <MaterialTable
+            isLoading={isLoading}
+            columns={columns}
+            data={getAllTenantData}
+            exportDataKeys={exportDataKeys}
+          />
+        )}
       </div>
       <Modal show={showLoaderModal} centered>
         <Modal.Body className="text-center">
