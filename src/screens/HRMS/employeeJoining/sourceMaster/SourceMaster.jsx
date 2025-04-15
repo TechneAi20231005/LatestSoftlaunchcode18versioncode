@@ -1,146 +1,144 @@
 import React, { useEffect, useState } from 'react';
-import { Col, Container, Row, OverlayTrigger, Tooltip } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
+import { Container } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 
 // // static import
 import PageHeader from '../../../../components/Common/PageHeader';
-import { ExportToExcel } from '../../../../components/Utilities/Table/ExportToExcel';
+
 import AddEditSourceModal from './AddEditSourceModal';
 import StatusBadge from '../../../../components/custom/Badges/StatusBadge';
 import { getSourceMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/sourceMaster';
-import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
-import { customSearchHandler } from '../../../../utils/customFunction';
+import MaterialTable from '../../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
 
 function SourceMaster() {
   // // initial state
   const dispatch = useDispatch();
 
   // // redux state
-  const { sourceMasterList, isLoading } = useSelector(state => state?.sourceMaster);
+  const { sourceMasterList, isLoading } = useSelector(
+    (state) => state?.sourceMaster
+  );
 
-  // // local state
-  const [searchValue, setSearchValue] = useState('');
   const [addEditSourceModal, setAddEditSourceModal] = useState({
     type: '',
     data: '',
-    open: false,
+    open: false
   });
-  const [filteredSourceMasterList, setFilteredSourceMasterList] = useState([]);
+  const [reset, setReset] = useState(false);
+  const clearFilters = () => {
+    setReset(true);
+  };
 
   // // static data
+
   const columns = [
     {
-      name: 'Action',
-      selector: row => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => (
         <i
           className="icofont-edit text-primary cp text-center"
-          onClick={() => setAddEditSourceModal({ type: 'EDIT', data: row, open: true })}
+          onClick={() =>
+            setAddEditSourceModal({
+              type: 'EDIT',
+              data: row?.original,
+              open: true
+            })
+          }
         />
-      ),
-      sortable: false,
-      width: '70px',
+      )
     },
     {
-      name: 'Sr. No.',
-      selector: (row, index) => index + 1,
-      sortable: false,
-      width: '70px',
+      header: 'Sr',
+      size: 90,
+      accessorFn: (_row, index) => index + 1,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableColumnFilter: false
     },
     {
-      name: 'Source Name',
-      sortable: true,
-      selector: row => row?.source_name || '--',
-      width: '200px',
+      header: 'Source Name',
+      accessorFn: (row) => row?.source_name?.trim() || '--',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      }),
+      size: 200
     },
     {
-      name: 'Remark',
-      sortable: true,
-      selector: row =>
-        row?.remark ? (
-          <OverlayTrigger
-            placement="top"
-            overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.remark}</Tooltip>}
-          >
-            <span>{row?.remark || '--'}</span>
-          </OverlayTrigger>
-        ) : (
-          '--'
-        ),
-      width: '300px',
+      header: 'Remark',
+      accessorFn: (row) => row?.remark?.trim() || '--',
+      size: 160
     },
     {
-      name: 'Status',
-      selector: row => <StatusBadge status={row?.is_active} />,
-      sortable: true,
-      width: '120px',
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return <StatusBadge status={isActive} />;
+      }
     },
     {
-      name: 'Created At',
-      selector: row => row?.created_at || '--',
-      sortable: true,
-      width: '175px',
+      header: 'Created At',
+      accessorKey: 'created_at',
+      filterVariant: 'date-range',
+      accessorFn: (row) => new Date(row.created_at),
+      Cell: ({ row }) =>
+        row.original.created_at
+          ? moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--',
+      size: 350
     },
     {
-      name: 'Created By',
-      selector: row => row?.created_by || '--',
-      sortable: true,
-      width: '175px',
-    },
-
-    {
-      name: 'Updated At',
-      selector: row => row?.updated_at || '--',
-      sortable: true,
-      width: '175px',
+      accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
+      header: 'Created By',
+      size: 180
     },
     {
-      name: 'Updated By',
-      selector: row => row?.updated_by || '--',
-      sortable: true,
-      width: '175px',
+      accessorKey: 'updated_at',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      accessorFn: (row) => new Date(row.updated_at),
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
+    {
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By',
+      size: 185
+    }
   ];
 
-  // Function to handle search button click
-  const handleSearch = () => {
-    const filteredList = customSearchHandler(sourceMasterList, searchValue);
-    setFilteredSourceMasterList(filteredList);
+  const exportDataKeys = {
+    remark: 'Remark',
+    source_name: 'Source Name',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Source Master Record'
   };
 
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchValue('');
-    setFilteredSourceMasterList(sourceMasterList);
-  };
-
-  const transformDataForExport = data => {
-    return data?.map((row, index) => ({
-      'Sr No.': index + 1,
-      'Source Name': row?.source_name || '--',
-      Remark: row?.remark || '--',
-      Status: row?.is_active ? 'Active' : 'Deactive',
-      'Created At': row?.created_at || '--',
-      'Created By': row?.created_by || '--',
-      'Updated At': row?.updated_at || '--',
-      'Updated By': row?.updated_by || '--',
-    }));
-  };
-
-  // // life cycle
   useEffect(() => {
     dispatch(getSourceMasterListThunk());
-  }, []);
-
-  // Update the useEffect to update the filtered list when sourceMasterList changes
-  useEffect(() => {
-    setFilteredSourceMasterList(sourceMasterList);
-  }, [sourceMasterList]);
-
-  // Function to handle search onchange
-  useEffect(() => {
-    handleSearch();
-  }, [searchValue]);
+  }, [dispatch]);
 
   return (
     <>
@@ -151,7 +149,9 @@ function SourceMaster() {
             return (
               <button
                 className="btn btn-dark px-5"
-                onClick={() => setAddEditSourceModal({ type: 'ADD', data: '', open: true })}
+                onClick={() =>
+                  setAddEditSourceModal({ type: 'ADD', data: '', open: true })
+                }
               >
                 <i className="icofont-plus me-2 fs-6" />
                 Add Source
@@ -159,50 +159,26 @@ function SourceMaster() {
             );
           }}
         />
-        <Row className="row_gap_3">
-          <Col xs={12} md={7} xxl={8}>
-            <input
-              type="search"
-              name="interview_search"
-              value={searchValue}
-              onChange={e => setSearchValue(e?.target?.value)}
-              placeholder="Enter source name..."
-              className="form-control"
+        {sourceMasterList && (
+          <div className="mt-2">
+            <MaterialTable
+              columns={columns}
+              data={sourceMasterList}
+              exportDataKeys={exportDataKeys}
+              isLoading={isLoading?.getSourceMasterList}
+              reset={reset}
+              setReset={setReset}
             />
-          </Col>
-          <Col xs={12} md={5} xxl={4} className="d-flex justify-content-sm-end btn_container">
-            <button className="btn btn-warning text-white" type="button" onClick={handleSearch}>
-              <i className="icofont-search-1 " /> Search
-            </button>
-            <button className="btn btn-info text-white" type="button" onClick={handleReset}>
-              <i className="icofont-refresh text-white" /> Reset
-            </button>
-            <ExportToExcel
-              className="btn btn-danger"
-              apiData={transformDataForExport(filteredSourceMasterList)}
-              fileName="Source Lists Records"
-              disabled={!filteredSourceMasterList?.length}
-            />
-          </Col>
-        </Row>
-        <DataTable
-          columns={columns}
-          data={filteredSourceMasterList}
-          defaultSortField="role_id"
-          pagination
-          selectableRows={false}
-          className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-          highlightOnHover={true}
-          progressPending={isLoading?.getSourceMasterList}
-          progressComponent={<TableLoadingSkelton />}
-        />
+          </div>
+        )}
       </Container>
 
       <AddEditSourceModal
         show={addEditSourceModal?.open}
         type={addEditSourceModal?.type}
         currentSourceData={addEditSourceModal?.data}
-        close={prev => setAddEditSourceModal({ ...prev, open: false })}
+        close={(prev) => setAddEditSourceModal({ ...prev, open: false })}
+        clearFilters={clearFilters}
       />
     </>
   );

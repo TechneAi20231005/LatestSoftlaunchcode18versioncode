@@ -23,7 +23,13 @@ import {
 import { experienceLevel } from '../../../../settings/constants';
 import useDropdownData from '../../../../hooks/useDropdownData';
 
-function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
+function AddEditSalaryModal({
+  show,
+  close,
+  type,
+  currentSalaryData,
+  clearFilters
+}) {
   // // initial state
   const dispatch = useDispatch();
 
@@ -73,6 +79,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
             setOpenConfirmModal({ open: false });
             close();
             dispatch(getSalaryMasterListThunk());
+            clearFilters();
           },
           onErrorHandler: () => {
             setOpenConfirmModal({ open: false });
@@ -88,6 +95,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
             setOpenConfirmModal({ open: false });
             close();
             dispatch(getSalaryMasterListThunk());
+            clearFilters();
           },
           onErrorHandler: () => {
             setOpenConfirmModal({ open: false });
