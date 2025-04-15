@@ -294,6 +294,7 @@ export default function Header() {
                         defaultValue={tenantDropdown.filter(
                           (d) => d.value == tenantId
                         )}
+                        classNamePrefix="react-select"
                         className="mb-2"
                       />
                     )}

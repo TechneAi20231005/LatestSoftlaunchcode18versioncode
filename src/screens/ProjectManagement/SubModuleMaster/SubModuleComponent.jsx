@@ -1,17 +1,15 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
-import ErrorLogService from '../../../services/ErrorLogService';
 import SubModuleService from '../../../services/ProjectManagementService/SubModuleService';
 
 import PageHeader from '../../../components/Common/PageHeader';
-import Alert from '../../../components/Common/Alert';
-
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
-import { customSearchHandler } from '../../../utils/customFunction';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 import moment from 'moment';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 function SubModuleComponent() {
   //initial state
@@ -25,30 +23,8 @@ function SubModuleComponent() {
 
   //local state
 
-  const notify = null;
-
   const [data, setData] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
-
-  const [exportData, setExportData] = useState(null);
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(data, searchTerm);
-    setFilteredData(filteredList);
-  }, [data, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(data);
-  };
-
-  //Data Table columns
+  const [isLoading, setIsLoading] = useState(true);
 
   const columns = useMemo(
     () => [
@@ -186,14 +162,13 @@ function SubModuleComponent() {
   const loadData = useCallback(async () => {
     setIsLoading(true);
     const data = [];
-    const exportTempData = [];
     await new SubModuleService()
       .getSubModule()
       .then((res) => {
-        if (res.status === 200) {
+        if (res?.status === 200) {
           let counter = 1;
           let count = 1;
-          const temp = res.data.data.data;
+          const temp = res?.data?.data?.data;
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -213,44 +188,14 @@ function SubModuleComponent() {
           setData(null);
           setData(data);
           setIsLoading(false);
-
-          for (const key in temp) {
-            exportTempData.push({
-              SrNo: count++,
-              // id: temp[key].id,
-              sub_module_name: temp[key].sub_module_name,
-              module_name: temp[key].module_name,
-              project_name: temp[key].project_name,
-              description: temp[key].description,
-              Status: temp[key].is_active === 1 ? 'Active' : 'Deactive',
-              remark: temp[key].remark,
-              created_at: temp[key].created_at,
-              created_by: temp[key].created_by,
-              updated_at: temp[key].updated_at,
-              updated_by: temp[key].updated_by
-            });
-          }
-
-          setExportData(exportTempData);
         } else {
-          new ErrorLogService().sendErrorLog(
-            'SubModule Master',
-            'Get_SubModule',
-            'INSERT',
-            res.message
-          );
+          toast.error(res?.data?.message);
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'SubModule Master',
-          'Get_SubModule',
-          'INSERT',
-          errorObject.data.message
-        );
-      });
+        errorHandler(error);
+      })
+      .finally(() => setIsLoading(false));
     dispatch(getRoles());
   }, [dispatch]);
 
@@ -263,18 +208,9 @@ function SubModuleComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-  useEffect(() => {
-    setFilteredData(data);
-  }, [data]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader
         headerTitle="Sub-Module Master"
         renderRight={() => {
@@ -295,7 +231,6 @@ function SubModuleComponent() {
           );
         }}
       />
-
       <div className="mt-2">
         <MaterialTable
           columns={columns}
@@ -314,9 +249,9 @@ function SubModuleDropdown(props) {
     const tempData = [];
 
     new SubModuleService().getSubModule().then((res) => {
-      if (res.status === 200) {
+      if (res?.status === 200) {
         let counter = 1;
-        const data = res.data.data;
+        const data = res?.data?.data;
         for (const key in data) {
           tempData.push({
             counter: counter++,

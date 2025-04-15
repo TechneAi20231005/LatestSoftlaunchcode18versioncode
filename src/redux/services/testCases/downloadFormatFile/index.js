@@ -1,8 +1,13 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { toast } from 'react-toastify';
-import customAxios from '../../../../http/axios';
+import customAxios, { rewampAxios } from '../../../../http/axios';
 import { errorHandler } from '../../../../utils';
-import { _apiUrl, _attachmentUrl } from '../../../../settings/constants';
+import {
+  _apiUrl,
+  _attachmentUrl,
+  _rewampApiUrl,
+  _rewampAttachmentUrl
+} from '../../../../settings/constants';
 
 export const getProjectModuleMasterThunk = createAsyncThunk(
   'projectModuleMaster/getProjectModuleMasterList',
@@ -62,29 +67,29 @@ export const getSubModuleMasterThunk = createAsyncThunk(
 );
 export const downloadFormatFileThunk = createAsyncThunk(
   'downloadFormatFile',
-  async ({ project_id, module_id, submodule_id, onSuccessHandler }) => {
+  async ({ project_name, module_name, submodule_name, onSuccessHandler }) => {
     try {
-      let endpoint = `draftFile/getTestdraftBulkFormat?project_id=${project_id}&module_id=${module_id}`;
+      let endpoint = `draftFile/getTestdraftBulkFormat?project_name=${project_name}&module_name=${module_name}`;
 
       // Append submodule_id parameters if they are provided
-      if (submodule_id && submodule_id.length >= 0) {
-        const submoduleQueryParam = submodule_id
-          .map((id) => `submodule_id[]=${id}`)
+      if (submodule_name && submodule_name.length >= 0) {
+        const submoduleQueryParam = submodule_name
+          .map((id) => `submodule_name[]=${id}`)
           .join('&');
         endpoint += `&${submoduleQueryParam}`;
       }
 
-      const response = await customAxios.get(endpoint);
+      const response = await rewampAxios.get(endpoint);
       if (response?.status === 200 || response?.status === 201) {
-        window.open(`${_apiUrl}${endpoint}`, '_parent').focus();
+        window.open(`${_rewampApiUrl}${endpoint}`, '_parent').focus();
         toast.success('File Downloaded Successfully');
-        // if (response?.data?.status === 1) {
-        //   onSuccessHandler();
-        //   toast.success(response?.data?.message);
-        //   return response?.data?.message;
-        // } else {
-        //   errorHandler(response);
-        // }
+        if (response?.data?.status === 1) {
+          onSuccessHandler();
+          toast.success(response?.data?.message);
+          return response?.data?.message;
+        } else {
+          errorHandler(response);
+        }
       }
     } catch (error) {
       errorHandler(error?.response);
@@ -98,7 +103,7 @@ export const getDraftTestCaseList = createAsyncThunk(
   'draftTestCase/getDraftTestCaseList',
   async ({ limit, page, filter_testcase_data }) => {
     try {
-      const response = await customAxios.get(
+      const response = await rewampAxios.get(
         `testCases/getDraftTestCases/getTestCases`,
         {
           params: {
@@ -149,7 +154,7 @@ export const importTestDraftThunk = createAsyncThunk(
   'testDraftMaster/importTestDraft',
   async ({ formData, onSuccessHandler, onErrorHandler }) => {
     try {
-      const response = await customAxios.post(
+      const response = await rewampAxios.post(
         `testCases/addDraft/postTestdraftImportTestcases`,
         formData
       );
@@ -160,7 +165,9 @@ export const importTestDraftThunk = createAsyncThunk(
           return { data: response?.data.data, msg: response?.data?.message };
         } else {
           onErrorHandler();
-          const url = `${_attachmentUrl}` + response.data.data.error_file;
+          toast.error(response?.data?.message);
+
+          const url = `${_rewampAttachmentUrl}` + response.data.data;
 
           window.open(url, '_blank');
           errorHandler(response);

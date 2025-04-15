@@ -32,6 +32,7 @@ function MaterialTable({
   enableStickyHeader = true,
   enableGrouping = true,
   enableFullScreenToggle = true,
+  // isExportData = true,
   enableColumnResizing = true,
   enableColumnOrdering = true,
   enableFacetedValues = true,
@@ -81,12 +82,16 @@ function MaterialTable({
         const eachRow = exportData[i]?.original;
         for (let key in exportDataKeys) {
           payload['Sr no'] = i + 1;
-          if (eachRow[key]) {
-            if (key === 'is_active') {
-              payload[exportDataKeys[key]] =
-                eachRow[key] == 1 ? 'Active' : 'Inactive';
+          if (key.toLowerCase() !== 'filename') {
+            if (eachRow[key]) {
+              if (key === 'is_active') {
+                payload[exportDataKeys[key]] =
+                  eachRow[key] == 1 ? 'Active' : 'Deactive';
+              } else {
+                payload[exportDataKeys[key]] = eachRow[key] || '--';
+              }
             } else {
-              payload[exportDataKeys[key]] = eachRow[key];
+              payload[exportDataKeys[key]] = '--';
             }
           }
         }
@@ -175,6 +180,19 @@ function MaterialTable({
     });
   }, [expandColumn, columns]);
 
+  const isFilterNotApplied =
+    (columnFilters?.length === 0 ||
+      (Array.isArray(columnFilters) &&
+        Array.isArray(columnFilters?.[0]?.value) &&
+        columnFilters?.[0]?.value?.every((value) => !value))) &&
+    JSON.stringify(rowSelection) === '{}' &&
+    JSON.stringify(columnVisibility) === '{}' &&
+    pagination.pageIndex === 0 &&
+    pagination.pageSize === 10 &&
+    sorting?.length === 0 &&
+    (globalFilter === undefined || globalFilter?.length === 0) &&
+    groupBy?.length === 0;
+
   return (
     <Box
       sx={{
@@ -208,6 +226,7 @@ function MaterialTable({
             noResultsFound: <NotFound topMargin={0} />
           }}
           enableStickyHeader={enableStickyHeader}
+          isExportData={isExportData}
           enableGrouping={enableGrouping}
           enableFullScreenToggle={data?.length > 0}
           enableColumnResizing={enableColumnResizing}
@@ -217,11 +236,9 @@ function MaterialTable({
           muiTableBodyCellProps={{
             onMouseOver: handleMouseHover,
             style: {
-              display: '-webkit-box',
-              WebkitLineClamp: 0.5,
-              /*WebkitBoxOrient: 'vertical', */
+              whiteSpace: 'nowrap',
               overflow: 'hidden',
-              lineHeight: '1.5rem'
+              textOverflow: 'ellipsis'
             }
           }}
           render
@@ -273,36 +290,14 @@ function MaterialTable({
               />
               <Tooltip title="Clear Filters" arrow>
                 <IconButton
-                  disabled={
-                    table.getState().columnFilters?.length === 0 &&
-                    JSON.stringify(table.getState().rowSelection) === '{}' &&
-                    JSON.stringify(table.getState().columnVisibility) ===
-                      '{}' &&
-                    table.getState().pagination.pageIndex === 0 &&
-                    table.getState().pagination.pageSize === 10 &&
-                    table.getState().sorting?.length === 0 &&
-                    (table.getState().globalFilter === undefined ||
-                      table.getState().globalFilter?.length === 0) &&
-                    table.getState().grouping?.length === 0
-                  }
+                  disabled={isFilterNotApplied}
                   onClick={resetFilters}
                 >
                   <FilterAltOffIcon
                     sx={{
-                      color:
-                        table.getState().columnFilters?.length === 0 &&
-                        JSON.stringify(table.getState().rowSelection) ===
-                          '{}' &&
-                        JSON.stringify(table.getState().columnVisibility) ===
-                          '{}' &&
-                        table.getState().pagination.pageIndex === 0 &&
-                        table.getState().pagination.pageSize === 10 &&
-                        table.getState().sorting?.length === 0 &&
-                        (table.getState().globalFilter === undefined ||
-                          table.getState().globalFilter?.length === 0) &&
-                        table.getState().grouping?.length === 0
-                          ? (theme) => theme.palette.action.disabled
-                          : grey[600]
+                      color: isFilterNotApplied
+                        ? (theme) => theme.palette.action.disabled
+                        : grey[600]
                     }}
                   />
                 </IconButton>
@@ -327,26 +322,28 @@ function MaterialTable({
                   sm: { width: 'fit-content' }
                 }}
               >
-                <Button
-                  className="text-primary"
-                  disabled={data.length === 0 || loading}
-                  onClick={() =>
-                    handleExportData(table.getFilteredRowModel()['rows'])
-                  }
-                  startIcon={
-                    completed ? (
-                      <CheckCircleIcon style={{ color: 'green' }} />
-                    ) : (
-                      <FileDownloadIcon />
-                    )
-                  }
-                >
-                  {completed
-                    ? 'Download Complete'
-                    : loading
-                    ? `Downloading... ${progress}%`
-                    : 'Export All Data'}
-                </Button>
+                {isExportData && (
+                  <Button
+                    className="text-primary"
+                    disabled={data.length === 0 || loading}
+                    onClick={() =>
+                      handleExportData(table.getFilteredRowModel()['rows'])
+                    }
+                    startIcon={
+                      completed ? (
+                        <CheckCircleIcon style={{ color: 'green' }} />
+                      ) : (
+                        <FileDownloadIcon />
+                      )
+                    }
+                  >
+                    {completed
+                      ? 'Download Complete'
+                      : loading
+                      ? `Downloading... ${progress}%`
+                      : 'Export All Data'}
+                  </Button>
+                )}
 
                 {loading && (
                   <LinearProgress
@@ -355,7 +352,6 @@ function MaterialTable({
                     style={{ marginTop: 10 }}
                   />
                 )}
-
                 {/* <Button
                   className="text-primary"
                   disabled={data?.length === 0}

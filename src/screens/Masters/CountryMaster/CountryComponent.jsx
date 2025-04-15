@@ -1,15 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
-// import DataTable from 'react-data-table-component';
-
 import CountryService from '../../../services/MastersService/CountryService';
 
 import PageHeader from '../../../components/Common/PageHeader';
 
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
-// import Alert from '../../../components/Common/Alert';
-
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import {
@@ -22,14 +18,9 @@ import {
   handleModalInStore,
   handleModalClose
 } from '../../Dashboard/DashbordSlice';
-// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { Box } from '@mui/material';
-import moment from 'moment/moment';
 
 function CountryComponent() {
   //initial state
@@ -51,19 +42,16 @@ function CountryComponent() {
   );
 
   //local state
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
 
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(countryData, searchTerm);
-    setFilteredData(filteredList);
-  }, [countryData, searchTerm]);
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(countryData);
+  const exportDataKeys = {
+    country: 'Country',
+    is_active: 'Status',
+    remark: 'Remark',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Country Master Record'
   };
 
   const columns = [
@@ -111,9 +99,12 @@ function CountryComponent() {
       accessorFn: (originalRow) => originalRow?.country || '--',
       header: 'Country',
       size: 160,
-      Cell: ({ row }) => (
-        <Box sx={{ color: '#f19828' }}>{row?.original?.country}</Box>
-      )
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
       accessorKey: 'is_active',
@@ -146,7 +137,7 @@ function CountryComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.created_by || '--',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By',
       size: 190
     },
@@ -160,7 +151,7 @@ function CountryComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 190
     }
@@ -207,13 +198,6 @@ function CountryComponent() {
     }
   }, [checkRole]);
 
-  // useEffect(() => {
-  //   dispatch(getCountryData());
-
-  //   if (!countryData.length || !checkRole.length) {
-  //     dispatch(getRoles());
-  //   }
-  // }, []);
   useEffect(() => {
     dispatch(getCountryData());
 
@@ -221,14 +205,6 @@ function CountryComponent() {
       dispatch(getRoles());
     }
   }, [dispatch, countryData.length, checkRole.length]);
-
-  useEffect(() => {
-    setFilteredData(countryData);
-  }, [countryData]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
 
   const fields = [
     {
@@ -280,22 +256,13 @@ function CountryComponent() {
           );
         }}
       />
-      {/* <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by country name...."
-        exportFileName="Country Master Record"
-        exportData={exportCountryData}
-        showExportButton={true}
-      /> */}
 
       <div className="mt-2">
         {countryData && (
           <MaterialTable
+            exportDataKeys={exportDataKeys}
             columns={columns}
-            data={filteredData}
+            data={countryData}
             isLoading={isLoading}
             reset={reset}
             setReset={setReset}
@@ -356,18 +323,7 @@ function CountryComponent() {
                         onKeyPress={(e) => {
                           Validation.CharacterWithSpace(e);
                         }}
-                        // onPaste={(e) => {
-                        //   e.preventDefault();
-                        //   return false;
-                        // }}
-                        // onCopy={(e) => {
-                        //   e.preventDefault();
-                        //   return false;
-                        // }}
                       />
-                      {/* {errors.country && touched.country ? (
-                        <small className="text-danger">{errors.country}</small>
-                      ) : null} */}
                       <ErrorMessage
                         name="country"
                         component="small"

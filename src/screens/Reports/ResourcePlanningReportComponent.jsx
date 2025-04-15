@@ -325,12 +325,13 @@ export default function ResourcePlanningReportComponent() {
                       <b>Select User :</b>
                     </label>
                     <Select
+                      classNamePrefix="react-select"
                       isMulti
                       isSearchable={true}
                       name="user_id"
                       value={values.user_id}
                       className="basic-multi-select"
-                      classNamePrefix="select"
+                      // classNamePrefix="select"
                       options={userData}
                       style={{ zIndex: '100' }}
                       onChange={(option) =>

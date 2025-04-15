@@ -1,16 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
-
 import RoleService from '../../../services/MastersService/RoleService';
 import PageHeader from '../../../components/Common/PageHeader';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import Alert from '../../../components/Common/Alert';
 import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
-
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
 import { useDispatch, useSelector } from 'react-redux';
 
 import { getRoleData, updatedRole } from './RoleMasterAction';
@@ -18,15 +12,10 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 import { postRole } from './RoleMasterAction';
 import { handleModalOpen, handleModalClose } from './RoleMasterSlice';
 
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../../src/components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
 import moment from 'moment';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 function RoleComponent({ location }) {
   //initial state
   const dispatch = useDispatch();
@@ -44,36 +33,17 @@ function RoleComponent({ location }) {
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 10)
   );
 
-  const Notify = useSelector(
-    (RoleMasterSlice) => RoleMasterSlice.rolemaster.notify
-  );
   const modal = useSelector(
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.modal
   );
-  const exportData = useSelector(
-    (RoleMasterSlice) => RoleMasterSlice.rolemaster.exportRoleData
-  );
 
   //Local state
-  // const [notify, setNotify] = useState();
   const [reset, setReset] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
 
   //search function
 
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(RoleMasterData, searchTerm);
-    setFilteredData(filteredList);
-  }, [RoleMasterData, searchTerm]);
-
   const clearFilters = () => {
     setReset(true);
-  };
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(RoleMasterData);
   };
 
   const columns = useMemo(
@@ -145,14 +115,7 @@ function RoleComponent({ location }) {
             color: '#f19828',
             fontWeight: 400
           }
-        }),
-        Cell: ({ row }) => (
-          <span>
-            {row?.original?.role.length > 20
-              ? row?.original?.role.substring(0, 20) + '...'
-              : row?.original?.role}
-          </span>
-        )
+        })
       },
 
       {
@@ -281,11 +244,8 @@ function RoleComponent({ location }) {
   useEffect(() => {
     const storedAlert = localStorage.getItem('alert');
     if (storedAlert) {
-      // setNotify(storedAlert);
-
       localStorage.removeItem('alert');
     } else if (location && location.state && location.state.alert) {
-      // setNotify(location.state.alert);
       localStorage.setItem('alert', location.state.alert);
     }
   }, [location]);
@@ -297,14 +257,6 @@ function RoleComponent({ location }) {
       dispatch(getRoles());
     }
   }, [dispatch, RoleMasterData.length]);
-
-  useEffect(() => {
-    setFilteredData(RoleMasterData);
-  }, [RoleMasterData]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -336,22 +288,11 @@ function RoleComponent({ location }) {
         }}
       />
 
-      {/*  <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        handleSearch={handleSearch}
-        searchTerm={searchTerm}
-        handleReset={handleReset}
-        placeholder="Search by role...."
-        exportFileName="Role Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      />
- */}
       <div className="card mt-2">
         {RoleMasterData && (
           <MaterialTable
             columns={columns}
-            data={filteredData}
+            data={RoleMasterData}
             isLoading={isLoading}
             reset={reset}
             setReset={setReset}

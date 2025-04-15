@@ -213,6 +213,7 @@ export default function CreateModuleComponent({ match }) {
                           className="form-control form-control-sm"
                           id="module_id"
                           name="module_id"
+                          classNamePrefix="react-select"
                         >
                           <option value="" label="Select a module" />
                           {modulesDropdown?.map((option) => (
@@ -230,9 +231,15 @@ export default function CreateModuleComponent({ match }) {
                     </div>
 
                     <div className="form-group row mt-2">
-                    <label className="col-sm-2 col-form-label d-flex align-items-center" style={{ whiteSpace: "nowrap" }}>
-    <b>Sub Module Name : <span style={{ color: 'red' }}>*</span></b>
-  </label>
+                      <label
+                        className="col-sm-2 col-form-label d-flex align-items-center"
+                        style={{ whiteSpace: 'nowrap' }}
+                      >
+                        <b>
+                          Sub Module Name :{' '}
+                          <span style={{ color: 'red' }}>*</span>
+                        </b>
+                      </label>
                       <div className="col-sm-4">
                         <Field
                           type="text"

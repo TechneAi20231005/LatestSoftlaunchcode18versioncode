@@ -161,6 +161,7 @@ function EditDepartmentMappingComponent({ match }) {
                   </div>
                   <div className="col-sm-3">
                     <Select
+                      classNamePrefix="react-select"
                       options={userData}
                       id="employee_id"
                       name="employee_id"
@@ -223,6 +224,7 @@ function EditDepartmentMappingComponent({ match }) {
                               <td>{idx + 1}</td>
                               <td>
                                 <Select
+                                  classNamePrefix="react-select"
                                   options={departmentData}
                                   id={`department_id_` + idx}
                                   name="department_id[]"
@@ -231,6 +233,7 @@ function EditDepartmentMappingComponent({ match }) {
                               </td>
                               <td>
                                 <Select
+                                  classNamePrefix="react-select"
                                   options={[
                                     {
                                       value: 'MY_TICKETS',

@@ -1,14 +1,9 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Modal } from 'react-bootstrap';
-// import DataTable from 'react-data-table-component';
-
 import CustomerType from '../../../services/MastersService/CustomerTypeService';
 import PageHeader from '../../../components/Common/PageHeader';
 
 import { Astrick } from '../../../components/Utilities/Style';
-// import * as Validation from '../../../components/Utilities/Validation';
-// import Alert from '../../../components/Common/Alert';
-
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getCustomerTypeData,
@@ -20,19 +15,13 @@ import {
   handleModalClose,
   handleModalOpen
 } from './CustomerTypeComponentSlice';
-// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { Field, Form, Formik, ErrorMessage } from 'formik';
 import { errorHandler } from '../../../utils';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { Box } from '@mui/material';
 
 function CustomerTypeComponent() {
-  const isActive1Ref = useRef();
   const dispatch = useDispatch();
-  const [message, setMessage] = useState(null);
   const customerData = useSelector(
     (CustomerTypeComponentSlice) =>
       CustomerTypeComponentSlice.customerTypeMaster.getCustomerTypeData
@@ -42,22 +31,10 @@ function CustomerTypeComponent() {
     (CustomerTypeComponentSlice) =>
       CustomerTypeComponentSlice.customerTypeMaster.isLoading.customerTypeList
   );
-  const notify = useSelector(
-    (CustomerTypeComponentSlice) =>
-      CustomerTypeComponentSlice.customerTypeMaster.notify
-  );
-
-  const exportData = useSelector(
-    (CustomerTypeComponentSlice) =>
-      CustomerTypeComponentSlice.customerTypeMaster.exportCustomerData
-  );
 
   const modal = useSelector(
     (customerMasterSlice) => customerMasterSlice.customerTypeMaster.modal
   );
-  // const notify = useSelector(
-  //   (customerMasterSlice) => customerMasterSlice.customerTypeMaster.notify
-  // );
 
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 12)
@@ -65,24 +42,6 @@ function CustomerTypeComponent() {
   const [reset, setReset] = useState(false);
   const clearFilters = () => {
     setReset(true);
-  };
-  const isActive0Ref = useRef();
-
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(customerData, searchTerm);
-    setFilteredData(filteredList);
-  }, [customerData, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(customerData);
   };
 
   const columns = [
@@ -126,9 +85,12 @@ function CustomerTypeComponent() {
       accessorFn: (originalRow) => originalRow.type_name || '--',
       header: 'Customer Type Name',
       size: 260,
-      Cell: ({ row }) => (
-        <Box sx={{ color: '#f19828' }}>{row?.original?.type_name}</Box>
-      )
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
       header: 'Status',
@@ -160,7 +122,7 @@ function CustomerTypeComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.created_by || '--',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
       header: 'Created By',
       size: 180
     },
@@ -174,24 +136,23 @@ function CustomerTypeComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 190
     }
   ];
 
-  const loadData = async () => {
-    // setShowLoaderModal(null);
+  const exportDataKeys = {
+    type_name: 'Customer Type Name',
+    is_active: 'Status',
+    remark: 'Remark',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Customer Type Record'
   };
-  const handleIsActive = (e) => {
-    const value = e.target.value;
 
-    if (value === 1) {
-      // setIsActive(1);
-    } else {
-      // setIsActive(0);
-    }
-  };
   const handleForm = async (values, id, { setSubmitting }) => {
     setSubmitting(true);
     const formData = new FormData();
@@ -229,12 +190,6 @@ function CustomerTypeComponent() {
     }
   };
 
-  // const handleKeyDown = (event) => {
-  //   if (event.key === 'Enter') {
-  //     handleSearch();
-  //   }
-  // };
-
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
@@ -242,15 +197,6 @@ function CustomerTypeComponent() {
   }, [checkRole]);
 
   useEffect(() => {
-    setFilteredData(customerData);
-  }, [customerData]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
-
-  useEffect(() => {
-    loadData();
     dispatch(getCustomerTypeData());
 
     if (!customerData?.length) {
@@ -313,37 +259,16 @@ function CustomerTypeComponent() {
         }}
       />
 
-      {/* <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by customer type name...."
-        exportFileName="Customer type Record"
-        exportData={exportData}
-        showExportButton={true}
-      /> */}
-
       <div className="card mt-2">
         {customerData && (
           <MaterialTable
+            exportDataKeys={exportDataKeys}
             isLoading={isLoading}
-            data={filteredData}
+            data={customerData}
             columns={columns}
             reset={reset}
             setReset={setReset}
           />
-          // <DataTable
-          //   columns={columns}
-          //   data={filteredData}
-          //   defaultSortField="title"
-          //   pagination
-          //   selectableRows={false}
-          //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-          //   highlightOnHover={true}
-          //   progressPending={isLoading}
-          //   progressComponent={<TableLoadingSkelton />}
-          // />
         )}
       </div>
 
@@ -355,7 +280,6 @@ function CustomerTypeComponent() {
             handleForm(values, modal.modalData ? modal.modalData.id : '', {
               setSubmitting
             });
-            // setOtpModal(true);
           }}
         >
           {({ isSubmitting }) => (
@@ -389,9 +313,6 @@ function CustomerTypeComponent() {
                         className="form-control form-control-sm"
                         id="type_name"
                         name="type_name"
-                        // onKeyPress={(e) => Validation.CharactersNumbersOnly(e)}
-                        // onPaste={(e) => e.preventDefault()}
-                        // onCopy={(e) => e.preventDefault()}
                       />
                       <ErrorMessage
                         name="type_name"
@@ -517,22 +438,25 @@ function CustomerTypeDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new CustomerType().getCustomerType().then((res) => {
-      if (res.status === 200) {
-        let counter = 1;
-        const data = res.data.data;
-        for (const key in data) {
-          if (data[key].is_active === 1) {
-            tempData.push({
-              counter: counter++,
-              id: data[key].id,
-              type_name: data[key].type_name
-            });
+    new CustomerType()
+      .getCustomerType()
+      .then((res) => {
+        if (res?.status === 200) {
+          let counter = 1;
+          const data = res?.data?.data;
+          for (const key in data) {
+            if (data[key].is_active === 1) {
+              tempData.push({
+                counter: counter++,
+                id: data[key].id,
+                type_name: data[key].type_name
+              });
+            }
           }
+          setData(tempData);
         }
-        setData(tempData);
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   }, []);
 
   return (

@@ -425,7 +425,8 @@ export default function ResourcePlanningReportComponent() {
                       name="user_id"
                       value={values.user_id}
                       className="basic-multi-select"
-                      classNamePrefix="select"
+                      // classNamePrefix="select"
+                      classNamePrefix="react-select"
                       options={userData && userData}
                       onChange={(option) =>
                         // console.log(option, "option")

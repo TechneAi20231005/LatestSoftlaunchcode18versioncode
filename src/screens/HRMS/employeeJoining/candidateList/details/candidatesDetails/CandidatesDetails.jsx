@@ -50,7 +50,10 @@ function CandidatesDetails() {
   );
 
   // // local state
-  const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
+  const [openConfirmModal, setOpenConfirmModal] = useState({
+    open: false,
+    formData: ''
+  });
   const [currentMode, setCurrentMode] = useState('VIEW');
 
   // form initial data
@@ -97,14 +100,32 @@ function CandidatesDetails() {
     candidatesData.append('source_id', openConfirmModal?.formData?.source_id);
     candidatesData.append('full_name', openConfirmModal?.formData?.full_name);
     candidatesData.append('dob', openConfirmModal?.formData?.dob);
-    candidatesData.append('designation_id', openConfirmModal?.formData?.designation_id);
-    candidatesData.append('location_id', openConfirmModal?.formData?.location_id);
+    candidatesData.append(
+      'designation_id',
+      openConfirmModal?.formData?.designation_id
+    );
+    candidatesData.append(
+      'location_id',
+      openConfirmModal?.formData?.location_id
+    );
     candidatesData.append('mobile_no', openConfirmModal?.formData?.mobile_no);
     candidatesData.append('email', openConfirmModal?.formData?.email);
-    candidatesData.append('relevant_experience', openConfirmModal?.formData?.relevant_experience);
-    candidatesData.append('expected_ctc', openConfirmModal?.formData?.expected_ctc);
-    candidatesData.append('current_ctc', openConfirmModal?.formData?.current_ctc);
-    candidatesData.append('notice_period', openConfirmModal?.formData?.notice_period);
+    candidatesData.append(
+      'relevant_experience',
+      openConfirmModal?.formData?.relevant_experience
+    );
+    candidatesData.append(
+      'expected_ctc',
+      openConfirmModal?.formData?.expected_ctc
+    );
+    candidatesData.append(
+      'current_ctc',
+      openConfirmModal?.formData?.current_ctc
+    );
+    candidatesData.append(
+      'notice_period',
+      openConfirmModal?.formData?.notice_period
+    );
     // candidatesData.append('resume_path[]', openConfirmModal?.formData?.resume_path);
     // openConfirmModal?.formData.forEach(file => {
     //   candidatesData.append('resume_path[]', file);
@@ -117,7 +138,11 @@ function CandidatesDetails() {
         onSuccessHandler: () => {
           setCurrentMode('VIEW');
           setOpenConfirmModal({ open: false });
-          dispatch(getCandidatesDetailsThunk({ currentId: location?.state?.currentCandidateId }));
+          dispatch(
+            getCandidatesDetailsThunk({
+              currentId: location?.state?.currentCandidateId
+            })
+          );
         },
         onErrorHandler: () => {
           setOpenConfirmModal({ open: false });
@@ -128,7 +153,11 @@ function CandidatesDetails() {
 
   // // life cycle
   useEffect(() => {
-    dispatch(getCandidatesDetailsThunk({ currentId: location?.state?.currentCandidateId }));
+    dispatch(
+      getCandidatesDetailsThunk({
+        currentId: location?.state?.currentCandidateId
+      })
+    );
     if (!designationMasterList?.length) {
       dispatch(getDesignationData());
     }
@@ -145,10 +174,15 @@ function CandidatesDetails() {
       <div className="d-flex justify-content-between align-items-center text-primary">
         <h5 className="mb-0">
           Candidates Details{' '}
-          <span className="fs-6 text-black opacity-50 ml-1">&nbsp; #{details?.application_id}</span>
+          <span className="fs-6 text-black opacity-50 ml-1">
+            &nbsp; #{details?.application_id}
+          </span>
         </h5>
 
-        <i className="icofont-edit me-1 cp" onClick={() => setCurrentMode('EDIT')} />
+        <i
+          className="icofont-edit me-1 cp"
+          onClick={() => setCurrentMode('EDIT')}
+        />
       </div>
       <hr className="primary_divider mt-1" />
       {isLoading?.getCandidatesDetailsData ? (
@@ -168,12 +202,15 @@ function CandidatesDetails() {
                 <Row className="gap-3 gap-sm-0">
                   <Col sm={6} md={6}>
                     <Field
+                      classNamePrefix="react-select"
                       data={sourceType}
                       component={CustomDropdown}
                       name="source_id"
                       label="Source"
                       placeholder={
-                        sourceMasterLoading?.getSourceMasterList ? 'Loading...' : 'Select'
+                        sourceMasterLoading?.getSourceMasterList
+                          ? 'Loading...'
+                          : 'Select'
                       }
                       disabled
                     />
@@ -200,11 +237,14 @@ function CandidatesDetails() {
                   </Col>
                   <Col sm={6} md={6}>
                     <Field
+                      classNamePrefix="react-select"
                       options={preferredRole}
                       component={CustomReactSelect}
                       name="designation_id"
                       label="Preferred Designation"
-                      placeholder={status === 'loading' ? 'Loading...' : 'Select'}
+                      placeholder={
+                        status === 'loading' ? 'Loading...' : 'Select'
+                      }
                       disabled
                     />
                   </Col>
@@ -212,12 +252,15 @@ function CandidatesDetails() {
                 <Row className="gap-3 gap-sm-0">
                   <Col sm={6} md={6}>
                     <Field
+                      classNamePrefix="react-select"
                       options={preferredLocation}
                       component={CustomReactSelect}
                       name="location_id"
                       label="Preferred Location"
                       placeholder={
-                        branchMasterLoading?.getBranchMasterList ? 'Loading...' : 'Select'
+                        branchMasterLoading?.getBranchMasterList
+                          ? 'Loading...'
+                          : 'Select'
                       }
                       isMulti
                       disabled
@@ -246,13 +289,17 @@ function CandidatesDetails() {
                   </Col>
                   <Col sm={6} md={6}>
                     <Field
+                      classNamePrefix="react-select"
                       data={experienceLevel}
                       component={CustomDropdown}
                       name="relevant_experience"
                       label="Current Years Of Work Experience"
                       placeholder="Select"
                       requiredField
-                      disabled={currentMode === 'VIEW' || details?.application_status_id !== 1}
+                      disabled={
+                        currentMode === 'VIEW' ||
+                        details?.application_status_id !== 1
+                      }
                     />
                   </Col>
                 </Row>
@@ -318,15 +365,24 @@ function CandidatesDetails() {
                           name="resume_path"
                           disabled
                           className={`form-control ${
-                            errors.resume_path && touched.resume_path ? 'is-invalid' : ''
+                            errors.resume_path && touched.resume_path
+                              ? 'is-invalid'
+                              : ''
                           }`}
                           onChange={(event) => {
-                            setFieldValue('resume_path', event.currentTarget.files[0]);
+                            setFieldValue(
+                              'resume_path',
+                              event.currentTarget.files[0]
+                            );
                           }}
                           accept=".jpeg, .jpg, .png, .pdf, .docx"
                         />
-                        <RenderIf render={errors.resume_path && touched.resume_path}>
-                          <div className="invalid-feedback">{errors.resume_path}</div>
+                        <RenderIf
+                          render={errors.resume_path && touched.resume_path}
+                        >
+                          <div className="invalid-feedback">
+                            {errors.resume_path}
+                          </div>
                         </RenderIf>
                       </>
                     )}
@@ -335,7 +391,11 @@ function CandidatesDetails() {
               </Stack>
               <RenderIf render={currentMode === 'EDIT'}>
                 <div className="d-flex justify-content-sm-end gap-2 mt-3 btn_container">
-                  <button className="btn btn-dark px-4" type="submit" disabled={!dirty}>
+                  <button
+                    className="btn btn-dark px-4"
+                    type="submit"
+                    disabled={!dirty}
+                  >
                     Update
                   </button>
                   <button

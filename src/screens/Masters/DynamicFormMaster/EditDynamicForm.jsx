@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import ErrorLogService from '../../../services/ErrorLogService';
 import { Link } from 'react-router-dom';
 import { _base, reportUrl } from '../../../settings/constants';
 
 import DynamicFormService from '../../../services/MastersService/DynamicFormService';
 import DynamicFormDropdownMasterService from '../../../services/MastersService/DynamicFormDropdownMasterService';
-import Alert from '../../../components/Common/Alert';
-
 import { Astrick } from '../../../components/Utilities/Style';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -70,18 +67,8 @@ function EditDynamicForm() {
 
   const [rows, setRows] = useState([mainJson]);
   const [formShow, setFormShow] = useState(false);
-
-  // const [inputDataSource, setInputDataSource] = useState();
-  // const [inputLabelValue, setInputLabelValue] = useState();
-
   const [labelErr, setLabelErr] = useState(null);
-  // const [selectedValueErr, setSelectedValueErr] = useState('');
-
   const [selectedValue, setSelectedValue] = useState();
-  // const [userData, setUserData] = useState(null);
-  // const [radioSelect, setRadioSelect] = useState();
-
-  // const [labelNames, setLabelNames] = useState([]);
 
   const roleDropdown = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getAllRoles
@@ -440,21 +427,14 @@ function EditDynamicForm() {
         data
       );
 
-      if (res.status === 200) {
-        if (res.data.status === 1) {
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
           dispatch(dynamicFormData());
-          toast.success(res.data.message);
-
-          setTimeout(() => {
-            navigate(`/${_base}/DynamicForm`, {
-              state: { alert: toast.success(res.data.message) }
-            });
-          }, 1000);
+          toast.success(res?.data?.message);
+          navigate(`/${_base}/DynamicForm`);
         } else {
-          toast.error(res.data.message);
+          toast.error(res?.data?.message);
         }
-      } else {
-        toast.error(res.data.message);
       }
     } catch (error) {
       errorHandler(error);
@@ -462,8 +442,6 @@ function EditDynamicForm() {
       setSubmitting(false);
     }
   };
-
-  console.log('formId', formId);
 
   const loadData = useCallback(async () => {
     dispatch(dynamicFormData());

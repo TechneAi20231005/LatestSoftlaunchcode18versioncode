@@ -125,6 +125,7 @@ function GeneratePo() {
                 <Row className="row_gap_3">
                   <Col sm={6}>
                     <Field
+                      classNamePrefix="react-select"
                       component={CustomReactSelect}
                       options={venderData}
                       name="vender_name"

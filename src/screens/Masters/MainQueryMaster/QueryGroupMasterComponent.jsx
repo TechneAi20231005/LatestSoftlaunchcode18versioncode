@@ -423,6 +423,7 @@ function QueryGroupMasterComponent() {
                     Query Type :
                   </label>
                   <Select
+                    classNamePrefix="react-select"
                     options={QueryTypeDropdown}
                     id="form_id"
                     name="form_id"

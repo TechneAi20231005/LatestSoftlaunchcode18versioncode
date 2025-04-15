@@ -2,16 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
-import ErrorLogService from '../../../services/ErrorLogService';
-
 import DynamicFormService from '../../../services/MastersService/DynamicFormService';
 import DynamicFormDropdownMasterService from '../../../services/MastersService/DynamicFormDropdownMasterService';
-
-import Alert from '../../../components/Common/Alert';
 import { Astrick } from '../../../components/Utilities/Style';
-
 import * as Validation from '../../../components/Utilities/Validation';
-
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getAllRoles,
@@ -30,7 +24,6 @@ import {
 import UserService from '../../../services/MastersService/UserService';
 import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
 import { getDesignationDataListThunk } from '../DesignationMaster/DesignationAction';
-
 import { getStatusData } from '../StatusMaster/StatusComponentAction';
 import QueryTypeService from '../../../services/MastersService/QueryTypeService';
 import { toast } from 'react-toastify';
@@ -122,14 +115,10 @@ function CreateDynamicForm() {
 
   const [formShow, setFormShow] = useState(false);
 
-  // const [inputDataSource, setInputDataSource] = useState();
-
   const [selectedValue, setSelectedValue] = useState();
 
   const [inputLabelValue, setInputLabelValue] = useState();
   const [minDate, setMinDate] = useState();
-
-  // const [selectMasterValue, setSelectMasterValue] = useState();
 
   const handleChange = (idx, type) => async (e) => {
     if (e.target.name === 'inputDateRange1') {
@@ -138,15 +127,6 @@ function CreateDynamicForm() {
     if (e.target.name === 'inputLabel') {
       setInputLabelValue(e.target.value);
     }
-
-    if (e.target.name === 'inputDataSource') {
-      // setSelectMasterValue(e.target.value);
-    }
-
-    if (selectedValue) {
-    } else {
-    }
-
     setFormShow(false);
 
     const notAllowed = [
@@ -323,17 +303,20 @@ function CreateDynamicForm() {
         e.target.name === 'inputDataSource' &&
         e.target.value === 'query'
       ) {
-        await new QueryTypeService().getQueryType().then((res) => {
-          if (res?.status === 200) {
-            const data = res?.data?.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({ value: d.id, label: d.query_type_name }));
+        await new QueryTypeService()
+          .getQueryType()
+          .then((res) => {
+            if (res?.status === 200) {
+              const data = res?.data?.data
+                .filter((d) => d.is_active === 1)
+                .map((d) => ({ value: d.id, label: d.query_type_name }));
 
-            rows[idx].inputAddOn.inputDataSourceData = data;
+              rows[idx].inputAddOn.inputDataSourceData = data;
 
-            // setInputDataSource(data);
-          }
-        });
+              // setInputDataSource(data);
+            }
+          })
+          .catch((error) => errorHandler(error));
       }
 
       const test = e.target.value;
@@ -359,7 +342,8 @@ function CreateDynamicForm() {
                 rows[idx].inputAddOn.inputOnChangeSource = dropDownValue;
               }
             }
-          });
+          })
+          .catch((error) => errorHandler(error));
       }
     }
   };
@@ -453,23 +437,19 @@ function CreateDynamicForm() {
       data: JSON.stringify(rows)
     };
     try {
+      setSubmitting(true);
       const res = await new DynamicFormService().postDynamicForm(data);
 
-      if (res.status === 200) {
-        if (res.data.status === 1) {
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
           dispatch(dynamicFormData());
-
-          toast.success(res.data.message);
-          setTimeout(() => {
-            navigate(`/${_base}/DynamicForm`, {
-              state: { alert: toast.success(res.data.message) }
-            });
-          }, 1000);
+          toast.success(res?.data?.message);
+          navigate(`/${_base}/DynamicForm`);
         } else {
-          toast.error(res.data.message);
+          toast.error(res?.data?.message);
         }
       } else {
-        toast.error(res.message);
+        toast.error(res?.message);
       }
     } catch (error) {
       errorHandler(error);

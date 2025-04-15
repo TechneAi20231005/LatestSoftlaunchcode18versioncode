@@ -1,19 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
-// import ErrorLogService from '../../../services/ErrorLogService';
 import ModuleService from '../../../services/ProjectManagementService/ModuleService';
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 import PageHeader from '../../../components/Common/PageHeader';
-// import Alert from '../../../components/Common/Alert';
-
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
 import { errorHandler } from '../../../utils';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { Box } from '@mui/material';
 function ModuleComponent() {
   //initial state
   const location = useLocation();
@@ -21,29 +13,10 @@ function ModuleComponent() {
 
   //local state
 
-  const [notify, setNotify] = useState(null);
   const [data, setData] = useState([]);
-  const [exportData, setExportData] = useState();
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [checkRole, setCheckRole] = useState(null);
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(data, searchTerm);
-    setFilteredData(filteredList);
-  }, [data, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(data);
-  };
-
-  //Data Table columns
 
   const columns = [
     {
@@ -75,9 +48,12 @@ function ModuleComponent() {
       accessorFn: (originalRow) => originalRow.module_name || '--',
       header: 'Module Name',
       size: 200,
-      Cell: ({ row }) => (
-        <Box sx={{ color: '#f19828' }}>{row?.original?.module_name}</Box>
-      )
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
       accessorFn: (originalRow) => originalRow.project_name || '--',
@@ -124,7 +100,7 @@ function ModuleComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.created_by || '--',
+      accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
       header: 'Created By',
       size: 190
     },
@@ -138,22 +114,33 @@ function ModuleComponent() {
           .toLocaleTimeString()}`
     },
     {
-      accessorFn: (originalRow) => originalRow.updated_by || '--',
+      accessorFn: (originalRow) => originalRow.updated_by?.trim() || '--',
       header: 'Updated By',
       size: 190
     }
   ];
 
-  const loadData = useCallback(async () => {
-    setIsLoading(true);
+  const exportDataKeys = {
+    module_name: 'Module Name',
+    project_name: 'Project Name',
+    description: 'Description',
+    remark: 'Remark',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Module Master Record'
+  };
 
+  const loadData = useCallback(async () => {
     const data = [];
     await new ModuleService()
       .getModule()
       .then((res) => {
-        if (res.status === 200) {
+        if (res?.status === 200) {
           let counter = 1;
-          const temp = res.data.data.data;
+          const temp = res?.data?.data?.data;
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -174,36 +161,20 @@ function ModuleComponent() {
           setData(null);
           setData(data);
           setIsLoading(false);
-
-          let exportData = [];
-          for (const key in data) {
-            exportData.push({
-              SrNo: exportData.length + 1,
-              module_name: data[key].module_name,
-              project_name: data[key].project_name,
-              description: data[key].description,
-              remark: data[key].remark,
-              Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
-              created_by: temp[key].created_by,
-              created_at: temp[key].created_at,
-              updated_by: data[key].updated_by,
-              updated_at: data[key].updated_at
-            });
-          }
-          setExportData(exportData);
         }
       })
       .catch((error) => {
         errorHandler(error);
-      });
+      })
+      .finally(() => setIsLoading(false));
 
     await new ManageMenuService()
       .getRole(roleId)
       .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
             const getRoleId = sessionStorage.getItem('role_id');
-            setCheckRole(res.data.data.filter((d) => d.menu_id === 21));
+            setCheckRole(res?.data?.data?.filter((d) => d.menu_id === 21));
           }
         }
       })
@@ -214,10 +185,7 @@ function ModuleComponent() {
 
   useEffect(() => {
     loadData();
-    if (location && location.state) {
-      setNotify(location.state.alert);
-    }
-  }, [loadData, location]);
+  }, [loadData]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -226,13 +194,6 @@ function ModuleComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-  useEffect(() => {
-    setFilteredData(data);
-  }, [data]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -255,33 +216,15 @@ function ModuleComponent() {
           );
         }}
       />
-      {/* <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by module name...."
-        exportFileName="Module Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      /> */}
 
       <div className="mt-2">
         {data && (
           <MaterialTable
+            exportDataKeys={exportDataKeys}
             isLoading={isLoading}
             columns={columns}
-            data={filteredData}
+            data={data}
           />
-          // <DataTable
-          //   columns={columns}
-          //   data={filteredData}
-          //   defaultSortField="title"
-          //   pagination
-          //   selectableRows={false}
-          //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-          //   highlightOnHover={true}
-          // />
         )}
       </div>
     </div>
@@ -293,9 +236,9 @@ function ModuleDropdown(props) {
   useEffect(() => {
     const tempData = [];
     new ModuleService().getModule().then((res) => {
-      if (res.status === 200) {
+      if (res?.status === 200) {
         let counter = 1;
-        const data = res.data.data;
+        const data = res?.data?.data;
         for (const key in data) {
           tempData.push({
             counter: counter++,

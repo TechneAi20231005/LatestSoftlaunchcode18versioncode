@@ -60,7 +60,6 @@ export default function CreateCustomer({ match }) {
   const [cityDropdownData, setCityDropdownData] = useState(false);
   const [isValidEmail, setIsValidEmail] = useState(true);
   const [email, setEmail] = useState('');
-  const [isDisabled, setIsDisabled] = useState(false);
 
   const handleEmailChange = (e) => {
     const newEmail = e.target.value;
@@ -178,12 +177,8 @@ export default function CreateCustomer({ match }) {
   //   // }
   // };
 
-
   const handleForm = async (values, { setSubmitting }) => {
     setSubmitting(true);
-    setIsDisabled(true)
-    if(isDisabled) return;
-
     // Manually create FormData object
     const formData = new FormData();
     formData.append('address', values.address);
@@ -202,23 +197,14 @@ export default function CreateCustomer({ match }) {
       if (res?.payload?.data?.status === 1 && res?.payload?.status === 200) {
         dispatch(getCustomerData());
         setTimeout(() => {
-          navigate(`/${_base}/Customer`, {
-            state: {
-              alert: toast.success(res?.payload?.data?.message)
-            }
-          });
+          navigate(`/${_base}/Customer`);
         }, 3000);
-      } else {
-        toast.error(res?.payload?.data?.message);
       }
-
     } catch (error) {
       errorHandler(error);
     } finally {
       setSubmitting(false);
-      setIsDisabled(false)
     }
-
   };
 
   const handleCountryChange = (e) => {
@@ -390,6 +376,7 @@ export default function CreateCustomer({ match }) {
                       <div className="col-sm-4">
                         {customerType && (
                           <Select
+                            classNamePrefix="react-select"
                             options={customerType}
                             name="customer_type_id"
                             id="customer_type_id"
@@ -560,6 +547,7 @@ export default function CreateCustomer({ match }) {
                       </label>
                       <div className="col-sm-4">
                         <Select
+                          classNamePrefix="react-select"
                           options={countryDropdown}
                           id="country_id"
                           name="country_id"
@@ -589,6 +577,7 @@ export default function CreateCustomer({ match }) {
 
                       <div className="col-sm-4">
                         <Select
+                          classNamePrefix="react-select"
                           options={
                             updateStatus.statedrp !== undefined
                               ? stateDropdownData
@@ -633,6 +622,7 @@ export default function CreateCustomer({ match }) {
 
                       <div className="col-sm-4">
                         <Select
+                          classNamePrefix="react-select"
                           options={
                             updateStatus.citydrp !== undefined
                               ? cityDropdownData
@@ -669,7 +659,7 @@ export default function CreateCustomer({ match }) {
 
                 <div className="mt-3" style={{ textAlign: 'right' }}>
                   <button
-                    disabled={isDisabled}
+                    disabled={isSubmitting}
                     type="submit"
                     className="btn btn-primary"
                   >

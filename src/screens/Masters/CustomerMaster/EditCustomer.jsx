@@ -691,6 +691,7 @@ function EditCustomer() {
                         <div className="col-sm-4">
                           {countryDropdown && data && (
                             <Field
+                              classNamePrefix="react-select"
                               options={countryDropdown}
                               component={Select}
                               id="country_id"
@@ -737,6 +738,7 @@ function EditCustomer() {
                         <div className="col-sm-4">
                           {stateDropdown && data && (
                             <Select
+                              classNamePrefix="react-select"
                               options={stateDropdown}
                               id="state_id"
                               name="state_id"
@@ -789,6 +791,7 @@ function EditCustomer() {
                         <div className="col-sm-4">
                           {cityDropdown && data && (
                             <Select
+                              classNamePrefix="react-select"
                               options={cityDropdown}
                               id="city_id"
                               name="city_id"
