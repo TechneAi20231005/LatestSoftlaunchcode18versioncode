@@ -967,7 +967,7 @@ function TestDraftDetails(props) {
           />
         </div>
       ),
-      selector: (row) => row?.testing_group?.group_name,
+      selector: (row) => row?.testing_group,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -976,17 +976,14 @@ function TestDraftDetails(props) {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row?.testing_group?.group_name && (
-            <OverlayTrigger
-              overlay={<Tooltip>{row?.testing_group?.group_name} </Tooltip>}
-            >
+          {row?.testing_group && (
+            <OverlayTrigger overlay={<Tooltip>{row?.testing_group} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row?.testing_group?.group_name &&
-                  row?.testing_group?.group_name?.length < 20
-                    ? row?.testing_group?.group_name
-                    : row?.testing_group?.group_name?.substring(0, 50) + '....'}
+                  {row?.testing_group && row?.testing_group?.length < 20
+                    ? row?.testing_group
+                    : row?.testing_group?.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>

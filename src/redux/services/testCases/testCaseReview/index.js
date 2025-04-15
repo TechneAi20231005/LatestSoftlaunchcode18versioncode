@@ -1,5 +1,5 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
-import customAxios from '../../../../http/axios';
+import customAxios, { rewampAxios } from '../../../../http/axios';
 import { errorHandler } from '../../../../utils';
 import { toast } from 'react-toastify';
 
@@ -7,7 +7,7 @@ export const getTestCaseReviewListThunk = createAsyncThunk(
   'testCaseReview/getTestCaseReviewListThunk',
   async ({ limit, page, filter_testcase_data, type }) => {
     try {
-      const response = await customAxios.get(
+      const response = await rewampAxios.get(
         `testCases/getCount/getTestDraft`,
         {
           params: {
