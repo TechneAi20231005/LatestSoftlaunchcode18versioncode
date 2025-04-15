@@ -157,7 +157,7 @@ function JobRoleMasterComponent() {
     {
       accessorKey: 'job_role',
       header: 'Job Role Title',
-      size: 160,
+      size: 200,
       filterVariant: 'autocomplete',
       muiTableBodyCellProps: () => ({
         sx: {
@@ -214,8 +214,9 @@ function JobRoleMasterComponent() {
           : '--'
     },
     {
-      accessorFn: (originalRow) => originalRow?.updated_by || '--',
-      header: 'Updated By'
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By',
+      size: 200
     }
   ];
 

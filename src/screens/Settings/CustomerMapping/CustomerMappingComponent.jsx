@@ -10,6 +10,7 @@ import {
 import { getRoles } from '../../Dashboard/DashboardAction';
 
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
 export default function CustomerMappingComponent() {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -109,10 +110,10 @@ export default function CustomerMappingComponent() {
       accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
       header: 'Created At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row?.original?.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
@@ -123,10 +124,10 @@ export default function CustomerMappingComponent() {
       accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
       header: 'Updated At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',

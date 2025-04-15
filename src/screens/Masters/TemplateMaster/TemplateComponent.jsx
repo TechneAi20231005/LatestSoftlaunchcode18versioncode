@@ -11,6 +11,7 @@ import { getRoles } from '../../Dashboard/DashboardAction';
 
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 import { errorHandler } from '../../../utils';
+import moment from 'moment';
 
 function TemplateComponent() {
   const location = useLocation();
@@ -92,10 +93,10 @@ function TemplateComponent() {
       accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
       header: 'Created At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row?.original?.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
@@ -106,11 +107,9 @@ function TemplateComponent() {
       accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
       header: 'Updated At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        cell?.row?.original?.updated_at
-          ? `${cell.getValue().toLocaleDateString()} ${cell
-              .getValue()
-              .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
           : '--'
     },
     {
