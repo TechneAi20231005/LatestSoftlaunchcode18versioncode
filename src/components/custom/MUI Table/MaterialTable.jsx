@@ -83,7 +83,7 @@ function MaterialTable({
         for (let key in exportDataKeys) {
           payload['Sr no'] = i + 1;
           if (key.toLowerCase() !== 'filename') {
-            if (eachRow[key]) {
+            if (eachRow[key] !== undefined && eachRow[key] !== null) {
               if (key === 'is_active') {
                 payload[exportDataKeys[key]] =
                   eachRow[key] == 1 ? 'Active' : 'Deactive';
