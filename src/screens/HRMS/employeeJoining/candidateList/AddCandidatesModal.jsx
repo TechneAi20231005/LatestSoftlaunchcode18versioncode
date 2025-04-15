@@ -21,7 +21,7 @@ import {
 import { experienceLevel } from '../../../../settings/constants';
 import useDropdownData from '../../../../hooks/useDropdownData';
 
-function AddCandidatesModal({ show, close }) {
+function AddCandidatesModal({ show, close, clearFilters }) {
   // // initial state
   const dispatch = useDispatch();
 
@@ -82,6 +82,7 @@ function AddCandidatesModal({ show, close }) {
       addCandidatesMasterThunk({
         formData: candidatesData,
         onSuccessHandler: () => {
+          clearFilters();
           close();
           dispatch(getCandidatesMasterListThunk());
         }
