@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit';
 import {
   addInterviewMasterThunk,
   editInterviewMasterThunk,
-  getInterviewMasterListThunk,
+  getInterviewMasterListThunk
 } from '../../../../services/hrms/employeeJoining/interviewListMaster';
 
 const initialState = {
@@ -10,10 +10,18 @@ const initialState = {
   isLoading: {
     getInterviewMasterList: false,
     addInterviewMaster: false,
-    editInterviewMaster: false,
+    editInterviewMaster: false
   },
-  errorMsg: { getInterviewMasterList: '', addInterviewMaster: '', editInterviewMaster: '' },
-  successMsg: { getInterviewMasterList: '', addInterviewMaster: '', editInterviewMaster: '' },
+  errorMsg: {
+    getInterviewMasterList: '',
+    addInterviewMaster: '',
+    editInterviewMaster: ''
+  },
+  successMsg: {
+    getInterviewMasterList: '',
+    addInterviewMaster: '',
+    editInterviewMaster: ''
+  }
 };
 const interviewMasterSlice = createSlice({
   name: 'Interview master',
@@ -28,7 +36,22 @@ const interviewMasterSlice = createSlice({
       })
       .addCase(getInterviewMasterListThunk.fulfilled, (state, action) => {
         state.isLoading.getInterviewMasterList = false;
-        state.interviewMasterList = action?.payload?.data;
+        let updatdData = action?.payload?.data?.map((item, index) => {
+          return {
+            ...item,
+            counter: index + 1,
+            email: item?.details
+              ?.map((detail) => detail?.employee_email || '--')
+              .join(', '),
+            employee_name: item?.details
+              ?.map((detail) => detail?.employee_name || '--')
+              .join(', '),
+            step_title: item?.details
+              ?.map((detail) => detail?.step_title || '--')
+              .join(', ')
+          };
+        });
+        state.interviewMasterList = updatdData;
         state.successMsg.getInterviewMasterList = action.payload.msg;
       })
       .addCase(getInterviewMasterListThunk.rejected, (state, action) => {
@@ -62,7 +85,7 @@ const interviewMasterSlice = createSlice({
         state.isLoading.editInterviewMaster = false;
         state.errorMsg.editInterviewMaster = action.error.message;
       });
-  },
+  }
 });
 
 export default interviewMasterSlice.reducer;

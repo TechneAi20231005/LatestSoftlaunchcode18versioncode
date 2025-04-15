@@ -3,7 +3,7 @@ import {
   addCandidatesMasterThunk,
   editCandidatesMasterThunk,
   getCandidatesMasterListThunk,
-  getCandidatesDetailsThunk,
+  getCandidatesDetailsThunk
 } from '../../../../services/hrms/employeeJoining/candidatesListMaster';
 
 const initialState = {
@@ -13,20 +13,20 @@ const initialState = {
     getCandidatesMasterList: false,
     getCandidatesDetailsData: false,
     addCandidatesMaster: false,
-    editCandidatesMaster: false,
+    editCandidatesMaster: false
   },
   errorMsg: {
     getCandidatesMasterList: '',
     addCandidatesMaster: '',
     editCandidatesMaster: '',
-    getCandidatesDetailsData: '',
+    getCandidatesDetailsData: ''
   },
   successMsg: {
     getCandidatesMasterList: '',
     addCandidatesMaster: '',
     editCandidatesMaster: '',
-    getCandidatesDetailsData: '',
-  },
+    getCandidatesDetailsData: ''
+  }
 };
 const candidatesMasterSlice = createSlice({
   name: 'Candidates master',
@@ -41,7 +41,13 @@ const candidatesMasterSlice = createSlice({
       })
       .addCase(getCandidatesMasterListThunk.fulfilled, (state, action) => {
         state.isLoading.getCandidatesMasterList = false;
-        state.candidatesMasterList = action?.payload?.data;
+        let updatdData = action?.payload?.data?.map((item, index) => {
+          return {
+            ...item,
+            counter: index + 1
+          };
+        });
+        state.candidatesMasterList = updatdData;
         state.successMsg.getCandidatesMasterList = action.payload.msg;
       })
       .addCase(getCandidatesMasterListThunk.rejected, (state, action) => {
@@ -90,7 +96,7 @@ const candidatesMasterSlice = createSlice({
         state.isLoading.editCandidatesMaster = false;
         state.errorMsg.editCandidatesMaster = action.error.message;
       });
-  },
+  }
 });
 
 export default candidatesMasterSlice.reducer;

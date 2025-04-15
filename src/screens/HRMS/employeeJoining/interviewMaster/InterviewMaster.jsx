@@ -11,6 +11,8 @@ import StatusBadge from '../../../../components/custom/Badges/StatusBadge';
 import { getInterviewMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/interviewListMaster';
 import { customSearchHandler } from '../../../../utils/customFunction';
 import TableLoadingSkelton from '../../../../components/custom/loader/TableLoadingSkelton';
+import moment from 'moment';
+import MaterialTable from '../../../../components/custom/MUI Table/MaterialTable';
 
 function InterviewMaster() {
   // // initial state
@@ -30,114 +32,245 @@ function InterviewMaster() {
   });
   const [filteredInterviewMasterList, setFilteredInterviewMasterList] =
     useState([]);
+  const [reset, setReset] = useState(false);
+  const clearFilters = () => {
+    setReset(true);
+  };
 
   // // static data
+  // const columns = [
+  //   {
+  //     name: 'Action',
+  //     selector: (row) => (
+  //       <>
+  //         <i
+  //           className="icofont-edit text-primary cp me-3"
+  //           onClick={() =>
+  //             setAddEditInterviewModal({ type: 'EDIT', data: row, open: true })
+  //           }
+  //         />
+  //         <i
+  //           class="icofont-eye-alt text-primary cp"
+  //           onClick={() =>
+  //             setAddEditInterviewModal({ type: 'VIEW', data: row, open: true })
+  //           }
+  //         />
+  //       </>
+  //     ),
+  //     sortable: false,
+  //     width: '90px'
+  //   },
+  //   {
+  //     name: 'Sr. No.',
+  //     selector: (row, index) => index + 1,
+  //     sortable: false,
+  //     width: '80px'
+  //   },
+  //   {
+  //     name: 'Step Count',
+  //     selector: (row) => row?.steps_count ?? '--',
+  //     sortable: true,
+  //     width: '110px'
+  //   },
+  //   {
+  //     name: 'Department',
+  //     selector: (row) =>
+  //       row?.department ? (
+  //         <OverlayTrigger
+  //           placement="top"
+  //           overlay={
+  //             <Tooltip id={`tooltip-${row.id}`}>{row?.department}</Tooltip>
+  //           }
+  //         >
+  //           <span>{row?.department ?? '--'}</span>
+  //         </OverlayTrigger>
+  //       ) : (
+  //         '--'
+  //       ),
+  //     sortable: true,
+  //     width: '150px'
+  //   },
+  //   {
+  //     name: 'Designation',
+  //     selector: (row) =>
+  //       row?.designation ? (
+  //         <OverlayTrigger
+  //           placement="top"
+  //           overlay={
+  //             <Tooltip id={`tooltip-${row.id}`}>{row?.designation}</Tooltip>
+  //           }
+  //         >
+  //           <span>{row?.designation ?? '--'}</span>
+  //         </OverlayTrigger>
+  //       ) : (
+  //         '--'
+  //       ),
+  //     sortable: true,
+  //     width: '150px'
+  //   },
+  //   {
+  //     name: 'Experience Level',
+  //     selector: (row) => row?.experience_level ?? '--',
+  //     sortable: true,
+  //     width: '150px'
+  //   },
+  //   {
+  //     name: 'Status',
+  //     sortable: true,
+  //     selector: (row) => <StatusBadge status={row?.is_active} />,
+  //     with: '120px'
+  //   },
+  //   {
+  //     name: 'Created At',
+  //     selector: (row) => row?.created_at ?? '--',
+  //     sortable: true,
+  //     width: '190px'
+  //   },
+  //   {
+  //     name: 'Created By',
+  //     selector: (row) => row?.created_by ?? '--',
+  //     sortable: true,
+  //     width: '190px'
+  //   },
+
+  //   {
+  //     name: 'Updated At',
+  //     selector: (row) => row?.updated_at ?? '--',
+  //     sortable: true,
+  //     width: '190px'
+  //   },
+  //   {
+  //     name: 'Updated By',
+  //     selector: (row) => row?.updated_by ?? '--',
+  //     sortable: true,
+  //     width: '190px'
+  //   }
+  // ];
+
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => (
-        <>
-          <i
-            className="icofont-edit text-primary cp me-3"
-            onClick={() =>
-              setAddEditInterviewModal({ type: 'EDIT', data: row, open: true })
-            }
-          />
-          <i
-            class="icofont-eye-alt text-primary cp"
-            onClick={() =>
-              setAddEditInterviewModal({ type: 'VIEW', data: row, open: true })
-            }
-          />
-        </>
-      ),
-      sortable: false,
-      width: '90px'
+      accessorKey: 'action', // Use a valid key
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => {
+        return (
+          <>
+            <i
+              className="icofont-edit text-primary cp me-3"
+              onClick={() =>
+                setAddEditInterviewModal({
+                  type: 'EDIT',
+                  data: row?.original,
+                  open: true
+                })
+              }
+            />
+            <i
+              class="icofont-eye-alt text-primary cp"
+              onClick={() =>
+                setAddEditInterviewModal({
+                  type: 'VIEW',
+                  data: row,
+                  open: true
+                })
+              }
+            />
+          </>
+        );
+      }
     },
     {
-      name: 'Sr. No.',
-      selector: (row, index) => index + 1,
-      sortable: false,
-      width: '80px'
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 70,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableColumnFilter: false
+    },
+    // {
+    //   accessorKey: 'steps_count',
+    //   header: 'Step Count',
+    //   size: 160,
+    //   filterVariant: 'autocomplete',
+    //   muiTableBodyCellProps: () => ({
+    //     sx: {
+    //       color: '#f19828',
+    //       fontWeight: 400
+    //     }
+    //   })
+    // },
+    {
+      accessorKey: 'steps_count',
+      header: 'Step Count',
+      size: 160
     },
     {
-      name: 'Step Count',
-      selector: (row) => row?.steps_count ?? '--',
-      sortable: true,
-      width: '110px'
+      accessorKey: 'department',
+      header: 'Department',
+      size: 160
     },
     {
-      name: 'Department',
-      selector: (row) =>
-        row?.department ? (
-          <OverlayTrigger
-            placement="top"
-            overlay={
-              <Tooltip id={`tooltip-${row.id}`}>{row?.department}</Tooltip>
-            }
+      accessorKey: 'designation',
+      header: 'Designation',
+      size: 160
+    },
+    {
+      accessorKey: 'experience_level',
+      header: 'Experience Level',
+      size: 160
+    },
+    {
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
           >
-            <span>{row?.department ?? '--'}</span>
-          </OverlayTrigger>
-        ) : (
-          '--'
-        ),
-      sortable: true,
-      width: '150px'
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
-      name: 'Designation',
-      selector: (row) =>
-        row?.designation ? (
-          <OverlayTrigger
-            placement="top"
-            overlay={
-              <Tooltip id={`tooltip-${row.id}`}>{row?.designation}</Tooltip>
-            }
-          >
-            <span>{row?.designation ?? '--'}</span>
-          </OverlayTrigger>
-        ) : (
-          '--'
-        ),
-      sortable: true,
-      width: '150px'
+      accessorFn: (originalRow) => {
+        return moment(originalRow.created_at).startOf('day').toDate();
+      },
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        cell.row.original.created_at &&
+        moment(cell.row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
     },
     {
-      name: 'Experience Level',
-      selector: (row) => row?.experience_level ?? '--',
-      sortable: true,
-      width: '150px'
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
+      header: 'Created By'
     },
     {
-      name: 'Status',
-      sortable: true,
-      selector: (row) => <StatusBadge status={row?.is_active} />,
-      with: '120px'
+      accessorFn: (originalRow) =>
+        moment(originalRow.updated_at).startOf('day').toDate(),
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        cell.row?.original?.updated_at?.trim()
+          ? moment(cell.row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Created At',
-      selector: (row) => row?.created_at ?? '--',
-      sortable: true,
-      width: '190px'
-    },
-    {
-      name: 'Created By',
-      selector: (row) => row?.created_by ?? '--',
-      sortable: true,
-      width: '190px'
-    },
-
-    {
-      name: 'Updated At',
-      selector: (row) => row?.updated_at ?? '--',
-      sortable: true,
-      width: '190px'
-    },
-    {
-      name: 'Updated By',
-      selector: (row) => row?.updated_by ?? '--',
-      sortable: true,
-      width: '190px'
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By'
     }
   ];
 
@@ -178,6 +311,23 @@ function InterviewMaster() {
     }));
   };
 
+  const exportDataKeys = {
+    department: 'Department',
+    designation: 'Designation',
+    step_title: 'Step Title',
+    experience_level: 'Experience Level',
+    steps_count: 'Step Count',
+    step_title: 'Step Title',
+    employee_name: 'Name',
+    email: 'Email',
+    remark: 'Remark',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Interview Lists Records'
+  };
+
   // // life cycle
   useEffect(() => {
     dispatch(getInterviewMasterListThunk());
@@ -211,7 +361,7 @@ function InterviewMaster() {
             );
           }}
         />
-        <Row className="row_gap_3">
+        {/* <Row className="row_gap_3">
           <Col xs={12} md={7} xxl={8}>
             <input
               type="search"
@@ -249,8 +399,8 @@ function InterviewMaster() {
               disabled={!filteredInterviewMasterList?.length}
             />
           </Col>
-        </Row>
-        <DataTable
+        </Row> */}
+        {/* <DataTable
           columns={columns}
           data={filteredInterviewMasterList}
           defaultSortField="role_id"
@@ -260,13 +410,26 @@ function InterviewMaster() {
           highlightOnHover={true}
           progressPending={isLoading?.getInterviewMasterList}
           progressComponent={<TableLoadingSkelton />}
-        />
+        /> */}
+        <div className="card mt-2">
+          {filteredInterviewMasterList && (
+            <MaterialTable
+              columns={columns}
+              data={filteredInterviewMasterList}
+              isLoading={isLoading?.getInterviewMasterList}
+              reset={reset}
+              setReset={setReset}
+              exportDataKeys={exportDataKeys}
+            />
+          )}
+        </div>
       </Container>
       <AddEditInterviewMasterModal
         show={addEditInterviewModal?.open}
         type={addEditInterviewModal?.type}
         currentInterviewData={addEditInterviewModal?.data}
         close={(prev) => setAddEditInterviewModal({ ...prev, open: false })}
+        clearFilters={clearFilters}
       />
     </>
   );

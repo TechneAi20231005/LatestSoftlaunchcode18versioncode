@@ -27,7 +27,8 @@ function AddEditInterviewMasterModal({
   show,
   close,
   type,
-  currentInterviewData
+  currentInterviewData,
+  clearFilters
 }) {
   // // initial state
   const dispatch = useDispatch();
@@ -129,6 +130,7 @@ function AddEditInterviewMasterModal({
         addInterviewMasterThunk({
           formData: openConfirmModal?.formData,
           onSuccessHandler: () => {
+            clearFilters();
             setOpenConfirmModal({ open: false });
             close();
             dispatch(getInterviewMasterListThunk());
@@ -144,6 +146,8 @@ function AddEditInterviewMasterModal({
           currentId: currentInterviewData?.id,
           formData: openConfirmModal?.formData,
           onSuccessHandler: () => {
+            clearFilters();
+
             setOpenConfirmModal({ open: false });
             close();
             dispatch(getInterviewMasterListThunk());
