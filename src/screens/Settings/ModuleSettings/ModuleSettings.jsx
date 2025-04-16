@@ -113,6 +113,7 @@ const ModuleSettings = ({ match }) => {
                 </label>
                 {module && (
                   <Select
+                    classNamePrefix="react-select"
                     options={module}
                     ref={moduleRef}
                     isClearable={true}
@@ -129,6 +130,7 @@ const ModuleSettings = ({ match }) => {
                 </label>
                 {submodule && (
                   <Select
+                    classNamePrefix="react-select"
                     options={submodule}
                     isClearable={true}
                     onChange={handleSubmoduleChange}
@@ -139,6 +141,7 @@ const ModuleSettings = ({ match }) => {
 
                 {!submodule && (
                   <Select
+                    classNamePrefix="react-select"
                     options={{ value: null, label: 'Select Sub-module' }}
                   />
                 )}

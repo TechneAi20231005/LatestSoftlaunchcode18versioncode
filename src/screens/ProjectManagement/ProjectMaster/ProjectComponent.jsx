@@ -9,6 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { errorHandler } from '../../../utils';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
 
 function ProjectComponent() {
   //initial state
@@ -20,9 +21,7 @@ function ProjectComponent() {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 20)
   );
 
-  const [notify, setNotify] = useState('');
   const [data, setData] = useState([]);
-  const [exportData, setExportData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const columns = [
@@ -102,10 +101,10 @@ function ProjectComponent() {
       accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
       header: 'Created At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row?.original?.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
@@ -117,10 +116,10 @@ function ProjectComponent() {
       accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
       header: 'Updated At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
@@ -147,11 +146,11 @@ function ProjectComponent() {
     await new ProjectService()
       .getProject()
       .then((res) => {
-        if (res.status === 200) {
+        if (res?.status === 200) {
           // setShowLoaderModal(false);
 
           let counter = 1;
-          const temp = res.data.data?.data;
+          const temp = res?.data?.data?.data;
           for (const key in temp) {
             data.push({
               counter: counter++,
@@ -169,26 +168,6 @@ function ProjectComponent() {
           }
           setData(null);
           setData(data);
-
-          let exportData = [];
-          let count = 1;
-          for (const key in data) {
-            exportData.push({
-              SrNo: count++,
-
-              'Project Name': data[key].project_name,
-              projectReviewer: data[key].projectReviewer,
-              description: data[key].description,
-              Status: data[key].is_active === 1 ? 'Active' : 'Deactive',
-              remark: data[key].remark,
-              created_by: data[key].created_by,
-              created_at: data[key].created_at,
-              updated_at: data[key].updated_at,
-              updated_by: data[key].updated_by
-            });
-          }
-          setExportData(exportData);
-          setIsLoading(false);
         }
       })
       .catch((error) => {
@@ -203,10 +182,7 @@ function ProjectComponent() {
 
   useEffect(() => {
     loadData();
-    if (location && location.state) {
-      setNotify(location.state.alert);
-    }
-  }, [loadData, location]);
+  }, [loadData]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -255,30 +231,36 @@ function ProjectDropdown({ field, form, ...props }) {
   const [deafultValue, setDeafultValue] = useState('');
   useEffect(() => {
     const tempData = [];
-    new ProjectService().getProject().then((res) => {
-      if (res.status === 200) {
-        let counter = 1;
-        const activeData = res.data.data.data.filter((d) => d.is_active === 1);
-        for (const key in activeData) {
-          tempData.push({
-            counter: counter++,
-            id: activeData[key].id,
-            project_name: activeData[key].project_name
-          });
+    new ProjectService()
+      .getProject()
+      .then((res) => {
+        if (res?.status === 200) {
+          let counter = 1;
+          const activeData = res?.data?.data?.data.filter(
+            (d) => d.is_active === 1
+          );
+          for (const key in activeData) {
+            tempData.push({
+              counter: counter++,
+              id: activeData[key].id,
+              project_name: activeData[key].project_name
+            });
+          }
+          const DeafultValue = tempData.find(
+            (d) => d.id === props.defaultValue
+          );
+          if (DeafultValue) {
+            setDeafultValue(DeafultValue.id);
+          } else {
+            setDeafultValue('');
+          }
+          setData(tempData);
         }
-        const DeafultValue = tempData.find((d) => d.id === props.defaultValue);
-        if (DeafultValue) {
-          setDeafultValue(DeafultValue.id);
-        } else {
-          setDeafultValue('');
-        }
-        setData(tempData);
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   }, []);
 
   const handleChange = (e) => {
-    console.log(e.target.value);
     const value = e.target.value;
     form.setFieldValue(field.name, value); // Update Formik value
   };

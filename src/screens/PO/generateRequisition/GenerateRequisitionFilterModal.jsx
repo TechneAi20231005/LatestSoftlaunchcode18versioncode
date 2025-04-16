@@ -174,6 +174,7 @@ function GenerateRequisitionFilterModal({
             <Row className="row_gap_3">
               <Col md={12}>
                 <Field
+                  classNamePrefix="react-select"
                   component={CustomReactSelect}
                   options={viewForOption}
                   styleData="w-100"
@@ -184,6 +185,7 @@ function GenerateRequisitionFilterModal({
               </Col>
               <Col md={6}>
                 <Field
+                  classNamePrefix="react-select"
                   component={CustomReactSelect}
                   options={itemOptionData}
                   styleData="w-100"
@@ -197,6 +199,7 @@ function GenerateRequisitionFilterModal({
               </Col>
               <Col md={6}>
                 <Field
+                  classNamePrefix="react-select"
                   component={CustomReactSelect}
                   options={categoryOptionData}
                   styleData="w-100"
@@ -210,6 +213,7 @@ function GenerateRequisitionFilterModal({
               <Col md={6}>
                 <RenderIf render={values.knockoff_karagir === 0}>
                   <Field
+                    classNamePrefix="react-select"
                     component={CustomReactSelect}
                     options={knockOffWeightRangeData}
                     styleData="w-100"
@@ -227,6 +231,7 @@ function GenerateRequisitionFilterModal({
                 </RenderIf>
                 <RenderIf render={values.knockoff_karagir === 1}>
                   <Field
+                    classNamePrefix="react-select"
                     component={CustomReactSelect}
                     options={karagirWeightRangeData}
                     styleData="w-100"
@@ -245,6 +250,7 @@ function GenerateRequisitionFilterModal({
               </Col>
               <Col md={6}>
                 <Field
+                  classNamePrefix="react-select"
                   component={CustomReactSelect}
                   options={sizeRangeData}
                   styleData="w-100"

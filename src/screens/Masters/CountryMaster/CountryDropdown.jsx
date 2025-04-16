@@ -69,6 +69,7 @@ export default class CountryDropdown extends Component {
         <>
           <span style={{ display: 'none' }}></span>
           <Select
+            classNamePrefix="react-select"
             defaultValue={this.state.defaultValue}
             options={this.state.data}
             id={this.props.id}
@@ -84,6 +85,7 @@ export default class CountryDropdown extends Component {
       return (
         <>
           <Select
+            classNamePrefix="react-select"
             options={this.state.data}
             id={this.props.id}
             name={this.props.name}

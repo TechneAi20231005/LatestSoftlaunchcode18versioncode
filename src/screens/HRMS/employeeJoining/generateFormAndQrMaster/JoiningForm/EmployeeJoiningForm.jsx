@@ -76,6 +76,7 @@ function EmployeeJoiningForm({ data }) {
                 <Row className="row_gap_3">
                   <Col sm={6} md={6}>
                     <Field
+                      classNamePrefix="react-select"
                       data={sourceType}
                       component={CustomDropdown}
                       name="source_id"
@@ -117,6 +118,7 @@ function EmployeeJoiningForm({ data }) {
                   </Col>
                   <Col sm={6} md={6}>
                     <Field
+                      classNamePrefix="react-select"
                       options={preferredRole}
                       component={CustomReactSelect}
                       name="designation_id"
@@ -129,6 +131,7 @@ function EmployeeJoiningForm({ data }) {
                   </Col>
                   <Col sm={6} md={6}>
                     <Field
+                      classNamePrefix="react-select"
                       options={preferredLocation}
                       component={CustomReactSelect}
                       name="location_id"
@@ -159,6 +162,7 @@ function EmployeeJoiningForm({ data }) {
                   </Col>
                   <Col sm={6} md={6}>
                     <Field
+                      classNamePrefix="react-select"
                       data={experienceLevel}
                       component={CustomDropdown}
                       name="relevant_experience"

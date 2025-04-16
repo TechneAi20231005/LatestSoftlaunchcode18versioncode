@@ -967,6 +967,7 @@ const TestCasesReviewerView = ({ match }) => {
                     </label>
                     {testSuiteDropdown && (
                       <Select
+                        classNamePrefix="react-select"
                         className="form-control center"
                         name="testsuit_id"
                         id="testsuit_id"
@@ -1081,6 +1082,7 @@ const TestCasesReviewerView = ({ match }) => {
                     <b>Testing Type:</b>
                   </label>
                   <Select
+                    classNamePrefix="react-select"
                     className="form-control form-control-sm"
                     id="testing_type"
                     name="testing_type"

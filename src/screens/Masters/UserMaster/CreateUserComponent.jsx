@@ -806,6 +806,7 @@ function CreateUserComponent({ match }) {
                         </label>
                         <div className="col-sm-3">
                           <Select
+                            classNamePrefix="react-select"
                             id="customer_id"
                             name="customer_id"
                             required={true}
@@ -1229,6 +1230,7 @@ function CreateUserComponent({ match }) {
                       </label>
                       <div className="col-sm-3">
                         <Select
+                          classNamePrefix="react-select"
                           id="role_id"
                           name="role_id"
                           // defaultValue={filteredRoles}
@@ -1276,6 +1278,7 @@ function CreateUserComponent({ match }) {
                       </label>
                       <div className="col-sm-3">
                         <Select
+                          classNamePrefix="react-select"
                           id="designation_id"
                           name="designation_id"
                           options={sortDesignationDropdown}
@@ -1316,6 +1319,7 @@ function CreateUserComponent({ match }) {
                       </label>
                       <div className="col-sm-3">
                         <Select
+                          classNamePrefix="react-select"
                           id="job_role"
                           name="job_role"
                           // defaultValue={filteredRoles}
@@ -1422,6 +1426,7 @@ function CreateUserComponent({ match }) {
                       </label>
                       <div className="col-sm-4">
                         <Select
+                          classNamePrefix="react-select"
                           options={CountryData}
                           name="country_id"
                           id="country_id"
@@ -1441,6 +1446,7 @@ function CreateUserComponent({ match }) {
                           //     ? stateDropdown
                           //     : []
                           // }
+                          classNamePrefix="react-select"
                           isClearable={true}
                           options={stateDropdownData}
                           name="state_id"
@@ -1461,6 +1467,7 @@ function CreateUserComponent({ match }) {
 
                       <div className="col-sm-4">
                         <Select
+                          classNamePrefix="react-select"
                           options={cityDropdownData && cityDropdownData}
                           name="city_id"
                           id="city_id"
@@ -1517,12 +1524,13 @@ function CreateUserComponent({ match }) {
                         <td className="text-center">{idx + 1}</td>
                         <td>
                           <Select
+                            classNamePrefix="react-select"
                             isSearchable={true}
                             name="department_id[]"
                             id="department_id[]"
                             key={idx}
                             className="basic-multi-select"
-                            classNamePrefix="select"
+                            // classNamePrefix="select"
                             options={departmentDropdown}
                             value={departmentDropdown.filter((d) =>
                               Array.isArray(item.department_id)
@@ -1538,6 +1546,7 @@ function CreateUserComponent({ match }) {
                         </td>
                         <td>
                           <Select
+                            classNamePrefix="react-select"
                             options={options}
                             id={`ticket_show_type_id_` + idx}
                             name="ticket_show_type_id[]"

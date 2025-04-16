@@ -415,6 +415,7 @@ const ViewBillTypeComponent = ({ match }) => {
                 </label>
                 {userData && billTypeData && (
                   <Select
+                    classNamePrefix="react-select"
                     isMulti
                     isDisabled
                     name="assign_employee_id[]"
@@ -555,6 +556,7 @@ const ViewBillTypeComponent = ({ match }) => {
                             <td>
                               {assignedUserData && (
                                 <Select
+                                  classNamePrefix="react-select"
                                   key={rowIndex}
                                   isDisabled
                                   options={assignedUserData && assignedUserData}
@@ -578,6 +580,7 @@ const ViewBillTypeComponent = ({ match }) => {
                             <td>
                               {assignedUserData && (
                                 <Select
+                                  classNamePrefix="react-select"
                                   key={rowIndex}
                                   value={
                                     levelItem.required_users &&

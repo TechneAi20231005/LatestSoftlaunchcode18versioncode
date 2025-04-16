@@ -1,8 +1,6 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-// import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
-
 import UserService from '../../../services/MastersService/UserService';
 import PageHeader from '../../../components/Common/PageHeader';
 
@@ -12,12 +10,8 @@ import { useDispatch, useSelector } from 'react-redux';
 
 import { getEmployeeData, getRoles } from '../../Dashboard/DashboardAction';
 import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
-// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
-// import NotFound from '../../../components/NotFound';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { Box, colors } from '@mui/material';
+import moment from 'moment';
 
 function UserComponent() {
   //initial state
@@ -25,8 +19,6 @@ function UserComponent() {
   const dispatch = useDispatch();
 
   //Redux State
-
-  const [exportData, setExportData] = useState(null);
 
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 3)
@@ -38,21 +30,7 @@ function UserComponent() {
   const isLoading = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.isLoading.employeeDataList
   );
-  //local state
-  // const [searchTerm, setSearchTerm] = useState('');
 
-  //search function
-
-  // const handleSearch = useCallback(() => {
-  //   const filteredList = customSearchHandler(employeeData, searchTerm);
-  //   setFilteredData(filteredList);
-  // }, [employeeData, searchTerm]);
-
-  // Function to handle reset button click
-  // const handleReset = () => {
-  //   setSearchTerm('');
-  //   setFilteredData(employeeData);
-  // };
   const exportDataKeys = {
     account_for: 'Account_For',
     customer: 'Customer Name',
@@ -172,10 +150,10 @@ function UserComponent() {
       accessorFn: (originalRow) => new Date(originalRow.created_at),
       header: 'Created At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row?.original?.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow.created_by || '--',
@@ -186,10 +164,10 @@ function UserComponent() {
       accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
       header: 'Updated At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow.updated_by || '--',
@@ -198,67 +176,7 @@ function UserComponent() {
     }
   ];
 
-  const loadData = async () => {
-    const exportTempData = [];
-
-    await new UserService().getExportTicket().then((res) => {
-      if (res.status === 200) {
-        const temp = res?.data?.data?.data;
-        for (const i in temp) {
-          exportTempData.push({
-            SrNo: exportTempData.length + 1,
-
-            Account_for: temp[i].account_for,
-            customer_name: temp[i].customer,
-            Name:
-              temp[i].first_name +
-              ' ' +
-              temp[i].middle_name +
-              ' ' +
-              temp[i].last_name,
-            Email: temp[i].email_id,
-            ContactNo: temp[i].contact_no,
-            WhatsappNo: temp[i].whats_app_contact_no,
-            User_Name: temp[i].user_name,
-            Role: temp[i].role,
-            Job_Role: temp[i].jobRole,
-            Designation: temp[i].designation,
-            Address: temp[i].address,
-            Pincode: temp[i].pincode,
-            Country: temp[i].country,
-            State: temp[i].state,
-            City: temp[i].city,
-            Department: temp[i].department
-              ?.map((d) => d.department_name)
-              ?.join(','),
-            Ticket_Show_Type: temp[i].department
-              ?.map((d) => d.ticket_show_type)
-              ?.join(','),
-
-            Ticket_Passing_Authority: temp[i].department
-              ?.map((d) => (d.ticket_passing_authority ? 'Yes' : 'No'))
-              ?.join(','),
-            Make_Default: temp[i].department
-              ?.map((d) => (d.is_default ? 'Yes' : 'No'))
-              ?.join(','),
-            Status: temp[i].is_active ? 'Active' : 'Deactive',
-            created_at: temp[i].created_at,
-            created_by: temp[i].created_by,
-            updated_at: temp[i].updated_at,
-
-            updated_by: temp[i].updated_by
-          });
-        }
-
-        setExportData(null);
-        setExportData(exportTempData);
-      }
-    });
-  };
-
   useEffect(() => {
-    loadData();
-
     dispatch(getEmployeeData());
     dispatch(getRoles());
     dispatch(departmentData());
@@ -269,13 +187,6 @@ function UserComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-  // useEffect(() => {
-  //   setFilteredData(employeeData);
-  // }, [employeeData]);
-
-  // useEffect(() => {
-  //   handleSearch();
-  // }, [searchTerm, handleSearch]);
 
   return (
     <div className="container-xxl">
@@ -299,16 +210,6 @@ function UserComponent() {
         }}
       />
 
-      {/* <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by user name...."
-        exportFileName="User Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      /> */}
       <div className="card mt-2 px-0">
         {employeeData && (
           <MaterialTable
@@ -328,8 +229,8 @@ function UserDropdown(props) {
   useEffect(() => {
     const tempData = [];
     new UserService().getUser().then((res) => {
-      if (res.status === 200) {
-        const data = res.data.data;
+      if (res?.status === 200) {
+        const data = res?.data?.data;
 
         for (const key in data) {
           tempData.push({

@@ -615,6 +615,7 @@ const EditTemplateComponent = ({ match, props }) => {
                   </label>
                   {userData && (
                     <Select
+                      classNamePrefix="react-select"
                       id="basket_owner"
                       name="basket_owner"
                       options={userData}
@@ -928,6 +929,7 @@ const EditTemplateComponent = ({ match, props }) => {
                           </label>
                           {userData && (
                             <Select
+                              classNamePrefix="react-select"
                               id="basket_owner"
                               name="basket_owner"
                               onChange={(e) => handleChange(e, 'select2')}

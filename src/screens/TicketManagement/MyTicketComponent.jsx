@@ -2115,7 +2115,8 @@ export default function MyTicketComponent() {
                   Passed_Status_Remark: temp[key].passed_status_remark,
                   project_name: temp[key]?.project?.project_name || '--',
                   // Status_name: temp[key].status_name,
-                  sub_module_name: temp[key]?.submodule?.sub_module_name || '--',
+                  sub_module_name:
+                    temp[key]?.submodule?.sub_module_name || '--',
                   Template_id: temp[key].template?.template_name,
                   Tenant_id: temp[key].tenant_id,
                   ticket_solved_date: temp[key].ticket_solved_date,
@@ -2227,7 +2228,7 @@ export default function MyTicketComponent() {
         statusValue?.length > 0 ? statusValue?.map((user) => user.value) : [],
       user_id:
         entryUser?.length > 0 ? entryUser?.map((user) => user.value) : [],
-      ticket_id: ticket,
+      ticket_id: ticket
       // filter: 'filter'
     };
 
@@ -2375,7 +2376,7 @@ export default function MyTicketComponent() {
           user_id:
             entryUser?.length > 0 ? entryUser?.map((user) => user.value) : [],
           ticket_id: ticket,
-          export: 'export',
+          export: 'export'
           // filter: 'filter'
         };
         const res = await new ReportService().getTicketReport(payload);
@@ -3150,6 +3151,7 @@ export default function MyTicketComponent() {
                   </label>
                   {userData && (
                     <Select
+                      classNamePrefix="react-select"
                       options={userData}
                       isMulti={true}
                       id="assign_to_user_id[]"
@@ -3171,6 +3173,7 @@ export default function MyTicketComponent() {
                   </label>
                   {departmentData && (
                     <Select
+                      classNamePrefix="react-select"
                       options={departmentData}
                       isMulti={true}
                       value={selectedDepartment}
@@ -3191,6 +3194,7 @@ export default function MyTicketComponent() {
                 </label>
                 {statusData && (
                   <Select
+                    classNamePrefix="react-select"
                     options={statusData}
                     isMulti={true}
                     value={selectedStatus}
@@ -3303,6 +3307,7 @@ export default function MyTicketComponent() {
                       </label>
                       {departmentData && (
                         <Select
+                          classNamePrefix="react-select"
                           options={departmentData}
                           isMulti={true}
                           ref={selectInputRef}
@@ -3318,6 +3323,7 @@ export default function MyTicketComponent() {
                         <b>Assigned User :</b>
                       </label>
                       <Select
+                        classNamePrefix="react-select"
                         options={assignUserDropdown}
                         isMulti={true}
                         id="assign_to_user_id[]"
@@ -3338,6 +3344,7 @@ export default function MyTicketComponent() {
                       </label>
                       {departmentData && (
                         <Select
+                          classNamePrefix="react-select"
                           options={departmentData}
                           isMulti={true}
                           id="department_id[]"
@@ -3354,6 +3361,7 @@ export default function MyTicketComponent() {
                         <b>Entry User :</b>
                       </label>
                       <Select
+                        classNamePrefix="react-select"
                         // options={ userDropdown}
                         options={
                           localStorage.getItem('account_for') === 'SELF'
@@ -3380,6 +3388,7 @@ export default function MyTicketComponent() {
                   </label>
                   {statusData && (
                     <Select
+                      classNamePrefix="react-select"
                       options={statusData}
                       isMulti={true}
                       id="status_id[]"

@@ -14,7 +14,6 @@ export const getQrCodeList = createAsyncThunk(
         errorHandler(response);
       }
     } catch (error) {
-      console.log(error, 'error');
       errorHandler(error?.response);
       return Promise.reject(error?.response?.data?.message);
     }
@@ -75,7 +74,6 @@ export const getQrCodeListById = createAsyncThunk(
         errorHandler(response);
       }
     } catch (error) {
-      console.log(error, 'error');
       errorHandler(error?.response);
       return Promise.reject(error?.response?.data?.message);
     }

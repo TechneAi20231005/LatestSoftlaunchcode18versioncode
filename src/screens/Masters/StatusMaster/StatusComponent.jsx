@@ -1,10 +1,7 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
-// import DataTable from 'react-data-table-component';
-
 import StatusService from '../../../services/MastersService/StatusService';
 import PageHeader from '../../../components/Common/PageHeader';
-// import Alert from '../../../components/Common/Alert';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getStatusData,
@@ -15,15 +12,11 @@ import {
 
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { handleModalClose, handleModalOpen } from './StatusComponentSlice';
-
-// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { Box } from '@mui/material';
+import moment from 'moment';
 
 function StatusComponent() {
   const dispatch = useDispatch();
@@ -34,35 +27,13 @@ function StatusComponent() {
     (statusMasterSlice) => statusMasterSlice.statusMaster.isLoading.statusData
   );
 
-  // const exportData = useSelector(
-  //   (statusMasterSlice) => statusMasterSlice.statusMaster.exportStatusData
-  // );
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 11)
   );
   const modal = useSelector(
     (statusMasterSlice) => statusMasterSlice.statusMaster.modal
   );
-  const notify = useSelector(
-    (statusMasterSlice) => statusMasterSlice.statusMaster.notify
-  );
 
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(statusData, searchTerm);
-    setFilteredData(filteredList);
-  }, [statusData, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(statusData);
-  };
   const [reset, setReset] = useState(false);
   const clearFilters = () => {
     setReset(true);
@@ -140,10 +111,10 @@ function StatusComponent() {
       accessorFn: (originalRow) => new Date(originalRow.created_at),
       header: 'Created At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row?.original?.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
@@ -154,10 +125,10 @@ function StatusComponent() {
       accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
       header: 'Updated At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
@@ -189,7 +160,6 @@ function StatusComponent() {
   ];
 
   const validationSchema = CustomValidation(fields);
-  const loadData = async () => {};
 
   const handleForm = async (values, id, { setSubmitting }) => {
     setSubmitting(true);
@@ -232,20 +202,12 @@ function StatusComponent() {
   }, [checkRole]);
 
   useEffect(() => {
-    loadData();
     dispatch(getGridStatusData());
 
     if (!statusData.length) {
       dispatch(getRoles());
     }
   }, [dispatch, statusData.length]);
-  useEffect(() => {
-    setFilteredData(statusData);
-  }, [statusData]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
 
   const exportDataKeys = {
     status: 'Status Name',
@@ -286,39 +248,17 @@ function StatusComponent() {
           );
         }}
       />
-      {/* <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by status name...."
-        exportFileName="status Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      /> */}
 
       <div className="card mt-2">
         {statusData && (
           <MaterialTable
             exportDataKeys={exportDataKeys}
             isLoading={isLoading}
-            data={filteredData}
+            data={statusData}
             columns={columns}
             reset={reset}
             setReset={setReset}
           />
-
-          // <DataTable
-          //   columns={columns}
-          //   data={filteredData}
-          //   defaultSortField="title"
-          //   pagination
-          //   selectableRows={false}
-          //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-          //   highlightOnHover={true}
-          //   progressPending={isLoading}
-          //   progressComponent={<TableLoadingSkelton />}
-          // />
         )}
       </div>
 
@@ -467,150 +407,6 @@ function StatusComponent() {
             </Form>
           )}
         </Formik>
-        {/* <form
-          method="post"
-          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
-        >
-          <Modal.Header closeButton>
-            <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="deadline-form">
-              <div className="row g-3 mb-3">
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Status Name :<Astrick color="red" size="13px" />
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="status"
-                    name="status"
-                    required
-                    maxLength={30}
-                    defaultValue={modal.modalData ? modal.modalData.status : ''}
-                    onKeyPress={(e) => {
-                      Validation.CharacterWithSpace(e);
-                    }}
-                    onPaste={(e) => {
-                      e.preventDefault();
-                      return false;
-                    }}
-                    onCopy={(e) => {
-                      e.preventDefault();
-                      return false;
-                    }}
-                  />
-                </div>
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Remark :
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="remark"
-                    name="remark"
-                    maxLength={50}
-                    defaultValue={modal.modalData ? modal.modalData.remark : ''}
-                  />
-                </div>
-                {modal.modalData && (
-                  <div className="col-sm-12">
-                    <label className="form-label font-weight-bold">
-                      Status :<Astrick color="red" size="13px" />
-                    </label>
-                    <div className="row">
-                      <div className="col-md-2">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_1"
-                            value="1"
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 1
-                                ? true
-                                : !modal.modalData
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_1"
-                          >
-                            Active
-                          </label>
-                        </div>
-                      </div>
-                      <div className="col-md-1">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_0"
-                            value="0"
-                            readOnly={modal.modalData ? false : true}
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_0"
-                          >
-                            Deactive
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            {!modal.modalData && (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-
-              >
-                Submit
-              </button>
-            )}
-            {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-              >
-                Update
-              </button>
-            ) : (
-              ''
-            )}
-            <button
-              type="button"
-              className="btn btn-danger text-white"
-              onClick={() => {
-                dispatch(
-                  handleModalClose({
-                    showModal: false,
-                    modalData: '',
-                    modalHeader: ''
-                  })
-                );
-              }}
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </form> */}
       </Modal>
     </div>
   );
@@ -620,22 +416,25 @@ function StatusDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new StatusService().getStatus().then((res) => {
-      if (res.status === 200) {
-        const data = res.data.data;
-        let counter = 1;
-        for (const key in data) {
-          if (data[key].is_active === 1) {
-            tempData.push({
-              counter: counter++,
-              id: data[key].id,
-              status: data[key].status
-            });
+    new StatusService()
+      .getStatus()
+      .then((res) => {
+        if (res?.status === 200) {
+          const data = res?.data?.data;
+          let counter = 1;
+          for (const key in data) {
+            if (data[key].is_active === 1) {
+              tempData.push({
+                counter: counter++,
+                id: data[key].id,
+                status: data[key].status
+              });
+            }
           }
+          setData(tempData);
         }
-        setData(tempData);
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   }, []);
 
   return (

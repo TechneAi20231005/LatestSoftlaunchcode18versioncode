@@ -209,6 +209,7 @@ function EditTestCaseModal({
               <Row className="row_gap_3">
                 <Col md={4} lg={4}>
                   <Field
+                    classNamePrefix="react-select"
                     data={getProjectModuleList}
                     component={CustomDropdown}
                     name="project_id"
@@ -223,6 +224,7 @@ function EditTestCaseModal({
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
+                    classNamePrefix="react-select"
                     data={!moduleDropdown ? newModuleListData : moduleDropdown}
                     component={CustomDropdown}
                     name="module_id"
@@ -238,6 +240,7 @@ function EditTestCaseModal({
 
                 <Col md={4} lg={4}>
                   <Field
+                    classNamePrefix="react-select"
                     data={subModuleDropdown}
                     component={CustomDropdown}
                     name="submodule_id"
@@ -251,6 +254,7 @@ function EditTestCaseModal({
 
                 <Col md={4} lg={4}>
                   <Field
+                    classNamePrefix="react-select"
                     data={filterFunctionMasterList}
                     component={CustomDropdown}
                     name="function_id"
@@ -272,6 +276,7 @@ function EditTestCaseModal({
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
+                    classNamePrefix="react-select"
                     data={filterTestingTypeMasterList}
                     component={CustomDropdown}
                     name="type_id"
@@ -295,6 +300,7 @@ function EditTestCaseModal({
 
                 <Col md={4} lg={4}>
                   <Field
+                    classNamePrefix="react-select"
                     data={filterTestingGroupMasterList}
                     component={CustomDropdown}
                     name="group_id"
@@ -305,6 +311,7 @@ function EditTestCaseModal({
 
                 <Col md={4} lg={4}>
                   <Field
+                    classNamePrefix="react-select"
                     data={severityData}
                     component={CustomDropdown}
                     name="severity"
@@ -341,7 +348,7 @@ function EditTestCaseModal({
                     component={CustomTextArea}
                     name="expected_result"
                     label="Expected Result"
-                    id='edittestcasemodal_expectedresult'
+                    id="edittestcasemodal_expectedresult"
                     placeholder="Enter expected result"
                     requiredField
                   />

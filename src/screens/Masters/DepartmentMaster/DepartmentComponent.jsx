@@ -14,7 +14,6 @@ import {
 
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { handleModalClose, handleModalOpen } from './DepartmentMasterSlice';
-import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
 import moment from 'moment';
@@ -39,29 +38,9 @@ function DepartmentComponent() {
   const modal = useSelector(
     (DashboardSlice) => DashboardSlice.department.modal
   );
-  const Notify = useSelector(
-    (DepartmentMasterSlice) => DepartmentMasterSlice.department.notify
-  );
-  const exportData = useSelector(
-    (DepartmentMasterSlice) =>
-      DepartmentMasterSlice.department.exportDepartmentData
-  );
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
   const [reset, setReset] = useState(false);
   //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(department, searchTerm);
-    setFilteredData(filteredList);
-  }, [department, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(department);
-  };
 
   const clearFilters = () => {
     setReset(true);
@@ -248,14 +227,6 @@ function DepartmentComponent() {
     }
   }, [dispatch, department.length]);
 
-  useEffect(() => {
-    setFilteredData(department);
-  }, [department]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
-
   return (
     <div className="container-xxl">
       <PageHeader
@@ -287,21 +258,10 @@ function DepartmentComponent() {
         }}
       />
 
-      {/*   <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by department name...."
-        exportFileName="Department Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      />
- */}
       <div className="card mt-2">
         {department && (
           <MaterialTable
-            data={filteredData}
+            data={department}
             columns={columns}
             isLoading={isLoading}
             reset={reset}

@@ -376,6 +376,7 @@ export default function CreateCustomer({ match }) {
                       <div className="col-sm-4">
                         {customerType && (
                           <Select
+                            classNamePrefix="react-select"
                             options={customerType}
                             name="customer_type_id"
                             id="customer_type_id"
@@ -546,6 +547,7 @@ export default function CreateCustomer({ match }) {
                       </label>
                       <div className="col-sm-4">
                         <Select
+                          classNamePrefix="react-select"
                           options={countryDropdown}
                           id="country_id"
                           name="country_id"
@@ -575,6 +577,7 @@ export default function CreateCustomer({ match }) {
 
                       <div className="col-sm-4">
                         <Select
+                          classNamePrefix="react-select"
                           options={
                             updateStatus.statedrp !== undefined
                               ? stateDropdownData
@@ -619,6 +622,7 @@ export default function CreateCustomer({ match }) {
 
                       <div className="col-sm-4">
                         <Select
+                          classNamePrefix="react-select"
                           options={
                             updateStatus.citydrp !== undefined
                               ? cityDropdownData

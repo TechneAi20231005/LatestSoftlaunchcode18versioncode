@@ -331,6 +331,7 @@ function StateComponent() {
                         Select Country :<Astrick color="red" size="13px" />
                       </label>
                       <Select
+                        classNamePrefix="react-select"
                         options={filteredCountryData}
                         isClearable
                         id="country_id"
@@ -365,14 +366,6 @@ function StateComponent() {
                         onKeyPress={(e) => {
                           Validation.CharacterWithSpace(e);
                         }}
-                        // onPaste={(e) => {
-                        //   e.preventDefault();
-                        //   return false;
-                        // }}
-                        // onCopy={(e) => {
-                        //   e.preventDefault();
-                        //   return false;
-                        // }}
                       />
                       <ErrorMessage
                         name="state"
@@ -506,22 +499,25 @@ function StateDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new StateService().getState().then((res) => {
-      if (res.status === 200) {
-        const data = res.data.data;
-        let counter = 1;
-        for (const key in data) {
-          if (data[key].is_active === 1) {
-            tempData.push({
-              counter: counter++,
-              id: data[key].id,
-              state: data[key].state
-            });
+    new StateService()
+      .getState()
+      .then((res) => {
+        if (res.status === 200) {
+          const data = res.data.data;
+          let counter = 1;
+          for (const key in data) {
+            if (data[key].is_active === 1) {
+              tempData.push({
+                counter: counter++,
+                id: data[key].id,
+                state: data[key].state
+              });
+            }
           }
+          setData(tempData);
         }
-        setData(tempData);
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   }, []);
 
   return (

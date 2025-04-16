@@ -11,95 +11,198 @@ import StatusBadge from '../../../../components/custom/Badges/StatusBadge';
 import { ExportToExcel } from '../../../../components/Utilities/Table/ExportToExcel';
 import { getBranchMasterListThunk } from '../../../../redux/services/hrms/employeeJoining/branchMaster';
 import { customSearchHandler } from '../../../../utils/customFunction';
+import moment from 'moment';
+import MaterialTable from '../../../../components/custom/MUI Table/MaterialTable';
 
 function BranchMaster() {
   // // initial state
   const dispatch = useDispatch();
 
   // // redux state
-  const { branchMasterList, isLoading } = useSelector(state => state?.branchMaster);
+  const { branchMasterList, isLoading } = useSelector(
+    (state) => state?.branchMaster
+  );
 
   // // local state
   const [searchValue, setSearchValue] = useState('');
   const [addEditBranchModal, setAddEditBranchModal] = useState({
     type: '',
     data: '',
-    open: false,
+    open: false
   });
   const [filteredBranchMasterList, setFilteredBranchMasterList] = useState([]);
-
+  const [reset, setReset] = useState(false);
+  const clearFilters = () => {
+    setReset(true);
+  };
   // // static data
+  // const columns = [
+  //   {
+  //     name: 'Action',
+  //     selector: row => (
+  //       <i
+  //         className="icofont-edit text-primary cp text-center"
+  //         onClick={() => setAddEditBranchModal({ type: 'EDIT', data: row, open: true })}
+  //       />
+  //     ),
+  //     sortable: false,
+  //     width: '70px',
+  //   },
+  //   {
+  //     name: 'Sr. No.',
+  //     selector: (row, index) => index + 1,
+  //     sortable: false,
+  //     width: '70px',
+  //   },
+  //   {
+  //     name: 'Branch Name',
+  //     sortable: true,
+  //     selector: row => row?.location_name || '--',
+  //     width: '200px',
+  //   },
+  //   {
+  //     name: 'Remark',
+  //     sortable: true,
+  //     selector: row =>
+  //       row?.remark ? (
+  //         <OverlayTrigger
+  //           placement="top"
+  //           overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.remark}</Tooltip>}
+  //         >
+  //           <span>{row?.remark || '--'}</span>
+  //         </OverlayTrigger>
+  //       ) : (
+  //         '--'
+  //       ),
+  //     width: '300px',
+  //   },
+  //   {
+  //     name: 'Status',
+  //     selector: row => <StatusBadge status={row?.is_active} />,
+  //     sortable: true,
+  //     width: '120px',
+  //   },
+  //   {
+  //     name: 'Created At',
+  //     selector: row => row?.created_at || '--',
+  //     sortable: true,
+  //     width: '175px',
+  //   },
+  //   {
+  //     name: 'Created By',
+  //     selector: row => row?.created_by || '--',
+  //     sortable: true,
+  //     width: '175px',
+  //   },
+
+  //   {
+  //     name: 'Updated At',
+  //     selector: row => row?.updated_at || '--',
+  //     sortable: true,
+  //     width: '175px',
+  //   },
+  //   {
+  //     name: 'Updated By',
+  //     selector: row => row?.updated_by || '--',
+  //     sortable: true,
+  //     width: '175px',
+  //   },
+  // ];
+
   const columns = [
     {
-      name: 'Action',
-      selector: row => (
-        <i
-          className="icofont-edit text-primary cp text-center"
-          onClick={() => setAddEditBranchModal({ type: 'EDIT', data: row, open: true })}
-        />
-      ),
-      sortable: false,
-      width: '70px',
+      accessorKey: 'action', // Use a valid key
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => {
+        return (
+          <i
+            className="icofont-edit text-primary cp text-center"
+            onClick={() =>
+              setAddEditBranchModal({ type: 'EDIT', data: row, open: true })
+            }
+          />
+        );
+      }
     },
     {
-      name: 'Sr. No.',
-      selector: (row, index) => index + 1,
-      sortable: false,
-      width: '70px',
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 70,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableColumnFilter: false
     },
     {
-      name: 'Branch Name',
-      sortable: true,
-      selector: row => row?.location_name || '--',
-      width: '200px',
+      accessorKey: 'location_name',
+      header: 'Branch Name',
+      size: 160,
+      filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
-      name: 'Remark',
-      sortable: true,
-      selector: row =>
-        row?.remark ? (
-          <OverlayTrigger
-            placement="top"
-            overlay={<Tooltip id={`tooltip-${row.id}`}>{row?.remark}</Tooltip>}
+      accessorKey: 'remark',
+      header: 'Remark',
+      size: 160
+    },
+    {
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
           >
-            <span>{row?.remark || '--'}</span>
-          </OverlayTrigger>
-        ) : (
-          '--'
-        ),
-      width: '300px',
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
-      name: 'Status',
-      selector: row => <StatusBadge status={row?.is_active} />,
-      sortable: true,
-      width: '120px',
+      accessorFn: (originalRow) => {
+        return moment(originalRow.created_at).startOf('day').toDate();
+      },
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        cell.row.original.created_at &&
+        moment(cell.row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
     },
     {
-      name: 'Created At',
-      selector: row => row?.created_at || '--',
-      sortable: true,
-      width: '175px',
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
+      header: 'Created By'
     },
     {
-      name: 'Created By',
-      selector: row => row?.created_by || '--',
-      sortable: true,
-      width: '175px',
-    },
-
-    {
-      name: 'Updated At',
-      selector: row => row?.updated_at || '--',
-      sortable: true,
-      width: '175px',
+      accessorFn: (originalRow) =>
+        moment(originalRow.updated_at).startOf('day').toDate(),
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        cell.row?.original?.updated_at?.trim()
+          ? moment(cell.row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Updated By',
-      selector: row => row?.updated_by || '--',
-      sortable: true,
-      width: '175px',
-    },
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By'
+    }
   ];
 
   // Function to handle search button click
@@ -114,7 +217,7 @@ function BranchMaster() {
     setFilteredBranchMasterList(branchMasterList);
   };
 
-  const transformDataForExport = data => {
+  const transformDataForExport = (data) => {
     return data?.map((row, index) => ({
       'Sr No.': index + 1,
       'Branch Name': row?.location_name || '--',
@@ -123,10 +226,20 @@ function BranchMaster() {
       'Created At': row?.created_at || '--',
       'Created By': row?.created_by || '--',
       'Updated At': row?.updated_at || '--',
-      'Updated By': row?.updated_by || '--',
+      'Updated By': row?.updated_by || '--'
     }));
   };
 
+  const exportDataKeys = {
+    location_name: 'Branch Name',
+    remark: 'Remark',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Branch Lists Records'
+  };
   // // life cycle
   useEffect(() => {
     dispatch(getBranchMasterListThunk());
@@ -151,7 +264,9 @@ function BranchMaster() {
             return (
               <button
                 className="btn btn-dark px-5"
-                onClick={() => setAddEditBranchModal({ type: 'ADD', data: '', open: true })}
+                onClick={() =>
+                  setAddEditBranchModal({ type: 'ADD', data: '', open: true })
+                }
               >
                 <i className="icofont-plus me-2 fs-6" />
                 Add Branch
@@ -159,23 +274,36 @@ function BranchMaster() {
             );
           }}
         />
-        <Row className="row_gap_3">
+        {/* <Row className="row_gap_3">
           <Col xs={12} md={7} xxl={8}>
             <input
               type="search"
               name="interview_search"
-              id='branchmaster_branchname'
+              id="branchmaster_branchname"
               value={searchValue}
-              onChange={e => setSearchValue(e?.target?.value)}
+              onChange={(e) => setSearchValue(e?.target?.value)}
               placeholder="Enter branch name..."
               className="form-control"
             />
           </Col>
-          <Col xs={12} md={5} xxl={4} className="d-flex justify-content-sm-end btn_container">
-            <button className="btn btn-warning text-white" type="button" onClick={handleSearch}>
+          <Col
+            xs={12}
+            md={5}
+            xxl={4}
+            className="d-flex justify-content-sm-end btn_container"
+          >
+            <button
+              className="btn btn-warning text-white"
+              type="button"
+              onClick={handleSearch}
+            >
               <i className="icofont-search-1 " /> Search
             </button>
-            <button className="btn btn-info text-white" type="button" onClick={handleReset}>
+            <button
+              className="btn btn-info text-white"
+              type="button"
+              onClick={handleReset}
+            >
               <i className="icofont-refresh text-white" /> Reset
             </button>
             <ExportToExcel
@@ -185,8 +313,8 @@ function BranchMaster() {
               disabled={!filteredBranchMasterList.length}
             />
           </Col>
-        </Row>
-        <DataTable
+        </Row> */}
+        {/* <DataTable
           columns={columns}
           data={filteredBranchMasterList}
           defaultSortField="role_id"
@@ -196,14 +324,26 @@ function BranchMaster() {
           highlightOnHover={true}
           progressPending={isLoading?.getBranchMasterList}
           progressComponent={<TableLoadingSkelton />}
-        />
+        /> */}
+        <div className="card mt-2">
+          {filteredBranchMasterList && (
+            <MaterialTable
+              columns={columns}
+              data={filteredBranchMasterList}
+              isLoading={isLoading?.getBranchMasterList}
+              reset={reset}
+              setReset={setReset}
+              exportDataKeys={exportDataKeys}
+            />
+          )}
+        </div>
       </Container>
 
       <AddEditBranchModal
         show={addEditBranchModal?.open}
         type={addEditBranchModal?.type}
         currentBranchData={addEditBranchModal?.data}
-        close={prev => setAddEditBranchModal({ ...prev, open: false })}
+        close={(prev) => setAddEditBranchModal({ ...prev, open: false })}
       />
     </>
   );

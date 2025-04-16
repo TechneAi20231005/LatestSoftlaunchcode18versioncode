@@ -1,28 +1,16 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-
-// import DataTable from 'react-data-table-component';
-
 import PageHeader from '../../../components/Common/PageHeader';
-// import Alert from '../../../components/Common/Alert';
-
 import { _base } from '../../../settings/constants';
-
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-
 import { useDispatch, useSelector } from 'react-redux';
-
 import {
   exportCustomerMappingData,
   getCustomerMappingData
 } from './Slices/CustomerMappingAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
 
-// import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import { customSearchHandler } from '../../../utils/customFunction';
-// import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { Box } from '@mui/material';
+import moment from 'moment';
 export default function CustomerMappingComponent() {
   const dispatch = useDispatch();
   const location = useLocation();
@@ -37,30 +25,13 @@ export default function CustomerMappingComponent() {
       CustomerMappingSlice.customerMaster.isLoading.customerMappingList
   );
 
-  const exportData = useSelector(
-    (CustomerMappingSlice) => CustomerMappingSlice.customerMaster.exportData
-  );
+  // const exportData = useSelector(
+  //   (CustomerMappingSlice) => CustomerMappingSlice.customerMaster.exportData
+  // );
 
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 32)
   );
-
-  // const [showLoaderModal, setShowLoaderModal] = useState(false);
-
-  // const [searchTerm, setSearchTerm] = useState('');
-  // const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  // const handleSearch = useCallback(() => {
-  //   const filteredList = customSearchHandler(data, searchTerm);
-  //   setFilteredData(filteredList);
-  // }, [data, searchTerm]);
-  // Function to handle reset button click
-  // const handleReset = () => {
-  //   setSearchTerm('');
-  //   setFilteredData(data);
-  // };
 
   const columns = [
     {
@@ -88,62 +59,26 @@ export default function CustomerMappingComponent() {
       size: 120,
       enableColumnFilter: false
     },
-    // // { name: 'Query', selector: row => row.query_type_name, sortable: true,width: "175px" },
-
     {
       accessorFn: (originalRow) => originalRow.query_type_name || '--',
       header: 'Query',
-      size: 180,
-      Cell: ({ row }) => (
-        <>
-          {row?.original?.query_type_name ? (
-            <span className="ms-1">
-              {' '}
-              {row?.original?.query_type_name &&
-              row?.original?.query_type_name.length < 20
-                ? row?.original?.query_type_name
-                : row?.original?.query_type_name.substring(0, 20) + '....'}
-            </span>
-          ) : (
-            '--'
-          )}
-        </>
-      )
+      size: 180
     },
     {
       accessorFn: (originalRow) => originalRow.template_name || '--',
       header: 'Template',
-      size: 200,
-      Cell: ({ row }) => (
-        <Box>
-          {row?.original?.template_name ? row?.original?.template_name : '--'}
-        </Box>
-      )
+      size: 200
     },
     {
       accessorFn: (originalRow) => originalRow.dynamic_form_name || '--',
       header: 'Form',
-      size: 180,
-      Cell: ({ row }) => (
-        <Box>
-          {row?.original?.dynamic_form_name
-            ? row?.original?.dynamic_form_name
-            : '--'}
-        </Box>
-      )
+      size: 180
     },
 
     {
       accessorFn: (originalRow) => originalRow.department_name || '--',
       header: 'Department',
-      size: 180,
-      Cell: ({ row }) => (
-        <Box>
-          {row?.original?.department_name
-            ? row?.original?.department_name
-            : '--'}
-        </Box>
-      )
+      size: 180
     },
     { accessorKey: 'priority', header: 'Priority', size: 180 },
     {
@@ -175,10 +110,10 @@ export default function CustomerMappingComponent() {
       accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
       header: 'Created At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row?.original?.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
@@ -189,10 +124,10 @@ export default function CustomerMappingComponent() {
       accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
       header: 'Updated At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
@@ -234,12 +169,6 @@ export default function CustomerMappingComponent() {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
-  // useEffect(() => {
-  //   handleSearch();
-  // }, [searchTerm, handleSearch]);
-  // useEffect(() => {
-  //   setFilteredData(data);
-  // }, [data]);
 
   return (
     <div className="container-xxl">
@@ -263,16 +192,6 @@ export default function CustomerMappingComponent() {
           );
         }}
       />
-      {/* <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by...."
-        exportFileName="Customer Mapping Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      /> */}
 
       <div className="card mt-2">
         {data && (
@@ -282,17 +201,6 @@ export default function CustomerMappingComponent() {
             data={data}
             columns={columns}
           />
-          // <DataTable
-          //   columns={columns}
-          //   data={filteredData}
-          //   defaultSortField="title"
-          //   pagination
-          //   selectableRows={false}
-          //   className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-          //   highlightOnHover={true}
-          //   progressPending={isLoading}
-          //   progressComponent={<TableLoadingSkelton />}
-          // />
         )}
       </div>
     </div>

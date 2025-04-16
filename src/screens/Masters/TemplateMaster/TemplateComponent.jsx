@@ -5,14 +5,13 @@ import { _base } from '../../../settings/constants';
 import TemplateService from '../../../services/MastersService/TemplateService';
 import PageHeader from '../../../components/Common/PageHeader';
 
-import Alert from '../../../components/Common/Alert';
-
 import { useDispatch, useSelector } from 'react-redux';
-import { exportTempateData, templateData } from './TemplateComponetAction';
+import { templateData } from './TemplateComponetAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
 
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { Box } from '@mui/material';
+import { errorHandler } from '../../../utils';
+import moment from 'moment';
 
 function TemplateComponent() {
   const location = useLocation();
@@ -20,19 +19,16 @@ function TemplateComponent() {
   const templatedata = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.templateData
   );
+
   const isLoading = useSelector(
     (TemplateComponetSlice) =>
       TemplateComponetSlice.tempateMaster.isLoading.templateDataList
   );
 
-  const notify = useSelector(
-    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
-  );
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 15)
   );
 
-  const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
 
   const columns = [
@@ -97,10 +93,10 @@ function TemplateComponent() {
       accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
       header: 'Created At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        `${cell.getValue().toLocaleDateString()} ${cell
-          .getValue()
-          .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row?.original?.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
       accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
@@ -111,11 +107,9 @@ function TemplateComponent() {
       accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
       header: 'Updated At',
       filterVariant: 'date-range',
-      Cell: ({ cell }) =>
-        cell?.row?.original?.updated_at
-          ? `${cell.getValue().toLocaleDateString()} ${cell
-              .getValue()
-              .toLocaleTimeString()}`
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
           : '--'
     },
     {
@@ -164,7 +158,6 @@ function TemplateComponent() {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader
         headerTitle="Template Master"
         renderRight={() => {
@@ -203,20 +196,23 @@ function TemplateDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new TemplateService().getTemplate().then((res) => {
-      if (res.status === 200) {
-        const data = res.data.data;
-        for (const key in data) {
-          tempData.push({
-            id: data[key].id,
-            template_name: data[key].template_name,
-            created_at: data[key].created_at,
-            created_by: data[key].created_by
-          });
+    new TemplateService()
+      .getTemplate()
+      .then((res) => {
+        if (res?.status === 200) {
+          const data = res?.data?.data;
+          for (const key in data) {
+            tempData.push({
+              id: data[key].id,
+              template_name: data[key].template_name,
+              created_at: data[key].created_at,
+              created_by: data[key].created_by
+            });
+          }
+          setData(tempData);
         }
-        setData(tempData);
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   }, []);
 
   return (

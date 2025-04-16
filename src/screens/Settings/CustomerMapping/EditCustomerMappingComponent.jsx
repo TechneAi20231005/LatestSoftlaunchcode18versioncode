@@ -749,6 +749,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             <Field name="customer_type_id">
                               {({ field, form }) => (
                                 <Select
+                                  classNamePrefix="react-select"
                                   id="customer_type_id"
                                   name="customer_type_id"
                                   options={customerTypeDropdown}
@@ -808,6 +809,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             <Field name="query_type_id">
                               {({ field, form }) => (
                                 <Select
+                                  classNamePrefix="react-select"
                                   options={queryTypeDropdown}
                                   id="query_type_id"
                                   name="query_type_id"
@@ -848,6 +850,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             <Field name="dynamic_form_id">
                               {({ field, form }) => (
                                 <Select
+                                  classNamePrefix="react-select"
                                   id="dynamic_form_id"
                                   name="dynamic_form_id"
                                   options={dynamicFormDropdown}
@@ -879,6 +882,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                               <Field name="dynamic_form_id">
                                 {({ field, form }) => (
                                   <Select
+                                    classNamePrefix="react-select"
                                     id="dynamic_form_id"
                                     name="dynamic_form_id"
                                     options={dynamicFormDropdown}
@@ -916,6 +920,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                             <Field name="template_id">
                               {({ field, form }) => (
                                 <Select
+                                  classNamePrefix="react-select"
                                   options={templateDropdown}
                                   id="template_id"
                                   name="template_id"
@@ -953,7 +958,10 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                         </label>
                         <div className="col-sm-4">
                           {data?.priority && (
-                            <Field name="priority">
+                            <Field
+                              name="priority"
+                              classNamePrefix="react-select"
+                            >
                               {({ field, form }) => {
                                 const options = [
                                   { value: '', label: 'Select Priority' },
@@ -969,6 +977,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                   : null;
                                 return (
                                   <Select
+                                    classNamePrefix="react-select"
                                     key={data.priority}
                                     id="priority"
                                     name="priority"
@@ -1127,7 +1136,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                           </b>
                         </label>
                         <div className="col-sm-4">
-                          <Field name="approach">
+                          <Field classNamePrefix="react-select" name="approach">
                             {({ field, form }) => {
                               const options = [
                                 { value: '', label: 'Select Approach' },
@@ -1149,6 +1158,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
                               return (
                                 <Select
+                                  classNamePrefix="react-select"
                                   key={data.approach}
                                   id="approach"
                                   name="approach"
@@ -1204,6 +1214,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                               <Field name="department_id">
                                 {({ field, form }) => (
                                   <Select
+                                    classNamePrefix="react-select"
                                     id="department_id"
                                     name="department_id"
                                     options={departmentDropdown}
@@ -1259,6 +1270,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
                                   <Field name="user_id">
                                     {({ field, form }) => (
                                       <Select
+                                        classNamePrefix="react-select"
                                         id="user_id"
                                         name="user_id"
                                         options={userDropdown}
