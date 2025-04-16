@@ -6,6 +6,7 @@ import { _base } from '../../../settings/constants';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, MenuItem, Button } from '@mui/material';
 import UnPassModal from './UnPassModal';
+import ConfirmationModal from './confirmationModal';
 
 const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
   // Edit Button
@@ -41,6 +42,14 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
     modalData: '',
     modalHeader: ''
   });
+  const [confirmationModal, setConfirmationModal] = useState({
+    showModals: false,
+    modalData: '',
+    modalsHeader: ''
+  });
+  const handleConfirmationModal = (data) => {
+    setConfirmationModal(data);
+  };
 
   const menuBtns = [
     {
@@ -222,6 +231,26 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
           return false;
         }
       }
+    },
+    {
+      id: 7,
+      label: 'Confirm',
+      className: ' btn btn-sm  btn-secondary text-white',
+      redirectLink: '',
+      type: type,
+      conditions: (type) => {
+        if (type === 'CreatedByMe') {
+          return true;
+        } else if (type === 'AssignToMe') {
+          return false;
+        } else if (type === 'YourTask') {
+          return false;
+        } else if (type === 'DepartmentWise') {
+          return false;
+        } else if (type === 'UnPassed') {
+          return false;
+        }
+      }
     }
   ];
   useEffect(() => {
@@ -239,28 +268,17 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
       >
         <i className="icofont-listine-dots"></i>
       </Button>
-
-      {/* MUI Menu Component */}
       <Menu
         id="basic-menu"
         anchorEl={anchorEl}
         open={open}
         onClose={handleClosed}
         sx={{ '& .MuiPaper-root': { width: '140px' } }}
-        // MenuListProps={{
-        //   'aria-labelledby': 'basic-button',
-        // }}
       >
         {/* {menuBtns.filter((btn) => btn.conditions(type)).length === 0 && (
           <MenuItem disabled>No actions available</MenuItem>
         )} */}
         {menuBtns.map((menuBtn, idx) => {
-          // console.log(
-          //   'menuBtn.conditions(menuBtn.type)',
-          //   'menuBtn.label :',
-          //   menuBtn.label,
-          //   menuBtn.conditions(menuBtn.type)
-          // );
           return (
             menuBtn.conditions(menuBtn.type) && (
               <MenuItem key={idx} onClick={handleClosed}>
@@ -275,6 +293,20 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
                         modalData: data,
                         modalHeader: 'Enter Remark',
                         status: menuBtn.status
+                      })
+                    }
+                  >
+                    {menuBtn.icon} {menuBtn.label}
+                  </button>
+                ) : type === 'CreatedByMe' ? (
+                  <button
+                    className={menuBtn.className}
+                    style={{ width: '100%' }}
+                    onClick={() =>
+                      handleConfirmationModal({
+                        showModal: true,
+                        modalData: data,
+                        modalHeader: 'Solve Ticket'
                       })
                     }
                   >
@@ -304,35 +336,14 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
           setColumnFilters={setColumnFilters}
         />
       )}
-      {/* <Dropdown className="d-inline-flex m-1">
-        <Dropdown.Toggle
-          as="button"
-          variant=""
-          className="btn btn-primary text-white"
-        >
-          <i className="icofont-listine-dots"></i>
-        </Dropdown.Toggle>
-        <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-          {menuBtns.map((menuBtn, idx) => {
-            return (
-              <RenderIf render={menuBtn.conditions(menuBtn.type)}>
-                <li>
-                  <Link
-                    to={menuBtn.redirectLink}
-                    className={`d-flex justify-content-center align-items-center ${menuBtn.className}`}
-                    style={{ width: '100%', zIndex: 100 }}
-                  >
-                    <span className="d-flex align-items-center gap-2">
-                      {menuBtn?.icon}
-                      {menuBtn.label}
-                    </span>
-                  </Link>
-                </li>
-              </RenderIf>
-            );
-          })}
-        </Dropdown.Menu>
-      </Dropdown> */}
+      {confirmationModal.showModal && (
+        <ConfirmationModal
+          confirmationModal={confirmationModal}
+          handleConfirmationModal={handleConfirmationModal}
+          setPagination={setPagination}
+          setColumnFilters={setColumnFilters}
+        />
+      )}
     </>
   );
 };
