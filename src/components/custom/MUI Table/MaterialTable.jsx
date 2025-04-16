@@ -255,6 +255,7 @@ function MaterialTable({
             showColumnFilters
           }}
           muiTableHeadCellProps={({ column }) => ({
+            title: column?.columnDef?.header,
             onClick: (event) => {
               const isFilterIconClicked = event?.target?.innerText
                 ?.toLowerCase()
