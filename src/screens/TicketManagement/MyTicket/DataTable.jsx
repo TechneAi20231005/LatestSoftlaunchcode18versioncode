@@ -21,14 +21,23 @@ const DataTableCustom = React.memo(
     setColumnFilters,
     columnFilters,
     reset = false,
-    setReset = () => {},
+    setReset = () => {}
   }) => {
+    let tabType = type;
+    const actionCell = ({ row }) => (
+      <MyTicketDropdown
+        setColumnFilters={setColumnFilters}
+        setPagination={setPagination}
+        type={tabType}
+        data={row.original}
+      />
+    );
     const columns = [
       {
         accessorKey: 'action',
         header: 'Action',
         size: 120,
-        Cell: ({ row }) => <MyTicketDropdown setColumnFilters={setColumnFilters} setPagination={setPagination} type={type} data={row.original} />,
+        Cell: actionCell,
         enableColumnOrdering: false,
         enableGrouping: false,
         enableSorting: false,
@@ -50,12 +59,12 @@ const DataTableCustom = React.memo(
         accessorKey: 'description',
         header: 'Description',
         enableColumnFilter: false,
-        size: 250,
+        size: 250
       },
       {
         accessorKey: 'ticket_date',
         header: 'Ticket Date',
-        filterVariant: 'date-range',
+        filterVariant: 'date-range'
       },
       {
         accessorKey: 'expected_solve_date',
@@ -90,13 +99,13 @@ const DataTableCustom = React.memo(
         header: 'Type',
         enableColumnFilter: false
       },
-      ...(type === "CreatedByMe"
+      ...(type === 'CreatedByMe'
         ? [
             {
               accessorFn: (originalRows) => originalRows?.passed_status || '--',
               header: 'Passed Status',
               enableColumnFilter: false,
-              size: 205,
+              size: 205
             }
           ]
         : []),
@@ -105,7 +114,7 @@ const DataTableCustom = React.memo(
         header: 'Status',
         filterVariant: 'multi-select',
         filterSelectOptions: allStatusData?.selectData,
-        size: 150,
+        size: 150
       },
       {
         accessorFn: (originalRows) =>
@@ -113,7 +122,7 @@ const DataTableCustom = React.memo(
         header: 'Assign To Dept',
         size: 220,
         filterVariant: 'multi-select',
-        filterSelectOptions: allDepartmentData?.selectData,
+        filterSelectOptions: allDepartmentData?.selectData
       },
       {
         accessorFn: (originalRows) =>
@@ -123,7 +132,7 @@ const DataTableCustom = React.memo(
         header: 'Assigned To',
         size: 220,
         filterVariant: 'multi-select',
-        filterSelectOptions: allUsersData?.selectData,
+        filterSelectOptions: allUsersData?.selectData
       },
       {
         accessorFn: (originalRows) =>
@@ -139,7 +148,7 @@ const DataTableCustom = React.memo(
               accessorFn: (row) => row.ticket_solved_date || '--',
               header: 'Solved Date',
               size: 190,
-              enableColumnFilter: false,
+              enableColumnFilter: false
             },
             {
               accessorFn: (originalRows) =>
@@ -147,13 +156,11 @@ const DataTableCustom = React.memo(
                   originalRows?.ticket_solved_by?.last_name || '--'
                 }`,
               header: 'Solved By',
-              enableColumnFilter: false,
+              enableColumnFilter: false
             }
           ]
         : [])
     ];
-
-
 
     return (
       <ServerMaterial

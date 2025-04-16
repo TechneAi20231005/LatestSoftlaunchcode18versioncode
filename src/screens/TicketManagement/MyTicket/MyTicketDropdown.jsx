@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { RenderIf } from '../../../utils';
@@ -7,11 +7,14 @@ import { Link, useLocation } from 'react-router-dom';
 import { Menu, MenuItem, Button } from '@mui/material';
 import UnPassModal from './UnPassModal';
 
-const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilters }) => {
+const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
   // Edit Button
-  const currentUser = localStorage.getItem('id');
+
+  const currentUser = Number(localStorage.getItem('id'));
   const ticketCreatedBy = Number(data.created_by?.id) === currentUser;
+
   const tickedtAssignedto = data.assign_to_user_id === currentUser;
+
   const checkNotSolvedAndNotReject =
     data.status_name !== 'Solved' && data.passed_status !== 'REJECT';
   const userAccountFor = localStorage.getItem('account_for');
@@ -19,29 +22,25 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
   //   (item) => item.user_id === currentUser
   // );
   const isUserProjectOwner = false;
-  // console.log('My ticket hamburger rendered');
-  console.log(type,"type")
 
   const [anchorEl, setAnchorEl] = React.useState(null);
-   const open = Boolean(anchorEl);
-   const handleClick = (event) => {
-     setAnchorEl(event.currentTarget);
-   };
-   const handleClosed = () => {
-     setAnchorEl(null);
-   };
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClosed = () => {
+    setAnchorEl(null);
+  };
 
-   const handleRemarkModal = (data) => {
+  const handleRemarkModal = (data) => {
     setRemarkModal(data);
   };
 
-     const [remarkModal, setRemarkModal] = useState({
-       showModal: false,
-       modalData: '',
-       modalHeader: ''
-     });
-
-
+  const [remarkModal, setRemarkModal] = useState({
+    showModal: false,
+    modalData: '',
+    modalHeader: ''
+  });
 
   const menuBtns = [
     {
@@ -55,18 +54,18 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
       conditions: (type) => {
         if (type === 'AssignToMe') {
           return (
-            currentUser === ticketCreatedBy ||
-            currentUser === tickedtAssignedto ||
+            ticketCreatedBy ||
+            tickedtAssignedto ||
             (checkNotSolvedAndNotReject && userAccountFor === 'SELF') ||
             isUserProjectOwner
           );
         } else if (type === 'YourTask') {
-          return (
-            currentUser === ticketCreatedBy || currentUser === tickedtAssignedto
-          );
+          return ticketCreatedBy || tickedtAssignedto;
         } else if (type === 'DepartmentWise') {
           return true;
         } else if (type === 'CreatedByMe') {
+          return false;
+        } else if (type === 'UnPassed') {
           return false;
         }
       }
@@ -88,7 +87,7 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
           return false;
         } else if (type === 'CreatedByMe') {
           return true;
-        }else if (type === 'UnPassed') {
+        } else if (type === 'UnPassed') {
           return true;
         }
       }
@@ -104,14 +103,14 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
       conditions: (type) => {
         if (type === 'AssignToMe') {
           return (
-            ((ticketCreatedBy !== currentUser && data?.basket_configured?.length > 0) ||
-              (tickedtAssignedto === currentUser &&
-                data?.basket_configured?.length > 0)) &&
+            ((data?.created_by?.id !== currentUser &&
+              data?.basket_configured?.length > 0) ||
+              (tickedtAssignedto && data?.basket_configured?.length > 0)) &&
             userAccountFor === 'SELF'
           );
         } else if (type === 'YourTask') {
           return (
-            ticketCreatedBy !== currentUser &&
+            data?.created_by?.id !== currentUser &&
             userAccountFor === 'SELF' &&
             data?.basket_configured?.length > 0
           );
@@ -119,10 +118,12 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
           return true;
         } else if (type === 'CreatedByMe') {
           return (
-            ticketCreatedBy !== currentUser &&
+            data?.created_by?.id !== currentUser &&
             userAccountFor === 'SELF' &&
             data?.basket_configured?.length > 0
           );
+        } else if (type === 'UnPassed') {
+          return false;
         }
       }
     },
@@ -137,10 +138,10 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
       conditions: (type) => {
         if (type === 'AssignToMe') {
           return (
-            ((ticketCreatedBy !== currentUser &&
-              data?.basket_configured?.length === 0) ||
-              (tickedtAssignedto === currentUser &&
-                data?.basket_configured?.length === 0)) &&
+            ((data?.created_by?.id !== currentUser &&
+              Number(data?.basket_configured?.length === 0)) ||
+              (tickedtAssignedto &&
+                Number(data?.basket_configured?.length) === 0)) &&
             userAccountFor === 'SELF'
           );
         } else if (type === 'YourTask') {
@@ -148,6 +149,8 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
         } else if (type === 'DepartmentWise') {
           return false;
         } else if (type === 'CreatedByMe') {
+          return false;
+        } else if (type === 'UnPassed') {
           return false;
         }
       }
@@ -169,47 +172,67 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
           return true;
         } else if (type === 'CreatedByMe') {
           return true;
+        } else if (type === 'UnPassed') {
+          return false;
         }
       }
     },
-     {
+    {
       id: 5,
       label: 'Pass',
-     className:"btn btn-success text-white",
-      redirectLink: '' ,
+      className: 'btn btn-success text-white',
+      redirectLink: '',
       icon: <i className="icofont-checked"></i>,
       type: type,
       isModal: true,
       status: 'PASS',
       conditions: (type) => {
-        if(type === "UnPassed"){
+        if (type === 'UnPassed') {
           return true;
-      }else return false;
-    }
+        } else if (type === 'AssignToMe') {
+          return false;
+        } else if (type === 'YourTask') {
+          return false;
+        } else if (type === 'DepartmentWise') {
+          return false;
+        } else if (type === 'CreatedByMe') {
+          return false;
+        }
+      }
     },
     {
       id: 6,
       label: 'Reject',
-     className:"btn btn-danger  text-white",
+      className: 'btn btn-danger  text-white',
       redirectLink: '',
-      icon:   <i className="icofont-close-squared-alt"></i>,
+      icon: <i className="icofont-close-squared-alt"></i>,
       type: type,
       status: 'Reject',
       isModal: true,
       conditions: (type) => {
-        if(type === "UnPassed"){
+        if (type === 'UnPassed') {
           return true;
-      }else return false;
+        } else if (type === 'AssignToMe') {
+          return false;
+        } else if (type === 'YourTask') {
+          return false;
+        } else if (type === 'DepartmentWise') {
+          return false;
+        } else if (type === 'CreatedByMe') {
+          return false;
+        }
+      }
     }
-    },
-
   ];
+  useEffect(() => {
+    console.log('Type updated:', type);
+  }, [type]);
 
   return (
     <>
-   <Button
+      <Button
         id="basic-button"
-        style={{ height: "30px", width: "35px" }}
+        style={{ height: '30px', width: '35px' }}
         className="btn btn-primary text-white"
         aria-haspopup="true"
         onClick={handleClick}
@@ -223,57 +246,64 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
         anchorEl={anchorEl}
         open={open}
         onClose={handleClosed}
-        sx={{'& .MuiPaper-root': {width: '140px'}}}
+        sx={{ '& .MuiPaper-root': { width: '140px' } }}
         // MenuListProps={{
         //   'aria-labelledby': 'basic-button',
         // }}
       >
-        {menuBtns.filter((btn) => btn.conditions(type)).length === 0 && (
-  <MenuItem disabled>No actions available</MenuItem>
-)}
-        {menuBtns.map((menuBtn, idx) => (
-          menuBtn.conditions(menuBtn.type) && (
-            <MenuItem key={idx} onClick={handleClosed}>
-              {
-                 type === "UnPassed" ?
-                <button
-                  className={menuBtn.className}
-                  style={{ width: '100%', }}
-                  disabled={data?.passed_status !== "UNPASS"}
-                  onClick={() =>
-                    handleRemarkModal({
-                      showModal: true,
-                      modalData: data,
-                      modalHeader: 'Enter Remark',
-                      status: menuBtn.status
-                    })
-                  }
-                >
-                  {menuBtn.icon} {menuBtn.label}
-                </button>
-                :
-                <Link
-                to={menuBtn.redirectLink}
-                className={menuBtn.className}
-                style={{  width: '100%' }}
-              >
-                {menuBtn.icon}
-                {menuBtn.label}
-              </Link>
-              }
-            </MenuItem>
-          )
-        ))}
+        {/* {menuBtns.filter((btn) => btn.conditions(type)).length === 0 && (
+          <MenuItem disabled>No actions available</MenuItem>
+        )} */}
+        {menuBtns.map((menuBtn, idx) => {
+          // console.log(
+          //   'menuBtn.conditions(menuBtn.type)',
+          //   'menuBtn.label :',
+          //   menuBtn.label,
+          //   menuBtn.conditions(menuBtn.type)
+          // );
+          return (
+            menuBtn.conditions(menuBtn.type) && (
+              <MenuItem key={idx} onClick={handleClosed}>
+                {type === 'UnPassed' ? (
+                  <button
+                    className={menuBtn.className}
+                    style={{ width: '100%' }}
+                    disabled={data?.passed_status !== 'UNPASS'}
+                    onClick={() =>
+                      handleRemarkModal({
+                        showModal: true,
+                        modalData: data,
+                        modalHeader: 'Enter Remark',
+                        status: menuBtn.status
+                      })
+                    }
+                  >
+                    {menuBtn.icon} {menuBtn.label}
+                  </button>
+                ) : (
+                  <Link
+                    to={menuBtn.redirectLink}
+                    className={menuBtn.className}
+                    style={{ width: '100%' }}
+                  >
+                    {menuBtn.icon}
+                    {menuBtn.label}
+                  </Link>
+                )}
+              </MenuItem>
+            )
+          );
+        })}
       </Menu>
 
-      {
-              remarkModal.showModal && <UnPassModal
-              remarkModal={remarkModal}
-              handleRemarkModal={handleRemarkModal}
-              setPagination={setPagination}
-              setColumnFilters={setColumnFilters}
-            />
-            }
+      {remarkModal.showModal && (
+        <UnPassModal
+          remarkModal={remarkModal}
+          handleRemarkModal={handleRemarkModal}
+          setPagination={setPagination}
+          setColumnFilters={setColumnFilters}
+        />
+      )}
       {/* <Dropdown className="d-inline-flex m-1">
         <Dropdown.Toggle
           as="button"
@@ -305,6 +335,6 @@ const MyTicketDropdown = React.memo(({ type, data, setPagination, setColumnFilte
       </Dropdown> */}
     </>
   );
-});
+};
 
 export default MyTicketDropdown;
