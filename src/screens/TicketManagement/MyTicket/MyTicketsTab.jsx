@@ -93,39 +93,41 @@ const MyTicketsTab = () => {
     await Promise.all(fetchPromises);
   };
 
-  const tabList = useMemo(
-    [
-      {
-        id: 2,
-        name: 'AssignToMe',
-        label: 'Assign To Me',
-        color: 'primary',
-        user: user
-      },
-      {
-        id: 3,
-        name: 'CreatedByMe',
-        label: 'Created By Me',
-        color: 'secondary'
-      },
-      {
-        id: 4,
-        name: 'DepartmentWise',
-        label: 'Department Wise',
-        color: 'success',
-        user: user
-      },
-      {
-        id: 5,
-        name: 'YourTask',
-        label: 'Your Task',
-        color: 'error',
-        user: user
-      },
-      { id: 6, name: 'UnPassed', label: 'UnPassed', color: 'warning' }
-    ],
-    [allTicketsData, user]
-  );
+  const tabList = useMemo(() => [
+    {
+      id: 2,
+      name: 'AssignToMe',
+      label: 'Assign To Me',
+      color: 'primary',
+      user: user
+    },
+    {
+      id: 3,
+      name: 'CreatedByMe',
+      label: 'Created By Me',
+      color: 'secondary'
+    },
+    {
+      id: 4,
+      name: 'DepartmentWise',
+      label: 'Department Wise',
+      color: 'success',
+      user: user
+    },
+    {
+      id: 5,
+      name: 'YourTask',
+      label: 'Your Task',
+      color: 'error',
+      user: user
+    },
+    {
+      id: 6,
+      name: 'UnPassed',
+      label: 'UnPassed',
+      color: 'warning'
+    }
+  ], [allTicketsData, user]);
 
   const handleTabChange = async (event, newValue) => {
     setActiveTab(newValue);
