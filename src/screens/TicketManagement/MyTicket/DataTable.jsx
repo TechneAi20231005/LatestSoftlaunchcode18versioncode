@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MyTicketDropdown from './MyTicketDropdown';
 import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import ServerMaterial from '../../../components/custom/MUI Table/ServerMaterial';
+import DescriptionModal from './DescriptionModal';
 
 const DataTableCustom = React.memo(
   ({
@@ -24,6 +25,15 @@ const DataTableCustom = React.memo(
     setReset = () => {}
   }) => {
     let tabType = type;
+    const [modal, setModal] = useState({
+      showModal: false,
+      modalData: '',
+      modalHeader: ''
+    });
+
+    const handleModal = (data) => {
+      setModal(data);
+    };
     const actionCell = ({ row }) => (
       <MyTicketDropdown
         setColumnFilters={setColumnFilters}
@@ -56,7 +66,20 @@ const DataTableCustom = React.memo(
         )
       },
       {
-        accessorKey: 'description',
+        accessorFn: (originalRows) =>
+          (
+            <span
+              onClick={() =>
+                handleModal({
+                  showModal: true,
+                  modalData: originalRows,
+                  modalHeader: ''
+                })
+              }
+            >
+              {originalRows?.description}
+            </span>
+          ) || '--',
         header: 'Description',
         enableColumnFilter: false,
         size: 250
@@ -163,24 +186,29 @@ const DataTableCustom = React.memo(
     ];
 
     return (
-      <ServerMaterial
-        columns={columns}
-        data={allTicketsData || []}
-        isLoading={isLoading}
-        pagination={pagination}
-        setPagination={setPagination}
-        totalRows={totalRows}
-        manualPagination={true}
-        manualFiltering={true}
-        setAllTicketsData={setAllTicketsData}
-        activeTab={activeTab}
-        setTotalRows={setTotalRows}
-        setColumnFilters={setColumnFilters}
-        columnFilters={columnFilters}
-        reset={reset}
-        setReset={setReset}
-        enableRowSelection={type === 'UnPassed'}
-      />
+      <React.Fragment>
+        <ServerMaterial
+          columns={columns}
+          data={allTicketsData || []}
+          isLoading={isLoading}
+          pagination={pagination}
+          setPagination={setPagination}
+          totalRows={totalRows}
+          manualPagination={true}
+          manualFiltering={true}
+          setAllTicketsData={setAllTicketsData}
+          activeTab={activeTab}
+          setTotalRows={setTotalRows}
+          setColumnFilters={setColumnFilters}
+          columnFilters={columnFilters}
+          reset={reset}
+          setReset={setReset}
+          enableRowSelection={type === 'UnPassed'}
+        />
+        {modal.showModal && (
+          <DescriptionModal modal={modal} handleModal={handleModal} />
+        )}
+      </React.Fragment>
     );
   }
 );
