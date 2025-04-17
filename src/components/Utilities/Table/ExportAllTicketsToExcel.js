@@ -104,26 +104,31 @@ export const ExportAllTicketsToExcel = ({
 
       if (dataToDownload.length > 0) {
         const tempExport = dataToDownload.map((item) => ({
-          TICKET_ID: item.ticket_id,
-          TICKET_DATE: item.ticket_date,
-          EXPECTED_SOLVE_DATE: item.expected_solve_date,
-          ASSIGN_TO_DEPARTMENT: item.assign_to_department?.department,
-          ASSIGN_TO_USER: item.assign_to_user,
-          QUERY_TYPE_NAME: item?.query_type?.query_type_name,
-          PRIORITY: item.priority,
-          DESCRIPTION: item.description,
-          CREATED_BY: item.created_by_name,
+          TICKET_ID: item.ticket_id || '--',
+          TICKET_DATE: item.ticket_date || '--',
+          EXPECTED_SOLVE_DATE: item.expected_solve_date || '--',
+          ASSIGN_TO_DEPARTMENT: item.assign_to_department?.department || '--',
+          ASSIGN_TO_USER: `${item?.assignee?.first_name || '-'} ${
+            item?.assignee?.last_name || '-'
+          }`,
+          QUERY_TYPE_NAME: item?.query_type?.query_type_name || '--',
+          PRIORITY: item.priority || '--',
+          DESCRIPTION: item.description || '--',
+          CREATED_BY: `${item?.created_by?.first_name || '-'} ${
+            item?.created_by?.last_name || '-'
+          }`,
           Confirmation_Required: item.confirmation_required ? 'YES' : 'NO',
-          Ref_id: item.cuid,
-          from_department_name: item.from_department_name,
-          module_name: item?.module?.module_name,
-          Passed_Status: item.passed_status,
-          Passed_Status_Changed_At: item.passed_status_changed_at,
-          Passed_Status_Changed_By_Name: item.passed_status_changed_by_name,
-          Passed_Status_Remark: item.passed_status_remark,
-          project_name: item?.project?.project_name,
-          Status_name: item?.status?.status,
-          sub_module_name: item?.sub_module?.sub_module_name
+          Ref_id: item.cuid || '--',
+          from_department_name: item.from_department_name || '--',
+          module_name: item?.module?.module_name || '--',
+          Passed_Status: item.passed_status || '--',
+          Passed_Status_Changed_At: item.passed_status_changed_at || '--',
+          Passed_Status_Changed_By_Name:
+            item.passed_status_changed_by_name || '--',
+          Passed_Status_Remark: item.passed_status_remark || '--',
+          project_name: item?.project?.project_name || '--',
+          Status_name: item?.status?.status || '--',
+          sub_module_name: item?.sub_module?.sub_module_name || '--'
         }));
 
         const ws = XLSX.utils.json_to_sheet(tempExport);
