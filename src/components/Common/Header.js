@@ -255,7 +255,7 @@ export default function Header() {
             {/* profile and modal */}
             <Dropdown
               className="dropdown-animation dropdown d-flex align-items-center"
-              style={{ zIndex: 100 }}
+              style={{ zIndex: 99999 }}
             >
               <p className="mb-0 text-end line-height-sm fw-bolder me-2 d-none d-sm-block">
                 {`${localStorage.getItem('first_name')} ${localStorage.getItem(
@@ -294,6 +294,7 @@ export default function Header() {
                         defaultValue={tenantDropdown.filter(
                           (d) => d.value == tenantId
                         )}
+                        classNamePrefix="react-select"
                         className="mb-2"
                       />
                     )}
