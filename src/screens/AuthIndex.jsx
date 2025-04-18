@@ -13,14 +13,12 @@ class AuthIndex extends React.Component {
   render() {
     const shouldRedirectToMain =
       sessionStorage.length > 0 || localStorage.length > 0;
-    console.log('shouldRedirectToMain', shouldRedirectToMain);
     return (
-      <>
         <>
-          <div className="main p-2 py-3 p-xl-5 ">
-            <div className="body d-flex p-0 p-xl-5">
+          <div className="main p-2 py-3  p-xl-5">
+            <div className="body d-flex p-0">
               <div className="container-xxl">
-                <div className="row g-0">
+                <div className="row g-0 pt-4">
                   <LeftSide />
                   <Routes>
                     <Route path="/*" element={<SignIn />} />
@@ -46,7 +44,6 @@ class AuthIndex extends React.Component {
             </div>
           </div>
         </>
-      </>
     );
   }
 }
