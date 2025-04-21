@@ -2115,7 +2115,8 @@ export default function MyTicketComponent() {
                   Passed_Status_Remark: temp[key].passed_status_remark,
                   project_name: temp[key]?.project?.project_name || '--',
                   // Status_name: temp[key].status_name,
-                  sub_module_name: temp[key]?.submodule?.sub_module_name || '--',
+                  sub_module_name:
+                    temp[key]?.submodule?.sub_module_name || '--',
                   Template_id: temp[key].template?.template_name,
                   Tenant_id: temp[key].tenant_id,
                   ticket_solved_date: temp[key].ticket_solved_date,
@@ -2227,7 +2228,7 @@ export default function MyTicketComponent() {
         statusValue?.length > 0 ? statusValue?.map((user) => user.value) : [],
       user_id:
         entryUser?.length > 0 ? entryUser?.map((user) => user.value) : [],
-      ticket_id: ticket,
+      ticket_id: ticket
       // filter: 'filter'
     };
 
@@ -2375,7 +2376,7 @@ export default function MyTicketComponent() {
           user_id:
             entryUser?.length > 0 ? entryUser?.map((user) => user.value) : [],
           ticket_id: ticket,
-          export: 'export',
+          export: 'export'
           // filter: 'filter'
         };
         const res = await new ReportService().getTicketReport(payload);
@@ -2506,7 +2507,11 @@ export default function MyTicketComponent() {
           setCreatedByMeData(res.data.data);
 
           setCreatedByMe(
-            res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
+            Array.isArray(res?.data?.data)
+              ? res?.data?.data?.data?.filter(
+                  (d) => d.passed_status !== 'REJECT'
+                )
+              : []
           );
         }
       } catch (error) {
@@ -2554,8 +2559,10 @@ export default function MyTicketComponent() {
             // res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
           }
         }
+        setIsLoading(false);
       } catch (error) {
         errorHandler(error);
+        setIsLoading(false);
       }
     } else if (k === 'unpassed_columns') {
       const forms = {
