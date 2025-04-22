@@ -26,6 +26,7 @@ import { errorHandler } from '../../utils';
 import CustomeLoaderDashboard, {
   ChartSkeleton
 } from '../../components/custom/loader/CustomeLoaderDashboard';
+import { Spinner } from 'react-bootstrap';
 
 export default function HrDashboard(props) {
   const history = useNavigate();
@@ -150,7 +151,10 @@ export default function HrDashboard(props) {
       });
   };
 
-  const loadNotifcation = () => {
+  const loadNotifcation = (type) => {
+    if(type?.toLowerCase() === 'init'){
+      setIsLoading(true);
+    }
     getNotification()
       .then((res) => {
         if (res.status === 200) {
@@ -185,6 +189,9 @@ export default function HrDashboard(props) {
       })
       .catch((error) => {
         errorHandler(error);
+      })
+      .finally(() => {
+        setIsLoading(false);
       });
   };
 
@@ -340,7 +347,7 @@ export default function HrDashboard(props) {
   }, [count]);
   useEffect(() => {
     get();
-    loadNotifcation();
+    loadNotifcation('init');
   }, [get]);
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -400,14 +407,24 @@ export default function HrDashboard(props) {
                   <div className=" me-3" style={{ marginLeft: '28%' }}>
                     <div>
                       <button
-                        class=" badge bg-primary p-2"
+                        class=" badge bg-primary"
                         style={{
-                          width: 'auto',
-                          padding: '0.5rem 2rem',
-                          lineHeight: 'revert-layer'
+                          lineHeight: 'revert-layer',
+                          display: 'flex',
+                          gap: '0.2rem',
+                          padding: '0.6rem',
+                          alignItems: 'center',
+                          height: '2rem'
                         }}
                       >
                         Regularization
+                        {isLoading && (
+                          <Spinner
+                            animation="border"
+                            size="sm"
+                            className="mb-1"
+                          />
+                        )}
                       </button>
                       {approvedNotifications?.length > 0 ? (
                         <div
