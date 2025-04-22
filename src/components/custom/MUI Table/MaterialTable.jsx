@@ -41,7 +41,15 @@ function MaterialTable({
   reset = false,
   exportDataKeys,
   setReset = () => {},
-  isExportData = true
+  isExportData = true,
+  enableRowNumbers= false,
+  manualFiltering = false,
+  setFilterData = () => {},
+  filterData,
+  renderDetailPanel,
+  enableExpandAll = false,
+
+
 }) {
   const [columnFilters, setColumnFilters] = useState([]);
   const [sorting, setSorting] = useState([]);
@@ -58,9 +66,12 @@ function MaterialTable({
     clickedRow.setAttribute('title', innerText);
   };
 
+
   const handleExportRows = (rows) => {
     const rowData = rows.map((row) => row.original);
   };
+
+
 
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -135,6 +146,7 @@ function MaterialTable({
 
   const resetFilters = () => {
     setColumnFilters([]);
+      setFilterData([])
     setSorting([]);
     setPagination({ pageIndex: 0, pageSize: 10 });
     setRowSelection({});
@@ -196,8 +208,11 @@ function MaterialTable({
   return (
     <Box
       sx={{
-        '& tbody > .MuiTableRow-root': { height: 50 },
+        '& tbody > .MuiTableRow-root': { height: !renderDetailPanel ? 50 : 'auto'  },
         '& .MuiCircularProgress-root': { display: 'none' },
+        '& .MuiCollapse-root': {
+          width: '100%',
+        },
         '& .css-wsew38': {
           sm: { flexDirection: 'row' },
           xs: { flexDirection: 'column' },
@@ -228,11 +243,15 @@ function MaterialTable({
           enableStickyHeader={enableStickyHeader}
           isExportData={isExportData}
           enableGrouping={enableGrouping}
+          renderDetailPanel={renderDetailPanel}
+          enableExpandAll={enableExpandAll}
+          manualFiltering={manualFiltering}
           enableFullScreenToggle={data?.length > 0}
           enableColumnResizing={enableColumnResizing}
           enableColumnOrdering={enableColumnOrdering}
           enableFacetedValues={enableFacetedValues}
           enableColumnFilter={enableColumnFilter}
+          enableRowNumbers={enableRowNumbers}
           muiTableBodyCellProps={{
             onMouseOver: handleMouseHover,
             style: {
@@ -244,7 +263,7 @@ function MaterialTable({
           render
           state={{
             isLoading: isLoading,
-            columnFilters,
+            columnFilters: manualFiltering ? filterData : columnFilters,
             sorting,
             pagination,
             rowSelection,
@@ -266,7 +285,7 @@ function MaterialTable({
             }
           })}
           onGroupingChange={setGroupBy}
-          onColumnFiltersChange={setColumnFilters}
+          onColumnFiltersChange={ manualFiltering ? setFilterData : setColumnFilters}
           onSortingChange={setSorting}
           onPaginationChange={setPagination}
           onRowSelectionChange={setRowSelection}
@@ -291,12 +310,12 @@ function MaterialTable({
               />
               <Tooltip title="Clear Filters" arrow>
                 <IconButton
-                  disabled={isFilterNotApplied}
+                  disabled={ !manualFiltering && isFilterNotApplied}
                   onClick={resetFilters}
                 >
                   <FilterAltOffIcon
                     sx={{
-                      color: isFilterNotApplied
+                      color: !manualFiltering && isFilterNotApplied
                         ? (theme) => theme.palette.action.disabled
                         : grey[600]
                     }}
