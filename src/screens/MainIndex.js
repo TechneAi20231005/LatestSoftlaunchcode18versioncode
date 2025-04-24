@@ -184,7 +184,8 @@ import JobRoleComponent from './Masters/JobRoleMaster/JobRoleComponent';
 import MenuComponent from './Masters/MenuMaster/MenuComponent';
 import DeleteRequisition from './PO/deleteRequisition/DeleteRequisition';
 import MyTicketRefactored from './TicketManagement/MyTicket/MyTicketFilters';
-import QueryGroupMaster from './Masters/QueryGroupMaster';
+import { QueryGroupMaster } from './Masters/QueryGroupMaster/QueryGroupMaster';
+
 
 class MainIndex extends React.Component {
   render() {

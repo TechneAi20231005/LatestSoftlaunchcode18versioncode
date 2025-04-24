@@ -384,4 +384,4 @@ const QueryGroupMaster = () => {
   );
 };
 
-export default QueryGroupMaster;
+export { QueryGroupMaster };
