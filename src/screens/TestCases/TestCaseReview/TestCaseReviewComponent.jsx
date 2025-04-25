@@ -993,7 +993,6 @@ function TestCaseReviewComponent() {
   //   }
   // ];
 
-
   const columns = [
     {
       header: 'Action',
@@ -1004,7 +1003,7 @@ function TestCaseReviewComponent() {
       enableColumnFilter: false,
       size: 130,
       muiTableBodyCellProps: {
-        align: "center",
+        align: 'center'
       },
       Cell: ({ row }) => {
         const rowData = row.original;
@@ -1014,14 +1013,14 @@ function TestCaseReviewComponent() {
         }
 
         return (
-          <div  className="d-flex align-items-center">
+          <div className="d-flex align-items-center">
             <i
               className="icofont-edit text-primary btn btn-outline-secondary cp"
               onClick={() => {
                 handleSendToReviewerModal({
                   showModal: true,
                   modalData: rowData,
-                  modalHeader: 'Send To Reviewer Modal',
+                  modalHeader: 'Send To Reviewer Modal'
                 });
               }}
             />
@@ -1035,14 +1034,14 @@ function TestCaseReviewComponent() {
                   handleTestCaseData({
                     showModal: true,
                     modalData: rowData,
-                    modalHeader: 'Send To Reviewer Modal',
+                    modalHeader: 'Send To Reviewer Modal'
                   });
                 }}
               />
             </div>
           </div>
         );
-      },
+      }
     },
     {
       header: 'Test Plan Id',
@@ -1050,21 +1049,20 @@ function TestCaseReviewComponent() {
       size: 210,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-         Test Plan ID
-       <i
-           style={{ cursor: 'pointer' }}
+      Header: (
+        <span>
+          Test Plan ID
+          <i
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'test_plan_id', 'test_plan_id', 'text')
             }
             className={`icofont-filter ms-2 ${
-              isFilterApplied['test_plan_id']
-                ? 'text-warning'
-                : 'text-dark'
+              isFilterApplied['test_plan_id'] ? 'text-warning' : 'text-dark'
             }`}
-         />
-       </span>,
+          />
+        </span>
+      ),
       enableSorting: true,
       Cell: ({ cell }) => {
         const rowData = cell.row.original;
@@ -1072,24 +1070,28 @@ function TestCaseReviewComponent() {
         const isDisabled = rowData?.reviewer_id !== parseInt(reviewerId);
 
         return (
-          <div className="btn-group" role="group" aria-label="Basic outlined example">
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
             {rowData.test_plan_id && (
-                <div>
-                  {isDisabled ? (
-                    <span className="text-muted">{rowData.test_plan_id}</span>
-                  ) : (
-                    <Link
-                      to={`/${_base + '/TestCaseReviewDetails/' + rowData?.id}`}
-                      className="link_underline_primary"
-                    >
-                      {rowData.test_plan_id}
-                    </Link>
-                  )}
-                </div>
+              <div>
+                {isDisabled ? (
+                  <span className="text-muted">{rowData.test_plan_id}</span>
+                ) : (
+                  <Link
+                    to={`/${_base + '/TestCaseReviewDetails/' + rowData?.id}`}
+                    className="link_underline_primary"
+                  >
+                    {rowData.test_plan_id}
+                  </Link>
+                )}
+              </div>
             )}
           </div>
         );
-      },
+      }
     },
     {
       header: 'Tester Name',
@@ -1097,19 +1099,20 @@ function TestCaseReviewComponent() {
       size: 188,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-        Tester Name
-        <i
-          style={{ cursor: 'pointer' }}
-          onClick={(e) =>
-            handleFilterClick(e, 'tester_name', 'Tester Name', 'text')
-          }
-          className={`icofont-filter ms-2 ${
-            isFilterApplied['tester_name'] ? 'text-warning' : 'text-dark'
-          }`}
-        />
-      </span>,
+      Header: (
+        <span>
+          Tester Name
+          <i
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'tester_name', 'Tester Name', 'text')
+            }
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['tester_name'] ? 'text-warning' : 'text-dark'
+            }`}
+          />
+        </span>
+      )
     },
     {
       header: 'Total Testcase',
@@ -1117,19 +1120,25 @@ function TestCaseReviewComponent() {
       size: 205,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-        Total Testcase
-        <i
-          style={{ cursor: 'pointer' }}
-          onClick={(e) =>
-            handleFilterClick(e, 'total_testcases', 'total_testcases', 'number')
-          }
-          className={`icofont-filter ms-2 ${
-            isFilterApplied['total_testcases'] ? 'text-warning' : 'text-dark'
-          }`}
-        />
-      </span>,
+      Header: (
+        <span>
+          Total Testcase
+          <i
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(
+                e,
+                'total_testcases',
+                'total_testcases',
+                'number'
+              )
+            }
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['total_testcases'] ? 'text-warning' : 'text-dark'
+            }`}
+          />
+        </span>
+      )
     },
     {
       header: 'Reviewed Testcase',
@@ -1137,19 +1146,27 @@ function TestCaseReviewComponent() {
       size: 235,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-        Reviewed Testcase
-        <i
-          style={{ cursor: 'pointer' }}
-          onClick={(e) =>
-            handleFilterClick(e, 'total_reviewed_testcases', 'total_reviewed_testcases', 'number')
-          }
-          className={`icofont-filter ms-2 ${
-            isFilterApplied['total_reviewed_testcases'] ? 'text-warning' : 'text-dark'
-          }`}
-        />
-      </span>,
+      Header: (
+        <span>
+          Reviewed Testcase
+          <i
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(
+                e,
+                'total_reviewed_testcases',
+                'total_reviewed_testcases',
+                'number'
+              )
+            }
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['total_reviewed_testcases']
+                ? 'text-warning'
+                : 'text-dark'
+            }`}
+          />
+        </span>
+      )
     },
     {
       header: 'Rejected Testcase',
@@ -1157,19 +1174,27 @@ function TestCaseReviewComponent() {
       size: 230,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-        Rejected Testcase
-        <i
-          style={{ cursor: 'pointer' }}
-          onClick={(e) =>
-            handleFilterClick(e, 'total_rejected_testcases', 'total_rejected_testcases', 'number')
-          }
-          className={`icofont-filter ms-2 ${
-            isFilterApplied['total_rejected_testcases'] ? 'text-warning' : 'text-dark'
-          }`}
-        />
-      </span>,
+      Header: (
+        <span>
+          Rejected Testcase
+          <i
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(
+                e,
+                'total_rejected_testcases',
+                'total_rejected_testcases',
+                'number'
+              )
+            }
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['total_rejected_testcases']
+                ? 'text-warning'
+                : 'text-dark'
+            }`}
+          />
+        </span>
+      )
     },
     {
       header: 'Approved Testcase',
@@ -1177,19 +1202,27 @@ function TestCaseReviewComponent() {
       size: 235,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-        Approved Testcase
-        <i
-          style={{ cursor: 'pointer' }}
-          onClick={(e) =>
-            handleFilterClick(e, 'total_approved_testcases', 'total_approved_testcases', 'number')
-          }
-          className={`icofont-filter ms-2 ${
-            isFilterApplied['total_approved_testcases'] ? 'text-warning' : 'text-dark'
-          }`}
-        />
-      </span>,
+      Header: (
+        <span>
+          Approved Testcase
+          <i
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(
+                e,
+                'total_approved_testcases',
+                'total_approved_testcases',
+                'number'
+              )
+            }
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['total_approved_testcases']
+                ? 'text-warning'
+                : 'text-dark'
+            }`}
+          />
+        </span>
+      )
     },
     {
       header: 'Created At',
@@ -1197,19 +1230,20 @@ function TestCaseReviewComponent() {
       size: 180,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-        Created At
-        <i
-          style={{ cursor: 'pointer' }}
-          onClick={(e) =>
-            handleFilterClick(e, 'created_at', 'created_at', 'text')
-          }
-          className={`icofont-filter ms-2 ${
-            isFilterApplied['created_at'] ? 'text-warning' : 'text-dark'
-          }`}
-        />
-      </span>,
+      Header: (
+        <span>
+          Created At
+          <i
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'created_at', 'created_at', 'text')
+            }
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['created_at'] ? 'text-warning' : 'text-dark'
+            }`}
+          />
+        </span>
+      )
     },
     {
       header: 'Created By',
@@ -1217,19 +1251,20 @@ function TestCaseReviewComponent() {
       size: 180,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-        Created By
-        <i
-          style={{ cursor: 'pointer' }}
-          onClick={(e) =>
-            handleFilterClick(e, 'created_by', 'created_by', 'text')
-          }
-          className={`icofont-filter ms-2 ${
-            isFilterApplied['created_by'] ? 'text-warning' : 'text-dark'
-          }`}
-        />
-      </span>,
+      Header: (
+        <span>
+          Created By
+          <i
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'created_by', 'created_by', 'text')
+            }
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['created_by'] ? 'text-warning' : 'text-dark'
+            }`}
+          />
+        </span>
+      )
     },
     {
       header: 'Updated At',
@@ -1237,19 +1272,20 @@ function TestCaseReviewComponent() {
       size: 180,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-        Updated At
-        <i
-          style={{ cursor: 'pointer' }}
-          onClick={(e) =>
-            handleFilterClick(e, 'updated_at', 'updated_at', 'text')
-          }
-          className={`icofont-filter ms-2 ${
-            isFilterApplied['updated_at'] ? 'text-warning' : 'text-dark'
-          }`}
-        />
-      </span>,
+      Header: (
+        <span>
+          Updated At
+          <i
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'updated_at', 'updated_at', 'text')
+            }
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['updated_at'] ? 'text-warning' : 'text-dark'
+            }`}
+          />
+        </span>
+      )
     },
     {
       header: 'Updated By',
@@ -1257,21 +1293,22 @@ function TestCaseReviewComponent() {
       size: 185,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-        Updated By
-        <i
-          style={{ cursor: 'pointer' }}
-          onClick={(e) =>
-            handleFilterClick(e, 'updated_by', 'updated_by', 'text')
-          }
-          className={`icofont-filter ms-2 ${
-            isFilterApplied['updated_by'] ? 'text-warning' : 'text-dark'
-          }`}
-        />
-      </span>,
+      Header: (
+        <span>
+          Updated By
+          <i
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'updated_by', 'updated_by', 'text')
+            }
+            className={`icofont-filter ms-2 ${
+              isFilterApplied['updated_by'] ? 'text-warning' : 'text-dark'
+            }`}
+          />
+        </span>
+      )
     }
-  ]
+  ];
   const [clearData, setClearData] = useState(false);
   const [sendToReviewerModal, setSendToReviewerModal] = useState({
     showModal: false,
@@ -1552,11 +1589,16 @@ function TestCaseReviewComponent() {
         }}
       />
 
-      <Container fluid className="employee_joining_details_container mt-2">
-
-        {
-          testCaseReviewList && <MaterialTable columns={columns} data={testCaseReviewList} enableRowNumbers={true} isLoading={isLoading?.testCaseReviewList} isExportData={false} />
-        }
+      <Container fluid className="mt-3">
+        {testCaseReviewList && (
+          <MaterialTable
+            columns={columns}
+            data={testCaseReviewList}
+            enableRowNumbers={true}
+            isLoading={isLoading?.testCaseReviewList}
+            isExportData={false}
+          />
+        )}
         {/* <DataTable
           columns={columns}
           data={testCaseReviewList}

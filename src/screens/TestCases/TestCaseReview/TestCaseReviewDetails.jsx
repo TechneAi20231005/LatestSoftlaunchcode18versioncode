@@ -2326,9 +2326,9 @@ function TestCaseReviewDetails() {
           );
         }}
       />
-      <Container fluid className="employee_joining_details_container mt-2">
-        <h5 className="mb-0 text-primary">Test Cases</h5>
-        <hr className="primary_divider " />
+      <Container fluid className="mt-3">
+        {/* <h5 className="mb-0 text-primary">Test Cases</h5>
+        <hr className="primary_divider " /> */}
         {/* <DataTable
           columns={columns}
           data={rowData}
@@ -2360,6 +2360,7 @@ function TestCaseReviewDetails() {
           totalRows={allTestPlanIDData?.data?.total}
           manualPagination={true}
           manualFiltering={true}
+          isExportData={false}
         />
       </Container>
 

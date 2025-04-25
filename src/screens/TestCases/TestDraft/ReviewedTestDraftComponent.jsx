@@ -2141,9 +2141,9 @@ function ReviewedTestDraftComponent() {
         }}
       />
 
-      <Container fluid className="employee_joining_details_container">
-        <h5 className="mb-0 text-primary">Test Cases</h5>
-        <hr className="primary_divider mt-1" />
+      <Container fluid className="mt-3">
+        {/* <h5 className="mb-0 text-primary">Test Cases</h5>
+        <hr className="primary_divider mt-1" /> */}
         {/* <DataTable
           columns={columns}
           data={allReviewDraftTestListDataByID}
@@ -2173,6 +2173,7 @@ function ReviewedTestDraftComponent() {
           totalRows={allReviewDraftTestListDataByID?.total}
           manualPagination={true}
           manualFiltering={true}
+          isExportData={false}
         />
       </Container>
 

@@ -1559,7 +1559,7 @@ function TestDraftDetails(props) {
         </span>
       ),
       enableColumnFilter: false,
-      size: 200,
+      size: 220,
       enableSorting: false
     },
     {
@@ -1576,7 +1576,7 @@ function TestDraftDetails(props) {
         </span>
       ),
       enableColumnFilter: false,
-      size: 200,
+      size: 180,
       enableSorting: false
     },
 
@@ -1632,7 +1632,7 @@ function TestDraftDetails(props) {
         </span>
       ),
       enableColumnFilter: false,
-      size: 200,
+      size: 180,
       enableSorting: false
     },
     {
@@ -1651,7 +1651,7 @@ function TestDraftDetails(props) {
         </span>
       ),
       enableColumnFilter: false,
-      size: 200,
+      size: 180,
       enableSorting: false
     },
     {
@@ -1676,7 +1676,7 @@ function TestDraftDetails(props) {
         </span>
       ),
       enableColumnFilter: false,
-      size: 200,
+      size: 220,
       enableSorting: false
     },
     {
@@ -1693,7 +1693,7 @@ function TestDraftDetails(props) {
         </span>
       ),
       enableColumnFilter: false,
-      size: 200,
+      size: 180,
       enableSorting: false
     },
     {
@@ -1712,7 +1712,7 @@ function TestDraftDetails(props) {
         </span>
       ),
       enableColumnFilter: false,
-      size: 200,
+      size: 220,
       enableSorting: false
     },
     {
@@ -1731,7 +1731,7 @@ function TestDraftDetails(props) {
         </span>
       ),
       enableColumnFilter: false,
-      size: 200,
+      size: 180,
       enableSorting: false
     },
     {
@@ -2033,9 +2033,9 @@ function TestDraftDetails(props) {
 
   return (
     <>
-      <Container fluid className="employee_joining_details_container">
-        <h5 className="mb-0 text-primary">Test Cases</h5>
-        <hr className="primary_divider mt-1" />
+      <Container fluid className="mt-3">
+        {/* <h5 className="mb-0 text-primary">Test Cases</h5>
+        <hr className="primary_divider mt-1" /> */}
         {/* <DataTable
           columns={columns}
           data={getDraftTestListData}
@@ -2061,12 +2061,13 @@ function TestDraftDetails(props) {
         <MaterialTable
           columns={columns}
           data={getDraftTestListData || []}
-          // isLoading={isLoading}
+          isLoading={isLoading?.getDraftTestListData}
           pagination={props?.paginationData}
           setPagination={props?.paginationData}
           totalRows={allDraftListData?.data?.total}
           manualPagination={true}
           manualFiltering={true}
+          isExportData={false}
         />
       </Container>
       <div className="d-flex justify-content-end mt-3">

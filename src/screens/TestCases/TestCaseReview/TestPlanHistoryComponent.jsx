@@ -369,52 +369,60 @@ function TestPlanHistoryComponent() {
   //     ]
   //   }
   // ];
- const columns = [
-  {
-    accessorKey: 'test_plan_id',
-    header: 'Test Plan Id',
-    size: 190,
- },
- {
-    accessorKey: 'tester_name',
-    header: 'Tester Name',
-    size: 190,
-
- },
- {
-    accessorKey: 'reviewer_name',
-    header: 'Reviewer Name',
-    size: 210,
-
- },
- {
-    accessorKey: 'created_at',
-    header: 'Created At',
-    size: 180,
-
- },
- {
-  accessorFn: (row) => (`${row?.created_by?.first_name || '-'} ${row?.created_by?.last_name || '-'}`),
-    header: 'Created By',
-    size: 180,
- },
- {
-    accessorKey: 'updated_at',
-    header: 'Updated At',
-    size: 180,
- },
- {
-  accessorKey: 'updated_by',
-  header: 'Updated By',
-  size: 185,
- }
-
- ]
+  const columns = [
+    {
+      accessorKey: 'test_plan_id',
+      header: 'Test Plan Id',
+      size: 190
+    },
+    {
+      accessorKey: 'tester_name',
+      header: 'Tester Name',
+      size: 190
+    },
+    {
+      accessorKey: 'reviewer_name',
+      header: 'Reviewer Name',
+      size: 210
+    },
+    {
+      accessorKey: 'created_at',
+      header: 'Created At',
+      size: 180
+    },
+    {
+      accessorFn: (row) =>
+        `${row?.created_by?.first_name || '-'} ${
+          row?.created_by?.last_name || '-'
+        }`,
+      header: 'Created By',
+      size: 180
+    },
+    {
+      accessorKey: 'updated_at',
+      header: 'Updated At',
+      size: 180
+    },
+    {
+      accessorFn: (row) =>
+        `${row?.updated_by?.first_name || '-'} ${
+          row?.updated_by?.last_name || '-'
+        }`,
+      header: 'Updated By',
+      size: 185
+    }
+  ];
   return (
     <>
-      <PageHeader showBackBtn  headerTitle="Test Plan History" />
-      <Container fluid className="employee_joining_details_container">
-        <MaterialTable columns={columns} data={testPlantHistory} isLoading={isLoading?.testDraftHistory} enableRowNumbers={true} isExportData={false} />
+      <PageHeader showBackBtn headerTitle="Test Plan History" />
+      <Container fluid className="mt-3">
+        <MaterialTable
+          columns={columns}
+          data={testPlantHistory}
+          isLoading={isLoading?.testDraftHistory}
+          enableRowNumbers={true}
+          isExportData={false}
+        />
         {/* <DataTable
           columns={columns}
           data={testPlantHistory}
