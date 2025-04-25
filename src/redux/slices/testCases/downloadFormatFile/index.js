@@ -307,7 +307,8 @@ const downloadFormatSlice = createSlice({
       .addCase(getByTestPlanIDReviewedListThunk.fulfilled, (state, action) => {
         state.isLoading.allReviewDraftTestListDataByID = false;
         state.successMsg.allReviewDraftTestListDataByID = action?.payload;
-        state.allReviewDraftTestListDataByID = action?.payload?.data?.data;
+        state.allReviewDraftTestListDataByID =
+          action?.payload?.data?.data?.data;
         state.allReviewDraftTestListData = action?.payload?.data;
         state.allReviewDraftTestListDataTotal = action?.payload?.data;
 

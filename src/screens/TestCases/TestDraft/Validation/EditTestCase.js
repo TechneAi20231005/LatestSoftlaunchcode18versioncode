@@ -8,7 +8,7 @@ export const editTestCaseValidation = Yup.object().shape({
     .required('Submodule name is required'),
   function_id: Yup.string().required('Function is required'),
   type_id: Yup.string().required('Testing type is required'),
-  testing_group: Yup.string().required('Testing group is required'),
+  // testing_group: Yup.string().required('Testing group is required'),
   severity: Yup.string().required('Severity is required'),
   test_description: Yup.string().required('Test Description is required'),
   expected_result: Yup.string().required('Expected result is required')

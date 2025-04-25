@@ -1410,21 +1410,8 @@ function TestDraftDetails(props) {
   // ];
 
   const columns = [
-    // {
-    //   accessorKey: 'ticket_id',
-    //   header: 'Ticket Id',
-    //   size: 170,
-    //   Cell: ({ row }) => (
-    //     <Link to={`/${_base}/Ticket/View/${row?.original?.id}`}>
-    //       <span className="fw-bold text-secondary">
-    //         {row?.original?.ticket_id}
-    //       </span>
-    //     </Link>
-    //   )
-    // },
-
     {
-      accessorKey: 'action', // Use a valid key
+      accessorKey: 'action',
       header: 'Action',
       size: 110,
       enableColumnOrdering: false,
@@ -1465,39 +1452,39 @@ function TestDraftDetails(props) {
         );
       }
     },
-    // {
-    //   accessorKey: 'selectAll', // can be any valid unique key
-    //   header: () => (
-    //     <div onClick={handleSelectAllNamesChange}>
-    //       <input
-    //         type="checkbox"
-    //         checked={selectAllNames}
-    //         onChange={handleSelectAllNamesChange}
-    //       />
-    //     </div>
-    //   ),
-    //   size: 80, // Adjust the width as needed
-    //   enableColumnOrdering: false,
-    //   enableGrouping: false,
-    //   enableSorting: false,
-    //   enableColumnFilter: false,
-    //   Cell: ({ row }) => {
-    //     const rowData = row.original;
-    //     if (!rowData || rowData.tc_id === null || rowData.status_name === null)
-    //       return null;
 
-    //     return (
-    //       <div>
-    //         <input
-    //           type="checkbox"
-    //           checked={selectedRows.includes(rowData.id)}
-    //           onChange={() => handleCheckboxChange(rowData)}
-    //           disabled={rowData.status_name !== 'DRAFT'}
-    //         />
-    //       </div>
-    //     );
-    //   }
-    // },
+    {
+      accessorFn: (originalRow) => originalRow?.tc_id || '--',
+      header: 'selectAll',
+      Header: (
+        <div onClick={handleSelectAllNamesChange}>
+          <input
+            type="checkbox"
+            checked={selectAllNames}
+            onChange={handleSelectAllNamesChange}
+          />
+        </div>
+      ),
+      enableColumnFilter: false,
+      enableSorting: false,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      size: 80,
+      Cell: ({ row }) => {
+        const rowData = row.original;
+        if (!rowData || rowData.tc_id === null || rowData.status_name === null)
+          return null;
+
+        return (
+          <input
+            type="checkbox"
+            checked={selectedRows.includes(rowData.id)}
+            onChange={() => handleCheckboxChange(rowData)}
+            disabled={rowData.status_name !== 'DRAFT'}
+          />
+        );
+      }
+    },
 
     {
       accessorFn: (originalRows) => `${originalRows?.module_name || '--'} `,
@@ -1521,74 +1508,269 @@ function TestDraftDetails(props) {
     {
       accessorFn: (originalRows) => `${originalRows?.sub_module_name || '--'} `,
       header: 'Submodule Name',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Submodule Name
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
+            }
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 220,
+      enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.platform || '--'} `,
       header: 'platform',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Platform
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'platform', 'Platform', 'text')
+            }
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.function_name || '--'} `,
       header: 'Function Name',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Function Name
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'function_name', 'Function Name', 'text')
+            }
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.field || '--'} `,
       header: 'Field',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Field
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
 
     {
       accessorFn: (originalRows) => `${originalRows?.type_name || '--'} `,
       header: 'Testing Type',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Testing Type
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'type_name', 'Testing Type', 'text')
+            }
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.group_name || '--'} `,
       header: 'Testing Group',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Testing Group
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'group_name', 'Testing Group', 'text')
+            }
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.tc_id || '--'} `,
       header: 'Test Id',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Test Id
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'text')}
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.severity || '--'} `,
       header: 'Severity',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Severity
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'severity', 'Severity', 'text')
+            }
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
     {
       accessorFn: (originalRows) =>
         `${originalRows?.test_description || '--'} `,
       header: 'Test Description',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Test Description
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(
+                e,
+                'test_description',
+                'Test Description',
+                'text'
+              )
+            }
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.steps || '--'} `,
       header: 'Steps',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Steps
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.expected_result || '--'} `,
       header: 'Expected Result',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Expected Result
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
+            }
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.status_name || '--'} `,
       header: 'Status',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Status
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'status_name', 'Status', 'text')
+            }
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.project_name || '--'} `,
       header: 'Project',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Project
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'project_name', 'Project', 'text')
+            }
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.created_at || '--'} `,
       header: 'Created At',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Created At
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'created_at', 'Created At', 'text')
+            }
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
 
     {
@@ -1597,12 +1779,40 @@ function TestDraftDetails(props) {
           originalRows?.created_by?.last_name || '--'
         }`,
       header: 'Created By',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Created By
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'created_by', 'Created By', 'text')
+            }
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.updated_at || '--'} `,
       header: 'Updated At',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Updated At
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'updated_at', 'Updated At', 'text')
+            }
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
     {
       accessorFn: (originalRows) =>
@@ -1610,7 +1820,21 @@ function TestDraftDetails(props) {
           originalRows?.updated_by?.last_name || '--'
         }`,
       header: 'Updated By',
-      enableColumnFilter: false
+      Header: (
+        <span>
+          Updated By
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'updated_by', 'Updated By', 'text')
+            }
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     }
   ];
 

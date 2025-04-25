@@ -16,6 +16,7 @@ import EditTestCaseModal from '../TestDraft/EditTestCaseModal';
 import CustomFilterModal from '../Modal/CustomFilterModal';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import { getTestCaseStatusDataList } from '../../../redux/services/testCases/downloadFormatFile';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 
 const initialState = {
   filterType: '',
@@ -367,33 +368,912 @@ function TestCaseReviewDetails() {
     // }
     setRowData(testPlanIdData);
   }, [testPlanIdData]);
+  // const columns = [
+  //   {
+  //     name: 'Action',
+  //     selector: (row) => (
+  //       <div className="d-flex align-items-center">
+  //         <i
+  //           className="icofont-edit text-primary  btn btn-outline-secondary cp me-3"
+  //           onClick={() =>
+  //             setAddEditTestCasesModal({
+  //               type: 'EDIT',
+  //               data: row,
+  //               open: true
+  //             })
+  //           }
+  //         />
+
+  //         <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.id}`}>
+  //           <i class="icofont-history cp   btn btn-outline-secondary fw-bold" />
+  //         </Link>
+  //       </div>
+  //     ),
+  //     sortable: false,
+  //     width: '150px'
+  //   },
+
+  //   {
+  //     name: (
+  //       <div onClick={handleSelectAllNamesChange}>
+  //         <input
+  //           type="checkbox"
+  //           checked={selectAllNames}
+  //           onChange={handleSelectAllNamesChange}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: 'selectAll',
+  //     center: true,
+  //     cell: (row) => (
+  //       <div>
+  //         <input
+  //           type="checkbox"
+  //           checked={selectedRows?.includes(row.tc_id)}
+  //           onChange={() => handleCheckboxChange(row)}
+  //         />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Module</span>
+  //         <i
+  //           onClick={(e, row) =>
+  //             handleFilterClick(e, 'module_name', 'Module', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['module_name'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+
+  //     selector: (row) => row?.module_name,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row?.module_name && (
+  //           <OverlayTrigger overlay={<Tooltip>{row?.module_name} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">
+  //                 {' '}
+  //                 {row?.module_name && row?.module_name?.length < 20
+  //                   ? row?.module_name
+  //                   : row?.module_name.substring(0, 50) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Submodule Name</span>
+  //         <i
+  //           onClick={(e, row) =>
+  //             handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['sub_module_name'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row?.sub_module_name,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row?.sub_module_name && (
+  //           <OverlayTrigger
+  //             overlay={<Tooltip>{row?.sub_module_name} </Tooltip>}
+  //           >
+  //             <div>
+  //               <span className="ms-1 d-block">
+  //                 {' '}
+  //                 {row?.sub_module_name && row?.sub_module_name?.length < 20
+  //                   ? row?.sub_module_name
+  //                   : row?.sub_module_name.substring(0, 50) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Function</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(e, 'function_name', 'Function', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['function_name'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row?.function_name,
+  //     width: '7rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row?.function_name && (
+  //           <OverlayTrigger overlay={<Tooltip>{row?.function_name} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">
+  //                 {' '}
+  //                 {row?.function_name && row?.function_namee?.length < 20
+  //                   ? row?.function_name
+  //                   : row?.function_name.substring(0, 50) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Field</span>
+  //         <i
+  //           onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['field'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row.field,
+  //     width: '7rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.field && (
+  //           <OverlayTrigger overlay={<Tooltip>{row.field} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">
+  //                 {' '}
+  //                 {row.field && row.field?.length < 20
+  //                   ? row.field
+  //                   : row.field.substring(0, 50) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Testing Type</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(e, 'type_name', 'Testing Type', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['type_name'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row?.type_name,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row?.type_name && (
+  //           <OverlayTrigger overlay={<Tooltip>{row?.type_name} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">
+  //                 {' '}
+  //                 {row?.type_name && row?.type_name?.length < 20
+  //                   ? row?.type_name
+  //                   : row?.type_name.substring(0, 50) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Testing Group</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(e, 'group_name', 'Testing Group', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['group_name'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row.testing_group,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row?.testing_group && (
+  //           <OverlayTrigger overlay={<Tooltip>{row?.testing_group} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">
+  //                 {' '}
+  //                 {row?.testing_group && row?.testing_group?.length < 20
+  //                   ? row?.testing_group
+  //                   : row?.testing_group.substring(0, 50) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Test Id</span>
+  //         <i
+  //           onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'number')}
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['tc_id'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row.tc_id,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.tc_id && (
+  //           <OverlayTrigger overlay={<Tooltip>{row.tc_id} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">{row.tc_id}</span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Severity</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(e, 'severity', 'Severity', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['severity'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row.severity,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.severity && (
+  //           <OverlayTrigger overlay={<Tooltip>{row.severity} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">{row.severity}</span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Test Description</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(
+  //               e,
+  //               'test_description',
+  //               'test_description',
+  //               'text'
+  //             )
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['test_description'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row.test_description,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.test_description && (
+  //           <OverlayTrigger
+  //             overlay={<Tooltip>{row.test_description} </Tooltip>}
+  //           >
+  //             <div>
+  //               <span className="ms-1">
+  //                 {' '}
+  //                 {row.test_description && row.test_description?.length < 20
+  //                   ? row.test_description
+  //                   : row.test_description.substring(0, 50) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Steps</span>
+  //         <i
+  //           onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['steps'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row.steps,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.steps && (
+  //           <OverlayTrigger overlay={<Tooltip>{row.steps} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1 d-block">
+  //                 {' '}
+  //                 {row.steps && row.type_name?.length < 20
+  //                   ? row.steps
+  //                   : row.steps.substring(0, 50) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Expected Result</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['expected_result'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row.expected_result,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.expected_result && (
+  //           <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1 d-block">
+  //                 {' '}
+  //                 {row.expected_result && row.expected_result?.length < 20
+  //                   ? row.expected_result
+  //                   : row.expected_result.substring(0, 50) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Status</span>
+  //         <i
+  //           onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['status'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row?.status_name,
+  //     width: '7rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row?.status_name && (
+  //           <OverlayTrigger overlay={<Tooltip>{row?.status_name} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">
+  //                 {' '}
+  //                 {row?.status_name && row?.status_name?.length < 20
+  //                   ? row?.status_name
+  //                   : row?.status_name.substring(0, 50) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: 'Reviewer comment',
+  //     selector: (row) => row?.comment_id,
+  //     sortable: true,
+
+  //     width: '250px',
+  //     cell: (row) => (
+  //       <div>
+  //         <select
+  //           className="form-select"
+  //           aria-label="Default select example"
+  //           // value={row.comment_id || ''}
+  //           // value={comments[row.id] || row.comment_id || ''}
+  //           // value={
+  //           //   selectedRows && selectedRows.includes(row.tc_id)
+  //           //     ? comments[row.id] || commonComment
+  //           //     : commonComment
+  //           // }
+  //           value={comments[row.id] || row.comment_id || commonComment || ''}
+  //           id="comment_id"
+  //           name="comment_id"
+  //           onChange={(e) =>
+  //             handleRowChange(row.id, 'comment_id', e.target.value)
+  //           }
+  //         >
+  //           {generateOptions(getFilterReviewCommentMasterList)}
+  //         </select>
+
+  //         {commentIdError[row.tc_id] &&
+  //           selectedRows &&
+  //           selectedRows?.includes(row?.tc_id) && (
+  //             <div className="col">
+  //               <span className="text-danger">
+  //                 {commentIdError[row?.tc_id]}
+  //               </span>
+  //             </div>
+  //           )}
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: 'Remark',
+  //     selector: (row) => row?.remark,
+  //     sortable: true,
+  //     width: '300px',
+  //     cell: (row) => (
+  //       <input
+  //         className="form-control"
+  //         type="text"
+  //         id="other_remark"
+  //         name="other_remark"
+  //         placeholder="Enter Remark"
+  //         aria-label="default input example"
+  //         maxLength={100}
+  //         defaultValue={
+  //           // selectedRows && selectedRows.includes(row.tc_id)
+  //           //   ? remarks[row.other_remark] || row.other_remark
+  //           //   : commonRemark
+  //           row.other_remark || remarks[row.id] || commonRemark
+  //         }
+  //         onChange={(e) =>
+  //           handleRowChange(row.id, 'other_remark', e.target.value)
+  //         }
+  //       />
+  //     )
+  //   },
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Project</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(e, 'project_name', 'Project', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['project_name'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row?.project_name,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row?.project_name && (
+  //           <OverlayTrigger overlay={<Tooltip>{row?.project_name} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">
+  //                 {' '}
+  //                 {row?.project_name && row?.project_name?.length < 20
+  //                   ? row?.project_name
+  //                   : row?.project_name.substring(0, 50) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Created At</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(e, 'created_at', 'created_at', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['created_at'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row.created_at,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.created_at && (
+  //           <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">
+  //                 {' '}
+  //                 {row.created_at && row.created_at?.length < 20
+  //                   ? row.created_at
+  //                   : row.created_at.substring(0, 50) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Created By</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(e, 'created_by', 'created_by', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['created_by'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row.created_by,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.created_by && (
+  //           <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1"> {row?.created_by}</span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Updated At</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(e, 'updated_at', 'updated_at', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['updated_at'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row.updated_at,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.updated_at && (
+  //           <OverlayTrigger overlay={<Tooltip>{row.updated_at} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">
+  //                 {' '}
+  //                 {row.updated_at && row.updated_at?.length < 20
+  //                   ? row.updated_at
+  //                   : row.updated_at.substring(0, 50) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Updated By</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(e, 'updated_by', 'updated_by', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             isFilterApplied['updated_by'] ? 'text-warning' : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row.updated_by,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row?.updated_by && (
+  //           <OverlayTrigger overlay={<Tooltip>{row?.updated_by} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1"> {row?.updated_by}</span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   }
+  // ];
+
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => (
-        <div className="d-flex align-items-center">
-          <i
-            className="icofont-edit text-primary  btn btn-outline-secondary cp me-3"
-            onClick={() =>
-              setAddEditTestCasesModal({
-                type: 'EDIT',
-                data: row,
-                open: true
-              })
-            }
-          />
-
-          <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.id}`}>
-            <i class="icofont-history cp   btn btn-outline-secondary fw-bold" />
-          </Link>
-        </div>
-      ),
-      sortable: false,
-      width: '150px'
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => {
+        if (
+          !row ||
+          row?.original?.tc_id === null ||
+          row?.original?.status === null
+        )
+          return null;
+        return (
+          <div className="d-flex align-items-center">
+            <i
+              onClick={() =>
+                setAddEditTestCasesModal({
+                  type: 'EDIT',
+                  data: row,
+                  open: true,
+                  id: row?.original?.id
+                })
+              }
+            />
+            <Link
+              to={`/${
+                _base + '/TestCaseHistoryComponent/' + row?.original?.id
+              }`}
+            >
+              <i class="icofont-history cp btn btn-outline-secondary fw-bold  " />
+            </Link>
+          </div>
+        );
+      }
     },
 
     {
-      name: (
+      accessorFn: (originalRow) => originalRow?.tc_id || '--',
+      header: 'selectAll',
+      Header: (
         <div onClick={handleSelectAllNamesChange}>
           <input
             type="checkbox"
@@ -402,830 +1282,464 @@ function TestCaseReviewDetails() {
           />
         </div>
       ),
-      selector: 'selectAll',
-      center: true,
-      cell: (row) => (
-        <div>
+      enableColumnFilter: false,
+      enableSorting: false,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      size: 80,
+      Cell: ({ row }) => {
+        const rowData = row.original;
+
+        return (
           <input
             type="checkbox"
-            checked={selectedRows?.includes(row.tc_id)}
-            onChange={() => handleCheckboxChange(row)}
+            checked={selectedRows.includes(rowData.tc_id)}
+            onChange={() => handleCheckboxChange(rowData)}
           />
-        </div>
-      )
+        );
+      }
     },
 
     {
-      name: (
-        <div>
-          <span>Module</span>
+      accessorFn: (originalRows) => `${originalRows?.module_name || '--'} `,
+      header: 'Module Name',
+      Header: (
+        <span>
+          Module Name
           <i
-            onClick={(e, row) =>
-              handleFilterClick(e, 'module_name', 'Module', 'text')
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'module_name', 'Module Name', 'text')
             }
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['module_name'] ? 'text-warning' : 'text-dark'
-            }`}
           />
-        </div>
+        </span>
       ),
-
-      selector: (row) => row?.module_name,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.module_name && (
-            <OverlayTrigger overlay={<Tooltip>{row?.module_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row?.module_name && row?.module_name?.length < 20
-                    ? row?.module_name
-                    : row?.module_name.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
-
     {
-      name: (
-        <div>
-          <span>Submodule Name</span>
+      accessorFn: (originalRows) => `${originalRows?.sub_module_name || '--'} `,
+      header: 'Submodule Name',
+      Header: (
+        <span>
+          Submodule Name
           <i
-            onClick={(e, row) =>
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
               handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
             }
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['sub_module_name'] ? 'text-warning' : 'text-dark'
-            }`}
           />
-        </div>
+        </span>
       ),
-      selector: (row) => row?.sub_module_name,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.sub_module_name && (
-            <OverlayTrigger
-              overlay={<Tooltip>{row?.sub_module_name} </Tooltip>}
-            >
-              <div>
-                <span className="ms-1 d-block">
-                  {' '}
-                  {row?.sub_module_name && row?.sub_module_name?.length < 20
-                    ? row?.sub_module_name
-                    : row?.sub_module_name.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+      enableColumnFilter: false,
+      size: 220,
+      enableSorting: false
     },
-
     {
-      name: (
-        <div>
-          <span>Function</span>
+      accessorFn: (originalRows) => `${originalRows?.platform || '--'} `,
+      header: 'platform',
+      Header: (
+        <span>
+          Platform
           <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
-              handleFilterClick(e, 'function_name', 'Function', 'text')
+              handleFilterClick(e, 'platform', 'Platform', 'text')
             }
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['function_name'] ? 'text-warning' : 'text-dark'
-            }`}
           />
-        </div>
+        </span>
       ),
-      selector: (row) => row?.function_name,
-      width: '7rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.function_name && (
-            <OverlayTrigger overlay={<Tooltip>{row?.function_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row?.function_name && row?.function_namee?.length < 20
-                    ? row?.function_name
-                    : row?.function_name.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
-
     {
-      name: (
-        <div>
-          <span>Field</span>
+      accessorFn: (originalRows) => `${originalRows?.function_name || '--'} `,
+      header: 'Function Name',
+      Header: (
+        <span>
+          Function Name
           <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'function_name', 'Function Name', 'text')
+            }
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
+    },
+    {
+      accessorFn: (originalRows) => `${originalRows?.field || '--'} `,
+      header: 'Field',
+      Header: (
+        <span>
+          Field
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
             onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['field'] ? 'text-warning' : 'text-dark'
-            }`}
           />
-        </div>
+        </span>
       ),
-      selector: (row) => row.field,
-      width: '7rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.field && (
-            <OverlayTrigger overlay={<Tooltip>{row.field} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.field && row.field?.length < 20
-                    ? row.field
-                    : row.field.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
 
     {
-      name: (
-        <div>
-          <span>Testing Type</span>
+      accessorFn: (originalRows) => `${originalRows?.type_name || '--'} `,
+      header: 'Testing Type',
+      Header: (
+        <span>
+          Testing Type
           <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'type_name', 'Testing Type', 'text')
             }
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['type_name'] ? 'text-warning' : 'text-dark'
-            }`}
           />
-        </div>
+        </span>
       ),
-      selector: (row) => row?.type_name,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.type_name && (
-            <OverlayTrigger overlay={<Tooltip>{row?.type_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row?.type_name && row?.type_name?.length < 20
-                    ? row?.type_name
-                    : row?.type_name.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
-
     {
-      name: (
-        <div>
-          <span>Testing Group</span>
+      accessorFn: (originalRows) => `${originalRows?.group_name || '--'} `,
+      header: 'Testing Group',
+      Header: (
+        <span>
+          Testing Group
           <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'group_name', 'Testing Group', 'text')
             }
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['group_name'] ? 'text-warning' : 'text-dark'
-            }`}
           />
-        </div>
+        </span>
       ),
-      selector: (row) => row.testing_group,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.testing_group && (
-            <OverlayTrigger overlay={<Tooltip>{row?.testing_group} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row?.testing_group && row?.testing_group?.length < 20
-                    ? row?.testing_group
-                    : row?.testing_group.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
-
     {
-      name: (
-        <div>
-          <span>Test Id</span>
+      accessorFn: (originalRows) => `${originalRows?.tc_id || '--'} `,
+      header: 'Test Id',
+      Header: (
+        <span>
+          Test Id
           <i
-            onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'number')}
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['tc_id'] ? 'text-warning' : 'text-dark'
-            }`}
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'text')}
           />
-        </div>
+        </span>
       ),
-      selector: (row) => row.tc_id,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.tc_id && (
-            <OverlayTrigger overlay={<Tooltip>{row.tc_id} </Tooltip>}>
-              <div>
-                <span className="ms-1">{row.tc_id}</span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
-
     {
-      name: (
-        <div>
-          <span>Severity</span>
+      accessorFn: (originalRows) => `${originalRows?.severity || '--'} `,
+      header: 'Severity',
+      Header: (
+        <span>
+          Severity
           <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'severity', 'Severity', 'text')
             }
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['severity'] ? 'text-warning' : 'text-dark'
-            }`}
           />
-        </div>
+        </span>
       ),
-      selector: (row) => row.severity,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.severity && (
-            <OverlayTrigger overlay={<Tooltip>{row.severity} </Tooltip>}>
-              <div>
-                <span className="ms-1">{row.severity}</span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
-
     {
-      name: (
-        <div>
-          <span>Test Description</span>
+      accessorFn: (originalRows) =>
+        `${originalRows?.test_description || '--'} `,
+      header: 'Test Description',
+      Header: (
+        <span>
+          Test Description
           <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(
                 e,
                 'test_description',
-                'test_description',
+                'Test Description',
                 'text'
               )
             }
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['test_description'] ? 'text-warning' : 'text-dark'
-            }`}
           />
-        </div>
+        </span>
       ),
-      selector: (row) => row.test_description,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.test_description && (
-            <OverlayTrigger
-              overlay={<Tooltip>{row.test_description} </Tooltip>}
-            >
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.test_description && row.test_description?.length < 20
-                    ? row.test_description
-                    : row.test_description.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
-
     {
-      name: (
-        <div>
-          <span>Steps</span>
+      accessorFn: (originalRows) => `${originalRows?.steps || '--'} `,
+      header: 'Steps',
+      Header: (
+        <span>
+          Steps
           <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
             onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['steps'] ? 'text-warning' : 'text-dark'
-            }`}
           />
-        </div>
+        </span>
       ),
-      selector: (row) => row.steps,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.steps && (
-            <OverlayTrigger overlay={<Tooltip>{row.steps} </Tooltip>}>
-              <div>
-                <span className="ms-1 d-block">
-                  {' '}
-                  {row.steps && row.type_name?.length < 20
-                    ? row.steps
-                    : row.steps.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
     {
-      name: (
-        <div>
-          <span>Expected Result</span>
+      accessorFn: (originalRows) => `${originalRows?.expected_result || '--'} `,
+      header: 'Expected Result',
+      Header: (
+        <span>
+          Expected Result
           <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
             }
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['expected_result'] ? 'text-warning' : 'text-dark'
-            }`}
           />
-        </div>
+        </span>
       ),
-      selector: (row) => row.expected_result,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.expected_result && (
-            <OverlayTrigger overlay={<Tooltip>{row.expected_result} </Tooltip>}>
-              <div>
-                <span className="ms-1 d-block">
-                  {' '}
-                  {row.expected_result && row.expected_result?.length < 20
-                    ? row.expected_result
-                    : row.expected_result.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
-
     {
-      name: (
-        <div>
-          <span>Status</span>
+      accessorFn: (originalRows) => `${originalRows?.status_name || '--'} `,
+      header: 'Status',
+      Header: (
+        <span>
+          Status
           <i
-            onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['status'] ? 'text-warning' : 'text-dark'
-            }`}
-          />
-        </div>
-      ),
-      selector: (row) => row?.status_name,
-      width: '7rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.status_name && (
-            <OverlayTrigger overlay={<Tooltip>{row?.status_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row?.status_name && row?.status_name?.length < 20
-                    ? row?.status_name
-                    : row?.status_name.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
-    },
-
-    {
-      name: 'Reviewer comment',
-      selector: (row) => row?.comment_id,
-      sortable: true,
-
-      width: '250px',
-      cell: (row) => (
-        <div>
-          <select
-            className="form-select"
-            aria-label="Default select example"
-            // value={row.comment_id || ''}
-            // value={comments[row.id] || row.comment_id || ''}
-            // value={
-            //   selectedRows && selectedRows.includes(row.tc_id)
-            //     ? comments[row.id] || commonComment
-            //     : commonComment
-            // }
-            value={comments[row.id] || row.comment_id || commonComment || ''}
-            id="comment_id"
-            name="comment_id"
-            onChange={(e) =>
-              handleRowChange(row.id, 'comment_id', e.target.value)
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'status_name', 'Status', 'text')
             }
-          >
-            {generateOptions(getFilterReviewCommentMasterList)}
-          </select>
-
-          {commentIdError[row.tc_id] &&
-            selectedRows &&
-            selectedRows?.includes(row?.tc_id) && (
-              <div className="col">
-                <span className="text-danger">
-                  {commentIdError[row?.tc_id]}
-                </span>
-              </div>
-            )}
-        </div>
-      )
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
 
     {
-      name: 'Remark',
-      selector: (row) => row?.remark,
-      sortable: true,
-      width: '300px',
-      cell: (row) => (
-        <input
-          className="form-control"
-          type="text"
-          id="other_remark"
-          name="other_remark"
-          placeholder="Enter Remark"
-          aria-label="default input example"
-          maxLength={100}
-          defaultValue={
-            // selectedRows && selectedRows.includes(row.tc_id)
-            //   ? remarks[row.other_remark] || row.other_remark
-            //   : commonRemark
-            row.other_remark || remarks[row.id] || commonRemark
-          }
-          onChange={(e) =>
-            handleRowChange(row.id, 'other_remark', e.target.value)
-          }
-        />
-      )
-    },
-    {
-      name: (
-        <div>
-          <span>Project</span>
+      accessorFn: (originalRow) => originalRow?.comment_id || '--',
+      header: 'Reviewer comment',
+      Header: (
+        <span>
+          Reviewer comment
           <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'comment_id', 'Reviewer comment', 'dropdown')
+            }
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      enableSorting: true,
+      size: 250,
+      Cell: ({ row }) => {
+        const rowData = row.original;
+        const selectedValue =
+          comments[rowData.id] || rowData.comment_id || commonComment || '';
+
+        return (
+          <div>
+            <select
+              className="form-select"
+              aria-label="Default select example"
+              value={selectedValue}
+              id="comment_id"
+              name="comment_id"
+              onChange={(e) =>
+                handleRowChange(rowData.id, 'comment_id', e.target.value)
+              }
+            >
+              {generateOptions(getFilterReviewCommentMasterList)}
+            </select>
+
+            {commentIdError[rowData.tc_id] &&
+              selectedRows?.includes(rowData.tc_id) && (
+                <div className="col">
+                  <span className="text-danger">
+                    {commentIdError[rowData.tc_id]}
+                  </span>
+                </div>
+              )}
+          </div>
+        );
+      }
+    },
+
+    {
+      accessorFn: (originalRow) => originalRow?.remark || '--',
+      header: 'Remark',
+      Header: (
+        <span>
+          Remark
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) => handleFilterClick(e, 'remark', 'Remark', 'text')}
+          />
+        </span>
+      ),
+      enableColumnFilter: false,
+      enableSorting: true,
+      size: 300,
+      Cell: ({ row }) => {
+        const rowData = row.original;
+        const value =
+          rowData.other_remark || remarks[rowData.id] || commonRemark || '';
+
+        return (
+          <input
+            className="form-control"
+            type="text"
+            id="other_remark"
+            name="other_remark"
+            placeholder="Enter Remark"
+            aria-label="default input example"
+            maxLength={100}
+            defaultValue={value}
+            onChange={(e) =>
+              handleRowChange(rowData.id, 'other_remark', e.target.value)
+            }
+          />
+        );
+      }
+    },
+
+    {
+      accessorFn: (originalRows) => `${originalRows?.project_name || '--'} `,
+      header: 'Project',
+      Header: (
+        <span>
+          Project
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'project_name', 'Project', 'text')
             }
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['project_name'] ? 'text-warning' : 'text-dark'
-            }`}
           />
-        </div>
+        </span>
       ),
-      selector: (row) => row?.project_name,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.project_name && (
-            <OverlayTrigger overlay={<Tooltip>{row?.project_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row?.project_name && row?.project_name?.length < 20
-                    ? row?.project_name
-                    : row?.project_name.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
+    },
+    {
+      accessorFn: (originalRows) => `${originalRows?.created_at || '--'} `,
+      header: 'Created At',
+      Header: (
+        <span>
+          Created At
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'created_at', 'Created At', 'text')
+            }
+          />
+        </span>
       ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
 
     {
-      name: (
-        <div>
-          <span>Created At</span>
+      accessorFn: (originalRows) =>
+        `${originalRows?.created_by?.first_name || '--'} ${
+          originalRows?.created_by?.last_name || '--'
+        }`,
+      header: 'Created By',
+      Header: (
+        <span>
+          Created By
           <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
-              handleFilterClick(e, 'created_at', 'created_at', 'text')
+              handleFilterClick(e, 'created_by', 'Created By', 'text')
             }
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['created_at'] ? 'text-warning' : 'text-dark'
-            }`}
           />
-        </div>
+        </span>
       ),
-      selector: (row) => row.created_at,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.created_at && (
-            <OverlayTrigger overlay={<Tooltip>{row.created_at} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.created_at && row.created_at?.length < 20
-                    ? row.created_at
-                    : row.created_at.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
-
     {
-      name: (
-        <div>
-          <span>Created By</span>
+      accessorFn: (originalRows) => `${originalRows?.updated_at || '--'} `,
+      header: 'Updated At',
+      Header: (
+        <span>
+          Updated At
           <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
-              handleFilterClick(e, 'created_by', 'created_by', 'text')
+              handleFilterClick(e, 'updated_at', 'Updated At', 'text')
             }
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['created_by'] ? 'text-warning' : 'text-dark'
-            }`}
           />
-        </div>
+        </span>
       ),
-      selector: (row) => row.created_by,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.created_by && (
-            <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
-              <div>
-                <span className="ms-1"> {row?.created_by}</span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     },
-
     {
-      name: (
-        <div>
-          <span>Updated At</span>
+      accessorFn: (originalRows) =>
+        `${originalRows?.updated_by?.first_name || '--'} ${
+          originalRows?.updated_by?.last_name || '--'
+        }`,
+      header: 'Updated By',
+      Header: (
+        <span>
+          Updated By
           <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
-              handleFilterClick(e, 'updated_at', 'updated_at', 'text')
+              handleFilterClick(e, 'updated_by', 'Updated By', 'text')
             }
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['updated_at'] ? 'text-warning' : 'text-dark'
-            }`}
           />
-        </div>
+        </span>
       ),
-      selector: (row) => row.updated_at,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.updated_at && (
-            <OverlayTrigger overlay={<Tooltip>{row.updated_at} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.updated_at && row.updated_at?.length < 20
-                    ? row.updated_at
-                    : row.updated_at.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
-    },
-
-    {
-      name: (
-        <div>
-          <span>Updated By</span>
-          <i
-            onClick={(e) =>
-              handleFilterClick(e, 'updated_by', 'updated_by', 'text')
-            }
-            className={`icofont-filter ms-2 ${
-              isFilterApplied['updated_by'] ? 'text-warning' : 'text-dark'
-            }`}
-          />
-        </div>
-      ),
-      selector: (row) => row.updated_by,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.updated_by && (
-            <OverlayTrigger overlay={<Tooltip>{row?.updated_by} </Tooltip>}>
-              <div>
-                <span className="ms-1"> {row?.updated_by}</span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+      enableColumnFilter: false,
+      size: 200,
+      enableSorting: false
     }
   ];
 
@@ -1815,7 +2329,7 @@ function TestCaseReviewDetails() {
       <Container fluid className="employee_joining_details_container mt-2">
         <h5 className="mb-0 text-primary">Test Cases</h5>
         <hr className="primary_divider " />
-        <DataTable
+        {/* <DataTable
           columns={columns}
           data={rowData}
           persistTableHead={true}
@@ -1835,6 +2349,17 @@ function TestCaseReviewDetails() {
           selectableRows={false}
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
+        /> */}
+
+        <MaterialTable
+          columns={columns}
+          data={rowData}
+          // isLoading={isLoading}
+          pagination={paginationData}
+          setPagination={paginationData}
+          totalRows={allTestPlanIDData?.data?.total}
+          manualPagination={true}
+          manualFiltering={true}
         />
       </Container>
 
