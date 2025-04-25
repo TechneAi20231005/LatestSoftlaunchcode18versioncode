@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import MyTicketDropdown from './MyTicketDropdown';
 import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import ServerMaterial from '../../../components/custom/MUI Table/ServerMaterial';
+import DescriptionModal from './DescriptionModal';
 
 const DataTableCustom = React.memo(
   ({
@@ -21,14 +22,32 @@ const DataTableCustom = React.memo(
     setColumnFilters,
     columnFilters,
     reset = false,
-    setReset = () => {},
+    setReset = () => {}
   }) => {
+    let tabType = type;
+    const [modal, setModal] = useState({
+      showModal: false,
+      modalData: '',
+      modalHeader: ''
+    });
+
+    const handleModal = (data) => {
+      setModal(data);
+    };
+    const actionCell = ({ row }) => (
+      <MyTicketDropdown
+        setColumnFilters={setColumnFilters}
+        setPagination={setPagination}
+        type={tabType}
+        data={row.original}
+      />
+    );
     const columns = [
       {
         accessorKey: 'action',
         header: 'Action',
         size: 120,
-        Cell: ({ row }) => <MyTicketDropdown setColumnFilters={setColumnFilters} setPagination={setPagination} type={type} data={row.original} />,
+        Cell: actionCell,
         enableColumnOrdering: false,
         enableGrouping: false,
         enableSorting: false,
@@ -47,15 +66,28 @@ const DataTableCustom = React.memo(
         )
       },
       {
-        accessorKey: 'description',
+        accessorFn: (originalRows) =>
+          (
+            <span
+              onClick={() =>
+                handleModal({
+                  showModal: true,
+                  modalData: originalRows,
+                  modalHeader: ''
+                })
+              }
+            >
+              {originalRows?.description}
+            </span>
+          ) || '--',
         header: 'Description',
         enableColumnFilter: false,
-        size: 250,
+        size: 250
       },
       {
         accessorKey: 'ticket_date',
         header: 'Ticket Date',
-        filterVariant: 'date-range',
+        filterVariant: 'date-range'
       },
       {
         accessorKey: 'expected_solve_date',
@@ -90,13 +122,13 @@ const DataTableCustom = React.memo(
         header: 'Type',
         enableColumnFilter: false
       },
-      ...(type === "CreatedByMe"
+      ...(type === 'CreatedByMe'
         ? [
             {
               accessorFn: (originalRows) => originalRows?.passed_status || '--',
               header: 'Passed Status',
               enableColumnFilter: false,
-              size: 205,
+              size: 205
             }
           ]
         : []),
@@ -105,7 +137,7 @@ const DataTableCustom = React.memo(
         header: 'Status',
         filterVariant: 'multi-select',
         filterSelectOptions: allStatusData?.selectData,
-        size: 150,
+        size: 150
       },
       {
         accessorFn: (originalRows) =>
@@ -113,7 +145,7 @@ const DataTableCustom = React.memo(
         header: 'Assign To Dept',
         size: 220,
         filterVariant: 'multi-select',
-        filterSelectOptions: allDepartmentData?.selectData,
+        filterSelectOptions: allDepartmentData?.selectData
       },
       {
         accessorFn: (originalRows) =>
@@ -123,7 +155,7 @@ const DataTableCustom = React.memo(
         header: 'Assigned To',
         size: 220,
         filterVariant: 'multi-select',
-        filterSelectOptions: allUsersData?.selectData,
+        filterSelectOptions: allUsersData?.selectData
       },
       {
         accessorFn: (originalRows) =>
@@ -139,7 +171,7 @@ const DataTableCustom = React.memo(
               accessorFn: (row) => row.ticket_solved_date || '--',
               header: 'Solved Date',
               size: 190,
-              enableColumnFilter: false,
+              enableColumnFilter: false
             },
             {
               accessorFn: (originalRows) =>
@@ -147,33 +179,36 @@ const DataTableCustom = React.memo(
                   originalRows?.ticket_solved_by?.last_name || '--'
                 }`,
               header: 'Solved By',
-              enableColumnFilter: false,
+              enableColumnFilter: false
             }
           ]
         : [])
     ];
 
-
-
     return (
-      <ServerMaterial
-        columns={columns}
-        data={allTicketsData || []}
-        isLoading={isLoading}
-        pagination={pagination}
-        setPagination={setPagination}
-        totalRows={totalRows}
-        manualPagination={true}
-        manualFiltering={true}
-        setAllTicketsData={setAllTicketsData}
-        activeTab={activeTab}
-        setTotalRows={setTotalRows}
-        setColumnFilters={setColumnFilters}
-        columnFilters={columnFilters}
-        reset={reset}
-        setReset={setReset}
-        enableRowSelection={type === 'UnPassed'}
-      />
+      <React.Fragment>
+        <ServerMaterial
+          columns={columns}
+          data={allTicketsData || []}
+          isLoading={isLoading}
+          pagination={pagination}
+          setPagination={setPagination}
+          totalRows={totalRows}
+          manualPagination={true}
+          manualFiltering={true}
+          setAllTicketsData={setAllTicketsData}
+          activeTab={activeTab}
+          setTotalRows={setTotalRows}
+          setColumnFilters={setColumnFilters}
+          columnFilters={columnFilters}
+          reset={reset}
+          setReset={setReset}
+          enableRowSelection={type === 'UnPassed'}
+        />
+        {modal.showModal && (
+          <DescriptionModal modal={modal} handleModal={handleModal} />
+        )}
+      </React.Fragment>
     );
   }
 );

@@ -15,7 +15,9 @@ import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 const MyTicketsTab = () => {
   const [isLoading, setIsLoading] = useState(true);
   let user = localStorage.getItem('account_for') === 'SELF' ? true : false;
-  const [activeTab, setActiveTab] = useState( user ? 'AssignToMe' : 'CreatedByMe');
+  const [activeTab, setActiveTab] = useState(
+    user ? 'AssignToMe' : 'CreatedByMe'
+  );
   const [allUsersData, setAllUsersData] = useState({});
   const [allDepartmentData, setAllDepartmentData] = useState({});
   const [allStatusData, setAllStatusData] = useState({});
@@ -29,9 +31,6 @@ const MyTicketsTab = () => {
   });
 
   const [totalRows, setTotalRows] = useState(0);
-
-
-
 
   const [columnFilters, setColumnFilters] = useState([]);
 
@@ -94,31 +93,43 @@ const MyTicketsTab = () => {
     await Promise.all(fetchPromises);
   };
 
-  const tabList = useMemo(
-    () => [
-      { id: 2, name: 'AssignToMe', label: 'Assign To Me', color: 'primary', user: user },
-      {
-        id: 3,
-        name: 'CreatedByMe',
-        label: 'Created By Me',
-        color: 'secondary',
-
-      },
-      {
-        id: 4,
-        name: 'DepartmentWise',
-        label: 'Department Wise',
-        color: 'success',
-        user: user
-      },
-      { id: 5, name: 'YourTask', label: 'Your Task', color: 'error', user: user },
-      { id: 6, name: 'UnPassed', label: 'UnPassed', color: 'warning' }
-    ],
-    [allTicketsData, user]
-  );
+  const tabList = useMemo(() => [
+    {
+      id: 2,
+      name: 'AssignToMe',
+      label: 'Assign To Me',
+      color: 'primary',
+      user: user
+    },
+    {
+      id: 3,
+      name: 'CreatedByMe',
+      label: 'Created By Me',
+      color: 'secondary'
+    },
+    {
+      id: 4,
+      name: 'DepartmentWise',
+      label: 'Department Wise',
+      color: 'success',
+      user: user
+    },
+    {
+      id: 5,
+      name: 'YourTask',
+      label: 'Your Task',
+      color: 'error',
+      user: user
+    },
+    {
+      id: 6,
+      name: 'UnPassed',
+      label: 'UnPassed',
+      color: 'warning'
+    }
+  ], [allTicketsData, user]);
 
   const handleTabChange = async (event, newValue) => {
-    // if (isLoading) return;
     setActiveTab(newValue);
     setColumnFilters([]);
     setReset(true);
@@ -234,18 +245,20 @@ const MyTicketsTab = () => {
         indicatorColor="secondary"
         aria-label="ticket tabs"
       >
-        {tabList?.filter((item) => item?.user !== false)?.map((tab) => (
-          <Tab
-            icon={
-              <AssignmentTurnedInIcon
-                sx={{ color: activeTab === tab.name ? '#198754' : 'inherit' }}
-              />
-            }
-            key={tab.id}
-            value={tab.name}
-            label={tab.label}
-          />
-        ))}
+        {tabList
+          ?.filter((item) => item?.user !== false)
+          ?.map((tab) => (
+            <Tab
+              icon={
+                <AssignmentTurnedInIcon
+                  sx={{ color: activeTab === tab.name ? '#198754' : 'inherit' }}
+                />
+              }
+              key={tab.id}
+              value={tab.name}
+              label={tab.label}
+            />
+          ))}
       </Tabs>
 
       <Box mt={2}>

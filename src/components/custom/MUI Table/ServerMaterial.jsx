@@ -90,7 +90,7 @@ function ServerMaterial({
       }
       return col;
     });
-  }, [expandColumn, columns.length]);
+  }, [expandColumn, columns]);
 
   useEffect(() => {
     if (reset) {
