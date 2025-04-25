@@ -59,7 +59,7 @@ const testCaseReviewSlice = createSlice({
       })
       .addCase(getTestCaseReviewListThunk.fulfilled, (state, action) => {
         state.isLoading.testCaseReviewList = false;
-        state.testCaseReviewList = action?.payload?.data?.data?.data;
+        state.testCaseReviewList = action?.payload?.data?.data?.data || [];
         state.filterTestCaseReviewList = action?.payload?.data?.filter_data;
         state.successMsg.testCaseReviewList = action?.payload?.message;
       })

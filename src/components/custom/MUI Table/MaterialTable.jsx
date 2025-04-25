@@ -41,7 +41,8 @@ function MaterialTable({
   reset = false,
   exportDataKeys,
   setReset = () => {},
-  isExportData = true
+  isExportData = true,
+  enableRowNumbers = false,
 }) {
   const [columnFilters, setColumnFilters] = useState([]);
   const [sorting, setSorting] = useState([]);
@@ -274,6 +275,7 @@ function MaterialTable({
           onGlobalFilterChange={setGlobalFilter}
           onShowGlobalFilterChange={setShowGlobalFilter}
           onShowColumnFiltersChange={setShowColumnFilters}
+          enableRowNumbers={enableRowNumbers}
           renderToolbarInternalActions={({ table }) => (
             <Box
               sx={{

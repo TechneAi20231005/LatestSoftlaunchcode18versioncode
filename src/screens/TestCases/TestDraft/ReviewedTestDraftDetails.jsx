@@ -7,6 +7,7 @@ import { _base } from '../../../settings/constants';
 import CustomFilterModal from '../Modal/CustomFilterModal';
 import { getAllReviewTestDraftList } from '../../../redux/services/testCases/downloadFormatFile';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 
 const initialState = {
   filterType: '',
@@ -73,11 +74,13 @@ function localReducer(state, action) {
 }
 
 function ReviewedTestDraftDetails(props) {
+
   const dispatch = useDispatch();
   const clearAllFilter = props.clearData;
 
   const { allReviewDraftTestListData, isLoading, filterReviewedDraftTestList } =
     useSelector((state) => state?.downloadFormat);
+    console.log(allReviewDraftTestListData,"allReviewDraftTestListData")
   // const [paginationData, setPaginationData] = useReducer(
   //   (prevState, nextState) => {
   //     return { ...prevState, ...nextState };
@@ -415,19 +418,442 @@ function ReviewedTestDraftDetails(props) {
     } catch (error) {}
   };
 
-  const columns = [
-    {
-      name: 'Sr. No.',
-      selector: (row, index) => index + 1,
-      sortable: false,
-      width: '70px'
-    },
+  // const columns = [
+  //   {
+  //     name: 'Sr. No.',
+  //     selector: (row, index) => index + 1,
+  //     sortable: false,
+  //     width: '70px'
+  //   },
 
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Test Plan Id</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(e, 'test_plan_id', 'test_plan_id', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             props?.isFilterApplied['test_plan_id']
+  //               ? 'text-warning'
+  //               : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+
+  //     selector: (row) => row.test_plan_id,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.test_plan_id && (
+  //           <OverlayTrigger overlay={<Tooltip>{row.test_plan_id} </Tooltip>}>
+  //             <div>
+  //               <Link
+  //                 to={`/${_base + '/ReviewedTestDraftComponent/' + row?.id}`}
+  //                 className="link_underline_primary"
+  //               >
+  //                 {row.test_plan_id}
+  //               </Link>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Reviewer Name</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(e, 'reviewer_name', 'Reviewer Name', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             props?.isFilterApplied['reviewer_name']
+  //               ? 'text-warning'
+  //               : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+
+  //     selector: (row) => row.reviewer_name,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.reviewer_name && (
+  //           <OverlayTrigger overlay={<Tooltip>{row.reviewer_name} </Tooltip>}>
+  //             <div>{row.reviewer_name}</div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Total Testcase</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(
+  //               e,
+  //               'total_testcases',
+  //               'total_testcases',
+  //               'number'
+  //             )
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             props?.isFilterApplied['total_testcases']
+  //               ? 'text-warning'
+  //               : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+
+  //     selector: (row) => row.total_testcases,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.total_testcases && (
+  //           <OverlayTrigger overlay={<Tooltip>{row.total_testcases} </Tooltip>}>
+  //             <div>{row.total_testcases}</div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Reviewed Testcase</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(
+  //               e,
+  //               'total_reviewed_testcases',
+  //               'total_reviewed_testcases',
+  //               'number'
+  //             )
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             props?.isFilterApplied['total_reviewed_testcases']
+  //               ? 'text-warning'
+  //               : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+
+  //     selector: (row) => row.total_reviewed_testcases,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.total_reviewed_testcases && (
+  //           <OverlayTrigger
+  //             overlay={<Tooltip>{row.total_reviewed_testcases} </Tooltip>}
+  //           >
+  //             <div>{row.total_reviewed_testcases}</div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Rejected Testcase</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(
+  //               e,
+  //               'total_rejected_testcases',
+  //               'total_rejected_testcases',
+  //               'number'
+  //             )
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             props?.isFilterApplied['total_rejected_testcases']
+  //               ? 'text-warning'
+  //               : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+
+  //     selector: (row) => row.total_rejected_testcases,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.total_rejected_testcases && (
+  //           <OverlayTrigger
+  //             overlay={<Tooltip>{row.total_rejected_testcases} </Tooltip>}
+  //           >
+  //             <div>{row.total_rejected_testcases}</div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Approved Testcase</span>
+  //         <i
+  //           onClick={(e) =>
+  //             handleFilterClick(
+  //               e,
+  //               'total_approved_testcases',
+  //               'total_approved_testcases',
+  //               'number'
+  //             )
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             props?.isFilterApplied['total_approved_testcases']
+  //               ? 'text-warning'
+  //               : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+
+  //     selector: (row) => row.total_approved_testcases,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row.total_approved_testcases && (
+  //           <OverlayTrigger
+  //             overlay={<Tooltip>{row.total_approved_testcases} </Tooltip>}
+  //           >
+  //             <div>{row.total_approved_testcases}</div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Created At</span>
+  //         <i
+  //           onClick={(e, row) =>
+  //             handleFilterClick(e, 'created_at', 'created_at', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             props?.isFilterApplied['created_at']
+  //               ? 'text-warning'
+  //               : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row.created_at,
+  //     sortable: false,
+  //     width: '10rem'
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Created By</span>
+  //         <i
+  //           onClick={(e, row) =>
+  //             handleFilterClick(e, 'created_by', 'created_by', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             props?.isFilterApplied['created_by']
+  //               ? 'text-warning'
+  //               : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row.created_by,
+  //     width: '10rem',
+  //     sortable: false,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row?.created_by && (
+  //           <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">
+  //                 {' '}
+  //                 {row?.created_by && row?.created_by?.length < 20
+  //                   ? row?.created_by
+  //                   : row?.created_by?.substring(0, 50) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Updated At</span>
+  //         <i
+  //           onClick={(e, row) =>
+  //             handleFilterClick(e, 'updated_at', 'updated_at', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             props?.isFilterApplied['updated_at']
+  //               ? 'text-warning'
+  //               : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row.updated_at,
+  //     sortable: false,
+  //     width: '10rem'
+  //   },
+
+  //   {
+  //     name: (
+  //       <div>
+  //         <span>Updated By</span>
+  //         <i
+  //           onClick={(e, row) =>
+  //             handleFilterClick(e, 'updated_by', 'updated_by', 'text')
+  //           }
+  //           className={`icofont-filter ms-2 ${
+  //             props?.isFilterApplied['updated_by']
+  //               ? 'text-warning'
+  //               : 'text-dark'
+  //           }`}
+  //         />
+  //       </div>
+  //     ),
+  //     selector: (row) => row.updated_by,
+  //     width: '10rem',
+  //     sortable: true,
+  //     cell: (row) => (
+  //       <div
+  //         className="btn-group"
+  //         role="group"
+  //         aria-label="Basic outlined example"
+  //       >
+  //         {row?.updated_by && (
+  //           <OverlayTrigger overlay={<Tooltip>{row.updated_by} </Tooltip>}>
+  //             <div>
+  //               <span className="ms-1">
+  //                 {' '}
+  //                 {row?.updated_by && row?.updated_by?.length < 20
+  //                   ? row?.updated_by
+  //                   : row?.updated_by?.substring(0, 50) + '....'}
+  //               </span>
+  //             </div>
+  //           </OverlayTrigger>
+  //         )}
+  //       </div>
+  //     ),
+  //     header: (column, sortDirection) => (
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   }
+  // ];
+
+   const columns = [
     {
-      name: (
-        <div>
-          <span>Test Plan Id</span>
-          <i
+      accessorKey: 'test_plan_id',
+      header: 'Test Plan ID',
+      size: 190,
+      enableColumnFilter: true,
+      enableSorting: false,
+      Header:
+      <span>
+         Test Plan ID
+       <i
+           style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'test_plan_id', 'test_plan_id', 'text')
             }
@@ -436,46 +862,33 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-          />
-        </div>
-      ),
+         />
+       </span>,
+      Cell: ({ row }) => {
+        const testPlanId = row.original.test_plan_id;
+        const id = row.original.id;
+        return testPlanId ? (
+            <Link
+              to={`/${_base}/ReviewedTestDraftComponent/${id}`}
+              style={{ textDecoration: 'underline', color: '#1976d2' }}
+            >
+              {testPlanId}
+            </Link>
 
-      selector: (row) => row.test_plan_id,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.test_plan_id && (
-            <OverlayTrigger overlay={<Tooltip>{row.test_plan_id} </Tooltip>}>
-              <div>
-                <Link
-                  to={`/${_base + '/ReviewedTestDraftComponent/' + row?.id}`}
-                  className="link_underline_primary"
-                >
-                  {row.test_plan_id}
-                </Link>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+        ) : null;
+      },
     },
-
     {
-      name: (
-        <div>
-          <span>Reviewer Name</span>
-          <i
+      accessorKey: 'reviewer_name',
+      header: 'Reviewer Name',
+      size: 215,
+      enableSorting: false,
+      enableColumnFilter: true,
+      Header:
+      <span>
+         Reviewer Name
+       <i
+           style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'reviewer_name', 'Reviewer Name', 'text')
             }
@@ -484,39 +897,20 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-          />
-        </div>
-      ),
-
-      selector: (row) => row.reviewer_name,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.reviewer_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.reviewer_name} </Tooltip>}>
-              <div>{row.reviewer_name}</div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+         />
+       </span>,
     },
-
     {
-      name: (
-        <div>
-          <span>Total Testcase</span>
-          <i
+      accessorKey: 'total_testcases',
+      header: 'Total Testcase',
+      size: 205,
+      enableSorting: false,
+      enableColumnFilter: true,
+      Header:
+      <span>
+         Total Testcase
+       <i
+           style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(
                 e,
@@ -530,39 +924,20 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-          />
-        </div>
-      ),
-
-      selector: (row) => row.total_testcases,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.total_testcases && (
-            <OverlayTrigger overlay={<Tooltip>{row.total_testcases} </Tooltip>}>
-              <div>{row.total_testcases}</div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+         />
+       </span>,
     },
-
     {
-      name: (
-        <div>
-          <span>Reviewed Testcase</span>
-          <i
+     accessorKey: 'total_reviewed_testcases',
+     header: 'Reviewed Testcase',
+      size: 235,
+      enableSorting: false,
+      enableColumnFilter: true,
+      Header:
+      <span>
+         Reviewed Testcase
+       <i
+           style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(
                 e,
@@ -576,41 +951,20 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-          />
-        </div>
-      ),
-
-      selector: (row) => row.total_reviewed_testcases,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.total_reviewed_testcases && (
-            <OverlayTrigger
-              overlay={<Tooltip>{row.total_reviewed_testcases} </Tooltip>}
-            >
-              <div>{row.total_reviewed_testcases}</div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+         />
+       </span>,
     },
-
     {
-      name: (
-        <div>
-          <span>Rejected Testcase</span>
-          <i
+      accessorKey: 'total_rejected_testcases',
+      header: 'Rejected Testcase',
+      size: 230,
+      enableSorting: false,
+      enableColumnFilter: true,
+      Header:
+      <span>
+         Rejected Testcase
+       <i
+           style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(
                 e,
@@ -624,41 +978,20 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-          />
-        </div>
-      ),
-
-      selector: (row) => row.total_rejected_testcases,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.total_rejected_testcases && (
-            <OverlayTrigger
-              overlay={<Tooltip>{row.total_rejected_testcases} </Tooltip>}
-            >
-              <div>{row.total_rejected_testcases}</div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+         />
+       </span>,
     },
-
     {
-      name: (
-        <div>
-          <span>Approved Testcase</span>
-          <i
+      accessorKey: 'total_approved_testcases',
+      header: 'Approved Testcase',
+      size: 235,
+      enableSorting: false,
+      enableColumnFilter: true,
+      Header:
+      <span>
+         Approved Testcase
+       <i
+           style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(
                 e,
@@ -672,41 +1005,20 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-          />
-        </div>
-      ),
-
-      selector: (row) => row.total_approved_testcases,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.total_approved_testcases && (
-            <OverlayTrigger
-              overlay={<Tooltip>{row.total_approved_testcases} </Tooltip>}
-            >
-              <div>{row.total_approved_testcases}</div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+         />
+       </span>,
     },
-
     {
-      name: (
-        <div>
-          <span>Created At</span>
-          <i
+      accessorKey: 'created_at',
+      header: 'Created At',
+      size: 180,
+      enableSorting: false,
+      enableColumnFilter: true,
+      Header:
+      <span>
+         Created At
+       <i
+           style={{ cursor: 'pointer' }}
             onClick={(e, row) =>
               handleFilterClick(e, 'created_at', 'created_at', 'text')
             }
@@ -715,19 +1027,20 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-          />
-        </div>
-      ),
-      selector: (row) => row.created_at,
-      sortable: false,
-      width: '10rem'
+         />
+       </span>,
     },
-
     {
-      name: (
-        <div>
-          <span>Created By</span>
-          <i
+      accessorKey: 'created_by',
+      header: 'Created By',
+      size: 180,
+      enableSorting: false,
+      enableColumnFilter: true,
+      Header:
+      <span>
+         Created By
+       <i
+           style={{ cursor: 'pointer' }}
             onClick={(e, row) =>
               handleFilterClick(e, 'created_by', 'created_by', 'text')
             }
@@ -736,66 +1049,43 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-          />
-        </div>
-      ),
-      selector: (row) => row.created_by,
-      width: '10rem',
-      sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.created_by && (
-            <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row?.created_by && row?.created_by?.length < 20
-                    ? row?.created_by
-                    : row?.created_by?.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+         />
+       </span>,
     },
-
     {
-      name: (
-        <div>
-          <span>Updated At</span>
-          <i
-            onClick={(e, row) =>
-              handleFilterClick(e, 'updated_at', 'updated_at', 'text')
-            }
-            className={`icofont-filter ms-2 ${
-              props?.isFilterApplied['updated_at']
-                ? 'text-warning'
-                : 'text-dark'
-            }`}
+     accessorKey: 'updated_at',
+
+      header: 'Updated At',
+        size: 180,
+        enableSorting: false,
+        enableColumnFilter: true,
+        Header:
+        <span>
+          Updated At
+        <i
+            style={{ cursor: 'pointer' }}
+              onClick={(e, row) =>
+                handleFilterClick(e, 'updated_at', 'updated_at', 'text')
+              }
+              className={`icofont-filter ms-2 ${
+                props?.isFilterApplied['updated_at']
+                  ? 'text-warning'
+                  : 'text-dark'
+              }`}
           />
-        </div>
-      ),
-      selector: (row) => row.updated_at,
-      sortable: false,
-      width: '10rem'
+        </span>,
     },
-
     {
-      name: (
-        <div>
-          <span>Updated By</span>
-          <i
+      accessorKey: 'updated_by',
+      header: 'Updated By',
+      size: 183,
+      enableSorting: false,
+      enableColumnFilter: true,
+      Header:
+      <span>
+         Updated By
+       <i
+           style={{ cursor: 'pointer' }}
             onClick={(e, row) =>
               handleFilterClick(e, 'updated_by', 'updated_by', 'text')
             }
@@ -804,41 +1094,10 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-          />
-        </div>
-      ),
-      selector: (row) => row.updated_by,
-      width: '10rem',
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row?.updated_by && (
-            <OverlayTrigger overlay={<Tooltip>{row.updated_by} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row?.updated_by && row?.updated_by?.length < 20
-                    ? row?.updated_by
-                    : row?.updated_by?.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+         />
+       </span>,
     }
-  ];
-
+   ]
   useEffect(() => {
     if (sortOrder && sortOrder != null) {
       const newFilter =
@@ -958,7 +1217,11 @@ function ReviewedTestDraftDetails(props) {
     <>
       <Container fluid className="employee_joining_details_container">
         <div>
-          <DataTable
+
+          {
+            allReviewDraftTestListData && <MaterialTable columns={columns} data={allReviewDraftTestListData} enableRowNumbers={true} isExportData={false} isLoading={isLoading?.allReviewDraftTestListData}  />
+          }
+          {/* <DataTable
             columns={columns}
             persistTableHead={true}
             data={allReviewDraftTestListData}
@@ -980,7 +1243,7 @@ function ReviewedTestDraftDetails(props) {
             highlightOnHover={true}
             progressPending={isLoading?.allReviewDraftTestListData}
             progressComponent={<TableLoadingSkelton />}
-          />
+          /> */}
 
           {modalIsOpen && (
             <CustomFilterModal
