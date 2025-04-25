@@ -49,14 +49,13 @@ function ServerMaterial({
     const innerText = clickedRow.innerText;
     clickedRow.setAttribute('title', innerText);
   };
-
   const [expandColumn, setExpandColumn] = useState(false);
 
   const [groupBy, setGroupBy] = useState([]);
 
   const [globalFilter, setGlobalFilter] = useState([]);
 
-    const [showColumnFilters, setShowColumnFilters] = useState(false);
+  const [showColumnFilters, setShowColumnFilters] = useState(false);
 
   const [showGlobalFilter, setShowGlobalFilter] = useState(false);
 
@@ -98,7 +97,7 @@ function ServerMaterial({
       setGroupBy([]);
       setGlobalFilter([]);
       setShowGlobalFilter(false);
-      setShowColumnFilters(false)
+      setShowColumnFilters(false);
       setRowSelection({});
       setReset(false);
       setExpandColumn(false);
@@ -201,7 +200,11 @@ function ServerMaterial({
                   marginY: 'auto'
                 }}
               >
-                <MRT_ToggleGlobalFilterButton onClick={globalFilterToggler} disabled={false} table={table} />
+                <MRT_ToggleGlobalFilterButton
+                  onClick={globalFilterToggler}
+                  disabled={false}
+                  table={table}
+                />
                 <Tooltip title="Clear Filters" arrow>
                   <IconButton
                     // disabled={
@@ -276,11 +279,12 @@ function ServerMaterial({
 
                 {activeTab === 'UnPassed' && (
                   <>
-
                     <button
                       className="btn btn-success btn-block text-white"
                       onClick={(e) => {
-                        const selectedRows = table.getSelectedRowModel().rows.map(row => row.original);
+                        const selectedRows = table
+                          .getSelectedRowModel()
+                          .rows.map((row) => row.original);
                         handleRemarkModal({
                           showModal: true,
                           modalData: selectedRows,
@@ -288,17 +292,23 @@ function ServerMaterial({
                           status: 'PASS'
                         });
                       }}
-                      disabled={Object.keys(rowSelection)?.length === 0 ||
+                      disabled={
+                        Object.keys(rowSelection)?.length === 0 ||
                         table
                           .getSelectedRowModel()
-                          .rows?.some(row => row?.original?.passed_status !== "UNPASS")  }
+                          .rows?.some(
+                            (row) => row?.original?.passed_status !== 'UNPASS'
+                          )
+                      }
                     >
                       <i className="icofont-checked"></i> Pass
                     </button>
                     <button
                       className="btn btn-danger btn-block text-white"
                       onClick={(e) => {
-                        const selectedRows = table.getSelectedRowModel().rows.map(row => row.original);
+                        const selectedRows = table
+                          .getSelectedRowModel()
+                          .rows.map((row) => row.original);
                         handleRemarkModal({
                           showModal: true,
                           modalData: selectedRows,
@@ -306,10 +316,14 @@ function ServerMaterial({
                           status: 'Reject'
                         });
                       }}
-                      disabled={Object.keys(rowSelection)?.length === 0 ||
+                      disabled={
+                        Object.keys(rowSelection)?.length === 0 ||
                         table
                           .getSelectedRowModel()
-                          .rows?.some(row => row?.original?.passed_status !== "UNPASS")  }
+                          .rows?.some(
+                            (row) => row?.original?.passed_status !== 'UNPASS'
+                          )
+                      }
                     >
                       <i className="icofont-close-squared-alt"></i> Reject
                     </button>
@@ -320,15 +334,15 @@ function ServerMaterial({
           />
         </LocalizationProvider>
       </Box>
-      {
-        remarkModal.showModal && <UnPassModal
-        remarkModal={remarkModal}
-        handleRemarkModal={handleRemarkModal}
-        setPagination={setPagination}
-        setColumnFilters={setColumnFilters}
-        setRowSelection={setRowSelection}
-      />
-      }
+      {remarkModal.showModal && (
+        <UnPassModal
+          remarkModal={remarkModal}
+          handleRemarkModal={handleRemarkModal}
+          setPagination={setPagination}
+          setColumnFilters={setColumnFilters}
+          setRowSelection={setRowSelection}
+        />
+      )}
     </>
   );
 }

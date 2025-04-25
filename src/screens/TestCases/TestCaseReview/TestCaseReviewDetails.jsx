@@ -15,6 +15,7 @@ import { getReviewCommentMasterListThunk } from '../../../redux/services/testCas
 import EditTestCaseModal from '../TestDraft/EditTestCaseModal';
 import CustomFilterModal from '../Modal/CustomFilterModal';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
+import { getTestCaseStatusDataList } from '../../../redux/services/testCases/downloadFormatFile';
 
 const initialState = {
   filterType: '',
@@ -101,6 +102,10 @@ function TestCaseReviewDetails() {
   } = useSelector((state) => state?.testCaseReview);
   const { getFilterReviewCommentMasterList } = useSelector(
     (state) => state?.reviewCommentMaster
+  );
+
+  const { testCasesStatusDataList } = useSelector(
+    (state) => state?.downloadFormat
   );
   const [paginationData, setPaginationData] = useReducer(
     (prevState, nextState) => {
@@ -304,11 +309,20 @@ function TestCaseReviewDetails() {
     } else {
       setCommentIdError('');
 
+      const statusId =
+        status === 'RESEND'
+          ? testCasesStatusDataList?.find(
+              (d) => d?.convention_name === 'RESEND'
+            )
+          : testCasesStatusDataList?.find(
+              (d) => d?.convention_name === 'REJECTED'
+            )?.id;
       const formData = {
         review_testcase_data: updatedRows,
         status: status,
         common_comment_id: commonComment,
-        common_remark: commonRemark
+        common_remark: commonRemark,
+        status_id: statusId
       };
 
       dispatch(
@@ -340,7 +354,7 @@ function TestCaseReviewDetails() {
     localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: newSelectAllNames });
 
     if (newSelectAllNames) {
-      const draftRowIds = exportTestCaseReviewData.map((row) => row.tc_id);
+      const draftRowIds = rowData.map((row) => row.tc_id);
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
     } else {
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
@@ -353,7 +367,6 @@ function TestCaseReviewDetails() {
     // }
     setRowData(testPlanIdData);
   }, [testPlanIdData]);
-
   const columns = [
     {
       name: 'Action',
@@ -417,7 +430,7 @@ function TestCaseReviewDetails() {
         </div>
       ),
 
-      selector: (row) => row.module_name,
+      selector: (row) => row?.module_name,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -426,14 +439,14 @@ function TestCaseReviewDetails() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.module_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.module_name} </Tooltip>}>
+          {row?.module_name && (
+            <OverlayTrigger overlay={<Tooltip>{row?.module_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.module_name && row.module_name?.length < 20
-                    ? row.module_name
-                    : row.module_name.substring(0, 50) + '....'}
+                  {row?.module_name && row?.module_name?.length < 20
+                    ? row?.module_name
+                    : row?.module_name.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -462,7 +475,7 @@ function TestCaseReviewDetails() {
           />
         </div>
       ),
-      selector: (row) => row.sub_module_name,
+      selector: (row) => row?.sub_module_name,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -471,14 +484,16 @@ function TestCaseReviewDetails() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.sub_module_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.sub_module_name} </Tooltip>}>
+          {row?.sub_module_name && (
+            <OverlayTrigger
+              overlay={<Tooltip>{row?.sub_module_name} </Tooltip>}
+            >
               <div>
                 <span className="ms-1 d-block">
                   {' '}
-                  {row.sub_module_name && row.sub_module_name?.length < 20
-                    ? row.sub_module_name
-                    : row.sub_module_name.substring(0, 50) + '....'}
+                  {row?.sub_module_name && row?.sub_module_name?.length < 20
+                    ? row?.sub_module_name
+                    : row?.sub_module_name.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -507,7 +522,7 @@ function TestCaseReviewDetails() {
           />
         </div>
       ),
-      selector: (row) => row.function_name,
+      selector: (row) => row?.function_name,
       width: '7rem',
       sortable: false,
       cell: (row) => (
@@ -516,14 +531,14 @@ function TestCaseReviewDetails() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.function_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.function_name} </Tooltip>}>
+          {row?.function_name && (
+            <OverlayTrigger overlay={<Tooltip>{row?.function_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.function_name && row.function_name?.length < 20
-                    ? row.function_name
-                    : row.function_name.substring(0, 50) + '....'}
+                  {row?.function_name && row?.function_namee?.length < 20
+                    ? row?.function_name
+                    : row?.function_name.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -595,7 +610,7 @@ function TestCaseReviewDetails() {
           />
         </div>
       ),
-      selector: (row) => row.type_name,
+      selector: (row) => row?.type_name,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -604,14 +619,14 @@ function TestCaseReviewDetails() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.type_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.type_name} </Tooltip>}>
+          {row?.type_name && (
+            <OverlayTrigger overlay={<Tooltip>{row?.type_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.type_name && row.type_name?.length < 20
-                    ? row.type_name
-                    : row.type_name.substring(0, 50) + '....'}
+                  {row?.type_name && row?.type_name?.length < 20
+                    ? row?.type_name
+                    : row?.type_name.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -640,7 +655,7 @@ function TestCaseReviewDetails() {
           />
         </div>
       ),
-      selector: (row) => row.group_name,
+      selector: (row) => row.testing_group,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -649,14 +664,14 @@ function TestCaseReviewDetails() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.group_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.group_name} </Tooltip>}>
+          {row?.testing_group && (
+            <OverlayTrigger overlay={<Tooltip>{row?.testing_group} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.group_name && row.group_name?.length < 20
-                    ? row.group_name
-                    : row.group_name.substring(0, 50) + '....'}
+                  {row?.testing_group && row?.testing_group?.length < 20
+                    ? row?.testing_group
+                    : row?.testing_group.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -900,7 +915,7 @@ function TestCaseReviewDetails() {
           />
         </div>
       ),
-      selector: (row) => row.status,
+      selector: (row) => row?.status_name,
       width: '7rem',
       sortable: false,
       cell: (row) => (
@@ -909,14 +924,14 @@ function TestCaseReviewDetails() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.status && (
-            <OverlayTrigger overlay={<Tooltip>{row.status} </Tooltip>}>
+          {row?.status_name && (
+            <OverlayTrigger overlay={<Tooltip>{row?.status_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.status && row.status?.length < 20
-                    ? row.status
-                    : row.status.substring(0, 50) + '....'}
+                  {row?.status_name && row?.status_name?.length < 20
+                    ? row?.status_name
+                    : row?.status_name.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -1012,7 +1027,7 @@ function TestCaseReviewDetails() {
           />
         </div>
       ),
-      selector: (row) => row.project_name,
+      selector: (row) => row?.project_name,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -1021,14 +1036,14 @@ function TestCaseReviewDetails() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.project_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.project_name} </Tooltip>}>
+          {row?.project_name && (
+            <OverlayTrigger overlay={<Tooltip>{row?.project_name} </Tooltip>}>
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.project_name && row.project_name?.length < 20
-                    ? row.project_name
-                    : row.project_name.substring(0, 50) + '....'}
+                  {row?.project_name && row?.project_name?.length < 20
+                    ? row?.project_name
+                    : row?.project_name.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -1114,12 +1129,7 @@ function TestCaseReviewDetails() {
           {row.created_by && (
             <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
               <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.created_by && row.created_by?.length < 20
-                    ? row.created_by
-                    : row.created_by.substring(0, 50) + '....'}
-                </span>
+                <span className="ms-1"> {row?.created_by}</span>
               </div>
             </OverlayTrigger>
           )}
@@ -1204,12 +1214,7 @@ function TestCaseReviewDetails() {
           {row?.updated_by && (
             <OverlayTrigger overlay={<Tooltip>{row?.updated_by} </Tooltip>}>
               <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.updated_by && row?.updated_by?.length < 20
-                    ? row?.updated_by
-                    : row?.updated_by.substring(0, 50) + '....'}
-                </span>
+                <span className="ms-1"> {row?.updated_by}</span>
               </div>
             </OverlayTrigger>
           )}
@@ -1758,6 +1763,15 @@ function TestCaseReviewDetails() {
     );
     dispatch(getReviewCommentMasterListThunk());
   }, [paginationData.rowPerPage, paginationData.currentPage]);
+
+  useEffect(() => {
+    dispatch(
+      getTestCaseStatusDataList({
+        limit: paginationData.rowPerPage,
+        page: paginationData.currentPage
+      })
+    );
+  }, [paginationData.rowPerPage, paginationData.currentPage]);
   return (
     <div className="container-xxl">
       <PageHeader
@@ -1765,6 +1779,18 @@ function TestCaseReviewDetails() {
         renderRight={() => {
           return (
             <div className="col-md-6 d-flex justify-content-end">
+              <button
+                onClick={() =>
+                  setAddEditTestCasesModal({
+                    type: 'Add',
+                    // data: row,
+                    open: true
+                  })
+                }
+                className="btn btn-primary text-white me-2"
+              >
+                ADD
+              </button>
               <button
                 onClick={handleButtonClick}
                 className="btn btn-primary text-white me-2"
@@ -1786,7 +1812,7 @@ function TestCaseReviewDetails() {
           );
         }}
       />
-      <Container fluid className="employee_joining_details_container">
+      <Container fluid className="employee_joining_details_container mt-2">
         <h5 className="mb-0 text-primary">Test Cases</h5>
         <hr className="primary_divider " />
         <DataTable

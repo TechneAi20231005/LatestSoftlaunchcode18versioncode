@@ -5,11 +5,17 @@ import DataTable from 'react-data-table-component';
 import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import PageHeader from '../../../components/Common/PageHeader';
-import { getTestCaseReviewListThunk } from '../../../redux/services/testCases/testCaseReview';
+import {
+  getReviewTestCasesData,
+  getTestCaseReviewListThunk
+} from '../../../redux/services/testCases/testCaseReview';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import CustomFilterModal from '../Modal/CustomFilterModal';
 import { Astrick } from '../../../components/Utilities/Style';
 import Select from 'react-select';
+import { sendTestPlanReviewerThunk } from '../../../redux/services/testCases/downloadFormatFile';
+import { getEmployeeData } from '../../Dashboard/DashboardAction';
+import { toast } from 'react-toastify';
 
 const initialState = {
   filterType: '',
@@ -96,7 +102,12 @@ function TestCaseReviewComponent() {
   const [errorMessage, setErrorMessage] = useState('');
   const [isFilterApplied, setIsFilterApplied] = useState(false);
   const [selectedValue, setSelectedValue] = useState('');
-
+  const testerData = useSelector(
+    (dashboardSlice) => dashboardSlice.dashboard.getAllTesterDataList
+  );
+  const filterTestData = testerData?.filter(
+    (d) => d?.value != localStorage?.getItem('id')
+  );
   const {
     filterType,
     columnName,
@@ -129,6 +140,25 @@ function TestCaseReviewComponent() {
     created_by: 'created_by',
     updated_at: 'updated_at',
     updated_by: 'updated_by'
+  };
+  const [selectedStatus, setSelectedStatus] = useState(null);
+  const options = [
+    {
+      value: 1,
+      label: 'TOTAL'
+    },
+    {
+      value: 2,
+      label: 'REJECTED'
+    },
+    {
+      value: 3,
+      label: 'APPROVED'
+    }
+  ];
+
+  const handleStatusChange = (selectedOption) => {
+    setSelectedStatus(selectedOption);
   };
 
   const handleFilterClick = (event, column, name, type, id) => {
@@ -448,14 +478,26 @@ function TestCaseReviewComponent() {
               onClick={() => {
                 handleSendToReviewerModal({
                   showModal: true,
-                  modalData: '',
+                  modalData: row,
                   modalHeader: 'Send To Reviewer Modal'
                 });
               }}
             />
-            <Link to={`/${_base + '/TestCaseHistoryComponent/' + row?.id}`}>
+            <Link to={`/${_base + '/TestPlanHistoryComponent/' + row?.id}`}>
               <i class="icofont-history cp btn btn-outline-secondary fw-bold  " />
             </Link>
+            <div>
+              <i
+                class="icofont-download cp btn btn-outline-secondary"
+                onClick={() => {
+                  handleTestCaseData({
+                    showModal: true,
+                    modalData: row,
+                    modalHeader: 'Send To Reviewer Modal'
+                  });
+                }}
+              />
+            </div>
           </div>
         );
       },
@@ -480,32 +522,66 @@ function TestCaseReviewComponent() {
       selector: (row) => row.test_plan_id,
       width: '10rem',
       sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.test_plan_id && (
-            <OverlayTrigger overlay={<Tooltip>{row.test_plan_id} </Tooltip>}>
-              <div>
-                <Link
-                  to={`/${_base + '/TestCaseReviewDetails/' + row?.id}`}
-                  className="link_underline_primary"
-                >
-                  {row.test_plan_id}
-                </Link>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
-      header: (column, sortDirection) => (
-        <div className="d-flex align-items-center">
-          <span>{column.name}</span>
-          <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-        </div>
-      )
+      //   cell: (row) => (
+
+      //     <div
+      //       className="btn-group"
+      //       role="group"
+      //       aria-label="Basic outlined example"
+      //     >
+      //       {row.test_plan_id && (
+      //         <OverlayTrigger overlay={<Tooltip>{row.test_plan_id} </Tooltip>}>
+      //           <div>
+      //             <Link
+      //               to={`/${_base + '/TestCaseReviewDetails/' + row?.id}`}
+      //               className="link_underline_primary"
+      //             >
+      //               {row.test_plan_id}
+      //             </Link>
+      //           </div>
+      //         </OverlayTrigger>
+      //       )}
+      //     </div>
+      //   ),
+      //   header: (column, sortDirection) => (
+      //     <div className="d-flex align-items-center">
+      //       <span>{column.name}</span>
+      //       <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+      //     </div>
+      //   )
+      // },
+      cell: (row) => {
+        const reviewerId = localStorage.getItem('id');
+
+        const isDisabled = row?.reviewer_id !== parseInt(reviewerId);
+
+        return (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {row.test_plan_id && (
+              <OverlayTrigger overlay={<Tooltip>{row.test_plan_id}</Tooltip>}>
+                <div>
+                  {isDisabled ? (
+                    // ✅ Show as plain text if disabled
+                    <span className="text-muted">{row.test_plan_id}</span>
+                  ) : (
+                    // ✅ Active link if not disabled
+                    <Link
+                      to={`/${_base + '/TestCaseReviewDetails/' + row?.id}`}
+                      className="link_underline_primary"
+                    >
+                      {row.test_plan_id}
+                    </Link>
+                  )}
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        );
+      }
     },
 
     {
@@ -922,6 +998,11 @@ function TestCaseReviewComponent() {
     modalData: '',
     modalHeader: ''
   });
+  const [sendTestCaseCount, setSendTestCaseCount] = useState({
+    showModal: false,
+    modalData: '',
+    modalHeader: ''
+  });
   const handleButtonClick = () => {
     setIsFilterApplied(false);
 
@@ -943,7 +1024,135 @@ function TestCaseReviewComponent() {
 
   const handleSendToReviewerModal = (currentData) => {
     setSendToReviewerModal(currentData);
-    // dispatch(getEmployeeData());
+    dispatch(getEmployeeData());
+  };
+
+  const handleTestCaseData = (currentData) => {
+    setSendTestCaseCount(currentData);
+  };
+
+  const [reviewerError, setReviewerError] = useState([]);
+  const [disable, setDisable] = useState(false);
+  const handleSubmit = () => {
+    if (!reviewerId) {
+      setReviewerError('Reviewer Id is Required');
+    } else {
+      setReviewerError('');
+    }
+    // const testCasesData =
+    //   selectedRows?.length > 0
+    //     ? selectedRows?.map((id) => id)
+    //     : getDraftTestListData
+    //         ?.filter((row) => row.status === 'DRAFT')
+    //         ?.map((row) => row.id);
+
+    let formData;
+
+    // if (selectedRows?.length <= 0) {
+    //   formData = {
+    //     reviewer_id: reviewerId
+    //   };
+    // } else {
+    //   formData = {
+    //     testcase_id: testCasesData,
+    //     reviewer_id: reviewerId,
+    //     status_id: testCasesStatusDataList?.id
+    //   };
+    // }
+
+    formData = {
+      reviewer_id: reviewerId
+    };
+    setDisable(true);
+    dispatch(
+      sendTestPlanReviewerThunk({
+        formData,
+        type: 'DRAFT',
+        id: sendToReviewerModal?.modalData?.id,
+
+        onSuccessHandler: () => {
+          setSendToReviewerModal({ showModal: false });
+          setDisable(false);
+
+          dispatch(
+            getTestCaseReviewListThunk({
+              limit: paginationData.rowPerPage,
+              page: paginationData.currentPage,
+              type: 'reviewer'
+            })
+          );
+        },
+        onErrorHandler: () => {}
+      })
+    );
+  };
+  const convertToCSV = (arr) => {
+    const array = [Object.keys(arr[0])].concat(
+      arr.map((obj) => Object.values(obj))
+    );
+
+    return array
+      .map((row) =>
+        row.map((value) => `"${String(value).replace(/"/g, '""')}"`).join(',')
+      )
+      .join('\n');
+  };
+
+  const handleTestData = () => {
+    if (!selectedStatus) {
+      alert('Please select a status first.');
+      return;
+    }
+
+    setDisable(true);
+    // dispatch(
+    //   getReviewTestCasesData({
+    //     id: sendTestCaseCount?.modalData?.id,
+    //     status: selectedStatus.label,
+
+    //     onSuccessHandler: () => {
+    //       setSendTestCaseCount({ showModal: false });
+    //       setDisable(false);
+    //     }
+    //   })
+    // );
+    dispatch(
+      getReviewTestCasesData({
+        id: sendTestCaseCount?.modalData?.id,
+        status: selectedStatus.label,
+
+        onSuccessHandler: (responseData) => {
+          setSendTestCaseCount({ showModal: false });
+          setDisable(false);
+          setSelectedStatus(null);
+
+          const testData = responseData?.data;
+          if (Array?.isArray(testData) && testData?.length > 0) {
+            // ✅ Convert JSON to CSV string
+            const csv = convertToCSV(testData);
+
+            // ✅ Trigger file download
+            const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'Testcases Data Count.csv');
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+          } else {
+            toast.warn('No test case data to download.');
+          }
+        },
+
+        errorHandler: () => {
+          setDisable(false);
+          setSelectedStatus(null);
+
+          toast.error('Failed to fetch test case data.');
+        }
+      })
+    );
   };
 
   useEffect(() => {
@@ -1063,7 +1272,7 @@ function TestCaseReviewComponent() {
         }}
       />
 
-      <Container fluid className="employee_joining_details_container">
+      <Container fluid className="employee_joining_details_container mt-2">
         <DataTable
           columns={columns}
           data={testCaseReviewList}
@@ -1138,10 +1347,9 @@ function TestCaseReviewComponent() {
           {/* {filterTestData?.length > 0 && ( */}
           <Select
             type="text"
-            className="form-control form-control-sm"
             id="reviewer_id"
             name="reviewer_id"
-            // options={filterTestData}
+            options={filterTestData}
             required
             onChange={(e) => {
               const selectedId = e?.value;
@@ -1165,8 +1373,8 @@ function TestCaseReviewComponent() {
           <button
             type="submit"
             className="btn btn-sm btn bg-success text-white"
-            // onClick={() => handleSubmit()}
-            // disabled={disable}
+            onClick={() => handleSubmit()}
+            disabled={disable}
           >
             <i class="icofont-paper-plane "></i> {''}
             Send To Reviewer
@@ -1177,6 +1385,64 @@ function TestCaseReviewComponent() {
             className="btn btn bg-white shadow p-2 text-black"
             onClick={() => {
               handleSendToReviewerModal({
+                showModal: false,
+                modalData: '',
+                modalHeader: 'Send To Reviewer Modal'
+              });
+            }}
+          >
+            Cancel
+          </button>
+        </Modal.Footer>
+      </Modal>
+
+      <Modal
+        centered
+        show={sendTestCaseCount.showModal}
+        size="sm"
+        onHide={(e) => {
+          handleTestCaseData({
+            showModal: true,
+            modalData: '',
+            modalHeader: 'Send To Reviewer Modal'
+          });
+        }}
+      >
+        {' '}
+        <Modal.Body>
+          <label>
+            <b>
+              Select Status : <Astrick color="red" size="13px" />
+            </b>
+          </label>
+          {/* {filterTestData?.length > 0 && ( */}
+          <Select
+            type="text"
+            id="status"
+            name="status"
+            options={options}
+            onChange={handleStatusChange}
+            value={selectedStatus}
+            required
+            placeholder="select..."
+          />
+        </Modal.Body>
+        <Modal.Footer>
+          <button
+            type="submit"
+            className="btn btn-sm btn bg-success text-white"
+            onClick={() => handleTestData()}
+            disabled={disable}
+          >
+            <i class="icofont-paper-plane "></i> {''}
+            Submit
+          </button>
+
+          <button
+            type="button"
+            className="btn btn bg-white shadow p-2 text-black"
+            onClick={() => {
+              handleTestCaseData({
                 showModal: false,
                 modalData: '',
                 modalHeader: 'Send To Reviewer Modal'

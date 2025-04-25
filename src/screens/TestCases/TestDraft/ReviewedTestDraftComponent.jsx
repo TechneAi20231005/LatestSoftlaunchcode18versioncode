@@ -14,6 +14,7 @@ import {
   getByTestPlanIDReviewedListThunk,
   getDraftTestCaseList,
   getExportAllReviewTestDraftList,
+  getTestCaseStatusDataList,
   sendTestCaseReviewerThunk
 } from '../../../redux/services/testCases/downloadFormatFile';
 import { getEmployeeData } from '../../Dashboard/DashboardAction';
@@ -133,6 +134,10 @@ function ReviewedTestDraftComponent() {
       return { ...prevState, ...nextState };
     },
     { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
+  );
+
+  const { testCasesStatusDataList } = useSelector(
+    (state) => state?.downloadFormat
   );
 
   const { getFilterReviewCommentMasterList } = useSelector(
@@ -605,7 +610,7 @@ function ReviewedTestDraftComponent() {
         </div>
       ),
 
-      selector: (row) => row.module_name,
+      selector: (row) => row?.module?.module_name,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -614,14 +619,17 @@ function ReviewedTestDraftComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.module_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.module_name} </Tooltip>}>
+          {row?.module?.module_name && (
+            <OverlayTrigger
+              overlay={<Tooltip>{row?.module?.module_name} </Tooltip>}
+            >
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.module_name && row.module_name?.length < 20
-                    ? row.module_name
-                    : row.module_name.substring(0, 50) + '....'}
+                  {row?.module?.module_name &&
+                  row?.module?.module_name?.length < 20
+                    ? row?.module?.module_name
+                    : row?.module?.module_name.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -650,7 +658,7 @@ function ReviewedTestDraftComponent() {
           />
         </div>
       ),
-      selector: (row) => row.sub_module_name,
+      selector: (row) => row?.sub_module?.module_name,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -664,9 +672,10 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1 d-block">
                   {' '}
-                  {row.sub_module_name && row.sub_module_name?.length < 20
-                    ? row.sub_module_name
-                    : row.sub_module_name.substring(0, 50) + '....'}
+                  {row.sub_module_name &&
+                  row?.sub_module?.module_name?.length < 20
+                    ? row?.sub_module?.module_name
+                    : row?.sub_module?.module_name.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -695,7 +704,7 @@ function ReviewedTestDraftComponent() {
           />
         </div>
       ),
-      selector: (row) => row.function_name,
+      selector: (row) => row?.function_master?.function_name,
       width: '7rem',
       sortable: false,
       cell: (row) => (
@@ -704,14 +713,20 @@ function ReviewedTestDraftComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.function_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.function_name} </Tooltip>}>
+          {row?.function_master?.function_name && (
+            <OverlayTrigger
+              overlay={
+                <Tooltip>{row?.function_master?.function_name} </Tooltip>
+              }
+            >
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.function_name && row.function_name?.length < 20
-                    ? row.function_name
-                    : row.function_name.substring(0, 50) + '....'}
+                  {row?.function_master?.function_name &&
+                  row?.function_master?.function_name?.length < 20
+                    ? row?.function_master?.function_name
+                    : row?.function_master?.function_name.substring(0, 50) +
+                      '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -783,7 +798,7 @@ function ReviewedTestDraftComponent() {
           />
         </div>
       ),
-      selector: (row) => row.type_name,
+      selector: (row) => row?.testing_type?.type_name,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -792,14 +807,17 @@ function ReviewedTestDraftComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.type_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.type_name} </Tooltip>}>
+          {row?.testing_type?.type_name && (
+            <OverlayTrigger
+              overlay={<Tooltip>{row?.testing_type?.type_name} </Tooltip>}
+            >
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.type_name && row.type_name?.length < 20
-                    ? row.type_name
-                    : row.type_name.substring(0, 50) + '....'}
+                  {row?.testing_type?.type_name &&
+                  row?.testing_type?.type_name?.length < 20
+                    ? row?.testing_type?.type_name
+                    : row?.testing_type?.type_name.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -1016,7 +1034,7 @@ function ReviewedTestDraftComponent() {
               <div>
                 <span className="ms-1 d-block">
                   {' '}
-                  {row.steps && row.type_name?.length < 20
+                  {row.steps && row?.testing_type?.type_name?.length < 20
                     ? row.steps
                     : row.steps.substring(0, 50) + '....'}
                 </span>
@@ -1090,7 +1108,7 @@ function ReviewedTestDraftComponent() {
           />
         </div>
       ),
-      selector: (row) => row.status,
+      selector: (row) => row.tai_bc_status_conventions?.convention_name,
       width: '7rem',
       sortable: false,
       cell: (row) => (
@@ -1099,14 +1117,24 @@ function ReviewedTestDraftComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.status && (
-            <OverlayTrigger overlay={<Tooltip>{row.status} </Tooltip>}>
+          {row.tai_bc_status_conventions?.convention_name && (
+            <OverlayTrigger
+              overlay={
+                <Tooltip>
+                  {row.tai_bc_status_conventions?.convention_name}{' '}
+                </Tooltip>
+              }
+            >
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.status && row.status?.length < 20
-                    ? row.status
-                    : row.status.substring(0, 50) + '....'}
+                  {row.tai_bc_status_conventions?.convention_name &&
+                  row.tai_bc_status_conventions?.convention_name?.length < 20
+                    ? row.tai_bc_status_conventions?.convention_name
+                    : row.tai_bc_status_conventions?.convention_name.substring(
+                        0,
+                        50
+                      ) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -1197,7 +1225,7 @@ function ReviewedTestDraftComponent() {
           />
         </div>
       ),
-      selector: (row) => row.project_name,
+      selector: (row) => row?.project?.project_name,
       width: '10rem',
       sortable: false,
       cell: (row) => (
@@ -1206,14 +1234,17 @@ function ReviewedTestDraftComponent() {
           role="group"
           aria-label="Basic outlined example"
         >
-          {row.project_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.project_name} </Tooltip>}>
+          {row?.project?.project_name && (
+            <OverlayTrigger
+              overlay={<Tooltip>{row?.project?.project_name} </Tooltip>}
+            >
               <div>
                 <span className="ms-1">
                   {' '}
-                  {row.project_name && row.project_name?.length < 20
-                    ? row.project_name
-                    : row.project_name.substring(0, 50) + '....'}
+                  {row?.project?.project_name &&
+                  row?.project?.project_name?.length < 20
+                    ? row?.project?.project_name
+                    : row?.project?.project_name.substring(0, 50) + '....'}
                 </span>
               </div>
             </OverlayTrigger>
@@ -1287,29 +1318,36 @@ function ReviewedTestDraftComponent() {
           />
         </div>
       ),
-      selector: (row) => row.created_by,
+      selector: (row) =>
+        row?.created_by
+          ? `${row?.created_by?.first_name} ${row?.created_by?.last_name}`
+          : '',
       width: '10rem',
       sortable: false,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.created_by && (
-            <OverlayTrigger overlay={<Tooltip>{row.created_by} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.created_by && row.created_by?.length < 20
-                    ? row.created_by
-                    : row.created_by.substring(0, 50) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      ),
+      cell: (row) => {
+        const fullName = row?.created_by
+          ? `${row?.created_by?.first_name} ${row?.created_by?.last_name}`
+          : '';
+        return (
+          <div
+            className="btn-group"
+            role="group"
+            aria-label="Basic outlined example"
+          >
+            {fullName && (
+              <OverlayTrigger overlay={<Tooltip>{fullName}</Tooltip>}>
+                <div>
+                  <span className="ms-1">
+                    {fullName?.length < 20
+                      ? fullName
+                      : fullName?.substring(0, 50) + '...'}
+                  </span>
+                </div>
+              </OverlayTrigger>
+            )}
+          </div>
+        );
+      },
       header: (column, sortDirection) => (
         <div className="d-flex align-items-center">
           <span>{column.name}</span>
@@ -1341,7 +1379,10 @@ function ReviewedTestDraftComponent() {
   const handleSubmit = () => {
     const formData = {
       testcase_id: selectedRows,
-      reviewer_id: reviewerId
+      reviewer_id: reviewerId,
+      status_id: testCasesStatusDataList?.find(
+        (d) => d.convention_name === 'MODIFIED'
+      )?.id
     };
 
     dispatch(
@@ -1519,6 +1560,14 @@ function ReviewedTestDraftComponent() {
       })
     );
   }, []);
+  useEffect(() => {
+    dispatch(
+      getTestCaseStatusDataList({
+        limit: paginationData.rowPerPage,
+        page: paginationData.currentPage
+      })
+    );
+  }, [paginationData.rowPerPage, paginationData.currentPage]);
 
   return (
     <div className="container-xxl">
