@@ -21,7 +21,7 @@ function UserComponent() {
   //Redux State
 
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 3)
+    DashboardSlice.dashboard.getRoles.find((d) => d.menu_id === 3)
   );
 
   const employeeData = useSelector(
@@ -183,10 +183,10 @@ function UserComponent() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (checkRole && checkRole[0]?.can_read === 0) {
+    if (checkRole && checkRole?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, [checkRole]);
+  }, []);
 
   return (
     <div className="container-xxl">
@@ -195,7 +195,7 @@ function UserComponent() {
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[0]?.can_create === 1 ? (
+              {checkRole && checkRole?.can_create === 1 ? (
                 <Link
                   to={`/${_base + '/User/Create'}`}
                   className="btn btn-dark btn-set-task w-sm-100"

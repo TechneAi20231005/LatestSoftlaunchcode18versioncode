@@ -30,7 +30,7 @@ const CreateTemplateComponent = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 15)
+    DashboardSlice.dashboard.getRoles.find((d) => d.menu_id === 15)
   );
   const parent = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.getParentData
@@ -500,13 +500,13 @@ const CreateTemplateComponent = () => {
         'id,employee_id,first_name,last_name,middle_name,is_active';
       dispatch(getUserForMyTicketsData(inputRequired));
     }
-    if (!checkRole.length) {
+    if (!checkRole) {
       dispatch(getRoles());
     }
-  }, [checkRole.length, dispatch, parent.length, userData.length]);
+  }, [dispatch, parent.length, userData.length]);
 
   useEffect(() => {
-    if (checkRole && checkRole[0]?.can_create === 0) {
+    if (checkRole && checkRole?.can_create === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);

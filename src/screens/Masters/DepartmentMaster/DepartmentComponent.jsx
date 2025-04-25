@@ -33,7 +33,7 @@ function DepartmentComponent() {
   );
 
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 9)
+    DashboardSlice.dashboard.getRoles.find((d) => d.menu_id === 9)
   );
   const modal = useSelector(
     (DashboardSlice) => DashboardSlice.department.modal
@@ -234,7 +234,7 @@ function DepartmentComponent() {
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[0]?.can_create === 1 ? (
+              {checkRole && checkRole?.can_create === 1 ? (
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
@@ -389,7 +389,7 @@ function DepartmentComponent() {
                 )}
                 {modal.modalData &&
                   checkRole &&
-                  checkRole[0]?.can_update === 1 && (
+                  checkRole?.can_update === 1 && (
                     <button
                       type="submit"
                       className="btn btn-primary text-white"

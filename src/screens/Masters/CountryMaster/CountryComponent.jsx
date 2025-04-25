@@ -39,7 +39,7 @@ function CountryComponent() {
   );
 
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 5)
+    DashboardSlice.dashboard.getRoles.find((d) => d.menu_id === 5)
   );
 
   //local state
@@ -194,7 +194,7 @@ function CountryComponent() {
   };
 
   useEffect(() => {
-    if (checkRole && checkRole[0]?.can_read === 0) {
+    if (checkRole && checkRole?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -202,10 +202,10 @@ function CountryComponent() {
   useEffect(() => {
     dispatch(getCountryData());
 
-    if (!countryData.length || !checkRole.length) {
+    if (!countryData.length || !checkRole) {
       dispatch(getRoles());
     }
-  }, [dispatch, countryData.length, checkRole.length]);
+  }, [dispatch, countryData.length, checkRole]);
 
   const fields = [
     {
@@ -234,7 +234,7 @@ function CountryComponent() {
         renderRight={() => {
           return (
             <div>
-              {checkRole && checkRole[0]?.can_create === 1 ? (
+              {checkRole && checkRole?.can_create === 1 ? (
                 <button
                   className="btn btn-dark px-5"
                   onClick={() => {
@@ -400,7 +400,7 @@ function CountryComponent() {
                 )}
                 {modal.modalData &&
                   checkRole &&
-                  checkRole[0]?.can_update === 1 && (
+                  checkRole?.can_update === 1 && (
                     <button
                       disabled={isSubmitting}
                       type="submit"

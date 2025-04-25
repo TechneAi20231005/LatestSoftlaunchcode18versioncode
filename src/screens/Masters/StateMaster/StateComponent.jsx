@@ -37,7 +37,7 @@ function StateComponent() {
   );
 
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 6)
+    DashboardSlice.dashboard.getRoles.find((d) => d.menu_id === 6)
   );
 
   const [reset, setReset] = useState(false);
@@ -188,7 +188,7 @@ function StateComponent() {
   };
 
   useEffect(() => {
-    if (checkRole && checkRole[0]?.can_read === 0) {
+    if (checkRole && checkRole?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -197,17 +197,12 @@ function StateComponent() {
     dispatch(getCountryDataSort());
     dispatch(getStateData());
 
-    if (!stateData.length || !checkRole.length) {
+    if (!stateData.length || !checkRole) {
       dispatch(getRoles());
     }
     if (!filteredCountryData.length) {
     }
-  }, [
-    dispatch,
-    stateData.length,
-    checkRole.length,
-    filteredCountryData.length
-  ]);
+  }, [dispatch, stateData.length, checkRole, filteredCountryData.length]);
   const exportDataKeys = {
     country: 'Country',
     state: 'State',
@@ -261,7 +256,7 @@ function StateComponent() {
         renderRight={() => {
           return (
             checkRole &&
-            checkRole[0]?.can_create === 1 && (
+            checkRole?.can_create === 1 && (
               <button
                 className="btn btn-dark px-5"
                 onClick={() => {
@@ -460,7 +455,7 @@ function StateComponent() {
                   </button>
                 ) : (
                   checkRole &&
-                  checkRole[0]?.can_update === 1 && (
+                  checkRole?.can_update === 1 && (
                     <button
                       disabled={isSubmitting}
                       type="submit"

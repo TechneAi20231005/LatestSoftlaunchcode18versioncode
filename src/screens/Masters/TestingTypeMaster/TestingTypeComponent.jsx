@@ -42,7 +42,7 @@ function TestingTypeComponent() {
     (TestingTypeComponentSlices) => TestingTypeComponentSlices.testingData.modal
   );
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 39)
+    DashboardSlice.dashboard.getRoles.find((d) => d.menu_id === 39)
   );
   const notify = useSelector(
     (TestingTypeComponentSlices) =>
@@ -184,7 +184,7 @@ function TestingTypeComponent() {
   }, [searchTerm, handleSearch]);
 
   useEffect(() => {
-    if (checkRole && checkRole[0]?.can_read === 0) {
+    if (checkRole && checkRole?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -197,7 +197,7 @@ function TestingTypeComponent() {
         renderRight={() => {
           return (
             <div className="col-auto d-flex w-sm-100">
-              {checkRole && checkRole[0]?.can_create === 1 ? (
+              {checkRole && checkRole?.can_create === 1 ? (
                 <button
                   className="btn btn-dark btn-set-task w-sm-100"
                   onClick={() => {
@@ -210,7 +210,8 @@ function TestingTypeComponent() {
                     );
                   }}
                 >
-                  <i className="icofont-plus-circle me-2 fs-6"></i>Add Testing Type
+                  <i className="icofont-plus-circle me-2 fs-6"></i>Add Testing
+                  Type
                 </button>
               ) : (
                 ''
@@ -365,18 +366,12 @@ function TestingTypeComponent() {
           </Modal.Body>
           <Modal.Footer>
             {!modal.modalData && (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-              >
-          Submit
+              <button type="submit" className="btn btn-primary text-white">
+                Submit
               </button>
             )}
-            {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-              >
+            {modal.modalData && checkRole && checkRole?.can_update === 1 ? (
+              <button type="submit" className="btn btn-primary text-white">
                 Update
               </button>
             ) : (

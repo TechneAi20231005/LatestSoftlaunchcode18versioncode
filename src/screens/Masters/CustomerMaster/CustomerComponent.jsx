@@ -27,7 +27,7 @@ function CustomerComponent() {
   );
 
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 4)
+    DashboardSlice.dashboard.getRoles.find((d) => d.menu_id === 4)
   );
 
   //local state
@@ -150,13 +150,13 @@ function CustomerComponent() {
   }, []);
 
   useEffect(() => {
-    if (!checkRole.length) {
+    if (!checkRole) {
       dispatch(getRoles());
     }
-  }, [checkRole.length]);
+  }, [checkRole, dispatch]);
 
   useEffect(() => {
-    if (checkRole && checkRole[0]?.can_read === 0) {
+    if (checkRole && checkRole?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
   }, [checkRole]);
@@ -168,7 +168,7 @@ function CustomerComponent() {
         renderRight={() => {
           return (
             <div>
-              {checkRole && checkRole[0]?.can_create === 1 ? (
+              {checkRole && checkRole?.can_create === 1 ? (
                 <Link
                   to={`/${_base}/Customer/Create`}
                   className="btn btn-dark btn-set-task w-sm-100"

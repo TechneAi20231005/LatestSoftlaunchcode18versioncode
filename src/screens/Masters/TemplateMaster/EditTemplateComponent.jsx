@@ -202,7 +202,7 @@ const EditTemplateComponent = ({ match, props }) => {
   const transformedOptions = transformData(taskData);
 
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 15)
+    DashboardSlice.dashboard.getRoles.find((d) => d.menu_id === 15)
   );
   const userData = useSelector(
     (MyTicketComponentSlice) =>
@@ -443,7 +443,7 @@ const EditTemplateComponent = ({ match, props }) => {
   }, [loadData]);
 
   useEffect(() => {
-    if (checkRole && checkRole[0]?.can_update === 0) {
+    if (checkRole && checkRole?.can_update === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;

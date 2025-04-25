@@ -23,10 +23,16 @@ import DemoProfileImg from '../../assets/images/profile_av.png';
 import './style.scss';
 import { errorHandler } from '../../utils';
 
+import { useDispatch, useSelector } from 'react-redux';
+import { getRoles } from '../../screens/Dashboard/DashboardAction';
+
 export default function Header() {
   // // initial state
   const userId = userSessionData.userId;
-
+  const dispatch = useDispatch();
+  const checkRole = useSelector((DashboardSlice) =>
+    DashboardSlice.dashboard.getRoles.find((d) => d.menu_id === 15)
+  );
   // // local state
   const [tenantId, setTenantId] = useState();
   const [tenantDropdown, setTenantDropdown] = useState();
@@ -80,6 +86,7 @@ export default function Header() {
   };
 
   const loadData = async (e) => {
+    dispatch(getRoles());
     new UserService().getUserById(localStorage.getItem('id')).then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
@@ -98,22 +105,6 @@ export default function Header() {
         );
       }
     });
-    await new ManageMenuService()
-      .getRole(localStorage.getItem('role_id'))
-      .then((res) => {
-        if (res.status === 200 && res.data.status === 1) {
-          const temp = res.data.data.filter((d) => d.menu_id === 33);
-
-          if (temp[0]?.can_read === 1) {
-            setShowDropdown(true);
-          } else {
-            setShowDropdown(false);
-          }
-        }
-      })
-      .catch((error) => {
-        errorHandler(error);
-      });
   };
 
   const handleTenantLogin = async (e) => {
@@ -136,6 +127,14 @@ export default function Header() {
     const interval = setInterval(loadNotifcation(), 5000);
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (checkRole && checkRole?.[0]?.can_read === 1) {
+      setShowDropdown(true);
+    } else {
+      setShowDropdown(false);
+    }
+  }, [checkRole?.length]);
 
   return (
     <div className="header">

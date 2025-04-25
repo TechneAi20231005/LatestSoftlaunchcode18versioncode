@@ -46,7 +46,7 @@ function CityComponent() {
     (dashboardSlice) => dashboardSlice.dashboard.isLoading.getCityDataList
   );
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 7)
+    DashboardSlice.dashboard.getRoles.find((d) => d.menu_id === 7)
   );
   //local state
   const [stateDropdownData, setStateDropdownData] = useState([]);
@@ -287,7 +287,7 @@ function CityComponent() {
 
     if (
       !cityData.length ||
-      !checkRole.length ||
+      !checkRole ||
       !filteredStateData.length ||
       !filteredCountryData.length
     ) {
@@ -295,7 +295,7 @@ function CityComponent() {
   }, [
     dispatch,
     cityData.length,
-    checkRole.length,
+    checkRole,
     filteredStateData.length,
     filteredCountryData.length
   ]);
@@ -305,7 +305,7 @@ function CityComponent() {
   }, [dispatch]);
 
   useEffect(() => {
-    if (checkRole && checkRole[0]?.can_read === 0) {
+    if (checkRole && checkRole?.can_read === 0) {
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
 
@@ -325,7 +325,7 @@ function CityComponent() {
         renderRight={() => {
           return (
             <div>
-              {checkRole && checkRole[0]?.can_create === 1 ? (
+              {checkRole && checkRole?.can_create === 1 ? (
                 <button
                   className="btn btn-dark px-5"
                   onClick={() => {
@@ -553,7 +553,7 @@ function CityComponent() {
 
                 {modal.modalData &&
                   checkRole &&
-                  checkRole[0]?.can_update === 1 && (
+                  checkRole?.can_update === 1 && (
                     <button
                       type="submit"
                       className="btn btn-primary text-white"

@@ -77,7 +77,7 @@ function CreateUserComponent({ match }) {
   });
 
   const checkRole = useSelector((DashboardSlice) =>
-    DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 3)
+    DashboardSlice.dashboard.getRoles.find((d) => d.menu_id === 3)
   );
   const stateDropdown = useSelector(
     (DashbordSlice) => DashbordSlice.dashboard.activeState
@@ -699,7 +699,7 @@ function CreateUserComponent({ match }) {
   // }
   useEffect(() => {
     loadData();
-    if (!checkRole.length) {
+    if (!checkRole) {
       dispatch(getRoles());
     }
     dispatch(getRoleData());
@@ -727,7 +727,6 @@ function CreateUserComponent({ match }) {
     dispatch(departmentData());
   }, [
     AllcityDropDownData.length,
-    checkRole.length,
     cityDropdownData.length,
     designationDropdown.length,
     dispatch,
@@ -737,12 +736,12 @@ function CreateUserComponent({ match }) {
   ]);
 
   useEffect(() => {
-    if (checkRole && checkRole[0]?.can_create === 0) {
+    if (checkRole && checkRole?.can_create === 0) {
       // alert("Rushi")
 
       window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
     }
-  }, [checkRole]);
+  }, []);
 
   useEffect(() => {
     dispatch(getJobRoleMasterListThunk());
