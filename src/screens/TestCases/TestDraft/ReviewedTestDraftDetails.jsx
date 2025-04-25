@@ -1215,7 +1215,7 @@ function ReviewedTestDraftDetails(props) {
   }, [props?.paginationData.rowPerPage, props?.paginationData.currentPage]);
   return (
     <>
-      <Container fluid className="employee_joining_details_container">
+      <Container className='mt-3' fluid>
         <div>
 
           {
