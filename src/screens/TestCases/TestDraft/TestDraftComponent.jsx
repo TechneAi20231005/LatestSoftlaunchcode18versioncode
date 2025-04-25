@@ -20,6 +20,9 @@ import {
   importTestDraftThunk
 } from '../../../redux/services/testCases/downloadFormatFile';
 import { getEmployeeData } from '../../Dashboard/DashboardAction';
+import { Icon, Tab, Tabs } from '@mui/material';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PreviewIcon from '@mui/icons-material/Preview';
 export default function TestDraftComponent({}) {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -62,9 +65,10 @@ export default function TestDraftComponent({}) {
   const tabsLabel = [
     {
       label: 'Test summary',
-      value: 'test_summary'
+      value: 'test_summary',
+      Icon: <DescriptionIcon />
     },
-    { label: 'Review Test Draft', value: 'review_test_draft' }
+    { label: 'Review Test Draft', value: 'review_test_draft', Icon: <PreviewIcon /> }
   ];
 
   const handleDownloadModal = (data) => {
@@ -217,6 +221,14 @@ export default function TestDraftComponent({}) {
     };
   }, [location.state]);
 
+  const handleChange = (event, newValue) => {
+    setCurrentTab(newValue);
+  };
+  const tabStyles = {
+    '& .MuiTabs-indicator': { backgroundColor: '#484c7f' },
+    '& .MuiTab-root.Mui-selected': { color: '#484c7f' }
+  };
+
   return (
     <div className="container-xxl">
       <PageHeader
@@ -293,11 +305,16 @@ export default function TestDraftComponent({}) {
       />
 
       <div className="mt-3">
-        <CustomTab
+      <Tabs sx={tabStyles} value={currentTab} onChange={handleChange}>
+        {tabsLabel.map((tab) => (
+          <Tab icon={tab.Icon}  key={tab.value} label={tab.label} value={tab.value} />
+        ))}
+      </Tabs>
+        {/* <CustomTab
           tabsData={tabsLabel}
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}
-        />
+        /> */}
       </div>
       <RenderIf render={currentTab === 'test_summary'}>
         <TestDraftDetails
