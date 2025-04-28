@@ -23,7 +23,7 @@ export const dynamicFormData = createAsyncThunk(
       try {
         const service = new DynamicFormService();
         const response = await service.getDynamicForm();
-  
+
         return response;
       } catch (error) {
         throw error;
@@ -37,16 +37,23 @@ export const dynamicFormData = createAsyncThunk(
       try {
         const service = new DynamicFormDropdownMasterService();
         const response = await service.getAllDropdown();
-  
+
         return response;
       } catch (error) {
         throw error;
       }
     }
   );
-  
+  export const getAllDynamicFormDropdownData = createAsyncThunk(
+    "getAllDynamicFormDropdownData",
+    async (config, thunkapi) => {
+      try {
+        const service = new DynamicFormDropdownMasterService();
+        const response = await service.getAllDynamicFormDropdown();
 
-
-  
-  
-
+        return response;
+      } catch (error) {
+        throw error;
+      }
+    }
+  );

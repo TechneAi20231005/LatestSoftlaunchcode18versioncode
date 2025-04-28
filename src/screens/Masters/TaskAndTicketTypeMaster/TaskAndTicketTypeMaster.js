@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, { useEffect, useState, useRef,  } from 'react';
 import { ButtonComponent } from '../../../components/Utilities/Button/Button';
 import PageHeader from '../../../components/Common/PageHeader';
 import { Modal } from 'react-bootstrap';
@@ -11,7 +11,8 @@ import { toast } from 'react-toastify';
 import errorHandler from '../../../utils/errorHandler';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 import moment from 'moment';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
+import { getAllTaskTicketType } from './TaskAndTicketTypeMasterAction';
 
 const CustomOption = ({ label, options, onClick, closeDropdown }) => {
   const [expanded, setExpanded] = useState(false);
@@ -385,12 +386,11 @@ const CustomMenuListTicket = ({ options, onSelect }) => {
 };
 
 function TaskAndTicketTypeMaster(props) {
-  const [data, setData] = useState([]);
   const [taskData, setTaskData] = useState([]);
   const [ticketData, setTicketData] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
 
-  const [exportData, setExportData] = useState(null);
+  const taskAndTicketData = useSelector((state) => (state?.taskAndTicket?.taskAndTicketData))
+  const isLoading = useSelector((state) => (state?.taskAndTicket?.loading?.taskAndTicketData))
   // const selectedOption = null;
   const [selectedOptionId, setSelectedOptionId] = useState(null);
   const [parentTaskName, setParentTaskName] = useState(null);
@@ -424,79 +424,7 @@ function TaskAndTicketTypeMaster(props) {
   });
 
   const loadData = async () => {
-    const exportTempData = [];
-    await new TaskTicketTypeService()
-      .getAllTaskTicketType(selectedType)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            let counter = 1;
-            var tempData = [];
-            const temp = res.data.data.data;
-            for (const key in temp) {
-              tempData.push({
-                counter: counter++,
-                id: temp[key].id,
-                type: temp[key].type,
-                parent_id: temp[key].parent_id,
-                type_name: temp[key].type_name,
-                parent_name:
-                  temp[key].parent_name === null && temp[key].parent_id === 0
-                    ? 'Primary'
-                    : temp[key].parent_name,
-
-                remark: temp[key].remark,
-                is_active: temp[key].is_active,
-                created_at: temp[key].created_at,
-                created_by: temp[key].created_by,
-                updated_at: temp[key].updated_at,
-                updated_by: temp[key].updated_by
-              });
-            }
-            setData(tempData);
-            for (const i in temp) {
-              exportTempData.push({
-                SrNo: exportTempData.length + 1,
-
-                // id: temp[i].id,
-                type: temp[i].type,
-
-                type_name: temp[i].type_name,
-                parent_name:
-                  temp[i].parent_name === null && temp[i].parent_id === 0
-                    ? 'Primary'
-                    : temp[i].parent_name,
-
-                remark: temp[i].remark,
-                status: temp[i].is_active === 1 ? 'Active' : 'Deactive',
-                created_at: temp[i].created_at,
-                created_by: temp[i].created_by,
-                updated_at: temp[i].updated_at,
-                updated_by: temp[i].updated_by
-              });
-            }
-
-            setExportData(null);
-            setIsLoading(false);
-
-            setExportData(exportTempData);
-          }
-        }
-      })
-      .catch((error) => errorHandler(error))
-      .finally(() => setIsLoading(false));
-
-    // await new TaskTicketTypeService().getParent().then((res) => {
-    //   if (res.status === 200) {
-    //     // const mappedData = res.data.data.map((d) => ({
-    //     //   value: d.id,
-    //     //   label: d.type_name
-    //     // }));
-    //     // setParent(mappedData);
-    //   } else {
-    //   }
-    // });
-
+    dispatch(getAllTaskTicketType(selectedType));
     await new TaskTicketTypeService()
       ?.getChildrenData(selectedType)
       ?.then((res) => {
@@ -505,18 +433,6 @@ function TaskAndTicketTypeMaster(props) {
         }
       })
       .catch((error) => errorHandler(error));
-
-    // await new TaskTicketTypeService()?.getTaskType()?.then((res) => {
-    //   if (res?.status === 200) {
-    //     // setTaskData(res?.data?.data?.data);
-    //   }
-    // });
-
-    // await new TaskTicketTypeService()?.getTicketType()?.then((res) => {
-    //   if (res?.status === 200) {
-    //     // setTicketData(res?.data?.data?.data);
-    //   }
-    // });
   };
 
   const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -601,9 +517,7 @@ function TaskAndTicketTypeMaster(props) {
 
   const [selectedType, setSelectedType] = useState('TASK'); // State to track selected type
   const handleType = async (e) => {
-    setIsLoading(true);
-    setData([]);
-    setSelectedType(e.target.value); // Update the selected type when a radio button is clicked
+    setSelectedType(e.target.value);
 
     await new TaskTicketTypeService()
       ?.getChildrenData(e.target.value)
@@ -613,40 +527,7 @@ function TaskAndTicketTypeMaster(props) {
         }
       })
       .catch((error) => errorHandler(error));
-    await new TaskTicketTypeService()
-      .getAllTaskTicketType(e.target.value)
-      .then((res) => {
-        if (res?.status === 200) {
-          if (res?.data?.status === 1) {
-            let counter = 1;
-            var tempData = [];
-            const temp = res?.data?.data?.data;
-            for (const key in temp) {
-              tempData.push({
-                counter: counter++,
-                id: temp[key].id,
-                type: temp[key].type,
-                parent_id: temp[key].parent_id,
-                type_name: temp[key].type_name,
-                parent_name:
-                  temp[key].parent_name === null && temp[key].parent_id === 0
-                    ? 'Primary'
-                    : temp[key].parent_name,
-                remark: temp[key].remark,
-                is_active: temp[key].is_active,
-                created_at: temp[key].created_at,
-                created_by: temp[key].created_by,
-                updated_at: temp[key].updated_at,
-                updated_by: temp[key].updated_by
-              });
-            }
-            setData(null);
-            setData(tempData);
-          }
-        }
-      })
-      .catch((error) => errorHandler(error))
-      .finally(() => setIsLoading(false));
+    dispatch(getAllTaskTicketType(e.target.value));
   };
 
   const columns = [
@@ -878,6 +759,7 @@ function TaskAndTicketTypeMaster(props) {
   };
 
   useEffect(() => {
+
     loadData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -1331,10 +1213,10 @@ function TaskAndTicketTypeMaster(props) {
       </Modal>
 
       <div className="card mt-2">
-        {data && (
+        {taskAndTicketData && (
           <MaterialTable
             columns={columns}
-            data={data}
+            data={taskAndTicketData}
             reset={reset}
             isLoading={isLoading}
             setReset={setReset}

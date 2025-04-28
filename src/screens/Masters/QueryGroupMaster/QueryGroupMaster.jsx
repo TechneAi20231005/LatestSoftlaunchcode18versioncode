@@ -9,48 +9,27 @@ import { Modal } from 'react-bootstrap';
 import { Astrick } from '../../../components/Utilities/Style';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
+import { queryTypeData } from '../QueryTypeMaster/QueryTypeComponetAction';
 
 const QueryGroupMaster = () => {
-  const [queryGroupData, setQueryGroupData] = useState([]);
   const [reset, setReset] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [modalQueryGroup, setModalQueryGroup] = useState({
     showModalQueryGroup: false,
     modalDataQueryGroup: ''
   });
+  const dispatch = useDispatch();
   const [isActive, setIsActive] = useState(true);
+  const queryTypeDetails = useSelector(
+    (queryTypeSlice) => queryTypeSlice.queryTypeMaster.queryTypeData
+  );
+  const isLoading = useSelector(
+    (queryTypeSlice) => queryTypeSlice.queryTypeMaster.loading.queryTypeData
+  );
   const handleIsActive = (e) => {
     setIsActive(e.target.value);
   };
-  const fetchQueryGroup = async () => {
-    setIsLoading(true);
-    const data = [];
-    try {
-      const res = await new QueryTypeService().getAllQueryGroup();
-      if (res?.status === 200) {
-        let counter = 1;
-        const temp = res?.data?.data?.data;
-        for (const key in temp) {
-          data.push({
-            counter: counter++,
-            id: temp[key].id,
-            group_name: temp[key].group_name,
-            is_active: temp[key].is_active,
-            created_at: temp[key].created_at,
-            created_by: temp[key].created_by,
-            updated_at: temp[key].updated_at,
-            updated_by: temp[key].updated_by
-          });
-        }
 
-        setQueryGroupData(data);
-      }
-    } catch (error) {
-      errorHandler(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
   const handleModalQueryGroup = (data) => {
     setModalQueryGroup(data);
   };
@@ -71,7 +50,7 @@ const QueryGroupMaster = () => {
             showModalQueryGroup: false,
             modalDataQueryGroup: ''
           });
-          fetchQueryGroup();
+          dispatch(queryTypeData());
           setSubmitting(false);
         } else {
           toast.error(res.data.message);
@@ -208,7 +187,7 @@ const QueryGroupMaster = () => {
     setReset(true);
   };
   useEffect(() => {
-    fetchQueryGroup();
+    dispatch(queryTypeData());
   }, []);
   return (
     <>
@@ -218,7 +197,7 @@ const QueryGroupMaster = () => {
           <MaterialTable
             exportDataKeys={exportQueryGroupDataKeys}
             columns={columns}
-            data={queryGroupData}
+            data={queryTypeDetails}
             reset={reset}
             setReset={setReset}
             clearFilter={clearFilters}

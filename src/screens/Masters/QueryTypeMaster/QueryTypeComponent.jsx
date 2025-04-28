@@ -8,7 +8,6 @@ import DynamicFormService from '../../../services/MastersService/DynamicFormServ
 import { Astrick } from '../../../components/Utilities/Style';
 import Dropdown from 'react-bootstrap/Dropdown';
 
-import CustomerService from '../../../services/MastersService/CustomerService';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { toast } from 'react-toastify';
@@ -19,6 +18,7 @@ import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
+import { fetchQueryTypeData } from '../../Settings/CustomerMapping/Slices/CustomerMappingAction';
 
 function QueryTypeComponent() {
   //initial state
@@ -29,11 +29,6 @@ function QueryTypeComponent() {
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 14)
   );
 
-  //local state
-
-  const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState([]);
-
   const [modal, setModal] = useState({
     showModal: false,
     modalData: '',
@@ -41,9 +36,6 @@ function QueryTypeComponent() {
   });
   const [reset, setReset] = useState(false);
   const [dynamicFormDropdown, setDynamicFormDropdown] = useState(null);
-
-  // *********************************Add Query Group ***********************
-  const [queryGroupDropdown, setQueryGroupDropdown] = useState(null);
 
   const [modalQueryGroup, setModalQueryGroup] = useState({
     showModalQueryGroup: false,
@@ -182,21 +174,6 @@ function QueryTypeComponent() {
     fileName: 'Query Type Master Record'
   };
 
-  const loadQueryGroupDropdownData = async () => {
-    try {
-      const res = await new QueryTypeService().getAllQueryGroup();
-      if (res.data.status === 1) {
-        setQueryGroupDropdown(
-          res.data.data.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({ value: d.id, label: d.group_name }))
-        );
-      }
-    } catch (error) {
-      errorHandler(error);
-    }
-  };
-
   // **************************************Add Query Group *****************************************
 
   const handleFormQueryGroup = async (values, { setSubmitting }) => {
@@ -215,7 +192,6 @@ function QueryTypeComponent() {
 
           toast.success(res?.data?.message);
           loadData();
-          loadQueryGroupDropdownData();
           setSubmitting(false);
         } else {
           toast.error(res.data.message);
@@ -234,47 +210,14 @@ function QueryTypeComponent() {
   //   return /^(?=.*[a-zA-Z])(?=.*[0-9])[a-zA-Z0-9]+$/.test(queryType);
   // }
 
+  const { queryTypeData, queryTypeDropDownData: queryGroupDropdown } =
+    useSelector((CustomerMappingSlice) => CustomerMappingSlice.customerMaster);
+  const { getQueryTypeData: isLoading } = useSelector(
+    (CustomerMappingSlice) => CustomerMappingSlice.customerMaster.isLoading
+  );
   const loadData = useCallback(async () => {
-    setIsLoading(true);
     // setShowLoaderModal(null);
     // setShowLoaderModal(true);
-    const data = [];
-    try {
-      const res = await new QueryTypeService().getQueryType();
-      if (res?.status === 200) {
-        // setShowLoaderModal(false);
-
-        let counter = 1;
-        const temp = res?.data?.data?.data;
-        for (const key in temp) {
-          data.push({
-            counter: counter++,
-            id: temp[key].id,
-            query_type_name: temp[key].query_type_name,
-            form_id: temp[key].form_id,
-            customer_id: temp[key].customer_id,
-
-            form_name: temp[key].form_id_name,
-            query_group_name: temp[key].query_group_name,
-            query_group: temp[key].query_group,
-            is_active: temp[key].is_active,
-            remark: temp[key].remark,
-            created_at: temp[key].created_at,
-            created_by: temp[key].created_by,
-            updated_at: temp[key].updated_at,
-            updated_by: temp[key].updated_by,
-            query_group_data: temp[key].query_group_data
-          });
-        }
-
-        setData(data);
-        setIsLoading(false);
-      }
-    } catch (error) {
-      errorHandler(error);
-    } finally {
-      setIsLoading(false);
-    }
 
     try {
       const res = await new DynamicFormService().getDynamicForm();
@@ -292,21 +235,6 @@ function QueryTypeComponent() {
     } catch (error) {
       errorHandler(error);
     }
-
-    try {
-      const res = await new CustomerService().getCustomer();
-      if (res.data.status === 1) {
-        // setSelectedCustomer(res.data.data.filter((d) => d.is_active === 1));
-        // setCustomerDropdown(
-        //   res.data.data
-        //     .filter((d) => d.is_active === 1)
-        //     .map((d) => ({ value: d.id, label: d.name }))
-        // );
-      }
-    } catch (error) {
-      errorHandler(error);
-    }
-
     dispatch(getRoles());
   }, [dispatch]);
 
@@ -373,8 +301,8 @@ function QueryTypeComponent() {
   };
 
   useEffect(() => {
-    loadData();
-    loadQueryGroupDropdownData();
+    //loadData();
+    dispatch(fetchQueryTypeData());
   }, [loadData]);
 
   useEffect(() => {
@@ -440,6 +368,7 @@ function QueryTypeComponent() {
   ];
   const validationSchemaGroupName = CustomValidation(fieldsGroupName);
 
+  console.log('queryGroupDropdown', queryGroupDropdown);
   return (
     <>
       <div className="container-xxl">
@@ -471,11 +400,11 @@ function QueryTypeComponent() {
         />
 
         <div className="card mt-2">
-          {data && (
+          {queryTypeData && (
             <MaterialTable
               exportDataKeys={exportDataKeys}
               isLoading={isLoading}
-              data={data}
+              data={queryTypeData}
               columns={columns}
               reset={reset}
               setReset={setReset}

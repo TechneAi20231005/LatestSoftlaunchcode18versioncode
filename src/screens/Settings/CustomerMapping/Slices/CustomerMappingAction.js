@@ -59,6 +59,19 @@ export const getQueryTypeData = createAsyncThunk(
     }
   }
 );
+export const fetchQueryTypeData = createAsyncThunk(
+  'fetchQueryTypeData',
+  async (config, thunkapi) => {
+    try {
+      const service = new QueryTypeService();
+      const response = await service.getQueryType();
+
+      return response;
+    } catch (error) {
+      errorHandler(error);
+    }
+  }
+);
 
 export const getTemplateData = createAsyncThunk(
   'getTemplateData',

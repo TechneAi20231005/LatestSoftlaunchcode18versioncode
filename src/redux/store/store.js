@@ -64,6 +64,7 @@ import testCaseReviewSlice from '../slices/testCases/testCaseReview';
 import testBankSlice from '../slices/testCases/testBank';
 import sidebarSlice from '../slices/Sidebar';
 import jobRoleMaster from '../slices/jobRoleMaster';
+import  taskAndTicketSlice  from '../../screens/Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeSlice';
 
 export const store = configureStore({
   reducer: {
@@ -100,7 +101,7 @@ export const store = configureStore({
     consolidatedData: ConsolidatedSlice,
     jobRoleMaster: jobRoleMaster,
     menuMaster: menuMaster,
-
+    taskAndTicket: taskAndTicketSlice,
     // // HRMS>>Employee Joining
     branchMaster: branchMasterSlice,
     sourceMaster: sourceMasterSlice,

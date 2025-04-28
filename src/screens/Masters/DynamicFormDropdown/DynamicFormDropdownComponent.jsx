@@ -8,13 +8,24 @@ import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import moment from 'moment';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-import { errorHandler } from '../../../utils';
+
+import { getAllDynamicFormDropdownData } from './Slices/DynamicFormDropDownAction';
 
 export default function DynamicFormDropdownComponent() {
   //initial state
   const dispatch = useDispatch();
-  const [isLoading, setIsLoading] = useState(true);
-  const [data, setData] = useState([]);
+
+  const allDynamicFormDropdownData = useSelector(
+    (DynamicFormDropdownSlice) =>
+      DynamicFormDropdownSlice?.dynamicFormDropDown
+        ?.getAllDynamicFormDropdownData
+  );
+
+  const isLoading = useSelector(
+    (DynamicFormDropdownSlice) =>
+      DynamicFormDropdownSlice?.dynamicFormDropDown?.isLoading
+        ?.getAllDynamicFormDropdownData
+  );
 
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice?.dashboard?.getRoles.filter((d) => d.menu_id === 35)
@@ -126,35 +137,8 @@ export default function DynamicFormDropdownComponent() {
     fileName: 'Dynamic Form Dropdown Master'
   };
 
-  const loadData = async () => {
-    try {
-      setIsLoading(true);
-      const response =
-        await new DynamicFormDropdownMasterService().getAllDynamicFormDropdown();
-
-      if (response?.status === 200) {
-        const temp = response?.data?.data?.data || [];
-        const formattedData = temp.map((item, index) => ({
-          counter: index + 1,
-          id: item.id,
-          dropdown_name: item.dropdown_name,
-          is_active: item.is_active,
-          updated_at: item.updated_at,
-          created_at: item.created_at,
-          created_by: item.created_by,
-          updated_by: item.updated_by
-        }));
-        setData(formattedData);
-        setIsLoading(false);
-      }
-    } catch (error) {
-      errorHandler(error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
   useEffect(() => {
-    loadData();
+    dispatch(getAllDynamicFormDropdownData());
   }, []);
 
   useEffect(() => {
@@ -182,13 +166,13 @@ export default function DynamicFormDropdownComponent() {
       />
 
       <div className="card mt-2">
-        {data && (
+        {allDynamicFormDropdownData && (
           <MaterialTable
             columns={columns}
             isLoading={isLoading}
-            data={data}
+            data={allDynamicFormDropdownData}
             exportDataKeys={exportDataKeys}
-          ></MaterialTable>
+          />
         )}
       </div>
     </div>

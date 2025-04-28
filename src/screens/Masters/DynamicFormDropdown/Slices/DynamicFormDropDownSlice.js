@@ -2,7 +2,8 @@ import { createSlice } from '@reduxjs/toolkit';
 import {
   dynamicFormData,
   dynamicFormDropDownData,
-  getAllDropDownData
+  getAllDropDownData,
+  getAllDynamicFormDropdownData
 } from './DynamicFormDropDownAction';
 
 const initialState = {
@@ -16,11 +17,13 @@ const initialState = {
     modalHeader: ''
   },
   isLoading: {
-    dyanamicFormList: false
+    dyanamicFormList: false,
+    getAllDynamicFormDropdownData: false
   },
   getDynamicFormDropDownData: [],
   exportDynamicFormDropDownData: [],
   getDynamicFormData: [],
+  getAllDynamicFormDropdownData: [],
   exportDynamicFormData: [],
   dropDownData: { index: 0 }
 };
@@ -158,6 +161,37 @@ export const DynamicFormDropDownSlice = createSlice({
     builder.addCase(getAllDropDownData.rejected, (state) => {
       state.status = 'rejected';
       state.isLoading.dyanamicFormList = false;
+    });
+    builder.addCase(getAllDynamicFormDropdownData.pending, (state) => {
+      state.status = 'loading';
+      state.isLoading.getAllDynamicFormDropdownData = true;
+    });
+    builder.addCase(
+      getAllDynamicFormDropdownData.fulfilled,
+      (state, action) => {
+        const { payload } = action;
+
+        if (payload?.status === 200 && payload?.data?.status === 1) {
+          state.status = 'succeded';
+          let dropDownData = payload.data.data?.data?.map((item, index) => ({
+            counter: index + 1,
+            id: item.id,
+            dropdown_name: item.dropdown_name,
+            is_active: item.is_active,
+            updated_at: item.updated_at,
+            created_at: item.created_at,
+            created_by: item.created_by,
+            updated_by: item.updated_by
+          }));
+          state.getAllDynamicFormDropdownData = dropDownData;
+
+        }
+          state.isLoading.getAllDynamicFormDropdownData = false;
+      }
+    );
+    builder.addCase(getAllDynamicFormDropdownData.rejected, (state) => {
+      state.status = 'rejected';
+      state.isLoading.getAllDynamicFormDropdownData = false;
     });
   }
 });

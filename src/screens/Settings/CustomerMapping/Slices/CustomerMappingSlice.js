@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 import {
   exportCustomerMappingData,
+  fetchQueryTypeData,
   getCustomerMappingData,
   getQueryTypeData,
   getTemplateData,
@@ -18,7 +19,8 @@ const initialState = {
     modalHeader: ''
   },
   isLoading: {
-    customerMappingList: false
+    customerMappingList: false,
+    getQueryTypeData:false
   },
   customerMappingData: [],
   exportTempData: [],
@@ -208,6 +210,7 @@ export const CustomerMappingSlice = createSlice({
 
     builder.addCase(getQueryTypeData.pending, (state) => {
       state.status = 'loading';
+      state.isLoading.getQueryTypeData = true;
     });
     builder.addCase(getQueryTypeData.fulfilled, (state, action) => {
       const { payload } = action;
@@ -222,15 +225,65 @@ export const CustomerMappingSlice = createSlice({
         state.queryTypeData = queryTypeData;
         state.queryTypeDropDownData = queryTypeDropDownData;
         state.status = 'succeded';
-
         state.notify = { type: 'success', message: payload.data.message };
       } else {
         state.notify = { type: 'danger', message: payload.data.message };
       }
+      state.isLoading.getQueryTypeData = false;
     });
     builder.addCase(getQueryTypeData.rejected, (state) => {
       state.status = 'rejected';
       state.isLoading.customerMappingList = false;
+      state.isLoading.getQueryTypeData = false;
+    });
+    builder.addCase(fetchQueryTypeData.pending, (state) => {
+      state.status = 'loading';
+      state.isLoading.getQueryTypeData = true;
+    });
+    builder.addCase(fetchQueryTypeData.fulfilled, (state, action) => {
+      const { payload } = action;
+      state.notify = null;
+      if (payload?.status === 200 && payload?.data?.status === 1) {
+        const queryTypeData = payload.data.data.data.filter(
+          (d) => d.is_active == 1
+        );
+        let data = [];
+        let counter = 1;
+        const temp = queryTypeData;
+        for (const key in temp) {
+          data.push({
+            counter: counter++,
+            id: temp[key].id,
+            query_type_name: temp[key].query_type_name,
+            form_id: temp[key].form_id,
+            customer_id: temp[key].customer_id,
+
+            form_name: temp[key].form_id_name,
+            query_group_name: temp[key].query_group_name,
+            query_group: temp[key].query_group,
+            is_active: temp[key].is_active,
+            remark: temp[key].remark,
+            created_at: temp[key].created_at,
+            created_by: temp[key].created_by,
+            updated_at: temp[key].updated_at,
+            updated_by: temp[key].updated_by,
+            query_group_data: temp[key].query_group_data
+          });
+        }
+
+        state.queryTypeData = data;
+        state.queryTypeDropDownData = queryTypeData?.map((d) => ({ value: d.id, label: d.query_type_name }));
+        state.status = 'succeded';
+        state.notify = { type: 'success', message: payload.data.message };
+      } else {
+        state.notify = { type: 'danger', message: payload.data.message };
+      }
+      state.isLoading.getQueryTypeData = false;
+    });
+    builder.addCase(fetchQueryTypeData.rejected, (state) => {
+      state.status = 'rejected';
+      state.isLoading.customerMappingList = false;
+      state.isLoading.getQueryTypeData = false;
     });
 
     builder.addCase(getTemplateData.pending, (state) => {

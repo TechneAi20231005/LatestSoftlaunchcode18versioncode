@@ -14,6 +14,9 @@ const initialState = {
   queryTypeData: [],
   queryType: [],
 
+  loading:{
+    queryTypeData: false,
+  },
   QueryGroupForm: [],
   notify: '',
   modal: {
@@ -44,6 +47,7 @@ export const queryTypeSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder.addCase(queryTypeData.pending, (state) => {
+      state.loading.queryTypeData = true;
       state.status = 'loading';
       state.notify = null;
     });
@@ -53,19 +57,29 @@ export const queryTypeSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let queryTypeData = payload.data.data
-          .filter((d) => d.is_active === 1)
-          .map((d) => ({ value: d.id, label: d.group_name }));
-
+        ?.data?.filter((d) => d.is_active === 1)
+        let data = [];
+        let counter = 1;
+         for (const key in queryTypeData) {
+          data.push({
+            counter: counter++,
+            id: queryTypeData[key].id,
+            group_name: queryTypeData[key].group_name,
+            is_active: queryTypeData[key].is_active,
+            created_at: queryTypeData[key].created_at,
+            created_by: queryTypeData[key].created_by,
+            updated_at: queryTypeData[key].updated_at,
+            updated_by: queryTypeData[key].updated_by
+          });
+        }
         state.status = 'succeded';
         state.showLoaderModal = false;
-        let count = 1;
-        for (let i = 0; i < queryTypeData.length; i++) {
-          queryTypeData[i].counter = count++;
-        }
-        state.queryTypeData = [...queryTypeData];
+        state.queryTypeData = data
+        state.loading.queryTypeData = false;
       }
     });
     builder.addCase(queryTypeData.rejected, (state) => {
+      state.loading.queryTypeData = false;
       state.status = 'rejected';
     });
 
