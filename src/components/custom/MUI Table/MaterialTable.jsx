@@ -43,6 +43,9 @@ function MaterialTable({
   setReset = () => {},
   isExportData = true,
   enableRowNumbers = false,
+  manualPagination = false,
+  paginationData,
+  setPaginationData = {}
 }) {
   const [columnFilters, setColumnFilters] = useState([]);
   const [sorting, setSorting] = useState([]);
@@ -232,6 +235,10 @@ function MaterialTable({
           enableFullScreenToggle={data?.length > 0}
           enableColumnResizing={enableColumnResizing}
           enableColumnOrdering={enableColumnOrdering}
+          onPaginationChange={
+            manualPagination ? setPaginationData : setPagination
+          }
+          manualPagination={manualPagination}
           enableFacetedValues={enableFacetedValues}
           enableColumnFilter={enableColumnFilter}
           muiTableBodyCellProps={{
@@ -247,7 +254,7 @@ function MaterialTable({
             isLoading: isLoading,
             columnFilters,
             sorting,
-            pagination,
+            pagination: manualPagination ? paginationData : pagination,
             rowSelection,
             columnVisibility,
             globalFilter,
@@ -269,7 +276,6 @@ function MaterialTable({
           onGroupingChange={setGroupBy}
           onColumnFiltersChange={setColumnFilters}
           onSortingChange={setSorting}
-          onPaginationChange={setPagination}
           onRowSelectionChange={setRowSelection}
           onColumnVisibilityChange={setColumnVisibility}
           onGlobalFilterChange={setGlobalFilter}

@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import { Modal } from 'react-bootstrap';
+import { Modal, PageItem } from 'react-bootstrap';
 import { Astrick } from '../../../components/Utilities/Style';
 import DownloadFormatFileModal from './DownloadFormatFileModal';
 import ReviewedTestDraftDetails from './ReviewedTestDraftDetails';
@@ -37,12 +37,17 @@ export default function TestDraftComponent({}) {
   );
   const [state, setState] = useState(location.state);
 
-  const [paginationData, setPaginationData] = useReducer(
-    (prevState, nextState) => {
-      return { ...prevState, ...nextState };
-    },
-    { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
-  );
+  // const [paginationData, setPaginationData] = useReducer(
+  //   (prevState, nextState) => {
+  //     return { ...prevState, ...nextState };
+  //   },
+  //   { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
+  // );
+
+  const [paginationData, setPaginationData] = useState({
+    pageIndex: 0,
+    pageSize: 10
+  });
 
   const [downloadmodal, setDownloadModal] = useState({
     showModal: false,
@@ -68,7 +73,11 @@ export default function TestDraftComponent({}) {
       value: 'test_summary',
       Icon: <DescriptionIcon />
     },
-    { label: 'Review Test Draft', value: 'review_test_draft', Icon: <PreviewIcon /> }
+    {
+      label: 'Review Test Draft',
+      value: 'review_test_draft',
+      Icon: <PreviewIcon />
+    }
   ];
 
   const handleDownloadModal = (data) => {
@@ -158,9 +167,13 @@ export default function TestDraftComponent({}) {
 
     setIsFilterApplied(false);
 
+    // setPaginationData({
+    //   rowPerPage: 10,
+    //   currentPage: 1
+    // });
     setPaginationData({
-      rowPerPage: 10,
-      currentPage: 1
+      pageSize: 10,
+      pageIndex: 0
     });
     currentTab === 'test_summary'
       ? dispatch(
@@ -305,11 +318,16 @@ export default function TestDraftComponent({}) {
       />
 
       <div className="mt-3">
-      <Tabs sx={tabStyles} value={currentTab} onChange={handleChange}>
-        {tabsLabel.map((tab) => (
-          <Tab icon={tab.Icon}  key={tab.value} label={tab.label} value={tab.value} />
-        ))}
-      </Tabs>
+        <Tabs sx={tabStyles} value={currentTab} onChange={handleChange}>
+          {tabsLabel.map((tab) => (
+            <Tab
+              icon={tab.Icon}
+              key={tab.value}
+              label={tab.label}
+              value={tab.value}
+            />
+          ))}
+        </Tabs>
         {/* <CustomTab
           tabsData={tabsLabel}
           currentTab={currentTab}

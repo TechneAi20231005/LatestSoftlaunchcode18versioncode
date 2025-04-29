@@ -25,7 +25,8 @@ const CustomFilterModal = ({
   handleClearAllFilter,
   errorMessage,
   setSelectedValue,
-  selectedValue
+  selectedValue,
+  isFilterApplied
 }) => {
   const [showTooltip, setShowTooltip] = useState(false);
   const [showModal, setShowModal] = useState(false);
@@ -192,14 +193,19 @@ const CustomFilterModal = ({
               All
             </label>
           </div>
-          {filterData?.map((value) => (
+          {console.log('selected', selectedFilters)}
+          {console.log('filterData', filterData)}
+          {filterData?.map((value, index) => (
             <div key={value?.id} className="filter-item p-1">
               <input
                 type="checkbox"
                 id={`filter${value?.id}`}
                 name={`filter${value?.id}`}
                 className="check-box-size"
-                checked={selectedFilters.includes(value?.name)}
+                // checked={selectedFilters.includes(value?.name)}
+                checked={
+                  !isFilterApplied || selectedFilters.includes(value?.name)
+                }
                 onChange={(e) =>
                   handleCheckboxChange(e, value?.name, value?.id)
                 }

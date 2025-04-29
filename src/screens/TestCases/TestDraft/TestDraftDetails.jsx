@@ -38,7 +38,8 @@ const initialState = {
   reviewerId: null,
   selectAllNames: false,
   selectedRows: [],
-  betweenValues: ['', '']
+  betweenValues: ['', ''],
+  isFilterApplied: false
 };
 
 function localReducer(state, action) {
@@ -86,6 +87,9 @@ function localReducer(state, action) {
       };
     case 'SET_BETWEEN_VALUES':
       return { ...state, betweenValues: action.payload };
+    case 'SET_IS_FILTER_APPLIED':
+      return { ...state, isFilterApplied: action.payload };
+
     default:
       return state;
   }
@@ -183,7 +187,9 @@ function TestDraftDetails(props) {
 
     if (newSelectAllNames) {
       const draftRowIds = getDraftTestListData
-        .filter((row) => row?.status_name === 'DRAFT')
+        .filter(
+          (row) => row?.tai_bc_status_conventions?.convention_name === 'DRAFT'
+        )
         .map((row) => row.id);
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
     } else {
@@ -211,28 +217,27 @@ function TestDraftDetails(props) {
       localDispatch({ type: 'SET_FILTERS', payload: [] });
     }
     const filterKeyMap = {
-      module_name: 'module_names',
-      sub_module_name: 'sub_module_names',
-      function_name: 'function_names',
-      field: 'field_names',
-      platform: 'platforms',
-      type_name: 'type_names',
+      module_name: 'module',
+      sub_module_name: 'submodule',
+      function_name: 'function',
+      field: 'field',
+      platform: 'platform',
+      type_name: 'testing_type',
       tc_id: 'ids',
       test_description: 'test_descriptions',
 
-      severity: 'severities',
+      severity: 'severity',
       group_name: 'group_names',
       steps: 'steps',
       expected_result: 'expected_results',
       status: 'status',
-      project_name: 'project_names',
+      project_name: 'project',
       created_at: 'created_at',
       created_by: 'created_by',
       updated_at: 'updated_at',
       updated_by: 'updated_by'
     };
     const filteredData = filterData[filterKeyMap[column]];
-
     const columnId = moduleMapping[column];
     localDispatch({ type: 'SET_FILTER_TYPE', payload: '' });
     localDispatch({ type: 'SET_COLUMN_NAME', payload: name });
@@ -257,10 +262,17 @@ function TestDraftDetails(props) {
       payload: term
     });
   };
-
   const filteredResults = filterValues?.filter((item) =>
     item?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase())
   );
+  // const filteredResults = filterValues?.filter((item) =>
+  //   item?.toString()?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+  // );
+
+  // const filteredResults = filterValues?.filter((item) =>
+  //   item?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+  // );
+
   const closeModal = () => {
     localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
     localDispatch({ type: 'SET_FILTER_COLUMN', payload: '' });
@@ -284,6 +296,7 @@ function TestDraftDetails(props) {
 
   const handleFilterCheckboxChange = (event, label, value) => {
     const isChecked = event.target.checked;
+    console.log('label', label);
 
     if (isChecked) {
       localDispatch({
@@ -306,6 +319,10 @@ function TestDraftDetails(props) {
         payload: state.selectedFilterIds.filter(
           (filterId) => filterId !== value
         )
+      });
+      localDispatch({
+        type: 'SET_IS_FILTER_APPLIED',
+        payload: true
       });
     }
   };
@@ -430,14 +447,14 @@ function TestDraftDetails(props) {
     try {
       dispatch(
         getDraftTestCaseList({
-          limit: props?.paginationData.rowPerPage,
-          page: props?.paginationData.currentPage,
+          limit: props?.paginationData.pageSize,
+          page: props?.paginationData.pageIndex,
           filter_testcase_data: updatedFilters
         })
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
       localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
-      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+      // localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
     } catch (error) {}
   };
   {
@@ -477,15 +494,15 @@ function TestDraftDetails(props) {
     try {
       dispatch(
         getDraftTestCaseList({
-          limit: props?.paginationData.rowPerPage,
-          page: props?.paginationData.currentPage,
+          limit: props?.paginationData.pageSize,
+          page: props?.paginationData.pageIndex,
           filter_testcase_data: updatedFilters
         })
       );
 
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
       localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
-      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+      // localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
     } catch (error) {}
   };
 
@@ -504,8 +521,8 @@ function TestDraftDetails(props) {
     try {
       dispatch(
         getDraftTestCaseList({
-          limit: props?.paginationData?.rowPerPage,
-          page: props?.paginationData?.currentPage,
+          limit: props?.paginationData?.pageSize,
+          page: props?.paginationData?.pageIndex,
           filter_testcase_data: updatedFilters
         })
       );
@@ -515,6 +532,20 @@ function TestDraftDetails(props) {
     } catch (error) {}
   };
 
+  useEffect(() => {
+    if (props.paginationData) {
+      const { pageSize, pageIndex } = props.paginationData;
+      if (pageSize && pageIndex) {
+        dispatch(
+          getDraftTestCaseList({
+            limit: pageSize,
+            page: pageIndex + 1,
+            filter_testcase_data: []
+          })
+        );
+      }
+    }
+  }, [props.paginationData]);
   // const columns = [
   //   {
   //     name: 'Action',
@@ -1428,9 +1459,13 @@ function TestDraftDetails(props) {
         return (
           <div className="d-flex align-items-center">
             <i
-              disabled={row.status !== 'DRAFT'}
+              disabled={
+                row?.tai_bc_status_conventions?.convention_name !== 'DRAFT'
+              }
               className={`icofont-edit text-primary btn btn-outline-secondary cp  ${
-                row.status !== 'DRAFT' ? 'disabled-icon' : ''
+                row?.tai_bc_status_conventions?.convention_name !== 'DRAFT'
+                  ? 'disabled-icon'
+                  : ''
               }`}
               onClick={() =>
                 setAddEditTestCasesModal({
@@ -1472,7 +1507,11 @@ function TestDraftDetails(props) {
       size: 80,
       Cell: ({ row }) => {
         const rowData = row.original;
-        if (!rowData || rowData.tc_id === null || rowData.status_name === null)
+        if (
+          !rowData ||
+          rowData.tc_id === null ||
+          rowData?.tai_bc_status_conventions?.convention_name === null
+        )
           return null;
 
         return (
@@ -1480,14 +1519,17 @@ function TestDraftDetails(props) {
             type="checkbox"
             checked={selectedRows.includes(rowData.id)}
             onChange={() => handleCheckboxChange(rowData)}
-            disabled={rowData.status_name !== 'DRAFT'}
+            disabled={
+              rowData?.tai_bc_status_conventions?.convention_name !== 'DRAFT'
+            }
           />
         );
       }
     },
 
     {
-      accessorFn: (originalRows) => `${originalRows?.module_name || '--'} `,
+      accessorFn: (originalRows) =>
+        `${originalRows?.module?.module_name || '--'} `,
       header: 'Module Name',
       Header: (
         <span>
@@ -1506,7 +1548,8 @@ function TestDraftDetails(props) {
       enableSorting: false
     },
     {
-      accessorFn: (originalRows) => `${originalRows?.sub_module_name || '--'} `,
+      accessorFn: (originalRows) =>
+        `${originalRows?.sub_module?.sub_module_name || '--'} `,
       header: 'Submodule Name',
       Header: (
         <span>
@@ -1544,7 +1587,8 @@ function TestDraftDetails(props) {
       enableSorting: false
     },
     {
-      accessorFn: (originalRows) => `${originalRows?.function_name || '--'} `,
+      accessorFn: (originalRows) =>
+        `${originalRows?.function_master?.function_name || '--'} `,
       header: 'Function Name',
       Header: (
         <span>
@@ -1581,7 +1625,8 @@ function TestDraftDetails(props) {
     },
 
     {
-      accessorFn: (originalRows) => `${originalRows?.type_name || '--'} `,
+      accessorFn: (originalRows) =>
+        `${originalRows?.testing_type?.type_name || '--'} `,
       header: 'Testing Type',
       Header: (
         <span>
@@ -1716,7 +1761,8 @@ function TestDraftDetails(props) {
       enableSorting: false
     },
     {
-      accessorFn: (originalRows) => `${originalRows?.status_name || '--'} `,
+      accessorFn: (originalRows) =>
+        `${originalRows?.tai_bc_status_conventions?.convention_name || '--'} `,
       header: 'Status',
       Header: (
         <span>
@@ -1735,7 +1781,8 @@ function TestDraftDetails(props) {
       enableSorting: false
     },
     {
-      accessorFn: (originalRows) => `${originalRows?.project_name || '--'} `,
+      accessorFn: (originalRows) =>
+        `${originalRows?.project?.project_name || '--'} `,
       header: 'Project',
       Header: (
         <span>
@@ -1888,8 +1935,8 @@ function TestDraftDetails(props) {
 
           dispatch(
             getDraftTestCaseList({
-              limit: props?.paginationData.rowPerPage,
-              page: props?.paginationData.currentPage
+              limit: props?.paginationData.pageSize,
+              page: props?.paginationData.pageIndex
             })
           );
         },
@@ -1948,14 +1995,14 @@ function TestDraftDetails(props) {
       try {
         dispatch(
           getDraftTestCaseList({
-            limit: props?.paginationData.rowPerPage,
-            page: props?.paginationData.currentPage,
+            limit: props?.paginationData.pageSize,
+            page: props?.paginationData.pageIndex,
             filter_testcase_data: updatedFilters
           })
         );
         localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
         localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
-        localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+        // localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
       } catch (error) {}
     }
   }, [sortOrder]);
@@ -1984,8 +2031,10 @@ function TestDraftDetails(props) {
     const updatedFilters = [...filters, newFilter];
     dispatch(
       getDraftTestCaseList({
-        limit: props?.paginationData?.rowPerPage,
-        page: props?.paginationData?.currentPage,
+        // limit: props?.paginationData?.rowPerPage,
+        // page: props?.paginationData?.currentPage,
+        limit: props?.paginationData?.pageSize,
+        page: props?.paginationData?.pageIndex + 1,
         filter_testcase_data:
           updatedFilters?.length === 1 &&
           updatedFilters[0]?.column === filterColumnId
@@ -1993,7 +2042,8 @@ function TestDraftDetails(props) {
             : updatedFilters
       })
     );
-  }, [props?.paginationData.rowPerPage, props?.paginationData.currentPage]);
+  }, [props?.paginationData.pageSize, props?.paginationData.pageIndex]);
+  // }, [props?.paginationData.rowPerPage, props?.paginationData.currentPage]);
 
   useEffect(() => {
     if (filterValues && searchTerm?.length === 0) {
@@ -2022,14 +2072,23 @@ function TestDraftDetails(props) {
     // }
   }, [searchTerm, localDispatch]);
 
+  // useEffect(() => {
+  //   dispatch(
+  //     getTestCaseStatusDataList({
+  //       limit: props?.paginationData?.rowPerPage,
+  //       page: props?.paginationData?.currentPage
+  //     })
+  //   );
+  // }, [props?.paginationData.rowPerPage, props?.paginationData.currentPage]);
+
   useEffect(() => {
     dispatch(
       getTestCaseStatusDataList({
-        limit: props?.paginationData?.rowPerPage,
-        page: props?.paginationData?.currentPage
+        limit: props?.paginationData?.pageSize,
+        page: props?.paginationData?.pageIndex + 1
       })
     );
-  }, [props?.paginationData.rowPerPage, props?.paginationData.currentPage]);
+  }, [props?.paginationData.pageSize, props?.paginationData.pageIndex]);
 
   return (
     <>
@@ -2062,8 +2121,8 @@ function TestDraftDetails(props) {
           columns={columns}
           data={getDraftTestListData || []}
           isLoading={isLoading?.getDraftTestListData}
-          pagination={props?.paginationData}
-          setPagination={props?.paginationData}
+          paginationData={props?.paginationData}
+          setPaginationData={props?.setPaginationData}
           totalRows={allDraftListData?.data?.total}
           manualPagination={true}
           manualFiltering={true}
@@ -2204,6 +2263,7 @@ function TestDraftDetails(props) {
           errorMessage={errorMessage}
           setSelectedValue={setSelectedValue}
           selectedValue={selectedValue}
+          isFilterApplied={state.isFilterApplied}
         />
       )}
     </>
