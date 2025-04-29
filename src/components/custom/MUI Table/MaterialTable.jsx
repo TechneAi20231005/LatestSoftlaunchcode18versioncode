@@ -44,7 +44,7 @@ function MaterialTable({
   isExportData = true,
   enableRowNumbers = false,
   manualPagination = false,
-  paginationData,
+  paginationData = {},
   setPaginationData = {}
 }) {
   const [columnFilters, setColumnFilters] = useState([]);

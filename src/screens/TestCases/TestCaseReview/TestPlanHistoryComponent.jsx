@@ -1,4 +1,4 @@
-import React, { useEffect, useReducer } from 'react';
+import React, { useEffect, useReducer, useState } from 'react';
 import { Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import PageHeader from '../../../components/Common/PageHeader';
@@ -14,12 +14,17 @@ import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 function TestPlanHistoryComponent() {
   const { id } = useParams();
 
-  const [paginationData, setPaginationData] = useReducer(
-    (prevState, nextState) => {
-      return { ...prevState, ...nextState };
-    },
-    { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
-  );
+  // const [paginationData, setPaginationData] = useReducer(
+  //   (prevState, nextState) => {
+  //     return { ...prevState, ...nextState };
+  //   },
+  //   { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
+  // );
+
+    const [paginationData, setPaginationData] = useState({
+      pageIndex: 0,
+      pageSize: 10
+    })
 
   const { testPlantHistory, isLoading } = useSelector(
     (state) => state?.downloadFormat
@@ -39,11 +44,11 @@ function TestPlanHistoryComponent() {
     dispatch(
       testPlansHistoryThunk({
         id: id,
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage
+        limit: paginationData.pageSize,
+        page: paginationData.pageIndex + 1
       })
     );
-  }, []);
+  }, [paginationData.pageIndex, paginationData.pageSize]);
 
   // const columns = [
   //   {
@@ -419,6 +424,7 @@ function TestPlanHistoryComponent() {
       enableColumnFilter: true
     }
   ];
+  console.log(testPlantHistory, 'testPlantHistory?.total');
   return (
     <>
       <PageHeader showBackBtn headerTitle="Test Plan History" />
@@ -428,7 +434,10 @@ function TestPlanHistoryComponent() {
           data={testPlantHistory}
           isLoading={isLoading?.testDraftHistory}
           enableRowNumbers={true}
+          paginationData={paginationData}
+          setPaginationData={setPaginationData}
           isExportData={false}
+          manualPagination={true}
         />
         {/* <DataTable
           columns={columns}

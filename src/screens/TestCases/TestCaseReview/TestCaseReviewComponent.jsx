@@ -91,12 +91,16 @@ function localReducer(state, action) {
 
 function TestCaseReviewComponent() {
   const dispatch = useDispatch();
-  const [paginationData, setPaginationData] = useReducer(
-    (prevState, nextState) => {
-      return { ...prevState, ...nextState };
-    },
-    { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
-  );
+  // const [paginationData, setPaginationData] = useReducer(
+  //   (prevState, nextState) => {
+  //     return { ...prevState, ...nextState };
+  //   },
+  //   { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
+  // );
+  const [paginationData, setPaginationData] = useState({
+    pageIndex: 0,
+    pageSize: 10
+  })
   const { testCaseReviewList, isLoading, filterTestCaseReviewList } =
     useSelector((state) => state?.testCaseReview);
 
@@ -371,8 +375,8 @@ function TestCaseReviewComponent() {
     try {
       dispatch(
         getTestCaseReviewListThunk({
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: paginationData.pageSize,
+          page: paginationData.pageIndex + 1,
           filter_testcase_data: updatedFilters,
           type: 'reviewer'
         })
@@ -397,8 +401,8 @@ function TestCaseReviewComponent() {
     try {
       dispatch(
         getTestCaseReviewListThunk({
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: paginationData.pageSize,
+          page: paginationData.pageIndex + 1,
           filter_testcase_data: updatedFilters,
           type: 'reviewer'
         })
@@ -447,8 +451,8 @@ function TestCaseReviewComponent() {
     try {
       dispatch(
         getTestCaseReviewListThunk({
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: paginationData.pageSize,
+          page: paginationData.pageIndex + 1,
           filter_testcase_data: updatedFilters,
           type: 'reviewer'
         })
@@ -1325,14 +1329,14 @@ function TestCaseReviewComponent() {
 
     setClearData(true);
     setPaginationData({
-      rowPerPage: 10,
-      currentPage: 1
+      pageSize: 10,
+      pageIndex: 1
     });
 
     dispatch(
       getTestCaseReviewListThunk({
-        limit: paginationData?.rowPerPage,
-        page: paginationData?.currentPage,
+        limit: paginationData?.pageSize,
+        page: paginationData?.pageIndex,
         filter_testcase_data: [],
         type: 'reviewer'
       })
@@ -1393,8 +1397,8 @@ function TestCaseReviewComponent() {
 
           dispatch(
             getTestCaseReviewListThunk({
-              limit: paginationData.rowPerPage,
-              page: paginationData.currentPage,
+              limit: paginationData.pageSize,
+              page: paginationData.pageIndex + 1,
               type: 'reviewer'
             })
           );
@@ -1522,8 +1526,8 @@ function TestCaseReviewComponent() {
       try {
         dispatch(
           getTestCaseReviewListThunk({
-            limit: paginationData.rowPerPage,
-            page: paginationData.currentPage,
+            limit: paginationData.pageSize,
+            page: paginationData.pageIndex + 1,
             filter_testcase_data: updatedFilters,
             type: 'reviewer'
           })
@@ -1559,8 +1563,8 @@ function TestCaseReviewComponent() {
     const updatedFilters = [...filters, newFilter];
     dispatch(
       getTestCaseReviewListThunk({
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage,
+        limit: paginationData.pageSize,
+        page: paginationData.pageIndex + 1,
         filter_testcase_data:
           updatedFilters?.length === 1 &&
           updatedFilters[0]?.column === filterColumnId
@@ -1569,7 +1573,7 @@ function TestCaseReviewComponent() {
         type: 'reviewer'
       })
     );
-  }, []);
+  }, [paginationData?.pageIndex, paginationData?.pageSize]);
   return (
     <>
     <Box ml={1}>
@@ -1590,15 +1594,20 @@ function TestCaseReviewComponent() {
         }}
       />
       </Box>
+      {console.log(testCaseReviewList,">>>>>>")}
 
       <Container fluid className="mt-3">
         {testCaseReviewList && (
           <MaterialTable
             columns={columns}
+            rowCount={testCaseReviewList?.data?.total}
+            paginationData={paginationData}
+            setPaginationData={setPaginationData}
             data={testCaseReviewList}
             enableRowNumbers={true}
             isLoading={isLoading?.testCaseReviewList}
             isExportData={false}
+            manualPagination={true}
           />
         )}
         {/* <DataTable
