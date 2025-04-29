@@ -17,6 +17,7 @@ import { sendTestPlanReviewerThunk } from '../../../redux/services/testCases/dow
 import { getEmployeeData } from '../../Dashboard/DashboardAction';
 import { toast } from 'react-toastify';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import { Box } from '@mui/material';
 
 const initialState = {
   filterType: '',
@@ -1063,7 +1064,6 @@ function TestCaseReviewComponent() {
           />
         </span>
       ),
-      enableSorting: true,
       Cell: ({ cell }) => {
         const rowData = cell.row.original;
         const reviewerId = localStorage.getItem('id');
@@ -1572,6 +1572,7 @@ function TestCaseReviewComponent() {
   }, []);
   return (
     <>
+    <Box ml={1}>
       <PageHeader
         headerTitle="Test Case Review"
         renderRight={() => {
@@ -1588,6 +1589,7 @@ function TestCaseReviewComponent() {
           );
         }}
       />
+      </Box>
 
       <Container fluid className="mt-3">
         {testCaseReviewList && (
@@ -1708,7 +1710,7 @@ function TestCaseReviewComponent() {
 
           <button
             type="button"
-            className="btn btn bg-white shadow p-2 text-black"
+              className="btn btn-danger text-white"
             onClick={() => {
               handleSendToReviewerModal({
                 showModal: false,
@@ -1766,7 +1768,7 @@ function TestCaseReviewComponent() {
 
           <button
             type="button"
-            className="btn btn bg-white shadow p-2 text-black"
+               className="btn btn-danger text-white"
             onClick={() => {
               handleTestCaseData({
                 showModal: false,

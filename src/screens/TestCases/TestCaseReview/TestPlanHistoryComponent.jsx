@@ -373,22 +373,26 @@ function TestPlanHistoryComponent() {
     {
       accessorKey: 'test_plan_id',
       header: 'Test Plan Id',
-      size: 190
+      size: 190,
+      enableColumnFilter: true
     },
     {
-      accessorKey: 'tester_name',
+      accessorFn: (row) => row?.tester_name || '--',
       header: 'Tester Name',
-      size: 190
+      size: 190,
+      enableColumnFilter: true
     },
     {
-      accessorKey: 'reviewer_name',
+      accessorFn: (row) => row?.reviewer_name || '--',
       header: 'Reviewer Name',
-      size: 210
+      size: 210,
+      enableColumnFilter: true
     },
     {
       accessorKey: 'created_at',
       header: 'Created At',
-      size: 180
+      size: 180,
+      enableColumnFilter: true
     },
     {
       accessorFn: (row) =>
@@ -396,12 +400,14 @@ function TestPlanHistoryComponent() {
           row?.created_by?.last_name || '-'
         }`,
       header: 'Created By',
-      size: 180
+      size: 180,
+      enableColumnFilter: true
     },
     {
-      accessorKey: 'updated_at',
+      accessorFn: (row) => row?.updated_at || '--',
       header: 'Updated At',
-      size: 180
+      size: 180,
+      enableColumnFilter: true
     },
     {
       accessorFn: (row) =>
@@ -409,7 +415,8 @@ function TestPlanHistoryComponent() {
           row?.updated_by?.last_name || '-'
         }`,
       header: 'Updated By',
-      size: 185
+      size: 185,
+      enableColumnFilter: true
     }
   ];
   return (
