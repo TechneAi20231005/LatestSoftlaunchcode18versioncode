@@ -74,13 +74,12 @@ function localReducer(state, action) {
 }
 
 function ReviewedTestDraftDetails(props) {
-
   const dispatch = useDispatch();
   const clearAllFilter = props.clearData;
 
   const { allReviewDraftTestListData, isLoading, filterReviewedDraftTestList } =
     useSelector((state) => state?.downloadFormat);
-    console.log(allReviewDraftTestListData,"allReviewDraftTestListData")
+  console.log(allReviewDraftTestListData, 'allReviewDraftTestListData');
   // const [paginationData, setPaginationData] = useReducer(
   //   (prevState, nextState) => {
   //     return { ...prevState, ...nextState };
@@ -319,8 +318,8 @@ function ReviewedTestDraftDetails(props) {
     try {
       dispatch(
         getAllReviewTestDraftList({
-          limit: props?.paginationData.rowPerPage,
-          page: props?.paginationData.currentPage,
+          limit: props?.paginationData?.pageSize,
+          page: props?.paginationData?.pageIndex + 1,
           filter_testcase_data: updatedFilters,
           type: 'tester'
         })
@@ -346,8 +345,8 @@ function ReviewedTestDraftDetails(props) {
     try {
       dispatch(
         getAllReviewTestDraftList({
-          limit: props?.paginationData.rowPerPage,
-          page: props?.paginationData.currentPage,
+          limit: props?.paginationData?.pageSize,
+          page: props?.paginationData?.pageIndex + 1,
           filter_testcase_data: updatedFilters,
           type: 'tester'
         })
@@ -406,8 +405,8 @@ function ReviewedTestDraftDetails(props) {
     try {
       dispatch(
         getAllReviewTestDraftList({
-          limit: props?.paginationData.rowPerPage,
-          page: props?.paginationData.currentPage,
+          limit: props?.paginationData?.pageSize,
+          page: props?.paginationData?.pageIndex + 1,
           filter_testcase_data: updatedFilters,
           type: 'tester'
         })
@@ -842,18 +841,18 @@ function ReviewedTestDraftDetails(props) {
   //   }
   // ];
 
-   const columns = [
+  const columns = [
     {
       accessorKey: 'test_plan_id',
       header: 'Test Plan ID',
       size: 190,
       enableColumnFilter: true,
       enableSorting: false,
-      Header:
-      <span>
-         Test Plan ID
-       <i
-           style={{ cursor: 'pointer' }}
+      Header: (
+        <span>
+          Test Plan ID
+          <i
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'test_plan_id', 'test_plan_id', 'text')
             }
@@ -862,21 +861,21 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-         />
-       </span>,
+          />
+        </span>
+      ),
       Cell: ({ row }) => {
         const testPlanId = row.original.test_plan_id;
         const id = row.original.id;
         return testPlanId ? (
-            <Link
-              to={`/${_base}/ReviewedTestDraftComponent/${id}`}
-              style={{ textDecoration: 'underline', color: '#1976d2' }}
-            >
-              {testPlanId}
-            </Link>
-
+          <Link
+            to={`/${_base}/ReviewedTestDraftComponent/${id}`}
+            style={{ textDecoration: 'underline', color: '#1976d2' }}
+          >
+            {testPlanId}
+          </Link>
         ) : null;
-      },
+      }
     },
     {
       accessorKey: 'reviewer_name',
@@ -884,11 +883,11 @@ function ReviewedTestDraftDetails(props) {
       size: 215,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-         Reviewer Name
-       <i
-           style={{ cursor: 'pointer' }}
+      Header: (
+        <span>
+          Reviewer Name
+          <i
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'reviewer_name', 'Reviewer Name', 'text')
             }
@@ -897,8 +896,9 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-         />
-       </span>,
+          />
+        </span>
+      )
     },
     {
       accessorKey: 'total_testcases',
@@ -906,11 +906,11 @@ function ReviewedTestDraftDetails(props) {
       size: 205,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-         Total Testcase
-       <i
-           style={{ cursor: 'pointer' }}
+      Header: (
+        <span>
+          Total Testcase
+          <i
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(
                 e,
@@ -924,20 +924,21 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-         />
-       </span>,
+          />
+        </span>
+      )
     },
     {
-     accessorKey: 'total_reviewed_testcases',
-     header: 'Reviewed Testcase',
+      accessorKey: 'total_reviewed_testcases',
+      header: 'Reviewed Testcase',
       size: 235,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-         Reviewed Testcase
-       <i
-           style={{ cursor: 'pointer' }}
+      Header: (
+        <span>
+          Reviewed Testcase
+          <i
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(
                 e,
@@ -951,8 +952,9 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-         />
-       </span>,
+          />
+        </span>
+      )
     },
     {
       accessorKey: 'total_rejected_testcases',
@@ -960,11 +962,11 @@ function ReviewedTestDraftDetails(props) {
       size: 230,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-         Rejected Testcase
-       <i
-           style={{ cursor: 'pointer' }}
+      Header: (
+        <span>
+          Rejected Testcase
+          <i
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(
                 e,
@@ -978,8 +980,9 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-         />
-       </span>,
+          />
+        </span>
+      )
     },
     {
       accessorKey: 'total_approved_testcases',
@@ -987,11 +990,11 @@ function ReviewedTestDraftDetails(props) {
       size: 235,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-         Approved Testcase
-       <i
-           style={{ cursor: 'pointer' }}
+      Header: (
+        <span>
+          Approved Testcase
+          <i
+            style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(
                 e,
@@ -1005,8 +1008,9 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-         />
-       </span>,
+          />
+        </span>
+      )
     },
     {
       accessorKey: 'created_at',
@@ -1014,11 +1018,11 @@ function ReviewedTestDraftDetails(props) {
       size: 180,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-         Created At
-       <i
-           style={{ cursor: 'pointer' }}
+      Header: (
+        <span>
+          Created At
+          <i
+            style={{ cursor: 'pointer' }}
             onClick={(e, row) =>
               handleFilterClick(e, 'created_at', 'created_at', 'text')
             }
@@ -1027,8 +1031,9 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-         />
-       </span>,
+          />
+        </span>
+      )
     },
     {
       accessorKey: 'created_by',
@@ -1036,11 +1041,11 @@ function ReviewedTestDraftDetails(props) {
       size: 180,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-         Created By
-       <i
-           style={{ cursor: 'pointer' }}
+      Header: (
+        <span>
+          Created By
+          <i
+            style={{ cursor: 'pointer' }}
             onClick={(e, row) =>
               handleFilterClick(e, 'created_by', 'created_by', 'text')
             }
@@ -1049,31 +1054,33 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-         />
-       </span>,
+          />
+        </span>
+      )
     },
     {
-     accessorKey: 'updated_at',
+      accessorKey: 'updated_at',
 
       header: 'Updated At',
-        size: 180,
-        enableSorting: false,
-        enableColumnFilter: true,
-        Header:
+      size: 180,
+      enableSorting: false,
+      enableColumnFilter: true,
+      Header: (
         <span>
           Updated At
-        <i
+          <i
             style={{ cursor: 'pointer' }}
-              onClick={(e, row) =>
-                handleFilterClick(e, 'updated_at', 'updated_at', 'text')
-              }
-              className={`icofont-filter ms-2 ${
-                props?.isFilterApplied['updated_at']
-                  ? 'text-warning'
-                  : 'text-dark'
-              }`}
+            onClick={(e, row) =>
+              handleFilterClick(e, 'updated_at', 'updated_at', 'text')
+            }
+            className={`icofont-filter ms-2 ${
+              props?.isFilterApplied['updated_at']
+                ? 'text-warning'
+                : 'text-dark'
+            }`}
           />
-        </span>,
+        </span>
+      )
     },
     {
       accessorKey: 'updated_by',
@@ -1081,11 +1088,11 @@ function ReviewedTestDraftDetails(props) {
       size: 183,
       enableSorting: false,
       enableColumnFilter: true,
-      Header:
-      <span>
-         Updated By
-       <i
-           style={{ cursor: 'pointer' }}
+      Header: (
+        <span>
+          Updated By
+          <i
+            style={{ cursor: 'pointer' }}
             onClick={(e, row) =>
               handleFilterClick(e, 'updated_by', 'updated_by', 'text')
             }
@@ -1094,10 +1101,11 @@ function ReviewedTestDraftDetails(props) {
                 ? 'text-warning'
                 : 'text-dark'
             }`}
-         />
-       </span>,
+          />
+        </span>
+      )
     }
-   ]
+  ];
   useEffect(() => {
     if (sortOrder && sortOrder != null) {
       const newFilter =
@@ -1147,8 +1155,8 @@ function ReviewedTestDraftDetails(props) {
       try {
         dispatch(
           getAllReviewTestDraftList({
-            limit: props?.paginationData.rowPerPage,
-            page: props?.paginationData.currentPage,
+            limit: props?.paginationData?.pageSize,
+            page: props?.paginationData?.pageIndex + 1,
             filter_testcase_data: updatedFilters,
             type: 'tester'
           })
@@ -1202,8 +1210,8 @@ function ReviewedTestDraftDetails(props) {
     const updatedFilters = getLatestConditions(updatedFiltersData);
     dispatch(
       getAllReviewTestDraftList({
-        limit: props?.paginationData.rowPerPage,
-        page: props?.paginationData.currentPage,
+        limit: props?.paginationData?.pageSize,
+        page: props?.paginationData?.pageIndex + 1,
         filter_testcase_data:
           updatedFilters?.length === 1 &&
           updatedFilters[0]?.column === filterColumnId
@@ -1212,15 +1220,26 @@ function ReviewedTestDraftDetails(props) {
         type: 'tester'
       })
     );
-  }, [props?.paginationData.rowPerPage, props?.paginationData.currentPage]);
+  }, [props?.paginationData.pageSize, props?.paginationData.pageIndex]);
   return (
     <>
-      <Container className='mt-3' fluid>
+      <Container className="mt-3" fluid>
         <div>
-
-          {
-            allReviewDraftTestListData && <MaterialTable columns={columns} data={allReviewDraftTestListData} enableRowNumbers={true} isExportData={false} isLoading={isLoading?.allReviewDraftTestListData}  />
-          }
+          {allReviewDraftTestListData && (
+            <MaterialTable
+              columns={columns}
+              data={allReviewDraftTestListData}
+              enableRowNumbers={true}
+              isExportData={false}
+              isLoading={isLoading?.allReviewDraftTestListData}
+              paginationData={props?.paginationData}
+              setPaginationData={props?.setPaginationData}
+              muiPaginationProps={{
+                rowsPerPageOptions: [10, 50, 100, 150, 200]
+              }}
+              manualPagination={true}
+            />
+          )}
           {/* <DataTable
             columns={columns}
             persistTableHead={true}

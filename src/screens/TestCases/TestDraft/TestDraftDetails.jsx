@@ -449,7 +449,7 @@ function TestDraftDetails(props) {
       dispatch(
         getDraftTestCaseList({
           limit: props?.paginationData.pageSize,
-          page: props?.paginationData.pageIndex,
+          page: props?.paginationData.pageIndex + 1,
           filter_testcase_data: updatedFilters
         })
       );
@@ -2127,6 +2127,7 @@ function TestDraftDetails(props) {
           manualPagination={true}
           manualFiltering={true}
           isExportData={false}
+          muiPaginationProps={{ rowsPerPageOptions: [10, 50, 100, 150, 200] }}
         />
       </Container>
       <div className="d-flex justify-content-end mt-3">
@@ -2209,7 +2210,7 @@ function TestDraftDetails(props) {
 
           <button
             type="button"
-            className="btn btn bg-white shadow p-2 text-black"
+            className="btn btn-danger bg-white shadow p-2 text-black"
             onClick={() => {
               handleSendToReviewerModal({
                 showModal: false,

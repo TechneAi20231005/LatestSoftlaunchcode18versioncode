@@ -130,12 +130,17 @@ function ReviewedTestDraftComponent() {
     exportAllReviewDraftTestListData
   } = useSelector((state) => state?.downloadFormat);
 
-  const [paginationData, setPaginationData] = useReducer(
-    (prevState, nextState) => {
-      return { ...prevState, ...nextState };
-    },
-    { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
-  );
+  // const [paginationData, setPaginationData] = useReducer(
+  //   (prevState, nextState) => {
+  //     return { ...prevState, ...nextState };
+  //   },
+  //   { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
+  // );
+
+  const [paginationData, setPaginationData] = useState({
+    pageIndex: 0,
+    pageSize: 10
+  });
 
   const { testCasesStatusDataList } = useSelector(
     (state) => state?.downloadFormat
@@ -467,8 +472,8 @@ function ReviewedTestDraftComponent() {
       dispatch(
         getByTestPlanIDReviewedListThunk({
           id: id,
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: paginationData.pageSize,
+          page: paginationData.pageIndex + 1,
           filter_testcase_data: updatedFilters
         })
       );
@@ -501,8 +506,8 @@ function ReviewedTestDraftComponent() {
       dispatch(
         getByTestPlanIDReviewedListThunk({
           id: id,
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: paginationData.pageSize,
+          page: paginationData.pageIndex + 1,
           filter_testcase_data: updatedFilters
         })
       );
@@ -537,8 +542,8 @@ function ReviewedTestDraftComponent() {
       dispatch(
         getByTestPlanIDReviewedListThunk({
           id: id,
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: paginationData.pageSize,
+          page: paginationData.pageIndex + 1,
           filter_testcase_data: updatedFilters
         })
       );
@@ -1940,15 +1945,15 @@ function ReviewedTestDraftComponent() {
           });
           dispatch(
             getDraftTestCaseList({
-              limit: paginationData.rowPerPage,
-              page: paginationData.currentPage
+              limit: paginationData.pageSize,
+              page: paginationData.pageIndex + 1
             })
           );
           dispatch(
             getByTestPlanIDReviewedListThunk({
               id: id,
-              limit: paginationData.rowPerPage,
-              page: paginationData.currentPage
+              limit: paginationData.pageSize,
+              page: paginationData.pageIndex + 1
             })
           );
         },
@@ -2000,8 +2005,8 @@ function ReviewedTestDraftComponent() {
     dispatch(
       getByTestPlanIDReviewedListThunk({
         id: id,
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage,
+        limit: paginationData.pageSize,
+        page: paginationData.pageIndex + 1,
         filter_testcase_data:
           updatedFilters?.length === 1 &&
           updatedFilters[0]?.column === filterColumnId
@@ -2175,7 +2180,7 @@ function ReviewedTestDraftComponent() {
           data={allReviewDraftTestListDataByID}
           // isLoading={isLoading}
           pagination={paginationData}
-          setPagination={paginationData}
+          setPagination={setPaginationData}
           totalRows={allReviewDraftTestListDataByID?.total}
           manualPagination={true}
           manualFiltering={true}
@@ -2234,6 +2239,7 @@ function ReviewedTestDraftComponent() {
           currentTestCasesData={addEditTestCasesModal?.data}
           close={(prev) => setAddEditTestCasesModal({ ...prev, open: false })}
           paginationData={paginationData}
+          muiPaginationProps={{ rowsPerPageOptions: [10, 50, 100, 150, 200] }}
           id={id}
           payloadType={'ReviewTestDraft'}
         />
