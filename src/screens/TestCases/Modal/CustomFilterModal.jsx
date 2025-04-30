@@ -114,6 +114,25 @@ const CustomFilterModal = ({
     };
   }, []);
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (
+        containerRef.current &&
+        !containerRef.current.contains(event.target) &&
+        show &&
+        !target.current?.contains(event.target) &&
+        !document.querySelector('.custom-toolkit')?.contains(event.target)
+      ) {
+        handleClose();
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [show, handleClose]);
+
   const handleShow = (value) => {
     setSelectedValue(value);
     setShowModal(true);
