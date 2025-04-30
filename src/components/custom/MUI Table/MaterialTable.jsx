@@ -45,7 +45,10 @@ function MaterialTable({
   enableRowNumbers = false,
   manualPagination = false,
   paginationData = {},
-  setPaginationData = {}
+  setPaginationData = {},
+  muiPaginationProps= {
+    rowsPerPageOptions: [5, 10, 15, 20, 25, 30, 50, 100]
+  }
 }) {
   const [columnFilters, setColumnFilters] = useState([]);
   const [sorting, setSorting] = useState([]);
@@ -229,6 +232,7 @@ function MaterialTable({
             noRecordsToDisplay: <NotFound topMargin={0} />,
             noResultsFound: <NotFound topMargin={0} />
           }}
+          muiPaginationProps={muiPaginationProps}
           enableStickyHeader={enableStickyHeader}
           isExportData={isExportData}
           enableGrouping={enableGrouping}

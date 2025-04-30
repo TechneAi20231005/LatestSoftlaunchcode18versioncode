@@ -1237,7 +1237,7 @@ const columns = [
     <>
       <PageHeader showBackBtn headerTitle="Test Case History" />
       <Container fluid className='mt-3'>
-        <MaterialTable columns={columns} data={testDraftHistory} isExportData={false} isLoading={isLoading.testDraftHistory} paginationData={paginationData} setPaginationData={setPaginationData}  manualPagination={true} />
+        <MaterialTable columns={columns} data={testDraftHistory} muiPaginationProps={{ rowsPerPageOptions: [10, 50, 100, 150, 200] }} isExportData={false} isLoading={isLoading.testDraftHistory} paginationData={paginationData} setPaginationData={setPaginationData}  manualPagination={true} />
         {/* <DataTable
           columns={columns}
           data={testDraftHistory}
