@@ -1301,7 +1301,8 @@ function TestCaseReviewDetails() {
     },
 
     {
-      accessorFn: (originalRows) => `${originalRows?.module_name || '--'} `,
+      accessorFn: (originalRows) =>
+        `${originalRows?.module?.module_name || '--'} `,
       header: 'Module Name',
       Header: (
         <span>
@@ -1320,7 +1321,8 @@ function TestCaseReviewDetails() {
       enableSorting: false
     },
     {
-      accessorFn: (originalRows) => `${originalRows?.sub_module_name || '--'} `,
+      accessorFn: (originalRows) =>
+        `${originalRows?.sub_module?.sub_module_name || '--'} `,
       header: 'Submodule Name',
       Header: (
         <span>
@@ -1358,7 +1360,8 @@ function TestCaseReviewDetails() {
       enableSorting: false
     },
     {
-      accessorFn: (originalRows) => `${originalRows?.function_name || '--'} `,
+      accessorFn: (originalRows) =>
+        `${originalRows?.function_master?.function_name || '--'} `,
       header: 'Function Name',
       Header: (
         <span>
@@ -1395,7 +1398,8 @@ function TestCaseReviewDetails() {
     },
 
     {
-      accessorFn: (originalRows) => `${originalRows?.type_name || '--'} `,
+      accessorFn: (originalRows) =>
+        `${originalRows?.testing_type?.type_name || '--'} `,
       header: 'Testing Type',
       Header: (
         <span>
@@ -1530,7 +1534,8 @@ function TestCaseReviewDetails() {
       enableSorting: false
     },
     {
-      accessorFn: (originalRows) => `${originalRows?.status_name || '--'} `,
+      accessorFn: (originalRows) =>
+        `${originalRows?.tai_bc_status_conventions?.convention_name || '--'} `,
       header: 'Status',
       Header: (
         <span>
@@ -1640,7 +1645,8 @@ function TestCaseReviewDetails() {
     },
 
     {
-      accessorFn: (originalRows) => `${originalRows?.project_name || '--'} `,
+      accessorFn: (originalRows) =>
+        `${originalRows?.project?.project_name || '--'} `,
       header: 'Project',
       Header: (
         <span>

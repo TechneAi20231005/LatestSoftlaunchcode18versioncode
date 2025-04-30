@@ -216,6 +216,7 @@ function TestDraftDetails(props) {
     if (clearAllFilter === true) {
       localDispatch({ type: 'SET_FILTERS', payload: [] });
     }
+
     const filterKeyMap = {
       module_name: 'module',
       sub_module_name: 'submodule',
@@ -1770,9 +1771,7 @@ function TestDraftDetails(props) {
           <i
             className="icofont-filter ms-2 text-dark"
             style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'status_name', 'Status', 'text')
-            }
+            onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
           />
         </span>
       ),
@@ -2048,11 +2047,12 @@ function TestDraftDetails(props) {
   useEffect(() => {
     if (filterValues && searchTerm?.length === 0) {
       localDispatch({ type: 'SET_FILTER_VALUES', payload: filterValues });
-
-      localDispatch({
-        type: 'SET_SELECTED_FILTER',
-        payload: filterValues.map((item) => item.name)
-      });
+      if (state.isFilterApplied === false) {
+        localDispatch({
+          type: 'SET_SELECTED_FILTER',
+          payload: filterValues.map((item) => item.name)
+        });
+      }
 
       localDispatch({
         type: 'SET_SELECTED_FILTER_IDS',
