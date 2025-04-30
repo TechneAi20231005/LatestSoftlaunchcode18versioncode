@@ -26,6 +26,7 @@ import { errorHandler } from '../../utils';
 import CustomeLoaderDashboard, {
   ChartSkeleton
 } from '../../components/custom/loader/CustomeLoaderDashboard';
+import { toast } from 'react-toastify';
 
 export default function HrDashboard(props) {
   const history = useNavigate();
@@ -100,22 +101,31 @@ export default function HrDashboard(props) {
   };
 
   const get = useCallback(async () => {
-    const id = localStorage.getItem('id');
-    const res = await getData(id);
-    if (res.status === 200) {
-      setCount(res?.data?.data?.count);
-      setDailyTask(res?.data?.data?.dailyTask);
-      setPreviousTask(res?.data?.data?.previousTask);
-      setUpcomingTask(res?.data?.data?.upcomingTask);
-      setChartData((prevChartData) => ({
-        ...prevChartData,
-        series: [
-          res?.data?.data?.count?.pendingTask || 0,
-          res?.data?.data?.count?.workingTask,
-          res?.data?.data?.count?.completedTask
-        ]
-      }));
+    try {
+      const id = localStorage.getItem('id');
+      const res = await getData(id);
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          setCount(res?.data?.data?.count);
+          setDailyTask(res?.data?.data?.dailyTask);
+          setPreviousTask(res?.data?.data?.previousTask);
+          setUpcomingTask(res?.data?.data?.upcomingTask);
+          setChartData((prevChartData) => ({
+            ...prevChartData,
+            series: [
+              res?.data?.data?.count?.pendingTask || 0,
+              res?.data?.data?.count?.workingTask,
+              res?.data?.data?.count?.completedTask
+            ]
+          }));
+        } else {
+          errorHandler(res);
+        }
+      }
+    } catch (error) {
+      errorHandler(error);
     }
+
     setLoading({ id: 0, condition: false, task_list: '' });
   }, []);
 
@@ -180,7 +190,12 @@ export default function HrDashboard(props) {
               if (parseInt(length) > 0 && parseInt(length) <= 5) {
               }
             }
+          } else {
+            errorHandler(res);
           }
+        } else {
+          errorHandler(res);
+          // toast.error(res.message);
         }
       })
       .catch((error) => {
@@ -253,6 +268,7 @@ export default function HrDashboard(props) {
             setHistoryData(temp);
           }
         } else {
+          toast.error(res.message);
         }
       })
       .catch((error) => {
@@ -274,33 +290,37 @@ export default function HrDashboard(props) {
     setIsLoading(true);
     setTicketID(id);
     setNotificationId(currentData.notificationid);
-    await new getRegularizationTime(id).then((res) => {
-      if (res.status === 200) {
-        setIsLoading(false);
-        const temp = res?.data?.data
+    await new getRegularizationTime(id)
+      .then((res) => {
+        if (res.status === 200) {
+          setIsLoading(false);
+          const temp = res?.data?.data
 
-          ?.filter((d) => d.status_remark === 'PENDING')
-          .map((d) => ({
-            id: d.id,
-            created_by_name: d.created_by_name,
-            from_date: d.from_date,
-            to_date: d.to_date,
-            from_time: d.from_time,
-            to_time: d.to_time,
-            remark: d.remark,
-            is_checked: 0,
-            regularization_time_status: d.regularization_time_status,
-            task_name: d.task_name,
-            ticket_id_name: d.ticket_id_name,
-            actual_time: d.actual_time,
-            task_hours: d.task_hours,
-            scheduled_time: d.scheduled_time,
-            status: d.status_remark
-          }));
+            ?.filter((d) => d.status_remark === 'PENDING')
+            .map((d) => ({
+              id: d.id,
+              created_by_name: d.created_by_name,
+              from_date: d.from_date,
+              to_date: d.to_date,
+              from_time: d.from_time,
+              to_time: d.to_time,
+              remark: d.remark,
+              is_checked: 0,
+              regularization_time_status: d.regularization_time_status,
+              task_name: d.task_name,
+              ticket_id_name: d.ticket_id_name,
+              actual_time: d.actual_time,
+              task_hours: d.task_hours,
+              scheduled_time: d.scheduled_time,
+              status: d.status_remark
+            }));
 
-        setRegularizationRequest(temp);
-      }
-    });
+          setRegularizationRequest(temp);
+        } else {
+          // toast.error(res.message);
+        }
+      })
+      .catch((error) => errorHandler(error));
   };
   const [animatedCounts, setAnimatedCounts] = useState({
     pendingTask: 0,
