@@ -236,7 +236,7 @@ const CustomFilterModal = ({
             </div>
           ))}
 
-        <div className='mt-3'>
+        <div className='mt-2 mb-1'>
         <button
             className="btn btn-sm btn-primary"
             onClick={handleApplyButton}
