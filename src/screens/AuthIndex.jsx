@@ -17,10 +17,10 @@ class AuthIndex extends React.Component {
     return (
       <>
         <>
-          <div className="main p-2 py-3 p-xl-5 ">
-            <div className="body d-flex p-0 p-xl-5">
-              <div className="container-xxl">
-                <div className="row g-0">
+          <div className="main ">
+            <div className="body d-flex">
+              <div className="container-xxl mt-lg-4">
+                <div className="d-flex justify-content-center align-items-center mt-5 px-lg-5 mx-lg-5">
                   <LeftSide />
                   <Routes>
                     <Route path="/*" element={<SignIn />} />
