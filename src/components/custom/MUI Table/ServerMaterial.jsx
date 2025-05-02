@@ -14,6 +14,8 @@ import { ExportAllTicketsToExcel } from '../../Utilities/Table/ExportAllTicketsT
 import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { grey } from '@mui/material/colors';
 import UnPassModal from '../../../screens/TicketManagement/MyTicket/UnPassModal';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { CssBaseline } from '@mui/material';
 
 function ServerMaterial({
   columns,
@@ -80,18 +82,30 @@ function ServerMaterial({
 
   const updatedColumns = useMemo(() => {
     return columns.map((col) => {
+      const baseColumn = {
+        ...col,
+        muiFilterTextFieldProps: (column) => ({
+          sx: {
+            '& .MuiInputAdornment-root': {
+              display:  columnFilters?.some(f => f.id === column?.column?.id) ? '' : 'none',
+            },
+          },
+        }),
+      };
+
       if (col?.filterVariant === 'date-range') {
         return {
-          ...col,
+          ...baseColumn,
           muiFilterTextFieldProps: (column) => ({
-            placeholder: column?.rangeFilterIndex === 0 ? 'From' : 'To'
+            placeholder: column?.rangeFilterIndex === 0 ? 'From' : 'To',
           }),
-          size: expandColumn ? 350 : 185
+          size: expandColumn ? 350 : 185,
         };
       }
-      return col;
+
+      return baseColumn;
     });
-  }, [expandColumn, columns]);
+  }, [expandColumn, columns, columnFilters]);
 
   useEffect(() => {
     if (reset) {
@@ -105,11 +119,24 @@ function ServerMaterial({
     }
   }, [reset]);
 
+
   const handleRemarkModal = (data) => {
     setRemarkModal(data);
   };
+  const customTheme = createTheme({
+    components: {
+      MuiMenu: {
+        styleOverrides: {
+          paper: {
+            maxHeight: '50%',
+            overflowY: 'auto',
+          },
+        },
+      },
 
-  // console.log(rowSelection,"setRowSelection");
+    },
+  });
+
 
   return (
     <>
@@ -120,6 +147,8 @@ function ServerMaterial({
         }}
       >
         <LocalizationProvider dateAdapter={AdapterDateFns}>
+        <ThemeProvider theme={customTheme}>
+        <CssBaseline />
           <MaterialReactTable
             columns={updatedColumns}
             data={data}
@@ -333,6 +362,7 @@ function ServerMaterial({
               </Box>
             )}
           />
+        </ThemeProvider>
         </LocalizationProvider>
       </Box>
       {remarkModal.showModal && (

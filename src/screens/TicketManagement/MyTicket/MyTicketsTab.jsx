@@ -174,7 +174,7 @@ const MyTicketsTab = () => {
         ? {
             department_id:
               columnFilters.find(
-                (filter) => filter.id === 'assign_to_department.department'
+                (filter) => filter.id === "Assign To Dept"
               )?.value || [],
             status_id:
               columnFilters.find((filter) => filter.id === 'Status')?.value ||
