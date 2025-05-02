@@ -15,7 +15,8 @@ import FilterAltOffIcon from '@mui/icons-material/FilterAltOff';
 import { grey } from '@mui/material/colors';
 import UnPassModal from '../../../screens/TicketManagement/MyTicket/UnPassModal';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
-import { CssBaseline } from '@mui/material';
+
+
 
 function ServerMaterial({
   columns,
@@ -143,12 +144,12 @@ function ServerMaterial({
       <Box
         sx={{
           '& tbody > .MuiTableRow-root': { height: 45 },
-          '& .MuiCircularProgress-root': { display: 'none' }
+          '& .MuiCircularProgress-root': { display: 'none' },
         }}
       >
+
         <LocalizationProvider dateAdapter={AdapterDateFns}>
         <ThemeProvider theme={customTheme}>
-        <CssBaseline />
           <MaterialReactTable
             columns={updatedColumns}
             data={data}
