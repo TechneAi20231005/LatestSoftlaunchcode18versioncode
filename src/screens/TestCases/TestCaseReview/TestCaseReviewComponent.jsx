@@ -100,7 +100,7 @@ function TestCaseReviewComponent() {
   const [paginationData, setPaginationData] = useState({
     pageIndex: 0,
     pageSize: 10
-  })
+  });
   const { testCaseReviewList, isLoading, filterTestCaseReviewList } =
     useSelector((state) => state?.testCaseReview);
 
@@ -1013,9 +1013,9 @@ function TestCaseReviewComponent() {
       Cell: ({ row }) => {
         const rowData = row.original;
 
-        if (!rowData || rowData.tc_id === null || rowData.status === null) {
-          return null;
-        }
+        // if (!rowData || rowData.id === null || rowData.status === null) {
+        //   return null;
+        // }
 
         return (
           <div className="d-flex align-items-center">
@@ -1099,7 +1099,9 @@ function TestCaseReviewComponent() {
     },
     {
       header: 'Tester Name',
-      accessorKey: 'tester_name',
+      accessorFn: (row) =>
+        `${row.tester_name?.first_name} ${row.tester_name?.last_name}`, // Combine first and last name
+      id: 'tester_name', // Needed when using accessorFn instead of accessorKey
       size: 188,
       enableSorting: false,
       enableColumnFilter: true,
@@ -1118,6 +1120,7 @@ function TestCaseReviewComponent() {
         </span>
       )
     },
+
     {
       header: 'Total Testcase',
       accessorKey: 'total_testcases',
@@ -1251,7 +1254,8 @@ function TestCaseReviewComponent() {
     },
     {
       header: 'Created By',
-      accessorKey: 'created_by',
+      accessorFn: (row) =>
+        `${row.created_by?.first_name} ${row.created_by?.last_name}`,
       size: 180,
       enableSorting: false,
       enableColumnFilter: true,
@@ -1293,7 +1297,8 @@ function TestCaseReviewComponent() {
     },
     {
       header: 'Updated By',
-      accessorKey: 'updated_by',
+      accessorFn: (row) =>
+        `${row.updated_by?.first_name} ${row.updated_by?.last_name}`,
       size: 185,
       enableSorting: false,
       enableColumnFilter: true,
@@ -1576,25 +1581,24 @@ function TestCaseReviewComponent() {
   }, [paginationData?.pageIndex, paginationData?.pageSize]);
   return (
     <>
-    <Box ml={1}>
-      <PageHeader
-        headerTitle="Test Case Review"
-        renderRight={() => {
-          return (
-            <div className="col-md-6 d-flex justify-content-end">
-              <button
-                onClick={handleButtonClick}
-                className="btn btn-primary text-white me-2"
-                disabled={filterTestCaseReviewList?.payload === 'null'}
-              >
-                Clear All Filter
-              </button>
-            </div>
-          );
-        }}
-      />
+      <Box ml={1}>
+        <PageHeader
+          headerTitle="Test Case Review"
+          renderRight={() => {
+            return (
+              <div className="col-md-6 d-flex justify-content-end">
+                <button
+                  onClick={handleButtonClick}
+                  className="btn btn-primary text-white me-2"
+                  disabled={filterTestCaseReviewList?.payload === 'null'}
+                >
+                  Clear All Filter
+                </button>
+              </div>
+            );
+          }}
+        />
       </Box>
-      {console.log(testCaseReviewList,">>>>>>")}
 
       <Container fluid className="mt-3">
         {testCaseReviewList && (
@@ -1719,7 +1723,7 @@ function TestCaseReviewComponent() {
 
           <button
             type="button"
-              className="btn btn-danger text-white"
+            className="btn btn-danger text-white"
             onClick={() => {
               handleSendToReviewerModal({
                 showModal: false,
@@ -1777,7 +1781,7 @@ function TestCaseReviewComponent() {
 
           <button
             type="button"
-               className="btn btn-danger text-white"
+            className="btn btn-danger text-white"
             onClick={() => {
               handleTestCaseData({
                 showModal: false,
