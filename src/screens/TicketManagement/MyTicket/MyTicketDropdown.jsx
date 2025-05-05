@@ -1,7 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
-import { RenderIf } from '../../../utils';
 import { _base } from '../../../settings/constants';
 import { Link, useLocation } from 'react-router-dom';
 import { Menu, MenuItem, Button } from '@mui/material';
@@ -238,6 +235,7 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
       className: ' btn btn-sm  btn-secondary text-white',
       redirectLink: '',
       type: type,
+      isModal: true,
       conditions: (type) => {
         if (type === 'CreatedByMe') {
           return true;
@@ -253,9 +251,6 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
       }
     }
   ];
-  useEffect(() => {
-    console.log('Type updated:', type);
-  }, [type]);
 
   return (
     <>
@@ -275,14 +270,11 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
         onClose={handleClosed}
         sx={{ '& .MuiPaper-root': { width: '140px' } }}
       >
-        {/* {menuBtns.filter((btn) => btn.conditions(type)).length === 0 && (
-          <MenuItem disabled>No actions available</MenuItem>
-        )} */}
         {menuBtns.map((menuBtn, idx) => {
           return (
             menuBtn.conditions(menuBtn.type) && (
               <MenuItem key={idx} onClick={handleClosed}>
-                {type === 'UnPassed' ? (
+                {type === 'UnPassed' && menuBtn?.isModal ? (
                   <button
                     className={menuBtn.className}
                     style={{ width: '100%' }}
@@ -298,7 +290,7 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
                   >
                     {menuBtn.icon} {menuBtn.label}
                   </button>
-                ) : type === 'CreatedByMe' ? (
+                ) : type === 'CreatedByMe' && menuBtn?.isModal ? (
                   <button
                     className={menuBtn.className}
                     style={{ width: '100%' }}
