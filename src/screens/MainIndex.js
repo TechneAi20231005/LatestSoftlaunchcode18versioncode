@@ -184,8 +184,8 @@ import JobRoleComponent from './Masters/JobRoleMaster/JobRoleComponent';
 import MenuComponent from './Masters/MenuMaster/MenuComponent';
 import DeleteRequisition from './PO/deleteRequisition/DeleteRequisition';
 import MyTicketRefactored from './TicketManagement/MyTicket/MyTicketFilters';
+import TestPlanHistoryComponent from './TestCases/TestCaseReview/TestPlanHistoryComponent';
 import { QueryGroupMaster } from './Masters/QueryGroupMaster/QueryGroupMaster';
-
 
 class MainIndex extends React.Component {
   render() {
@@ -953,6 +953,11 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/TestCaseHistoryComponent/:id`}
               element={<TestCaseHistoryComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/TestPlanHistoryComponent/:id`}
+              element={<TestPlanHistoryComponent />}
             />
             <Route
               exact

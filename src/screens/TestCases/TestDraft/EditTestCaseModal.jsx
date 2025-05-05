@@ -83,6 +83,8 @@ function EditTestCaseModal({
       label: 'Low'
     }
   ];
+  const testingGroupRef = useRef();
+
   const testCaseInitialValue = {
     project_id:
       type === 'EDIT' ? currentTestCasesData?.project_id?.toString() : '',
@@ -94,8 +96,10 @@ function EditTestCaseModal({
       type === 'EDIT' ? currentTestCasesData?.function_id?.toString() : '',
     field: type === 'EDIT' ? currentTestCasesData?.field : '',
     type_id: type === 'EDIT' ? currentTestCasesData?.type_id?.toString() : '',
-    tc_id: type === 'EDIT' ? currentTestCasesData?.tc_id?.toString() : '',
-    group_id: type === 'EDIT' ? currentTestCasesData?.group_id?.toString() : '',
+    // tc_id: type === 'EDIT' ? currentTestCasesData?.tc_id?.toString() : '',
+    testing_group:
+      type === 'EDIT' ? currentTestCasesData?.testing_group?.toString() : [],
+
     severity: type === 'EDIT' ? currentTestCasesData?.severity : '',
     steps: type === 'EDIT' ? currentTestCasesData?.steps : '',
     test_description:
@@ -103,51 +107,52 @@ function EditTestCaseModal({
     expected_result:
       type === 'EDIT' ? currentTestCasesData?.expected_result : ''
   };
+
   const handleEditTestCase = ({ formData }) => {
+    console.log('formdata', formData);
     setDisable(true);
-    dispatch(
-      editTestCaseThunk({
-        currentId: currentTestCasesData?.id,
-        formData: formData,
-        onSuccessHandler: () => {
-          close();
-          setDisable(false);
-          {
-            payloadType === 'DRAFT' &&
-              dispatch(
-                getDraftTestCaseList({
-                  limit: paginationData.rowPerPage,
-                  page: paginationData.currentPage
-                })
-              );
-          }
-          {
-            payloadType === 'TestCaseReview' &&
-              dispatch(
-                getByTestPlanIDListThunk({
-                  id: id,
-                  limit: paginationData.rowPerPage,
-                  page: paginationData.currentPage
-                })
-              );
-          }
+    // dispatch(
+    //   editTestCaseThunk({
+    //     currentId: currentTestCasesData?.id,
+    //     formData: formData,
+    //     onSuccessHandler: () => {
+    //       close();
+    //       setDisable(false);
+    //       {
+    //         payloadType === 'DRAFT' &&
+    //           dispatch(
+    //             getDraftTestCaseList({
+    //               limit: paginationData.rowPerPage,
+    //               page: paginationData.currentPage
+    //             })
+    //           );
+    //       }
+    //       {
+    //         payloadType === 'TestCaseReview' &&
+    //           dispatch(
+    //             getByTestPlanIDListThunk({
+    //               id: id,
+    //               limit: paginationData.rowPerPage,
+    //               page: paginationData.currentPage
+    //             })
+    //           );
+    //       }
 
-          {
-            payloadType === 'ReviewTestDraft' &&
-              dispatch(
-                getByTestPlanIDReviewedListThunk({
-                  id: id,
-                  limit: paginationData.rowPerPage,
-                  page: paginationData.currentPage
-                })
-              );
-          }
-        },
-        onErrorHandler: () => {}
-      })
-    );
+    //       {
+    //         payloadType === 'ReviewTestDraft' &&
+    //           dispatch(
+    //             getByTestPlanIDReviewedListThunk({
+    //               id: id,
+    //               limit: paginationData.rowPerPage,
+    //               page: paginationData.currentPage
+    //             })
+    //           );
+    //       }
+    //     },
+    //     onErrorHandler: () => {}
+    //   })
+    // );
   };
-
   const handleProjectChange = async (e, setFieldValue) => {
     setFieldValue('project_id', e.target.value);
     setFieldValue('module_id', '');
@@ -155,7 +160,7 @@ function EditTestCaseModal({
     setModuleDropdown(null);
     setSubModuleDropdown(null);
     const filteredModules = getModuleData
-      .filter((d) => d.project_id === parseInt(e.target.value))
+      .filter((d) => d.project_name === e.target.value)
       .map((d) => ({ value: d.id, label: d.module_name }));
 
     setModuleDropdown(filteredModules);
@@ -196,13 +201,29 @@ function EditTestCaseModal({
 
   return (
     <>
-      <CustomModal show={show} title="Edit Test Case" width="lg">
+      <CustomModal
+        show={show}
+        title={type === 'Add' ? 'Add Test Cases' : 'Edit Test Case'}
+        width="lg"
+      >
         <Formik
           initialValues={testCaseInitialValue}
           validationSchema={editTestCaseValidation}
           onSubmit={(values) => {
+            console.log('values', values);
             handleEditTestCase({ formData: values });
           }}
+          // onSubmit={(values) => {
+          //   console.log('values', values);
+          //   handleEditTestCase({
+          //     formData: {
+          //       ...values,
+          //       testing_group: values.testing_group?.map(
+          //         (option) => option.label
+          //       )
+          //     }
+          //   });
+          // }}
         >
           {({ setFieldValue }) => (
             <Form>
@@ -222,6 +243,7 @@ function EditTestCaseModal({
                     }
                   />
                 </Col>
+
                 <Col md={4} lg={4}>
                   <Field
                     classNamePrefix="react-select"
@@ -286,8 +308,8 @@ function EditTestCaseModal({
                     requiredField
                   />
                 </Col>
-                <Col md={4} lg={4}>
-                  <Field
+                {/* <Col md={4} lg={4}> */}
+                {/* <Field
                     component={CustomInput}
                     name="tc_id"
                     label="Test Id"
@@ -295,18 +317,59 @@ function EditTestCaseModal({
                     placeholder="Enter testing id"
                     requiredField
                     disabled
-                  />
-                </Col>
+                  /> */}
+                {/* </Col> */}
 
                 <Col md={4} lg={4}>
+                  {/* <Field
+                    classNamePrefix="react-select"
+                    options={filterTestingGroupMasterList}
+                    component={CustomReactSelect}
+                    name="testing_group"
+                    label="Testing Group"
+                    isMulti
+                    id="edittestcasemodal_testinggroup"
+                  /> */}
                   <Field
                     classNamePrefix="react-select"
-                    data={filterTestingGroupMasterList}
-                    component={CustomDropdown}
-                    name="group_id"
+                    options={filterTestingGroupMasterList}
+                    component={CustomReactSelect}
+                    name="testing_group"
                     label="Testing Group"
                     id="edittestcasemodal_testinggroup"
+                    placeholder="Select"
+                    ref={testingGroupRef}
+                    isMulti
+
+                    // required
                   />
+                  {/* <Field
+                    classNamePrefix="react-select"
+                    data={filterTestingGroupMasterList}
+                    // component={CustomDropdown}
+                    component={CustomReactSelect}
+                    name="testing_group"
+                    label="Testing Group"
+                    id="edittestcasemodal_testinggroup"
+                    isMulti={true}
+                  /> */}
+                  {/* {console.log(
+                    'filterTestingGroupMasterList',
+                    filterTestingGroupMasterList
+                  )}
+                  <Field
+                    classNamePrefix="react-select"
+                    // data={filterTestingGroupMasterList.map((item) => ({
+                    //   label: item.name,
+                    //   value: item.name
+                    // }))}
+                    data={filterTestingGroupMasterList}
+                    component={CustomReactSelect}
+                    name="testing_group"
+                    label="Testing Group"
+                    id="edittestcasemodal_testinggroup"
+                    isMulti={true} // ✅ This is correct
+                  /> */}
                 </Col>
 
                 <Col md={4} lg={4}>
@@ -361,7 +424,7 @@ function EditTestCaseModal({
                   className="btn btn-primary px-4"
                   type="submit"
                 >
-                  Update
+                  {type === 'Add' ? 'Submit' : 'Update'}
                 </button>
                 <button
                   onClick={close}

@@ -1,7 +1,7 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useLocation } from 'react-router-dom';
-import { Modal } from 'react-bootstrap';
+import { Modal, PageItem } from 'react-bootstrap';
 import { Astrick } from '../../../components/Utilities/Style';
 import DownloadFormatFileModal from './DownloadFormatFileModal';
 import ReviewedTestDraftDetails from './ReviewedTestDraftDetails';
@@ -20,6 +20,9 @@ import {
   importTestDraftThunk
 } from '../../../redux/services/testCases/downloadFormatFile';
 import { getEmployeeData } from '../../Dashboard/DashboardAction';
+import { Icon, Tab, Tabs } from '@mui/material';
+import DescriptionIcon from '@mui/icons-material/Description';
+import PreviewIcon from '@mui/icons-material/Preview';
 export default function TestDraftComponent({}) {
   const location = useLocation();
   const dispatch = useDispatch();
@@ -34,12 +37,17 @@ export default function TestDraftComponent({}) {
   );
   const [state, setState] = useState(location.state);
 
-  const [paginationData, setPaginationData] = useReducer(
-    (prevState, nextState) => {
-      return { ...prevState, ...nextState };
-    },
-    { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
-  );
+  // const [paginationData, setPaginationData] = useReducer(
+  //   (prevState, nextState) => {
+  //     return { ...prevState, ...nextState };
+  //   },
+  //   { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
+  // );
+
+  const [paginationData, setPaginationData] = useState({
+    pageIndex: 0,
+    pageSize: 10
+  });
 
   const [downloadmodal, setDownloadModal] = useState({
     showModal: false,
@@ -62,9 +70,14 @@ export default function TestDraftComponent({}) {
   const tabsLabel = [
     {
       label: 'Test summary',
-      value: 'test_summary'
+      value: 'test_summary',
+      Icon: <DescriptionIcon />
     },
-    { label: 'Review Test Draft', value: 'review_test_draft' }
+    {
+      label: 'Review Test Draft',
+      value: 'review_test_draft',
+      Icon: <PreviewIcon />
+    }
   ];
 
   const handleDownloadModal = (data) => {
@@ -154,9 +167,13 @@ export default function TestDraftComponent({}) {
 
     setIsFilterApplied(false);
 
+    // setPaginationData({
+    //   rowPerPage: 10,
+    //   currentPage: 1
+    // });
     setPaginationData({
-      rowPerPage: 10,
-      currentPage: 1
+      pageSize: 10,
+      pageIndex: 0
     });
     currentTab === 'test_summary'
       ? dispatch(
@@ -216,6 +233,14 @@ export default function TestDraftComponent({}) {
       window.removeEventListener('beforeunload', handleBeforeUnload);
     };
   }, [location.state]);
+
+  const handleChange = (event, newValue) => {
+    setCurrentTab(newValue);
+  };
+  const tabStyles = {
+    '& .MuiTabs-indicator': { backgroundColor: '#484c7f' },
+    '& .MuiTab-root.Mui-selected': { color: '#484c7f' }
+  };
 
   return (
     <div className="container-xxl">
@@ -293,11 +318,21 @@ export default function TestDraftComponent({}) {
       />
 
       <div className="mt-3">
-        <CustomTab
+        <Tabs sx={tabStyles} value={currentTab} onChange={handleChange}>
+          {tabsLabel.map((tab) => (
+            <Tab
+              icon={tab.Icon}
+              key={tab.value}
+              label={tab.label}
+              value={tab.value}
+            />
+          ))}
+        </Tabs>
+        {/* <CustomTab
           tabsData={tabsLabel}
           currentTab={currentTab}
           setCurrentTab={setCurrentTab}
-        />
+        /> */}
       </div>
       <RenderIf render={currentTab === 'test_summary'}>
         <TestDraftDetails

@@ -41,7 +41,14 @@ function MaterialTable({
   reset = false,
   exportDataKeys,
   setReset = () => {},
-  isExportData = true
+  isExportData = true,
+  enableRowNumbers = false,
+  manualPagination = false,
+  paginationData = {},
+  setPaginationData = {},
+  muiPaginationProps= {
+    rowsPerPageOptions: [5, 10, 15, 20, 25, 30, 50, 100]
+  }
 }) {
   const [columnFilters, setColumnFilters] = useState([]);
   const [sorting, setSorting] = useState([]);
@@ -225,12 +232,17 @@ function MaterialTable({
             noRecordsToDisplay: <NotFound topMargin={0} />,
             noResultsFound: <NotFound topMargin={0} />
           }}
+          muiPaginationProps={muiPaginationProps}
           enableStickyHeader={enableStickyHeader}
           isExportData={isExportData}
           enableGrouping={enableGrouping}
           enableFullScreenToggle={data?.length > 0}
           enableColumnResizing={enableColumnResizing}
           enableColumnOrdering={enableColumnOrdering}
+          onPaginationChange={
+            manualPagination ? setPaginationData : setPagination
+          }
+          manualPagination={manualPagination}
           enableFacetedValues={enableFacetedValues}
           enableColumnFilter={enableColumnFilter}
           muiTableBodyCellProps={{
@@ -246,7 +258,7 @@ function MaterialTable({
             isLoading: isLoading,
             columnFilters,
             sorting,
-            pagination,
+            pagination: manualPagination ? paginationData : pagination,
             rowSelection,
             columnVisibility,
             globalFilter,
@@ -268,12 +280,12 @@ function MaterialTable({
           onGroupingChange={setGroupBy}
           onColumnFiltersChange={setColumnFilters}
           onSortingChange={setSorting}
-          onPaginationChange={setPagination}
           onRowSelectionChange={setRowSelection}
           onColumnVisibilityChange={setColumnVisibility}
           onGlobalFilterChange={setGlobalFilter}
           onShowGlobalFilterChange={setShowGlobalFilter}
           onShowColumnFiltersChange={setShowColumnFilters}
+          enableRowNumbers={enableRowNumbers}
           renderToolbarInternalActions={({ table }) => (
             <Box
               sx={{

@@ -52,7 +52,6 @@ function ServerMaterial({
     const innerText = clickedRow.innerText;
     clickedRow.setAttribute('title', innerText);
   };
-
   const [expandColumn, setExpandColumn] = useState(false);
 
   const [groupBy, setGroupBy] = useState([]);

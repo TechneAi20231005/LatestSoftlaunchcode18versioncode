@@ -134,7 +134,7 @@ export const getAllDraftTestCaseList = createAsyncThunk(
   'draftTestCase/getAllDraftTestCaseList',
   async ({ type }) => {
     try {
-      const response = await customAxios.get(
+      const response = await rewampAxios.get(
         `testCases/getDraftTestCases/getTestCases?type=${type}`
       );
       if (response?.status === 200 || response?.status === 201) {
@@ -168,7 +168,6 @@ export const importTestDraftThunk = createAsyncThunk(
           toast.error(response?.data?.message);
 
           const url = `${_rewampAttachmentUrl}` + response.data.data;
-
           window.open(url, '_blank');
           errorHandler(response);
         }
@@ -185,8 +184,34 @@ export const sendTestCaseReviewerThunk = createAsyncThunk(
   'sendTestCaseReviewer',
   async ({ formData, onSuccessHandler, onErrorHandler, type, id }) => {
     try {
-      const response = await customAxios.post(
+      const response = await rewampAxios.post(
         `testCases/send/sendTestCasesReviewer/${type}/${id}`,
+        formData
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          onSuccessHandler();
+          toast.success(response?.data?.message);
+          return response?.data?.message;
+        } else {
+          onErrorHandler();
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      onErrorHandler();
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
+);
+
+export const sendTestPlanReviewerThunk = createAsyncThunk(
+  'sendTestPlanReviewerThunk',
+  async ({ formData, onSuccessHandler, onErrorHandler, id }) => {
+    try {
+      const response = await rewampAxios.post(
+        `testCases/updateTestCaseReviewerData/${id}`,
         formData
       );
       if (response?.status === 200 || response?.status === 201) {
@@ -211,7 +236,7 @@ export const editTestCaseThunk = createAsyncThunk(
   'editTestCase/editTestCaseThunk',
   async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
     try {
-      const response = await customAxios.post(
+      const response = await rewampAxios.post(
         `testCases/editTestCase/postTestdraftTestcase/${currentId}`,
         formData
       );
@@ -237,7 +262,7 @@ export const getAllReviewTestDraftList = createAsyncThunk(
   'reviewDraftList/getAllReviewTestDraftList',
   async ({ limit, page, filter_testcase_data, type }) => {
     try {
-      const response = await customAxios.get(
+      const response = await rewampAxios.get(
         `testCases/getCount/getTestDraft`,
         {
           params: {
@@ -266,7 +291,7 @@ export const getExportAllReviewTestDraftList = createAsyncThunk(
   'reviewDraftListExport/getExportAllReviewTestDraftList',
   async ({ id, type }) => {
     try {
-      const response = await customAxios.get(
+      const response = await rewampAxios.get(
         `testCases/getDraftTestCases/getTestCases/${id}?type=${type}`
       );
       if (response?.status === 200 || response?.status === 201) {
@@ -287,7 +312,7 @@ export const getByTestPlanIDReviewedListThunk = createAsyncThunk(
   'testPlanID/getByTestPlanIDListThunk',
   async ({ id, limit, page, filter_testcase_data }) => {
     try {
-      const response = await customAxios.get(
+      const response = await rewampAxios.get(
         `testCases/getDraftTestCases/getTestCases/${id}`,
         {
           params: {
@@ -316,12 +341,60 @@ export const testDraftDetailsHistoryThunk = createAsyncThunk(
   'testDraft/testDraftHistory',
   async ({ id, limit, page }) => {
     try {
-      const response = await customAxios.get(
+      const response = await rewampAxios.get(
         `testCases/history/getTestcasesHistory/${id}?limit=${limit}&page=${page}`
       );
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };
+        } else {
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
+);
+
+export const testPlansHistoryThunk = createAsyncThunk(
+  'getTestPlanHistoryData',
+  async ({ id, limit, page }) => {
+    try {
+      const response = await rewampAxios.get(
+        `testCases/getTestPlanHistoryData/${id}?limit=${limit}&page=${page}`
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          return { data: response?.data?.data, msg: response?.data?.message };
+        } else {
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
+);
+
+export const getTestCaseStatusDataList = createAsyncThunk(
+  'getTestCaseStatusDataList/getTestCaseStatusData',
+  async ({ limit, page }) => {
+    try {
+      const response = await rewampAxios.get(
+        `testCases/getTestCaseStatusData`,
+        {
+          params: {
+            limit: limit,
+            page: page
+          }
+        }
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          return { data: response?.data, msg: response?.data?.message };
         } else {
           errorHandler(response);
         }
