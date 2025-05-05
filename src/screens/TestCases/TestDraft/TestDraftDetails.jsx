@@ -1501,10 +1501,11 @@ function TestDraftDetails(props) {
           />
         </div>
       ),
-      enableColumnFilter: false,
+
       enableSorting: false,
       enableColumnOrdering: false,
       enableGrouping: false,
+      enableColumnFilter: false,
       size: 80,
       Cell: ({ row }) => {
         const rowData = row.original;
@@ -1544,7 +1545,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 200,
       enableSorting: false
     },
@@ -1564,8 +1565,8 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
-      size: 220,
+
+      size: 225,
       enableSorting: false
     },
     {
@@ -1583,7 +1584,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 200,
       enableSorting: false
     },
@@ -1603,7 +1604,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 220,
       enableSorting: false
     },
@@ -1620,7 +1621,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 180,
       enableSorting: false
     },
@@ -1641,7 +1642,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 200,
       enableSorting: false
     },
@@ -1660,7 +1661,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 200,
       enableSorting: false
     },
@@ -1677,7 +1678,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 180,
       enableSorting: false
     },
@@ -1696,7 +1697,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 180,
       enableSorting: false
     },
@@ -1721,7 +1722,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 220,
       enableSorting: false
     },
@@ -1738,7 +1739,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 180,
       enableSorting: false
     },
@@ -1757,7 +1758,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 220,
       enableSorting: false
     },
@@ -1775,7 +1776,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 180,
       enableSorting: false
     },
@@ -1795,7 +1796,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 200,
       enableSorting: false
     },
@@ -1814,7 +1815,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 200,
       enableSorting: false
     },
@@ -1837,7 +1838,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 200,
       enableSorting: false
     },
@@ -1856,7 +1857,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 200,
       enableSorting: false
     },
@@ -1878,7 +1879,7 @@ function TestDraftDetails(props) {
           />
         </span>
       ),
-      enableColumnFilter: false,
+
       size: 200,
       enableSorting: false
     }
