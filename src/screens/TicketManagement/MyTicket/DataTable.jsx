@@ -137,7 +137,7 @@ const DataTableCustom = React.memo(
         header: 'Status',
         filterVariant: 'multi-select',
         filterSelectOptions: allStatusData?.selectData,
-        size: 150
+        size: 158
       },
       {
         accessorFn: (originalRows) =>
