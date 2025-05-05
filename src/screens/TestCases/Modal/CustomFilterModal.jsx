@@ -155,27 +155,27 @@ const CustomFilterModal = ({
           style={{ top: position.top, left: position.left }}
         >
           <div className="p-2">
-            <b className="fs-6 text-primary">{columnName}</b>
+            <b className="fs-7 text-primary">{columnName}</b>
             <hr className="my-2" />
 
             <p className="Sort mb-2">Sort</p>
             <span className="d-flex flex-column">
               <p
-                className="fs-6 mb-2 cp"
+                className="fs-7 mb-2 cp"
                 onClick={() => handleAscendingClick('ASC')}
               >
-                <i className="bi bi-arrow-up-short fs-6"></i>Ascending
+                <i className="bi bi-arrow-up-short fs-7"></i>Ascending
               </p>
               <p
-                className="fs-6 mb-2 cp"
+                className="fs-7 mb-1 cp"
                 onClick={() => handleDescendingClick('DESC')}
               >
-                <i className="bi bi-arrow-down-short fs-6"></i>Descending
+                <i className="bi bi-arrow-down-short fs-7"></i>Descending
               </p>
             </span>
 
             <hr className="my-1" />
-            <p className="fs-6 mb-0 ms-4 text-filters-container">
+            <p className="fs-7 mb-0 ms-4 text-filters-container">
               {type === 'number' ? 'Number Filters' : 'Text Filters'}
               <i
                 ref={target}
@@ -190,8 +190,9 @@ const CustomFilterModal = ({
                 <input
                   ref={searchRef}
                   type="text"
+                  style={{height: '27px'}}
                   placeholder="Search Here"
-                  className="form-control pe-5"
+                  className="form-control pe-5 custom-placeholder"
                   value={searchTerm}
                   onChange={handleSearchChange}
                   onKeyDown={handleKeyDown}
@@ -200,7 +201,7 @@ const CustomFilterModal = ({
               </div>
             </div>
           </div>
-          <div className="p-1">
+          <div className="px-1">
             <input
               type="checkbox"
               id="filterAll"
@@ -208,14 +209,14 @@ const CustomFilterModal = ({
               checked={selectedFilters?.length === filterData?.length}
               onChange={handleSelectAll}
             />
-            <label className="mt-3 mx-3 fs-6" htmlFor="filterAll">
+            <label className="mt-1 mx-3 fs-7" htmlFor="filterAll">
               All
             </label>
           </div>
           {console.log('selected', selectedFilters)}
           {console.log('filterData', filterData)}
           {filterData?.map((value, index) => (
-            <div key={value?.id} className="filter-item p-1">
+            <div key={value?.id} className="filter-item px-1">
               <input
                 type="checkbox"
                 id={`filter${value?.id}`}
@@ -229,28 +230,30 @@ const CustomFilterModal = ({
                   handleCheckboxChange(e, value?.name, value?.id)
                 }
               />
-              <label className="mx-3 fs-6 mb-0" htmlFor={`filter${value?.id}`}>
+              <label className="mx-3 fs-7 mb-0" htmlFor={`filter${value?.id}`}>
                 {value?.name}
               </label>
             </div>
           ))}
 
-          <button
-            className="btn btn-sm btn-primary mt-3"
+        <div className='mt-2 mb-1'>
+        <button
+            className="btn btn-sm btn-primary"
             onClick={handleApplyButton}
           >
             Apply
           </button>
-          <button className="btn btn-sm btn-warning mt-3" onClick={handleClose}>
+          <button className="btn btn-sm btn-warning " onClick={handleClose}>
             Cancel
           </button>
           <button
             onClick={handleClearAllFilter}
-            className="btn btn-sm btn-outline-primary mt-3"
+            className="btn btn-sm btn-outline-primary"
             title="Clear All"
           >
             Clear All
           </button>
+        </div>
         </div>
       )}
       <div>
@@ -285,7 +288,7 @@ const CustomFilterModal = ({
                       {textFilterData.map((option) => (
                         <p
                           key={option.value}
-                          className="mb-2 cp"
+                          className="mb-2 cp fs-7"
                           onClick={() => handleShow(option.value)}
                         >
                           {option.label}
@@ -312,7 +315,7 @@ const CustomFilterModal = ({
               {type === 'number' ? 'Number Filters' : 'Text Filters'}
             </Modal.Title>
           </Modal.Header>
-          <Modal.Body className="fs-6">
+          <Modal.Body className="fs-7">
             Show item where: <b>{columnName}</b>
             <div className="row mt-2">
               <div className="col">
