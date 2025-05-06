@@ -37,7 +37,9 @@ const initialState = {
   reviewerId: null,
   selectAllNames: false,
   selectedRows: [],
-  betweenValues: ['', '']
+  betweenValues: ['', ''],
+  isFilterApplied: false,
+  hasOpenedFilter: {}
 };
 
 function localReducer(state, action) {
@@ -84,6 +86,13 @@ function localReducer(state, action) {
       };
     case 'SET_BETWEEN_VALUES':
       return { ...state, betweenValues: action.payload };
+    case 'SET_IS_FILTER_APPLIED':
+      return { ...state, isFilterApplied: action.payload };
+    case 'SET_HAS_OPENED_FILTER':
+      return {
+        ...state,
+        hasOpenedFilter: action.payload
+      };
     default:
       return state;
   }
@@ -166,7 +175,6 @@ function TestCaseReviewComponent() {
   const handleStatusChange = (selectedOption) => {
     setSelectedStatus(selectedOption);
   };
-
   const handleFilterClick = (event, column, name, type, id) => {
     if (clearData === true) {
       localDispatch({ type: 'SET_FILTERS', payload: [] });
@@ -185,6 +193,7 @@ function TestCaseReviewComponent() {
     };
     const filteredData = filterTestCaseReviewList[filterKeyMap[column]];
     const columnId = moduleMapping[column];
+
     localDispatch({ type: 'SET_FILTER_TYPE', payload: '' });
     localDispatch({ type: 'SET_COLUMN_NAME', payload: name });
     localDispatch({ type: 'SET_TYPE', payload: type });
@@ -198,6 +207,22 @@ function TestCaseReviewComponent() {
     localDispatch({
       type: 'SET_MODAL_POSITION',
       payload: { top: rect.bottom, left: rect.left }
+    });
+    if (!state.hasOpenedFilter[column]) {
+      localDispatch({
+        type: 'SET_SELECTED_FILTER',
+        payload: filteredData?.map((item) => item?.name)
+      });
+      localDispatch({
+        type: 'SET_SELECTED_FILTER_IDS',
+        payload: filteredData?.map((item) => item?.id)
+      });
+    }
+
+    // ✅ Mark column as opened
+    localDispatch({
+      type: 'SET_HAS_OPENED_FILTER',
+      payload: { ...state.hasOpenedFilter, [column]: true }
     });
   };
 
@@ -238,18 +263,23 @@ function TestCaseReviewComponent() {
     } else {
       localDispatch({
         type: 'SET_SELECTED_FILTER',
-        payload: [...state.selectedFilters.filter((filter) => filter !== label)]
+        payload: [
+          ...state?.selectedFilters?.filter((filter) => filter !== label)
+        ]
       });
 
       localDispatch({
         type: 'SET_SELECTED_FILTER_IDS',
-        payload: state.selectedFilterIds.filter(
+        payload: state?.selectedFilterIds?.filter(
           (filterId) => filterId !== value
         )
       });
+      localDispatch({
+        type: 'SET_IS_FILTER_APPLIED',
+        payload: true
+      });
     }
   };
-
   const handleSearchChange = (e) => {
     const term = e.target.value;
     localDispatch({
@@ -257,15 +287,19 @@ function TestCaseReviewComponent() {
       payload: term
     });
   };
-
   const filteredResults = filterValues?.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    item?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase())
   );
+
+  // const filteredResults = filterValues?.filter((item) =>
+  //   item?.toString().includes(searchTerm?.toString())
+  // );
+
   const handleSelectAll = (event) => {
     if (event.target.checked) {
       localDispatch({
         type: 'SET_SELECTED_FILTER',
-        payload: filterValues?.map((item) => item.name)
+        payload: filterValues?.map((item) => item?.name)
       });
 
       localDispatch({
@@ -412,7 +446,6 @@ function TestCaseReviewComponent() {
       localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
     } catch (error) {}
   };
-
   const handleApplyButton = async () => {
     setClearData(false);
 
@@ -459,7 +492,7 @@ function TestCaseReviewComponent() {
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
       localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
-      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+      // localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
     } catch (error) {}
   };
 
@@ -1523,6 +1556,7 @@ function TestCaseReviewComponent() {
 
       const updatedFilters = getLatestConditions(updatedFiltersData);
       localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
+
       setIsFilterApplied((prev) => ({
         ...prev,
         [filterColumnId]: true
@@ -1579,6 +1613,36 @@ function TestCaseReviewComponent() {
       })
     );
   }, [paginationData?.pageIndex, paginationData?.pageSize]);
+
+  useEffect(() => {
+    if (filterValues && searchTerm?.length === 0) {
+      localDispatch({ type: 'SET_FILTER_VALUES', payload: filterValues });
+      if (state.isFilterApplied === false) {
+        localDispatch({
+          type: 'SET_SELECTED_FILTER',
+          payload: filterValues.map((item) => item.name)
+        });
+      }
+      // localDispatch({
+      //   type: 'SET_SELECTED_FILTER',
+      //   payload: filterValues.map((item) => item.name)
+      // });
+      localDispatch({
+        type: 'SET_SELECTED_FILTER_IDS',
+        payload: filterValues.map((item) => item.id)
+      });
+    }
+  }, [filterValues, localDispatch]);
+  useEffect(() => {
+    // Whenever searchTerm or filterData changes, update the selected filter IDs
+    // if (searchTerm?.length === 0) {
+    const filteredData = filteredResults?.filter((item) =>
+      item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    const filteredIds = filteredData?.map((item) => item.id);
+    localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: filteredIds });
+    // }
+  }, [searchTerm, localDispatch]);
   return (
     <>
       <Box ml={1}>
@@ -1663,6 +1727,7 @@ function TestCaseReviewComponent() {
           errorMessage={errorMessage}
           setSelectedValue={setSelectedValue}
           selectedValue={selectedValue}
+          isFilterApplied={state.isFilterApplied}
         />
       )}
 

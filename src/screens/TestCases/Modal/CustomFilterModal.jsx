@@ -190,7 +190,7 @@ const CustomFilterModal = ({
                 <input
                   ref={searchRef}
                   type="text"
-                  style={{height: '27px'}}
+                  style={{ height: '27px' }}
                   placeholder="Search Here"
                   className="form-control pe-5 custom-placeholder"
                   value={searchTerm}
@@ -206,15 +206,15 @@ const CustomFilterModal = ({
               type="checkbox"
               id="filterAll"
               name="filterAll"
-              checked={selectedFilters?.length === filterData?.length}
+              // checked={selectedFilters?.length === filterData?.length}
+              checked={selectedFilters.length === filterData.length}
               onChange={handleSelectAll}
             />
             <label className="mt-1 mx-3 fs-7" htmlFor="filterAll">
               All
             </label>
           </div>
-          {console.log('selected', selectedFilters)}
-          {console.log('filterData', filterData)}
+
           {filterData?.map((value, index) => (
             <div key={value?.id} className="filter-item px-1">
               <input
@@ -236,24 +236,24 @@ const CustomFilterModal = ({
             </div>
           ))}
 
-        <div className='mt-2 mb-1'>
-        <button
-            className="btn btn-sm btn-primary"
-            onClick={handleApplyButton}
-          >
-            Apply
-          </button>
-          <button className="btn btn-sm btn-warning " onClick={handleClose}>
-            Cancel
-          </button>
-          <button
-            onClick={handleClearAllFilter}
-            className="btn btn-sm btn-outline-primary"
-            title="Clear All"
-          >
-            Clear All
-          </button>
-        </div>
+          <div className="mt-2 mb-1">
+            <button
+              className="btn btn-sm btn-primary"
+              onClick={handleApplyButton}
+            >
+              Apply
+            </button>
+            <button className="btn btn-sm btn-warning " onClick={handleClose}>
+              Cancel
+            </button>
+            <button
+              onClick={handleClearAllFilter}
+              className="btn btn-sm btn-outline-primary"
+              title="Clear All"
+            >
+              Clear All
+            </button>
+          </div>
         </div>
       )}
       <div>

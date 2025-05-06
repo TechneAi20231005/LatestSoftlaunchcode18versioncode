@@ -266,6 +266,8 @@ function TestDraftDetails(props) {
   const filteredResults = filterValues?.filter((item) =>
     item?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase())
   );
+  console.log('filterValues', filterValues);
+
   // const filteredResults = filterValues?.filter((item) =>
   //   item?.toString()?.toLowerCase()?.includes(searchTerm?.toLowerCase())
   // );
@@ -297,8 +299,9 @@ function TestDraftDetails(props) {
 
   const handleFilterCheckboxChange = (event, label, value) => {
     const isChecked = event.target.checked;
-    console.log('label', label);
-
+    console.log('label', isChecked);
+    console.log('state?.selectedFilterIds', state?.selectedFilterIds);
+    console.log('vv', value);
     if (isChecked) {
       localDispatch({
         type: 'SET_SELECTED_FILTER',
@@ -1985,6 +1988,7 @@ function TestDraftDetails(props) {
       const updatedFiltersData = [...filters, newFilter];
 
       const updatedFilters = getLatestConditions(updatedFiltersData);
+      console.log('filterColumnId', filterColumnId);
 
       // const updatedFilters = [...filters, newFilter];
       localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
