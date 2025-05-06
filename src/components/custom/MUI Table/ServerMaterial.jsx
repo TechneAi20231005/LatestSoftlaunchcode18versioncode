@@ -130,7 +130,8 @@ function ServerMaterial({
           paper: {
             maxHeight: '50%',
             overflowY: 'auto',
-            width:"30%"
+            width:"fit-content",
+            maxWidth: '30%',
           },
         },
       },
