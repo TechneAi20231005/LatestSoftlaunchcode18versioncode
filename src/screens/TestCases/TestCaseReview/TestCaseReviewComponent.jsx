@@ -296,6 +296,10 @@ function TestCaseReviewComponent() {
   // );
 
   const handleSelectAll = (event) => {
+    localDispatch({
+      type: 'SET_IS_FILTER_APPLIED',
+      payload: true
+    });
     if (event.target.checked) {
       localDispatch({
         type: 'SET_SELECTED_FILTER',
