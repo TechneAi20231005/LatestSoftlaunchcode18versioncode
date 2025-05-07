@@ -1804,6 +1804,26 @@ function TestDraftDetails(props) {
       enableSorting: false
     },
     {
+      accessorFn: (originalRows) =>
+        `${originalRows?.is_automation_script || '--'} `,
+      header: 'Is Automation Script',
+      Header: (
+        <span>
+          Is Automation Script
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'is_automation_script', 'Is Automation Script', 'text')
+            }
+          />
+        </span>
+      ),
+
+      size: 250,
+      enableSorting: false
+    },
+    {
       accessorFn: (originalRows) => `${originalRows?.created_at || '--'} `,
       header: 'Created At',
       Header: (
@@ -2122,6 +2142,7 @@ function TestDraftDetails(props) {
           progressComponent={<TableLoadingSkelton />}
         /> */}
 
+
         <MaterialTable
           columns={columns}
           data={getDraftTestListData || []}
@@ -2179,7 +2200,7 @@ function TestDraftDetails(props) {
             <Select
               classNamePrefix="react-select"
               type="text"
-              className="form-control form-control-sm"
+              // className="form-control form-control-sm"
               id="reviewer_id"
               name="reviewer_id"
               options={filterTestData}
@@ -2205,7 +2226,7 @@ function TestDraftDetails(props) {
         <Modal.Footer>
           <button
             type="submit"
-            className="btn btn-sm btn bg-success text-white"
+            className="btn btn bg-success text-white"
             onClick={() => handleSubmit()}
             disabled={disable}
           >
@@ -2215,7 +2236,7 @@ function TestDraftDetails(props) {
 
           <button
             type="button"
-            className="btn btn-danger shadow p-2 text-black"
+            className="btn btn-danger p-1.5 text-white"
             onClick={() => {
               handleSendToReviewerModal({
                 showModal: false,

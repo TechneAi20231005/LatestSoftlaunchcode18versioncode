@@ -154,7 +154,7 @@ function DownloadFormatFileModal({ show, close }) {
                 </button>
                 <button
                   type="button"
-                  className="btn btn-danger shadow p-2 text-black"
+                  className="btn btn-danger text-white"
                   onClick={() => close()}
                 >
                   Cancel

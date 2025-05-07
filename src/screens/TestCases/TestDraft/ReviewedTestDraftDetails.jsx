@@ -1036,7 +1036,8 @@ function ReviewedTestDraftDetails(props) {
       )
     },
     {
-      accessorKey: 'created_by',
+      // accessorKey: 'created_by',
+      accessorFn: (row) => `${row?.created_by?.first_name} ${row?.created_by?.last_name}`,
       header: 'Created By',
       size: 180,
       enableSorting: false,
@@ -1083,7 +1084,8 @@ function ReviewedTestDraftDetails(props) {
       )
     },
     {
-      accessorKey: 'updated_by',
+      // accessorKey: 'updated_by',
+      accessorFn: (row) => `${row?.updated_by?.first_name} ${row?.updated_by?.last_name}`,
       header: 'Updated By',
       size: 183,
       enableSorting: false,
