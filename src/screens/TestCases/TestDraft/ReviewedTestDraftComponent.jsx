@@ -2182,7 +2182,7 @@ function ReviewedTestDraftComponent() {
 
         <MaterialTable
           columns={columns}
-          data={allReviewDraftTestListDataByID}
+          data={allReviewDraftTestListDataByID || []}
           // isLoading={isLoading}
           pagination={paginationData}
           setPagination={setPaginationData}
