@@ -183,6 +183,7 @@ import PowerBidashboard from './Dashboard/PowerBidashboard';
 import JobRoleComponent from './Masters/JobRoleMaster/JobRoleComponent';
 import MenuComponent from './Masters/MenuMaster/MenuComponent';
 import DeleteRequisition from './PO/deleteRequisition/DeleteRequisition';
+import ChatBot from './Dashboard/ChatBot';
 
 class MainIndex extends React.Component {
   render() {
@@ -809,6 +810,7 @@ class MainIndex extends React.Component {
               path={`/${_base}/CandidateList/:id`}
               element={<EmployeeJoining />}
             />
+            <Route exact path={`/${_base}/ChatBot`} element={<ChatBot />} />
             <Route
               exact
               path={`/${_base}/InterviewMaster`}
