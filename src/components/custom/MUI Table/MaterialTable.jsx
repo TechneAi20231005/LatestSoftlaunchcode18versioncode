@@ -288,7 +288,6 @@ function MaterialTable({
           onShowGlobalFilterChange={setShowGlobalFilter}
           onShowColumnFiltersChange={setShowColumnFilters}
           enableRowNumbers={enableRowNumbers}
-          rowCount={manualPagination && totalRows}
           renderToolbarInternalActions={({ table }) => (
             <Box
               sx={{

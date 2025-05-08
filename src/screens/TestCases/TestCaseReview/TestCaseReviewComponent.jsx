@@ -108,7 +108,7 @@ function TestCaseReviewComponent() {
   // );
   const [paginationData, setPaginationData] = useState({
     pageIndex: 0,
-    pageSize: 10
+    pageSize: 100
   });
   const { testCaseReviewList, isLoading, filterTestCaseReviewList } =
     useSelector((state) => state?.testCaseReview);
@@ -1057,7 +1057,8 @@ function TestCaseReviewComponent() {
         return (
           <div className="d-flex align-items-center">
             <i
-              className="icofont-edit text-primary btn btn-outline-secondary cp"
+              // className="icofont-edit text-primary btn btn-outline-secondary cp"
+              className="icofont-paper-plane btn btn-outline-secondary icon-large mx-2 cp"
               onClick={() => {
                 handleSendToReviewerModal({
                   showModal: true,
@@ -1371,7 +1372,7 @@ function TestCaseReviewComponent() {
 
     setClearData(true);
     setPaginationData({
-      pageSize: 10,
+      pageSize: 100,
       pageIndex: 1
     });
 
@@ -1680,6 +1681,9 @@ function TestCaseReviewComponent() {
             isLoading={isLoading?.testCaseReviewList}
             isExportData={false}
             manualPagination={true}
+            muiPaginationProps={{
+              rowsPerPageOptions: [100, 500, 1000, 2000]
+            }}
           />
         )}
         {/* <DataTable
