@@ -207,7 +207,7 @@ const CustomFilterModal = ({
               id="filterAll"
               name="filterAll"
               // checked={selectedFilters?.length === filterData?.length}
-              checked={selectedFilters.length === filterData.length}
+              checked={selectedFilters?.length === filterData?.length}
               onChange={handleSelectAll}
             />
             <label className="mt-1 mx-3 fs-7" htmlFor="filterAll">
@@ -224,7 +224,7 @@ const CustomFilterModal = ({
                 className="check-box-size"
                 // checked={selectedFilters.includes(value?.name)}
                 checked={
-                  !isFilterApplied || selectedFilters.includes(value?.name)
+                  !isFilterApplied || selectedFilters?.includes(value?.name)
                 }
                 onChange={(e) =>
                   handleCheckboxChange(e, value?.name, value?.id)
@@ -271,7 +271,7 @@ const CustomFilterModal = ({
                 <div className="my-3">
                   {type === 'number' ? (
                     <>
-                      {numberFilterData.map((option) => (
+                      {numberFilterData?.map((option) => (
                         <p
                           key={option.value}
                           className="mb-2 cp "
@@ -285,7 +285,7 @@ const CustomFilterModal = ({
                     </>
                   ) : (
                     <>
-                      {textFilterData.map((option) => (
+                      {textFilterData?.map((option) => (
                         <p
                           key={option.value}
                           className="mb-2 cp fs-7"

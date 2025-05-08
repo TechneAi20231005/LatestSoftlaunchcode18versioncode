@@ -233,6 +233,7 @@ function MaterialTable({
             noRecordsToDisplay: <NotFound topMargin={0} />,
             noResultsFound: <NotFound topMargin={0} />
           }}
+          rowCount={totalRows}
           muiPaginationProps={muiPaginationProps}
           enableStickyHeader={enableStickyHeader}
           isExportData={isExportData}

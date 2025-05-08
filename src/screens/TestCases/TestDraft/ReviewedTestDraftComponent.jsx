@@ -263,14 +263,14 @@ function ReviewedTestDraftComponent() {
       localDispatch({ type: 'SET_FILTERS', payload: [] });
     }
     const filterKeyMap = {
-      module_name: 'module_names',
-      sub_module_name: 'sub_module_names',
-      function_name: 'function_names',
-      field: 'field_names',
-      platform: 'platforms',
+      module_name: 'module',
+      sub_module_name: 'submodule',
+      function_name: 'function',
+      field: 'field',
+      platform: 'platform',
       type_name: 'type_names',
       tc_id: 'ids',
-      severity: 'severities',
+      severity: 'severity',
       group_name: 'group_names',
       steps: 'steps',
       expected_result: 'expected_results',
@@ -1371,6 +1371,9 @@ function ReviewedTestDraftComponent() {
       enableColumnOrdering: false,
       enableGrouping: false,
       enableSorting: false,
+      muiTableBodyCellProps: {
+        align: 'center'
+      },
       enableColumnFilter: false,
       Cell: ({ row }) => {
         if (
@@ -1382,10 +1385,11 @@ function ReviewedTestDraftComponent() {
         return (
           <div className="d-flex align-items-center">
             <i
+             className="icofont-edit text-primary btn btn-outline-secondary cp "
               onClick={() =>
                 setAddEditTestCasesModal({
                   type: 'EDIT',
-                  data: row,
+                  data: row?.original,
                   open: true,
                   id: row?.original?.id
                 })
@@ -2115,6 +2119,7 @@ function ReviewedTestDraftComponent() {
   return (
     <div className="container-xxl">
       <PageHeader
+      showBackBtn
         headerTitle="Test Draft"
         renderRight={() => {
           return (
@@ -2177,7 +2182,7 @@ function ReviewedTestDraftComponent() {
 
         <MaterialTable
           columns={columns}
-          data={allReviewDraftTestListDataByID}
+          data={allReviewDraftTestListDataByID || []}
           // isLoading={isLoading}
           pagination={paginationData}
           setPagination={setPaginationData}
@@ -2279,7 +2284,7 @@ function ReviewedTestDraftComponent() {
         <Modal.Footer>
           <button
             type="submit"
-            className="btn btn-sm btn bg-success text-white"
+            className="btn btn bg-success text-white"
             onClick={() => handleSubmit()}
           >
             <i class="icofont-paper-plane "></i> {''}
@@ -2288,7 +2293,7 @@ function ReviewedTestDraftComponent() {
 
           <button
             type="button"
-            className="btn btn bg-white shadow p-2 text-black"
+            className="btn bg-danger p-1.5 text-white"
             onClick={() => {
               handleSendToReviewerModal({
                 showModal: false,
