@@ -2121,14 +2121,14 @@ function TestDraftDetails(props) {
           progressPending={isLoading?.getDraftTestListData}
           progressComponent={<TableLoadingSkelton />}
         /> */}
-
+        {console.log('dataa', allDraftListData?.total)}
         <MaterialTable
           columns={columns}
           data={getDraftTestListData || []}
           isLoading={isLoading?.getDraftTestListData}
           paginationData={props?.paginationData}
           setPaginationData={props?.setPaginationData}
-          totalRows={allDraftListData?.data?.total}
+          totalRows={allDraftListData?.total}
           manualPagination={true}
           manualFiltering={true}
           isExportData={false}
