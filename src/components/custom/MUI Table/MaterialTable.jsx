@@ -46,7 +46,8 @@ function MaterialTable({
   manualPagination = false,
   paginationData = {},
   setPaginationData = {},
-  muiPaginationProps= {
+  totalRows,
+  muiPaginationProps = {
     rowsPerPageOptions: [5, 10, 15, 20, 25, 30, 50, 100]
   }
 }) {
@@ -232,6 +233,7 @@ function MaterialTable({
             noRecordsToDisplay: <NotFound topMargin={0} />,
             noResultsFound: <NotFound topMargin={0} />
           }}
+          rowCount={totalRows}
           muiPaginationProps={muiPaginationProps}
           enableStickyHeader={enableStickyHeader}
           isExportData={isExportData}
@@ -286,6 +288,7 @@ function MaterialTable({
           onShowGlobalFilterChange={setShowGlobalFilter}
           onShowColumnFiltersChange={setShowColumnFilters}
           enableRowNumbers={enableRowNumbers}
+          rowCount={manualPagination && totalRows}
           renderToolbarInternalActions={({ table }) => (
             <Box
               sx={{

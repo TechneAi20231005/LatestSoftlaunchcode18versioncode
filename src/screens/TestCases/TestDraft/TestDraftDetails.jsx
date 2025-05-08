@@ -266,6 +266,8 @@ function TestDraftDetails(props) {
   const filteredResults = filterValues?.filter((item) =>
     item?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase())
   );
+  console.log('filterValues', filterValues);
+
   // const filteredResults = filterValues?.filter((item) =>
   //   item?.toString()?.toLowerCase()?.includes(searchTerm?.toLowerCase())
   // );
@@ -297,8 +299,9 @@ function TestDraftDetails(props) {
 
   const handleFilterCheckboxChange = (event, label, value) => {
     const isChecked = event.target.checked;
-    console.log('label', label);
-
+    console.log('label', isChecked);
+    console.log('state?.selectedFilterIds', state?.selectedFilterIds);
+    console.log('vv', value);
     if (isChecked) {
       localDispatch({
         type: 'SET_SELECTED_FILTER',
@@ -1801,6 +1804,31 @@ function TestDraftDetails(props) {
       enableSorting: false
     },
     {
+      accessorFn: (originalRows) =>
+        `${originalRows?.is_automation_script || '--'} `,
+      header: 'Is Automation Script',
+      Header: (
+        <span>
+          Is Automation Script
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(
+                e,
+                'is_automation_script',
+                'Is Automation Script',
+                'text'
+              )
+            }
+          />
+        </span>
+      ),
+
+      size: 250,
+      enableSorting: false
+    },
+    {
       accessorFn: (originalRows) => `${originalRows?.created_at || '--'} `,
       header: 'Created At',
       Header: (
@@ -1985,6 +2013,7 @@ function TestDraftDetails(props) {
       const updatedFiltersData = [...filters, newFilter];
 
       const updatedFilters = getLatestConditions(updatedFiltersData);
+      console.log('filterColumnId', filterColumnId);
 
       // const updatedFilters = [...filters, newFilter];
       localDispatch({ type: 'SET_FILTERS', payload: updatedFilters });
@@ -2117,14 +2146,14 @@ function TestDraftDetails(props) {
           progressPending={isLoading?.getDraftTestListData}
           progressComponent={<TableLoadingSkelton />}
         /> */}
-
+        {console.log('dataa', allDraftListData?.total)}
         <MaterialTable
           columns={columns}
           data={getDraftTestListData || []}
           isLoading={isLoading?.getDraftTestListData}
           paginationData={props?.paginationData}
           setPaginationData={props?.setPaginationData}
-          totalRows={allDraftListData?.data?.total}
+          totalRows={allDraftListData?.total}
           manualPagination={true}
           manualFiltering={true}
           isExportData={false}
@@ -2175,7 +2204,7 @@ function TestDraftDetails(props) {
             <Select
               classNamePrefix="react-select"
               type="text"
-              className="form-control form-control-sm"
+              // className="form-control form-control-sm"
               id="reviewer_id"
               name="reviewer_id"
               options={filterTestData}
@@ -2201,7 +2230,7 @@ function TestDraftDetails(props) {
         <Modal.Footer>
           <button
             type="submit"
-            className="btn btn-sm btn bg-success text-white"
+            className="btn btn bg-success text-white"
             onClick={() => handleSubmit()}
             disabled={disable}
           >
@@ -2211,7 +2240,7 @@ function TestDraftDetails(props) {
 
           <button
             type="button"
-            className="btn btn-danger shadow p-2 text-black"
+            className="btn btn-danger p-1.5 text-white"
             onClick={() => {
               handleSendToReviewerModal({
                 showModal: false,
