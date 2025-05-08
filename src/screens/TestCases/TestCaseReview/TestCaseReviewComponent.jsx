@@ -1057,7 +1057,8 @@ function TestCaseReviewComponent() {
         return (
           <div className="d-flex align-items-center">
             <i
-              className="icofont-edit text-primary btn btn-outline-secondary cp"
+              // className="icofont-edit text-primary btn btn-outline-secondary cp"
+              className="icofont-paper-plane btn btn-outline-secondary icon-large mx-2 cp"
               onClick={() => {
                 handleSendToReviewerModal({
                   showModal: true,

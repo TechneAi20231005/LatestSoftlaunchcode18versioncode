@@ -1244,12 +1244,12 @@ function TestCaseReviewDetails() {
       enableSorting: false,
       enableColumnFilter: false,
       Cell: ({ row }) => {
-        if (
-          !row ||
-          row?.original?.tc_id === null ||
-          row?.original?.status === null
-        )
-          return null;
+        // if (
+        //   !row ||
+        //   row?.original?.tc_id === null ||
+        //   row?.original?.status === null
+        // )
+        //   return null;
         return (
           <div className="d-flex align-items-center">
             <i
