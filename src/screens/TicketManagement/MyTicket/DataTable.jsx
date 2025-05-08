@@ -22,7 +22,8 @@ const DataTableCustom = React.memo(
     setColumnFilters,
     columnFilters,
     reset = false,
-    setReset = () => {}
+    setReset = () => {},
+    message = '',
   }) => {
     let tabType = type;
     const [modal, setModal] = useState({
@@ -99,6 +100,18 @@ const DataTableCustom = React.memo(
         header: 'Priority',
         size: 160,
         enableColumnFilter: false,
+        sortingFn: (rowA, rowB, columnId) => {
+
+          const priorityOrder = {
+            Low: 1,
+            Medium: 2,
+            High: 3,
+            'Very High': 4,
+          };
+          const priorityA = rowA.getValue(columnId);
+          const priorityB = rowB.getValue(columnId);
+          return (priorityOrder[priorityA] || 0) - (priorityOrder[priorityB] || 0);
+        },
         Cell: ({ cell }) => {
           const priority = cell.getValue();
           const badgeColors = {
@@ -204,6 +217,7 @@ const DataTableCustom = React.memo(
           reset={reset}
           setReset={setReset}
           enableRowSelection={type === 'UnPassed'}
+          message={message}
         />
         {modal.showModal && (
           <DescriptionModal modal={modal} handleModal={handleModal} />

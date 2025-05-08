@@ -40,6 +40,7 @@ const MyTicketsTab = () => {
   });
 
   const [reset, setReset] = useState(false);
+  const [message, setMessage] = useState('');
 
   const apiFetchData = [
     {
@@ -134,6 +135,7 @@ const MyTicketsTab = () => {
     setColumnFilters([]);
     setReset(true);
     setPagination({ pageIndex: 0, pageSize: 10 });
+    setMessage("");
   };
 
   useEffect(() => {
@@ -146,12 +148,21 @@ const MyTicketsTab = () => {
   const debouncedTicketId = useDebounce(ticketIdValue, 1000);
   useEffect(() => {
     const getData = async () => {
+
       // if (isLoading) return;
       setIsLoading(true);
       const fromDateRaw = columnFilters.find((f) => f.id === 'ticket_date')
         ?.value?.[0];
       const toDateRaw = columnFilters.find((f) => f.id === 'ticket_date')
         ?.value?.[1];
+
+        if (toDateRaw && fromDateRaw && moment(toDateRaw).isBefore(fromDateRaw)) {
+          setMessage("Ticket To Date Cannot Be Earlier Than From Date");
+          setIsLoading(false);
+          return;
+        }else{
+          setMessage("");
+        }
 
       const hasColumnFilters = columnFilters?.some((filter) => {
         const value = filter?.value;
@@ -279,6 +290,7 @@ const MyTicketsTab = () => {
           columnFilters={columnFilters}
           reset={reset}
           setReset={setReset}
+          message={message}
         />
       </Box>
     </Box>
