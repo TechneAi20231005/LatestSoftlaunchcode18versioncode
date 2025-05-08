@@ -46,7 +46,7 @@ export default function TestDraftComponent({}) {
 
   const [paginationData, setPaginationData] = useState({
     pageIndex: 0,
-    pageSize: 10
+    pageSize: 100
   });
 
   const [downloadmodal, setDownloadModal] = useState({
@@ -119,6 +119,12 @@ export default function TestDraftComponent({}) {
         },
         onErrorHandler: () => {
           setBulkModal({ showModal: false });
+          dispatch(
+            getDraftTestCaseList({
+              limit: paginationData.rowPerPage,
+              page: paginationData.currentPage
+            })
+          );
         }
       })
     );
@@ -172,7 +178,7 @@ export default function TestDraftComponent({}) {
     //   currentPage: 1
     // });
     setPaginationData({
-      pageSize: 10,
+      pageSize: 100,
       pageIndex: 0
     });
     currentTab === 'test_summary'
@@ -241,7 +247,7 @@ export default function TestDraftComponent({}) {
     '& .MuiTabs-indicator': { backgroundColor: '#484c7f' },
     '& .MuiTab-root.Mui-selected': { color: '#484c7f' }
   };
-
+  console.log('allDraftTestListData', allDraftTestListData);
   return (
     <div className="container-xxl">
       <PageHeader

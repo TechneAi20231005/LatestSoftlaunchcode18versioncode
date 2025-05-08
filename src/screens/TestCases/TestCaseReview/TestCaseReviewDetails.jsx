@@ -108,12 +108,16 @@ function TestCaseReviewDetails() {
   const { testCasesStatusDataList } = useSelector(
     (state) => state?.downloadFormat
   );
-  const [paginationData, setPaginationData] = useReducer(
-    (prevState, nextState) => {
-      return { ...prevState, ...nextState };
-    },
-    { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
-  );
+  // const [paginationData, setPaginationData] = useReducer(
+  //   (prevState, nextState) => {
+  //     return { ...prevState, ...nextState };
+  //   },
+  //   { rowPerPage: 100, currentPage: 1, currentFilterData: {} }
+  // );
+  const [paginationData, setPaginationData] = useState({
+    pageIndex: 0,
+    pageSize: 100
+  });
 
   const [addEditTestCasesModal, setAddEditTestCasesModal] = useState({
     type: '',
@@ -1249,6 +1253,7 @@ function TestCaseReviewDetails() {
         return (
           <div className="d-flex align-items-center">
             <i
+              className="icofont-edit text-primary  btn btn-outline-secondary cp me-3"
               onClick={() =>
                 setAddEditTestCasesModal({
                   type: 'EDIT',
@@ -2164,9 +2169,13 @@ function TestCaseReviewDetails() {
   const handleButtonClick = () => {
     setIsFilterApplied(false);
     setClearData(true);
+    // setPaginationData({
+    //   rowPerPage: 10,
+    //   currentPage: 1
+    // });
     setPaginationData({
-      rowPerPage: 10,
-      currentPage: 1
+      pageSize: 100,
+      pageIndex: 0
     });
     dispatch(
       getByTestPlanIDListThunk({
@@ -2361,11 +2370,13 @@ function TestCaseReviewDetails() {
           columns={columns}
           data={rowData}
           // isLoading={isLoading}
-          pagination={paginationData}
-          setPagination={paginationData}
+          paginationData={paginationData}
           totalRows={allTestPlanIDData?.data?.total}
           manualPagination={true}
-          manualFiltering={true}
+          setPaginationData={setPaginationData}
+          muiPaginationProps={{
+            rowsPerPageOptions: [100, 500, 1000, 2000]
+          }}
           isExportData={false}
         />
       </Container>

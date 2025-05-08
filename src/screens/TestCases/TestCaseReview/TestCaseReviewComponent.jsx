@@ -108,7 +108,7 @@ function TestCaseReviewComponent() {
   // );
   const [paginationData, setPaginationData] = useState({
     pageIndex: 0,
-    pageSize: 10
+    pageSize: 100
   });
   const { testCaseReviewList, isLoading, filterTestCaseReviewList } =
     useSelector((state) => state?.testCaseReview);
@@ -1371,7 +1371,7 @@ function TestCaseReviewComponent() {
 
     setClearData(true);
     setPaginationData({
-      pageSize: 10,
+      pageSize: 100,
       pageIndex: 1
     });
 
@@ -1680,6 +1680,9 @@ function TestCaseReviewComponent() {
             isLoading={isLoading?.testCaseReviewList}
             isExportData={false}
             manualPagination={true}
+            muiPaginationProps={{
+              rowsPerPageOptions: [100, 500, 1000, 2000]
+            }}
           />
         )}
         {/* <DataTable

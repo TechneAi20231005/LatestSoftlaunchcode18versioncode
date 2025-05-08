@@ -187,10 +187,10 @@ function TestDraftDetails(props) {
 
     if (newSelectAllNames) {
       const draftRowIds = getDraftTestListData
-        .filter(
+        ?.filter(
           (row) => row?.tai_bc_status_conventions?.convention_name === 'DRAFT'
         )
-        .map((row) => row.id);
+        ?.map((row) => row?.id);
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
     } else {
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
@@ -1460,14 +1460,17 @@ function TestDraftDetails(props) {
           row?.original?.status === null
         )
           return null;
+        console.log('row', row);
         return (
           <div className="d-flex align-items-center">
             <i
               disabled={
-                row?.tai_bc_status_conventions?.convention_name !== 'DRAFT'
+                row?.original?.tai_bc_status_conventions?.convention_name !==
+                'DRAFT'
               }
               className={`icofont-edit text-primary btn btn-outline-secondary cp  ${
-                row?.tai_bc_status_conventions?.convention_name !== 'DRAFT'
+                row?.original?.tai_bc_status_conventions?.convention_name !==
+                'DRAFT'
                   ? 'disabled-icon'
                   : ''
               }`}
@@ -2157,7 +2160,7 @@ function TestDraftDetails(props) {
           manualPagination={true}
           manualFiltering={true}
           isExportData={false}
-          muiPaginationProps={{ rowsPerPageOptions: [10, 50, 100, 150, 200] }}
+          muiPaginationProps={{ rowsPerPageOptions: [100, 500, 1000, 2000] }}
         />
       </Container>
       <div className="d-flex justify-content-end mt-3">
@@ -2171,11 +2174,7 @@ function TestDraftDetails(props) {
               modalHeader: 'Send To Reviewer Modal'
             });
           }}
-          // disabled={
-          //   !getDraftTestListData ||
-          //   getDraftTestListData?.filter((item) => item.status === 'DRAFT')
-          //     .length === 0
-          // }
+          disabled={!getDraftTestListData}
         >
           <i class="icofont-paper-plane fs-0.8"></i> {''}
           Send To Reviewer

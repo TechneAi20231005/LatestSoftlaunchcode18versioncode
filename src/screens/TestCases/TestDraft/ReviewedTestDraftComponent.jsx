@@ -139,7 +139,7 @@ function ReviewedTestDraftComponent() {
 
   const [paginationData, setPaginationData] = useState({
     pageIndex: 0,
-    pageSize: 10
+    pageSize: 100
   });
 
   const { testCasesStatusDataList } = useSelector(
@@ -1385,7 +1385,7 @@ function ReviewedTestDraftComponent() {
         return (
           <div className="d-flex align-items-center">
             <i
-             className="icofont-edit text-primary btn btn-outline-secondary cp "
+              className="icofont-edit text-primary btn btn-outline-secondary cp "
               onClick={() =>
                 setAddEditTestCasesModal({
                   type: 'EDIT',
@@ -2026,14 +2026,14 @@ function ReviewedTestDraftComponent() {
 
     setClearData(true);
     setPaginationData({
-      pageSize: 10,
+      pageSize: 100,
       pageIndex: 0
     });
     dispatch(
       getByTestPlanIDReviewedListThunk({
         id: id,
         limit: 10,
-        page: 1,
+        page: 1
       })
     );
   };
@@ -2111,7 +2111,7 @@ function ReviewedTestDraftComponent() {
     dispatch(
       getTestCaseStatusDataList({
         limit: paginationData.pageSize,
-        page: paginationData.pageIndex + 1,
+        page: paginationData.pageIndex + 1
       })
     );
   }, [paginationData.pageSize, paginationData.pageIndex]);
@@ -2119,7 +2119,7 @@ function ReviewedTestDraftComponent() {
   return (
     <div className="container-xxl">
       <PageHeader
-      showBackBtn
+        showBackBtn
         headerTitle="Test Draft"
         renderRight={() => {
           return (
@@ -2186,6 +2186,9 @@ function ReviewedTestDraftComponent() {
           // isLoading={isLoading}
           pagination={paginationData}
           setPagination={setPaginationData}
+          muiPaginationProps={{
+            rowsPerPageOptions: [100, 500, 1000, 2000]
+          }}
           totalRows={allReviewDraftTestListDataByID?.total}
           manualPagination={true}
           isExportData={false}
