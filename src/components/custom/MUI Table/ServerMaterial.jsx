@@ -232,9 +232,7 @@ function ServerMaterial({
 
                   <div className="message-wrapper">
                     <span
-                      className={`text-danger message-transition ${
-                        message ? 'visible' : ''
-                      }`}
+                       className={`text-danger fade ${message ? 'show' : ''}`}
                     >
                       {message && `Note:- ${message}`}
                     </span>

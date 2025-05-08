@@ -169,14 +169,3 @@
   0% { background-position: 200% 0; }
   100% { background-position: -200% 0; }
 }
-
-.message-transition {
-  opacity: 0;
-  transition: opacity 0.5s ease-in-out;
-  display: inline-block;
-  min-height: 1rem;
-}
-
-.message-transition.visible {
-  opacity: 1;
-}
