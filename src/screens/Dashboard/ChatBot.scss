@@ -102,9 +102,9 @@ font-weight: 600;
     transition: 0.2s ease;
 }
 
-.chat-header button:hover{
-    background: #593bab;
-}
+// .chat-header button:hover{
+//     background: #593bab;
+// }
 
 .chat-body{
     display: flex;
@@ -192,25 +192,25 @@ font-weight: 600;
   }
 
   .chat-form button {
-    height: 35px;
-    width: 35px;
+    // height: 30px;
+    // width: 30px;
     border: none;
-    display: none;
+    // display: none;
     outline: none;
     cursor: pointer;
     font-size: 1.15rem;
-    color: #fff;
+    color: #6D4FC2;
     flex-shrink: 0;
     margin-right: 6px;
-    border-radius: 50%;
-    background: #6D4FC2;
+    // border-radius: 50%;
+    // background: #6D4FC2;
     transition: 0.2s ease;
   }
 
-    .chat-form button:hover {
-        background: #593bab;
-    }
+    // .chat-form button:hover {
+    //     background: #593bab;
+    // }
 
-    .chat-form .message-input:valid~button{
-        display: block;
-    }
+    // .chat-form .message-input:valid~button{
+    //     display: block;
+    // }
