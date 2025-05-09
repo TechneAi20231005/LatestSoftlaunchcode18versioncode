@@ -11,6 +11,7 @@ import {
 } from '../../../components/custom/inputs/CustomInputs';
 import { editTestCaseValidation } from './Validation/EditTestCase';
 import {
+  addTestCaseThunk,
   editTestCaseThunk,
   getByTestPlanIDReviewedListThunk,
   getDraftTestCaseList,
@@ -36,6 +37,7 @@ function EditTestCaseModal({
   const { filterFunctionMasterList } = useSelector(
     (state) => state?.functionMaster
   );
+  console.log('id', id);
 
   const { filterTestingGroupMasterList } = useSelector(
     (state) => state?.testingGroupMaster
@@ -64,7 +66,7 @@ function EditTestCaseModal({
 
   const [subModuleDropdown, setSubModuleDropdown] = useState();
   const [disable, setDisable] = useState(false);
-
+  console.log('currentTestCasesData', currentTestCasesData);
   const severityData = [
     {
       value: 'Very High',
@@ -108,50 +110,72 @@ function EditTestCaseModal({
       type === 'EDIT' ? currentTestCasesData?.expected_result : ''
   };
 
-  const handleEditTestCase = ({ formData }) => {
-    console.log('formdata', formData);
-    setDisable(true);
-    // dispatch(
-    //   editTestCaseThunk({
-    //     currentId: currentTestCasesData?.id,
-    //     formData: formData,
-    //     onSuccessHandler: () => {
-    //       close();
-    //       setDisable(false);
-    //       {
-    //         payloadType === 'DRAFT' &&
-    //           dispatch(
-    //             getDraftTestCaseList({
-    //               limit: paginationData.rowPerPage,
-    //               page: paginationData.currentPage
-    //             })
-    //           );
-    //       }
-    //       {
-    //         payloadType === 'TestCaseReview' &&
-    //           dispatch(
-    //             getByTestPlanIDListThunk({
-    //               id: id,
-    //               limit: paginationData.rowPerPage,
-    //               page: paginationData.currentPage
-    //             })
-    //           );
-    //       }
+  console.log('type', type);
 
-    //       {
-    //         payloadType === 'ReviewTestDraft' &&
-    //           dispatch(
-    //             getByTestPlanIDReviewedListThunk({
-    //               id: id,
-    //               limit: paginationData.rowPerPage,
-    //               page: paginationData.currentPage
-    //             })
-    //           );
-    //       }
-    //     },
-    //     onErrorHandler: () => {}
-    //   })
-    // );
+  const handleEditTestCase = ({ formData }) => {
+    setDisable(true);
+    console.log('sssss', id);
+
+    {
+      type === 'Add'
+        ? dispatch(
+            addTestCaseThunk({
+              formData: formData,
+              onSuccessHandler: () => {
+                close();
+                dispatch(
+                  getByTestPlanIDListThunk({
+                    id: id,
+                    limit: paginationData.rowPerPage,
+                    page: 1,
+                    filter_testcase_data: []
+                  })
+                );
+              }
+            })
+          )
+        : dispatch(
+            editTestCaseThunk({
+              currentId: currentTestCasesData?.original?.id,
+              formData: formData,
+              onSuccessHandler: () => {
+                close();
+                setDisable(false);
+                {
+                  payloadType === 'DRAFT' &&
+                    dispatch(
+                      getDraftTestCaseList({
+                        limit: paginationData.rowPerPage,
+                        page: paginationData.currentPage
+                      })
+                    );
+                }
+                {
+                  payloadType === 'TestCaseReview' &&
+                    dispatch(
+                      getByTestPlanIDListThunk({
+                        id: id,
+                        limit: paginationData.rowPerPage,
+                        page: paginationData.currentPage
+                      })
+                    );
+                }
+
+                {
+                  payloadType === 'ReviewTestDraft' &&
+                    dispatch(
+                      getByTestPlanIDReviewedListThunk({
+                        id: id,
+                        limit: paginationData.rowPerPage,
+                        page: paginationData.currentPage
+                      })
+                    );
+                }
+              },
+              onErrorHandler: () => {}
+            })
+          );
+    }
   };
   const handleProjectChange = async (e, setFieldValue) => {
     setFieldValue('project_id', e.target.value);
@@ -209,9 +233,23 @@ function EditTestCaseModal({
         <Formik
           initialValues={testCaseInitialValue}
           validationSchema={editTestCaseValidation}
+          // onSubmit={(values) => {
+          //   console.log('values', values);
+          //   handleEditTestCase({ formData: values });
+          // }}
           onSubmit={(values) => {
-            console.log('values', values);
-            handleEditTestCase({ formData: values });
+            const formData = new FormData();
+
+            // Append all form values
+            Object.entries(values).forEach(([key, value]) => {
+              formData.append(key, value);
+            });
+
+            // ✅ Append test_draft_id
+            formData.append('test_draft_id', id); // <--- this line adds your `id` into FormData
+
+            // Now call the handler
+            handleEditTestCase({ formData });
           }}
           // onSubmit={(values) => {
           //   console.log('values', values);

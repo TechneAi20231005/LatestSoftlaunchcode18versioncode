@@ -258,6 +258,31 @@ export const editTestCaseThunk = createAsyncThunk(
   }
 );
 
+export const addTestCaseThunk = createAsyncThunk(
+  'addTestCase/addTestCaseThunk',
+  async ({ formData, onSuccessHandler, onErrorHandler, currentId }) => {
+    try {
+      const response = await rewampAxios.post(
+        `testCases/addTestCase`,
+        formData
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        if (response?.data?.status === 1) {
+          onSuccessHandler();
+          toast.success(response?.data?.message);
+          return response?.data?.message;
+        } else {
+          onErrorHandler();
+          errorHandler(response);
+        }
+      }
+    } catch (error) {
+      onErrorHandler();
+      errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
+);
 export const getAllReviewTestDraftList = createAsyncThunk(
   'reviewDraftList/getAllReviewTestDraftList',
   async ({ limit, page, filter_testcase_data, type }) => {

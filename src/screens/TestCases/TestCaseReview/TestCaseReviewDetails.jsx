@@ -239,12 +239,12 @@ function TestCaseReviewDetails() {
     //     comment_id: comments[row.id] || row.comment_id || commonComment,
     //     other_remark: remarks[row.id] || row.other_remark
     //   }));
-    if (status === 'RESEND' && selectAllNames !== true) {
-      alert(
-        'Please select all test cases to send for modification, partial selection is not allowed.'
-      );
-      return false; // Exit the function or prevent further execution
-    }
+    // if (status === 'RESEND' && selectAllNames !== true) {
+    //   alert(
+    //     'Please select all test cases to send for modification, partial selection is not allowed.'
+    //   );
+    //   return false; // Exit the function or prevent further execution
+    // }
 
     if (status === 'APPROVED' && selectedRows?.length <= 0) {
       alert('Please select the test cases that you want to approve.');
