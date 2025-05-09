@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit';
 
 import {
+  addTestCaseThunk,
   downloadFormatFileThunk,
   editTestCaseThunk,
   getAllDraftTestCaseList,
@@ -44,6 +45,7 @@ const initialState = {
   sendTestCasesReviewer: false,
   testCasesStatusDataList: [],
   sendTestPlanReviewerList: [],
+  addTestPlanReviewerList: [],
 
   isLoading: {
     downloadFormatFile: false,
@@ -68,7 +70,8 @@ const initialState = {
     testPlantHistory: false,
     exportAllReviewDraftTestListData: false,
     testCasesStatusDataList: false,
-    sendTestPlanReviewerList: false
+    sendTestPlanReviewerList: false,
+    addTestPlanReviewerList: false
   },
   errorMsg: {
     getProjectModuleList: '',
@@ -84,7 +87,8 @@ const initialState = {
     testCasesStatusDataList: '',
     sendTestPlanReviewerList: '',
     testPlantHistory: '',
-    testDraftHistory: ''
+    testDraftHistory: '',
+    addTestPlanReviewerList: ''
   },
   successMsg: {
     getProjectModuleList: '',
@@ -100,7 +104,8 @@ const initialState = {
     exportAllReviewDraftTestListData: '',
     testCasesStatusDataList: '',
     sendTestPlanReviewerList: '',
-    testPlantHistory: ','
+    testPlantHistory: '',
+    addTestPlanReviewerList: ''
   }
 };
 const downloadFormatSlice = createSlice({
@@ -376,6 +381,18 @@ const downloadFormatSlice = createSlice({
       .addCase(sendTestPlanReviewerThunk.rejected, (state, action) => {
         state.isLoading.sendTestPlanReviewerList = false;
         state.errorMsg.sendTestPlanReviewerList = action?.error?.message;
+      })
+
+      .addCase(addTestCaseThunk.pending, (state, action) => {
+        state.isLoading.addTestPlanReviewerList = true;
+      })
+      .addCase(addTestCaseThunk.fulfilled, (state, action) => {
+        state.isLoading.addTestPlanReviewerList = false;
+        state.successMsg.addTestPlanReviewerList = action?.payload;
+      })
+      .addCase(addTestCaseThunk.rejected, (state, action) => {
+        state.isLoading.addTestPlanReviewerList = false;
+        state.errorMsg.addTestPlanReviewerList = action?.error?.message;
       });
   }
 });

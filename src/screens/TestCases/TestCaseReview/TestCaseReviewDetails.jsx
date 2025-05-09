@@ -124,7 +124,6 @@ function TestCaseReviewDetails() {
     data: '',
     open: false
   });
-
   const [errorMessage, setErrorMessage] = useState('');
 
   const [state, localDispatch] = useReducer(localReducer, initialState);
@@ -177,7 +176,7 @@ function TestCaseReviewDetails() {
       setRemarks((prev) => ({ ...prev, [id]: value }));
     }
     setRowData((prevData) =>
-      prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row))
+      prevData?.map((row) => (row.id === id ? { ...row, [field]: value } : row))
     );
 
     setChangedRows((prevChangedRows) => ({
@@ -239,12 +238,12 @@ function TestCaseReviewDetails() {
     //     comment_id: comments[row.id] || row.comment_id || commonComment,
     //     other_remark: remarks[row.id] || row.other_remark
     //   }));
-    if (status === 'RESEND' && selectAllNames !== true) {
-      alert(
-        'Please select all test cases to send for modification, partial selection is not allowed.'
-      );
-      return false; // Exit the function or prevent further execution
-    }
+    // if (status === 'RESEND' && selectAllNames !== true) {
+    //   alert(
+    //     'Please select all test cases to send for modification, partial selection is not allowed.'
+    //   );
+    //   return false; // Exit the function or prevent further execution
+    // }
 
     if (status === 'APPROVED' && selectedRows?.length <= 0) {
       alert('Please select the test cases that you want to approve.');
@@ -2365,6 +2364,7 @@ function TestCaseReviewDetails() {
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
         /> */}
+
 
         <MaterialTable
           columns={columns}
