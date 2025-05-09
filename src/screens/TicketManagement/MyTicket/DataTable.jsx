@@ -164,7 +164,7 @@ const DataTableCustom = React.memo(
           originalRows?.assign_to_department?.department || '--',
         header: 'Assign To Dept',
         size: 220,
-        filterVariant: 'multi-select',
+        // filterVariant: 'multi-select',
         Filter: ({ column }) => (
           <AutocompleteMultiFilter
             column={column}
@@ -181,7 +181,7 @@ const DataTableCustom = React.memo(
           }`,
         header: 'Assigned To',
         size: 220,
-        filterVariant: 'multi-select',
+        // filterVariant: 'multi-select',
         Filter: ({ column }) => (
           <AutocompleteMultiFilter
             column={column}
