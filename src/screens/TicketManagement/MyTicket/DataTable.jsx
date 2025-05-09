@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import ServerMaterial from '../../../components/custom/MUI Table/ServerMaterial';
 import DescriptionModal from './DescriptionModal';
+import AutocompleteMultiFilter from './AutocompleteMultiFilter';
 
 const DataTableCustom = React.memo(
   ({
@@ -145,20 +146,33 @@ const DataTableCustom = React.memo(
             }
           ]
         : []),
-      {
-        accessorFn: (originalRows) => originalRows?.status?.status || '--',
-        header: 'Status',
-        filterVariant: 'multi-select',
-        filterSelectOptions: allStatusData?.selectData,
-        size: 158
-      },
+        {
+          accessorFn: (originalRow) => originalRow?.status?.status || '--',
+          id: 'Status',
+          header: 'Status',
+          size: 158,
+          Filter: ({ column }) => (
+            <AutocompleteMultiFilter
+              column={column}
+              options={allStatusData?.selectData || []}
+              placeholder="Filter Status"
+            />
+          ),
+        },
       {
         accessorFn: (originalRows) =>
           originalRows?.assign_to_department?.department || '--',
         header: 'Assign To Dept',
         size: 220,
         filterVariant: 'multi-select',
-        filterSelectOptions: allDepartmentData?.selectData
+        Filter: ({ column }) => (
+          <AutocompleteMultiFilter
+            column={column}
+            options={allDepartmentData?.selectData || []}
+            placeholder="Filter Department"
+          />
+        ),
+        // filterSelectOptions: allDepartmentData?.selectData
       },
       {
         accessorFn: (originalRows) =>
@@ -168,7 +182,14 @@ const DataTableCustom = React.memo(
         header: 'Assigned To',
         size: 220,
         filterVariant: 'multi-select',
-        filterSelectOptions: allUsersData?.selectData
+        Filter: ({ column }) => (
+          <AutocompleteMultiFilter
+            column={column}
+            options={allUsersData?.selectData || []}
+            placeholder="Filter Assigned To"
+          />
+        ),
+        // filterSelectOptions: allUsersData?.selectData
       },
       {
         accessorFn: (originalRows) =>
@@ -197,6 +218,7 @@ const DataTableCustom = React.memo(
           ]
         : [])
     ];
+
 
     return (
       <React.Fragment>
