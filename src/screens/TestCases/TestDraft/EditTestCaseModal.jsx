@@ -23,6 +23,7 @@ import { getFunctionMasterListThunk } from '../../../redux/services/testCases/fu
 import { getTestingGroupMasterListThunk } from '../../../redux/services/testCases/testingGroupMaster';
 import { getTestingTypeMasterListThunk } from '../../../redux/services/testCases/testingTypeMaster';
 import { getByTestPlanIDListThunk } from '../../../redux/services/testCases/testCaseReview';
+import { original } from '@reduxjs/toolkit';
 
 function EditTestCaseModal({
   show,
@@ -37,7 +38,6 @@ function EditTestCaseModal({
   const { filterFunctionMasterList } = useSelector(
     (state) => state?.functionMaster
   );
-  console.log('id', id);
 
   const { filterTestingGroupMasterList } = useSelector(
     (state) => state?.testingGroupMaster
@@ -53,20 +53,18 @@ function EditTestCaseModal({
     getModuleData,
     getSubModuleData
   } = useSelector((state) => state?.downloadFormat);
-
   const newModuleListData = getModuleData
-    ?.filter((d) => d.project_id === currentTestCasesData?.project_id)
+    ?.filter((d) => d.project_id === currentTestCasesData?.original?.project_id)
     ?.map((i) => ({ value: i.id, label: i.module_name }));
 
   const newSubModuleListData = getSubModuleData
-    ?.filter((d) => d.module_id === currentTestCasesData?.module_id)
+    ?.filter((d) => d.module_id === currentTestCasesData?.original?.module_id)
     ?.map((i) => ({ value: i.id, label: i.sub_module_name }));
 
   const [moduleDropdown, setModuleDropdown] = useState();
 
   const [subModuleDropdown, setSubModuleDropdown] = useState();
   const [disable, setDisable] = useState(false);
-  console.log('currentTestCasesData', currentTestCasesData);
   const severityData = [
     {
       value: 'Very High',
@@ -89,32 +87,42 @@ function EditTestCaseModal({
 
   const testCaseInitialValue = {
     project_id:
-      type === 'EDIT' ? currentTestCasesData?.project_id?.toString() : '',
+      type === 'EDIT'
+        ? currentTestCasesData?.original?.project_id?.toString()
+        : '',
     module_id:
-      type === 'EDIT' ? currentTestCasesData?.module_id?.toString() : '',
+      type === 'EDIT'
+        ? currentTestCasesData?.original?.module_id?.toString()
+        : '',
     submodule_id:
-      type === 'EDIT' ? currentTestCasesData?.submodule_id?.toString() : '',
+      type === 'EDIT'
+        ? currentTestCasesData?.original?.submodule_id?.toString()
+        : '',
     function_id:
-      type === 'EDIT' ? currentTestCasesData?.function_id?.toString() : '',
-    field: type === 'EDIT' ? currentTestCasesData?.field : '',
-    type_id: type === 'EDIT' ? currentTestCasesData?.type_id?.toString() : '',
+      type === 'EDIT'
+        ? currentTestCasesData?.original?.function_id?.toString()
+        : '',
+    field: type === 'EDIT' ? currentTestCasesData?.original?.field : '',
+    type_id:
+      type === 'EDIT'
+        ? currentTestCasesData?.original?.type_id?.toString()
+        : '',
     // tc_id: type === 'EDIT' ? currentTestCasesData?.tc_id?.toString() : '',
     testing_group:
-      type === 'EDIT' ? currentTestCasesData?.testing_group?.toString() : [],
+      type === 'EDIT'
+        ? currentTestCasesData?.original?.testing_group?.toString()
+        : [],
 
-    severity: type === 'EDIT' ? currentTestCasesData?.severity : '',
-    steps: type === 'EDIT' ? currentTestCasesData?.steps : '',
+    severity: type === 'EDIT' ? currentTestCasesData?.original?.severity : '',
+    steps: type === 'EDIT' ? currentTestCasesData?.original?.steps : '',
     test_description:
-      type === 'EDIT' ? currentTestCasesData?.test_description : '',
+      type === 'EDIT' ? currentTestCasesData?.original?.test_description : '',
     expected_result:
-      type === 'EDIT' ? currentTestCasesData?.expected_result : ''
+      type === 'EDIT' ? currentTestCasesData?.original?.expected_result : ''
   };
-
-  console.log('type', type);
 
   const handleEditTestCase = ({ formData }) => {
     setDisable(true);
-    console.log('sssss', id);
 
     {
       type === 'Add'
@@ -204,7 +212,7 @@ function EditTestCaseModal({
     if (getProjectModuleList?.length <= 0) {
       dispatch(getProjectModuleMasterThunk());
     }
-    if (getModuleList.length <= 0) {
+    if (getModuleList?.length <= 0) {
       dispatch(getModuleMasterThunk());
     }
     if (getSubModuleList?.length <= 0) {

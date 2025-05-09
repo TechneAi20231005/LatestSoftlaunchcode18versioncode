@@ -124,7 +124,6 @@ function TestCaseReviewDetails() {
     data: '',
     open: false
   });
-
   const [errorMessage, setErrorMessage] = useState('');
 
   const [state, localDispatch] = useReducer(localReducer, initialState);
@@ -177,7 +176,7 @@ function TestCaseReviewDetails() {
       setRemarks((prev) => ({ ...prev, [id]: value }));
     }
     setRowData((prevData) =>
-      prevData.map((row) => (row.id === id ? { ...row, [field]: value } : row))
+      prevData?.map((row) => (row.id === id ? { ...row, [field]: value } : row))
     );
 
     setChangedRows((prevChangedRows) => ({
@@ -2365,6 +2364,7 @@ function TestCaseReviewDetails() {
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
         /> */}
+
 
         <MaterialTable
           columns={columns}
