@@ -1555,7 +1555,7 @@ function ReviewedTestDraftComponent() {
       enableSorting: false
     },
     {
-      accessorFn: (originalRows) => `${originalRows?.group_name || '--'} `,
+      accessorFn: (originalRows) => `${originalRows?.testing_group || '--'} `,
       header: 'Testing Group',
       Header: (
         <span>
