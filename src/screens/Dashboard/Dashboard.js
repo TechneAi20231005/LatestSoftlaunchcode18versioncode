@@ -27,6 +27,7 @@ import CustomeLoaderDashboard, {
   ChartSkeleton
 } from '../../components/custom/loader/CustomeLoaderDashboard';
 import { Spinner } from 'react-bootstrap';
+import ChatBot from './ChatBot';
 
 export default function HrDashboard(props) {
   const history = useNavigate();
@@ -152,7 +153,7 @@ export default function HrDashboard(props) {
   };
 
   const loadNotifcation = (type) => {
-    if(type?.toLowerCase() === 'init'){
+    if (type?.toLowerCase() === 'init') {
       setIsLoading(true);
     }
     getNotification()
@@ -1983,6 +1984,7 @@ export default function HrDashboard(props) {
                 </div>
               </div>
             )}
+            <ChatBot />
           </div>
         </>
       )}

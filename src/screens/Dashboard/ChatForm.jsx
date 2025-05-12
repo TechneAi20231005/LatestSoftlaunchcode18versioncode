@@ -1,30 +1,89 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import SendIcon from '@mui/icons-material/Send';
-import IconButton from '@mui/material/IconButton';
 import MicIcon from '@mui/icons-material/Mic';
-import { Tooltip } from '@mui/material';
+import CheckIcon from '@mui/icons-material/Check';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
+import Tooltip from '@mui/material/Tooltip';
 
 function ChatForm({ setChatHistory }) {
   const inputRef = useRef();
   const [inputValue, setInputValue] = useState('');
   const [showSend, setShowSend] = useState(false);
+  const [recognizing, setRecognizing] = useState(false);
+  const [tempTranscript, setTempTranscript] = useState('');
+  const [awaitingConfirmation, setAwaitingConfirmation] = useState(false);
+
+  const SpeechRecognition =
+    window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognitionRef = useRef(null);
+  const manuallyStopped = useRef(false); // Track if stopped by user
+
+  useEffect(() => {
+    if (!SpeechRecognition) {
+      alert('Speech Recognition is not supported in this browser.');
+      return;
+    }
+
+    const recognition = new SpeechRecognition();
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = 'en-IN';
+
+    recognition.onstart = () => {
+      setRecognizing(true);
+      setAwaitingConfirmation(true);
+    };
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript;
+      setTempTranscript((prev) =>
+        prev ? `${prev} ${transcript}` : transcript
+      );
+    };
+
+    recognition.onerror = (event) => {
+      console.error('Speech recognition error:', event.error);
+    };
+
+    recognition.onend = () => {
+      setRecognizing(false);
+
+      // Auto-restart unless user stopped it manually
+      if (!manuallyStopped.current) {
+        recognition.start();
+      }
+    };
+
+    recognitionRef.current = recognition;
+
+    return () => {
+      recognition.stop();
+    };
+  }, []);
 
   const handleInputChange = (e) => {
-    setInputValue(e.target.value);
-    setShowSend(e.target.value.trim() !== '');
+    const textarea = e.target;
+    textarea.style.height = 'auto';
+    textarea.style.height = textarea.scrollHeight + 'px';
+    const value = textarea.value;
+    setInputValue(value);
+    setShowSend(value.trim() !== '');
   };
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
-    const userMessage = inputRef.current.value.trim();
+    const userMessage = inputValue.trim();
     if (!userMessage) return;
-    inputRef.current.value = '';
+
     setChatHistory((history) => [
       ...history,
       { role: 'user', text: userMessage }
     ]);
     setInputValue('');
     setShowSend(false);
+    if (inputRef.current) inputRef.current.style.height = '47px';
+
     setTimeout(() => {
       setChatHistory((history) => [
         ...history,
@@ -33,22 +92,138 @@ function ChatForm({ setChatHistory }) {
     }, 600);
   };
 
+  const resizeTextarea = () => {
+    const el = inputRef.current;
+    if (el) {
+      el.style.height = 'auto';
+      el.style.height = el.scrollHeight + 'px';
+    }
+  };
+
+  const handleMicClick = () => {
+    const recognition = recognitionRef.current;
+    if (!recognition) return;
+
+    if (recognizing) {
+      manuallyStopped.current = true;
+      recognition.stop();
+    } else {
+      manuallyStopped.current = false;
+      setTempTranscript('');
+      recognition.start();
+    }
+  };
+
+  const handleAcceptSpeech = () => {
+    setInputValue(tempTranscript);
+    setShowSend(tempTranscript.trim() !== '');
+    setTempTranscript('');
+    setAwaitingConfirmation(false);
+    manuallyStopped.current = true;
+    recognitionRef.current?.stop();
+    setTimeout(() => resizeTextarea(), 0);
+  };
+
+  const handleRejectSpeech = () => {
+    setTempTranscript('');
+    setAwaitingConfirmation(false);
+    setRecognizing(false);
+    manuallyStopped.current = true;
+    recognitionRef.current?.stop();
+  };
+
   return (
-    <form action="#" className="chat-form" onSubmit={handleFormSubmit}>
-      <input
+    <form
+      className="chat-form"
+      onSubmit={handleFormSubmit}
+      style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+    >
+      <textarea
         ref={inputRef}
-        type="text"
         placeholder="Message..."
         className="message-input"
         value={inputValue}
         onChange={handleInputChange}
-        required
+        rows={1}
+        style={{
+          width: '100%',
+          maxHeight: '120px',
+          resize: 'none',
+          overflowY: 'auto',
+          paddingTop: '13px',
+          fontSize: '0.95rem',
+          border: 'none',
+          outline: 'none',
+          background: 'transparent',
+          lineHeight: '1.4'
+        }}
       />
-       <Tooltip placement='top' title={showSend ? "Send" : "Voice Input"} arrow>
-      <IconButton>
-        {showSend ? <SendIcon fontSize='small'/> : <MicIcon  fontSize='medium'/>}
-      </IconButton>
-      </Tooltip>
+
+      {showSend ? (
+        <Tooltip placement='top' title="Send Message" arrow>
+          <IconButton type="submit">
+            <SendIcon fontSize="small" />
+          </IconButton>
+        </Tooltip>
+      ) : (
+        <Tooltip placement='top' title="Voice Input" arrow>
+          <IconButton
+            sx={{ display: recognizing ? 'none' : 'block' }}
+            type="button"
+            onClick={handleMicClick}
+          >
+            <MicIcon
+              fontSize="small"
+              color={recognizing ? 'primary' : 'inherit'}
+            />
+          </IconButton>
+        </Tooltip>
+      )}
+
+      {awaitingConfirmation && (
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+            background: '#f5f5f5',
+            padding: '6px 12px',
+            borderRadius: '10px',
+            maxWidth: '80%',
+            overflowWrap: 'break-word',
+            minHeight: '40px'
+          }}
+        >
+          {recognizing && (
+            <div className="frequency-bars" style={{ display: 'flex', gap: 2 }}>
+              {[1, 2, 3, 4, 5].map((_, i) => (
+                <div
+                  key={i}
+                  className="bar"
+                  style={{
+                    width: 3,
+                    height: 13,
+                    background: '#1976d2',
+                    animation: `pulseBar 1s ease-in-out infinite`,
+                    animationDelay: `${i * 0.1}s`
+                  }}
+                />
+              ))}
+            </div>
+          )}
+          <Tooltip placement='top' title="Confirm" arrow>
+            <IconButton onClick={handleAcceptSpeech}>
+              <CheckIcon color="success" fontSize="small" />
+            </IconButton>
+          </Tooltip>
+
+          <Tooltip placement='top' title="Cancel" arrow>
+            <IconButton onClick={handleRejectSpeech}>
+              <CloseIcon color="error" fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        </div>
+      )}
     </form>
   );
 }

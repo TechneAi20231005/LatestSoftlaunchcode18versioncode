@@ -11,10 +11,12 @@ function ChatBot() {
   const [showChatbot, setShowChatbot] = useState(false);
   return (
     <div className={`containers ${showChatbot ? 'show-chatbot' : ''}`}>
-      <IconButton onClick={() => setShowChatbot((prev) => !prev)} id="chatbot-toggler">
+      <IconButton
+        onClick={() => setShowChatbot((prev) => !prev)}
+        id="chatbot-toggler"
+      >
         <span>
-        <ModeCommentIcon
-        />
+          <ModeCommentIcon />
         </span>
       </IconButton>
       {/* <button
@@ -32,13 +34,10 @@ function ChatBot() {
             <h2 className="logo-text">Chatbot</h2>
           </div>
 
-          <IconButton  onClick={() => setShowChatbot((prev) => !prev)}>
-<span>
-<KeyboardArrowDownIcon
-              fontSize="large"
-
-            />
-</span>
+          <IconButton onClick={() => setShowChatbot((prev) => !prev)}>
+            <span>
+              <KeyboardArrowDownIcon fontSize="large" />
+            </span>
           </IconButton>
 
           {/* <button onClick={() => setShowChatbot((prev) => !prev)} className="material-symbols-rounded">
