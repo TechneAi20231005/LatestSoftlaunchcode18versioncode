@@ -36,7 +36,9 @@ const initialState = {
   reviewerId: null,
   selectAllNames: false,
   selectedRows: [],
-  betweenValues: ['', '']
+  betweenValues: ['', ''],
+  isFilterApplied: false,
+  hasOpenedFilter: {}
 };
 
 function localReducer(state, action) {
@@ -84,6 +86,13 @@ function localReducer(state, action) {
       };
     case 'SET_BETWEEN_VALUES':
       return { ...state, betweenValues: action.payload };
+    case 'SET_IS_FILTER_APPLIED':
+      return { ...state, isFilterApplied: action.payload };
+    case 'SET_HAS_OPENED_FILTER':
+      return {
+        ...state,
+        hasOpenedFilter: action.payload
+      };
     default:
       return state;
   }
@@ -336,11 +345,19 @@ function TestCaseReviewDetails() {
           onSuccessHandler: () => {
             // setCommonComment('');
             setCommonRemark('');
+            // dispatch(
+            //   getByTestPlanIDListThunk({
+            //     id: id,
+            //     limit: paginationData.rowPerPage,
+            //     page: paginationData.currentPage
+            //   })
+            // );
             dispatch(
               getByTestPlanIDListThunk({
                 id: id,
                 limit: paginationData.rowPerPage,
-                page: paginationData.currentPage
+                page: 1,
+                filter_testcase_data: []
               })
             );
             localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: false });
@@ -1899,6 +1916,20 @@ function TestCaseReviewDetails() {
       type: 'SET_MODAL_POSITION',
       payload: { top: rect.bottom, left: rect.left }
     });
+    if (!state.hasOpenedFilter[column]) {
+      localDispatch({
+        type: 'SET_SELECTED_FILTER',
+        payload: filteredData?.map((item) => item?.name)
+      });
+      localDispatch({
+        type: 'SET_SELECTED_FILTER_IDS',
+        payload: filteredData?.map((item) => item?.id)
+      });
+      localDispatch({
+        type: 'SET_HAS_OPENED_FILTER',
+        payload: { ...state.hasOpenedFilter, [column]: true }
+      });
+    }
   };
 
   const handleSearchChange = (e) => {
@@ -1959,6 +1990,10 @@ function TestCaseReviewDetails() {
           (filterId) => filterId !== value
         )
       });
+      localDispatch({
+        type: 'SET_IS_FILTER_APPLIED',
+        payload: true
+      });
     }
   };
 
@@ -1977,6 +2012,10 @@ function TestCaseReviewDetails() {
       localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
 
       localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: [] });
+      localDispatch({
+        type: 'SET_IS_FILTER_APPLIED',
+        payload: true
+      });
     }
   };
 
@@ -2365,7 +2404,6 @@ function TestCaseReviewDetails() {
           highlightOnHover={true}
         /> */}
 
-
         <MaterialTable
           columns={columns}
           data={rowData}
@@ -2478,6 +2516,7 @@ function TestCaseReviewDetails() {
           errorMessage={errorMessage}
           setSelectedValue={setSelectedValue}
           selectedValue={selectedValue}
+          isFilterApplied={state.isFilterApplied}
         />
       )}
     </div>

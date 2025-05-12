@@ -314,6 +314,10 @@ function TestCaseReviewComponent() {
       localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
 
       localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: [] });
+      localDispatch({
+        type: 'SET_IS_FILTER_APPLIED',
+        payload: true
+      });
     }
   };
 

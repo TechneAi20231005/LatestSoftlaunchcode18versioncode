@@ -27,7 +27,9 @@ const initialState = {
   reviewerId: null,
   selectAllNames: false,
   selectedRows: [],
-  betweenValues: ['', '']
+  betweenValues: ['', ''],
+  isFilterApplied: false,
+  hasOpenedFilter: {}
 };
 
 function localReducer(state, action) {
@@ -68,6 +70,13 @@ function localReducer(state, action) {
       return { ...state, selectedRows: action.payload };
     case 'SET_BETWEEN_VALUES':
       return { ...state, betweenValues: action.payload };
+    case 'SET_IS_FILTER_APPLIED':
+      return { ...state, isFilterApplied: action.payload };
+    case 'SET_HAS_OPENED_FILTER':
+      return {
+        ...state,
+        hasOpenedFilter: action.payload
+      };
     default:
       return state;
   }
@@ -138,6 +147,8 @@ function ReviewedTestDraftDetails(props) {
       updated_by: 'updated_by'
     };
     const filteredData = filterReviewedDraftTestList[filterKeyMap[column]];
+    console.log('filteredData', filteredData);
+
     const columnId = moduleMapping[column];
     localDispatch({ type: 'SET_FILTER_TYPE', payload: '' });
     localDispatch({ type: 'SET_COLUMN_NAME', payload: name });
@@ -153,6 +164,20 @@ function ReviewedTestDraftDetails(props) {
       type: 'SET_MODAL_POSITION',
       payload: { top: rect.bottom, left: rect.left }
     });
+    if (!state.hasOpenedFilter[column]) {
+      localDispatch({
+        type: 'SET_SELECTED_FILTER',
+        payload: filteredData?.map((item) => item?.name)
+      });
+      localDispatch({
+        type: 'SET_SELECTED_FILTER_IDS',
+        payload: filteredData?.map((item) => item?.id)
+      });
+      localDispatch({
+        type: 'SET_HAS_OPENED_FILTER',
+        payload: { ...state.hasOpenedFilter, [column]: true }
+      });
+    }
   };
 
   const closeModal = () => {
@@ -176,9 +201,46 @@ function ReviewedTestDraftDetails(props) {
     });
   };
 
+  // const handleFilterCheckboxChange = (event, label, value) => {
+  //   const isChecked = event.target.checked;
+  //   console.log('value', label);
+  //   console.log('state.selectedFilters', state.selectedFilterIds);
+  //   if (isChecked) {
+  //     localDispatch({
+  //       type: 'SET_SELECTED_FILTER',
+  //       payload: [...state.selectedFilters, label]
+  //     });
+
+  //     localDispatch({
+  //       type: 'SET_SELECTED_FILTER_IDS',
+  //       payload: [...state.selectedFilterIds, value]
+  //     });
+  //   } else {
+  //     localDispatch({
+  //       type: 'SET_SELECTED_FILTER',
+  //       payload: [
+  //         ...state?.selectedFilters?.filter((filter) => filter !== label)
+  //       ]
+  //     });
+
+  //     localDispatch({
+  //       type: 'SET_SELECTED_FILTER_IDS',
+  //       payload: state?.selectedFilterIds?.filter(
+  //         (filterId) => filterId !== value
+  //       )
+  //     });
+  //     localDispatch({
+  //       type: 'SET_IS_FILTER_APPLIED',
+  //       payload: true
+  //     });
+  //   }
+  // };
+
   const handleFilterCheckboxChange = (event, label, value) => {
     const isChecked = event.target.checked;
-
+    console.log('label', isChecked);
+    console.log('state?.selectedFilterIds', state?.selectedFilterIds);
+    console.log('vv', value);
     if (isChecked) {
       localDispatch({
         type: 'SET_SELECTED_FILTER',
@@ -192,7 +254,9 @@ function ReviewedTestDraftDetails(props) {
     } else {
       localDispatch({
         type: 'SET_SELECTED_FILTER',
-        payload: [...state.selectedFilters.filter((filter) => filter !== label)]
+        payload: [
+          ...state?.selectedFilters?.filter((filter) => filter !== label)
+        ]
       });
 
       localDispatch({
@@ -200,6 +264,10 @@ function ReviewedTestDraftDetails(props) {
         payload: state.selectedFilterIds.filter(
           (filterId) => filterId !== value
         )
+      });
+      localDispatch({
+        type: 'SET_IS_FILTER_APPLIED',
+        payload: true
       });
     }
   };
@@ -213,12 +281,16 @@ function ReviewedTestDraftDetails(props) {
 
       localDispatch({
         type: 'SET_SELECTED_FILTER_IDS',
-        payload: filterValues?.map((item) => item.id)
+        payload: filterValues?.map((item) => item.value)
       });
     } else {
       localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
 
       localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: [] });
+      localDispatch({
+        type: 'SET_IS_FILTER_APPLIED',
+        payload: true
+      });
     }
   };
 
@@ -371,6 +443,7 @@ function ReviewedTestDraftDetails(props) {
 
   const handleApplyButton = async () => {
     props?.setClearData(false);
+    console.log('selectedFilterIds', selectedFilterIds);
     const newFilter = {
       column: filterColumnId,
       column_name: filterColumn,
@@ -413,7 +486,7 @@ function ReviewedTestDraftDetails(props) {
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
       localDispatch({ type: 'SET_SEARCH_TERM', payload: '' });
-      localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
+      // localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
     } catch (error) {}
   };
 
@@ -1225,6 +1298,34 @@ function ReviewedTestDraftDetails(props) {
       })
     );
   }, [props?.paginationData.pageSize, props?.paginationData.pageIndex]);
+  useEffect(() => {
+    console.log('filterValues', filterValues);
+    if (filterValues && searchTerm?.length === 0) {
+      localDispatch({ type: 'SET_FILTER_VALUES', payload: filterValues });
+      if (state.isFilterApplied === false) {
+        localDispatch({
+          type: 'SET_SELECTED_FILTER',
+          payload: filterValues.map((item) => item.name)
+        });
+      }
+
+      localDispatch({
+        type: 'SET_SELECTED_FILTER_IDS',
+        payload: filterValues.map((item) => item.id)
+      });
+    }
+  }, [filterValues, localDispatch]);
+
+  useEffect(() => {
+    // Whenever searchTerm or filterData changes, update the selected filter IDs
+    // if (searchTerm?.length === 0) {
+    const filteredData = filteredResults?.filter((item) =>
+      item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    const filteredIds = filteredData?.map((item) => item.id);
+    localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: filteredIds });
+    // }
+  }, [searchTerm, localDispatch]);
   return (
     <>
       <Container className="mt-3" fluid>
@@ -1295,6 +1396,7 @@ function ReviewedTestDraftDetails(props) {
               errorMessage={errorMessage}
               setSelectedValue={setSelectedValue}
               selectedValue={selectedValue}
+              isFilterApplied={state.isFilterApplied}
             />
           )}
         </div>
