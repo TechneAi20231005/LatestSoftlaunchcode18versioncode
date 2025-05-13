@@ -17,7 +17,7 @@ import CustomFilterModal from '../Modal/CustomFilterModal';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import { getTestCaseStatusDataList } from '../../../redux/services/testCases/downloadFormatFile';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-
+import Select from 'react-select';
 const initialState = {
   filterType: '',
   columnName: '',
@@ -2406,7 +2406,7 @@ function TestCaseReviewDetails() {
 
         <MaterialTable
           columns={columns}
-          data={rowData}
+          data={rowData || []}
           // isLoading={isLoading}
           paginationData={paginationData}
           totalRows={allTestPlanIDData?.data?.total}
@@ -2425,18 +2425,19 @@ function TestCaseReviewDetails() {
             Reviewer Comment :
           </label>
 
-          <select
-            className="form-select"
-            value={commonComment}
+          <Select
+           classNamePrefix="react-select"
+            options={getFilterReviewCommentMasterList}
             id="common_comment_id"
             name="common_comment_id"
-            onChange={(e) => {
-              setCommonComment(e.target.value);
+            isClearable={true}
+            onChange={(option) => {
+              setCommonComment(option?.value || '');
               setCommentIdError('');
             }}
           >
-            {generateOptions(getFilterReviewCommentMasterList)}
-          </select>
+            {/* {generateOptions(getFilterReviewCommentMasterList)} */}
+          </Select>
         </div>
         <div className="col-md-3">
           <label className="form-label font-weight-bold">Remark :</label>
