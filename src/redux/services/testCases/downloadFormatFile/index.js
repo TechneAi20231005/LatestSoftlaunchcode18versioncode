@@ -176,7 +176,7 @@ export const importTestDraftThunk = createAsyncThunk(
 
           const url = `${_rewampAttachmentUrl}` + response.data.data;
           window.open(url, '_blank');
-          errorHandler(response);
+          // errorHandler(response);
         }
       }
     } catch (error) {

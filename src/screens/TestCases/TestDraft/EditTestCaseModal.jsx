@@ -49,7 +49,7 @@ function EditTestCaseModal({
   );
 
   const {
-    getProjectModuleList,
+    getProjectModuleListId,
     getModuleList,
     getSubModuleList,
     getModuleData,
@@ -211,13 +211,14 @@ function EditTestCaseModal({
     }
   };
   const handleProjectChange = async (e, setFieldValue) => {
-    setFieldValue('project_id', e.target.value);
+    console.log('sss', getModuleData);
+    setFieldValue('project_id', e?.target?.value);
     setFieldValue('module_id', '');
     setFieldValue('submodule_id', '');
     setModuleDropdown(null);
     setSubModuleDropdown(null);
     const filteredModules = getModuleData
-      .filter((d) => d.project_name === e.target.value)
+      .filter((d) => d.project_id == e.target.value)
       .map((d) => ({ value: d.id, label: d.module_name }));
 
     setModuleDropdown(filteredModules);
@@ -234,7 +235,7 @@ function EditTestCaseModal({
   };
 
   useEffect(() => {
-    if (getProjectModuleList?.length <= 0) {
+    if (getProjectModuleListId?.length <= 0) {
       dispatch(getProjectModuleMasterThunk());
     }
     if (getModuleList?.length <= 0) {
@@ -317,7 +318,7 @@ function EditTestCaseModal({
                 <Col md={4} lg={4}>
                   <Field
                     classNamePrefix="react-select"
-                    data={getProjectModuleList}
+                    data={getProjectModuleListId}
                     component={CustomDropdown}
                     name="project_id"
                     label="Project Name"

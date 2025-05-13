@@ -18,7 +18,7 @@ import {
 
 function DownloadFormatFileModal({ show, close }) {
   const {
-    getProjectModuleList,
+    getProjectModuleListId,
     getModuleList,
     getSubModuleList,
     getModuleData,
@@ -41,13 +41,14 @@ function DownloadFormatFileModal({ show, close }) {
   };
 
   const handleProjectChange = async (e, setFieldValue) => {
+    console.log('eeee', e.target.value);
     setFieldValue('project_id', e.target.value);
     setFieldValue('module_id', '');
     setFieldValue('submodule_id', '');
     setModuleDropdown(null);
     const filteredModules = getModuleData
-      .filter((d) => d.project_name === e.target.value)
-      .map((d) => ({ value: d.module_name, label: d.module_name }));
+      .filter((d) => d.project_id == e.target.value)
+      .map((d) => ({ value: d.id, label: d.module_name }));
     setModuleDropdown(filteredModules);
   };
 
@@ -67,11 +68,10 @@ function DownloadFormatFileModal({ show, close }) {
     // selectedOptions is an array of selected { label, value } objects from react-select
     const selectedModuleValues = selectedOptions?.map((opt) => opt.value) || [];
 
-    const selectedModuleNames = selectedOptions?.map((opt) => opt.label) || [];
-
+    const selectedModuleNames = selectedOptions?.map((opt) => opt.value) || [];
     const data = getSubModuleData
-      ?.filter((d) => selectedModuleNames.includes(d.module_name))
-      .map((d) => ({ value: d.sub_module_name, label: d.sub_module_name }));
+      ?.filter((d) => selectedModuleNames.includes(d.module_id))
+      .map((d) => ({ value: d.id, label: d.sub_module_name }));
 
     setSubModuleDropdown(data);
   };
@@ -93,7 +93,7 @@ function DownloadFormatFileModal({ show, close }) {
   };
 
   useEffect(() => {
-    if (!getProjectModuleList) {
+    if (!getProjectModuleListId) {
       dispatch(getProjectModuleMasterThunk());
     }
     if (!getModuleList) {
@@ -120,7 +120,7 @@ function DownloadFormatFileModal({ show, close }) {
                 <Col md={4} lg={4}>
                   <Field
                     classNamePrefix="react-select"
-                    data={getProjectModuleList}
+                    data={getProjectModuleListId}
                     component={CustomDropdown}
                     name="project_id"
                     label="Project Name"
@@ -145,6 +145,7 @@ function DownloadFormatFileModal({ show, close }) {
                     }
                     ref={moduleIdRef}
                   /> */}
+                  {console.log('moduleDropdown', moduleDropdown)}
                   <Field
                     classNamePrefix="react-select"
                     options={moduleDropdown}

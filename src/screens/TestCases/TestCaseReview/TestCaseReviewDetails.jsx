@@ -143,7 +143,7 @@ function TestCaseReviewDetails() {
   const [remarks, setRemarks] = useState({});
   const [isFilterApplied, setIsFilterApplied] = useState(false);
   const [selectedValue, setSelectedValue] = useState('');
-
+  const [remarkErrors, setRemarkErrors] = useState('');
   const {
     filterType,
     columnName,
@@ -304,10 +304,13 @@ function TestCaseReviewDetails() {
 
     const updatedRows = getUpdatedRows();
     const newCommentIdErrors = [];
-
+    const newRemarkErrors = [];
     updatedRows?.forEach((row) => {
       if (!row?.comment_id) {
         newCommentIdErrors[row?.tc_id] = 'Reviewer comment is required';
+      }
+      if (!row?.remark && !row?.other_remark) {
+        newRemarkErrors[row?.tc_id] = 'Remark is required';
       }
     });
 
@@ -315,59 +318,71 @@ function TestCaseReviewDetails() {
       if (!row?.comment_id) {
         newCommentIdErrors[row?.tc_id] = 'Reviewer comment is required';
       }
+      if (!row?.remark && !row?.other_remark) {
+        newRemarkErrors[row?.tc_id] = 'Remark is required';
+      }
     });
 
-    if (newCommentIdErrors?.length > 0 && !commonComment) {
-      setCommentIdError(newCommentIdErrors);
-    } else {
-      setCommentIdError('');
+    // if (newCommentIdErrors?.length > 0 && !commonComment) {
+    //   setCommentIdError(newCommentIdErrors);
+    // } else {
+    //   setCommentIdError('');
 
-      const statusId =
-        status === 'RESEND'
-          ? testCasesStatusDataList?.find(
-              (d) => d?.convention_name === 'RESEND'
-            )
-          : testCasesStatusDataList?.find(
-              (d) => d?.convention_name === 'REJECTED'
-            )?.id;
-      const formData = {
-        review_testcase_data: updatedRows,
-        status: status,
-        common_comment_id: commonComment,
-        common_remark: commonRemark,
-        status_id: statusId
-      };
+    // if (
+    //   (Object.keys(newCommentIdErrors).length > 0 ||
+    //     Object.keys(newRemarkErrors).length > 0) &&
+    //   !commonComment &&
+    //   !commonRemark
+    // ) {
+    //   setCommentIdError(newCommentIdErrors);
+    //   setRemarkErrors(newRemarkErrors);
+    // } else {
+    setCommentIdError('');
+    setRemarkErrors('');
 
-      dispatch(
-        approveRejectByReviewerMasterThunk({
-          planID,
-          formData,
-          onSuccessHandler: () => {
-            // setCommonComment('');
-            setCommonRemark('');
-            dispatch(
-              getByTestPlanIDListThunk({
-                id: id,
-                limit: paginationData.rowPerPage,
-                page: paginationData.currentPage
-              })
-            );
-            dispatch(
-              getByTestPlanIDListThunk({
-                id: id,
-                limit: paginationData.rowPerPage,
-                page: 1,
-                filter_testcase_data: []
-              })
-            );
-            localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: false });
-            localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
-            setRowData(testPlanIdData);
-          },
-          onErrorHandler: () => {}
-        })
-      );
-    }
+    const statusId =
+      status === 'RESEND'
+        ? testCasesStatusDataList?.find((d) => d?.convention_name === 'RESEND')
+        : testCasesStatusDataList?.find(
+            (d) => d?.convention_name === 'REJECTED'
+          )?.id;
+    const formData = {
+      review_testcase_data: updatedRows,
+      status: status,
+      common_comment_id: commonComment,
+      common_remark: commonRemark,
+      status_id: statusId
+    };
+    dispatch(
+      approveRejectByReviewerMasterThunk({
+        planID,
+        formData,
+        onSuccessHandler: () => {
+          // setCommonComment('');
+          setCommonRemark('');
+          dispatch(
+            getByTestPlanIDListThunk({
+              id: id,
+              limit: paginationData.rowPerPage,
+              page: paginationData.currentPage
+            })
+          );
+          dispatch(
+            getByTestPlanIDListThunk({
+              id: id,
+              limit: paginationData.rowPerPage,
+              page: 1,
+              filter_testcase_data: []
+            })
+          );
+          localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: false });
+          localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
+          setRowData(testPlanIdData);
+        },
+        onErrorHandler: () => {}
+      })
+    );
+    // }
   };
 
   const handleSelectAllNamesChange = () => {
@@ -1439,7 +1454,7 @@ function TestCaseReviewDetails() {
       enableSorting: false
     },
     {
-      accessorFn: (originalRows) => `${originalRows?.testing_group || '--'} `,
+      accessorFn: (originalRows) => `${originalRows?.group_name || '--'} `,
       header: 'Testing Group',
       Header: (
         <span>
@@ -1637,6 +1652,18 @@ function TestCaseReviewDetails() {
             style={{ cursor: 'pointer' }}
             onClick={(e) => handleFilterClick(e, 'remark', 'Remark', 'text')}
           />
+          {console.log(
+            'remarkErrors[rowData.tc_id]',
+            remarkErrors[rowData.tc_id]
+          )}
+          {remarkErrors[rowData.tc_id] &&
+            selectedRows?.includes(rowData.tc_id) && (
+              <div className="col">
+                <span className="text-danger">
+                  {remarkErrors[rowData.tc_id]}
+                </span>
+              </div>
+            )}
         </span>
       ),
       enableColumnFilter: false,
@@ -1646,21 +1673,29 @@ function TestCaseReviewDetails() {
         const rowData = row.original;
         const value =
           rowData.other_remark || remarks[rowData.id] || commonRemark || '';
-
+        const showError =
+          remarkErrors[rowData.tc_id] && selectedRows?.includes(rowData.tc_id);
         return (
-          <input
-            className="form-control"
-            type="text"
-            id="other_remark"
-            name="other_remark"
-            placeholder="Enter Remark"
-            aria-label="default input example"
-            maxLength={100}
-            defaultValue={value}
-            onChange={(e) =>
-              handleRowChange(rowData.id, 'other_remark', e.target.value)
-            }
-          />
+          <div>
+            <input
+              className="form-control"
+              type="text"
+              id="other_remark"
+              name="other_remark"
+              placeholder="Enter Remark"
+              aria-label="default input example"
+              maxLength={100}
+              defaultValue={value}
+              onChange={(e) =>
+                handleRowChange(rowData.id, 'other_remark', e.target.value)
+              }
+            />
+            {showError && (
+              <div className="text-danger mt-1">
+                {remarkErrors[rowData.tc_id]}
+              </div>
+            )}
+          </div>
         );
       }
     },
@@ -1769,7 +1804,7 @@ function TestCaseReviewDetails() {
       enableSorting: false
     }
   ];
-
+  console.log('setRemarkErrors', remarkErrors);
   const moduleMapping = {
     module_name: 'module_id',
     sub_module_name: 'submodule_id',
@@ -1852,24 +1887,6 @@ function TestCaseReviewDetails() {
   //   comments,
   //   commonComment
   // );
-
-   const transformDataForTestCaseDetails = (data) => {
-    return data?.length > 0 && data?.map((originalRows) => ({
-       ...originalRows,
-       module_name: originalRows?.module?.module_name || '-',
-       sub_module_name: originalRows?.sub_module?.sub_module_name || '-',
-       function_name: originalRows?.function_master?.function_name || '-',
-       "Testing Type": originalRows?.testing_type?.type_name || '-',
-       group_name: originalRows?.testing_group || '-',
-       project_name: originalRows?.project?.project_name || '-',
-        'Created By': `${originalRows?.created_by?.first_name || '-'} ${
-        originalRows?.created_by?.last_name || '-'
-      }`,
-        'Updated By': `${originalRows?.updated_by?.first_name || '-'} ${
-        originalRows?.updated_by?.last_name || '-'
-      }`
-    }))
-    }
 
   const exportColumns = [
     { title: 'Module', field: 'module_name' },
@@ -2390,9 +2407,8 @@ function TestCaseReviewDetails() {
               <ExportToExcel
                 className="btn btn-sm btn-danger "
                 fileName="Test Case Review List"
-                apiData={transformDataForTestCaseDetails(rowData)}
+                apiData={rowData}
                 columns={exportColumns}
-                disabled={rowData?.length === 0}
               />
             </div>
           );
