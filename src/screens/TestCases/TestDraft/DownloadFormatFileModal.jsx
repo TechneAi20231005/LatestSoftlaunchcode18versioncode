@@ -36,7 +36,7 @@ function DownloadFormatFileModal({ show, close }) {
 
   const downloadFormatInitialValue = {
     project_id: '',
-    module_id: '',
+    module_id: [],
     submodule_id: []
   };
 
@@ -51,12 +51,26 @@ function DownloadFormatFileModal({ show, close }) {
     setModuleDropdown(filteredModules);
   };
 
-  const handleModuleChange = (e, setFieldValue) => {
-    setFieldValue('module_id', e.target.value);
-    setFieldValue('submodule_id', '');
+  // const handleModuleChange = (e, setFieldValue) => {
+  //   console.log('eeee', e.target.value);
+  //   setFieldValue('module_id', e.target.value);
+  //   setFieldValue('submodule_id', '');
+
+  //   const data = getSubModuleData
+  //     ?.filter((d) => d.module_name === e.target.value)
+  //     .map((d) => ({ value: d.sub_module_name, label: d.sub_module_name }));
+
+  //   setSubModuleDropdown(data);
+  // };
+
+  const handleModuleChange = (selectedOptions) => {
+    // selectedOptions is an array of selected { label, value } objects from react-select
+    const selectedModuleValues = selectedOptions?.map((opt) => opt.value) || [];
+
+    const selectedModuleNames = selectedOptions?.map((opt) => opt.label) || [];
 
     const data = getSubModuleData
-      ?.filter((d) => d.module_name === e.target.value)
+      ?.filter((d) => selectedModuleNames.includes(d.module_name))
       .map((d) => ({ value: d.sub_module_name, label: d.sub_module_name }));
 
     setSubModuleDropdown(data);
@@ -118,7 +132,7 @@ function DownloadFormatFileModal({ show, close }) {
                   />
                 </Col>
                 <Col md={4} lg={4}>
-                  <Field
+                  {/* <Field
                     classNamePrefix="react-select"
                     data={moduleDropdown}
                     component={CustomDropdown}
@@ -130,6 +144,21 @@ function DownloadFormatFileModal({ show, close }) {
                       handleModuleChange(event, setFieldValue)
                     }
                     ref={moduleIdRef}
+                  /> */}
+                  <Field
+                    classNamePrefix="react-select"
+                    options={moduleDropdown}
+                    component={CustomReactSelect}
+                    name="module_id"
+                    label="Module Name"
+                    id="testdraft_modulename"
+                    placeholder="Select"
+                    ref={moduleIdRef}
+                    isMulti
+                    handleChange={(event) =>
+                      handleModuleChange(event, setFieldValue)
+                    }
+                    // required
                   />
                 </Col>
                 <Col md={4} lg={4}>

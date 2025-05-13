@@ -17,13 +17,15 @@ import {
   getDraftTestCaseList,
   getModuleMasterThunk,
   getProjectModuleMasterThunk,
-  getSubModuleMasterThunk
+  getSubModuleMasterThunk,
+  getTestCaseStatusDataList
 } from '../../../redux/services/testCases/downloadFormatFile';
 import { getFunctionMasterListThunk } from '../../../redux/services/testCases/functionMaster';
 import { getTestingGroupMasterListThunk } from '../../../redux/services/testCases/testingGroupMaster';
 import { getTestingTypeMasterListThunk } from '../../../redux/services/testCases/testingTypeMaster';
 import { getByTestPlanIDListThunk } from '../../../redux/services/testCases/testCaseReview';
 import { original } from '@reduxjs/toolkit';
+import { getReviewCommentMasterListThunk } from '../../../redux/services/testCases/reviewCommentMaster';
 
 function EditTestCaseModal({
   show,
@@ -51,7 +53,8 @@ function EditTestCaseModal({
     getModuleList,
     getSubModuleList,
     getModuleData,
-    getSubModuleData
+    getSubModuleData,
+    testCasesStatusDataList
   } = useSelector((state) => state?.downloadFormat);
   const newModuleListData = getModuleData
     ?.filter((d) => d.project_id === currentTestCasesData?.original?.project_id)
@@ -60,7 +63,9 @@ function EditTestCaseModal({
   const newSubModuleListData = getSubModuleData
     ?.filter((d) => d.module_id === currentTestCasesData?.original?.module_id)
     ?.map((i) => ({ value: i.id, label: i.sub_module_name }));
-
+  const { getFilterReviewCommentMasterList } = useSelector(
+    (state) => state?.reviewCommentMaster
+  );
   const [moduleDropdown, setModuleDropdown] = useState();
 
   const [subModuleDropdown, setSubModuleDropdown] = useState();
@@ -81,6 +86,16 @@ function EditTestCaseModal({
     {
       value: 'Low',
       label: 'Low'
+    }
+  ];
+  const automationScriptData = [
+    {
+      value: 'Y',
+      label: 'Yes'
+    },
+    {
+      value: 'N',
+      label: 'No'
     }
   ];
   const testingGroupRef = useRef();
@@ -114,6 +129,16 @@ function EditTestCaseModal({
         : [],
 
     severity: type === 'EDIT' ? currentTestCasesData?.original?.severity : '',
+    is_automation_script:
+      type === 'EDIT'
+        ? currentTestCasesData?.original?.is_automation_script
+        : '',
+
+    reviewer_comment_id:
+      type === 'EDIT'
+        ? currentTestCasesData?.original?.reviewer_comment_id
+        : '',
+
     steps: type === 'EDIT' ? currentTestCasesData?.original?.steps : '',
     test_description:
       type === 'EDIT' ? currentTestCasesData?.original?.test_description : '',
@@ -229,7 +254,17 @@ function EditTestCaseModal({
     dispatch(getTestingGroupMasterListThunk());
     dispatch(getTestingTypeMasterListThunk());
     setSubModuleDropdown(newSubModuleListData);
+    dispatch(getReviewCommentMasterListThunk());
   }, []);
+
+  useEffect(() => {
+    dispatch(
+      getTestCaseStatusDataList({
+        limit: paginationData.pageSize,
+        page: paginationData.pageIndex
+      })
+    );
+  }, [paginationData.pageSize, paginationData.pageIndex]);
 
   return (
     <>
@@ -255,7 +290,12 @@ function EditTestCaseModal({
 
             // ✅ Append test_draft_id
             formData.append('test_draft_id', id); // <--- this line adds your `id` into FormData
-
+            formData.append(
+              'status_id',
+              testCasesStatusDataList?.find(
+                (d) => d.convention_name === 'PENDING'
+              )?.id
+            );
             // Now call the handler
             handleEditTestCase({ formData });
           }}
@@ -427,6 +467,31 @@ function EditTestCaseModal({
                     label="Severity"
                     id="edittestcasemodal_severity"
                     placeholder="Enter Severity"
+                    requiredField
+                  />
+                </Col>
+                <Col md={4} lg={4}>
+                  <Field
+                    classNamePrefix="react-select"
+                    data={automationScriptData}
+                    component={CustomDropdown}
+                    name="is_automation_script"
+                    label="Automation Script"
+                    id="is_automation_script"
+                    placeholder="Enter Automation Script"
+                    requiredField
+                  />
+                </Col>
+
+                <Col md={4} lg={4}>
+                  <Field
+                    classNamePrefix="react-select"
+                    data={getFilterReviewCommentMasterList}
+                    component={CustomDropdown}
+                    name="reviewer_comment_id"
+                    label="Reviewer Comment Id"
+                    id="reviewer_comment_id"
+                    placeholder="Enter Reviewer Comment"
                     requiredField
                   />
                 </Col>

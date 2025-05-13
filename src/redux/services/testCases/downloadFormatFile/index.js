@@ -69,9 +69,16 @@ export const downloadFormatFileThunk = createAsyncThunk(
   'downloadFormatFile',
   async ({ project_name, module_name, submodule_name, onSuccessHandler }) => {
     try {
-      let endpoint = `draftFile/getTestdraftBulkFormat?project_name=${project_name}&module_name=${module_name}`;
+      let endpoint = `draftFile/getTestdraftBulkFormat?project_name=${project_name}`;
 
       // Append submodule_id parameters if they are provided
+
+      if (module_name && module_name.length >= 0) {
+        const moduleQueryParam = module_name
+          .map((id) => `module_name[]=${id}`)
+          .join('&');
+        endpoint += `&${moduleQueryParam}`;
+      }
       if (submodule_name && submodule_name.length >= 0) {
         const submoduleQueryParam = submodule_name
           .map((id) => `submodule_name[]=${id}`)

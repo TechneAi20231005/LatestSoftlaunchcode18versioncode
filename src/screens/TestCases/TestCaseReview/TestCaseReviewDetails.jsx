@@ -345,13 +345,13 @@ function TestCaseReviewDetails() {
           onSuccessHandler: () => {
             // setCommonComment('');
             setCommonRemark('');
-            // dispatch(
-            //   getByTestPlanIDListThunk({
-            //     id: id,
-            //     limit: paginationData.rowPerPage,
-            //     page: paginationData.currentPage
-            //   })
-            // );
+            dispatch(
+              getByTestPlanIDListThunk({
+                id: id,
+                limit: paginationData.rowPerPage,
+                page: paginationData.currentPage
+              })
+            );
             dispatch(
               getByTestPlanIDListThunk({
                 id: id,
@@ -1880,21 +1880,21 @@ function TestCaseReviewDetails() {
       localDispatch({ type: 'SET_FILTERS', payload: [] });
     }
     const filterKeyMap = {
-      module_name: 'module_names',
-      sub_module_name: 'sub_module_names',
-      function_name: 'function_names',
-      field: 'field_names',
-      platform: 'platforms',
-      type_name: 'type_names',
+      module_name: 'module',
+      sub_module_name: 'submodule',
+      function_name: 'function',
+      field: 'field',
+      platform: 'platform',
+      type_name: 'testing_type',
       tc_id: 'ids',
-      severity: 'severities',
-      group_name: 'group_names',
       test_description: 'test_descriptions',
 
+      severity: 'severity',
+      group_name: 'group_names',
       steps: 'steps',
       expected_result: 'expected_results',
       status: 'status',
-      project_name: 'project_names',
+      project_name: 'project',
       created_at: 'created_at',
       created_by: 'created_by',
       updated_at: 'updated_at',
@@ -2404,6 +2404,7 @@ function TestCaseReviewDetails() {
           highlightOnHover={true}
         /> */}
 
+        {console.log('rowData', rowData)}
         <MaterialTable
           columns={columns}
           data={rowData}
