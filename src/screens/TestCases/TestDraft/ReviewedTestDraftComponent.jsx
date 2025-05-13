@@ -1904,6 +1904,26 @@ function ReviewedTestDraftComponent() {
     }
   ];
 
+
+   const transformDataForReviewTestDraft = (data) => {
+    return data?.length > 0 && data?.map((originalRows) => ({
+       ...originalRows,
+       module_name: originalRows?.module?.module_name || '-',
+       sub_module_name: originalRows?.sub_module?.sub_module_name || '-',
+       function_name: originalRows?.function_master?.function_name || '-',
+       "Testing Type": originalRows?.testing_type?.type_name || '-',
+       group_name: originalRows?.testing_group || '-',
+       project_name: originalRows?.project?.project_name || '-',
+        'Created By': `${originalRows?.created_by?.first_name || '-'} ${
+        originalRows?.created_by?.last_name || '-'
+      }`,
+        'Updated By': `${originalRows?.updated_by?.first_name || '-'} ${
+        originalRows?.updated_by?.last_name || '-'
+      }`
+    }))
+    }
+
+
   const exportColumns = [
     { title: 'Module', field: 'module_name' },
     { title: 'Submodule', field: 'sub_module_name' },
@@ -2148,9 +2168,10 @@ function ReviewedTestDraftComponent() {
               </button>
               <ExportToExcel
                 className="btn btn-sm btn-danger "
-                apiData={allReviewDraftTestListDataByID}
+                apiData={transformDataForReviewTestDraft(allReviewDraftTestListDataByID)}
                 columns={exportColumns}
                 fileName="Reviewed Test Draft List"
+                disabled={allReviewDraftTestListDataByID?.length === 0}
               />
             </div>
           );

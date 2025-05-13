@@ -130,41 +130,88 @@ export default function TestDraftComponent({}) {
     );
   };
 
-  const exportColumns = [
-    { title: 'Module', field: 'module_name' },
-    { title: 'Submodule', field: 'sub_module_name' },
-    { title: 'Platform', field: 'platform' },
-    { title: 'Function', field: 'function_name' },
-    { title: 'Field', field: 'field' },
-    { title: 'Testing Type', field: 'type_name' },
-    { title: 'Testing Group', field: 'group_name' },
-    { title: 'Test ID', field: 'tc_id' },
-    { title: 'Test Description', field: 'test_description' },
-    { title: 'Severity', field: 'severity' },
+  const transformDataForDraft = (data) => {
+    return data?.length > 0 && data?.map((originalRows) => ({
+      Module: originalRows?.module?.module_name,
+      Submodule: originalRows?.sub_module?.sub_module_name,
+      Platform: originalRows?.platform || '-',
+      Function: originalRows?.function_master?.function_name || '-',
+      Field: originalRows?.field,
+      'Testing Type': originalRows?.testing_type?.type_name || '-',
+      'Testing Group': originalRows?.testing_group || '-',
+      'Test ID': originalRows?.tc_id || '-',
+      'Test Description': originalRows?.test_description || '-',
+      Severity: originalRows?.severity || '-',
+      Steps: originalRows?.steps || '-',
+      'Expected Result': originalRows?.expected_result || '-',
+      Status: originalRows?.tai_bc_status_conventions?.convention_name || '-',
+      Project: originalRows?.project?.project_name || '-',
+      'Created At': originalRows?.created_at || '-',
+      'Created By': `${originalRows?.created_by?.first_name || '-'} ${
+        originalRows?.created_by?.last_name || '-'
+      }`,
+      'Updated At': originalRows?.updated_at || '-',
+      'Updated By': `${originalRows?.updated_by?.first_name || '-'} ${
+        originalRows?.updated_by?.last_name || '-'
+      }`
+    }));
+  };
 
-    { title: 'Steps', field: 'steps' },
-    { title: 'Expected Result', field: 'expected_result' },
-    { title: 'Status', field: 'status' },
-    { title: 'Project', field: 'project_name' },
-    { title: 'Created At', field: 'created_at' },
-    { title: 'Created By', field: 'created_by' },
-    { title: 'Updated At', field: 'updated_at' },
-    { title: 'Updated By', field: 'updated_by' }
+  const transformDataForReviewer = (data) => {
+    return data?.length > 0 && data?.map((originalRows) => ({
+
+      "Test Plan ID": originalRows?.test_plan_id || '-',
+      "Reviewer Name": originalRows?.reviewer_name || '-',
+      "Total Testcase": originalRows?.total_testcases,
+      "Reviewed Testcase": originalRows?.total_reviewed_testcases,
+      "Rejected Testcase": originalRows?.total_rejected_testcases,
+      "Approved Testcse": originalRows?.total_approved_testcase,
+      'Created At': originalRows?.created_at || '-',
+      'Created By': `${originalRows?.created_by?.first_name || '-'} ${
+        originalRows?.created_by?.last_name || '-'
+      }`,
+      'Updated At': originalRows?.updated_at || '-',
+      'Updated By': `${originalRows?.updated_by?.first_name || '-'} ${
+        originalRows?.updated_by?.last_name || '-'
+      }`
+    }));
+  };
+
+  const exportColumns = [
+    { title: 'Module', field: 'Module' },
+    { title: 'Submodule', field: 'Submodule' },
+    { title: 'Platform', field: 'Platform' },
+    { title: 'Function', field: 'Function' },
+    { title: 'Field', field: 'Field' },
+    { title: 'Testing Type', field: 'Testing Type' },
+    { title: 'Testing Group', field: 'Testing Group' },
+    { title: 'Test ID', field: 'Test ID' },
+    { title: 'Test Description', field: 'Test Description' },
+    { title: 'Severity', field: 'Severity' },
+
+    { title: 'Steps', field: 'Steps' },
+    { title: 'Expected Result', field: 'Expected Result' },
+    { title: 'Status', field: 'Status' },
+    { title: 'Project', field: 'Project' },
+    { title: 'Created At', field: 'Created At' },
+    { title: 'Created By', field: 'Created By' },
+    { title: 'Updated At', field: 'Updated At' },
+    { title: 'Updated By', field: 'Updated By' }
   ];
 
   const exportReviewedColumns = [
-    { title: 'Test Plan ID', field: 'test_plan_id' },
-    { title: 'Reviewer Name', field: 'reviewer_name' },
-    { title: 'Total Testcase', field: 'total_testcases' },
-    { title: 'Reviewed Testcase', field: 'total_reviewed_testcases' },
-    { title: 'Rejected Testcase', field: 'total_rejected_testcases' },
-    { title: 'Approved Testcse', field: 'total_approved_testcases' },
+    { title: 'Test Plan ID', field: 'Test Plan ID' },
+    { title: 'Reviewer Name', field: 'Reviewer Name' },
+    { title: 'Total Testcase', field: 'Total Testcase' },
+    { title: 'Reviewed Testcase', field: 'Reviewed Testcase' },
+    { title: 'Rejected Testcase', field: 'Rejected Testcase' },
+    { title: 'Approved Testcse', field: 'Approved Testcse' },
 
-    { title: 'Created At', field: 'created_at' },
-    { title: 'Created By', field: 'created_by' },
+    { title: 'Created At', field: 'Created At' },
+    { title: 'Created By', field: 'Created By' },
 
-    { title: 'Updated At', field: 'updated_at' },
-    { title: 'Updated By', field: 'updated_by' }
+    { title: 'Updated At', field: 'Updated At' },
+    { title: 'Updated By', field: 'Updated By' }
   ];
   const [isFilterApplied, setIsFilterApplied] = useState(false);
 
@@ -300,7 +347,7 @@ export default function TestDraftComponent({}) {
               {currentTab === 'test_summary' && (
                 <ExportToExcel
                   className="btn btn-danger"
-                  apiData={allDraftTestListData}
+                  apiData={transformDataForDraft(allDraftTestListData)}
                   columns={exportColumns}
                   fileName={'Test Summary Records'}
                   disabled={allDraftTestListData?.length <= 0 ? true : false}
@@ -310,7 +357,7 @@ export default function TestDraftComponent({}) {
               {currentTab === 'review_test_draft' && (
                 <ExportToExcel
                   className="btn btn-danger"
-                  apiData={allReviewDraftTestListData}
+                  apiData={transformDataForReviewer(allReviewDraftTestListData)}
                   columns={exportReviewedColumns}
                   fileName={'Review Test Draft Records'}
                   disabled={
