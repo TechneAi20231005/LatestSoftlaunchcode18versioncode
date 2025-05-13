@@ -1494,7 +1494,37 @@ function TestCaseReviewComponent() {
           setDisable(false);
           setSelectedStatus(null);
 
-          const testData = responseData?.data;
+          // const testData = responseData?.data;
+           const testData = responseData?.data?.map((item) => {
+            return{
+              id: item.id || '',
+              tc_id: item.tc_id || '',
+              unix_code: item?.unix_code || '',
+              tenant_id: item?.tenant_id || '',
+              project_id: item?.project_id || '',
+              module_name: item?.module?.module_name || '',
+              sub_module_name: item?.sub_module?.sub_module_name || '',
+              platform: item?.platform || '',
+              function_master: item?.function_master?.function_name || '',
+              field: item?.field || '',
+              type_id: item?.type_id || '',
+              testing_group: item?.testing_group || '',
+              severity: item?.severity || '',
+              test_description: item?.test_description || '',
+              status: item?.tai_bc_status_conventions?.convention_name || '',
+              steps: item?.steps || '',
+              expected_result: item?.expected_result || '',
+              reviewer_comment: item?.reviewer_comment?.reviewer_comment || '',
+              is_active:item?.is_active || '',
+              created_by: `${item?.created_by?.first_name || ''} ${item?.created_by?.last_name || ''}`,
+              created_at: item?.created_at,
+              updated_by:  `${item?.updated_by?.first_name || ''} ${item?.updated_by?.last_name || ''}`,
+              updated_at: item?.updated_at || '',
+              is_automation_script: item?.is_automation_script || '',
+              function_master: item?.function_master?.function_name || '',
+
+            }
+          });
           if (Array?.isArray(testData) && testData?.length > 0) {
             // ✅ Convert JSON to CSV string
             const csv = convertToCSV(testData);
