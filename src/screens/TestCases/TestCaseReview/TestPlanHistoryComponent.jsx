@@ -394,6 +394,19 @@ function TestPlanHistoryComponent() {
       enableColumnFilter: true
     },
     {
+      accessorFn: (originalRows) =>
+        `${originalRows?.is_automation_script || '--'} `,
+      header: 'Is Automation Script',
+      Header: (
+        <span>
+          Is Automation Script
+        </span>
+      ),
+
+      size: 250,
+      enableSorting: false
+    },
+    {
       accessorKey: 'created_at',
       header: 'Created At',
       size: 180,

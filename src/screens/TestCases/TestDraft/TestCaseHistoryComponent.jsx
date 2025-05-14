@@ -42,6 +42,52 @@ function TestCaseHistoryComponent() {
 
 const columns = [
   {
+    accessorKey: 'tc_id',
+    header: 'TC ID',
+    size: 155,
+
+    muiTableBodyCellProps: ({ row }) =>
+      row.original.changes?.includes('id')
+        ? {
+            sx: {
+              color: 'red',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+            },
+          }
+        : {},
+  },
+  {
+    accessorKey: 'operation',
+    header: 'Operation',
+    size: 180,
+    muiTableBodyCellProps: ({ row }) =>
+      row.original.changes?.includes('operation')
+        ? {
+            sx: {
+              color: 'red',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+            },
+          }
+        : {},
+  },
+  {
+    accessorKey: 'project_name',
+    header: 'Project Name',
+    size: 200,
+    muiTableBodyCellProps: ({ row }) =>
+      row.original.changes?.includes('project_name')
+        ? {
+            sx: {
+              color: 'red',
+              fontWeight: 'bold',
+              cursor: 'pointer',
+            },
+          }
+        : {},
+  },
+  {
     accessorKey: 'module_name',
     header: 'Module Name',
     size: 200,
@@ -73,6 +119,18 @@ const columns = [
         : {},
   },
   {
+    accessorFn: (originalRows) => `${originalRows?.platform || '--'} `,
+    header: 'platform',
+    Header: (
+      <span>
+        Platform
+      </span>
+    ),
+    enableColumnFilter: false,
+    size: 180,
+    enableSorting: true
+  },
+  {
     accessorKey: 'function_name',
     header: 'Function Name',
     size: 220,
@@ -87,22 +145,7 @@ const columns = [
           }
         : {},
   },
-  {
-    accessorKey: 'field',
-    header: 'Field',
-    size: 140,
 
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('field')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-  },
   {
     accessorKey: 'type_name',
     header: 'Type Name',
@@ -135,12 +178,12 @@ const columns = [
         : {},
   },
   {
-    accessorKey: 'tc_id',
-    header: 'TC ID',
-    size: 155,
+    accessorKey: 'field',
+    header: 'Field',
+    size: 140,
 
     muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('id')
+      row.original.changes?.includes('field')
         ? {
             sx: {
               color: 'red',
@@ -166,11 +209,11 @@ const columns = [
         : {},
   },
   {
-    accessorKey: 'steps',
-    header: 'Steps',
-    size: 150,
+    accessorKey: 'test_description',
+    header: 'Test Description',
+    size: 220,
     muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('steps')
+      row.original.changes?.includes('test_description')
         ? {
             sx: {
               color: 'red',
@@ -181,11 +224,11 @@ const columns = [
         : {},
   },
   {
-    accessorKey: 'test_description',
-    header: 'Test Description',
-    size: 220,
+    accessorKey: 'steps',
+    header: 'Steps',
+    size: 150,
     muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('test_description')
+      row.original.changes?.includes('steps')
         ? {
             sx: {
               color: 'red',
@@ -225,44 +268,14 @@ const columns = [
           }
         : {},
   },
-  {
-    accessorKey: 'project_name',
-    header: 'Project Name',
-    size: 200,
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('project_name')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-  },
     {
       accessorFn: (originalRows) =>
         `${originalRows?.is_automation_script || '--'} `,
       header: 'Is Automation Script',
 
       size: 250,
-      enableSorting: false
+      enableSorting: true
     },
-  {
-    accessorKey: 'operation',
-    header: 'Operation',
-    size: 200,
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('operation')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-  },
 {
     accessorKey: 'created_at',
     header: 'Created At',

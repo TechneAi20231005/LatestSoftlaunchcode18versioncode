@@ -1533,7 +1533,43 @@ function TestDraftDetails(props) {
         );
       }
     },
+    {
+      accessorFn: (originalRows) => `${originalRows?.tc_id || '--'} `,
+      header: 'Test Id',
+      Header: (
+        <span>
+          Test Id
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'text')}
+          />
+        </span>
+      ),
 
+      size: 180,
+      enableSorting: false
+    },
+    {
+      accessorFn: (originalRows) =>
+        `${originalRows?.project?.project_name || '--'} `,
+      header: 'Project',
+      Header: (
+        <span>
+          Project
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'project_name', 'Project', 'text')
+            }
+          />
+        </span>
+      ),
+
+      size: 200,
+      enableSorting: false
+    },
     {
       accessorFn: (originalRows) =>
         `${originalRows?.module?.module_name || '--'} `,
@@ -1670,23 +1706,7 @@ function TestDraftDetails(props) {
       size: 200,
       enableSorting: false
     },
-    {
-      accessorFn: (originalRows) => `${originalRows?.tc_id || '--'} `,
-      header: 'Test Id',
-      Header: (
-        <span>
-          Test Id
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'text')}
-          />
-        </span>
-      ),
 
-      size: 180,
-      enableSorting: false
-    },
     {
       accessorFn: (originalRows) => `${originalRows?.severity || '--'} `,
       header: 'Severity',
@@ -1783,26 +1803,6 @@ function TestDraftDetails(props) {
       ),
 
       size: 180,
-      enableSorting: false
-    },
-    {
-      accessorFn: (originalRows) =>
-        `${originalRows?.project?.project_name || '--'} `,
-      header: 'Project',
-      Header: (
-        <span>
-          Project
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'project_name', 'Project', 'text')
-            }
-          />
-        </span>
-      ),
-
-      size: 200,
       enableSorting: false
     },
     {

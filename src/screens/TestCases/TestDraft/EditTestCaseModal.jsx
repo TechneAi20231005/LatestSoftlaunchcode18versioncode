@@ -174,6 +174,7 @@ function EditTestCaseModal({
   };
 
   const handleEditTestCase = ({ formData }) => {
+    if(disable) return;
     setDisable(true);
 
     {
@@ -236,6 +237,7 @@ function EditTestCaseModal({
             })
           );
     }
+    // setDisable(false);
   };
   const handleProjectChange = async (e, setFieldValue) => {
     setFieldValue('project_id', e?.target?.value);
@@ -405,15 +407,6 @@ function EditTestCaseModal({
 
                 <Col md={4} lg={4}>
                   <Field
-                    component={CustomInput}
-                    name="field"
-                    label="Field"
-                    id="edittestcasemodal_field"
-                    placeholder="Enter field name"
-                  />
-                </Col>
-                <Col md={4} lg={4}>
-                  <Field
                     classNamePrefix="react-select"
                     data={filterTestingTypeMasterList}
                     component={CustomDropdown}
@@ -490,6 +483,15 @@ function EditTestCaseModal({
 
                 <Col md={4} lg={4}>
                   <Field
+                    component={CustomInput}
+                    name="field"
+                    label="Field"
+                    id="edittestcasemodal_field"
+                    placeholder="Enter field name"
+                  />
+                </Col>
+                <Col md={4} lg={4}>
+                  <Field
                     classNamePrefix="react-select"
                     data={severityData}
                     component={CustomDropdown}
@@ -500,7 +502,36 @@ function EditTestCaseModal({
                     requiredField
                   />
                 </Col>
-                <Col md={4} lg={4}>
+                <Col md={6} lg={6}>
+                  <Field
+                    component={CustomTextArea}
+                    name="test_description"
+                    label="Test Description"
+                    id="edittestcasemodal_testdescription"
+                    placeholder="Enter test description"
+                    requiredField
+                  />
+                </Col>
+                <Col md={6} lg={6}>
+                  <Field
+                    component={CustomTextArea}
+                    name="steps"
+                    label="Steps"
+                    id="edittestcasemodal_steps"
+                    placeholder="Enter steps"
+                  />
+                </Col>
+                <Col md={6} lg={6}>
+                  <Field
+                    component={CustomTextArea}
+                    name="expected_result"
+                    label="Expected Result"
+                    id="edittestcasemodal_expectedresult"
+                    placeholder="Enter expected result"
+                    requiredField
+                  />
+                </Col>
+                <Col md={4} lg={6}>
                   <Field
                     classNamePrefix="react-select"
                     data={automationScriptData}
@@ -597,7 +628,7 @@ function EditTestCaseModal({
               </Row>
               <div className="d-flex justify-content-end gap-2 mt-3">
                 <button
-                  // disabled={disable}
+                  disabled={disable}
                   className="btn btn-primary px-4"
                   type="submit"
                 >
