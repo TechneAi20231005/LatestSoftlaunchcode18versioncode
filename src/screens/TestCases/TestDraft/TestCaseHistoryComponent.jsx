@@ -10,7 +10,7 @@ import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 
 function TestCaseHistoryComponent() {
   const { id } = useParams();
-  console.log('id', id);
+
   // const [paginationData, setPaginationData] = useReducer(
   //   (prevState, nextState) => {
   //     return { ...prevState, ...nextState };
@@ -1246,7 +1246,6 @@ function TestCaseHistoryComponent() {
   //     ]
   //   }
   // ];
-  console.log('testDraftHistory', testDraftHistory);
 
   return (
     <>

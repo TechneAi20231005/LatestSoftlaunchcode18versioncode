@@ -391,7 +391,16 @@ function EditTestCaseModal({
                     requiredField
                   />
                 </Col>
-
+                <Col md={4} lg={4}>
+                  <Field
+                    component={CustomDropdown}
+                    data={platformData}
+                    name="platform"
+                    label="Platform"
+                    id="edittestcasemodal_platform"
+                    placeholder="Enter Platform"
+                  />
+                </Col>
                 <Col md={4} lg={4}>
                   <Field
                     classNamePrefix="react-select"
@@ -559,15 +568,6 @@ function EditTestCaseModal({
                   </Col>
                 )}
 
-                <Col md={6} lg={6}>
-                  <Field
-                    component={CustomTextArea}
-                    name="steps"
-                    label="Steps"
-                    id="edittestcasemodal_steps"
-                    placeholder="Enter steps"
-                  />
-                </Col>
                 {type === 'EDIT' && (
                   <Col md={6} lg={6}>
                     <Field
@@ -580,28 +580,6 @@ function EditTestCaseModal({
                     />
                   </Col>
                 )}
-
-                <Col md={6} lg={6}>
-                  <Field
-                    component={CustomDropdown}
-                    data={platformData}
-                    name="platform"
-                    label="Platform"
-                    id="edittestcasemodal_platform"
-                    placeholder="Enter Platform"
-                  />
-                </Col>
-
-                <Col md={6} lg={6}>
-                  <Field
-                    component={CustomTextArea}
-                    name="test_description"
-                    label="Test Description"
-                    id="edittestcasemodal_testdescription"
-                    placeholder="Enter test description"
-                    requiredField
-                  />
-                </Col>
                 {(payloadType === 'TestCaseReview' ||
                   payloadType === 'ReviewTestDraft') && (
                   <Col md={6} lg={6}>
@@ -615,16 +593,6 @@ function EditTestCaseModal({
                     />
                   </Col>
                 )}
-
-                <Col md={6} lg={6}>
-                  <Field
-                    component={CustomTextArea}
-                    name="expected_result"
-                    label="Expected Result"
-                    id="edittestcasemodal_expectedresult"
-                    placeholder="Enter expected result"
-                  />
-                </Col>
               </Row>
               <div className="d-flex justify-content-end gap-2 mt-3">
                 <button
