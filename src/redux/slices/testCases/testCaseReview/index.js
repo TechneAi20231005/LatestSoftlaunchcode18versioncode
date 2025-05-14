@@ -94,6 +94,7 @@ const testCaseReviewSlice = createSlice({
       .addCase(getExportByTestPlanIDListThunk.fulfilled, (state, action) => {
         state.isLoading.exportTestCaseReviewData = false;
         state.exportTestCaseReviewData = action?.payload?.data?.data;
+        console.log('aaaa', action.payload.data);
         state.successMsg.exportTestCaseReviewData = action?.payload?.message;
       })
       .addCase(getExportByTestPlanIDListThunk.rejected, (state, action) => {

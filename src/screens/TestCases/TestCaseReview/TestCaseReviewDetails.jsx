@@ -314,75 +314,76 @@ function TestCaseReviewDetails() {
       }
     });
 
-    selectedRows?.forEach((row) => {
-      if (!row?.comment_id) {
-        newCommentIdErrors[row?.tc_id] = 'Reviewer comment is required';
-      }
-      if (!row?.remark && !row?.other_remark) {
-        newRemarkErrors[row?.tc_id] = 'Remark is required';
-      }
-    });
+    // selectedRows?.forEach((row) => {
+    //   if (!row?.comment_id) {
+    //     newCommentIdErrors[row?.tc_id] = 'Reviewer comment is required';
+    //   }
+    //   if (!row?.remark && !row?.other_remark) {
+    //     newRemarkErrors[row?.tc_id] = 'Remark is required';
+    //   }
+    // });
 
     // if (newCommentIdErrors?.length > 0 && !commonComment) {
     //   setCommentIdError(newCommentIdErrors);
     // } else {
     //   setCommentIdError('');
+    if (
+      (Object.keys(newCommentIdErrors).length > 0 ||
+        Object.keys(newRemarkErrors).length > 0) &&
+      !commonComment &&
+      !commonRemark
+    ) {
+      setCommentIdError(newCommentIdErrors);
+      setRemarkErrors(newRemarkErrors);
+    } else {
+      setCommentIdError('');
+      setRemarkErrors('');
 
-    // if (
-    //   (Object.keys(newCommentIdErrors).length > 0 ||
-    //     Object.keys(newRemarkErrors).length > 0) &&
-    //   !commonComment &&
-    //   !commonRemark
-    // ) {
-    //   setCommentIdError(newCommentIdErrors);
-    //   setRemarkErrors(newRemarkErrors);
-    // } else {
-    setCommentIdError('');
-    setRemarkErrors('');
-
-    const statusId =
-      status === 'RESEND'
-        ? testCasesStatusDataList?.find((d) => d?.convention_name === 'RESEND')
-        : testCasesStatusDataList?.find(
-            (d) => d?.convention_name === 'REJECTED'
-          )?.id;
-    const formData = {
-      review_testcase_data: updatedRows,
-      status: status,
-      common_comment_id: commonComment,
-      common_remark: commonRemark,
-      status_id: statusId
-    };
-    dispatch(
-      approveRejectByReviewerMasterThunk({
-        planID,
-        formData,
-        onSuccessHandler: () => {
-          // setCommonComment('');
-          setCommonRemark('');
-          dispatch(
-            getByTestPlanIDListThunk({
-              id: id,
-              limit: paginationData.rowPerPage,
-              page: paginationData.currentPage
-            })
-          );
-          dispatch(
-            getByTestPlanIDListThunk({
-              id: id,
-              limit: paginationData.rowPerPage,
-              page: 1,
-              filter_testcase_data: []
-            })
-          );
-          localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: false });
-          localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
-          setRowData(testPlanIdData);
-        },
-        onErrorHandler: () => {}
-      })
-    );
-    // }
+      const statusId =
+        status === 'RESEND'
+          ? testCasesStatusDataList?.find(
+              (d) => d?.convention_name === 'RESEND'
+            )
+          : testCasesStatusDataList?.find(
+              (d) => d?.convention_name === 'REJECTED'
+            )?.id;
+      const formData = {
+        review_testcase_data: updatedRows,
+        status: status,
+        common_comment_id: commonComment,
+        common_remark: commonRemark,
+        status_id: statusId
+      };
+      dispatch(
+        approveRejectByReviewerMasterThunk({
+          planID,
+          formData,
+          onSuccessHandler: () => {
+            // setCommonComment('');
+            setCommonRemark('');
+            dispatch(
+              getByTestPlanIDListThunk({
+                id: id,
+                limit: paginationData.rowPerPage,
+                page: paginationData.currentPage
+              })
+            );
+            dispatch(
+              getByTestPlanIDListThunk({
+                id: id,
+                limit: paginationData.rowPerPage,
+                page: 1,
+                filter_testcase_data: []
+              })
+            );
+            localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: false });
+            localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
+            setRowData(testPlanIdData);
+          },
+          onErrorHandler: () => {}
+        })
+      );
+    }
   };
 
   const handleSelectAllNamesChange = () => {
@@ -1325,7 +1326,6 @@ function TestCaseReviewDetails() {
       size: 80,
       Cell: ({ row }) => {
         const rowData = row.original;
-
         return (
           <input
             type="checkbox"
