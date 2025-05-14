@@ -234,7 +234,7 @@ export default function TestDraftComponent({}) {
     currentTab === 'test_summary'
       ? dispatch(
           getDraftTestCaseList({
-            limit: 10,
+            limit: 100,
             page: 1,
             filter_testcase_data: []
           })
