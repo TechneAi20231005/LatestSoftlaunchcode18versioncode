@@ -146,6 +146,7 @@ export default function TestDraftComponent({}) {
       'Expected Result': originalRows?.expected_result || '-',
       Status: originalRows?.tai_bc_status_conventions?.convention_name || '-',
       Project: originalRows?.project?.project_name || '-',
+      'is Automation': originalRows?.is_automation_script || '-',
       'Created At': originalRows?.created_at || '-',
       'Created By': `${originalRows?.created_by?.first_name || '-'} ${
         originalRows?.created_by?.last_name || '-'
@@ -166,6 +167,7 @@ export default function TestDraftComponent({}) {
       "Reviewed Testcase": originalRows?.total_reviewed_testcases,
       "Rejected Testcase": originalRows?.total_rejected_testcases,
       "Approved Testcse": originalRows?.total_approved_testcase,
+      'is Automation': originalRows?.is_automation_script || '-',
       'Created At': originalRows?.created_at || '-',
       'Created By': `${originalRows?.created_by?.first_name || '-'} ${
         originalRows?.created_by?.last_name || '-'
@@ -193,6 +195,7 @@ export default function TestDraftComponent({}) {
     { title: 'Expected Result', field: 'Expected Result' },
     { title: 'Status', field: 'Status' },
     { title: 'Project', field: 'Project' },
+     { title: 'is Automation', field: 'is Automation' },
     { title: 'Created At', field: 'Created At' },
     { title: 'Created By', field: 'Created By' },
     { title: 'Updated At', field: 'Updated At' },
@@ -206,7 +209,7 @@ export default function TestDraftComponent({}) {
     { title: 'Reviewed Testcase', field: 'Reviewed Testcase' },
     { title: 'Rejected Testcase', field: 'Rejected Testcase' },
     { title: 'Approved Testcse', field: 'Approved Testcse' },
-
+     { title: 'is Automation', field: 'is Automation' },
     { title: 'Created At', field: 'Created At' },
     { title: 'Created By', field: 'Created By' },
 

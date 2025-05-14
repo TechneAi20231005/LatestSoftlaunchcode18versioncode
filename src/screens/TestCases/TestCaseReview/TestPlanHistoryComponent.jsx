@@ -382,13 +382,13 @@ function TestPlanHistoryComponent() {
       enableColumnFilter: true
     },
     {
-      accessorFn: (row) => row?.tester_name || '--',
+      accessorFn: (row) => `${row?.tester?.first_name || '-'} ${row?.tester?.last_name || '-'}`,
       header: 'Tester Name',
       size: 190,
       enableColumnFilter: true
     },
     {
-      accessorFn: (row) => row?.reviewer_name || '--',
+      accessorFn: (row) => `${row?.reviewer?.first_name || '-'} ${row?.reviewer?.last_name || '-'}`,
       header: 'Reviewer Name',
       size: 210,
       enableColumnFilter: true

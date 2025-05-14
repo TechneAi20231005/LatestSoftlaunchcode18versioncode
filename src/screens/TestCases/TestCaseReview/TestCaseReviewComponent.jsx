@@ -1313,8 +1313,8 @@ function TestCaseReviewComponent() {
     },
     {
       header: 'Created By',
-      accessorFn: (row) =>
-        `${row.created_by?.first_name} ${row.created_by?.last_name}`,
+      accessorFn: (row) => row.created_by ?
+        `${row.created_by?.first_name} ${row.created_by?.last_name}` : '-',
       size: 180,
       enableSorting: false,
       enableColumnFilter: true,
@@ -1356,8 +1356,8 @@ function TestCaseReviewComponent() {
     },
     {
       header: 'Updated By',
-      accessorFn: (row) =>
-        `${row.updated_by?.first_name} ${row.updated_by?.last_name}`,
+      accessorFn: (row) => row.updated_by ?
+        `${row.updated_by?.first_name} ${row.updated_by?.last_name}` : '-',
       size: 185,
       enableSorting: false,
       enableColumnFilter: true,
