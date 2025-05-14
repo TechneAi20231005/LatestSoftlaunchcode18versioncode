@@ -2434,7 +2434,7 @@ function TestCaseReviewDetails() {
               <ExportToExcel
                 className="btn btn-sm btn-danger "
                 fileName="Test Case Review List"
-                apiData={rowData}
+                apiData={ transformDataForTestCaseDetails(rowData)}
                 columns={exportColumns}
               />
             </div>

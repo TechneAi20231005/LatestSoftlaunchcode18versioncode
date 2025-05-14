@@ -951,7 +951,7 @@ function ReviewedTestDraftDetails(props) {
       }
     },
     {
-      accessorKey: 'reviewer_name',
+       accessorFn: (originalRow) => `${originalRow.reviewer_name?.first_name || '-'} ${originalRow.reviewer_name?.last_name || '-'} `,
       header: 'Reviewer Name',
       size: 215,
       enableSorting: false,

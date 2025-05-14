@@ -162,11 +162,11 @@ export default function TestDraftComponent({}) {
     return data?.length > 0 && data?.map((originalRows) => ({
 
       "Test Plan ID": originalRows?.test_plan_id || '-',
-      "Reviewer Name": originalRows?.reviewer_name || '-',
+      "Reviewer Name": `${originalRows.reviewer_name?.first_name || '-'} ${originalRows.reviewer_name?.last_name || '-'} `,
       "Total Testcase": originalRows?.total_testcases,
       "Reviewed Testcase": originalRows?.total_reviewed_testcases,
       "Rejected Testcase": originalRows?.total_rejected_testcases,
-      "Approved Testcse": originalRows?.total_approved_testcase,
+      "Approved Testcase": originalRows?.total_approved_testcase,
       'is Automation': originalRows?.is_automation_script || '-',
       'Created At': originalRows?.created_at || '-',
       'Created By': `${originalRows?.created_by?.first_name || '-'} ${
@@ -208,7 +208,7 @@ export default function TestDraftComponent({}) {
     { title: 'Total Testcase', field: 'Total Testcase' },
     { title: 'Reviewed Testcase', field: 'Reviewed Testcase' },
     { title: 'Rejected Testcase', field: 'Rejected Testcase' },
-    { title: 'Approved Testcse', field: 'Approved Testcse' },
+    { title: 'Approved Testcase', field: 'Approved Testcase' },
      { title: 'is Automation', field: 'is Automation' },
     { title: 'Created At', field: 'Created At' },
     { title: 'Created By', field: 'Created By' },
