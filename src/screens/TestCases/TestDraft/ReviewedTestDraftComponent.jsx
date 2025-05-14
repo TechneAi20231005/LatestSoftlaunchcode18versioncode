@@ -157,6 +157,13 @@ function ReviewedTestDraftComponent() {
     (d) => d?.value != localStorage?.getItem('id')
   );
 
+  const reviewerID =
+    allReviewDraftTestListDataByID &&
+    allReviewDraftTestListDataByID[0]?.reviewer_id;
+  const filterDataByReviewer = filterTestData?.filter(
+    (d) => d?.value == reviewerID
+  );
+
   const [downloadmodal, setDownloadModal] = useState({
     showModal: false,
     modalData: '',
@@ -1389,7 +1396,7 @@ function ReviewedTestDraftComponent() {
               onClick={() =>
                 setAddEditTestCasesModal({
                   type: 'EDIT',
-                  data: row?.original,
+                  data: row,
                   open: true,
                   id: row?.original?.id
                 })
@@ -1914,9 +1921,9 @@ function ReviewedTestDraftComponent() {
         function_name: originalRows?.function_master?.function_name || '-',
         'Testing Type': originalRows?.testing_type?.type_name || '-',
         group_name: originalRows?.testing_group || '-',
-        platform : originalRows?.platform || '--',
+        platform: originalRows?.platform || '--',
         project_name: originalRows?.project?.project_name || '-',
-         'is Automation': originalRows?.is_automation_script || '-',
+        'is Automation': originalRows?.is_automation_script || '-',
         'Created By': `${originalRows?.created_by?.first_name || '-'} ${
           originalRows?.created_by?.last_name || '-'
         }`,
@@ -1934,7 +1941,7 @@ function ReviewedTestDraftComponent() {
     { title: 'Field', field: 'field' },
     { title: 'Testing Type', field: 'type_name' },
     { title: 'Testing Group', field: 'group_name' },
-     { title: 'platform', field: 'platform' },
+    { title: 'platform', field: 'platform' },
     { title: 'Test ID', field: 'tc_id' },
     { title: 'Test Description', field: 'test_description' },
     { title: 'Steps', field: 'steps' },
@@ -2303,7 +2310,7 @@ function ReviewedTestDraftComponent() {
             classNamePrefix="react-select"
             id="reviewer_id"
             name="reviewer_id"
-            options={filterTestData}
+            options={filterDataByReviewer}
             required={true}
             onChange={(e) => {
               const selectedId = e?.value;

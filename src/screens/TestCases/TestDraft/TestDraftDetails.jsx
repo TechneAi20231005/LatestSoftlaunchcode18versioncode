@@ -116,8 +116,6 @@ function TestDraftDetails(props) {
     (d) => d?.value != localStorage?.getItem('id')
   );
 
-  console.log('filterTestData', filterTestData);
-
   const [state, localDispatch] = useReducer(localReducer, initialState);
 
   const {

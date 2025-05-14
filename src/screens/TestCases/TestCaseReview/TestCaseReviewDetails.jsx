@@ -1652,11 +1652,11 @@ function TestCaseReviewDetails() {
             style={{ cursor: 'pointer' }}
             onClick={(e) => handleFilterClick(e, 'remark', 'Remark', 'text')}
           />
-          {remarkErrors[rowData.tc_id] &&
-            selectedRows?.includes(rowData.tc_id) && (
+          {remarkErrors[rowData?.tc_id] &&
+            selectedRows?.includes(rowData?.tc_id) && (
               <div className="col">
                 <span className="text-danger">
-                  {remarkErrors[rowData.tc_id]}
+                  {remarkErrors[rowData?.tc_id]}
                 </span>
               </div>
             )}
@@ -1895,9 +1895,9 @@ function TestCaseReviewDetails() {
         group_name: originalRows?.testing_group || '-',
         reviewer_comment:
           originalRows?.reviewer_comment?.reviewer_comment || '-',
-          platform: originalRows?.platform || '--',
+        platform: originalRows?.platform || '--',
         project_name: originalRows?.project?.project_name || '-',
-         'is Automation': originalRows?.is_automation_script || '-',
+        'is Automation': originalRows?.is_automation_script || '-',
         'Created By': `${originalRows?.created_by?.first_name || '-'} ${
           originalRows?.created_by?.last_name || '-'
         }`,
@@ -1922,10 +1922,10 @@ function TestCaseReviewDetails() {
     { title: 'Expected Result', field: 'expected_result' },
     { title: 'Status', field: 'status' },
     { title: 'Reviewer Comment', field: 'reviewer_comment' },
-      { title: 'platform', field: 'platform' },
+    { title: 'platform', field: 'platform' },
     { title: 'Remark', field: 'remark' },
     { title: 'Project', field: 'project_name' },
-      { title: 'is Automation', field: 'is Automation' },
+    { title: 'is Automation', field: 'is Automation' },
     { title: 'Created At', field: 'created_at' },
     { title: 'Created By', field: 'created_by' },
     { title: 'Updated At', field: 'updated_at' },
@@ -2429,7 +2429,7 @@ function TestCaseReviewDetails() {
               <ExportToExcel
                 className="btn btn-sm btn-danger "
                 fileName="Test Case Review List"
-                apiData={ transformDataForTestCaseDetails(rowData)}
+                apiData={transformDataForTestCaseDetails(rowData)}
                 columns={exportColumns}
               />
             </div>

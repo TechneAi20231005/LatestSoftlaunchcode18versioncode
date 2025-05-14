@@ -1052,18 +1052,32 @@ function TestCaseReviewComponent() {
         align: 'center'
       },
       Cell: ({ row }) => {
-        const rowData = row.original;
+        const rowData = row?.original;
+        const reviewerId = localStorage?.getItem('id');
 
-        // if (!rowData || rowData.id === null || rowData.status === null) {
-        //   return null;
-        // }
+        const isDisabled = rowData?.reviewer_id !== parseInt(reviewerId);
 
         return (
           <div className="d-flex align-items-center">
-            <i
-              // className="icofont-edit text-primary btn btn-outline-secondary cp"
+            {/* <i
+
               className="icofont-paper-plane btn btn-outline-secondary icon-large mx-2 cp"
               onClick={() => {
+                handleSendToReviewerModal({
+                  showModal: true,
+                  modalData: rowData,
+                  modalHeader: 'Send To Reviewer Modal'
+                });
+              }}
+
+            /> */}
+
+            <i
+              className={`icofont-paper-plane btn btn-outline-secondary icon-large mx-2 cp ${
+                isDisabled ? 'disabled text-muted' : 'text-primary'
+              }`}
+              onClick={() => {
+                if (isDisabled) return;
                 handleSendToReviewerModal({
                   showModal: true,
                   modalData: rowData,

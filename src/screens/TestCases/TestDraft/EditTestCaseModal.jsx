@@ -121,7 +121,6 @@ function EditTestCaseModal({
     }
   ];
   const testingGroupRef = useRef();
-
   const testCaseInitialValue = {
     project_id:
       type === 'EDIT'
@@ -524,7 +523,7 @@ function EditTestCaseModal({
                       label="Reviewer Comment"
                       id="reviewer_comment_id"
                       placeholder="Enter Reviewer Comment"
-                      requiredField
+                      disabled={payloadType === 'ReviewTestDraft'}
                     />
                   </Col>
                 )}
@@ -572,16 +571,19 @@ function EditTestCaseModal({
                     requiredField
                   />
                 </Col>
-                <Col md={6} lg={6}>
-                  <Field
-                    component={CustomTextArea}
-                    name="other_remark"
-                    label="Remark"
-                    id="edittestcasemodal_remark"
-                    placeholder="Enter Remark"
-                    disabled={payloadType === 'ReviewTestDraft'}
-                  />
-                </Col>
+                {(payloadType === 'TestCaseReview' ||
+                  payloadType === 'ReviewTestDraft') && (
+                  <Col md={6} lg={6}>
+                    <Field
+                      component={CustomTextArea}
+                      name="other_remark"
+                      label="Remark"
+                      id="edittestcasemodal_remark"
+                      placeholder="Enter Remark"
+                      disabled={payloadType === 'ReviewTestDraft'}
+                    />
+                  </Col>
+                )}
 
                 <Col md={6} lg={6}>
                   <Field
@@ -590,7 +592,6 @@ function EditTestCaseModal({
                     label="Expected Result"
                     id="edittestcasemodal_expectedresult"
                     placeholder="Enter expected result"
-                    disabled={payloadType === 'ReviewTestDraft'}
                   />
                 </Col>
               </Row>
