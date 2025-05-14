@@ -21,10 +21,10 @@ function TestPlanHistoryComponent() {
   //   { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
   // );
 
-    const [paginationData, setPaginationData] = useState({
-      pageIndex: 0,
-      pageSize: 10
-    })
+  const [paginationData, setPaginationData] = useState({
+    pageIndex: 0,
+    pageSize: 10
+  });
 
   const { testPlantHistory, isLoading } = useSelector(
     (state) => state?.downloadFormat
@@ -382,13 +382,17 @@ function TestPlanHistoryComponent() {
       enableColumnFilter: true
     },
     {
-      accessorFn: (row) => `${row?.tester?.first_name || '-'} ${row?.tester?.last_name || '-'}`,
+      accessorFn: (row) =>
+        `${row?.tester?.first_name || '-'} ${row?.tester?.last_name || '-'}`,
       header: 'Tester Name',
       size: 190,
       enableColumnFilter: true
     },
     {
-      accessorFn: (row) => `${row?.reviewer?.first_name || '-'} ${row?.reviewer?.last_name || '-'}`,
+      accessorFn: (row) =>
+        `${row?.reviewer?.first_name || '-'} ${
+          row?.reviewer?.last_name || '-'
+        }`,
       header: 'Reviewer Name',
       size: 210,
       enableColumnFilter: true
@@ -397,11 +401,7 @@ function TestPlanHistoryComponent() {
       accessorFn: (originalRows) =>
         `${originalRows?.is_automation_script || '--'} `,
       header: 'Is Automation Script',
-      Header: (
-        <span>
-          Is Automation Script
-        </span>
-      ),
+      Header: <span>Is Automation Script</span>,
 
       size: 250,
       enableSorting: false
@@ -451,6 +451,9 @@ function TestPlanHistoryComponent() {
           setPaginationData={setPaginationData}
           isExportData={false}
           manualPagination={true}
+          muiPaginationProps={{
+            rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
+          }}
         />
         {/* <DataTable
           columns={columns}

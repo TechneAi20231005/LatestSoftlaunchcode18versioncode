@@ -46,7 +46,7 @@ export default function TestDraftComponent({}) {
 
   const [paginationData, setPaginationData] = useState({
     pageIndex: 0,
-    pageSize: 100
+    pageSize: 10
   });
 
   const [downloadmodal, setDownloadModal] = useState({
@@ -131,52 +131,59 @@ export default function TestDraftComponent({}) {
   };
 
   const transformDataForDraft = (data) => {
-    return data?.length > 0 && data?.map((originalRows) => ({
-      Module: originalRows?.module?.module_name,
-      Submodule: originalRows?.sub_module?.sub_module_name,
-      Platform: originalRows?.platform || '-',
-      Function: originalRows?.function_master?.function_name || '-',
-      Field: originalRows?.field,
-      'Testing Type': originalRows?.testing_type?.type_name || '-',
-      'Testing Group': originalRows?.testing_group || '-',
-      'Test ID': originalRows?.tc_id || '-',
-      'Test Description': originalRows?.test_description || '-',
-      Severity: originalRows?.severity || '-',
-      Steps: originalRows?.steps || '-',
-      'Expected Result': originalRows?.expected_result || '-',
-      Status: originalRows?.tai_bc_status_conventions?.convention_name || '-',
-      Project: originalRows?.project?.project_name || '-',
-      'is Automation': originalRows?.is_automation_script || '-',
-      'Created At': originalRows?.created_at || '-',
-      'Created By': `${originalRows?.created_by?.first_name || '-'} ${
-        originalRows?.created_by?.last_name || '-'
-      }`,
-      'Updated At': originalRows?.updated_at || '-',
-      'Updated By': `${originalRows?.updated_by?.first_name || '-'} ${
-        originalRows?.updated_by?.last_name || '-'
-      }`
-    }));
+    return (
+      data?.length > 0 &&
+      data?.map((originalRows) => ({
+        Module: originalRows?.module?.module_name,
+        Submodule: originalRows?.sub_module?.sub_module_name,
+        Platform: originalRows?.platform || '-',
+        Function: originalRows?.function_master?.function_name || '-',
+        Field: originalRows?.field,
+        'Testing Type': originalRows?.testing_type?.type_name || '-',
+        'Testing Group': originalRows?.testing_group || '-',
+        'Test ID': originalRows?.tc_id || '-',
+        'Test Description': originalRows?.test_description || '-',
+        Severity: originalRows?.severity || '-',
+        Steps: originalRows?.steps || '-',
+        'Expected Result': originalRows?.expected_result || '-',
+        Status: originalRows?.tai_bc_status_conventions?.convention_name || '-',
+        Project: originalRows?.project?.project_name || '-',
+        'is Automation': originalRows?.is_automation_script || '-',
+        'Created At': originalRows?.created_at || '-',
+        'Created By': `${originalRows?.created_by?.first_name || '-'} ${
+          originalRows?.created_by?.last_name || '-'
+        }`,
+        'Updated At': originalRows?.updated_at || '-',
+        'Updated By': `${originalRows?.updated_by?.first_name || '-'} ${
+          originalRows?.updated_by?.last_name || '-'
+        }`
+      }))
+    );
   };
 
   const transformDataForReviewer = (data) => {
-    return data?.length > 0 && data?.map((originalRows) => ({
-
-      "Test Plan ID": originalRows?.test_plan_id || '-',
-      "Reviewer Name": `${originalRows.reviewer_name?.first_name || '-'} ${originalRows.reviewer_name?.last_name || '-'} `,
-      "Total Testcase": originalRows?.total_testcases,
-      "Reviewed Testcase": originalRows?.total_reviewed_testcases,
-      "Rejected Testcase": originalRows?.total_rejected_testcases,
-      "Approved Testcase": originalRows?.total_approved_testcase,
-      'is Automation': originalRows?.is_automation_script || '-',
-      'Created At': originalRows?.created_at || '-',
-      'Created By': `${originalRows?.created_by?.first_name || '-'} ${
-        originalRows?.created_by?.last_name || '-'
-      }`,
-      'Updated At': originalRows?.updated_at || '-',
-      'Updated By': `${originalRows?.updated_by?.first_name || '-'} ${
-        originalRows?.updated_by?.last_name || '-'
-      }`
-    }));
+    return (
+      data?.length > 0 &&
+      data?.map((originalRows) => ({
+        'Test Plan ID': originalRows?.test_plan_id || '-',
+        'Reviewer Name': `${originalRows.reviewer_name?.first_name || '-'} ${
+          originalRows.reviewer_name?.last_name || '-'
+        } `,
+        'Total Testcase': originalRows?.total_testcases,
+        'Reviewed Testcase': originalRows?.total_reviewed_testcases,
+        'Rejected Testcase': originalRows?.total_rejected_testcases,
+        'Approved Testcase': originalRows?.total_approved_testcase,
+        'is Automation': originalRows?.is_automation_script || '-',
+        'Created At': originalRows?.created_at || '-',
+        'Created By': `${originalRows?.created_by?.first_name || '-'} ${
+          originalRows?.created_by?.last_name || '-'
+        }`,
+        'Updated At': originalRows?.updated_at || '-',
+        'Updated By': `${originalRows?.updated_by?.first_name || '-'} ${
+          originalRows?.updated_by?.last_name || '-'
+        }`
+      }))
+    );
   };
 
   const exportColumns = [
@@ -195,7 +202,7 @@ export default function TestDraftComponent({}) {
     { title: 'Expected Result', field: 'Expected Result' },
     { title: 'Status', field: 'Status' },
     { title: 'Project', field: 'Project' },
-     { title: 'is Automation', field: 'is Automation' },
+    { title: 'is Automation', field: 'is Automation' },
     { title: 'Created At', field: 'Created At' },
     { title: 'Created By', field: 'Created By' },
     { title: 'Updated At', field: 'Updated At' },
@@ -209,7 +216,7 @@ export default function TestDraftComponent({}) {
     { title: 'Reviewed Testcase', field: 'Reviewed Testcase' },
     { title: 'Rejected Testcase', field: 'Rejected Testcase' },
     { title: 'Approved Testcase', field: 'Approved Testcase' },
-     { title: 'is Automation', field: 'is Automation' },
+    { title: 'is Automation', field: 'is Automation' },
     { title: 'Created At', field: 'Created At' },
     { title: 'Created By', field: 'Created By' },
 

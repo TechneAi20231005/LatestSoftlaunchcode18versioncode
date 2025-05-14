@@ -270,7 +270,8 @@ function TestCaseHistoryComponent() {
       enableSorting: true
     },
     {
-      accessorFn: (originalRows) => `${originalRows?.reviewer_comment || '--'} `,
+      accessorFn: (originalRows) =>
+        `${originalRows?.reviewer_comment || '--'} `,
       header: 'Reviewer Comment',
       enableColumnFilter: false,
       size: 250,
@@ -1268,7 +1269,9 @@ function TestCaseHistoryComponent() {
         <MaterialTable
           columns={columns}
           data={testDraftHistory || []}
-          muiPaginationProps={{ rowsPerPageOptions: [10, 50, 100, 150, 200] }}
+          muiPaginationProps={{
+            rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
+          }}
           isExportData={false}
           isLoading={isLoading.testDraftHistory}
           paginationData={paginationData}

@@ -78,6 +78,7 @@ const testCaseReviewSlice = createSlice({
         state.filterTestPlanData = action?.payload?.data?.filter_data;
         state.allTestPlanIDData = action?.payload?.data;
 
+
         state.successMsg.testPlanIdData = action?.payload?.message;
       })
       .addCase(getByTestPlanIDListThunk.rejected, (state, action) => {

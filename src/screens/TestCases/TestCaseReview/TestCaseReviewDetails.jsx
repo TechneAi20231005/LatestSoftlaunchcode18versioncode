@@ -2470,7 +2470,7 @@ function TestCaseReviewDetails() {
           manualPagination={true}
           setPaginationData={setPaginationData}
           muiPaginationProps={{
-            rowsPerPageOptions: [100, 500, 1000, 2000]
+            rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
           }}
           isExportData={false}
         />

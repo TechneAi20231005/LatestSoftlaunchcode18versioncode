@@ -108,7 +108,7 @@ function TestCaseReviewComponent() {
   // );
   const [paginationData, setPaginationData] = useState({
     pageIndex: 0,
-    pageSize: 100
+    pageSize: 10
   });
   const { testCaseReviewList, isLoading, filterTestCaseReviewList } =
     useSelector((state) => state?.testCaseReview);
@@ -1738,12 +1738,12 @@ function TestCaseReviewComponent() {
           }}
         />
       </Box>
-
+      {console.log('testCaseReviewList', testCaseReviewList)}
       <Container fluid className="mt-3">
         {testCaseReviewList && (
           <MaterialTable
             columns={columns}
-            rowCount={testCaseReviewList?.data?.total}
+            rowCount={testCaseReviewList}
             paginationData={paginationData}
             setPaginationData={setPaginationData}
             data={testCaseReviewList}
@@ -1752,7 +1752,7 @@ function TestCaseReviewComponent() {
             isExportData={false}
             manualPagination={true}
             muiPaginationProps={{
-              rowsPerPageOptions: [100, 500, 1000, 2000]
+              rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
             }}
           />
         )}
