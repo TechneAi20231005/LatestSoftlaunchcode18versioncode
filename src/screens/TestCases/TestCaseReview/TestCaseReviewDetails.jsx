@@ -1652,10 +1652,6 @@ function TestCaseReviewDetails() {
             style={{ cursor: 'pointer' }}
             onClick={(e) => handleFilterClick(e, 'remark', 'Remark', 'text')}
           />
-          {console.log(
-            'remarkErrors[rowData.tc_id]',
-            remarkErrors[rowData.tc_id]
-          )}
           {remarkErrors[rowData.tc_id] &&
             selectedRows?.includes(rowData.tc_id) && (
               <div className="col">
@@ -1804,7 +1800,6 @@ function TestCaseReviewDetails() {
       enableSorting: false
     }
   ];
-  console.log('setRemarkErrors', remarkErrors);
   const moduleMapping = {
     module_name: 'module_id',
     sub_module_name: 'submodule_id',
@@ -2462,7 +2457,6 @@ function TestCaseReviewDetails() {
           highlightOnHover={true}
         /> */}
 
-        {console.log('rowData', rowData)}
         <MaterialTable
           columns={columns}
           data={rowData || []}
@@ -2485,7 +2479,7 @@ function TestCaseReviewDetails() {
           </label>
 
           <Select
-           classNamePrefix="react-select"
+            classNamePrefix="react-select"
             options={getFilterReviewCommentMasterList}
             id="common_comment_id"
             name="common_comment_id"
@@ -2546,6 +2540,7 @@ function TestCaseReviewDetails() {
           close={(prev) => setAddEditTestCasesModal({ ...prev, open: false })}
           paginationData={paginationData}
           id={planID}
+          project_id={rowData}
           payloadType={'TestCaseReview'}
         />
       )}

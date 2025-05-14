@@ -116,6 +116,8 @@ function TestDraftDetails(props) {
     (d) => d?.value != localStorage?.getItem('id')
   );
 
+  console.log('filterTestData', filterTestData);
+
   const [state, localDispatch] = useReducer(localReducer, initialState);
 
   const {
@@ -2259,6 +2261,7 @@ function TestDraftDetails(props) {
           paginationData={props?.paginationData}
           id={addEditTestCasesModal?.id}
           payloadType={'DRAFT'}
+          project_id={getDraftTestListData}
         />
       )}
 

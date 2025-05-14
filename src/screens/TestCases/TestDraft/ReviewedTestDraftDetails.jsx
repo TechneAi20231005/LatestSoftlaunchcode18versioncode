@@ -88,7 +88,6 @@ function ReviewedTestDraftDetails(props) {
 
   const { allReviewDraftTestListData, isLoading, filterReviewedDraftTestList } =
     useSelector((state) => state?.downloadFormat);
-  console.log(allReviewDraftTestListData, 'allReviewDraftTestListData');
   // const [paginationData, setPaginationData] = useReducer(
   //   (prevState, nextState) => {
   //     return { ...prevState, ...nextState };
@@ -147,7 +146,6 @@ function ReviewedTestDraftDetails(props) {
       updated_by: 'updated_by'
     };
     const filteredData = filterReviewedDraftTestList[filterKeyMap[column]];
-    console.log('filteredData', filteredData);
 
     const columnId = moduleMapping[column];
     localDispatch({ type: 'SET_FILTER_TYPE', payload: '' });
@@ -238,9 +236,6 @@ function ReviewedTestDraftDetails(props) {
 
   const handleFilterCheckboxChange = (event, label, value) => {
     const isChecked = event.target.checked;
-    console.log('label', isChecked);
-    console.log('state?.selectedFilterIds', state?.selectedFilterIds);
-    console.log('vv', value);
     if (isChecked) {
       localDispatch({
         type: 'SET_SELECTED_FILTER',
@@ -443,7 +438,6 @@ function ReviewedTestDraftDetails(props) {
 
   const handleApplyButton = async () => {
     props?.setClearData(false);
-    console.log('selectedFilterIds', selectedFilterIds);
     const newFilter = {
       column: filterColumnId,
       column_name: filterColumn,
@@ -1316,7 +1310,6 @@ function ReviewedTestDraftDetails(props) {
     );
   }, [props?.paginationData.pageSize, props?.paginationData.pageIndex]);
   useEffect(() => {
-    console.log('filterValues', filterValues);
     if (filterValues && searchTerm?.length === 0) {
       localDispatch({ type: 'SET_FILTER_VALUES', payload: filterValues });
       if (state.isFilterApplied === false) {

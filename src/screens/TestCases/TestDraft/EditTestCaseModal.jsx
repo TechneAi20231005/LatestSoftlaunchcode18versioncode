@@ -26,6 +26,7 @@ import { getTestingTypeMasterListThunk } from '../../../redux/services/testCases
 import { getByTestPlanIDListThunk } from '../../../redux/services/testCases/testCaseReview';
 import { original } from '@reduxjs/toolkit';
 import { getReviewCommentMasterListThunk } from '../../../redux/services/testCases/reviewCommentMaster';
+import platform from 'platform';
 
 function EditTestCaseModal({
   show,
@@ -34,13 +35,13 @@ function EditTestCaseModal({
   currentTestCasesData,
   paginationData,
   id,
-  payloadType
+  payloadType,
+  project_id
 }) {
   const dispatch = useDispatch();
   const { filterFunctionMasterList } = useSelector(
     (state) => state?.functionMaster
   );
-
   const { filterTestingGroupMasterList } = useSelector(
     (state) => state?.testingGroupMaster
   );
@@ -58,6 +59,9 @@ function EditTestCaseModal({
   } = useSelector((state) => state?.downloadFormat);
   const newModuleListData = getModuleData
     ?.filter((d) => d.project_id === currentTestCasesData?.original?.project_id)
+    ?.map((i) => ({ value: i.id, label: i.module_name }));
+  const newModuleListAddData = getModuleData
+    ?.filter((d) => d.project_id === project_id[0]?.project_id)
     ?.map((i) => ({ value: i.id, label: i.module_name }));
 
   const newSubModuleListData = getSubModuleData
@@ -98,13 +102,31 @@ function EditTestCaseModal({
       label: 'No'
     }
   ];
+  const platformData = [
+    {
+      value: 'WEB',
+      label: 'WEB'
+    },
+    {
+      value: 'WEBSITE',
+      label: 'WEBSITE'
+    },
+    {
+      value: 'APP',
+      label: 'APP'
+    },
+    {
+      value: 'API',
+      label: 'API'
+    }
+  ];
   const testingGroupRef = useRef();
 
   const testCaseInitialValue = {
     project_id:
       type === 'EDIT'
         ? currentTestCasesData?.original?.project_id?.toString()
-        : '',
+        : project_id[0]?.project_id,
     module_id:
       type === 'EDIT'
         ? currentTestCasesData?.original?.module_id?.toString()
@@ -121,6 +143,12 @@ function EditTestCaseModal({
     type_id:
       type === 'EDIT'
         ? currentTestCasesData?.original?.type_id?.toString()
+        : '',
+    tc_id:
+      type === 'EDIT' ? currentTestCasesData?.original?.tc_id?.toString() : '',
+    platform:
+      type === 'EDIT'
+        ? currentTestCasesData?.original?.platform?.toString()
         : '',
     // tc_id: type === 'EDIT' ? currentTestCasesData?.tc_id?.toString() : '',
     testing_group:
@@ -211,7 +239,6 @@ function EditTestCaseModal({
     }
   };
   const handleProjectChange = async (e, setFieldValue) => {
-    console.log('sss', getModuleData);
     setFieldValue('project_id', e?.target?.value);
     setFieldValue('module_id', '');
     setFieldValue('submodule_id', '');
@@ -325,6 +352,7 @@ function EditTestCaseModal({
                     id="edittestcasemodal_projectname"
                     placeholder="Select"
                     requiredField
+                    disabled
                     handleChange={(event) =>
                       handleProjectChange(event, setFieldValue)
                     }
@@ -334,7 +362,9 @@ function EditTestCaseModal({
                 <Col md={4} lg={4}>
                   <Field
                     classNamePrefix="react-select"
-                    data={!moduleDropdown ? newModuleListData : moduleDropdown}
+                    data={
+                      !moduleDropdown ? newModuleListAddData : moduleDropdown
+                    }
                     component={CustomDropdown}
                     name="module_id"
                     label="Module Name"
@@ -483,19 +513,21 @@ function EditTestCaseModal({
                     requiredField
                   />
                 </Col>
-
-                <Col md={4} lg={4}>
-                  <Field
-                    classNamePrefix="react-select"
-                    data={getFilterReviewCommentMasterList}
-                    component={CustomDropdown}
-                    name="reviewer_comment_id"
-                    label="Reviewer Comment Id"
-                    id="reviewer_comment_id"
-                    placeholder="Enter Reviewer Comment"
-                    requiredField
-                  />
-                </Col>
+                {(payloadType === 'TestCaseReview' ||
+                  payloadType === 'ReviewTestDraft') && (
+                  <Col md={4} lg={4}>
+                    <Field
+                      classNamePrefix="react-select"
+                      data={getFilterReviewCommentMasterList}
+                      component={CustomDropdown}
+                      name="reviewer_comment_id"
+                      label="Reviewer Comment"
+                      id="reviewer_comment_id"
+                      placeholder="Enter Reviewer Comment"
+                      requiredField
+                    />
+                  </Col>
+                )}
 
                 <Col md={6} lg={6}>
                   <Field
@@ -504,6 +536,29 @@ function EditTestCaseModal({
                     label="Steps"
                     id="edittestcasemodal_steps"
                     placeholder="Enter steps"
+                  />
+                </Col>
+                {type === 'EDIT' && (
+                  <Col md={6} lg={6}>
+                    <Field
+                      component={CustomInput}
+                      name="tc_id"
+                      label="Test Case Id"
+                      id="edittestcasemodal_tc_id"
+                      placeholder="Enter Test Case Id"
+                      disabled
+                    />
+                  </Col>
+                )}
+
+                <Col md={6} lg={6}>
+                  <Field
+                    component={CustomDropdown}
+                    data={platformData}
+                    name="platform"
+                    label="Platform"
+                    id="edittestcasemodal_platform"
+                    placeholder="Enter Platform"
                   />
                 </Col>
 
@@ -517,6 +572,16 @@ function EditTestCaseModal({
                     requiredField
                   />
                 </Col>
+                <Col md={6} lg={6}>
+                  <Field
+                    component={CustomTextArea}
+                    name="other_remark"
+                    label="Remark"
+                    id="edittestcasemodal_remark"
+                    placeholder="Enter Remark"
+                    disabled={payloadType === 'ReviewTestDraft'}
+                  />
+                </Col>
 
                 <Col md={6} lg={6}>
                   <Field
@@ -525,12 +590,11 @@ function EditTestCaseModal({
                     label="Expected Result"
                     id="edittestcasemodal_expectedresult"
                     placeholder="Enter expected result"
-                    requiredField
+                    disabled={payloadType === 'ReviewTestDraft'}
                   />
                 </Col>
               </Row>
-
-              <div className="d-flex justify-content-end gap-2">
+              <div className="d-flex justify-content-end gap-2 mt-3">
                 <button
                   // disabled={disable}
                   className="btn btn-primary px-4"

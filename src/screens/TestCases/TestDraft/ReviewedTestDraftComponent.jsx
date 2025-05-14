@@ -2262,7 +2262,6 @@ function ReviewedTestDraftComponent() {
           close={() => setDownloadModal(false)}
         />
       )}
-
       {addEditTestCasesModal.open === true && (
         <EditTestCaseModal
           show={addEditTestCasesModal?.open}
@@ -2273,6 +2272,7 @@ function ReviewedTestDraftComponent() {
           muiPaginationProps={{ rowsPerPageOptions: [10, 50, 100, 150, 200] }}
           id={id}
           payloadType={'ReviewTestDraft'}
+          project_id={allReviewDraftTestListDataByID}
         />
       )}
 
