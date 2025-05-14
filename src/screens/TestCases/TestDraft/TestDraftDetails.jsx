@@ -1752,19 +1752,12 @@ function TestDraftDetails(props) {
       accessorFn: (originalRows) =>
         `${originalRows?.tai_bc_status_conventions?.convention_name || '--'} `,
       header: 'Status',
-      Header: (
-        <span>
-          Status
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
-          />
-        </span>
-      ),
+      Header: <span>Status</span>,
 
       size: 180,
-      enableSorting: false
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableGrouping: false
     },
     {
       accessorFn: (originalRows) =>
