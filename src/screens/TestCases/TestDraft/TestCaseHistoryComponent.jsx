@@ -263,6 +263,20 @@ function TestCaseHistoryComponent() {
           : {}
     },
     {
+      accessorFn: (originalRows) => `${originalRows?.remark || '--'} `,
+      header: 'Remark',
+      enableColumnFilter: false,
+      size: 180,
+      enableSorting: true
+    },
+    {
+      accessorFn: (originalRows) => `${originalRows?.reviewer_comment || '--'} `,
+      header: 'Reviewer Comment',
+      enableColumnFilter: false,
+      size: 250,
+      enableSorting: true
+    },
+    {
       accessorFn: (originalRows) =>
         `${originalRows?.is_automation_script || '--'} `,
       header: 'Is Automation Script',
