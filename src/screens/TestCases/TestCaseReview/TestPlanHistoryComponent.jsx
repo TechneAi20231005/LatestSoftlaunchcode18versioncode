@@ -394,6 +394,20 @@ function TestPlanHistoryComponent() {
       enableColumnFilter: true
     },
     {
+      accessorFn: (originalRow) => originalRow?.reviewer_comment || '--',
+      header: 'Reviewer Comment',
+      enableColumnFilter: false,
+      enableSorting: true,
+      size: 250,
+    },
+    {
+      accessorFn: (originalRow) => originalRow?.remark || '--',
+      header: 'Remark',
+      enableColumnFilter: false,
+      enableSorting: true,
+      size: 180,
+    },
+    {
       accessorFn: (originalRows) =>
         `${originalRows?.is_automation_script || '--'} `,
       header: 'Is Automation Script',

@@ -1533,9 +1533,9 @@ function TestCaseReviewComponent() {
           const testData = responseData?.data?.map((item) => {
             return {
               tc_id: item.tc_id || '',
-              tester_name: item.tester_name
-                ? `${item.tester_name?.first_name} ${item.tester_name?.last_name}`
-                : '',
+              // tester_name: item.tester_name
+              //   ? `${item.tester_name?.first_name} ${item.tester_name?.last_name}`
+              //   : '',
               project_name: item?.project?.project_name || '',
               module_name: item?.module?.module_name || '',
               sub_module_name: item?.sub_module?.sub_module_name || '',

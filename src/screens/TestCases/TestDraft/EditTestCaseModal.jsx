@@ -391,7 +391,16 @@ function EditTestCaseModal({
                     requiredField
                   />
                 </Col>
-
+                <Col md={4} lg={4}>
+                  <Field
+                    component={CustomDropdown}
+                    data={platformData}
+                    name="platform"
+                    label="Platform"
+                    id="edittestcasemodal_platform"
+                    placeholder="Enter Platform"
+                  />
+                </Col>
                 <Col md={4} lg={4}>
                   <Field
                     classNamePrefix="react-select"
@@ -580,17 +589,6 @@ function EditTestCaseModal({
                     />
                   </Col>
                 )}
-
-                <Col md={6} lg={6}>
-                  <Field
-                    component={CustomDropdown}
-                    data={platformData}
-                    name="platform"
-                    label="Platform"
-                    id="edittestcasemodal_platform"
-                    placeholder="Enter Platform"
-                  />
-                </Col>
 
                 <Col md={6} lg={6}>
                   <Field
