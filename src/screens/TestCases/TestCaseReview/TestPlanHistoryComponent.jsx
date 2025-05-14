@@ -399,7 +399,7 @@ function TestPlanHistoryComponent() {
     },
     {
       accessorFn: (originalRows) =>
-        `${originalRows?.is_automation_script || '--'} `,
+        `${originalRows?.testcases?.[0].is_automation_script || '--'} `,
       header: 'Is Automation Script',
       Header: <span>Is Automation Script</span>,
 
