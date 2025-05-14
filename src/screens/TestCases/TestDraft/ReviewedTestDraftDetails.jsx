@@ -945,7 +945,7 @@ function ReviewedTestDraftDetails(props) {
       }
     },
     {
-      accessorKey: 'reviewer_name',
+       accessorFn: (originalRow) => `${originalRow.reviewer_name?.first_name || '-'} ${originalRow.reviewer_name?.last_name || '-'} `,
       header: 'Reviewer Name',
       size: 215,
       enableSorting: false,
@@ -1121,8 +1121,8 @@ function ReviewedTestDraftDetails(props) {
     },
     {
       // accessorKey: 'created_by',
-      accessorFn: (row) =>
-        `${row?.created_by?.first_name} ${row?.created_by?.last_name}`,
+      accessorFn: (row) => row?.created_by ?
+        `${row?.created_by?.first_name} ${row?.created_by?.last_name}` : '-',
       header: 'Created By',
       size: 180,
       enableSorting: false,
@@ -1170,8 +1170,8 @@ function ReviewedTestDraftDetails(props) {
     },
     {
       // accessorKey: 'updated_by',
-      accessorFn: (row) =>
-        `${row?.updated_by?.first_name} ${row?.updated_by?.last_name}`,
+      accessorFn: (row) => row?.updated_by ?
+        `${row?.updated_by?.first_name} ${row?.updated_by?.last_name}` : '-',
       header: 'Updated By',
       size: 183,
       enableSorting: false,
@@ -1343,7 +1343,7 @@ function ReviewedTestDraftDetails(props) {
           {allReviewDraftTestListData && (
             <MaterialTable
               columns={columns}
-              data={allReviewDraftTestListData}
+              data={allReviewDraftTestListData || []}
               enableRowNumbers={true}
               isExportData={false}
               isLoading={isLoading?.allReviewDraftTestListData}

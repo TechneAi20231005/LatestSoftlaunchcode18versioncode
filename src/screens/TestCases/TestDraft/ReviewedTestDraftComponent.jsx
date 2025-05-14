@@ -1914,7 +1914,9 @@ function ReviewedTestDraftComponent() {
         function_name: originalRows?.function_master?.function_name || '-',
         'Testing Type': originalRows?.testing_type?.type_name || '-',
         group_name: originalRows?.testing_group || '-',
+        platform : originalRows?.platform || '--',
         project_name: originalRows?.project?.project_name || '-',
+         'is Automation': originalRows?.is_automation_script || '-',
         'Created By': `${originalRows?.created_by?.first_name || '-'} ${
           originalRows?.created_by?.last_name || '-'
         }`,
@@ -1932,6 +1934,7 @@ function ReviewedTestDraftComponent() {
     { title: 'Field', field: 'field' },
     { title: 'Testing Type', field: 'type_name' },
     { title: 'Testing Group', field: 'group_name' },
+     { title: 'platform', field: 'platform' },
     { title: 'Test ID', field: 'tc_id' },
     { title: 'Test Description', field: 'test_description' },
     { title: 'Steps', field: 'steps' },
@@ -1939,6 +1942,7 @@ function ReviewedTestDraftComponent() {
     { title: 'Expected Result', field: 'expected_result' },
     { title: 'Status', field: 'status' },
     { title: 'Project', field: 'project_name' },
+    { title: 'is Automation', field: 'is Automation' },
     { title: 'Created At', field: 'created_at' },
     { title: 'Created By', field: 'created_by' },
     { title: 'Updated At', field: 'updated_at' },
