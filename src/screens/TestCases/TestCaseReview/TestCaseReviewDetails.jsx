@@ -309,7 +309,11 @@ function TestCaseReviewDetails() {
       if (!row?.comment_id) {
         newCommentIdErrors[row?.tc_id] = 'Reviewer comment is required';
       }
-      if (!row?.remark && !row?.other_remark) {
+      // if (!row?.remark && !row?.other_remark) {
+      //   newRemarkErrors[row?.tc_id] = 'Remark is required';
+      // }
+      const rowRemark = row?.remark || row?.other_remark;
+      if (!rowRemark && !commonRemark) {
         newRemarkErrors[row?.tc_id] = 'Remark is required';
       }
     });
@@ -330,7 +334,6 @@ function TestCaseReviewDetails() {
     if (
       (Object.keys(newCommentIdErrors).length > 0 ||
         Object.keys(newRemarkErrors).length > 0) &&
-      !commonComment &&
       !commonRemark
     ) {
       setCommentIdError(newCommentIdErrors);
@@ -1888,11 +1891,13 @@ function TestCaseReviewDetails() {
       data?.length > 0 &&
       data?.map((originalRows) => ({
         ...originalRows,
+
         module_name: originalRows?.module?.module_name || '-',
         sub_module_name: originalRows?.sub_module?.sub_module_name || '-',
         function_name: originalRows?.function_master?.function_name || '-',
         'Testing Type': originalRows?.testing_type?.type_name || '-',
         group_name: originalRows?.testing_group || '-',
+        status: originalRows?.tai_bc_status_conventions?.convention_name || '-',
         reviewer_comment:
           originalRows?.reviewer_comment?.reviewer_comment || '-',
         platform: originalRows?.platform || '--',
@@ -2173,8 +2178,8 @@ function TestCaseReviewDetails() {
       dispatch(
         getByTestPlanIDListThunk({
           id: id,
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: paginationData.pageSize,
+          page: paginationData.pageIndex,
           filter_testcase_data: updatedFilters
         })
       );
@@ -2199,8 +2204,8 @@ function TestCaseReviewDetails() {
       dispatch(
         getByTestPlanIDListThunk({
           id: id,
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: paginationData.pageSize,
+          page: paginationData.pageIndex,
           filter_testcase_data: updatedFilters
         })
       );
@@ -2248,8 +2253,8 @@ function TestCaseReviewDetails() {
       dispatch(
         getByTestPlanIDListThunk({
           id: id,
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: paginationData.pageSize,
+          page: paginationData.pageIndex,
           filter_testcase_data: updatedFilters
         })
       );
@@ -2275,8 +2280,8 @@ function TestCaseReviewDetails() {
     dispatch(
       getByTestPlanIDListThunk({
         id: id,
-        limit: paginationData.rowPerPage,
-        page: 1,
+        limit: paginationData.pageSize,
+        page: paginationData.pageIndex,
         filter_testcase_data: []
       })
     );
@@ -2333,8 +2338,8 @@ function TestCaseReviewDetails() {
         dispatch(
           getByTestPlanIDListThunk({
             id: id,
-            limit: paginationData.rowPerPage,
-            page: paginationData.currentPage,
+            limit: paginationData.pageSize,
+            page: paginationData.pageIndex,
             filter_testcase_data: updatedFilters
           })
         );
@@ -2370,8 +2375,8 @@ function TestCaseReviewDetails() {
     dispatch(
       getByTestPlanIDListThunk({
         id: id,
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage,
+        limit: paginationData.pageSize,
+        page: paginationData.pageIndex,
         filter_testcase_data:
           updatedFilters?.length === 1 &&
           updatedFilters[0]?.column === filterColumnId
@@ -2386,16 +2391,16 @@ function TestCaseReviewDetails() {
       })
     );
     dispatch(getReviewCommentMasterListThunk());
-  }, [paginationData.rowPerPage, paginationData.currentPage]);
+  }, [paginationData.pageSize, paginationData.pageIndex]);
 
   useEffect(() => {
     dispatch(
       getTestCaseStatusDataList({
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage
+        limit: paginationData.pageSize,
+        page: paginationData.pageIndex
       })
     );
-  }, [paginationData.rowPerPage, paginationData.currentPage]);
+  }, [paginationData.pageSize, paginationData.pageIndex]);
   return (
     <div className="container-xxl">
       <PageHeader
@@ -2403,18 +2408,20 @@ function TestCaseReviewDetails() {
         renderRight={() => {
           return (
             <div className="col-md-6 d-flex justify-content-end">
-              <button
-                onClick={() =>
-                  setAddEditTestCasesModal({
-                    type: 'Add',
-                    // data: row,
-                    open: true
-                  })
-                }
-                className="btn btn-primary text-white me-2"
-              >
-                ADD
-              </button>
+              {rowData?.length > 0 && (
+                <button
+                  onClick={() =>
+                    setAddEditTestCasesModal({
+                      type: 'Add',
+                      // data: row,
+                      open: true
+                    })
+                  }
+                  className="btn btn-primary text-white me-2"
+                >
+                  ADD
+                </button>
+              )}
               <button
                 onClick={handleButtonClick}
                 className="btn btn-primary text-white me-2"
@@ -2460,7 +2467,7 @@ function TestCaseReviewDetails() {
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
         /> */}
-
+        {console.log('data', allTestPlanIDData?.data?.total)}
         <MaterialTable
           columns={columns}
           data={rowData || []}

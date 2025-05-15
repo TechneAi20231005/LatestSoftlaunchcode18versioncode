@@ -171,12 +171,30 @@ export const importTestDraftThunk = createAsyncThunk(
           toast.success(response?.data?.message);
           return { data: response?.data.data, msg: response?.data?.message };
         } else {
-          onErrorHandler();
-          toast.error(response?.data?.message);
+          // onErrorHandler();
+          // console.log('rrrr', response.data.data);
+          // console.log('_rewampAttachmentUrl', _rewampAttachmentUrl);
+          // toast.error(response?.data?.message);
 
-          const url = `${_rewampAttachmentUrl}` + response.data.data;
-          window.open(url, '_blank');
-          // errorHandler(response);
+          // const url = `${_rewampAttachmentUrl}` + response.data.data;
+          // window.open(url, '_blank');
+
+          onErrorHandler();
+          console.log('rrrr', response.data.data);
+          console.log('_rewampAttachmentUrl', _rewampAttachmentUrl);
+
+          if (
+            Array.isArray(response.data.data) &&
+            response.data.data.length === 0
+          ) {
+            toast.error(
+              response?.data?.message || 'No data available to download.'
+            );
+          } else {
+            toast.error(response?.data?.message);
+            const url = `${_rewampAttachmentUrl}${response.data.data}`;
+            window.open(url, '_blank');
+          }
         }
       }
     } catch (error) {

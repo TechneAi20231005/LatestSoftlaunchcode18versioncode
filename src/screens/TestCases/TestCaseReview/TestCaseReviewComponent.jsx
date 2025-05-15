@@ -1582,8 +1582,8 @@ function TestCaseReviewComponent() {
         errorHandler: () => {
           setDisable(false);
           setSelectedStatus(null);
-
-          toast.error('Failed to fetch test case data.');
+          // onErrorHandler();
+          // toast.error('Failed to fetch test case data.');
         }
       })
     );
@@ -1711,8 +1711,14 @@ function TestCaseReviewComponent() {
   useEffect(() => {
     // Whenever searchTerm or filterData changes, update the selected filter IDs
     // if (searchTerm?.length === 0) {
+    // const filteredData = filteredResults?.filter((item) =>
+    //   item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    // );
     const filteredData = filteredResults?.filter((item) =>
-      item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+      (item?.name || '')
+        .toString()
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
     );
     const filteredIds = filteredData?.map((item) => item.id);
     localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: filteredIds });

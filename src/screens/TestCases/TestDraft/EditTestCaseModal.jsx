@@ -163,8 +163,8 @@ function EditTestCaseModal({
         ? currentTestCasesData?.original?.is_automation_script
         : '',
 
-    reviewer_comment:
-      type === 'EDIT' ? currentTestCasesData?.original?.reviewer_comment : '',
+    comment_id:
+      type === 'EDIT' ? currentTestCasesData?.original?.comment_id : '',
 
     other_remark:
       type === 'EDIT' ? currentTestCasesData?.original?.other_remark : '',
@@ -562,9 +562,9 @@ function EditTestCaseModal({
                       classNamePrefix="react-select"
                       data={getFilterReviewCommentMasterList}
                       component={CustomDropdown}
-                      name="reviewer_comment"
+                      name="comment_id"
                       label="Reviewer Comment"
-                      id="reviewer_comment"
+                      id="comment_id"
                       placeholder="Enter Reviewer Comment"
                       disabled={payloadType === 'ReviewTestDraft'}
                     />
