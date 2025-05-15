@@ -291,7 +291,7 @@ const downloadFormatSlice = createSlice({
       .addCase(getAllReviewTestDraftList.fulfilled, (state, action) => {
         state.isLoading.allReviewDraftTestListData = false;
         state.successMsg.allReviewDraftTestListData = action?.payload;
-        state.allReviewDraftTestListData = action?.payload?.data?.data?.data;
+        state.allReviewDraftTestListData = action?.payload?.data?.data;
         state.filterReviewedDraftTestList = action?.payload?.data?.filter_data;
       })
       .addCase(getAllReviewTestDraftList.rejected, (state, action) => {

@@ -1353,10 +1353,10 @@ function ReviewedTestDraftDetails(props) {
     <>
       <Container className="mt-3" fluid>
         <div>
-          {allReviewDraftTestListData && (
+          {allReviewDraftTestListData?.data && (
             <MaterialTable
               columns={columns}
-              data={allReviewDraftTestListData || []}
+              data={allReviewDraftTestListData?.data || []}
               enableRowNumbers={true}
               isExportData={false}
               isLoading={isLoading?.allReviewDraftTestListData}
@@ -1365,6 +1365,7 @@ function ReviewedTestDraftDetails(props) {
               muiPaginationProps={{
                 rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
               }}
+              totalRows={allReviewDraftTestListData?.total}
               manualPagination={true}
             />
           )}

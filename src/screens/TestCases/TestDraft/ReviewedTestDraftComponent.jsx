@@ -139,7 +139,7 @@ function ReviewedTestDraftComponent() {
 
   const [paginationData, setPaginationData] = useState({
     pageIndex: 0,
-    pageSize: 100
+    pageSize: 10
   });
 
   const { testCasesStatusDataList } = useSelector(
@@ -2075,7 +2075,7 @@ function ReviewedTestDraftComponent() {
 
     setClearData(true);
     setPaginationData({
-      pageSize: 100,
+      pageSize: 10,
       pageIndex: 0
     });
     dispatch(
@@ -2231,13 +2231,12 @@ function ReviewedTestDraftComponent() {
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
         /> */}
-
         <MaterialTable
           columns={columns}
           data={allReviewDraftTestListDataByID || []}
           // isLoading={isLoading}
-          pagination={paginationData}
-          setPagination={setPaginationData}
+          paginationData={paginationData}
+          setPaginationData={setPaginationData}
           muiPaginationProps={{
             rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
           }}
