@@ -192,7 +192,7 @@ function EditTestCaseModal({
                 dispatch(
                   getByTestPlanIDListThunk({
                     id: id,
-                    limit: paginationData.rowPerPage,
+                    limit: 10,
                     page: 1,
                     filter_testcase_data: []
                   })
@@ -211,8 +211,8 @@ function EditTestCaseModal({
                   payloadType === 'DRAFT' &&
                     dispatch(
                       getDraftTestCaseList({
-                        limit: paginationData.rowPerPage,
-                        page: paginationData.currentPage
+                        limit: 10,
+                        page: 1
                       })
                     );
                 }
@@ -221,8 +221,8 @@ function EditTestCaseModal({
                     dispatch(
                       getByTestPlanIDListThunk({
                         id: id,
-                        limit: paginationData.rowPerPage,
-                        page: paginationData.currentPage
+                        limit: 10,
+                        page: 1
                       })
                     );
                 }
@@ -232,8 +232,8 @@ function EditTestCaseModal({
                     dispatch(
                       getByTestPlanIDReviewedListThunk({
                         id: id,
-                        limit: paginationData.rowPerPage,
-                        page: paginationData.currentPage
+                        limit: 10,
+                        page: 1
                       })
                     );
                 }

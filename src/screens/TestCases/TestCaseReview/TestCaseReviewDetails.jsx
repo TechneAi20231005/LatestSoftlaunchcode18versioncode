@@ -2395,7 +2395,7 @@ function TestCaseReviewDetails() {
       getByTestPlanIDListThunk({
         id: id,
         limit: paginationData.pageSize,
-        page: paginationData.pageIndex,
+        page: paginationData.pageIndex + 1,
         filter_testcase_data:
           updatedFilters?.length === 1 &&
           updatedFilters[0]?.column === filterColumnId
@@ -2416,7 +2416,7 @@ function TestCaseReviewDetails() {
     dispatch(
       getTestCaseStatusDataList({
         limit: paginationData.pageSize,
-        page: paginationData.pageIndex
+        page: paginationData.pageIndex + 1
       })
     );
   }, [paginationData.pageSize, paginationData.pageIndex]);
