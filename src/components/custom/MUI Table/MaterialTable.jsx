@@ -166,6 +166,14 @@ function MaterialTable({
         return {
           ...col,
           size: expandColumn ? 350 : 190,
+          /*************  ✨ Windsurf Command ⭐  *************/
+          /**
+           * Props for the Material-UI TextField component that is used
+           * as the filter input for date-range filters.
+           * @param {Object} column The column for which the filter is being applied
+           * @returns {Object} Props for the TextField component
+           */
+          /*******  eae971db-3024-4283-a939-4a03c1ed6113  *******/
           muiFilterTextFieldProps: (column) => ({
             placeholder: column?.rangeFilterIndex === 0 ? 'From' : 'To'
           }),

@@ -1714,21 +1714,12 @@ function TestDraftDetails(props) {
     {
       accessorFn: (originalRows) => `${originalRows?.testing_group || '--'} `,
       header: 'Testing Group',
-      Header: (
-        <span>
-          Testing Group
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'group_name', 'Testing Group', 'text')
-            }
-          />
-        </span>
-      ),
+      Header: <span>Testing Group</span>,
 
       size: 200,
-      enableSorting: false
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableGrouping: false
     },
 
     {
@@ -1754,80 +1745,43 @@ function TestDraftDetails(props) {
       accessorFn: (originalRows) =>
         `${originalRows?.test_description || '--'} `,
       header: 'Test Description',
-      Header: (
-        <span>
-          Test Description
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(
-                e,
-                'test_description',
-                'Test Description',
-                'text'
-              )
-            }
-          />
-        </span>
-      ),
+      Header: <span>Test Description</span>,
 
       size: 220,
-      enableSorting: false
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableGrouping: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.steps || '--'} `,
       header: 'Steps',
-      Header: (
-        <span>
-          Steps
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-          />
-        </span>
-      ),
+      Header: <span>Steps</span>,
 
       size: 180,
-      enableSorting: false
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableGrouping: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.expected_result || '--'} `,
       header: 'Expected Result',
-      Header: (
-        <span>
-          Expected Result
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
-            }
-          />
-        </span>
-      ),
+      Header: <span>Expected Result</span>,
 
       size: 220,
-      enableSorting: false
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableGrouping: false
     },
     {
       accessorFn: (originalRows) =>
         `${originalRows?.tai_bc_status_conventions?.convention_name || '--'} `,
       header: 'Status',
-      Header: (
-        <span>
-          Status
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
-          />
-        </span>
-      ),
+      Header: <span>Status</span>,
 
       size: 180,
-      enableSorting: false
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableGrouping: false
     },
     {
       accessorFn: (originalRows) =>
@@ -2180,7 +2134,9 @@ function TestDraftDetails(props) {
           manualPagination={true}
           manualFiltering={true}
           isExportData={false}
-          muiPaginationProps={{ rowsPerPageOptions: [100, 500, 1000, 2000] }}
+          muiPaginationProps={{
+            rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
+          }}
         />
       </Container>
       <div className="d-flex justify-content-end mt-3">
@@ -2194,7 +2150,7 @@ function TestDraftDetails(props) {
               modalHeader: 'Send To Reviewer Modal'
             });
           }}
-          disabled={!getDraftTestListData}
+          disabled={!(selectedRows?.length > 0)}
         >
           <i class="icofont-paper-plane fs-0.8"></i> {''}
           Send To Reviewer

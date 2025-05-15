@@ -263,6 +263,21 @@ function TestCaseHistoryComponent() {
           : {}
     },
     {
+      accessorFn: (originalRows) => `${originalRows?.remark || '--'} `,
+      header: 'Remark',
+      enableColumnFilter: false,
+      size: 180,
+      enableSorting: true
+    },
+    {
+      accessorFn: (originalRows) =>
+        `${originalRows?.reviewer_comment || '--'} `,
+      header: 'Reviewer Comment',
+      enableColumnFilter: false,
+      size: 250,
+      enableSorting: true
+    },
+    {
       accessorFn: (originalRows) =>
         `${originalRows?.is_automation_script || '--'} `,
       header: 'Is Automation Script',
@@ -1254,7 +1269,9 @@ function TestCaseHistoryComponent() {
         <MaterialTable
           columns={columns}
           data={testDraftHistory || []}
-          muiPaginationProps={{ rowsPerPageOptions: [10, 50, 100, 150, 200] }}
+          muiPaginationProps={{
+            rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
+          }}
           isExportData={false}
           isLoading={isLoading.testDraftHistory}
           paginationData={paginationData}

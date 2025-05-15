@@ -395,6 +395,9 @@ function ReviewCommentMasterComponent() {
             reset={reset}
             setReset={setReset}
             exportDataKeys={exportDataKeys}
+            muiPaginationProps={{
+              rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
+            }}
           ></MaterialTable>
         )}
         <AddEditReviewCommentMaster
