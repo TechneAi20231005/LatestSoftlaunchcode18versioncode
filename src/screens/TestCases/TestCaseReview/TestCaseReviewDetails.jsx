@@ -125,7 +125,7 @@ function TestCaseReviewDetails() {
   // );
   const [paginationData, setPaginationData] = useState({
     pageIndex: 0,
-    pageSize: 100
+    pageSize: 10
   });
 
   const [addEditTestCasesModal, setAddEditTestCasesModal] = useState({
@@ -2270,7 +2270,7 @@ function TestCaseReviewDetails() {
     //   currentPage: 1
     // });
     setPaginationData({
-      pageSize: 100,
+      pageSize: 10,
       pageIndex: 0
     });
     dispatch(

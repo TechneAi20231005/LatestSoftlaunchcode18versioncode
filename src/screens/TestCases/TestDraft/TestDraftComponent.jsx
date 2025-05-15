@@ -235,13 +235,13 @@ export default function TestDraftComponent({}) {
     //   currentPage: 1
     // });
     setPaginationData({
-      pageSize: 100,
+      pageSize: 10,
       pageIndex: 0
     });
     currentTab === 'test_summary'
       ? dispatch(
           getDraftTestCaseList({
-            limit: 100,
+            limit: 10,
             page: 1,
             filter_testcase_data: []
           })
@@ -304,7 +304,6 @@ export default function TestDraftComponent({}) {
     '& .MuiTabs-indicator': { backgroundColor: '#484c7f' },
     '& .MuiTab-root.Mui-selected': { color: '#484c7f' }
   };
-  console.log('allDraftTestListData', allDraftTestListData);
   return (
     <div className="container-xxl">
       <PageHeader
