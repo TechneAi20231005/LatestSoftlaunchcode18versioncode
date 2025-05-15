@@ -110,8 +110,12 @@ function TestCaseReviewComponent() {
     pageIndex: 0,
     pageSize: 10
   });
-  const { testCaseReviewList, isLoading, filterTestCaseReviewList ,totalCount} =
-    useSelector((state) => state?.testCaseReview);
+  const {
+    testCaseReviewList,
+    isLoading,
+    filterTestCaseReviewList,
+    totalCount
+  } = useSelector((state) => state?.testCaseReview);
 
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const [errorMessage, setErrorMessage] = useState('');
@@ -1053,11 +1057,7 @@ function TestCaseReviewComponent() {
       },
       Cell: ({ row }) => {
         const rowData = row?.original;
-        const reviewerId = localStorage?.getItem('id');
-
-        const isDisabled =
-          rowData?.reviewer_id !== parseInt(reviewerId) ||
-          rowData?.total_reviewed_testcases?.length > 0;
+        const isDisabled = rowData?.total_reviewed_testcases > 0;
 
         return (
           <div className="d-flex align-items-center">
@@ -1798,7 +1798,6 @@ function TestCaseReviewComponent() {
           isFilterApplied={state.isFilterApplied}
         />
       )}
-
       <Modal
         centered
         show={sendToReviewerModal.showModal}
@@ -1823,7 +1822,9 @@ function TestCaseReviewComponent() {
             type="text"
             id="reviewer_id"
             name="reviewer_id"
-            options={filterTestData}
+            options={filterTestData?.filter(
+              (d) => d?.value != sendToReviewerModal?.modalData?.tester_id
+            )}
             required
             onChange={(e) => {
               const selectedId = e?.value;
