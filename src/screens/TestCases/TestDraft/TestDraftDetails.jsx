@@ -239,9 +239,9 @@ function TestDraftDetails(props) {
       status: 'status',
       project_name: 'project',
       created_at: 'created_at',
-      created_by: 'created_by',
+      created_by: 'createdby',
       updated_at: 'updated_at',
-      updated_by: 'updated_by'
+      updated_by: 'updatedby'
     };
     const filteredData = filterData[filterKeyMap[column]];
     const columnId = moduleMapping[column];
@@ -1507,10 +1507,8 @@ function TestDraftDetails(props) {
               }
             />
             <Link
-              to={`/${
-                _base + '/TestCaseHistoryComponent/' + row?.original?.id
-              }`}
-            >
+  to={`/${_base}/TestCaseHistoryComponent/${row?.original?.id}?type=testSummary`}
+>
               <i class="icofont-history cp btn btn-outline-secondary fw-bold  " />
             </Link>
           </div>
@@ -1558,7 +1556,8 @@ function TestDraftDetails(props) {
       }
     },
     {
-      accessorFn: (originalRows) => `${originalRows?.tc_id || '--'} `,
+      accessorFn: (originalRows) =>
+        originalRows?.tc_id ? `TC_${originalRows?.tc_id}` : '--',
       header: 'Test Id',
       Header: (
         <span>
@@ -1848,7 +1847,8 @@ function TestDraftDetails(props) {
       ),
 
       size: 200,
-      enableSorting: false
+      enableSorting: false,
+      enableGrouping:false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.updated_at || '--'} `,

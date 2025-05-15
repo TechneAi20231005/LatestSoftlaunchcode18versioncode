@@ -125,7 +125,7 @@ function TestCaseReviewDetails() {
   // );
   const [paginationData, setPaginationData] = useState({
     pageIndex: 0,
-    pageSize: 100
+    pageSize: 10
   });
 
   const [addEditTestCasesModal, setAddEditTestCasesModal] = useState({
@@ -1902,7 +1902,8 @@ function TestCaseReviewDetails() {
           originalRows?.reviewer_comment?.reviewer_comment || '-',
         platform: originalRows?.platform || '--',
         project_name: originalRows?.project?.project_name || '-',
-        'is Automation': originalRows?.is_automation_script || '-',
+        'is Automation':
+          originalRows?.test_cases?.[0].is_automation_script || '--',
         'Created By': `${originalRows?.created_by?.first_name || '-'} ${
           originalRows?.created_by?.last_name || '-'
         }`,
@@ -2274,7 +2275,7 @@ function TestCaseReviewDetails() {
     //   currentPage: 1
     // });
     setPaginationData({
-      pageSize: 100,
+      pageSize: 10,
       pageIndex: 0
     });
     dispatch(
