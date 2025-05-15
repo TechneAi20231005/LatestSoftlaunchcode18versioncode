@@ -240,6 +240,7 @@ const CustomFilterModal = ({
             <button
               className="btn btn-sm btn-primary"
               onClick={handleApplyButton}
+              disabled={!(selectedFilters?.length > 0)}
             >
               Apply
             </button>
@@ -250,6 +251,7 @@ const CustomFilterModal = ({
               onClick={handleClearAllFilter}
               className="btn btn-sm btn-outline-primary"
               title="Clear All"
+              disabled={!(selectedFilters?.length > 0)}
             >
               Clear All
             </button>

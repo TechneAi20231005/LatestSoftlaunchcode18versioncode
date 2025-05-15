@@ -243,7 +243,13 @@ function TestDraftDetails(props) {
       updated_at: 'updated_at',
       updated_by: 'updatedby'
     };
-    const filteredData = filterData[filterKeyMap[column]];
+    let filteredData = filterData[filterKeyMap[column]];
+    if (filterKeyMap[column] === 'tc_id') {
+      filteredData = filteredData?.map((item) => ({
+        ...item,
+        name: `TC_${item?.name}`
+      }));
+    }
     const columnId = moduleMapping[column];
     localDispatch({ type: 'SET_FILTER_TYPE', payload: '' });
     localDispatch({ type: 'SET_COLUMN_NAME', payload: name });
@@ -282,6 +288,19 @@ function TestDraftDetails(props) {
     localDispatch({
       type: 'SET_SEARCH_TERM',
       payload: term
+    });
+    localDispatch({
+      type: 'SET_SELECTED_FILTER',
+      payload: []
+    });
+
+    localDispatch({
+      type: 'SET_SELECTED_FILTER_IDS',
+      payload: []
+    });
+    localDispatch({
+      type: 'SET_IS_FILTER_APPLIED',
+      payload: true
     });
   };
   // const filteredResults = filterValues?.filter((item) =>
@@ -350,8 +369,6 @@ function TestDraftDetails(props) {
       });
     }
   };
-  {
-  }
   const handleSelectAll = (event) => {
     if (event.target.checked) {
       localDispatch({
@@ -485,15 +502,13 @@ function TestDraftDetails(props) {
       // localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
     } catch (error) {}
   };
-  {
-  }
+
   const handleApplyButton = async () => {
     props?.setClearData(false);
     const newFilter = {
       column: filterColumnId,
       column_name: filterColumn,
-
-      whereIn: selectedFilterIds,
+      whereIn: Array.from(new Set(selectedFilterIds)),
       sort: sortOrder
     };
 
@@ -1507,8 +1522,8 @@ function TestDraftDetails(props) {
               }
             />
             <Link
-  to={`/${_base}/TestCaseHistoryComponent/${row?.original?.id}?type=testSummary`}
->
+              to={`/${_base}/TestCaseHistoryComponent/${row?.original?.id}?type=testSummary`}
+            >
               <i class="icofont-history cp btn btn-outline-secondary fw-bold  " />
             </Link>
           </div>
@@ -1848,7 +1863,7 @@ function TestDraftDetails(props) {
 
       size: 200,
       enableSorting: false,
-      enableGrouping:false
+      enableGrouping: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.updated_at || '--'} `,
@@ -2068,24 +2083,6 @@ function TestDraftDetails(props) {
       });
     }
   }, [filterValues, localDispatch]);
-
-  useEffect(() => {
-    // Whenever searchTerm or filterData changes, update the selected filter IDs
-    // if (searchTerm?.length === 0) {
-    // const filteredData = filteredResults?.filter((item) =>
-    //   item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    // );
-    const filteredData = filteredResults?.filter((item) =>
-      (item?.name || '')
-        .toString()
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
-    );
-
-    const filteredIds = filteredData?.map((item) => item.id);
-    localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: filteredIds });
-    // }
-  }, [searchTerm, localDispatch]);
 
   // useEffect(() => {
   //   dispatch(
