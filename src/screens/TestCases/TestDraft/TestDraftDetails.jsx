@@ -239,9 +239,9 @@ function TestDraftDetails(props) {
       status: 'status',
       project_name: 'project',
       created_at: 'created_at',
-      created_by: 'created_by',
+      created_by: 'createdby',
       updated_at: 'updated_at',
-      updated_by: 'updated_by'
+      updated_by: 'updatedby'
     };
     const filteredData = filterData[filterKeyMap[column]];
     const columnId = moduleMapping[column];
