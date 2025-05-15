@@ -1507,10 +1507,8 @@ function TestDraftDetails(props) {
               }
             />
             <Link
-              to={`/${
-                _base + '/TestCaseHistoryComponent/' + row?.original?.id
-              }`}
-            >
+  to={`/${_base}/TestCaseHistoryComponent/${row?.original?.id}?type=testSummary`}
+>
               <i class="icofont-history cp btn btn-outline-secondary fw-bold  " />
             </Link>
           </div>

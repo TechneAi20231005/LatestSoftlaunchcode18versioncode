@@ -4,13 +4,15 @@ import DataTable from 'react-data-table-component';
 import PageHeader from '../../../components/Common/PageHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import { testDraftDetailsHistoryThunk } from '../../../redux/services/testCases/downloadFormatFile';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 
 function TestCaseHistoryComponent() {
-  const { id } = useParams();
-
+  const { id} = useParams();
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const type = queryParams.get('type');
   // const [paginationData, setPaginationData] = useReducer(
   //   (prevState, nextState) => {
   //     return { ...prevState, ...nextState };
@@ -262,7 +264,8 @@ function TestCaseHistoryComponent() {
             }
           : {}
     },
-    {
+    ...(type !=="testSummary"
+    ? [ {
       accessorFn: (originalRows) => `${originalRows?.other_remark || '--'} `,
       header: 'Remark',
       enableColumnFilter: false,
@@ -276,7 +279,8 @@ function TestCaseHistoryComponent() {
       enableColumnFilter: false,
       size: 250,
       enableSorting: true
-    },
+    }]:[])
+   ,
     {
       accessorFn: (originalRows) =>
         `${originalRows?.is_automation_script || '--'} `,
