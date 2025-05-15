@@ -1824,7 +1824,8 @@ function TestDraftDetails(props) {
       ),
 
       size: 200,
-      enableSorting: false
+      enableSorting: false,
+      enableGrouping:false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.updated_at || '--'} `,

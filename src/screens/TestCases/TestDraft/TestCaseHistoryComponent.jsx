@@ -263,7 +263,7 @@ function TestCaseHistoryComponent() {
           : {}
     },
     {
-      accessorFn: (originalRows) => `${originalRows?.remark || '--'} `,
+      accessorFn: (originalRows) => `${originalRows?.other_remark || '--'} `,
       header: 'Remark',
       enableColumnFilter: false,
       size: 180,
