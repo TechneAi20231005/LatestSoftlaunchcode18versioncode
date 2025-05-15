@@ -22475,7 +22475,7 @@ body.rtl_mode
 .modal {
   right: 0;
   left: auto;
-  z-index: 99999;
+  z-index: 1050;
 }
 
 .modal.fade .modal-dialog-vertical {

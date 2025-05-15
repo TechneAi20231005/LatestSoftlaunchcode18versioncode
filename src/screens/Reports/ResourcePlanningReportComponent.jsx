@@ -306,7 +306,7 @@ export default function ResourcePlanningReportComponent() {
 
   return (
     <div className="container-xxl">
-      <PageHeader headerTitle="Resource Planing Report" />
+      <PageHeader headerTitle="Resource Planning Report" />
 
       <div className="card mt-2" style={{ zIndex: 10 }}>
         <div className="card-body">
