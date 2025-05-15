@@ -253,6 +253,7 @@ const downloadFormatSlice = createSlice({
       .addCase(getDraftTestCaseList.fulfilled, (state, action) => {
         state.isLoading.getDraftTestListData = false;
         state.successMsg.getDraftTestListData = action?.payload;
+
         let data = !action?.payload?.data?.data?.data
           ? action?.payload?.data?.data?.data
           : action?.payload?.data?.data?.data?.filter(

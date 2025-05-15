@@ -1289,7 +1289,7 @@ function TestCaseReviewComponent() {
     },
     {
       accessorFn: (originalRows) =>
-        `${originalRows?.is_automation_script || '--'} `,
+        originalRows?.test_cases?.[0].is_automation_script || '--',
       header: 'Is Automation Script',
       Header: (
         <span>

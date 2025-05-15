@@ -1352,7 +1352,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1372,7 +1372,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 220,
       enableSorting: false
     },
@@ -1391,7 +1391,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1411,7 +1411,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1428,7 +1428,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1449,7 +1449,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1468,7 +1468,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1485,7 +1485,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1504,7 +1504,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1529,7 +1529,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1546,7 +1546,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1565,7 +1565,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1585,7 +1585,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1605,7 +1605,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       enableSorting: true,
       size: 250,
       Cell: ({ row }) => {
@@ -1662,7 +1662,7 @@ function TestCaseReviewDetails() {
             )}
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       enableSorting: true,
       size: 300,
       Cell: ({ row }) => {
@@ -1712,7 +1712,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1731,7 +1731,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1754,7 +1754,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1773,7 +1773,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1795,7 +1795,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     }
