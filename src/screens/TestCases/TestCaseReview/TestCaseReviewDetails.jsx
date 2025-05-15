@@ -1684,7 +1684,7 @@ function TestCaseReviewDetails() {
               placeholder="Enter Remark"
               aria-label="default input example"
               maxLength={100}
-              defaultValue={value}
+              value={value}
               onChange={(e) =>
                 handleRowChange(rowData.id, 'other_remark', e.target.value)
               }
