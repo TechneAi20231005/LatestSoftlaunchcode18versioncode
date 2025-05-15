@@ -163,8 +163,7 @@ function EditTestCaseModal({
         ? currentTestCasesData?.original?.is_automation_script
         : '',
 
-    comment_id:
-      type === 'EDIT' ? currentTestCasesData?.original?.comment_id : '',
+    comment_id: currentTestCasesData?.original?.comment_id || '',
 
     other_remark:
       type === 'EDIT' ? currentTestCasesData?.original?.other_remark : '',
@@ -175,7 +174,10 @@ function EditTestCaseModal({
     expected_result:
       type === 'EDIT' ? currentTestCasesData?.original?.expected_result : ''
   };
-
+  console.log(
+    'currentTestCasesData',
+    currentTestCasesData?.original?.comment_id
+  );
   const handleEditTestCase = ({ formData }) => {
     if (disable) return;
     setDisable(true);
@@ -555,6 +557,10 @@ function EditTestCaseModal({
                     requiredField
                   />
                 </Col>
+                {console.log(
+                  'getFilterReviewCommentMasterList',
+                  getFilterReviewCommentMasterList
+                )}
                 {(payloadType === 'TestCaseReview' ||
                   payloadType === 'ReviewTestDraft') && (
                   <Col md={4} lg={4}>

@@ -1615,7 +1615,7 @@ function TestCaseReviewDetails() {
         const rowData = row.original;
         const selectedValue =
           comments[rowData.id] || rowData.comment_id || commonComment || '';
-
+        console.log('selectedValue', selectedValue);
         return (
           <div>
             <select
@@ -1720,6 +1720,22 @@ function TestCaseReviewDetails() {
       enableSorting: false
     },
     {
+      accessorFn: (originalRows) => originalRows?.is_automation_script || '--',
+      header: 'Is Automation Script',
+      Header: (
+        <span>
+          Is Automation Script
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+          />
+        </span>
+      ),
+
+      size: 250,
+      enableSorting: false
+    },
+    {
       accessorFn: (originalRows) => `${originalRows?.created_at || '--'} `,
       header: 'Created At',
       Header: (
@@ -1821,7 +1837,8 @@ function TestCaseReviewDetails() {
     created_at: 'created_at',
     created_by: 'created_by',
     updated_at: 'updated_at',
-    updated_by: 'updated_by'
+    updated_by: 'updated_by',
+    is_automation_script: 'is_automation_script'
   };
 
   // const transformDataForExport = (rowData, data, comments, commonComment) => {
@@ -1961,7 +1978,8 @@ function TestCaseReviewDetails() {
       created_at: 'created_at',
       created_by: 'created_by',
       updated_at: 'updated_at',
-      updated_by: 'updated_by'
+      updated_by: 'updated_by',
+      is_automation_script: 'is_automation_script'
     };
     const filteredData = filterTestPlanData[filterKeyMap[column]];
     const columnId = moduleMapping[column];

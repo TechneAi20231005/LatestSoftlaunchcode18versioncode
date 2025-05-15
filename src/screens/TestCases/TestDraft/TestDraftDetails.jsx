@@ -184,7 +184,8 @@ function TestDraftDetails(props) {
     created_at: 'created_at',
     created_by: 'created_by',
     updated_at: 'updated_at',
-    updated_by: 'updated_by'
+    updated_by: 'updated_by',
+    is_automation_script: 'is_automation_script'
   };
   const handleSelectAllNamesChange = () => {
     const newSelectAllNames = !selectAllNames;
@@ -241,7 +242,8 @@ function TestDraftDetails(props) {
       created_at: 'created_at',
       created_by: 'createdby',
       updated_at: 'updated_at',
-      updated_by: 'updatedby'
+      updated_by: 'updatedby',
+      is_automation_script: 'is_automation_script'
     };
     let filteredData = filterData[filterKeyMap[column]];
     if (filterKeyMap[column] === 'tc_id') {
