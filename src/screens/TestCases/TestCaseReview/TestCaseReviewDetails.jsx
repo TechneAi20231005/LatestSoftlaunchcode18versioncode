@@ -1615,7 +1615,7 @@ function TestCaseReviewDetails() {
         const rowData = row.original;
         const selectedValue =
           comments[rowData.id] || rowData.comment_id || commonComment || '';
-
+        console.log('selectedValue', selectedValue);
         return (
           <div>
             <select

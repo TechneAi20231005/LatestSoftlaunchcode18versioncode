@@ -1507,8 +1507,8 @@ function TestDraftDetails(props) {
               }
             />
             <Link
-  to={`/${_base}/TestCaseHistoryComponent/${row?.original?.id}?type=testSummary`}
->
+              to={`/${_base}/TestCaseHistoryComponent/${row?.original?.id}?type=testSummary`}
+            >
               <i class="icofont-history cp btn btn-outline-secondary fw-bold  " />
             </Link>
           </div>
@@ -1848,7 +1848,7 @@ function TestDraftDetails(props) {
 
       size: 200,
       enableSorting: false,
-      enableGrouping:false
+      enableGrouping: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.updated_at || '--'} `,

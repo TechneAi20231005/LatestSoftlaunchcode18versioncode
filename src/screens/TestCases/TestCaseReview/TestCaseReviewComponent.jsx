@@ -1055,7 +1055,9 @@ function TestCaseReviewComponent() {
         const rowData = row?.original;
         const reviewerId = localStorage?.getItem('id');
 
-        const isDisabled = rowData?.reviewer_id !== parseInt(reviewerId);
+        const isDisabled =
+          rowData?.reviewer_id !== parseInt(reviewerId) ||
+          rowData?.total_reviewed_testcases?.length > 0;
 
         return (
           <div className="d-flex align-items-center">
