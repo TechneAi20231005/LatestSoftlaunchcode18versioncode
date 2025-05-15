@@ -110,7 +110,7 @@ function TestCaseReviewComponent() {
     pageIndex: 0,
     pageSize: 10
   });
-  const { testCaseReviewList, isLoading, filterTestCaseReviewList } =
+  const { testCaseReviewList, isLoading, filterTestCaseReviewList ,totalCount} =
     useSelector((state) => state?.testCaseReview);
 
   const [state, localDispatch] = useReducer(localReducer, initialState);
@@ -1288,23 +1288,6 @@ function TestCaseReviewComponent() {
       )
     },
     {
-      accessorFn: (originalRows) =>
-        originalRows?.test_cases?.[0].is_automation_script || '--',
-      header: 'Is Automation Script',
-      Header: (
-        <span>
-          Is Automation Script
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-          />
-        </span>
-      ),
-
-      size: 250,
-      enableSorting: false
-    },
-    {
       header: 'Created At',
       accessorKey: 'created_at',
       size: 180,
@@ -1411,7 +1394,7 @@ function TestCaseReviewComponent() {
 
     setClearData(true);
     setPaginationData({
-      pageSize: 100,
+      pageSize: 10,
       pageIndex: 1
     });
 
@@ -1744,12 +1727,11 @@ function TestCaseReviewComponent() {
           }}
         />
       </Box>
-      {console.log('testCaseReviewList', testCaseReviewList)}
       <Container fluid className="mt-3">
         {testCaseReviewList && (
           <MaterialTable
             columns={columns}
-            rowCount={testCaseReviewList}
+            totalRows={totalCount}
             paginationData={paginationData}
             setPaginationData={setPaginationData}
             data={testCaseReviewList}

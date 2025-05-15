@@ -1720,6 +1720,23 @@ function TestCaseReviewDetails() {
       enableSorting: false
     },
     {
+      accessorFn: (originalRows) =>
+        originalRows?.is_automation_script || '--',
+      header: 'Is Automation Script',
+      Header: (
+        <span>
+          Is Automation Script
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+          />
+        </span>
+      ),
+
+      size: 250,
+      enableSorting: false
+    },
+    {
       accessorFn: (originalRows) => `${originalRows?.created_at || '--'} `,
       header: 'Created At',
       Header: (
