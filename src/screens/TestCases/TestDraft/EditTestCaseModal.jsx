@@ -70,6 +70,8 @@ function EditTestCaseModal({
   const { getFilterReviewCommentMasterList } = useSelector(
     (state) => state?.reviewCommentMaster
   );
+
+  console.log('currentTestCasesData', currentTestCasesData?.original);
   const [moduleDropdown, setModuleDropdown] = useState();
 
   const [subModuleDropdown, setSubModuleDropdown] = useState();
@@ -161,10 +163,11 @@ function EditTestCaseModal({
         ? currentTestCasesData?.original?.is_automation_script
         : '',
 
-    reviewer_comment_id:
-      type === 'EDIT'
-        ? currentTestCasesData?.original?.reviewer_comment_id
-        : '',
+    reviewer_comment:
+      type === 'EDIT' ? currentTestCasesData?.original?.reviewer_comment : '',
+
+    other_remark:
+      type === 'EDIT' ? currentTestCasesData?.original?.other_remark : '',
 
     steps: type === 'EDIT' ? currentTestCasesData?.original?.steps : '',
     test_description:
@@ -174,7 +177,7 @@ function EditTestCaseModal({
   };
 
   const handleEditTestCase = ({ formData }) => {
-    if(disable) return;
+    if (disable) return;
     setDisable(true);
 
     {
@@ -559,9 +562,9 @@ function EditTestCaseModal({
                       classNamePrefix="react-select"
                       data={getFilterReviewCommentMasterList}
                       component={CustomDropdown}
-                      name="reviewer_comment_id"
+                      name="reviewer_comment"
                       label="Reviewer Comment"
-                      id="reviewer_comment_id"
+                      id="reviewer_comment"
                       placeholder="Enter Reviewer Comment"
                       disabled={payloadType === 'ReviewTestDraft'}
                     />

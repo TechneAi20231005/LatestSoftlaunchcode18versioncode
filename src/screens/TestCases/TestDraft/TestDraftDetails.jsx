@@ -39,7 +39,8 @@ const initialState = {
   selectAllNames: false,
   selectedRows: [],
   betweenValues: ['', ''],
-  isFilterApplied: false
+  isFilterApplied: false,
+  hasOpenedFilter: {}
 };
 
 function localReducer(state, action) {
@@ -89,7 +90,11 @@ function localReducer(state, action) {
       return { ...state, betweenValues: action.payload };
     case 'SET_IS_FILTER_APPLIED':
       return { ...state, isFilterApplied: action.payload };
-
+    case 'SET_HAS_OPENED_FILTER':
+      return {
+        ...state,
+        hasOpenedFilter: action.payload
+      };
     default:
       return state;
   }
@@ -224,7 +229,7 @@ function TestDraftDetails(props) {
       field: 'field',
       platform: 'platform',
       type_name: 'testing_type',
-      tc_id: 'ids',
+      tc_id: 'tc_id',
       test_description: 'test_descriptions',
 
       severity: 'severity',
@@ -254,6 +259,22 @@ function TestDraftDetails(props) {
       type: 'SET_MODAL_POSITION',
       payload: { top: rect.bottom, left: rect.left }
     });
+    if (!state.hasOpenedFilter[column]) {
+      localDispatch({
+        type: 'SET_SELECTED_FILTER',
+        payload: filteredData?.map((item) => item?.name)
+      });
+      localDispatch({
+        type: 'SET_SELECTED_FILTER_IDS',
+        payload: filteredData?.map((item) => item?.id)
+      });
+    }
+
+    // ✅ Mark column as opened
+    localDispatch({
+      type: 'SET_HAS_OPENED_FILTER',
+      payload: { ...state.hasOpenedFilter, [column]: true }
+    });
   };
 
   const handleSearchChange = (e) => {
@@ -263,8 +284,11 @@ function TestDraftDetails(props) {
       payload: term
     });
   };
+  // const filteredResults = filterValues?.filter((item) =>
+  //   item?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+  // );
   const filteredResults = filterValues?.filter((item) =>
-    item?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+    item?.name?.toString().toLowerCase().includes(searchTerm?.toLowerCase())
   );
 
   // const filteredResults = filterValues?.filter((item) =>
@@ -1947,7 +1971,6 @@ function TestDraftDetails(props) {
         )?.id
       };
     }
-
     setDisable(true);
     dispatch(
       sendTestCaseReviewerThunk({
