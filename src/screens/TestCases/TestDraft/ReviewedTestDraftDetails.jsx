@@ -127,7 +127,8 @@ function ReviewedTestDraftDetails(props) {
     created_at: 'created_at',
     created_by: 'created_by',
     updated_at: 'updated_at',
-    updated_by: 'updated_by'
+    updated_by: 'updated_by',
+    is_automation_script: 'is_automation_script'
   };
   const handleFilterClick = (event, column, name, type, id) => {
     if (clearAllFilter === true) {
@@ -143,7 +144,8 @@ function ReviewedTestDraftDetails(props) {
       created_at: 'created_at',
       created_by: 'created_by',
       updated_at: 'updated_at',
-      updated_by: 'updated_by'
+      updated_by: 'updated_by',
+      is_automation_script: 'is_automation_script'
     };
     const filteredData = filterReviewedDraftTestList[filterKeyMap[column]];
 
@@ -1084,7 +1086,7 @@ function ReviewedTestDraftDetails(props) {
     },
     {
       accessorFn: (originalRows) =>
-        `${ originalRows?.test_cases?.[0]?.is_automation_script || '--'} `,
+        `${originalRows?.test_cases?.[0]?.is_automation_script || '--'} `,
       header: 'Is Automation Script',
       Header: (
         <span>

@@ -1720,8 +1720,7 @@ function TestCaseReviewDetails() {
       enableSorting: false
     },
     {
-      accessorFn: (originalRows) =>
-        originalRows?.is_automation_script || '--',
+      accessorFn: (originalRows) => originalRows?.is_automation_script || '--',
       header: 'Is Automation Script',
       Header: (
         <span>
@@ -1838,7 +1837,8 @@ function TestCaseReviewDetails() {
     created_at: 'created_at',
     created_by: 'created_by',
     updated_at: 'updated_at',
-    updated_by: 'updated_by'
+    updated_by: 'updated_by',
+    is_automation_script: 'is_automation_script'
   };
 
   // const transformDataForExport = (rowData, data, comments, commonComment) => {
@@ -1978,7 +1978,8 @@ function TestCaseReviewDetails() {
       created_at: 'created_at',
       created_by: 'created_by',
       updated_at: 'updated_at',
-      updated_by: 'updated_by'
+      updated_by: 'updated_by',
+      is_automation_script: 'is_automation_script'
     };
     const filteredData = filterTestPlanData[filterKeyMap[column]];
     const columnId = moduleMapping[column];
