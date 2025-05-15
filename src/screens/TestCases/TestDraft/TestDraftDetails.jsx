@@ -1558,7 +1558,8 @@ function TestDraftDetails(props) {
       }
     },
     {
-      accessorFn: (originalRows) => `${originalRows?.tc_id || '--'} `,
+      accessorFn: (originalRows) =>
+        originalRows?.tc_id ? `TC_${originalRows?.tc_id}` : '--',
       header: 'Test Id',
       Header: (
         <span>
