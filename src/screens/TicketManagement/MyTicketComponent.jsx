@@ -1844,7 +1844,11 @@ export default function MyTicketComponent() {
         if (res?.data?.status === 1) {
           setAssignedToMeData(res.data.data);
           setAssignedToMe(
-            res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
+            Array.isArray(res?.data?.data?.data)
+              ? res?.data?.data?.data?.filter(
+                  (d) => d.passed_status !== 'REJECT'
+                )
+              : []
           );
           const dataAssignToMe = res.data.data.data;
           var counter = 1;
@@ -1910,7 +1914,11 @@ export default function MyTicketComponent() {
           setCreatedByMeData(res.data.data);
 
           setCreatedByMe(
-            res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
+            Array.isArray(res?.data?.data?.data)
+              ? res?.data?.data?.data?.filter(
+                  (d) => d.passed_status !== 'REJECT'
+                )
+              : []
           );
         }
       } catch (error) {
@@ -1958,7 +1966,9 @@ export default function MyTicketComponent() {
             if (res.status === 200) {
               if (res?.data?.status === 1) {
                 setUnpassedData(res.data.data);
-                setUnpassedTickets(res.data.data.data);
+                setUnpassedTickets(
+                  Array.isArray(res?.data?.data?.data) ? res.data.data.data : []
+                );
                 setIsLoading(false);
               }
             }
@@ -2487,7 +2497,11 @@ export default function MyTicketComponent() {
           setIsLoading(false);
           if (res.data.status === 1) {
             setAssignedToMe(
-              res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
+              Array.isArray(res?.data?.data?.data)
+                ? res?.data?.data?.data?.filter(
+                    (d) => d.passed_status !== 'REJECT'
+                  )
+                : []
             );
           }
         }
@@ -2507,7 +2521,11 @@ export default function MyTicketComponent() {
           setCreatedByMeData(res.data.data);
 
           setCreatedByMe(
-            res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
+            Array.isArray(res?.data?.data?.data)
+              ? res?.data?.data?.data?.filter(
+                  (d) => d.passed_status !== 'REJECT'
+                )
+              : []
           );
         }
       } catch (error) {
@@ -2528,7 +2546,11 @@ export default function MyTicketComponent() {
             setDepartmentWiseData(res.data.data);
 
             setDepartmentwiseTicket(
-              res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
+              Array.isArray(res?.data?.data?.data)
+                ? res?.data?.data?.data?.filter(
+                    (d) => d.passed_status !== 'REJECT'
+                  )
+                : []
             );
           }
         }
@@ -2551,12 +2573,16 @@ export default function MyTicketComponent() {
             setYourTask();
             setIsLoading(false);
 
-            setYourTask(res.data.data.data);
+            setYourTask(
+              Array.isArray(res?.data?.data?.data) ? res.data.data.data : []
+            );
             // res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
           }
         }
+        setIsLoading(false);
       } catch (error) {
         errorHandler(error);
+        setIsLoading(false);
       }
     } else if (k === 'unpassed_columns') {
       const forms = {
@@ -2572,7 +2598,9 @@ export default function MyTicketComponent() {
           if (res?.data?.status === 1) {
             setUnpassedData(res?.data?.data);
 
-            setUnpassedTickets(res?.data?.data?.data);
+            setUnpassedTickets(
+              Array.isArray(res?.data?.data?.data) ? res?.data?.data?.data : []
+            );
           } else {
             setUnpassedTickets([]);
           }
@@ -2633,7 +2661,11 @@ export default function MyTicketComponent() {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setAssignedToMe(
-            res?.data?.data?.data.filter((d) => d.passed_status !== 'REJECT')
+            Array.isArray(res?.data?.data?.data)
+              ? res?.data?.data?.data.filter(
+                  (d) => d.passed_status !== 'REJECT'
+                )
+              : []
           );
           setIsLoading(false);
           if (type === 'PLUS' && res.data.data.data.length > 0) {
@@ -2810,7 +2842,11 @@ export default function MyTicketComponent() {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setCreatedByMe(
-            res?.data?.data?.data.filter((d) => d.passed_status !== 'REJECT')
+            Array.isArray(res?.data?.data?.data)
+              ? res?.data?.data?.data.filter(
+                  (d) => d.passed_status !== 'REJECT'
+                )
+              : []
           );
 
           setIsLoading(false);
@@ -2873,7 +2909,9 @@ export default function MyTicketComponent() {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setDepartmentwiseTicket(
-            res.data.data.data.filter((d) => d.passed_status !== 'REJECT')
+            Array.isArray(res?.data?.data?.data)
+              ? res.data.data.data.filter((d) => d.passed_status !== 'REJECT')
+              : []
           );
           setIsLoading(false);
 
@@ -2932,7 +2970,9 @@ export default function MyTicketComponent() {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setYourTask(
-            res.data.data.data.filter((d) => d.passed_status !== 'REJECT')
+            Array.isArray(res?.data?.data?.data)
+              ? res.data.data.data.filter((d) => d.passed_status !== 'REJECT')
+              : []
           );
           setIsLoading(false);
           if (type === 'PLUS' && res.data.data.data.length > 0) {
@@ -2994,7 +3034,9 @@ export default function MyTicketComponent() {
       const res = await new MyTicketService().getUserTicketsTest(form);
       if (res.status === 200) {
         if (res?.data?.status === 1) {
-          setUnpassedTickets(res.data.data.data);
+          setUnpassedTickets(
+            Array.isArray(res?.data?.data?.data) ? res.data.data.data : []
+          );
           setIsLoading(false);
           // setUnpassedData({
           //   ...unpassedData,

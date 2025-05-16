@@ -21144,7 +21144,9 @@ a {
 }
 
 .notifications {
-  /* z-index: 9999 !important; */
+
+  z-index: 100 !important;
+
 }
 z-index: 1000 !important;
 
@@ -22476,7 +22478,7 @@ body.rtl_mode
 .modal {
   right: 0;
   left: auto;
-  z-index: 99999;
+  z-index: 1050;
 }
 
 .modal.fade .modal-dialog-vertical {
@@ -23369,8 +23371,9 @@ body.rtl_mode
   -webkit-transition: ease 0.1s;
   transition: ease 0.1s;
   background: var(--primary-color);
-  /* z-index: 99999; */
-  z-index: 1000;
+
+  z-index: 999;
+
   margin: 25px;
   height: calc(100vh - 50px);
   width: 260px;
