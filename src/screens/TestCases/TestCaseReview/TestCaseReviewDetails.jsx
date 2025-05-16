@@ -1459,19 +1459,6 @@ function TestCaseReviewDetails() {
     {
       accessorFn: (originalRows) => `${originalRows?.testing_group || '--'} `,
       header: 'Testing Group',
-      Header: (
-        <span>
-          Testing Group
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'group_name', 'Testing Group', 'text')
-            }
-          />
-        </span>
-      ),
-      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1515,23 +1502,6 @@ function TestCaseReviewDetails() {
       accessorFn: (originalRows) =>
         `${originalRows?.test_description || '--'} `,
       header: 'Test Description',
-      Header: (
-        <span>
-          Test Description
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(
-                e,
-                'test_description',
-                'Test Description',
-                'text'
-              )
-            }
-          />
-        </span>
-      ),
       // enableColumnFilter: false,
       size: 200,
       enableSorting: false
@@ -1539,36 +1509,12 @@ function TestCaseReviewDetails() {
     {
       accessorFn: (originalRows) => `${originalRows?.steps || '--'} `,
       header: 'Steps',
-      Header: (
-        <span>
-          Steps
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-          />
-        </span>
-      ),
-      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.expected_result || '--'} `,
       header: 'Expected Result',
-      Header: (
-        <span>
-          Expected Result
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
-            }
-          />
-        </span>
-      ),
-      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1576,39 +1522,13 @@ function TestCaseReviewDetails() {
       accessorFn: (originalRows) =>
         `${originalRows?.tai_bc_status_conventions?.convention_name || '--'} `,
       header: 'Status',
-      Header: (
-        <span>
-          Status
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'status_name', 'Status', 'text')
-            }
-          />
-        </span>
-      ),
-      // enableColumnFilter: false,
-      size: 200,
+      size: 180,
       enableSorting: false
     },
 
     {
       accessorFn: (originalRow) => originalRow?.comment_id || '--',
       header: 'Reviewer comment',
-      Header: (
-        <span>
-          Reviewer comment
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'comment_id', 'Reviewer comment', 'dropdown')
-            }
-          />
-        </span>
-      ),
-      // enableColumnFilter: false,
       enableSorting: true,
       size: 250,
       Cell: ({ row }) => {
@@ -1647,27 +1567,27 @@ function TestCaseReviewDetails() {
     {
       accessorFn: (originalRow) => originalRow?.remark || '--',
       header: 'Remark',
-      Header: (
-        <span>
-          Remark
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'remark', 'Remark', 'text')}
-          />
-          {remarkErrors[rowData?.tc_id] &&
-            selectedRows?.includes(rowData?.tc_id) && (
-              <div className="col">
-                <span className="text-danger">
-                  {remarkErrors[rowData?.tc_id]}
-                </span>
-              </div>
-            )}
-        </span>
-      ),
+      // Header: (
+      //   <span>
+      //     Remark
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) => handleFilterClick(e, 'remark', 'Remark', 'text')}
+      //     />
+      //     {remarkErrors[rowData?.tc_id] &&
+      //       selectedRows?.includes(rowData?.tc_id) && (
+      //         <div className="col">
+      //           <span className="text-danger">
+      //             {remarkErrors[rowData?.tc_id]}
+      //           </span>
+      //         </div>
+      //       )}
+      //   </span>
+      // ),
       // enableColumnFilter: false,
       enableSorting: true,
-      size: 300,
+      size: 200,
       Cell: ({ row }) => {
         const rowData = row.original;
         const value =
@@ -1683,7 +1603,6 @@ function TestCaseReviewDetails() {
               name="other_remark"
               placeholder="Enter Remark"
               aria-label="default input example"
-              maxLength={100}
               value={value}
               onChange={(e) =>
                 handleRowChange(rowData.id, 'other_remark', e.target.value)

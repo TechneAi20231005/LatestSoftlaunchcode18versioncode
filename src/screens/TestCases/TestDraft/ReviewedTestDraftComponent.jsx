@@ -1564,21 +1564,21 @@ function ReviewedTestDraftComponent() {
     {
       accessorFn: (originalRows) => `${originalRows?.testing_group || '--'} `,
       header: 'Testing Group',
-      Header: (
-        <span>
-          Testing Group
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'group_name', 'Testing Group', 'text')
-            }
-          />
-        </span>
-      ),
+      // Header: (
+      //   <span>
+      //     Testing Group
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) =>
+      //         handleFilterClick(e, 'group_name', 'Testing Group', 'text')
+      //       }
+      //     />
+      //   </span>
+      // ),
       enableColumnFilter: false,
       size: 200,
-      enableSorting: false
+      enableSorting: false,
     },
     {
       accessorFn: (originalRows) => `${originalRows?.tc_id || '--'} `,
@@ -1620,23 +1620,23 @@ function ReviewedTestDraftComponent() {
       accessorFn: (originalRows) =>
         `${originalRows?.test_description || '--'} `,
       header: 'Test Description',
-      Header: (
-        <span>
-          Test Description
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(
-                e,
-                'test_description',
-                'Test Description',
-                'text'
-              )
-            }
-          />
-        </span>
-      ),
+      // Header: (
+      //   <span>
+      //     Test Description
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) =>
+      //         handleFilterClick(
+      //           e,
+      //           'test_description',
+      //           'Test Description',
+      //           'text'
+      //         )
+      //       }
+      //     />
+      //   </span>
+      // ),
       enableColumnFilter: false,
       size: 200,
       enableSorting: false
@@ -1644,16 +1644,16 @@ function ReviewedTestDraftComponent() {
     {
       accessorFn: (originalRows) => `${originalRows?.steps || '--'} `,
       header: 'Steps',
-      Header: (
-        <span>
-          Steps
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-          />
-        </span>
-      ),
+      // Header: (
+      //   <span>
+      //     Steps
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
+      //     />
+      //   </span>
+      // ),
       enableColumnFilter: false,
       size: 200,
       enableSorting: false
@@ -1661,18 +1661,18 @@ function ReviewedTestDraftComponent() {
     {
       accessorFn: (originalRows) => `${originalRows?.expected_result || '--'} `,
       header: 'Expected Result',
-      Header: (
-        <span>
-          Expected Result
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
-            }
-          />
-        </span>
-      ),
+      // Header: (
+      //   <span>
+      //     Expected Result
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) =>
+      //         handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
+      //       }
+      //     />
+      //   </span>
+      // ),
       enableColumnFilter: false,
       size: 200,
       enableSorting: false
@@ -1681,18 +1681,18 @@ function ReviewedTestDraftComponent() {
       accessorFn: (originalRows) =>
         `${originalRows?.tai_bc_status_conventions?.convention_name || '--'} `,
       header: 'Status',
-      Header: (
-        <span>
-          Status
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'status_name', 'Status', 'text')
-            }
-          />
-        </span>
-      ),
+      // Header: (
+      //   <span>
+      //     Status
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) =>
+      //         handleFilterClick(e, 'status_name', 'Status', 'text')
+      //       }
+      //     />
+      //   </span>
+      // ),
       enableColumnFilter: false,
       size: 200,
       enableSorting: false
@@ -1731,18 +1731,18 @@ function ReviewedTestDraftComponent() {
     {
       accessorFn: (originalRow) => originalRow?.comment_id || '--',
       header: 'Reviewer comment',
-      Header: (
-        <span>
-          Reviewer comment
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'comment_id', 'Reviewer comment', 'dropdown')
-            }
-          />
-        </span>
-      ),
+      // Header: (
+      //   <span>
+      //     Reviewer comment
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) =>
+      //         handleFilterClick(e, 'comment_id', 'Reviewer comment', 'dropdown')
+      //       }
+      //     />
+      //   </span>
+      // ),
       enableColumnFilter: false,
       enableSorting: true,
       size: 250,
@@ -1773,16 +1773,16 @@ function ReviewedTestDraftComponent() {
     {
       accessorFn: (originalRow) => originalRow?.remark || '--',
       header: 'Remark',
-      Header: (
-        <span>
-          Remark
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'remark', 'Remark', 'text')}
-          />
-        </span>
-      ),
+      // Header: (
+      //   <span>
+      //     Remark
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) => handleFilterClick(e, 'remark', 'Remark', 'text')}
+      //     />
+      //   </span>
+      // ),
       enableColumnFilter: false,
       enableSorting: true,
       size: 300,
