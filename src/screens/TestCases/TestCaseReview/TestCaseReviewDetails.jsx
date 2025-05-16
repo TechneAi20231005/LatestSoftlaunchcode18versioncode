@@ -281,7 +281,8 @@ function TestCaseReviewDetails() {
           tc_id: row?.tc_id,
           comment_id:
             changedRows[id]?.comment_id || row?.comment_id || commonComment,
-          other_remark: changedRows[id]?.other_remark || row?.other_remark
+          other_remark: changedRows[id]?.other_remark || row?.other_remark,
+          created_by: row?.created_by?.id
         };
       });
 
