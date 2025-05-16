@@ -180,6 +180,7 @@ function TestDraftDetails(props) {
     steps: 'steps',
     expected_result: 'expected_result',
     status: 'status',
+    is_automation_script: 'is_automation_script',
     project_name: 'project_id',
     created_at: 'created_at',
     created_by: 'created_by',
@@ -231,7 +232,7 @@ function TestDraftDetails(props) {
       type_name: 'testing_type',
       tc_id: 'tc_id',
       test_description: 'test_descriptions',
-
+      is_automation_script: 'is_automation_script',
       severity: 'severity',
       group_name: 'group_names',
       steps: 'steps',
@@ -1839,7 +1840,7 @@ function TestDraftDetails(props) {
               handleFilterClick(
                 e,
                 'is_automation_script',
-                'Is Automation Script',
+                'is_automation_script',
                 'text'
               )
             }
