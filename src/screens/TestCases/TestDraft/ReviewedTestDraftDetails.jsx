@@ -1152,8 +1152,7 @@ function ReviewedTestDraftDetails(props) {
       )
     },
     {
-      accessorKey: 'updated_at',
-
+      accessorFn: (row) =>row?.updated_at||'--',
       header: 'Updated At',
       size: 180,
       enableSorting: false,
@@ -1180,7 +1179,7 @@ function ReviewedTestDraftDetails(props) {
       accessorFn: (row) =>
         row?.updated_by
           ? `${row?.updated_by?.first_name} ${row?.updated_by?.last_name}`
-          : '-',
+          : '--',
       header: 'Updated By',
       size: 183,
       enableSorting: false,
