@@ -41,7 +41,9 @@ const initialState = {
   reviewerId: null,
   selectAllNames: false,
   selectedRows: [],
-  betweenValues: ['', '']
+  betweenValues: ['', ''],
+  hasOpenedFilter: {},
+  isFilterApplied: false
 };
 
 function localReducer(state, action) {
@@ -78,6 +80,8 @@ function localReducer(state, action) {
       return { ...state, reviewerId: action.payload };
     case 'SET_SELECT_ALL_NAMES':
       return { ...state, selectAllNames: action.payload };
+    case 'SET_IS_FILTER_APPLIED':
+      return { ...state, isFilterApplied: action.payload };
     case 'SET_SELECTED_ROWS':
       return {
         ...state,
@@ -85,6 +89,11 @@ function localReducer(state, action) {
           typeof action?.payload === 'function'
             ? action?.payload(state.selectedRows)
             : action?.payload
+      };
+    case 'SET_HAS_OPENED_FILTER':
+      return {
+        ...state,
+        hasOpenedFilter: action.payload
       };
     case 'SET_BETWEEN_VALUES':
       return { ...state, betweenValues: action.payload };
@@ -305,6 +314,16 @@ function ReviewedTestDraftComponent() {
       type: 'SET_MODAL_POSITION',
       payload: { top: rect.bottom, left: rect.left }
     });
+    if (!state.hasOpenedFilter[column]) {
+      localDispatch({
+        type: 'SET_SELECTED_FILTER',
+        payload: filteredData?.map((item) => item?.name)
+      });
+      localDispatch({
+        type: 'SET_SELECTED_FILTER_IDS',
+        payload: filteredData?.map((item) => item?.id)
+      });
+    }
   };
 
   const closeModal = () => {
@@ -365,10 +384,18 @@ function ReviewedTestDraftComponent() {
           (filterId) => filterId !== value
         )
       });
+      localDispatch({
+        type: 'SET_IS_FILTER_APPLIED',
+        payload: true
+      });
     }
   };
 
   const handleSelectAll = (event) => {
+    localDispatch({
+      type: 'SET_IS_FILTER_APPLIED',
+      payload: true
+    });
     if (event.target.checked) {
       localDispatch({
         type: 'SET_SELECTED_FILTER',
@@ -383,6 +410,10 @@ function ReviewedTestDraftComponent() {
       localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
 
       localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: [] });
+      localDispatch({
+        type: 'SET_IS_FILTER_APPLIED',
+        payload: true
+      });
     }
   };
 
@@ -2168,6 +2199,41 @@ function ReviewedTestDraftComponent() {
       })
     );
   }, [paginationData.pageSize, paginationData.pageIndex]);
+  useEffect(() => {
+    if (filterValues && searchTerm?.length === 0) {
+      localDispatch({ type: 'SET_FILTER_VALUES', payload: filterValues });
+      if (state.isFilterApplied === false) {
+        localDispatch({
+          type: 'SET_SELECTED_FILTER',
+          payload: filterValues.map((item) => item.name)
+        });
+      }
+      // localDispatch({
+      //   type: 'SET_SELECTED_FILTER',
+      //   payload: filterValues.map((item) => item.name)
+      // });
+      localDispatch({
+        type: 'SET_SELECTED_FILTER_IDS',
+        payload: filterValues.map((item) => item.id)
+      });
+    }
+  }, [filterValues, localDispatch]);
+  useEffect(() => {
+    // Whenever searchTerm or filterData changes, update the selected filter IDs
+    // if (searchTerm?.length === 0) {
+    // const filteredData = filteredResults?.filter((item) =>
+    //   item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    // );
+    const filteredData = filteredResults?.filter((item) =>
+      (item?.name || '')
+        .toString()
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+    const filteredIds = filteredData?.map((item) => item.id);
+    localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: filteredIds });
+    // }
+  }, [searchTerm, localDispatch]);
 
   return (
     <div className="container-xxl">
@@ -2392,6 +2458,7 @@ function ReviewedTestDraftComponent() {
           errorMessage={errorMessage}
           setSelectedValue={setSelectedValue}
           selectedValue={selectedValue}
+          isFilterApplied={state.isFilterApplied}
         />
       )}
     </div>

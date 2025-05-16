@@ -9,7 +9,7 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 
 function TestCaseHistoryComponent() {
-  const { id} = useParams();
+  const { id } = useParams();
   const location = useLocation();
   const queryParams = new URLSearchParams(location.search);
   const type = queryParams.get('type');
@@ -264,30 +264,61 @@ function TestCaseHistoryComponent() {
             }
           : {}
     },
-    ...(type !=="testSummary"
-    ? [ {
-      accessorFn: (originalRows) => `${originalRows?.other_remark || '--'} `,
-      header: 'Remark',
-      enableColumnFilter: false,
-      size: 180,
-      enableSorting: true
-    },
-    {
-      accessorFn: (originalRows) =>
-        `${originalRows?.reviewer_comment || '--'} `,
-      header: 'Reviewer Comment',
-      enableColumnFilter: false,
-      size: 250,
-      enableSorting: true
-    }]:[])
-   ,
+    ...(type !== 'testSummary'
+      ? [
+          {
+            accessorFn: (originalRows) =>
+              `${originalRows?.other_remark || '--'} `,
+            header: 'Remark',
+            enableColumnFilter: false,
+            size: 180,
+            muiTableBodyCellProps: ({ row }) =>
+              row.original.changes?.includes('other_remark')
+                ? {
+                    sx: {
+                      color: 'red',
+                      fontWeight: 'bold',
+                      cursor: 'pointer'
+                    }
+                  }
+                : {}
+          },
+          {
+            accessorFn: (originalRows) =>
+              `${originalRows?.reviewer_comment || '--'} `,
+            header: 'Reviewer Comment',
+            enableColumnFilter: false,
+            size: 250,
+            muiTableBodyCellProps: ({ row }) =>
+              row.original.changes?.includes('other_remark')
+                ? {
+                    sx: {
+                      color: 'red',
+                      fontWeight: 'bold',
+                      cursor: 'pointer'
+                    }
+                  }
+                : {}
+            // enableSorting: true
+          }
+        ]
+      : []),
     {
       accessorFn: (originalRows) =>
         `${originalRows?.is_automation_script || '--'} `,
       header: 'Is Automation Script',
 
       size: 250,
-      enableSorting: true
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('is_automation_script')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
     },
     {
       accessorKey: 'created_at',

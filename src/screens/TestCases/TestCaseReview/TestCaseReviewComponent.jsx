@@ -1553,13 +1553,12 @@ function TestCaseReviewComponent() {
           if (Array?.isArray(testData) && testData?.length > 0) {
             // ✅ Convert JSON to CSV string
             const csv = convertToCSV(testData);
-
             // ✅ Trigger file download
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', 'Testcases Data Count.csv');
+            link.setAttribute('download', responseData.file_name);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
