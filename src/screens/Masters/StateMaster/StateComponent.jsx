@@ -1,6 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { Container, Modal } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
+import { Modal } from 'react-bootstrap';
 
 import StateService from '../../../services/MastersService/StateService';
 import PageHeader from '../../../components/Common/PageHeader';
@@ -8,7 +7,6 @@ import Select from 'react-select';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
-import Alert from '../../../components/Common/Alert';
 
 import { useSelector, useDispatch } from 'react-redux';
 import { handleModalClose } from '../../Dashboard/DashbordSlice';
@@ -20,11 +18,10 @@ import {
   updateStateData
 } from '../../Dashboard/DashboardAction';
 import { handleModalInStore } from '../../Dashboard/DashbordSlice';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
 
 function StateComponent() {
   //initial state
@@ -43,112 +40,116 @@ function StateComponent() {
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 6)
   );
 
-  //local state
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(stateData, searchTerm);
-    setFilteredData(filteredList);
-  }, [stateData, searchTerm]);
-
-  //reset function
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(stateData);
+  const [reset, setReset] = useState(false);
+  const clearFilters = () => {
+    setReset(true);
   };
-
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      cell: (row) => (
-        <div className="btn-group" role="group">
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            data-bs-toggle="modal"
-            data-bs-target="#edit"
-            onClick={(e) => {
-              dispatch(
-                handleModalInStore({
-                  showModal: true,
-                  modalData: row,
-                  modalHeader: 'Edit State'
-                })
-              );
-            }}
+      accessorKey: 'action', // Use a valid key
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => {
+        return (
+          <div className="btn-group" role="group">
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#edit"
+              onClick={() => {
+                dispatch(
+                  handleModalInStore({
+                    showModal: true,
+                    modalData: row?.original,
+                    modalHeader: 'Edit State'
+                  })
+                );
+              }}
+            >
+              <i className="icofont-edit text-success"></i>
+            </button>
+          </div>
+        );
+      }
+    },
+    {
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 70,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableColumnFilter: false
+    },
+    {
+      accessorKey: 'state',
+      header: 'State',
+      size: 160,
+      filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
+    },
+    {
+      accessorKey: 'country',
+      header: 'Country',
+      size: 160
+    },
+    {
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
           >
-            <i className="icofont-edit text-success"></i>
-          </button>
-        </div>
-      ),
-      width: '80px'
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
+      accessorFn: (originalRow) => {
+        return moment(originalRow.created_at).startOf('day').toDate();
+      },
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        cell.row.original.created_at &&
+        moment(cell.row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
     },
     {
-      name: 'State',
-      selector: (row) => row.state,
-      sortable: true,
-      width: '125px'
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
+      header: 'Created By'
     },
     {
-      name: 'Country',
-      selector: (row) => row.country,
-      sortable: true,
-      width: '125px'
+      accessorFn: (originalRow) =>
+        moment(originalRow.updated_at).startOf('day').toDate(),
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ cell }) =>
+        cell.row?.original?.updated_at?.trim()
+          ? moment(cell.row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      ),
-      width: '100px'
-    },
-    {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
-    },
-    {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
-    },
-    {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
-    },
-    {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By'
     }
   ];
 
@@ -169,15 +170,18 @@ function StateComponent() {
         await dispatch(postStateData(formData));
         setTimeout(() => {
           dispatch(getStateData());
+          clearFilters();
         }, 500);
       } else {
         await dispatch(updateStateData({ id: id, payload: editformdata }));
         setTimeout(() => {
           dispatch(getStateData());
+          clearFilters();
         }, 500);
       }
     } catch (error) {
       errorHandler(error);
+      clearFilters();
     } finally {
       setSubmitting(false);
     }
@@ -204,17 +208,15 @@ function StateComponent() {
     checkRole.length,
     filteredCountryData.length
   ]);
-
-  useEffect(() => {
-    setFilteredData(stateData);
-  }, [stateData]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
+  const exportDataKeys = {
+    country: 'Country',
+    state: 'State',
+    is_active: 'Status',
+    created_by: 'Created By',
+    fileName: 'State Master Record'
+  };
 
   const fields = [
-    // { name: 'project_id', label: 'Project name', required: true },
     {
       name: 'country_id',
       label: 'Country name',
@@ -254,60 +256,44 @@ function StateComponent() {
 
   return (
     <div className="container-xxl">
-      <Container fluid>
-        <PageHeader
-          headerTitle="State Master"
-          renderRight={() => {
-            return (
-              checkRole &&
-              checkRole[0]?.can_create === 1 && (
-                <button
-                  className="btn btn-dark px-5"
-                  onClick={() => {
-                    dispatch(
-                      handleModalInStore({
-                        showModal: true,
-                        modalData: null,
-                        modalHeader: 'Add State'
-                      })
-                    );
-                  }}
-                >
-                  <i className="icofont-plus-circle fs-6" />
-                  Add State
-                </button>
-              )
-            );
-          }}
-        />
+      <PageHeader
+        headerTitle="State Master"
+        renderRight={() => {
+          return (
+            checkRole &&
+            checkRole[0]?.can_create === 1 && (
+              <button
+                className="btn btn-dark px-5"
+                onClick={() => {
+                  dispatch(
+                    handleModalInStore({
+                      showModal: true,
+                      modalData: null,
+                      modalHeader: 'Add State'
+                    })
+                  );
+                }}
+              >
+                <i className="icofont-plus-circle fs-6" />
+                Add State
+              </button>
+            )
+          );
+        }}
+      />
 
-        <SearchBoxHeader
-          setSearchTerm={setSearchTerm}
-          searchTerm={searchTerm}
-          handleSearch={handleSearch}
-          handleReset={handleReset}
-          placeholder="Search by state name...."
-          exportFileName="State Master Record"
-          exportData={exportData}
-          showExportButton={true}
-        />
-
-        <div className="card mt-2">
-          {stateData && (
-            <DataTable
-              columns={columns}
-              data={filteredData}
-              defaultSortField="title"
-              pagination
-              selectableRows={false}
-              progressPending={isLoading}
-              progressComponent={<TableLoadingSkelton />}
-              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-              highlightOnHover={true}
-            />
-          )}
-        </div>
-      </Container>
+      <div className="card mt-2">
+        {stateData && (
+          <MaterialTable
+            columns={columns}
+            data={stateData}
+            isLoading={isLoading}
+            reset={reset}
+            setReset={setReset}
+            exportDataKeys={exportDataKeys}
+          />
+        )}
+      </div>
 
       <Modal centered show={modal.showModal}>
         <Formik
@@ -345,6 +331,7 @@ function StateComponent() {
                         Select Country :<Astrick color="red" size="13px" />
                       </label>
                       <Select
+                        classNamePrefix="react-select"
                         options={filteredCountryData}
                         isClearable
                         id="country_id"
@@ -379,14 +366,6 @@ function StateComponent() {
                         onKeyPress={(e) => {
                           Validation.CharacterWithSpace(e);
                         }}
-                        // onPaste={(e) => {
-                        //   e.preventDefault();
-                        //   return false;
-                        // }}
-                        // onCopy={(e) => {
-                        //   e.preventDefault();
-                        //   return false;
-                        // }}
                       />
                       <ErrorMessage
                         name="state"
@@ -520,22 +499,25 @@ function StateDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new StateService().getState().then((res) => {
-      if (res.status === 200) {
-        const data = res.data.data;
-        let counter = 1;
-        for (const key in data) {
-          if (data[key].is_active === 1) {
-            tempData.push({
-              counter: counter++,
-              id: data[key].id,
-              state: data[key].state
-            });
+    new StateService()
+      .getState()
+      .then((res) => {
+        if (res.status === 200) {
+          const data = res.data.data;
+          let counter = 1;
+          for (const key in data) {
+            if (data[key].is_active === 1) {
+              tempData.push({
+                counter: counter++,
+                id: data[key].id,
+                state: data[key].state
+              });
+            }
           }
+          setData(tempData);
         }
-        setData(tempData);
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   }, []);
 
   return (

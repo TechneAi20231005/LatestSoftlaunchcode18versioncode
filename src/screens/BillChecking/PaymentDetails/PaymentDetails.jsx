@@ -604,6 +604,7 @@ function PaymentDetails({ location, match }) {
                     <>
                       {statusDropDown && statusDropDown && (
                         <Select
+                          classNamePrefix="react-select"
                           className="form-control"
                           id="payment_status"
                           name="payment_status"

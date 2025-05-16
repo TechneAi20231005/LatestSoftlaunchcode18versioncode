@@ -41,7 +41,7 @@ export default function CreateProjectComponent({ match }) {
     values?.project_owner.forEach((item) => {
       formData?.append('project_owner[]', item?.value);
     });
-    console.log(values?.logo, "logo")
+    console.log(values?.logo, 'logo');
     values?.logo && formData.append('logo', values.logo);
     if (values?.project_reviewer?.length > 0) {
       values?.project_reviewer?.forEach((item) => {
@@ -280,6 +280,7 @@ export default function CreateProjectComponent({ match }) {
                       </label>
                       <div className="col-sm-4">
                         <Select
+                          classNamePrefix="react-select"
                           options={customer}
                           // required
                           id="customer_id"
@@ -334,6 +335,7 @@ export default function CreateProjectComponent({ match }) {
                       <div className="col-sm-4">
                         {users && (
                           <Field
+                            classNamePrefix="react-select"
                             component={Select}
                             options={users}
                             id="project_owner"
@@ -399,6 +401,7 @@ export default function CreateProjectComponent({ match }) {
                       {ba && (
                         <div className="col-sm-4">
                           <Field
+                            classNamePrefix="react-select"
                             component={Select}
                             id="project_reviewer"
                             name="project_reviewer"
@@ -458,7 +461,10 @@ export default function CreateProjectComponent({ match }) {
                     </div>
 
                     <div className="form-group row mt-3">
-                      <label className="col-sm-2 col-form-label d-flex align-items-center" style={{ whiteSpace: "nowrap" }}>
+                      <label
+                        className="col-sm-2 col-form-label d-flex align-items-center"
+                        style={{ whiteSpace: 'nowrap' }}
+                      >
                         <b>API Document Link : </b>
                       </label>
                       <div className="col-sm-10">

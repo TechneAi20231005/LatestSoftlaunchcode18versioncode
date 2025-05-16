@@ -88,8 +88,6 @@ export const templateSlice = createSlice({
 
     builder.addCase(templateData.fulfilled, (state, action) => {
       const { payload } = action;
-      state.isLoading.templateDataList = false;
-
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let templateData = payload.data.data?.data;
 
@@ -100,6 +98,7 @@ export const templateSlice = createSlice({
           templateData[i].counter = count++;
         }
         state.templateData = [...templateData];
+        state.isLoading.templateDataList = false;
       }
     });
     builder.addCase(templateData.rejected, (state) => {
@@ -119,7 +118,6 @@ export const templateSlice = createSlice({
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let exportTempateData = payload.data.data?.data;
-        state.isLoading.templateDataList = false;
 
         state.status = 'succeded';
         state.showLoaderModal = false;
@@ -132,7 +130,8 @@ export const templateSlice = createSlice({
 
         for (const i in exportTempateData) {
           exportData.push({
-            Sr: exportTempateData[i].counter,
+            id: exportTempateData[i].id,
+            counter: exportTempateData[i].counter,
             template_name: exportTempateData[i].template_name,
             calculate_from: exportTempateData[i].calculate_from,
             basket_name: exportTempateData[i].basket_name,
@@ -146,7 +145,7 @@ export const templateSlice = createSlice({
 
             remark: exportTempateData[i].remark,
 
-            Status: exportTempateData[i].is_active ? 'Active' : 'Deactive',
+            is_active: exportTempateData[i].is_active,
             created_at: exportTempateData[i].created_at,
             created_by: exportTempateData[i].created_by,
             updated_at: exportTempateData[i].updated_at,
@@ -154,6 +153,7 @@ export const templateSlice = createSlice({
           });
           state.exportData = exportData;
         }
+        state.isLoading.templateDataList = false;
       }
     });
     builder.addCase(exportTempateData.rejected, (state) => {

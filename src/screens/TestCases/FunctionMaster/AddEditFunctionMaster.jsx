@@ -14,11 +14,17 @@ import {
   editFunctionMasterThunk,
   getFunctionMasterListThunk
 } from '../../../redux/services/testCases/functionMaster';
-import { addFunctionMasterValidation } from './Validation/AddFunctionMaster';
+
 import CustomModal from '../../../components/custom/modal/CustomModal';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 
-function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
+function AddEditFunctionMaster({
+  show,
+  close,
+  type,
+  currentFunctionData,
+  clearFilters
+}) {
   const dispatch = useDispatch();
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -41,6 +47,7 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
             setIsSubmitting(false);
             close();
             dispatch(getFunctionMasterListThunk());
+            clearFilters();
           },
           onErrorHandler: () => {
             setIsSubmitting(false);
@@ -56,6 +63,7 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
             setIsSubmitting(false);
             close();
             dispatch(getFunctionMasterListThunk());
+            clearFilters();
           },
           onErrorHandler: () => {
             setIsSubmitting(false);

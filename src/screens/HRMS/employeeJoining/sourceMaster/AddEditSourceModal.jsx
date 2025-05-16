@@ -5,30 +5,42 @@ import { useDispatch, useSelector } from 'react-redux';
 
 // // static import
 import CustomModal from '../../../../components/custom/modal/CustomModal';
-import { CustomInput, CustomRadioButton } from '../../../../components/custom/inputs/CustomInputs';
+import {
+  CustomInput,
+  CustomRadioButton
+} from '../../../../components/custom/inputs/CustomInputs';
 import { addEditSourceValidation } from './validation/addEditSource';
 import CustomAlertModal from '../../../../components/custom/modal/CustomAlertModal';
 import { RenderIf } from '../../../../utils';
 import {
   addSourceMasterThunk,
   editSourceMasterThunk,
-  getSourceMasterListThunk,
+  getSourceMasterListThunk
 } from '../../../../redux/services/hrms/employeeJoining/sourceMaster';
 
-function AddEditSourceModal({ show, close, type, currentSourceData }) {
+function AddEditSourceModal({
+  show,
+  close,
+  type,
+  currentSourceData,
+  clearFilters
+}) {
   // // initial state
   const dispatch = useDispatch();
   const sourceInitialValue = {
     source_name: type === 'EDIT' ? currentSourceData?.source_name : '',
     remark: type === 'EDIT' ? currentSourceData?.remark || '' : '',
-    is_active: type === 'EDIT' ? currentSourceData?.is_active?.toString() : 1,
+    is_active: type === 'EDIT' ? currentSourceData?.is_active?.toString() : 1
   };
 
   // // redux state
-  const { isLoading } = useSelector(state => state?.sourceMaster);
+  const { isLoading } = useSelector((state) => state?.sourceMaster);
 
   // // local state
-  const [openConfirmModal, setOpenConfirmModal] = useState({ open: false, formData: '' });
+  const [openConfirmModal, setOpenConfirmModal] = useState({
+    open: false,
+    formData: ''
+  });
 
   // // function
   const handelAddEditSource = () => {
@@ -40,11 +52,12 @@ function AddEditSourceModal({ show, close, type, currentSourceData }) {
             setOpenConfirmModal({ open: false });
             close();
             dispatch(getSourceMasterListThunk());
+            clearFilters();
           },
           onErrorHandler: () => {
             setOpenConfirmModal({ open: false });
-          },
-        }),
+          }
+        })
       );
     } else {
       dispatch(
@@ -55,22 +68,27 @@ function AddEditSourceModal({ show, close, type, currentSourceData }) {
             setOpenConfirmModal({ open: false });
             close();
             dispatch(getSourceMasterListThunk());
+            clearFilters();
           },
           onErrorHandler: () => {
             setOpenConfirmModal({ open: false });
-          },
-        }),
+          }
+        })
       );
     }
   };
   return (
     <>
-      <CustomModal show={show} title={`${type === 'ADD' ? 'Add' : 'Edit'} Source`} width="md">
+      <CustomModal
+        show={show}
+        title={`${type === 'ADD' ? 'Add' : 'Edit'} Source`}
+        width="md"
+      >
         <Formik
           initialValues={sourceInitialValue}
           enableReinitialize
           validationSchema={addEditSourceValidation}
-          onSubmit={values => {
+          onSubmit={(values) => {
             setOpenConfirmModal({ open: true, formData: values });
           }}
         >
@@ -124,10 +142,18 @@ function AddEditSourceModal({ show, close, type, currentSourceData }) {
               </RenderIf>
 
               <div className="d-flex justify-content-end mt-3 gap-2">
-                <button className="btn btn-primary px-4" type="submit" disabled={!dirty}>
+                <button
+                  className="btn btn-primary px-4"
+                  type="submit"
+                  disabled={!dirty}
+                >
                   {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>
-                <button onClick={close} className="btn btn-danger px-3" type="button">
+                <button
+                  onClick={close}
+                  className="btn btn-danger px-3"
+                  type="button"
+                >
                   Cancel
                 </button>
               </div>
@@ -140,7 +166,9 @@ function AddEditSourceModal({ show, close, type, currentSourceData }) {
       <CustomAlertModal
         show={openConfirmModal.open}
         type="success"
-        message={`Do you want to ${type === 'ADD' ? 'save' : 'update'} this record?`}
+        message={`Do you want to ${
+          type === 'ADD' ? 'save' : 'update'
+        } this record?`}
         onSuccess={handelAddEditSource}
         onClose={() => setOpenConfirmModal({ open: false })}
         isLoading={isLoading?.addSourceMaster || isLoading?.editSourceMaster}

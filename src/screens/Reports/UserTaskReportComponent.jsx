@@ -201,7 +201,7 @@ function UserTaskReportComponent() {
             errorObject.data.message
           );
         });
-        setShowLoaderModal(false);
+      setShowLoaderModal(false);
     }
   };
 
@@ -252,7 +252,6 @@ function UserTaskReportComponent() {
       required: false,
       alphaNumeric: true,
       max: 100
-
     }
   ];
 
@@ -290,7 +289,8 @@ function UserTaskReportComponent() {
                       isSearchable={true}
                       name="user_id"
                       className="basic-multi-select"
-                      classNamePrefix="select"
+                      // classNamePrefix="select"
+                      classNamePrefix="react-select"
                       options={userData}
                       onChange={(option) =>
                         setFieldValue('user_id', option || null)
@@ -410,8 +410,7 @@ function UserTaskReportComponent() {
             </div>
           </div>
         </div>
-      )
-    }
+      )}
       <Modal show={showLoaderModal} centered>
         <Modal.Body className="text-center">
           <Spinner animation="grow" variant="primary" />

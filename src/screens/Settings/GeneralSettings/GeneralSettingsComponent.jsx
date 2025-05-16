@@ -1,18 +1,16 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo
+} from 'react';
 import { Modal } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
 import Select from 'react-select';
-
-import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 import PageHeader from '../../../components/Common/PageHeader';
 import { Astrick } from '../../../components/Utilities/Style';
-
-import Alert from '../../../components/Common/Alert';
-
 import UserService from '../../../services/MastersService/UserService';
 import GeneralSettingService from '../../../services/SettingService/GeneralSettingService';
-import Tooltip from 'react-bootstrap/Tooltip';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
 import { useSelector, useDispatch } from 'react-redux';
 import {
   getGeneralSettingData,
@@ -22,12 +20,11 @@ import {
 
 import { getUserForMyTicketsData } from '../../TicketManagement/MyTicketComponentAction';
 import { handleModalClose, handleGeneralModal } from '../SettingSlice';
-import { customSearchHandler } from '../../../utils/customFunction';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import { ErrorMessage, Field, Form, Formik } from 'formik';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
 
 function GeneralSettings() {
   //initial  state
@@ -49,36 +46,9 @@ function GeneralSettings() {
     (SettingSlice) => SettingSlice.generalSetting.modal
   );
 
-  //local state
-  const data = null;
-  const exportData = null;
   const [user, setUser] = useState(null);
+  const [reset, setReset] = useState(false);
 
-  const userDetail = useRef();
-
-  const userValue = useRef();
-
-  const useSetting = useRef();
-  const useRemark = useRef();
-
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(
-      getAllgeneralSettingData,
-      searchTerm
-    );
-    setFilteredData(filteredList);
-  }, [getAllgeneralSettingData, searchTerm]);
-
-  const handleReset = () => {
-    setSearchTerm('');
-  };
-
-  //Data Table columns
   const loadData = useCallback(async () => {
     const inputRequired = 'id,employee_id,first_name,last_name';
     dispatch(getGeneralSettingData());
@@ -86,185 +56,206 @@ function GeneralSettings() {
 
     const roleId = localStorage.getItem('role_id');
 
-    await new ManageMenuService()
-      .getRole(roleId)
+    // await new ManageMenuService()
+    //   .getRole(roleId)
+    //   .then((res) => {
+    //     if (res?.status === 200) {
+    //       if (res.data.status === 1) {
+    //       }
+    //     }
+    //   })
+    //   .catch((error) => {
+    //     errorHandler(error);
+    //   });
+
+    await new UserService()
+      .getUserForMyTickets(inputRequired)
       .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            const data = res?.data?.data?.data
+              ?.filter((i) => i.is_active === 1)
+              ?.sort((a, b) => {
+                if (a.first_name && b.first_name) {
+                  return a.first_name.localeCompare(b.first_name);
+                }
+                return 0;
+              });
+            setUser(
+              data.map((d) => ({
+                value: d.id,
+                // label: d.first_name + ' ' + d.last_name
+                label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
+              }))
+            );
           }
         }
       })
-      .catch((error) => {
-        errorHandler(error);
-      });
-
-    await new UserService().getUserForMyTickets(inputRequired).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const data = res.data.data?.data
-            ?.filter((i) => i.is_active === 1)
-            ?.sort((a, b) => {
-              if (a.first_name && b.first_name) {
-                return a.first_name.localeCompare(b.first_name);
-              }
-              return 0;
-            });
-          setUser(
-            data.map((d) => ({
-              value: d.id,
-              // label: d.first_name + ' ' + d.last_name
-              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
-            }))
-          );
-        }
-      }
-    });
-    await new GeneralSettingService().getGeneralSetting().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          let data = [...res.data.data.data];
-          let count = 1;
-          for (let i = 0; i < data.length; i++) {
-            data[i].counter = count++;
+      .catch((error) => errorHandler(error));
+    await new GeneralSettingService()
+      .getGeneralSetting()
+      .then((res) => {
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            let data = [...res?.data?.data?.data];
+            let count = 1;
+            for (let i = 0; i < data?.length; i++) {
+              data[i].counter = count++;
+            }
           }
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   }, [dispatch]);
 
-  //columns
-  const columns = [
-    {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '8%',
-      cell: (row) => (
-        <div className="btn-group" role="group">
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            data-bs-toggle="modal"
-            data-bs-target="#edit"
-            onClick={(e) => {
-              dispatch(
-                handleGeneralModal({
-                  showModal: true,
-                  modalData: row,
-                  modalHeader: 'Edit Settings'
-                })
-              );
-            }}
-          >
-            <i className="icofont-edit text-success"></i>
-          </button>
-        </div>
-      )
-    },
-    {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '5%'
-    },
-    {
-      name: 'Setting Name',
-      selector: (row) => row.setting_name,
-      sortable: true,
-      width: '10%'
-    },
-    {
-      name: 'Assigned User',
-
-      sortable: true,
-      width: '20%',
-      cell: (row) => {
-        let arr = [];
-        User.filter((el) => {
-          if (row.user_id.includes(el.value)) {
-            arr.push(el.label);
+  const columns = useMemo(
+    () => [
+      {
+        header: 'Action',
+        accessorKey: 'action',
+        size: 110,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableSorting: false,
+        enableColumnFilter: false,
+        Cell: ({ row }) => (
+          <div className="btn-group" role="group">
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#edit"
+              onClick={(e) => {
+                dispatch(
+                  handleGeneralModal({
+                    showModal: true,
+                    modalData: row?.original,
+                    modalHeader: 'Edit Settings'
+                  })
+                );
+              }}
+            >
+              <i className="icofont-edit text-success"></i>
+            </button>
+          </div>
+        )
+      },
+      {
+        accessorKey: 'counter',
+        header: 'Sr',
+        size: 90,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableColumnFilter: false
+      },
+      {
+        header: 'Setting Name',
+        accessorKey: 'setting_name',
+        muiTableBodyCellProps: () => ({
+          sx: {
+            color: '#f19828',
+            fontWeight: 400
           }
-        });
+        }),
+        size: 200
+      },
+      {
+        header: 'Assigned User',
+        accessorKey: 'assigned_user',
+        accessorFn: (row) => {
+          let arr = [];
+          User.forEach((el) => {
+            if (row?.user_id?.includes(el.value)) {
+              arr.push(el.label);
+            }
+          });
+          return arr.join(', ')?.trim();
+        },
+        filterFn: (row, columnId, filterValue) => {
+          const val = row.getValue(columnId);
+          return val?.toLowerCase().includes(filterValue.toLowerCase());
+        },
+        Cell: ({ row }) => {
+          let arr = [];
+          User.forEach((el) => {
+            if (row?.original?.user_id?.includes(el.value)) {
+              arr.push(el.label);
+            }
+          });
 
-        return (
-          <>
-            <OverlayTrigger overlay={<Tooltip>{arr.join(', ')}</Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {arr.length > 2 ? `${(arr[0], arr[1])}...` : `${arr}`}
-                </span>
-              </div>
-            </OverlayTrigger>
-          </>
-        );
-      }
-    },
-    {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
+          return (
+            <span className="ms-1">
+              {arr?.length > 2
+                ? `${arr[0]}, ${arr[1]}...`
+                : arr.length === 0
+                ? '--'
+                : arr.join(', ')}
             </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
+          );
+        },
+        size: 210
+      },
+      {
+        header: 'Status',
+        accessorKey: 'is_active',
+        size: 150,
+        accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+        filterFn: (row, id, filterValue) => {
+          const status = row.getValue(id);
+          return status.toLowerCase().includes(filterValue.toLowerCase());
+        },
+        Cell: ({ row }) => {
+          const isActive = row?.original?.is_active;
+          return (
+            <span
+              className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+              style={{ width: '4rem' }}
+            >
+              {isActive ? 'Active' : 'Deactive'}
             </span>
-          )}
-        </div>
-      ),
-      width: '10%'
-    },
-    {
-      name: 'Remark',
-      selector: (row) => row.remark,
-      sortable: true,
-      width: '10%'
-    },
-    {
-      name: 'Created at',
-      selector: (row) => row.created_at,
-      sortable: true
-    },
-    {
-      name: 'Created by',
-      sortable: true,
-      cell: (row) => {
-        let userList = User.filter(
-          (userData) => row.created_by === userData.value
-        );
-
-        if (userList && userList.length > 0) {
-          return <>{userList[0].label}</>;
-        } else {
-          return <>{''}</>;
+          );
         }
+      },
+      {
+        header: 'Remark',
+        size: 160,
+        accessorFn: (row) => row.remark?.trim() || '--'
+      },
+      {
+        accessorKey: 'created_at',
+        header: 'Created At',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.created_at),
+        Cell: ({ row }) =>
+          row.original.created_at
+            ? moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--',
+        size: 350
+      },
+      {
+        accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
+        header: 'Created By',
+        size: 180
+      },
+      {
+        accessorKey: 'updated_at',
+        header: 'Updated At',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.updated_at),
+        Cell: ({ row }) =>
+          row?.original?.updated_at?.trim()
+            ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--'
+      },
+      {
+        id: 'updated_by',
+        accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+        header: 'Updated By',
+        size: 185
       }
-    },
-    {
-      name: 'Updated at',
-      selector: (row) => row.updated_at,
-      sortable: true
-    },
-    {
-      name: 'Updated by',
-      sortable: true,
-      cell: (row) => {
-        let userList = User.filter(
-          (userData) => row.updated_by === userData.value
-        );
-        if (userList && userList.length > 0) {
-          return <>{userList[0].label}</>;
-        } else {
-          return <>{''}</>;
-        }
-      }
-    }
-  ];
+    ],
+    [dispatch, User]
+  );
 
   const fields = [
     {
@@ -355,13 +346,7 @@ function GeneralSettings() {
   useEffect(() => {
     loadData();
   }, [loadData]);
-  useEffect(() => {
-    setFilteredData(getAllgeneralSettingData);
-  }, [getAllgeneralSettingData]);
 
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
   return (
     <div className="container-xxl">
       <PageHeader
@@ -387,29 +372,16 @@ function GeneralSettings() {
           );
         }}
       />
-      <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by setting name...."
-        exportFileName="General setting  Master Record"
-        exportData={exportData}
-      />
 
       <div className="card mt-2">
-        {isLoading && <TableLoadingSkelton />}
-        {!isLoading && getAllgeneralSettingData && (
-          <DataTable
-            columns={columns}
-            data={filteredData}
-            defaultSortField="title"
-            pagination
-            selectableRows={false}
-            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-            highlightOnHover={true}
-          />
-        )}
+        <MaterialTable
+          columns={columns}
+          isLoading={isLoading}
+          data={getAllgeneralSettingData}
+          reset={reset}
+          setReset={setReset}
+          isExportData={false}
+        />
       </div>
 
       <Modal centered show={modal.showModal}>

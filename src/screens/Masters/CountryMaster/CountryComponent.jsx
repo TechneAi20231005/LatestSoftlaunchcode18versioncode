@@ -1,15 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
-
 import CountryService from '../../../services/MastersService/CountryService';
 
 import PageHeader from '../../../components/Common/PageHeader';
 
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
-import Alert from '../../../components/Common/Alert';
-
 import { useDispatch, useSelector } from 'react-redux';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import {
@@ -22,15 +18,15 @@ import {
   handleModalInStore,
   handleModalClose
 } from '../../Dashboard/DashbordSlice';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
 
 function CountryComponent() {
   //initial state
   const dispatch = useDispatch();
+  const [reset, setReset] = useState(false);
 
   //redux state
 
@@ -47,28 +43,28 @@ function CountryComponent() {
   );
 
   //local state
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
 
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(countryData, searchTerm);
-    setFilteredData(filteredList);
-  }, [countryData, searchTerm]);
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(countryData);
+  const exportDataKeys = {
+    country: 'Country',
+    is_active: 'Status',
+    remark: 'Remark',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Country Master Record'
   };
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '100px',
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => (
         <div
           className="btn-group"
           role="group"
@@ -83,7 +79,7 @@ function CountryComponent() {
               dispatch(
                 handleModalInStore({
                   showModal: true,
-                  modalData: row,
+                  modalData: row?.original,
                   modalHeader: 'Edit Country'
                 })
               );
@@ -95,62 +91,75 @@ function CountryComponent() {
       )
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
+      accessorFn: (originalRow) => originalRow?.counter || '--',
+      header: 'Sr',
+      size: 120,
+      enableColumnFilter: false
     },
     {
-      name: 'Country',
-      selector: (row) => row.country,
-      sortable: true,
-      width: '125px'
+      accessorFn: (originalRow) => originalRow?.country || '--',
+      header: 'Country',
+      size: 160,
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      ),
-      width: '100px'
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => new Date(originalRow.created_at),
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row?.original?.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
+      header: 'Created By',
+      size: 190
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By',
+      size: 190
     }
   ];
+  const clearFilters = () => {
+    setReset(true);
+  };
   const handleForm = async (values, id, { setSubmitting = false }) => {
     setSubmitting(true);
 
@@ -180,6 +189,7 @@ function CountryComponent() {
       errorHandler(error);
     } finally {
       setSubmitting(false);
+      clearFilters();
     }
   };
 
@@ -189,13 +199,6 @@ function CountryComponent() {
     }
   }, [checkRole]);
 
-  // useEffect(() => {
-  //   dispatch(getCountryData());
-
-  //   if (!countryData.length || !checkRole.length) {
-  //     dispatch(getRoles());
-  //   }
-  // }, []);
   useEffect(() => {
     dispatch(getCountryData());
 
@@ -203,14 +206,6 @@ function CountryComponent() {
       dispatch(getRoles());
     }
   }, [dispatch, countryData.length, checkRole.length]);
-
-  useEffect(() => {
-    setFilteredData(countryData);
-  }, [countryData]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
 
   const fields = [
     {
@@ -262,29 +257,16 @@ function CountryComponent() {
           );
         }}
       />
-      <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by country name...."
-        exportFileName="Country Master Record"
-        exportData={exportCountryData}
-        showExportButton={true}
-      />
 
       <div className="mt-2">
         {countryData && (
-          <DataTable
+          <MaterialTable
+            exportDataKeys={exportDataKeys}
             columns={columns}
-            data={filteredData}
-            defaultSortField="title"
-            pagination
-            selectableRows={false}
-            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-            highlightOnHover={true}
-            progressPending={isLoading}
-            progressComponent={<TableLoadingSkelton />}
+            data={countryData}
+            isLoading={isLoading}
+            reset={reset}
+            setReset={setReset}
           />
         )}
       </div>
@@ -342,18 +324,7 @@ function CountryComponent() {
                         onKeyPress={(e) => {
                           Validation.CharacterWithSpace(e);
                         }}
-                        // onPaste={(e) => {
-                        //   e.preventDefault();
-                        //   return false;
-                        // }}
-                        // onCopy={(e) => {
-                        //   e.preventDefault();
-                        //   return false;
-                        // }}
                       />
-                      {/* {errors.country && touched.country ? (
-                        <small className="text-danger">{errors.country}</small>
-                      ) : null} */}
                       <ErrorMessage
                         name="country"
                         component="small"

@@ -23,7 +23,13 @@ import {
 import { experienceLevel } from '../../../../settings/constants';
 import useDropdownData from '../../../../hooks/useDropdownData';
 
-function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
+function AddEditSalaryModal({
+  show,
+  close,
+  type,
+  currentSalaryData,
+  clearFilters
+}) {
   // // initial state
   const dispatch = useDispatch();
 
@@ -73,6 +79,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
             setOpenConfirmModal({ open: false });
             close();
             dispatch(getSalaryMasterListThunk());
+            clearFilters();
           },
           onErrorHandler: () => {
             setOpenConfirmModal({ open: false });
@@ -88,6 +95,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
             setOpenConfirmModal({ open: false });
             close();
             dispatch(getSalaryMasterListThunk());
+            clearFilters();
           },
           onErrorHandler: () => {
             setOpenConfirmModal({ open: false });
@@ -118,6 +126,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                 <Row className="gap-3 gap-sm-0">
                   <Col sm={6} md={6} lg={3}>
                     <Field
+                      classNamePrefix="react-select"
                       options={preferredDepartmentDropdown}
                       component={CustomReactSelect}
                       name="department_id"
@@ -133,6 +142,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                   </Col>
                   <Col sm={6} md={6} lg={3}>
                     <Field
+                      classNamePrefix="react-select"
                       options={preferredDesignationDropdown}
                       component={CustomReactSelect}
                       name="designation_id"
@@ -148,6 +158,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                   </Col>
                   <Col sm={6} md={6} lg={3}>
                     <Field
+                      classNamePrefix="react-select"
                       options={preferredLocationDropdown}
                       component={CustomReactSelect}
                       name="location_id"
@@ -164,6 +175,7 @@ function AddEditSalaryModal({ show, close, type, currentSalaryData }) {
                   </Col>
                   <Col sm={6} md={6} lg={3}>
                     <Field
+                      classNamePrefix="react-select"
                       data={experienceLevel}
                       component={CustomDropdown}
                       name="experience_level"

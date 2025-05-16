@@ -897,6 +897,7 @@ function CreateDynamicForm({ match }) {
                                   <b>{d.label} :</b>
                                 </label>
                                 <Select
+                                  classNamePrefix="react-select"
                                   className="form-control"
                                   id={d.id}
                                   name={d.name}

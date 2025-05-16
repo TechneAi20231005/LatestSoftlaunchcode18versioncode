@@ -285,6 +285,7 @@ function DepartmentMappingComponent() {
                       Deparment Name :
                     </label>
                     <Select
+                      classNamePrefix="react-select"
                       options={ticketViewOption}
                       id="ticket_show_type"
                       name="ticket_show_type"

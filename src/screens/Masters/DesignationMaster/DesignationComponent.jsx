@@ -1,13 +1,10 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Container, Modal } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
 
 import DesignationService from '../../../services/MastersService/DesignationService';
 
 import PageHeader from '../../../components/Common/PageHeader';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
-import Alert from '../../../components/Common/Alert';
-
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import {
@@ -17,11 +14,10 @@ import {
 } from './DesignationAction';
 import { handleModalClose, handleModalOpen } from './DesignationSlice';
 
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { errorHandler } from '../../../utils';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
 
 function DesignationComponent() {
   //initial state
@@ -31,7 +27,7 @@ function DesignationComponent() {
   const { getDesignationData, exportDesignation, modal, notify } = useSelector(
     (state) => state.designationMaster
   );
-
+  const [reset, setReset] = useState(false);
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice?.dashboard?.getRoles?.filter((d) => d.menu_id === 8)
   );
@@ -42,108 +38,120 @@ function DesignationComponent() {
   );
 
   //local state
-  const [searchTerm, setSearchTerm] = useState('');
 
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(getDesignationData, searchTerm);
-    setFilteredData(filteredList);
-  }, [getDesignationData, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(getDesignationData);
+  const clearFilters = () => {
+    setReset(true);
   };
 
-  const columns = [
-    {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
-        <div className="btn-group" role="group">
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            data-bs-toggle="modal"
-            data-bs-target="#edit"
-            onClick={(e) => {
-              dispatch(
-                handleModalOpen({
-                  showModal: true,
-                  modalData: row,
-                  modalHeader: 'Edit Designation'
-                })
-              );
-            }}
-          >
-            <i className="icofont-edit text-success"></i>
-          </button>
-        </div>
-      )
-    },
-    {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '80px'
-    },
-    {
-      name: 'Designation',
-      selector: (row) => row.designation,
-      sortable: true,
-      width: '150px'
-    },
-    {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      width: '150px',
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'action',
+        header: 'Action',
+        size: 110,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableSorting: false,
+        enableColumnFilter: false,
+        Cell: ({ row }) => (
+          <div className="btn-group" role="group">
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#edit"
+              onClick={(e) => {
+                dispatch(
+                  handleModalOpen({
+                    showModal: true,
+                    modalData: row?.original,
+                    modalHeader: 'Edit Designation'
+                  })
+                );
+              }}
+            >
+              <i className="icofont-edit text-success"></i>
+            </button>
+          </div>
+        )
+      },
+      {
+        accessorKey: 'counter',
+        header: 'Sr',
+        size: 80,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableColumnFilter: false
+      },
+      {
+        accessorKey: 'designation',
+        header: 'Designation',
+        filterVariant: 'autocomplete',
+        muiTableBodyCellProps: () => ({
+          sx: {
+            color: '#f19828',
+            fontWeight: 400
+          }
+        }),
+        size: 190
+      },
+      {
+        accessorKey: 'is_active',
+        header: 'Status',
+        size: 150,
+        accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+        filterFn: (row, id, filterValue) => {
+          const status = row.getValue(id);
+          return status.toLowerCase().includes(filterValue.toLowerCase());
+        },
+        Cell: ({ row }) => {
+          const isActive = row?.original?.is_active;
+          return (
+            <span
+              className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+              style={{ width: '4rem' }}
+            >
+              {isActive ? 'Active' : 'Deactive'}
             </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      )
-    },
-    {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
-    },
-    {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
-    },
-    {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
-    },
-    {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
-    }
-  ];
+          );
+        }
+      },
+      {
+        accessorKey: 'created_at',
+        accessorFn: (originalRow) => {
+          return moment(originalRow.created_at).startOf('day').toDate();
+        },
+        header: 'Created At',
+        filterVariant: 'date-range',
+        Cell: ({ row }) =>
+          row.original.created_at
+            ? moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--',
+        size: 180
+      },
+      {
+        accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
+        header: 'Created By',
+        size: 180
+      },
+      {
+        accessorKey: 'updated_at',
+        header: 'Updated At',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.updated_at),
+        Cell: ({ row }) =>
+          row?.original?.updated_at?.trim()
+            ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--'
+      },
+      {
+        header: 'Updated By',
+        accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+        size: 190
+      }
+    ],
+    [dispatch]
+  );
 
   const fields = [
     {
@@ -164,83 +172,17 @@ function DesignationComponent() {
   ];
 
   const validationSchema = CustomValidation(fields);
-  const loadData = async () => {};
 
-  // const handleForm = async (values, id) => {
-  //   const formData = new FormData();
-  //   formData.append('designation', values.designation);
-  //   formData.append('remark', values.remark);
-
-  //   const editformdata = new FormData();
-  //   editformdata.append('designation', values.designation);
-  //   editformdata.append('remark', values.remark);
-  //   editformdata.append('is_active', values.is_active);
-
-  //   if (!id) {
-  //     dispatch(postDesignationData(formData));
-  //     setTimeout(() => {
-  //       dispatch(
-  //         getDesignationDataListThunk(),
-  //         handleModalClose({
-  //           showModal: false,
-  //           modalData: null,
-  //           modalHeader: ''
-  //         })
-  //       );
-  //     }, 500);
-  //   } else {
-  //     dispatch(
-  //       updatedDesignationData({ id: id, payload: editformdata }),
-  //       handleModalClose({
-  //         showModal: false,
-  //         modalData: null,
-  //         modalHeader: ''
-  //       })
-  //     );
-
-  //     setTimeout(() => {
-  //       dispatch(getDesignationDataListThunk());
-  //     }, 500);
-  //   }
-  // };
-
-  // const handleForm = async (values, id) => {
-  //   const formData = new FormData();
-  //   formData.append('designation', values.designation);
-  //   formData.append('remark', values.remark);
-
-  //   const editformdata = new FormData();
-  //   editformdata.append('designation', values.designation);
-  //   editformdata.append('remark', values.remark);
-  //   editformdata.append('is_active', values.is_active);
-
-  //   dispatch(postDesignationData(formData));
-  //     setTimeout(() => {
-  //       dispatch(
-  //         getDesignationDataListThunk(),
-  //         handleModalClose({
-  //           showModal: false,
-  //           modalData: null,
-  //           modalHeader: ''
-  //         })
-  //       );
-  //     }, 500);
-  //   } else {
-  //     dispatch(
-  //       updatedDesignationData({ id: id, payload: editformdata }),
-  //       handleModalClose({
-  //         showModal: false,
-  //         modalData: null,
-  //         modalHeader: ''
-  //       })
-  //     );
-
-  //     setTimeout(() => {
-  //       dispatch(getDesignationDataListThunk());
-  //     }, 500);
-  //   }
-  // }}
-
+  const exportDataKeys = {
+    designation: 'Designation',
+    remark: 'Remark',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    is_active: 'Status',
+    fileName: 'Designation Master Record'
+  };
   const handleForm = async (values, id, { setSubmitting }) => {
     setSubmitting(true);
     const formData = new FormData();
@@ -252,11 +194,13 @@ function DesignationComponent() {
         await dispatch(updatedDesignationData({ id, payload: formData }));
         setTimeout(() => {
           dispatch(getDesignationDataListThunk());
+          clearFilters();
         }, 500);
       } else {
         await dispatch(postDesignationData(formData));
         setTimeout(() => {
           dispatch(getDesignationDataListThunk());
+          clearFilters();
         }, 500);
         handleModalClose({
           showModal: false,
@@ -266,6 +210,7 @@ function DesignationComponent() {
       }
     } catch (error) {
       errorHandler(error);
+      clearFilters();
     } finally {
       setSubmitting(false);
     }
@@ -285,13 +230,6 @@ function DesignationComponent() {
       dispatch(getRoles());
     }
   }, [dispatch, getDesignationData.length]);
-  useEffect(() => {
-    setFilteredData(getDesignationData);
-  }, [getDesignationData]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
 
   const initialValues = {
     designation: modal.modalData?.designation || '',
@@ -330,29 +268,16 @@ function DesignationComponent() {
             );
           }}
         />
-        <SearchBoxHeader
-          setSearchTerm={setSearchTerm}
-          searchTerm={searchTerm}
-          handleSearch={handleSearch}
-          handleReset={handleReset}
-          placeholder="Search by designation name...."
-          exportFileName="Designation Master Record"
-          exportData={exportDesignation}
-          showExportButton={true}
-        />
 
         <div className="card mt-2">
           {getDesignationData && (
-            <DataTable
+            <MaterialTable
               columns={columns}
-              data={filteredData}
-              defaultSortField="title"
-              pagination
-              selectableRows={false}
-              progressPending={isLoading}
-              progressComponent={<TableLoadingSkelton />}
-              className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-              highlightOnHover={true}
+              data={getDesignationData}
+              isLoading={isLoading}
+              reset={reset}
+              setReset={setReset}
+              exportDataKeys={exportDataKeys}
             />
           )}
         </div>
@@ -515,18 +440,21 @@ function DesignationDropdown(props) {
   useEffect(() => {
     const tempData = [];
 
-    new DesignationService().getDesignation().then((res) => {
-      if (res.status === 200) {
-        const data = res.data.data;
-        for (const key in data) {
-          tempData.push({
-            id: data[key].id,
-            designation: data[key].designation
-          });
+    new DesignationService()
+      .getDesignation()
+      .then((res) => {
+        if (res?.status === 200) {
+          const data = res?.data?.data;
+          for (const key in data) {
+            tempData.push({
+              id: data[key].id,
+              designation: data[key].designation
+            });
+          }
+          setData(tempData);
         }
-        setData(tempData);
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   }, []);
 
   return (
