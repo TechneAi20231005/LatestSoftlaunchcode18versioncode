@@ -1579,7 +1579,11 @@ function TestDraftDetails(props) {
         <span>
           Test Id
           <i
-            className="icofont-filter ms-2 text-dark"
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['tc_id']
+                ? 'text-warning'
+                : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'text')}
           />
@@ -1735,7 +1739,7 @@ function TestDraftDetails(props) {
           Testing Type
           <i
             className={`icofont-filter ms-2 ${
-              props.isFilterApplied['tyepe_name'] ? 'text-warning' : 'text-dark'
+              props.isFilterApplied['type_name'] ? 'text-warning' : 'text-dark'
             }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
