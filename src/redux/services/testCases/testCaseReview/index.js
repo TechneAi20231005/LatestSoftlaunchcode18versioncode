@@ -111,7 +111,7 @@ export const approveRejectByReviewerMasterThunk = createAsyncThunk(
 );
 export const getReviewTestCasesData = createAsyncThunk(
   'getReviewTestCasesData',
-  async ({ id, status, onSuccessHandler, errorHandler }) => {
+  async ({ id, status, onSuccessHandler, onErrorHandler, errorHandler }) => {
     try {
       const response = await rewampAxios.get(
         `testCases/getDraftTestCases/getReviewTestCases/${id}/${status}`
@@ -122,6 +122,8 @@ export const getReviewTestCasesData = createAsyncThunk(
           toast.success(response?.data?.message);
           return { data: response?.data, msg: response?.data?.message };
         } else {
+          toast.error(response?.data?.message);
+          onErrorHandler();
           errorHandler(response);
         }
       }

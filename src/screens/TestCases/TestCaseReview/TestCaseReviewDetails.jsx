@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useState } from 'react';
 import { Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import PageHeader from '../../../components/Common/PageHeader';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
 import { _base } from '../../../settings/constants';
@@ -17,7 +17,7 @@ import CustomFilterModal from '../Modal/CustomFilterModal';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import { getTestCaseStatusDataList } from '../../../redux/services/testCases/downloadFormatFile';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
-
+import Select from 'react-select';
 const initialState = {
   filterType: '',
   columnName: '',
@@ -102,6 +102,7 @@ function TestCaseReviewDetails() {
   const { id } = useParams();
   const planID = id;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     testPlanIdData,
@@ -110,7 +111,7 @@ function TestCaseReviewDetails() {
     exportTestCaseReviewData,
     isLoading
   } = useSelector((state) => state?.testCaseReview);
-  const { getFilterReviewCommentMasterList } = useSelector(
+  const { getFilterReviewCommentMasterList, status } = useSelector(
     (state) => state?.reviewCommentMaster
   );
 
@@ -125,7 +126,7 @@ function TestCaseReviewDetails() {
   // );
   const [paginationData, setPaginationData] = useState({
     pageIndex: 0,
-    pageSize: 100
+    pageSize: 10
   });
 
   const [addEditTestCasesModal, setAddEditTestCasesModal] = useState({
@@ -143,7 +144,7 @@ function TestCaseReviewDetails() {
   const [remarks, setRemarks] = useState({});
   const [isFilterApplied, setIsFilterApplied] = useState(false);
   const [selectedValue, setSelectedValue] = useState('');
-
+  const [remarkErrors, setRemarkErrors] = useState('');
   const {
     filterType,
     columnName,
@@ -235,7 +236,6 @@ function TestCaseReviewDetails() {
       }
     });
   };
-
   const [commentIdError, setCommentIdError] = useState('');
   const [changedRows, setChangedRows] = useState({});
   const handleSubmit = async (status) => {
@@ -254,10 +254,10 @@ function TestCaseReviewDetails() {
     //   return false; // Exit the function or prevent further execution
     // }
 
-    if (status === 'APPROVED' && selectedRows?.length <= 0) {
-      alert('Please select the test cases that you want to approve.');
-      return false; // Exit the function or prevent further execution
-    }
+    // if (status === 'APPROVED' && selectedRows?.length <= 0) {
+    //   alert('Please select the test cases that you want to approve.');
+    //   return false; // Exit the function or prevent further execution
+    // }
     const getUpdatedRows = () => {
       let updatedRows = [];
 
@@ -268,7 +268,8 @@ function TestCaseReviewDetails() {
             id: row?.id,
             tc_id: row?.tc_id,
             comment_id: comments[row?.id] || row?.comment_id || commonComment,
-            other_remark: remarks[row?.id] || row?.other_remark || commonRemark
+            other_remark: remarks[row?.id] || row?.other_remark || commonRemark,
+            created_by: row?.created_by?.id
           }));
       }
 
@@ -281,7 +282,8 @@ function TestCaseReviewDetails() {
           tc_id: row?.tc_id,
           comment_id:
             changedRows[id]?.comment_id || row?.comment_id || commonComment,
-          other_remark: changedRows[id]?.other_remark || row?.other_remark
+          other_remark: changedRows[id]?.other_remark || row?.other_remark,
+          created_by: row?.created_by?.id
         };
       });
 
@@ -304,23 +306,43 @@ function TestCaseReviewDetails() {
 
     const updatedRows = getUpdatedRows();
     const newCommentIdErrors = [];
-
+    const newRemarkErrors = [];
     updatedRows?.forEach((row) => {
       if (!row?.comment_id) {
         newCommentIdErrors[row?.tc_id] = 'Reviewer comment is required';
       }
-    });
-
-    selectedRows?.forEach((row) => {
-      if (!row?.comment_id) {
-        newCommentIdErrors[row?.tc_id] = 'Reviewer comment is required';
+      // if (!row?.remark && !row?.other_remark) {
+      //   newRemarkErrors[row?.tc_id] = 'Remark is required';
+      // }
+      const rowRemark = row?.remark || row?.other_remark;
+      if (!rowRemark && !commonRemark) {
+        newRemarkErrors[row?.tc_id] = 'Remark is required';
       }
     });
 
-    if (newCommentIdErrors?.length > 0 && !commonComment) {
+    // selectedRows?.forEach((row) => {
+    //   if (!row?.comment_id) {
+    //     newCommentIdErrors[row?.tc_id] = 'Reviewer comment is required';
+    //   }
+    //   if (!row?.remark && !row?.other_remark) {
+    //     newRemarkErrors[row?.tc_id] = 'Remark is required';
+    //   }
+    // });
+
+    // if (newCommentIdErrors?.length > 0 && !commonComment) {
+    //   setCommentIdError(newCommentIdErrors);
+    // } else {
+    //   setCommentIdError('');
+    if (
+      (Object.keys(newCommentIdErrors).length > 0 ||
+        Object.keys(newRemarkErrors).length > 0) &&
+      !commonRemark
+    ) {
       setCommentIdError(newCommentIdErrors);
+      setRemarkErrors(newRemarkErrors);
     } else {
       setCommentIdError('');
+      setRemarkErrors('');
 
       const statusId =
         status === 'RESEND'
@@ -337,7 +359,6 @@ function TestCaseReviewDetails() {
         common_remark: commonRemark,
         status_id: statusId
       };
-
       dispatch(
         approveRejectByReviewerMasterThunk({
           planID,
@@ -345,21 +366,26 @@ function TestCaseReviewDetails() {
           onSuccessHandler: () => {
             // setCommonComment('');
             setCommonRemark('');
-            // dispatch(
-            //   getByTestPlanIDListThunk({
-            //     id: id,
-            //     limit: paginationData.rowPerPage,
-            //     page: paginationData.currentPage
-            //   })
-            // );
             dispatch(
               getByTestPlanIDListThunk({
                 id: id,
                 limit: paginationData.rowPerPage,
-                page: 1,
-                filter_testcase_data: []
+                page: paginationData.currentPage
               })
             );
+            // dispatch(
+            //   getByTestPlanIDListThunk({
+            //     id: id,
+            //     limit: paginationData.rowPerPage,
+            //     page: 1,
+            //     filter_testcase_data: []
+            //   })
+            // );
+
+            // if (rowData?.length == 0) {
+            //   navigate(-1); // this goes back to the previous page
+            // }
+
             localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: false });
             localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
             setRowData(testPlanIdData);
@@ -1310,7 +1336,6 @@ function TestCaseReviewDetails() {
       size: 80,
       Cell: ({ row }) => {
         const rowData = row.original;
-
         return (
           <input
             type="checkbox"
@@ -1337,7 +1362,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1357,7 +1382,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 220,
       enableSorting: false
     },
@@ -1376,7 +1401,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1396,7 +1421,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1413,7 +1438,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1434,26 +1459,13 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.testing_group || '--'} `,
       header: 'Testing Group',
-      Header: (
-        <span>
-          Testing Group
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'group_name', 'Testing Group', 'text')
-            }
-          />
-        </span>
-      ),
-      enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1466,11 +1478,11 @@ function TestCaseReviewDetails() {
           <i
             className="icofont-filter ms-2 text-dark"
             style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'text')}
+            onClick={(e) => handleFilterClick(e, 'tc_id', 'tc_id', 'text')}
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1489,7 +1501,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1497,60 +1509,19 @@ function TestCaseReviewDetails() {
       accessorFn: (originalRows) =>
         `${originalRows?.test_description || '--'} `,
       header: 'Test Description',
-      Header: (
-        <span>
-          Test Description
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(
-                e,
-                'test_description',
-                'Test Description',
-                'text'
-              )
-            }
-          />
-        </span>
-      ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.steps || '--'} `,
       header: 'Steps',
-      Header: (
-        <span>
-          Steps
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-          />
-        </span>
-      ),
-      enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.expected_result || '--'} `,
       header: 'Expected Result',
-      Header: (
-        <span>
-          Expected Result
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
-            }
-          />
-        </span>
-      ),
-      enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1558,46 +1529,19 @@ function TestCaseReviewDetails() {
       accessorFn: (originalRows) =>
         `${originalRows?.tai_bc_status_conventions?.convention_name || '--'} `,
       header: 'Status',
-      Header: (
-        <span>
-          Status
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'status_name', 'Status', 'text')
-            }
-          />
-        </span>
-      ),
-      enableColumnFilter: false,
-      size: 200,
+      size: 180,
       enableSorting: false
     },
 
     {
       accessorFn: (originalRow) => originalRow?.comment_id || '--',
       header: 'Reviewer comment',
-      Header: (
-        <span>
-          Reviewer comment
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'comment_id', 'Reviewer comment', 'dropdown')
-            }
-          />
-        </span>
-      ),
-      enableColumnFilter: false,
       enableSorting: true,
       size: 250,
       Cell: ({ row }) => {
         const rowData = row.original;
         const selectedValue =
           comments[rowData.id] || rowData.comment_id || commonComment || '';
-
         return (
           <div>
             <select
@@ -1629,38 +1573,53 @@ function TestCaseReviewDetails() {
     {
       accessorFn: (originalRow) => originalRow?.remark || '--',
       header: 'Remark',
-      Header: (
-        <span>
-          Remark
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'remark', 'Remark', 'text')}
-          />
-        </span>
-      ),
-      enableColumnFilter: false,
+      // Header: (
+      //   <span>
+      //     Remark
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) => handleFilterClick(e, 'remark', 'Remark', 'text')}
+      //     />
+      //     {remarkErrors[rowData?.tc_id] &&
+      //       selectedRows?.includes(rowData?.tc_id) && (
+      //         <div className="col">
+      //           <span className="text-danger">
+      //             {remarkErrors[rowData?.tc_id]}
+      //           </span>
+      //         </div>
+      //       )}
+      //   </span>
+      // ),
+      // enableColumnFilter: false,
       enableSorting: true,
-      size: 300,
+      size: 200,
       Cell: ({ row }) => {
         const rowData = row.original;
         const value =
           rowData.other_remark || remarks[rowData.id] || commonRemark || '';
-
+        const showError =
+          remarkErrors[rowData.tc_id] && selectedRows?.includes(rowData.tc_id);
         return (
-          <input
-            className="form-control"
-            type="text"
-            id="other_remark"
-            name="other_remark"
-            placeholder="Enter Remark"
-            aria-label="default input example"
-            maxLength={100}
-            defaultValue={value}
-            onChange={(e) =>
-              handleRowChange(rowData.id, 'other_remark', e.target.value)
-            }
-          />
+          <div>
+            <input
+              className="form-control"
+              type="text"
+              id="other_remark"
+              name="other_remark"
+              placeholder="Enter Remark"
+              aria-label="default input example"
+              value={value}
+              onChange={(e) =>
+                handleRowChange(rowData.id, 'other_remark', e.target.value)
+              }
+            />
+            {showError && (
+              <div className="text-danger mt-1">
+                {remarkErrors[rowData.tc_id]}
+              </div>
+            )}
+          </div>
         );
       }
     },
@@ -1681,8 +1640,24 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
+      enableSorting: false
+    },
+    {
+      accessorFn: (originalRows) => originalRows?.is_automation_script || '--',
+      header: 'Is Automation Script',
+      Header: (
+        <span>
+          Is Automation Script
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+          />
+        </span>
+      ),
+
+      size: 250,
       enableSorting: false
     },
     {
@@ -1700,7 +1675,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1723,7 +1698,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1742,7 +1717,7 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1764,12 +1739,11 @@ function TestCaseReviewDetails() {
           />
         </span>
       ),
-      enableColumnFilter: false,
+      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     }
   ];
-
   const moduleMapping = {
     module_name: 'module_id',
     sub_module_name: 'submodule_id',
@@ -1788,7 +1762,8 @@ function TestCaseReviewDetails() {
     created_at: 'created_at',
     created_by: 'created_by',
     updated_at: 'updated_at',
-    updated_by: 'updated_by'
+    updated_by: 'updated_by',
+    is_automation_script: 'is_automation_script'
   };
 
   // const transformDataForExport = (rowData, data, comments, commonComment) => {
@@ -1853,12 +1828,40 @@ function TestCaseReviewDetails() {
   //   commonComment
   // );
 
+  const transformDataForTestCaseDetails = (data) => {
+    return (
+      data?.length > 0 &&
+      data?.map((originalRows) => ({
+        ...originalRows,
+
+        module_name: originalRows?.module?.module_name || '-',
+        sub_module_name: originalRows?.sub_module?.sub_module_name || '-',
+        function_name: originalRows?.function_master?.function_name || '-',
+        'Testing Type': originalRows?.testing_type?.type_name || '-',
+        group_name: originalRows?.testing_group || '-',
+        status: originalRows?.tai_bc_status_conventions?.convention_name || '-',
+        reviewer_comment:
+          originalRows?.reviewer_comment?.reviewer_comment || '-',
+        platform: originalRows?.platform || '--',
+        project_name: originalRows?.project?.project_name || '-',
+        'is Automation':
+          originalRows?.test_cases?.[0].is_automation_script || '--',
+        'Created By': `${originalRows?.created_by?.first_name || '-'} ${
+          originalRows?.created_by?.last_name || '-'
+        }`,
+        'Updated By': `${originalRows?.updated_by?.first_name || '-'} ${
+          originalRows?.updated_by?.last_name || '-'
+        }`
+      }))
+    );
+  };
+
   const exportColumns = [
     { title: 'Module', field: 'module_name' },
     { title: 'Submodule', field: 'sub_module_name' },
     { title: 'Function', field: 'function_name' },
     { title: 'Field', field: 'field' },
-    { title: 'Testing Type', field: 'type_name' },
+    { title: 'Testing Type', field: 'Testing Type' },
     { title: 'Testing Group', field: 'group_name' },
     { title: 'Test ID', field: 'tc_id' },
     { title: 'Test Description', field: 'test_description' },
@@ -1867,8 +1870,10 @@ function TestCaseReviewDetails() {
     { title: 'Expected Result', field: 'expected_result' },
     { title: 'Status', field: 'status' },
     { title: 'Reviewer Comment', field: 'reviewer_comment' },
+    { title: 'platform', field: 'platform' },
     { title: 'Remark', field: 'remark' },
     { title: 'Project', field: 'project_name' },
+    { title: 'is Automation', field: 'is Automation' },
     { title: 'Created At', field: 'created_at' },
     { title: 'Created By', field: 'created_by' },
     { title: 'Updated At', field: 'updated_at' },
@@ -1880,25 +1885,26 @@ function TestCaseReviewDetails() {
       localDispatch({ type: 'SET_FILTERS', payload: [] });
     }
     const filterKeyMap = {
-      module_name: 'module_names',
-      sub_module_name: 'sub_module_names',
-      function_name: 'function_names',
-      field: 'field_names',
-      platform: 'platforms',
-      type_name: 'type_names',
-      tc_id: 'ids',
-      severity: 'severities',
-      group_name: 'group_names',
+      module_name: 'module',
+      sub_module_name: 'submodule',
+      function_name: 'function',
+      field: 'field',
+      platform: 'platform',
+      type_name: 'testing_type',
+      tc_id: 'tc_id',
       test_description: 'test_descriptions',
 
+      severity: 'severity',
+      group_name: 'group_names',
       steps: 'steps',
       expected_result: 'expected_results',
       status: 'status',
-      project_name: 'project_names',
+      project_name: 'project',
       created_at: 'created_at',
       created_by: 'created_by',
       updated_at: 'updated_at',
-      updated_by: 'updated_by'
+      updated_by: 'updated_by',
+      is_automation_script: 'is_automation_script'
     };
     const filteredData = filterTestPlanData[filterKeyMap[column]];
     const columnId = moduleMapping[column];
@@ -1940,8 +1946,10 @@ function TestCaseReviewDetails() {
     });
   };
 
-  const filteredResults = filterValues?.filter((item) =>
-    item?.name?.toLowerCase()?.includes(searchTerm.toLowerCase())
+  const filteredResults = filterValues?.filter(
+    (item) =>
+      item?.name &&
+      item?.name?.toString()?.toLowerCase()?.includes(searchTerm.toLowerCase())
   );
 
   const closeModal = () => {
@@ -2116,8 +2124,8 @@ function TestCaseReviewDetails() {
       dispatch(
         getByTestPlanIDListThunk({
           id: id,
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: paginationData.pageSize,
+          page: paginationData.pageIndex,
           filter_testcase_data: updatedFilters
         })
       );
@@ -2142,8 +2150,8 @@ function TestCaseReviewDetails() {
       dispatch(
         getByTestPlanIDListThunk({
           id: id,
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: paginationData.pageSize,
+          page: paginationData.pageIndex,
           filter_testcase_data: updatedFilters
         })
       );
@@ -2191,8 +2199,8 @@ function TestCaseReviewDetails() {
       dispatch(
         getByTestPlanIDListThunk({
           id: id,
-          limit: paginationData.rowPerPage,
-          page: paginationData.currentPage,
+          limit: paginationData.pageSize,
+          page: paginationData.pageIndex,
           filter_testcase_data: updatedFilters
         })
       );
@@ -2212,14 +2220,14 @@ function TestCaseReviewDetails() {
     //   currentPage: 1
     // });
     setPaginationData({
-      pageSize: 100,
+      pageSize: 10,
       pageIndex: 0
     });
     dispatch(
       getByTestPlanIDListThunk({
         id: id,
-        limit: paginationData.rowPerPage,
-        page: 1,
+        limit: paginationData.pageSize,
+        page: paginationData.pageIndex,
         filter_testcase_data: []
       })
     );
@@ -2276,8 +2284,8 @@ function TestCaseReviewDetails() {
         dispatch(
           getByTestPlanIDListThunk({
             id: id,
-            limit: paginationData.rowPerPage,
-            page: paginationData.currentPage,
+            limit: paginationData.pageSize,
+            page: paginationData.pageIndex,
             filter_testcase_data: updatedFilters
           })
         );
@@ -2313,8 +2321,8 @@ function TestCaseReviewDetails() {
     dispatch(
       getByTestPlanIDListThunk({
         id: id,
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage,
+        limit: paginationData.pageSize,
+        page: paginationData.pageIndex + 1,
         filter_testcase_data:
           updatedFilters?.length === 1 &&
           updatedFilters[0]?.column === filterColumnId
@@ -2329,35 +2337,44 @@ function TestCaseReviewDetails() {
       })
     );
     dispatch(getReviewCommentMasterListThunk());
-  }, [paginationData.rowPerPage, paginationData.currentPage]);
+  }, [paginationData.pageSize, paginationData.pageIndex]);
 
   useEffect(() => {
     dispatch(
       getTestCaseStatusDataList({
-        limit: paginationData.rowPerPage,
-        page: paginationData.currentPage
+        limit: paginationData.pageSize,
+        page: paginationData.pageIndex + 1
       })
     );
-  }, [paginationData.rowPerPage, paginationData.currentPage]);
+  }, [paginationData.pageSize, paginationData.pageIndex]);
+  useEffect(() => {
+    if (!testPlanIdData) {
+      navigate(-1);
+    }
+  }, [testPlanIdData]);
+
   return (
     <div className="container-xxl">
       <PageHeader
+        showBackBtn
         headerTitle="Test Case Review"
         renderRight={() => {
           return (
             <div className="col-md-6 d-flex justify-content-end">
-              <button
-                onClick={() =>
-                  setAddEditTestCasesModal({
-                    type: 'Add',
-                    // data: row,
-                    open: true
-                  })
-                }
-                className="btn btn-primary text-white me-2"
-              >
-                ADD
-              </button>
+              {rowData?.length > 0 && (
+                <button
+                  onClick={() =>
+                    setAddEditTestCasesModal({
+                      type: 'Add',
+                      // data: row,
+                      open: true
+                    })
+                  }
+                  className="btn btn-primary text-white me-2"
+                >
+                  ADD
+                </button>
+              )}
               <button
                 onClick={handleButtonClick}
                 className="btn btn-primary text-white me-2"
@@ -2372,7 +2389,7 @@ function TestCaseReviewDetails() {
               <ExportToExcel
                 className="btn btn-sm btn-danger "
                 fileName="Test Case Review List"
-                apiData={rowData}
+                apiData={transformDataForTestCaseDetails(rowData)}
                 columns={exportColumns}
               />
             </div>
@@ -2403,17 +2420,16 @@ function TestCaseReviewDetails() {
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
         /> */}
-
         <MaterialTable
           columns={columns}
-          data={rowData}
-          // isLoading={isLoading}
+          data={rowData || []}
+          isLoading={isLoading?.testPlanIdData}
           paginationData={paginationData}
           totalRows={allTestPlanIDData?.data?.total}
           manualPagination={true}
           setPaginationData={setPaginationData}
           muiPaginationProps={{
-            rowsPerPageOptions: [100, 500, 1000, 2000]
+            rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
           }}
           isExportData={false}
         />
@@ -2425,18 +2441,19 @@ function TestCaseReviewDetails() {
             Reviewer Comment :
           </label>
 
-          <select
-            className="form-select"
-            value={commonComment}
+          <Select
+            classNamePrefix="react-select"
+            options={getFilterReviewCommentMasterList}
             id="common_comment_id"
             name="common_comment_id"
-            onChange={(e) => {
-              setCommonComment(e.target.value);
+            isClearable={true}
+            onChange={(option) => {
+              setCommonComment(option?.value || '');
               setCommentIdError('');
             }}
           >
-            {generateOptions(getFilterReviewCommentMasterList)}
-          </select>
+            {/* {generateOptions(getFilterReviewCommentMasterList)} */}
+          </Select>
         </div>
         <div className="col-md-3">
           <label className="form-label font-weight-bold">Remark :</label>
@@ -2486,6 +2503,7 @@ function TestCaseReviewDetails() {
           close={(prev) => setAddEditTestCasesModal({ ...prev, open: false })}
           paginationData={paginationData}
           id={planID}
+          project_id={rowData}
           payloadType={'TestCaseReview'}
         />
       )}

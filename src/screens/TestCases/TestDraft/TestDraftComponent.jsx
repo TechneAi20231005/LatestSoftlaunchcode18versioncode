@@ -28,6 +28,7 @@ export default function TestDraftComponent({}) {
   const dispatch = useDispatch();
   const {
     allDraftTestListData,
+    getDraftTestListData,
     allReviewDraftTestListData,
     filterData,
     filterReviewedDraftTestList
@@ -46,7 +47,7 @@ export default function TestDraftComponent({}) {
 
   const [paginationData, setPaginationData] = useState({
     pageIndex: 0,
-    pageSize: 100
+    pageSize: 10
   });
 
   const [downloadmodal, setDownloadModal] = useState({
@@ -130,41 +131,98 @@ export default function TestDraftComponent({}) {
     );
   };
 
-  const exportColumns = [
-    { title: 'Module', field: 'module_name' },
-    { title: 'Submodule', field: 'sub_module_name' },
-    { title: 'Platform', field: 'platform' },
-    { title: 'Function', field: 'function_name' },
-    { title: 'Field', field: 'field' },
-    { title: 'Testing Type', field: 'type_name' },
-    { title: 'Testing Group', field: 'group_name' },
-    { title: 'Test ID', field: 'tc_id' },
-    { title: 'Test Description', field: 'test_description' },
-    { title: 'Severity', field: 'severity' },
+  const transformDataForDraft = (data) => {
+    return (
+      data?.length > 0 &&
+      data?.map((originalRows) => ({
+        Module: originalRows?.module?.module_name,
+        Submodule: originalRows?.sub_module?.sub_module_name,
+        Platform: originalRows?.platform || '-',
+        Function: originalRows?.function_master?.function_name || '-',
+        Field: originalRows?.field,
+        'Testing Type': originalRows?.testing_type?.type_name || '-',
+        'Testing Group': originalRows?.testing_group || '-',
+        'Test ID': originalRows?.tc_id || '-',
+        'Test Description': originalRows?.test_description || '-',
+        Severity: originalRows?.severity || '-',
+        Steps: originalRows?.steps || '-',
+        'Expected Result': originalRows?.expected_result || '-',
+        Status: originalRows?.tai_bc_status_conventions?.convention_name || '-',
+        Project: originalRows?.project?.project_name || '-',
+        'is Automation': originalRows?.is_automation_script || '-',
+        'Created At': originalRows?.created_at || '-',
+        'Created By': `${originalRows?.created_by?.first_name || '-'} ${
+          originalRows?.created_by?.last_name || '-'
+        }`,
+        'Updated At': originalRows?.updated_at || '-',
+        'Updated By': `${originalRows?.updated_by?.first_name || '-'} ${
+          originalRows?.updated_by?.last_name || '-'
+        }`
+      }))
+    );
+  };
 
-    { title: 'Steps', field: 'steps' },
-    { title: 'Expected Result', field: 'expected_result' },
-    { title: 'Status', field: 'status' },
-    { title: 'Project', field: 'project_name' },
-    { title: 'Created At', field: 'created_at' },
-    { title: 'Created By', field: 'created_by' },
-    { title: 'Updated At', field: 'updated_at' },
-    { title: 'Updated By', field: 'updated_by' }
+  const transformDataForReviewer = (data) => {
+    return (
+      data?.data?.length > 0 &&
+      data?.data?.map((originalRows) => ({
+        'Test Plan ID': originalRows?.test_plan_id || '-',
+        'Reviewer Name': `${originalRows.reviewer_name?.first_name || '-'} ${
+          originalRows.reviewer_name?.last_name || '-'
+        } `,
+        'Total Testcase': originalRows?.total_testcases,
+        'Reviewed Testcase': originalRows?.total_reviewed_testcases,
+        'Rejected Testcase': originalRows?.total_rejected_testcases,
+        'Approved Testcase': originalRows?.total_approved_testcase,
+        'is Automation': originalRows?.is_automation_script || '-',
+        'Created At': originalRows?.created_at || '-',
+        'Created By': `${originalRows?.created_by?.first_name || '-'} ${
+          originalRows?.created_by?.last_name || '-'
+        }`,
+        'Updated At': originalRows?.updated_at || '-',
+        'Updated By': `${originalRows?.updated_by?.first_name || '-'} ${
+          originalRows?.updated_by?.last_name || '-'
+        }`
+      }))
+    );
+  };
+
+  const exportColumns = [
+    { title: 'Module', field: 'Module' },
+    { title: 'Submodule', field: 'Submodule' },
+    { title: 'Platform', field: 'Platform' },
+    { title: 'Function', field: 'Function' },
+    { title: 'Field', field: 'Field' },
+    { title: 'Testing Type', field: 'Testing Type' },
+    { title: 'Testing Group', field: 'Testing Group' },
+    { title: 'Test ID', field: 'Test ID' },
+    { title: 'Test Description', field: 'Test Description' },
+    { title: 'Severity', field: 'Severity' },
+
+    { title: 'Steps', field: 'Steps' },
+    { title: 'Expected Result', field: 'Expected Result' },
+    { title: 'Status', field: 'Status' },
+    { title: 'Project', field: 'Project' },
+    { title: 'is Automation', field: 'is Automation' },
+    { title: 'Created At', field: 'Created At' },
+    { title: 'Created By', field: 'Created By' },
+    { title: 'Updated At', field: 'Updated At' },
+    { title: 'Updated By', field: 'Updated By' }
   ];
 
   const exportReviewedColumns = [
-    { title: 'Test Plan ID', field: 'test_plan_id' },
-    { title: 'Reviewer Name', field: 'reviewer_name' },
-    { title: 'Total Testcase', field: 'total_testcases' },
-    { title: 'Reviewed Testcase', field: 'total_reviewed_testcases' },
-    { title: 'Rejected Testcase', field: 'total_rejected_testcases' },
-    { title: 'Approved Testcse', field: 'total_approved_testcases' },
+    { title: 'Test Plan ID', field: 'Test Plan ID' },
+    { title: 'Reviewer Name', field: 'Reviewer Name' },
+    { title: 'Total Testcase', field: 'Total Testcase' },
+    { title: 'Reviewed Testcase', field: 'Reviewed Testcase' },
+    { title: 'Rejected Testcase', field: 'Rejected Testcase' },
+    { title: 'Approved Testcase', field: 'Approved Testcase' },
+    { title: 'is Automation', field: 'is Automation' },
+    { title: 'Created At', field: 'Created At' },
+    { title: 'Created By', field: 'Created By' },
 
-    { title: 'Created At', field: 'created_at' },
-    { title: 'Created By', field: 'created_by' },
-
-    { title: 'Updated At', field: 'updated_at' },
-    { title: 'Updated By', field: 'updated_by' }
+    { title: 'Updated At', field: 'Updated At' },
+    { title: 'Updated By', field: 'Updated By' }
   ];
   const [isFilterApplied, setIsFilterApplied] = useState(false);
 
@@ -178,7 +236,7 @@ export default function TestDraftComponent({}) {
     //   currentPage: 1
     // });
     setPaginationData({
-      pageSize: 100,
+      pageSize: 10,
       pageIndex: 0
     });
     currentTab === 'test_summary'
@@ -247,7 +305,6 @@ export default function TestDraftComponent({}) {
     '& .MuiTabs-indicator': { backgroundColor: '#484c7f' },
     '& .MuiTab-root.Mui-selected': { color: '#484c7f' }
   };
-  console.log('allDraftTestListData', allDraftTestListData);
   return (
     <div className="container-xxl">
       <PageHeader
@@ -300,7 +357,8 @@ export default function TestDraftComponent({}) {
               {currentTab === 'test_summary' && (
                 <ExportToExcel
                   className="btn btn-danger"
-                  apiData={allDraftTestListData}
+                  // apiData={transformDataForDraft(allDraftTestListData)}
+                  apiData={transformDataForDraft(getDraftTestListData)}
                   columns={exportColumns}
                   fileName={'Test Summary Records'}
                   disabled={allDraftTestListData?.length <= 0 ? true : false}
@@ -310,7 +368,7 @@ export default function TestDraftComponent({}) {
               {currentTab === 'review_test_draft' && (
                 <ExportToExcel
                   className="btn btn-danger"
-                  apiData={allReviewDraftTestListData}
+                  apiData={transformDataForReviewer(allReviewDraftTestListData)}
                   columns={exportReviewedColumns}
                   fileName={'Review Test Draft Records'}
                   disabled={
@@ -405,7 +463,7 @@ export default function TestDraftComponent({}) {
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <button
+            {/* <button
               type="submit"
               className="btn btn-primary text-white"
               style={{ backgroundColor: '#484C7F' }}
@@ -419,7 +477,34 @@ export default function TestDraftComponent({}) {
               }}
             >
               Submit
+            </button> */}
+            <button
+              type="submit"
+              className="btn btn-primary text-white"
+              style={{ backgroundColor: '#484C7F' }}
+              disabled={disable}
+              onClick={() => {
+                handleBulkModal({
+                  showModal: true,
+                  modalData: '',
+                  modalHeader: 'Bulk Upload Test Draft'
+                });
+              }}
+            >
+              {disable ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Submitting...
+                </>
+              ) : (
+                'Submit'
+              )}
             </button>
+
             <button
               type="button"
               className="btn btn-danger text-white"

@@ -204,7 +204,7 @@ function ReviewCommentMasterComponent() {
     {
       accessorKey: 'reviewer_comment',
       header: 'Reviewer Comment Title',
-      size: 160,
+      size: 250,
       filterVariant: 'autocomplete',
       muiTableBodyCellProps: () => ({
         sx: {
@@ -213,7 +213,23 @@ function ReviewCommentMasterComponent() {
         }
       })
     },
+    {
+      accessorFn: (originalRows) =>
+        `${originalRows?.is_automation_script || '--'} `,
+      header: 'Is Automation Script',
+      Header: (
+        <span>
+          Is Automation Script
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+          />
+        </span>
+      ),
 
+      size: 250,
+      enableSorting: false
+    },
     {
       accessorFn: (originalRow) => {
         return moment(originalRow.created_at).startOf('day').toDate();
@@ -379,6 +395,9 @@ function ReviewCommentMasterComponent() {
             reset={reset}
             setReset={setReset}
             exportDataKeys={exportDataKeys}
+            muiPaginationProps={{
+              rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
+            }}
           ></MaterialTable>
         )}
         <AddEditReviewCommentMaster

@@ -39,7 +39,8 @@ const initialState = {
   selectAllNames: false,
   selectedRows: [],
   betweenValues: ['', ''],
-  isFilterApplied: false
+  isFilterApplied: false,
+  hasOpenedFilter: {}
 };
 
 function localReducer(state, action) {
@@ -89,7 +90,11 @@ function localReducer(state, action) {
       return { ...state, betweenValues: action.payload };
     case 'SET_IS_FILTER_APPLIED':
       return { ...state, isFilterApplied: action.payload };
-
+    case 'SET_HAS_OPENED_FILTER':
+      return {
+        ...state,
+        hasOpenedFilter: action.payload
+      };
     default:
       return state;
   }
@@ -175,6 +180,7 @@ function TestDraftDetails(props) {
     steps: 'steps',
     expected_result: 'expected_result',
     status: 'status',
+    is_automation_script: 'is_automation_script',
     project_name: 'project_id',
     created_at: 'created_at',
     created_by: 'created_by',
@@ -224,9 +230,9 @@ function TestDraftDetails(props) {
       field: 'field',
       platform: 'platform',
       type_name: 'testing_type',
-      tc_id: 'ids',
+      tc_id: 'tc_id',
       test_description: 'test_descriptions',
-
+      is_automation_script: 'is_automation_script',
       severity: 'severity',
       group_name: 'group_names',
       steps: 'steps',
@@ -234,11 +240,17 @@ function TestDraftDetails(props) {
       status: 'status',
       project_name: 'project',
       created_at: 'created_at',
-      created_by: 'created_by',
+      created_by: 'createdby',
       updated_at: 'updated_at',
-      updated_by: 'updated_by'
+      updated_by: 'updatedby'
     };
-    const filteredData = filterData[filterKeyMap[column]];
+    let filteredData = filterData[filterKeyMap[column]];
+    if (filterKeyMap[column] === 'tc_id') {
+      filteredData = filteredData?.map((item) => ({
+        ...item,
+        name: `TC_${item?.name}`
+      }));
+    }
     const columnId = moduleMapping[column];
     localDispatch({ type: 'SET_FILTER_TYPE', payload: '' });
     localDispatch({ type: 'SET_COLUMN_NAME', payload: name });
@@ -254,6 +266,22 @@ function TestDraftDetails(props) {
       type: 'SET_MODAL_POSITION',
       payload: { top: rect.bottom, left: rect.left }
     });
+    if (!state.hasOpenedFilter[column]) {
+      localDispatch({
+        type: 'SET_SELECTED_FILTER',
+        payload: filteredData?.map((item) => item?.name)
+      });
+      localDispatch({
+        type: 'SET_SELECTED_FILTER_IDS',
+        payload: filteredData?.map((item) => item?.id)
+      });
+    }
+
+    // ✅ Mark column as opened
+    localDispatch({
+      type: 'SET_HAS_OPENED_FILTER',
+      payload: { ...state.hasOpenedFilter, [column]: true }
+    });
   };
 
   const handleSearchChange = (e) => {
@@ -262,9 +290,25 @@ function TestDraftDetails(props) {
       type: 'SET_SEARCH_TERM',
       payload: term
     });
+    localDispatch({
+      type: 'SET_SELECTED_FILTER',
+      payload: []
+    });
+
+    localDispatch({
+      type: 'SET_SELECTED_FILTER_IDS',
+      payload: []
+    });
+    localDispatch({
+      type: 'SET_IS_FILTER_APPLIED',
+      payload: true
+    });
   };
+  // const filteredResults = filterValues?.filter((item) =>
+  //   item?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+  // );
   const filteredResults = filterValues?.filter((item) =>
-    item?.name?.toLowerCase()?.includes(searchTerm?.toLowerCase())
+    item?.name?.toString().toLowerCase().includes(searchTerm?.toLowerCase())
   );
 
   // const filteredResults = filterValues?.filter((item) =>
@@ -326,8 +370,6 @@ function TestDraftDetails(props) {
       });
     }
   };
-  {
-  }
   const handleSelectAll = (event) => {
     if (event.target.checked) {
       localDispatch({
@@ -461,15 +503,13 @@ function TestDraftDetails(props) {
       // localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
     } catch (error) {}
   };
-  {
-  }
+
   const handleApplyButton = async () => {
     props?.setClearData(false);
     const newFilter = {
       column: filterColumnId,
       column_name: filterColumn,
-
-      whereIn: selectedFilterIds,
+      whereIn: Array.from(new Set(selectedFilterIds)),
       sort: sortOrder
     };
 
@@ -1483,9 +1523,7 @@ function TestDraftDetails(props) {
               }
             />
             <Link
-              to={`/${
-                _base + '/TestCaseHistoryComponent/' + row?.original?.id
-              }`}
+              to={`/${_base}/TestCaseHistoryComponent/${row?.original?.id}?type=testSummary`}
             >
               <i class="icofont-history cp btn btn-outline-secondary fw-bold  " />
             </Link>
@@ -1533,7 +1571,50 @@ function TestDraftDetails(props) {
         );
       }
     },
+    {
+      accessorFn: (originalRows) =>
+        originalRows?.tc_id ? `TC_${originalRows?.tc_id}` : '--',
+      header: 'Test Id',
+      Header: (
+        <span>
+          Test Id
+          <i
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['tc_id'] ? 'text-warning' : 'text-dark'
+            }`}
+            style={{ cursor: 'pointer' }}
+            onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'text')}
+          />
+        </span>
+      ),
 
+      size: 180,
+      enableSorting: false
+    },
+    {
+      accessorFn: (originalRows) =>
+        `${originalRows?.project?.project_name || '--'} `,
+      header: 'Project',
+      Header: (
+        <span>
+          Project
+          <i
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['project_name']
+                ? 'text-warning'
+                : 'text-dark'
+            }`}
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'project_name', 'Project', 'text')
+            }
+          />
+        </span>
+      ),
+
+      size: 200,
+      enableSorting: false
+    },
     {
       accessorFn: (originalRows) =>
         `${originalRows?.module?.module_name || '--'} `,
@@ -1542,7 +1623,11 @@ function TestDraftDetails(props) {
         <span>
           Module Name
           <i
-            className="icofont-filter ms-2 text-dark"
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['module_name']
+                ? 'text-warning'
+                : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'module_name', 'Module Name', 'text')
@@ -1562,7 +1647,11 @@ function TestDraftDetails(props) {
         <span>
           Submodule Name
           <i
-            className="icofont-filter ms-2 text-dark"
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['sub_module_name']
+                ? 'text-warning'
+                : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'sub_module_name', 'Submodule Name', 'text')
@@ -1581,7 +1670,9 @@ function TestDraftDetails(props) {
         <span>
           Platform
           <i
-            className="icofont-filter ms-2 text-dark"
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['platform'] ? 'text-warning' : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'platform', 'Platform', 'text')
@@ -1601,7 +1692,11 @@ function TestDraftDetails(props) {
         <span>
           Function Name
           <i
-            className="icofont-filter ms-2 text-dark"
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['function_name']
+                ? 'text-warning'
+                : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'function_name', 'Function Name', 'text')
@@ -1620,7 +1715,9 @@ function TestDraftDetails(props) {
         <span>
           Field
           <i
-            className="icofont-filter ms-2 text-dark"
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['field'] ? 'text-warning' : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
           />
@@ -1639,7 +1736,9 @@ function TestDraftDetails(props) {
         <span>
           Testing Type
           <i
-            className="icofont-filter ms-2 text-dark"
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['type_name'] ? 'text-warning' : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'type_name', 'Testing Type', 'text')
@@ -1654,39 +1753,14 @@ function TestDraftDetails(props) {
     {
       accessorFn: (originalRows) => `${originalRows?.testing_group || '--'} `,
       header: 'Testing Group',
-      Header: (
-        <span>
-          Testing Group
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'group_name', 'Testing Group', 'text')
-            }
-          />
-        </span>
-      ),
+      Header: <span>Testing Group</span>,
 
       size: 200,
-      enableSorting: false
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableGrouping: false
     },
-    {
-      accessorFn: (originalRows) => `${originalRows?.tc_id || '--'} `,
-      header: 'Test Id',
-      Header: (
-        <span>
-          Test Id
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'text')}
-          />
-        </span>
-      ),
 
-      size: 180,
-      enableSorting: false
-    },
     {
       accessorFn: (originalRows) => `${originalRows?.severity || '--'} `,
       header: 'Severity',
@@ -1694,7 +1768,9 @@ function TestDraftDetails(props) {
         <span>
           Severity
           <i
-            className="icofont-filter ms-2 text-dark"
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['severity'] ? 'text-warning' : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'severity', 'Severity', 'text')
@@ -1710,100 +1786,43 @@ function TestDraftDetails(props) {
       accessorFn: (originalRows) =>
         `${originalRows?.test_description || '--'} `,
       header: 'Test Description',
-      Header: (
-        <span>
-          Test Description
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(
-                e,
-                'test_description',
-                'Test Description',
-                'text'
-              )
-            }
-          />
-        </span>
-      ),
+      Header: <span>Test Description</span>,
 
       size: 220,
-      enableSorting: false
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableGrouping: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.steps || '--'} `,
       header: 'Steps',
-      Header: (
-        <span>
-          Steps
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-          />
-        </span>
-      ),
+      Header: <span>Steps</span>,
 
       size: 180,
-      enableSorting: false
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableGrouping: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.expected_result || '--'} `,
       header: 'Expected Result',
-      Header: (
-        <span>
-          Expected Result
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
-            }
-          />
-        </span>
-      ),
+      Header: <span>Expected Result</span>,
 
       size: 220,
-      enableSorting: false
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableGrouping: false
     },
     {
       accessorFn: (originalRows) =>
         `${originalRows?.tai_bc_status_conventions?.convention_name || '--'} `,
       header: 'Status',
-      Header: (
-        <span>
-          Status
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'status', 'Status', 'text')}
-          />
-        </span>
-      ),
+      Header: <span>Status</span>,
 
       size: 180,
-      enableSorting: false
-    },
-    {
-      accessorFn: (originalRows) =>
-        `${originalRows?.project?.project_name || '--'} `,
-      header: 'Project',
-      Header: (
-        <span>
-          Project
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'project_name', 'Project', 'text')
-            }
-          />
-        </span>
-      ),
-
-      size: 200,
-      enableSorting: false
+      enableSorting: false,
+      enableColumnFilter: false,
+      enableGrouping: false
     },
     {
       accessorFn: (originalRows) =>
@@ -1813,13 +1832,17 @@ function TestDraftDetails(props) {
         <span>
           Is Automation Script
           <i
-            className="icofont-filter ms-2 text-dark"
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['is_automation_script']
+                ? 'text-warning'
+                : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(
                 e,
                 'is_automation_script',
-                'Is Automation Script',
+                'is_automation_script',
                 'text'
               )
             }
@@ -1837,7 +1860,9 @@ function TestDraftDetails(props) {
         <span>
           Created At
           <i
-            className="icofont-filter ms-2 text-dark"
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['created_at'] ? 'text-warning' : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'created_at', 'Created At', 'text')
@@ -1860,7 +1885,9 @@ function TestDraftDetails(props) {
         <span>
           Created By
           <i
-            className="icofont-filter ms-2 text-dark"
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['created_by'] ? 'text-warning' : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'created_by', 'Created By', 'text')
@@ -1870,7 +1897,8 @@ function TestDraftDetails(props) {
       ),
 
       size: 200,
-      enableSorting: false
+      enableSorting: false,
+      enableGrouping: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.updated_at || '--'} `,
@@ -1879,7 +1907,9 @@ function TestDraftDetails(props) {
         <span>
           Updated At
           <i
-            className="icofont-filter ms-2 text-dark"
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['updated_at'] ? 'text-warning' : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'updated_at', 'Updated At', 'text')
@@ -1901,7 +1931,9 @@ function TestDraftDetails(props) {
         <span>
           Updated By
           <i
-            className="icofont-filter ms-2 text-dark"
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['updated_by'] ? 'text-warning' : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'updated_by', 'Updated By', 'text')
@@ -1914,7 +1946,6 @@ function TestDraftDetails(props) {
       enableSorting: false
     }
   ];
-
   const handleSendToReviewerModal = (currentData) => {
     setSendToReviewerModal(currentData);
     dispatch(getEmployeeData());
@@ -1947,7 +1978,6 @@ function TestDraftDetails(props) {
         )?.id
       };
     }
-
     setDisable(true);
     dispatch(
       sendTestCaseReviewerThunk({
@@ -2092,17 +2122,6 @@ function TestDraftDetails(props) {
     }
   }, [filterValues, localDispatch]);
 
-  useEffect(() => {
-    // Whenever searchTerm or filterData changes, update the selected filter IDs
-    // if (searchTerm?.length === 0) {
-    const filteredData = filteredResults?.filter((item) =>
-      item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
-    );
-    const filteredIds = filteredData?.map((item) => item.id);
-    localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: filteredIds });
-    // }
-  }, [searchTerm, localDispatch]);
-
   // useEffect(() => {
   //   dispatch(
   //     getTestCaseStatusDataList({
@@ -2157,7 +2176,9 @@ function TestDraftDetails(props) {
           manualPagination={true}
           manualFiltering={true}
           isExportData={false}
-          muiPaginationProps={{ rowsPerPageOptions: [100, 500, 1000, 2000] }}
+          muiPaginationProps={{
+            rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
+          }}
         />
       </Container>
       <div className="d-flex justify-content-end mt-3">
@@ -2171,7 +2192,7 @@ function TestDraftDetails(props) {
               modalHeader: 'Send To Reviewer Modal'
             });
           }}
-          disabled={!getDraftTestListData}
+          disabled={!(selectedRows?.length > 0)}
         >
           <i class="icofont-paper-plane fs-0.8"></i> {''}
           Send To Reviewer
@@ -2224,7 +2245,7 @@ function TestDraftDetails(props) {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <button
+          {/* <button
             type="submit"
             className="btn btn bg-success text-white"
             onClick={() => handleSubmit()}
@@ -2232,6 +2253,28 @@ function TestDraftDetails(props) {
           >
             <i class="icofont-paper-plane "></i> {''}
             Send To Reviewer
+          </button> */}
+          <button
+            type="submit"
+            className="btn bg-success text-white"
+            onClick={() => handleSubmit()}
+            disabled={disable}
+          >
+            {disable ? (
+              <>
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                Sending...
+              </>
+            ) : (
+              <>
+                <i className="icofont-paper-plane me-2"></i>
+                Send To Reviewer
+              </>
+            )}
           </button>
 
           <button
@@ -2259,6 +2302,7 @@ function TestDraftDetails(props) {
           paginationData={props?.paginationData}
           id={addEditTestCasesModal?.id}
           payloadType={'DRAFT'}
+          project_id={getDraftTestListData}
         />
       )}
 

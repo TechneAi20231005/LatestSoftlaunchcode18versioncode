@@ -33,6 +33,7 @@ const initialState = {
   filterColumn: null,
   modalIsOpen: false,
   searchTerm: '',
+  testing_type: 'testing_type',
   selectedFilterIds: '',
   selectedFilters: [],
   filters: [],
@@ -40,7 +41,9 @@ const initialState = {
   reviewerId: null,
   selectAllNames: false,
   selectedRows: [],
-  betweenValues: ['', '']
+  betweenValues: ['', ''],
+  hasOpenedFilter: {},
+  isFilterApplied: false
 };
 
 function localReducer(state, action) {
@@ -77,6 +80,8 @@ function localReducer(state, action) {
       return { ...state, reviewerId: action.payload };
     case 'SET_SELECT_ALL_NAMES':
       return { ...state, selectAllNames: action.payload };
+    case 'SET_IS_FILTER_APPLIED':
+      return { ...state, isFilterApplied: action.payload };
     case 'SET_SELECTED_ROWS':
       return {
         ...state,
@@ -84,6 +89,11 @@ function localReducer(state, action) {
           typeof action?.payload === 'function'
             ? action?.payload(state.selectedRows)
             : action?.payload
+      };
+    case 'SET_HAS_OPENED_FILTER':
+      return {
+        ...state,
+        hasOpenedFilter: action.payload
       };
     case 'SET_BETWEEN_VALUES':
       return { ...state, betweenValues: action.payload };
@@ -139,7 +149,7 @@ function ReviewedTestDraftComponent() {
 
   const [paginationData, setPaginationData] = useState({
     pageIndex: 0,
-    pageSize: 100
+    pageSize: 10
   });
 
   const { testCasesStatusDataList } = useSelector(
@@ -155,6 +165,13 @@ function ReviewedTestDraftComponent() {
 
   const filterTestData = testerData?.filter(
     (d) => d?.value != localStorage?.getItem('id')
+  );
+
+  const reviewerID =
+    allReviewDraftTestListDataByID &&
+    allReviewDraftTestListDataByID[0]?.reviewer_id;
+  const filterDataByReviewer = filterTestData?.filter(
+    (d) => d?.value == reviewerID
   );
 
   const [downloadmodal, setDownloadModal] = useState({
@@ -269,8 +286,9 @@ function ReviewedTestDraftComponent() {
       field: 'field',
       platform: 'platform',
       type_name: 'type_names',
-      tc_id: 'ids',
+      tc_id: 'tc_id',
       severity: 'severity',
+      testing_type: 'testing_type',
       group_name: 'group_names',
       steps: 'steps',
       expected_result: 'expected_results',
@@ -296,6 +314,16 @@ function ReviewedTestDraftComponent() {
       type: 'SET_MODAL_POSITION',
       payload: { top: rect.bottom, left: rect.left }
     });
+    if (!state.hasOpenedFilter[column]) {
+      localDispatch({
+        type: 'SET_SELECTED_FILTER',
+        payload: filteredData?.map((item) => item?.name)
+      });
+      localDispatch({
+        type: 'SET_SELECTED_FILTER_IDS',
+        payload: filteredData?.map((item) => item?.id)
+      });
+    }
   };
 
   const closeModal = () => {
@@ -356,10 +384,18 @@ function ReviewedTestDraftComponent() {
           (filterId) => filterId !== value
         )
       });
+      localDispatch({
+        type: 'SET_IS_FILTER_APPLIED',
+        payload: true
+      });
     }
   };
 
   const handleSelectAll = (event) => {
+    localDispatch({
+      type: 'SET_IS_FILTER_APPLIED',
+      payload: true
+    });
     if (event.target.checked) {
       localDispatch({
         type: 'SET_SELECTED_FILTER',
@@ -374,6 +410,10 @@ function ReviewedTestDraftComponent() {
       localDispatch({ type: 'SET_SELECTED_FILTER', payload: [] });
 
       localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: [] });
+      localDispatch({
+        type: 'SET_IS_FILTER_APPLIED',
+        payload: true
+      });
     }
   };
 
@@ -517,8 +557,10 @@ function ReviewedTestDraftComponent() {
     } catch (error) {}
   };
 
-  const filteredResults = filterValues?.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredResults = filterValues?.filter(
+    (item) => (item) =>
+      item?.name &&
+      item?.name?.toString()?.toLowerCase()?.includes(searchTerm.toLowerCase())
   );
   const handleApplyButton = async () => {
     setClearData(false);
@@ -1389,7 +1431,7 @@ function ReviewedTestDraftComponent() {
               onClick={() =>
                 setAddEditTestCasesModal({
                   type: 'EDIT',
-                  data: row?.original,
+                  data: row,
                   open: true,
                   id: row?.original?.id
                 })
@@ -1545,7 +1587,7 @@ function ReviewedTestDraftComponent() {
             className="icofont-filter ms-2 text-dark"
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
-              handleFilterClick(e, 'type_name', 'Testing Type', 'text')
+              handleFilterClick(e, 'testing_type', 'testing_type', 'text')
             }
           />
         </span>
@@ -1557,18 +1599,18 @@ function ReviewedTestDraftComponent() {
     {
       accessorFn: (originalRows) => `${originalRows?.testing_group || '--'} `,
       header: 'Testing Group',
-      Header: (
-        <span>
-          Testing Group
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'group_name', 'Testing Group', 'text')
-            }
-          />
-        </span>
-      ),
+      // Header: (
+      //   <span>
+      //     Testing Group
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) =>
+      //         handleFilterClick(e, 'group_name', 'Testing Group', 'text')
+      //       }
+      //     />
+      //   </span>
+      // ),
       enableColumnFilter: false,
       size: 200,
       enableSorting: false
@@ -1582,7 +1624,7 @@ function ReviewedTestDraftComponent() {
           <i
             className="icofont-filter ms-2 text-dark"
             style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'text')}
+            onClick={(e) => handleFilterClick(e, 'tc_id', 'tc_id', 'text')}
           />
         </span>
       ),
@@ -1613,23 +1655,23 @@ function ReviewedTestDraftComponent() {
       accessorFn: (originalRows) =>
         `${originalRows?.test_description || '--'} `,
       header: 'Test Description',
-      Header: (
-        <span>
-          Test Description
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(
-                e,
-                'test_description',
-                'Test Description',
-                'text'
-              )
-            }
-          />
-        </span>
-      ),
+      // Header: (
+      //   <span>
+      //     Test Description
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) =>
+      //         handleFilterClick(
+      //           e,
+      //           'test_description',
+      //           'Test Description',
+      //           'text'
+      //         )
+      //       }
+      //     />
+      //   </span>
+      // ),
       enableColumnFilter: false,
       size: 200,
       enableSorting: false
@@ -1637,16 +1679,16 @@ function ReviewedTestDraftComponent() {
     {
       accessorFn: (originalRows) => `${originalRows?.steps || '--'} `,
       header: 'Steps',
-      Header: (
-        <span>
-          Steps
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-          />
-        </span>
-      ),
+      // Header: (
+      //   <span>
+      //     Steps
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
+      //     />
+      //   </span>
+      // ),
       enableColumnFilter: false,
       size: 200,
       enableSorting: false
@@ -1654,18 +1696,18 @@ function ReviewedTestDraftComponent() {
     {
       accessorFn: (originalRows) => `${originalRows?.expected_result || '--'} `,
       header: 'Expected Result',
-      Header: (
-        <span>
-          Expected Result
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
-            }
-          />
-        </span>
-      ),
+      // Header: (
+      //   <span>
+      //     Expected Result
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) =>
+      //         handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
+      //       }
+      //     />
+      //   </span>
+      // ),
       enableColumnFilter: false,
       size: 200,
       enableSorting: false
@@ -1674,18 +1716,18 @@ function ReviewedTestDraftComponent() {
       accessorFn: (originalRows) =>
         `${originalRows?.tai_bc_status_conventions?.convention_name || '--'} `,
       header: 'Status',
-      Header: (
-        <span>
-          Status
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'status_name', 'Status', 'text')
-            }
-          />
-        </span>
-      ),
+      // Header: (
+      //   <span>
+      //     Status
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) =>
+      //         handleFilterClick(e, 'status_name', 'Status', 'text')
+      //       }
+      //     />
+      //   </span>
+      // ),
       enableColumnFilter: false,
       size: 200,
       enableSorting: false
@@ -1724,18 +1766,18 @@ function ReviewedTestDraftComponent() {
     {
       accessorFn: (originalRow) => originalRow?.comment_id || '--',
       header: 'Reviewer comment',
-      Header: (
-        <span>
-          Reviewer comment
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'comment_id', 'Reviewer comment', 'dropdown')
-            }
-          />
-        </span>
-      ),
+      // Header: (
+      //   <span>
+      //     Reviewer comment
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) =>
+      //         handleFilterClick(e, 'comment_id', 'Reviewer comment', 'dropdown')
+      //       }
+      //     />
+      //   </span>
+      // ),
       enableColumnFilter: false,
       enableSorting: true,
       size: 250,
@@ -1766,16 +1808,16 @@ function ReviewedTestDraftComponent() {
     {
       accessorFn: (originalRow) => originalRow?.remark || '--',
       header: 'Remark',
-      Header: (
-        <span>
-          Remark
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'remark', 'Remark', 'text')}
-          />
-        </span>
-      ),
+      // Header: (
+      //   <span>
+      //     Remark
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) => handleFilterClick(e, 'remark', 'Remark', 'text')}
+      //     />
+      //   </span>
+      // ),
       enableColumnFilter: false,
       enableSorting: true,
       size: 300,
@@ -1817,6 +1859,23 @@ function ReviewedTestDraftComponent() {
       ),
       enableColumnFilter: false,
       size: 200,
+      enableSorting: false
+    },
+    {
+      accessorFn: (originalRows) =>
+        `${originalRows?.is_automation_script || '--'} `,
+      header: 'Is Automation Script',
+      Header: (
+        <span>
+          Is Automation Script
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+          />
+        </span>
+      ),
+
+      size: 250,
       enableSorting: false
     },
     {
@@ -1904,6 +1963,29 @@ function ReviewedTestDraftComponent() {
     }
   ];
 
+  const transformDataForReviewTestDraft = (data) => {
+    return (
+      data?.length > 0 &&
+      data?.map((originalRows) => ({
+        ...originalRows,
+        module_name: originalRows?.module?.module_name || '-',
+        sub_module_name: originalRows?.sub_module?.sub_module_name || '-',
+        function_name: originalRows?.function_master?.function_name || '-',
+        'Testing Type': originalRows?.testing_type?.type_name || '-',
+        group_name: originalRows?.testing_group || '-',
+        platform: originalRows?.platform || '--',
+        project_name: originalRows?.project?.project_name || '-',
+        'is Automation': originalRows?.is_automation_script || '-',
+        'Created By': `${originalRows?.created_by?.first_name || '-'} ${
+          originalRows?.created_by?.last_name || '-'
+        }`,
+        'Updated By': `${originalRows?.updated_by?.first_name || '-'} ${
+          originalRows?.updated_by?.last_name || '-'
+        }`
+      }))
+    );
+  };
+
   const exportColumns = [
     { title: 'Module', field: 'module_name' },
     { title: 'Submodule', field: 'sub_module_name' },
@@ -1911,6 +1993,7 @@ function ReviewedTestDraftComponent() {
     { title: 'Field', field: 'field' },
     { title: 'Testing Type', field: 'type_name' },
     { title: 'Testing Group', field: 'group_name' },
+    { title: 'platform', field: 'platform' },
     { title: 'Test ID', field: 'tc_id' },
     { title: 'Test Description', field: 'test_description' },
     { title: 'Steps', field: 'steps' },
@@ -1918,6 +2001,7 @@ function ReviewedTestDraftComponent() {
     { title: 'Expected Result', field: 'expected_result' },
     { title: 'Status', field: 'status' },
     { title: 'Project', field: 'project_name' },
+    { title: 'is Automation', field: 'is Automation' },
     { title: 'Created At', field: 'created_at' },
     { title: 'Created By', field: 'created_by' },
     { title: 'Updated At', field: 'updated_at' },
@@ -2026,7 +2110,7 @@ function ReviewedTestDraftComponent() {
 
     setClearData(true);
     setPaginationData({
-      pageSize: 100,
+      pageSize: 10,
       pageIndex: 0
     });
     dispatch(
@@ -2115,12 +2199,47 @@ function ReviewedTestDraftComponent() {
       })
     );
   }, [paginationData.pageSize, paginationData.pageIndex]);
+  useEffect(() => {
+    if (filterValues && searchTerm?.length === 0) {
+      localDispatch({ type: 'SET_FILTER_VALUES', payload: filterValues });
+      if (state.isFilterApplied === false) {
+        localDispatch({
+          type: 'SET_SELECTED_FILTER',
+          payload: filterValues.map((item) => item.name)
+        });
+      }
+      // localDispatch({
+      //   type: 'SET_SELECTED_FILTER',
+      //   payload: filterValues.map((item) => item.name)
+      // });
+      localDispatch({
+        type: 'SET_SELECTED_FILTER_IDS',
+        payload: filterValues.map((item) => item.id)
+      });
+    }
+  }, [filterValues, localDispatch]);
+  useEffect(() => {
+    // Whenever searchTerm or filterData changes, update the selected filter IDs
+    // if (searchTerm?.length === 0) {
+    // const filteredData = filteredResults?.filter((item) =>
+    //   item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    // );
+    const filteredData = filteredResults?.filter((item) =>
+      (item?.name || '')
+        .toString()
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
+    );
+    const filteredIds = filteredData?.map((item) => item.id);
+    localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: filteredIds });
+    // }
+  }, [searchTerm, localDispatch]);
 
   return (
     <div className="container-xxl">
       <PageHeader
         showBackBtn
-        headerTitle="Test Draft"
+        headerTitle="Review Test Draft"
         renderRight={() => {
           return (
             <div className="col-md-6 d-flex justify-content-end">
@@ -2148,9 +2267,12 @@ function ReviewedTestDraftComponent() {
               </button>
               <ExportToExcel
                 className="btn btn-sm btn-danger "
-                apiData={allReviewDraftTestListDataByID}
+                apiData={transformDataForReviewTestDraft(
+                  allReviewDraftTestListDataByID
+                )}
                 columns={exportColumns}
                 fileName="Reviewed Test Draft List"
+                disabled={allReviewDraftTestListDataByID?.length === 0}
               />
             </div>
           );
@@ -2179,15 +2301,14 @@ function ReviewedTestDraftComponent() {
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
         /> */}
-
         <MaterialTable
           columns={columns}
           data={allReviewDraftTestListDataByID || []}
           // isLoading={isLoading}
-          pagination={paginationData}
-          setPagination={setPaginationData}
+          paginationData={paginationData}
+          setPaginationData={setPaginationData}
           muiPaginationProps={{
-            rowsPerPageOptions: [100, 500, 1000, 2000]
+            rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
           }}
           totalRows={allReviewDraftTestListDataByID?.total}
           manualPagination={true}
@@ -2212,12 +2333,12 @@ function ReviewedTestDraftComponent() {
             //   modalData: '',
             //   modalHeader: 'Send To Reviewer Modal'
             // });
-            if (selectAllNames !== true) {
-              alert(
-                'Please select all test cases to send for review, partial selection is not allowed.'
-              );
-              return; // Exit the function or prevent further execution
-            }
+            // if (selectAllNames !== true) {
+            //   alert(
+            //     'Please select all test cases to send for review, partial selection is not allowed.'
+            //   );
+            //   return; // Exit the function or prevent further execution
+            // }
             handleSendToReviewerModal({
               showModal: true,
               modalData: '',
@@ -2238,7 +2359,6 @@ function ReviewedTestDraftComponent() {
           close={() => setDownloadModal(false)}
         />
       )}
-
       {addEditTestCasesModal.open === true && (
         <EditTestCaseModal
           show={addEditTestCasesModal?.open}
@@ -2249,6 +2369,7 @@ function ReviewedTestDraftComponent() {
           muiPaginationProps={{ rowsPerPageOptions: [10, 50, 100, 150, 200] }}
           id={id}
           payloadType={'ReviewTestDraft'}
+          project_id={allReviewDraftTestListDataByID}
         />
       )}
 
@@ -2275,7 +2396,7 @@ function ReviewedTestDraftComponent() {
             classNamePrefix="react-select"
             id="reviewer_id"
             name="reviewer_id"
-            options={filterTestData}
+            options={filterDataByReviewer}
             required={true}
             onChange={(e) => {
               const selectedId = e?.value;
@@ -2337,6 +2458,7 @@ function ReviewedTestDraftComponent() {
           errorMessage={errorMessage}
           setSelectedValue={setSelectedValue}
           selectedValue={selectedValue}
+          isFilterApplied={state.isFilterApplied}
         />
       )}
     </div>

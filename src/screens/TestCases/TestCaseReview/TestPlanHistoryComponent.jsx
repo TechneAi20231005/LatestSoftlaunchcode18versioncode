@@ -21,10 +21,10 @@ function TestPlanHistoryComponent() {
   //   { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
   // );
 
-    const [paginationData, setPaginationData] = useState({
-      pageIndex: 0,
-      pageSize: 10
-    })
+  const [paginationData, setPaginationData] = useState({
+    pageIndex: 0,
+    pageSize: 10
+  });
 
   const { testPlantHistory, isLoading } = useSelector(
     (state) => state?.downloadFormat
@@ -379,52 +379,150 @@ function TestPlanHistoryComponent() {
       accessorKey: 'test_plan_id',
       header: 'Test Plan Id',
       size: 190,
-      enableColumnFilter: true
+      enableColumnFilter: true,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('test_plan_id')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
     },
     {
-      accessorFn: (row) => row?.tester_name || '--',
+      accessorKey: 'tester',
+      accessorFn: (row) =>
+        `${row?.tester?.first_name || '-'} ${row?.tester?.last_name || '-'}`,
       header: 'Tester Name',
       size: 190,
-      enableColumnFilter: true
+      enableColumnFilter: true,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('tester')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
     },
     {
-      accessorFn: (row) => row?.reviewer_name || '--',
+      accessorKey: 'reviewer',
+      accessorFn: (row) =>
+        `${row?.reviewer?.first_name || '-'} ${
+          row?.reviewer?.last_name || '-'
+        }`,
       header: 'Reviewer Name',
       size: 210,
-      enableColumnFilter: true
+      enableColumnFilter: true,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('reviewer')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
     },
+    // {
+    //   accessorKey: 'testcases',
+    //   accessorFn: (originalRows) =>
+    //     `${originalRows?.testcases?.[0].is_automation_script || '--'} `,
+    //   header: 'Is Automation Script',
+    //   Header: <span>Is Automation Script</span>,
+
+    //   size: 250,
+    //   enableSorting: false,
+    //   muiTableBodyCellProps: ({ row }) =>
+    //     row.original.changes?.includes('testcases')
+    //       ? {
+    //           sx: {
+    //             color: 'red',
+    //             fontWeight: 'bold',
+    //             cursor: 'pointer'
+    //           }
+    //         }
+    //       : {}
+    // },
     {
       accessorKey: 'created_at',
       header: 'Created At',
       size: 180,
-      enableColumnFilter: true
+      enableColumnFilter: true,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('created_at')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
     },
     {
+      accessorKey: 'created_by',
       accessorFn: (row) =>
         `${row?.created_by?.first_name || '-'} ${
           row?.created_by?.last_name || '-'
         }`,
       header: 'Created By',
       size: 180,
-      enableColumnFilter: true
+      enableColumnFilter: true,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('created_by')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
     },
     {
+      accessorKey: 'updated_at',
       accessorFn: (row) => row?.updated_at || '--',
       header: 'Updated At',
       size: 180,
-      enableColumnFilter: true
+      enableColumnFilter: true,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('updated_at')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
     },
     {
+      accessorKey: 'updated_by',
       accessorFn: (row) =>
         `${row?.updated_by?.first_name || '-'} ${
           row?.updated_by?.last_name || '-'
         }`,
       header: 'Updated By',
       size: 185,
-      enableColumnFilter: true
+      enableColumnFilter: true,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('updated_by')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
     }
   ];
-  console.log(testPlantHistory, 'testPlantHistory?.total');
   return (
     <>
       <PageHeader showBackBtn headerTitle="Test Plan History" />
@@ -438,6 +536,9 @@ function TestPlanHistoryComponent() {
           setPaginationData={setPaginationData}
           isExportData={false}
           manualPagination={true}
+          muiPaginationProps={{
+            rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
+          }}
         />
         {/* <DataTable
           columns={columns}

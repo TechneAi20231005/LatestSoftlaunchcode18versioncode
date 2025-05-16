@@ -210,7 +210,7 @@ function TestingTypeMasterComponent() {
     {
       accessorKey: 'type_name',
       header: 'Testing Type Title',
-      size: 160,
+      size: 240,
       filterVariant: 'autocomplete',
       muiTableBodyCellProps: () => ({
         sx: {
@@ -219,7 +219,23 @@ function TestingTypeMasterComponent() {
         }
       })
     },
+    {
+      accessorFn: (originalRows) =>
+        `${originalRows?.is_automation_script || '--'} `,
+      header: 'Is Automation Script',
+      Header: (
+        <span>
+          Is Automation Script
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+          />
+        </span>
+      ),
 
+      size: 250,
+      enableSorting: false
+    },
     {
       accessorFn: (originalRow) => {
         return moment(originalRow.created_at).startOf('day').toDate();
@@ -383,6 +399,9 @@ function TestingTypeMasterComponent() {
             reset={reset}
             setReset={setReset}
             exportDataKeys={exportDataKeys}
+            muiPaginationProps={{
+              rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
+            }}
           ></MaterialTable>
         )}
         <AddTestingTypeModal

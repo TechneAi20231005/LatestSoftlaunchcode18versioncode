@@ -17,6 +17,7 @@ const initialState = {
   filterTestCaseReviewList: [],
   exportTestCaseReviewData: [],
   reviewTestCaseData: [],
+  totalCount: 0,
   isLoading: {
     testCaseReviewList: false,
     testPlanIdData: false,
@@ -61,6 +62,7 @@ const testCaseReviewSlice = createSlice({
         state.isLoading.testCaseReviewList = false;
         state.testCaseReviewList = action?.payload?.data?.data?.data || [];
         state.filterTestCaseReviewList = action?.payload?.data?.filter_data;
+        state.totalCount = action?.payload?.data?.data?.total || 0;
         state.successMsg.testCaseReviewList = action?.payload?.message;
       })
       .addCase(getTestCaseReviewListThunk.rejected, (state, action) => {

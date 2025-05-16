@@ -69,9 +69,16 @@ export const downloadFormatFileThunk = createAsyncThunk(
   'downloadFormatFile',
   async ({ project_name, module_name, submodule_name, onSuccessHandler }) => {
     try {
-      let endpoint = `draftFile/getTestdraftBulkFormat?project_name=${project_name}&module_name=${module_name}`;
+      let endpoint = `draftFile/getTestdraftBulkFormat?project_name=${project_name}`;
 
       // Append submodule_id parameters if they are provided
+
+      if (module_name && module_name.length >= 0) {
+        const moduleQueryParam = module_name
+          .map((id) => `module_name[]=${id}`)
+          .join('&');
+        endpoint += `&${moduleQueryParam}`;
+      }
       if (submodule_name && submodule_name.length >= 0) {
         const submoduleQueryParam = submodule_name
           .map((id) => `submodule_name[]=${id}`)
@@ -164,12 +171,30 @@ export const importTestDraftThunk = createAsyncThunk(
           toast.success(response?.data?.message);
           return { data: response?.data.data, msg: response?.data?.message };
         } else {
-          onErrorHandler();
-          toast.error(response?.data?.message);
+          // onErrorHandler();
+          // console.log('rrrr', response.data.data);
+          // console.log('_rewampAttachmentUrl', _rewampAttachmentUrl);
+          // toast.error(response?.data?.message);
 
-          const url = `${_rewampAttachmentUrl}` + response.data.data;
-          window.open(url, '_blank');
-          errorHandler(response);
+          // const url = `${_rewampAttachmentUrl}` + response.data.data;
+          // window.open(url, '_blank');
+
+          onErrorHandler();
+          console.log('rrrr', response.data.data);
+          console.log('_rewampAttachmentUrl', _rewampAttachmentUrl);
+
+          if (
+            Array.isArray(response.data.data) &&
+            response.data.data.length === 0
+          ) {
+            toast.error(
+              response?.data?.message || 'No data available to download.'
+            );
+          } else {
+            toast.error(response?.data?.message);
+            const url = `${_rewampAttachmentUrl}${response.data.data}`;
+            window.open(url, '_blank');
+          }
         }
       }
     } catch (error) {

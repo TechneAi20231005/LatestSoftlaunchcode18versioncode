@@ -88,7 +88,6 @@ function ReviewedTestDraftDetails(props) {
 
   const { allReviewDraftTestListData, isLoading, filterReviewedDraftTestList } =
     useSelector((state) => state?.downloadFormat);
-  console.log(allReviewDraftTestListData, 'allReviewDraftTestListData');
   // const [paginationData, setPaginationData] = useReducer(
   //   (prevState, nextState) => {
   //     return { ...prevState, ...nextState };
@@ -128,7 +127,8 @@ function ReviewedTestDraftDetails(props) {
     created_at: 'created_at',
     created_by: 'created_by',
     updated_at: 'updated_at',
-    updated_by: 'updated_by'
+    updated_by: 'updated_by',
+    is_automation_script: 'is_automation_script'
   };
   const handleFilterClick = (event, column, name, type, id) => {
     if (clearAllFilter === true) {
@@ -144,10 +144,10 @@ function ReviewedTestDraftDetails(props) {
       created_at: 'created_at',
       created_by: 'created_by',
       updated_at: 'updated_at',
-      updated_by: 'updated_by'
+      updated_by: 'updated_by',
+      is_automation_script: 'is_automation_script'
     };
     const filteredData = filterReviewedDraftTestList[filterKeyMap[column]];
-    console.log('filteredData', filteredData);
 
     const columnId = moduleMapping[column];
     localDispatch({ type: 'SET_FILTER_TYPE', payload: '' });
@@ -238,9 +238,6 @@ function ReviewedTestDraftDetails(props) {
 
   const handleFilterCheckboxChange = (event, label, value) => {
     const isChecked = event.target.checked;
-    console.log('label', isChecked);
-    console.log('state?.selectedFilterIds', state?.selectedFilterIds);
-    console.log('vv', value);
     if (isChecked) {
       localDispatch({
         type: 'SET_SELECTED_FILTER',
@@ -443,7 +440,6 @@ function ReviewedTestDraftDetails(props) {
 
   const handleApplyButton = async () => {
     props?.setClearData(false);
-    console.log('selectedFilterIds', selectedFilterIds);
     const newFilter = {
       column: filterColumnId,
       column_name: filterColumn,
@@ -951,7 +947,10 @@ function ReviewedTestDraftDetails(props) {
       }
     },
     {
-      accessorKey: 'reviewer_name',
+      accessorFn: (originalRow) =>
+        `${originalRow.reviewer_name?.first_name || '-'} ${
+          originalRow.reviewer_name?.last_name || '-'
+        } `,
       header: 'Reviewer Name',
       size: 215,
       enableSorting: false,
@@ -1086,6 +1085,23 @@ function ReviewedTestDraftDetails(props) {
       )
     },
     {
+      accessorFn: (originalRows) =>
+        `${originalRows?.test_cases?.[0]?.is_automation_script || '--'} `,
+      header: 'Is Automation Script',
+      Header: (
+        <span>
+          Is Automation Script
+          <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+          />
+        </span>
+      ),
+
+      size: 250,
+      enableSorting: false
+    },
+    {
       accessorKey: 'created_at',
       header: 'Created At',
       size: 180,
@@ -1111,7 +1127,9 @@ function ReviewedTestDraftDetails(props) {
     {
       // accessorKey: 'created_by',
       accessorFn: (row) =>
-        `${row?.created_by?.first_name} ${row?.created_by?.last_name}`,
+        row?.created_by
+          ? `${row?.created_by?.first_name} ${row?.created_by?.last_name}`
+          : '-',
       header: 'Created By',
       size: 180,
       enableSorting: false,
@@ -1134,8 +1152,7 @@ function ReviewedTestDraftDetails(props) {
       )
     },
     {
-      accessorKey: 'updated_at',
-
+      accessorFn: (row) =>row?.updated_at||'--',
       header: 'Updated At',
       size: 180,
       enableSorting: false,
@@ -1160,7 +1177,9 @@ function ReviewedTestDraftDetails(props) {
     {
       // accessorKey: 'updated_by',
       accessorFn: (row) =>
-        `${row?.updated_by?.first_name} ${row?.updated_by?.last_name}`,
+        row?.updated_by
+          ? `${row?.updated_by?.first_name} ${row?.updated_by?.last_name}`
+          : '--',
       header: 'Updated By',
       size: 183,
       enableSorting: false,
@@ -1299,7 +1318,6 @@ function ReviewedTestDraftDetails(props) {
     );
   }, [props?.paginationData.pageSize, props?.paginationData.pageIndex]);
   useEffect(() => {
-    console.log('filterValues', filterValues);
     if (filterValues && searchTerm?.length === 0) {
       localDispatch({ type: 'SET_FILTER_VALUES', payload: filterValues });
       if (state.isFilterApplied === false) {
@@ -1319,8 +1337,14 @@ function ReviewedTestDraftDetails(props) {
   useEffect(() => {
     // Whenever searchTerm or filterData changes, update the selected filter IDs
     // if (searchTerm?.length === 0) {
+    // const filteredData = filteredResults?.filter((item) =>
+    //   item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    // );
     const filteredData = filteredResults?.filter((item) =>
-      item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+      (item?.name || '')
+        .toString()
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
     );
     const filteredIds = filteredData?.map((item) => item.id);
     localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: filteredIds });
@@ -1330,18 +1354,19 @@ function ReviewedTestDraftDetails(props) {
     <>
       <Container className="mt-3" fluid>
         <div>
-          {allReviewDraftTestListData && (
+          {allReviewDraftTestListData?.data && (
             <MaterialTable
               columns={columns}
-              data={allReviewDraftTestListData}
+              data={allReviewDraftTestListData?.data || []}
               enableRowNumbers={true}
               isExportData={false}
               isLoading={isLoading?.allReviewDraftTestListData}
               paginationData={props?.paginationData}
               setPaginationData={props?.setPaginationData}
               muiPaginationProps={{
-                rowsPerPageOptions: [100, 500, 1000, 2000]
+                rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
               }}
+              totalRows={allReviewDraftTestListData?.total}
               manualPagination={true}
             />
           )}

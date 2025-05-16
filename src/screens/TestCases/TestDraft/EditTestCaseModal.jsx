@@ -17,13 +17,19 @@ import {
   getDraftTestCaseList,
   getModuleMasterThunk,
   getProjectModuleMasterThunk,
-  getSubModuleMasterThunk
+  getSubModuleMasterThunk,
+  getTestCaseStatusDataList
 } from '../../../redux/services/testCases/downloadFormatFile';
 import { getFunctionMasterListThunk } from '../../../redux/services/testCases/functionMaster';
 import { getTestingGroupMasterListThunk } from '../../../redux/services/testCases/testingGroupMaster';
 import { getTestingTypeMasterListThunk } from '../../../redux/services/testCases/testingTypeMaster';
-import { getByTestPlanIDListThunk } from '../../../redux/services/testCases/testCaseReview';
+import {
+  getByTestPlanIDListThunk,
+  getExportByTestPlanIDListThunk
+} from '../../../redux/services/testCases/testCaseReview';
 import { original } from '@reduxjs/toolkit';
+import { getReviewCommentMasterListThunk } from '../../../redux/services/testCases/reviewCommentMaster';
+import platform from 'platform';
 
 function EditTestCaseModal({
   show,
@@ -32,13 +38,13 @@ function EditTestCaseModal({
   currentTestCasesData,
   paginationData,
   id,
-  payloadType
+  payloadType,
+  project_id
 }) {
   const dispatch = useDispatch();
   const { filterFunctionMasterList } = useSelector(
     (state) => state?.functionMaster
   );
-
   const { filterTestingGroupMasterList } = useSelector(
     (state) => state?.testingGroupMaster
   );
@@ -47,19 +53,26 @@ function EditTestCaseModal({
   );
 
   const {
-    getProjectModuleList,
+    getProjectModuleListId,
     getModuleList,
     getSubModuleList,
     getModuleData,
-    getSubModuleData
+    getSubModuleData,
+    testCasesStatusDataList
   } = useSelector((state) => state?.downloadFormat);
   const newModuleListData = getModuleData
     ?.filter((d) => d.project_id === currentTestCasesData?.original?.project_id)
+    ?.map((i) => ({ value: i.id, label: i.module_name }));
+  const newModuleListAddData = getModuleData
+    ?.filter((d) => d.project_id === project_id[0]?.project_id)
     ?.map((i) => ({ value: i.id, label: i.module_name }));
 
   const newSubModuleListData = getSubModuleData
     ?.filter((d) => d.module_id === currentTestCasesData?.original?.module_id)
     ?.map((i) => ({ value: i.id, label: i.sub_module_name }));
+  const { getFilterReviewCommentMasterList } = useSelector(
+    (state) => state?.reviewCommentMaster
+  );
 
   const [moduleDropdown, setModuleDropdown] = useState();
 
@@ -83,13 +96,40 @@ function EditTestCaseModal({
       label: 'Low'
     }
   ];
+  const automationScriptData = [
+    {
+      value: 'Y',
+      label: 'Yes'
+    },
+    {
+      value: 'N',
+      label: 'No'
+    }
+  ];
+  const platformData = [
+    {
+      value: 'WEB',
+      label: 'WEB'
+    },
+    {
+      value: 'WEBSITE',
+      label: 'WEBSITE'
+    },
+    {
+      value: 'APP',
+      label: 'APP'
+    },
+    {
+      value: 'API',
+      label: 'API'
+    }
+  ];
   const testingGroupRef = useRef();
-
   const testCaseInitialValue = {
     project_id:
       type === 'EDIT'
         ? currentTestCasesData?.original?.project_id?.toString()
-        : '',
+        : project_id[0]?.project_id,
     module_id:
       type === 'EDIT'
         ? currentTestCasesData?.original?.module_id?.toString()
@@ -107,6 +147,12 @@ function EditTestCaseModal({
       type === 'EDIT'
         ? currentTestCasesData?.original?.type_id?.toString()
         : '',
+    tc_id:
+      type === 'EDIT' ? currentTestCasesData?.original?.tc_id?.toString() : '',
+    platform:
+      type === 'EDIT'
+        ? currentTestCasesData?.original?.platform?.toString()
+        : '',
     // tc_id: type === 'EDIT' ? currentTestCasesData?.tc_id?.toString() : '',
     testing_group:
       type === 'EDIT'
@@ -114,6 +160,16 @@ function EditTestCaseModal({
         : [],
 
     severity: type === 'EDIT' ? currentTestCasesData?.original?.severity : '',
+    is_automation_script:
+      type === 'EDIT'
+        ? currentTestCasesData?.original?.is_automation_script
+        : '',
+
+    comment_id: currentTestCasesData?.original?.comment_id || '',
+
+    other_remark:
+      type === 'EDIT' ? currentTestCasesData?.original?.other_remark : '',
+
     steps: type === 'EDIT' ? currentTestCasesData?.original?.steps : '',
     test_description:
       type === 'EDIT' ? currentTestCasesData?.original?.test_description : '',
@@ -122,6 +178,7 @@ function EditTestCaseModal({
   };
 
   const handleEditTestCase = ({ formData }) => {
+    if (disable) return;
     setDisable(true);
 
     {
@@ -134,9 +191,15 @@ function EditTestCaseModal({
                 dispatch(
                   getByTestPlanIDListThunk({
                     id: id,
-                    limit: paginationData.rowPerPage,
+                    limit: 10,
                     page: 1,
                     filter_testcase_data: []
+                  })
+                );
+                dispatch(
+                  getExportByTestPlanIDListThunk({
+                    id: id,
+                    type: 'ALL'
                   })
                 );
               }
@@ -153,8 +216,8 @@ function EditTestCaseModal({
                   payloadType === 'DRAFT' &&
                     dispatch(
                       getDraftTestCaseList({
-                        limit: paginationData.rowPerPage,
-                        page: paginationData.currentPage
+                        limit: 10,
+                        page: 1
                       })
                     );
                 }
@@ -163,10 +226,16 @@ function EditTestCaseModal({
                     dispatch(
                       getByTestPlanIDListThunk({
                         id: id,
-                        limit: paginationData.rowPerPage,
-                        page: paginationData.currentPage
+                        limit: 10,
+                        page: 1
                       })
                     );
+                  dispatch(
+                    getExportByTestPlanIDListThunk({
+                      id: id,
+                      type: 'ALL'
+                    })
+                  );
                 }
 
                 {
@@ -174,8 +243,8 @@ function EditTestCaseModal({
                     dispatch(
                       getByTestPlanIDReviewedListThunk({
                         id: id,
-                        limit: paginationData.rowPerPage,
-                        page: paginationData.currentPage
+                        limit: 10,
+                        page: 1
                       })
                     );
                 }
@@ -184,15 +253,16 @@ function EditTestCaseModal({
             })
           );
     }
+    // setDisable(false);
   };
   const handleProjectChange = async (e, setFieldValue) => {
-    setFieldValue('project_id', e.target.value);
+    setFieldValue('project_id', e?.target?.value);
     setFieldValue('module_id', '');
     setFieldValue('submodule_id', '');
     setModuleDropdown(null);
     setSubModuleDropdown(null);
     const filteredModules = getModuleData
-      .filter((d) => d.project_name === e.target.value)
+      .filter((d) => d.project_id == e.target.value)
       .map((d) => ({ value: d.id, label: d.module_name }));
 
     setModuleDropdown(filteredModules);
@@ -209,7 +279,7 @@ function EditTestCaseModal({
   };
 
   useEffect(() => {
-    if (getProjectModuleList?.length <= 0) {
+    if (getProjectModuleListId?.length <= 0) {
       dispatch(getProjectModuleMasterThunk());
     }
     if (getModuleList?.length <= 0) {
@@ -229,7 +299,17 @@ function EditTestCaseModal({
     dispatch(getTestingGroupMasterListThunk());
     dispatch(getTestingTypeMasterListThunk());
     setSubModuleDropdown(newSubModuleListData);
+    dispatch(getReviewCommentMasterListThunk());
   }, []);
+
+  useEffect(() => {
+    dispatch(
+      getTestCaseStatusDataList({
+        limit: paginationData.pageSize,
+        page: paginationData.pageIndex
+      })
+    );
+  }, [paginationData.pageSize, paginationData.pageIndex]);
 
   return (
     <>
@@ -255,7 +335,12 @@ function EditTestCaseModal({
 
             // ✅ Append test_draft_id
             formData.append('test_draft_id', id); // <--- this line adds your `id` into FormData
-
+            formData.append(
+              'status_id',
+              testCasesStatusDataList?.find(
+                (d) => d.convention_name === 'PENDING'
+              )?.id
+            );
             // Now call the handler
             handleEditTestCase({ formData });
           }}
@@ -277,13 +362,14 @@ function EditTestCaseModal({
                 <Col md={4} lg={4}>
                   <Field
                     classNamePrefix="react-select"
-                    data={getProjectModuleList}
+                    data={getProjectModuleListId}
                     component={CustomDropdown}
                     name="project_id"
                     label="Project Name"
                     id="edittestcasemodal_projectname"
                     placeholder="Select"
                     requiredField
+                    disabled
                     handleChange={(event) =>
                       handleProjectChange(event, setFieldValue)
                     }
@@ -293,7 +379,9 @@ function EditTestCaseModal({
                 <Col md={4} lg={4}>
                   <Field
                     classNamePrefix="react-select"
-                    data={!moduleDropdown ? newModuleListData : moduleDropdown}
+                    data={
+                      !moduleDropdown ? newModuleListAddData : moduleDropdown
+                    }
                     component={CustomDropdown}
                     name="module_id"
                     label="Module Name"
@@ -319,7 +407,16 @@ function EditTestCaseModal({
                     requiredField
                   />
                 </Col>
-
+                <Col md={4} lg={4}>
+                  <Field
+                    component={CustomDropdown}
+                    data={platformData}
+                    name="platform"
+                    label="Platform"
+                    id="edittestcasemodal_platform"
+                    placeholder="Enter Platform"
+                  />
+                </Col>
                 <Col md={4} lg={4}>
                   <Field
                     classNamePrefix="react-select"
@@ -333,15 +430,6 @@ function EditTestCaseModal({
                   />
                 </Col>
 
-                <Col md={4} lg={4}>
-                  <Field
-                    component={CustomInput}
-                    name="field"
-                    label="Field"
-                    id="edittestcasemodal_field"
-                    placeholder="Enter field name"
-                  />
-                </Col>
                 <Col md={4} lg={4}>
                   <Field
                     classNamePrefix="react-select"
@@ -420,6 +508,15 @@ function EditTestCaseModal({
 
                 <Col md={4} lg={4}>
                   <Field
+                    component={CustomInput}
+                    name="field"
+                    label="Field"
+                    id="edittestcasemodal_field"
+                    placeholder="Enter field name"
+                  />
+                </Col>
+                <Col md={4} lg={4}>
+                  <Field
                     classNamePrefix="react-select"
                     data={severityData}
                     component={CustomDropdown}
@@ -430,17 +527,6 @@ function EditTestCaseModal({
                     requiredField
                   />
                 </Col>
-
-                <Col md={6} lg={6}>
-                  <Field
-                    component={CustomTextArea}
-                    name="steps"
-                    label="Steps"
-                    id="edittestcasemodal_steps"
-                    placeholder="Enter steps"
-                  />
-                </Col>
-
                 <Col md={6} lg={6}>
                   <Field
                     component={CustomTextArea}
@@ -451,7 +537,15 @@ function EditTestCaseModal({
                     requiredField
                   />
                 </Col>
-
+                <Col md={6} lg={6}>
+                  <Field
+                    component={CustomTextArea}
+                    name="steps"
+                    label="Steps"
+                    id="edittestcasemodal_steps"
+                    placeholder="Enter steps"
+                  />
+                </Col>
                 <Col md={6} lg={6}>
                   <Field
                     component={CustomTextArea}
@@ -462,11 +556,64 @@ function EditTestCaseModal({
                     requiredField
                   />
                 </Col>
-              </Row>
+                <Col md={4} lg={6}>
+                  <Field
+                    classNamePrefix="react-select"
+                    data={automationScriptData}
+                    component={CustomDropdown}
+                    name="is_automation_script"
+                    label="Automation Script"
+                    id="is_automation_script"
+                    placeholder="Enter Automation Script"
+                    requiredField
+                  />
+                </Col>
 
-              <div className="d-flex justify-content-end gap-2">
+                {(payloadType === 'TestCaseReview' ||
+                  payloadType === 'ReviewTestDraft') && (
+                  <Col md={4} lg={4}>
+                    <Field
+                      classNamePrefix="react-select"
+                      data={getFilterReviewCommentMasterList}
+                      component={CustomDropdown}
+                      name="comment_id"
+                      label="Reviewer Comment"
+                      id="comment_id"
+                      placeholder="Enter Reviewer Comment"
+                      disabled={payloadType === 'ReviewTestDraft'}
+                    />
+                  </Col>
+                )}
+
+                {type === 'EDIT' && (
+                  <Col md={6} lg={6}>
+                    <Field
+                      component={CustomInput}
+                      name="tc_id"
+                      label="Test Case Id"
+                      id="edittestcasemodal_tc_id"
+                      placeholder="Enter Test Case Id"
+                      disabled
+                    />
+                  </Col>
+                )}
+                {(payloadType === 'TestCaseReview' ||
+                  payloadType === 'ReviewTestDraft') && (
+                  <Col md={6} lg={6}>
+                    <Field
+                      component={CustomTextArea}
+                      name="other_remark"
+                      label="Remark"
+                      id="edittestcasemodal_remark"
+                      placeholder="Enter Remark"
+                      disabled={payloadType === 'ReviewTestDraft'}
+                    />
+                  </Col>
+                )}
+              </Row>
+              <div className="d-flex justify-content-end gap-2 mt-3">
                 <button
-                  // disabled={disable}
+                  disabled={disable}
                   className="btn btn-primary px-4"
                   type="submit"
                 >

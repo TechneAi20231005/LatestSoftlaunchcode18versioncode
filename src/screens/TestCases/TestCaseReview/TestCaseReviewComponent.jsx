@@ -108,10 +108,14 @@ function TestCaseReviewComponent() {
   // );
   const [paginationData, setPaginationData] = useState({
     pageIndex: 0,
-    pageSize: 100
+    pageSize: 10
   });
-  const { testCaseReviewList, isLoading, filterTestCaseReviewList } =
-    useSelector((state) => state?.testCaseReview);
+  const {
+    testCaseReviewList,
+    isLoading,
+    filterTestCaseReviewList,
+    totalCount
+  } = useSelector((state) => state?.testCaseReview);
 
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const [errorMessage, setErrorMessage] = useState('');
@@ -1052,18 +1056,34 @@ function TestCaseReviewComponent() {
         align: 'center'
       },
       Cell: ({ row }) => {
-        const rowData = row.original;
-
-        // if (!rowData || rowData.id === null || rowData.status === null) {
-        //   return null;
-        // }
+        const rowData = row?.original;
+        const isDisabled =
+          rowData?.total_reviewed_testcases > 0 &&
+          rowData?.total_rejected_testcases +
+            rowData?.total_approved_testcases !==
+            rowData?.total_reviewed_testcases;
 
         return (
           <div className="d-flex align-items-center">
-            <i
-              // className="icofont-edit text-primary btn btn-outline-secondary cp"
+            {/* <i
+
               className="icofont-paper-plane btn btn-outline-secondary icon-large mx-2 cp"
               onClick={() => {
+                handleSendToReviewerModal({
+                  showModal: true,
+                  modalData: rowData,
+                  modalHeader: 'Send To Reviewer Modal'
+                });
+              }}
+
+            /> */}
+
+            <i
+              className={`icofont-paper-plane btn btn-outline-secondary icon-large mx-2 cp ${
+                isDisabled ? 'disabled text-muted' : 'text-primary'
+              }`}
+              onClick={() => {
+                if (isDisabled) return;
                 handleSendToReviewerModal({
                   showModal: true,
                   modalData: rowData,
@@ -1297,7 +1317,9 @@ function TestCaseReviewComponent() {
     {
       header: 'Created By',
       accessorFn: (row) =>
-        `${row.created_by?.first_name} ${row.created_by?.last_name}`,
+        row.created_by
+          ? `${row.created_by?.first_name} ${row.created_by?.last_name}`
+          : '-',
       size: 180,
       enableSorting: false,
       enableColumnFilter: true,
@@ -1318,7 +1340,7 @@ function TestCaseReviewComponent() {
     },
     {
       header: 'Updated At',
-      accessorKey: 'updated_at',
+      accessorFn: (row) => row.updated_at|| '--',
       size: 180,
       enableSorting: false,
       enableColumnFilter: true,
@@ -1340,7 +1362,9 @@ function TestCaseReviewComponent() {
     {
       header: 'Updated By',
       accessorFn: (row) =>
-        `${row.updated_by?.first_name} ${row.updated_by?.last_name}`,
+        row.updated_by
+          ? `${row.updated_by?.first_name} ${row.updated_by?.last_name}`
+          : '--',
       size: 185,
       enableSorting: false,
       enableColumnFilter: true,
@@ -1376,7 +1400,7 @@ function TestCaseReviewComponent() {
 
     setClearData(true);
     setPaginationData({
-      pageSize: 100,
+      pageSize: 10,
       pageIndex: 1
     });
 
@@ -1494,17 +1518,47 @@ function TestCaseReviewComponent() {
           setDisable(false);
           setSelectedStatus(null);
 
-          const testData = responseData?.data;
+          // const testData = responseData?.data;
+          const testData = responseData?.data?.map((item) => {
+            return {
+              tc_id: item.tc_id || '',
+              // tester_name: item.tester_name
+              //   ? `${item.tester_name?.first_name} ${item.tester_name?.last_name}`
+              //   : '',
+              project_name: item?.project?.project_name || '',
+              module_name: item?.module?.module_name || '',
+              sub_module_name: item?.sub_module?.sub_module_name || '',
+              platform: item?.platform || '',
+              function_name: item?.function_master?.function_name || '',
+              field: item?.field || '',
+              testing_type: item?.testing_type?.type_name || '',
+              testing_group: item?.testing_group || '',
+              severity: item?.severity || '',
+              test_description: item?.test_description || '',
+              status: item?.tai_bc_status_conventions?.convention_name || '',
+              steps: item?.steps || '',
+              expected_result: item?.expected_result || '',
+              reviewer_comment: item?.reviewer_comment?.reviewer_comment || '',
+              created_by: `${item?.created_by?.first_name || ''} ${
+                item?.created_by?.last_name || ''
+              }`,
+              created_at: item?.created_at,
+              updated_by: `${item?.updated_by?.first_name || ''} ${
+                item?.updated_by?.last_name || ''
+              }`,
+              updated_at: item?.updated_at || '',
+              is_automation_script: item?.is_automation_script || ''
+            };
+          });
           if (Array?.isArray(testData) && testData?.length > 0) {
             // ✅ Convert JSON to CSV string
             const csv = convertToCSV(testData);
-
             // ✅ Trigger file download
             const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const link = document.createElement('a');
             link.href = url;
-            link.setAttribute('download', 'Testcases Data Count.csv');
+            link.setAttribute('download', responseData.file_name);
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
@@ -1516,8 +1570,8 @@ function TestCaseReviewComponent() {
         errorHandler: () => {
           setDisable(false);
           setSelectedStatus(null);
-
-          toast.error('Failed to fetch test case data.');
+          // onErrorHandler();
+          // toast.error('Failed to fetch test case data.');
         }
       })
     );
@@ -1645,8 +1699,14 @@ function TestCaseReviewComponent() {
   useEffect(() => {
     // Whenever searchTerm or filterData changes, update the selected filter IDs
     // if (searchTerm?.length === 0) {
+    // const filteredData = filteredResults?.filter((item) =>
+    //   item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+    // );
     const filteredData = filteredResults?.filter((item) =>
-      item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
+      (item?.name || '')
+        .toString()
+        .toLowerCase()
+        .includes(searchTerm.toLowerCase())
     );
     const filteredIds = filteredData?.map((item) => item.id);
     localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: filteredIds });
@@ -1656,6 +1716,7 @@ function TestCaseReviewComponent() {
     <>
       <Box ml={1}>
         <PageHeader
+          showBackBtn
           headerTitle="Test Case Review"
           renderRight={() => {
             return (
@@ -1672,12 +1733,11 @@ function TestCaseReviewComponent() {
           }}
         />
       </Box>
-
       <Container fluid className="mt-3">
         {testCaseReviewList && (
           <MaterialTable
             columns={columns}
-            rowCount={testCaseReviewList?.data?.total}
+            totalRows={totalCount}
             paginationData={paginationData}
             setPaginationData={setPaginationData}
             data={testCaseReviewList}
@@ -1686,7 +1746,7 @@ function TestCaseReviewComponent() {
             isExportData={false}
             manualPagination={true}
             muiPaginationProps={{
-              rowsPerPageOptions: [100, 500, 1000, 2000]
+              rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
             }}
           />
         )}
@@ -1742,7 +1802,6 @@ function TestCaseReviewComponent() {
           isFilterApplied={state.isFilterApplied}
         />
       )}
-
       <Modal
         centered
         show={sendToReviewerModal.showModal}
@@ -1767,7 +1826,9 @@ function TestCaseReviewComponent() {
             type="text"
             id="reviewer_id"
             name="reviewer_id"
-            options={filterTestData}
+            options={filterTestData?.filter(
+              (d) => d?.value != sendToReviewerModal?.modalData?.tester_id
+            )}
             required
             onChange={(e) => {
               const selectedId = e?.value;

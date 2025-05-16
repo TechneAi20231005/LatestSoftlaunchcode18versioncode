@@ -4,23 +4,25 @@ import DataTable from 'react-data-table-component';
 import PageHeader from '../../../components/Common/PageHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import { testDraftDetailsHistoryThunk } from '../../../redux/services/testCases/downloadFormatFile';
-import { useParams } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
 import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 
 function TestCaseHistoryComponent() {
   const { id } = useParams();
-
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const type = queryParams.get('type');
   // const [paginationData, setPaginationData] = useReducer(
   //   (prevState, nextState) => {
   //     return { ...prevState, ...nextState };
   //   },
   //   { rowPerPage: 10, currentPage: 1, currentFilterData: {} }
   // );
-    const [paginationData, setPaginationData] = useState({
-      pageIndex: 0,
-      pageSize: 10
-    })
+  const [paginationData, setPaginationData] = useState({
+    pageIndex: 0,
+    pageSize: 10
+  });
 
   const { testDraftHistory, isLoading } = useSelector(
     (state) => state?.downloadFormat
@@ -33,290 +35,352 @@ function TestCaseHistoryComponent() {
       testDraftDetailsHistoryThunk({
         id: id,
         limit: paginationData.pageSize,
-        page: paginationData.pageIndex + 1,
+        page: paginationData.pageIndex + 1
       })
     );
   }, [paginationData.pageIndex, paginationData.pageSize]);
 
+  const columns = [
+    {
+      accessorKey: 'tc_id',
+      header: 'TC ID',
+      size: 155,
 
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('id')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    {
+      accessorKey: 'operation',
+      header: 'Operation',
+      size: 180,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('operation')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    {
+      accessorKey: 'project_name',
+      header: 'Project Name',
+      size: 200,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('project_name')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    {
+      accessorKey: 'module_name',
+      header: 'Module Name',
+      size: 200,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('module_name')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    {
+      accessorKey: 'sub_module_name',
+      header: 'Sub Module Name',
+      size: 230,
 
-const columns = [
-  {
-    accessorKey: 'module_name',
-    header: 'Module Name',
-    size: 200,
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('module_name')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-  },
-  {
-    accessorKey: 'sub_module_name',
-    header: 'Sub Module Name',
-    size: 230,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('sub_module_name')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    {
+      accessorFn: (originalRows) => `${originalRows?.platform || '--'} `,
+      header: 'platform',
+      Header: <span>Platform</span>,
+      enableColumnFilter: false,
+      size: 180,
+      enableSorting: true
+    },
+    {
+      accessorKey: 'function_name',
+      header: 'Function Name',
+      size: 220,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('function_name')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
 
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('sub_module_name')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-  },
-  {
-    accessorKey: 'function_name',
-    header: 'Function Name',
-    size: 220,
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('function_name')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-  },
-  {
-    accessorKey: 'field',
-    header: 'Field',
-    size: 140,
+    {
+      accessorKey: 'type_name',
+      header: 'Type Name',
+      size: 185,
 
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('field')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-  },
-  {
-    accessorKey: 'type_name',
-    header: 'Type Name',
-    size: 185,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('type_name')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    {
+      accessorKey: 'group_name',
+      header: 'Group Name',
+      size: 190,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('group_name')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    {
+      accessorKey: 'field',
+      header: 'Field',
+      size: 140,
 
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('type_name')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('field')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    {
+      accessorKey: 'severity',
+      header: 'Severity',
+      size: 170,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('severity')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    {
+      accessorKey: 'test_description',
+      header: 'Test Description',
+      size: 220,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('test_description')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    {
+      accessorKey: 'steps',
+      header: 'Steps',
+      size: 150,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('steps')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    {
+      accessorKey: 'expected_result',
+      header: 'Expected Result',
+      size: 220,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('expected_result')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    {
+      accessorKey: 'status',
+      header: 'Status',
+      size: 155,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('status')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    ...(type !== 'testSummary'
+      ? [
+          {
+            accessorFn: (originalRows) =>
+              `${originalRows?.other_remark || '--'} `,
+            header: 'Remark',
+            enableColumnFilter: false,
+            size: 180,
+            muiTableBodyCellProps: ({ row }) =>
+              row.original.changes?.includes('other_remark')
+                ? {
+                    sx: {
+                      color: 'red',
+                      fontWeight: 'bold',
+                      cursor: 'pointer'
+                    }
+                  }
+                : {}
+          },
+          {
+            accessorFn: (originalRows) =>
+              `${originalRows?.reviewer_comment || '--'} `,
+            header: 'Reviewer Comment',
+            enableColumnFilter: false,
+            size: 250,
+            muiTableBodyCellProps: ({ row }) =>
+              row.original.changes?.includes('other_remark')
+                ? {
+                    sx: {
+                      color: 'red',
+                      fontWeight: 'bold',
+                      cursor: 'pointer'
+                    }
+                  }
+                : {}
+            // enableSorting: true
           }
-        : {},
-  },
-  {
-    accessorKey: 'group_name',
-    header: 'Group Name',
-    size: 190,
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('group_name')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-  },
-  {
-    accessorKey: 'tc_id',
-    header: 'TC ID',
-    size: 155,
+        ]
+      : []),
+    {
+      accessorFn: (originalRows) =>
+        `${originalRows?.is_automation_script || '--'} `,
+      header: 'Is Automation Script',
 
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('id')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-  },
-  {
-    accessorKey: 'severity',
-    header: 'Severity',
-    size: 170,
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('severity')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-  },
-  {
-    accessorKey: 'steps',
-    header: 'Steps',
-    size: 150,
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('steps')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-  },
-  {
-    accessorKey: 'test_description',
-    header: 'Test Description',
-    size: 220,
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('test_description')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-  },
-  {
-    accessorKey: 'expected_result',
-    header: 'Expected Result',
-    size: 220,
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('expected_result')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-  },
-  {
-    accessorKey: 'status',
-    header: 'Status',
-    size: 155,
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('status')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-  },
-  {
-    accessorKey: 'project_name',
-    header: 'Project Name',
-    size: 200,
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('project_name')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-  },
-  {
-    accessorKey: 'operation',
-    header: 'Operation',
-    size: 200,
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('operation')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-  },
-{
-    accessorKey: 'created_at',
-    header: 'Created At',
-    size: 200,
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('created_at')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-},
-{
-    accessorKey: 'updated_at',
-    header: 'Updated At',
-    size: 200,
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('updated_at')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-},
-{
-    accessorKey: 'created_by',
-    header: 'Created By',
-    size: 200,
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('created_by')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-},
-{
-    accessorKey: 'updated_by',
-    header: 'Updated By',
-    size: 200,
-    muiTableBodyCellProps: ({ row }) =>
-      row.original.changes?.includes('updated_by')
-        ? {
-            sx: {
-              color: 'red',
-              fontWeight: 'bold',
-              cursor: 'pointer',
-            },
-          }
-        : {},
-}
-]
-
+      size: 250,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('is_automation_script')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    {
+      accessorKey: 'created_at',
+      header: 'Created At',
+      size: 200,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('created_at')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    {
+      accessorKey: 'updated_at',
+      header: 'Updated At',
+      size: 200,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('updated_at')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    {
+      accessorKey: 'created_by',
+      header: 'Created By',
+      size: 200,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('created_by')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    },
+    {
+      accessorKey: 'updated_by',
+      header: 'Updated By',
+      size: 200,
+      muiTableBodyCellProps: ({ row }) =>
+        row.original.changes?.includes('updated_by')
+          ? {
+              sx: {
+                color: 'red',
+                fontWeight: 'bold',
+                cursor: 'pointer'
+              }
+            }
+          : {}
+    }
+  ];
 
   // const columns = [
   //   {
@@ -1236,8 +1300,19 @@ const columns = [
   return (
     <>
       <PageHeader showBackBtn headerTitle="Test Case History" />
-      <Container fluid className='mt-3'>
-        <MaterialTable columns={columns} data={testDraftHistory} muiPaginationProps={{ rowsPerPageOptions: [10, 50, 100, 150, 200] }} isExportData={false} isLoading={isLoading.testDraftHistory} paginationData={paginationData} setPaginationData={setPaginationData}  manualPagination={true} />
+      <Container fluid className="mt-3">
+        <MaterialTable
+          columns={columns}
+          data={testDraftHistory || []}
+          muiPaginationProps={{
+            rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
+          }}
+          isExportData={false}
+          isLoading={isLoading.testDraftHistory}
+          paginationData={paginationData}
+          setPaginationData={setPaginationData}
+          manualPagination={true}
+        />
         {/* <DataTable
           columns={columns}
           data={testDraftHistory}

@@ -46,6 +46,7 @@ const initialState = {
   testCasesStatusDataList: [],
   sendTestPlanReviewerList: [],
   addTestPlanReviewerList: [],
+  getProjectModuleListId: [],
 
   isLoading: {
     downloadFormatFile: false,
@@ -71,7 +72,8 @@ const initialState = {
     exportAllReviewDraftTestListData: false,
     testCasesStatusDataList: false,
     sendTestPlanReviewerList: false,
-    addTestPlanReviewerList: false
+    addTestPlanReviewerList: false,
+    getProjectModuleListId: false
   },
   errorMsg: {
     getProjectModuleList: '',
@@ -88,7 +90,8 @@ const initialState = {
     sendTestPlanReviewerList: '',
     testPlantHistory: '',
     testDraftHistory: '',
-    addTestPlanReviewerList: ''
+    addTestPlanReviewerList: '',
+    getProjectModuleListId: ''
   },
   successMsg: {
     getProjectModuleList: '',
@@ -105,7 +108,8 @@ const initialState = {
     testCasesStatusDataList: '',
     sendTestPlanReviewerList: '',
     testPlantHistory: '',
-    addTestPlanReviewerList: ''
+    addTestPlanReviewerList: '',
+    getProjectModuleListId: ''
   }
 };
 const downloadFormatSlice = createSlice({
@@ -126,6 +130,12 @@ const downloadFormatSlice = createSlice({
           .filter((project) => project.is_active === 1)
           .map((project) => ({
             value: project.project_name,
+            label: project.project_name
+          }));
+        state.getProjectModuleListId = action?.payload?.data
+          .filter((project) => project.is_active === 1)
+          .map((project) => ({
+            value: project.id,
             label: project.project_name
           }));
         state.successMsg.getProjectModuleList = action.payload;
@@ -243,6 +253,7 @@ const downloadFormatSlice = createSlice({
       .addCase(getDraftTestCaseList.fulfilled, (state, action) => {
         state.isLoading.getDraftTestListData = false;
         state.successMsg.getDraftTestListData = action?.payload;
+
         let data = !action?.payload?.data?.data?.data
           ? action?.payload?.data?.data?.data
           : action?.payload?.data?.data?.data?.filter(
@@ -280,7 +291,7 @@ const downloadFormatSlice = createSlice({
       .addCase(getAllReviewTestDraftList.fulfilled, (state, action) => {
         state.isLoading.allReviewDraftTestListData = false;
         state.successMsg.allReviewDraftTestListData = action?.payload;
-        state.allReviewDraftTestListData = action?.payload?.data?.data?.data;
+        state.allReviewDraftTestListData = action?.payload?.data?.data;
         state.filterReviewedDraftTestList = action?.payload?.data?.filter_data;
       })
       .addCase(getAllReviewTestDraftList.rejected, (state, action) => {
