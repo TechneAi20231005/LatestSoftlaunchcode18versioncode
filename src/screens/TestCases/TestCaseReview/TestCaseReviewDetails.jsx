@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useState } from 'react';
 import { Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams } from 'react-router-dom';
 import PageHeader from '../../../components/Common/PageHeader';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
 import { _base } from '../../../settings/constants';
@@ -102,6 +102,7 @@ function TestCaseReviewDetails() {
   const { id } = useParams();
   const planID = id;
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   const {
     testPlanIdData,
@@ -110,7 +111,7 @@ function TestCaseReviewDetails() {
     exportTestCaseReviewData,
     isLoading
   } = useSelector((state) => state?.testCaseReview);
-  const { getFilterReviewCommentMasterList } = useSelector(
+  const { getFilterReviewCommentMasterList, status } = useSelector(
     (state) => state?.reviewCommentMaster
   );
 
@@ -235,7 +236,7 @@ function TestCaseReviewDetails() {
       }
     });
   };
-
+  console.log('testPlanIdData', testPlanIdData);
   const [commentIdError, setCommentIdError] = useState('');
   const [changedRows, setChangedRows] = useState({});
   const handleSubmit = async (status) => {
@@ -254,10 +255,10 @@ function TestCaseReviewDetails() {
     //   return false; // Exit the function or prevent further execution
     // }
 
-    if (status === 'APPROVED' && selectedRows?.length <= 0) {
-      alert('Please select the test cases that you want to approve.');
-      return false; // Exit the function or prevent further execution
-    }
+    // if (status === 'APPROVED' && selectedRows?.length <= 0) {
+    //   alert('Please select the test cases that you want to approve.');
+    //   return false; // Exit the function or prevent further execution
+    // }
     const getUpdatedRows = () => {
       let updatedRows = [];
 
@@ -371,19 +372,26 @@ function TestCaseReviewDetails() {
                 page: paginationData.currentPage
               })
             );
-            dispatch(
-              getByTestPlanIDListThunk({
-                id: id,
-                limit: paginationData.rowPerPage,
-                page: 1,
-                filter_testcase_data: []
-              })
-            );
+            // dispatch(
+            //   getByTestPlanIDListThunk({
+            //     id: id,
+            //     limit: paginationData.rowPerPage,
+            //     page: 1,
+            //     filter_testcase_data: []
+            //   })
+            // );
+
+            // if (rowData?.length == 0) {
+            //   navigate(-1); // this goes back to the previous page
+            // }
+
             localDispatch({ type: 'SET_SELECT_ALL_NAMES', payload: false });
             localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
             setRowData(testPlanIdData);
           },
-          onErrorHandler: () => {}
+          onErrorHandler: () => {
+            console.log('hey');
+          }
         })
       );
     }
@@ -2420,9 +2428,17 @@ function TestCaseReviewDetails() {
       })
     );
   }, [paginationData.pageSize, paginationData.pageIndex]);
+  console.log('sssss', status);
+  useEffect(() => {
+    if (!testPlanIdData) {
+      navigate(-1);
+    }
+  }, [testPlanIdData]);
+
   return (
     <div className="container-xxl">
       <PageHeader
+        showBackBtn
         headerTitle="Test Case Review"
         renderRight={() => {
           return (
@@ -2490,7 +2506,7 @@ function TestCaseReviewDetails() {
         <MaterialTable
           columns={columns}
           data={rowData || []}
-          // isLoading={isLoading}
+          isLoading={isLoading?.testPlanIdData}
           paginationData={paginationData}
           totalRows={allTestPlanIDData?.data?.total}
           manualPagination={true}

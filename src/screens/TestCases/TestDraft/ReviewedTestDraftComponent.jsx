@@ -525,7 +525,7 @@ function ReviewedTestDraftComponent() {
   };
 
   const filteredResults = filterValues?.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+    item?.name?.toLowerCase().includes(searchTerm.toLowerCase())
   );
   const handleApplyButton = async () => {
     setClearData(false);

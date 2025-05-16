@@ -1713,6 +1713,7 @@ function TestCaseReviewComponent() {
     <>
       <Box ml={1}>
         <PageHeader
+          showBackBtn
           headerTitle="Test Case Review"
           renderRight={() => {
             return (
