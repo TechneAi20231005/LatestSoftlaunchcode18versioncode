@@ -33,6 +33,7 @@ const initialState = {
   filterColumn: null,
   modalIsOpen: false,
   searchTerm: '',
+  testing_type: 'testing_type',
   selectedFilterIds: '',
   selectedFilters: [],
   filters: [],
@@ -278,6 +279,7 @@ function ReviewedTestDraftComponent() {
       type_name: 'type_names',
       tc_id: 'tc_id',
       severity: 'severity',
+      testing_type: 'testing_type',
       group_name: 'group_names',
       steps: 'steps',
       expected_result: 'expected_results',
@@ -1554,7 +1556,7 @@ function ReviewedTestDraftComponent() {
             className="icofont-filter ms-2 text-dark"
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
-              handleFilterClick(e, 'type_name', 'Testing Type', 'text')
+              handleFilterClick(e, 'testing_type', 'testing_type', 'text')
             }
           />
         </span>
@@ -1580,7 +1582,7 @@ function ReviewedTestDraftComponent() {
       // ),
       enableColumnFilter: false,
       size: 200,
-      enableSorting: false,
+      enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.tc_id || '--'} `,
