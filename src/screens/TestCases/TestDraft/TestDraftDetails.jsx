@@ -1580,9 +1580,7 @@ function TestDraftDetails(props) {
           Test Id
           <i
             className={`icofont-filter ms-2 ${
-              props.isFilterApplied['tc_id']
-                ? 'text-warning'
-                : 'text-dark'
+              props.isFilterApplied['tc_id'] ? 'text-warning' : 'text-dark'
             }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'text')}
@@ -2247,7 +2245,7 @@ function TestDraftDetails(props) {
           )}
         </Modal.Body>
         <Modal.Footer>
-          <button
+          {/* <button
             type="submit"
             className="btn btn bg-success text-white"
             onClick={() => handleSubmit()}
@@ -2255,6 +2253,28 @@ function TestDraftDetails(props) {
           >
             <i class="icofont-paper-plane "></i> {''}
             Send To Reviewer
+          </button> */}
+          <button
+            type="submit"
+            className="btn bg-success text-white"
+            onClick={() => handleSubmit()}
+            disabled={disable}
+          >
+            {disable ? (
+              <>
+                <span
+                  className="spinner-border spinner-border-sm me-2"
+                  role="status"
+                  aria-hidden="true"
+                ></span>
+                Sending...
+              </>
+            ) : (
+              <>
+                <i className="icofont-paper-plane me-2"></i>
+                Send To Reviewer
+              </>
+            )}
           </button>
 
           <button

@@ -429,26 +429,26 @@ function TestPlanHistoryComponent() {
             }
           : {}
     },
-    {
-      accessorKey: 'testcases',
-      accessorFn: (originalRows) =>
-        `${originalRows?.testcases?.[0].is_automation_script || '--'} `,
-      header: 'Is Automation Script',
-      Header: <span>Is Automation Script</span>,
+    // {
+    //   accessorKey: 'testcases',
+    //   accessorFn: (originalRows) =>
+    //     `${originalRows?.testcases?.[0].is_automation_script || '--'} `,
+    //   header: 'Is Automation Script',
+    //   Header: <span>Is Automation Script</span>,
 
-      size: 250,
-      enableSorting: false,
-      muiTableBodyCellProps: ({ row }) =>
-        row.original.changes?.includes('testcases')
-          ? {
-              sx: {
-                color: 'red',
-                fontWeight: 'bold',
-                cursor: 'pointer'
-              }
-            }
-          : {}
-    },
+    //   size: 250,
+    //   enableSorting: false,
+    //   muiTableBodyCellProps: ({ row }) =>
+    //     row.original.changes?.includes('testcases')
+    //       ? {
+    //           sx: {
+    //             color: 'red',
+    //             fontWeight: 'bold',
+    //             cursor: 'pointer'
+    //           }
+    //         }
+    //       : {}
+    // },
     {
       accessorKey: 'created_at',
       header: 'Created At',
@@ -523,7 +523,6 @@ function TestPlanHistoryComponent() {
           : {}
     }
   ];
-  console.log(testPlantHistory, 'testPlantHistory?.total');
   return (
     <>
       <PageHeader showBackBtn headerTitle="Test Plan History" />

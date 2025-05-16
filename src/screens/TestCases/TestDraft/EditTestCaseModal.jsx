@@ -23,7 +23,10 @@ import {
 import { getFunctionMasterListThunk } from '../../../redux/services/testCases/functionMaster';
 import { getTestingGroupMasterListThunk } from '../../../redux/services/testCases/testingGroupMaster';
 import { getTestingTypeMasterListThunk } from '../../../redux/services/testCases/testingTypeMaster';
-import { getByTestPlanIDListThunk } from '../../../redux/services/testCases/testCaseReview';
+import {
+  getByTestPlanIDListThunk,
+  getExportByTestPlanIDListThunk
+} from '../../../redux/services/testCases/testCaseReview';
 import { original } from '@reduxjs/toolkit';
 import { getReviewCommentMasterListThunk } from '../../../redux/services/testCases/reviewCommentMaster';
 import platform from 'platform';
@@ -71,7 +74,6 @@ function EditTestCaseModal({
     (state) => state?.reviewCommentMaster
   );
 
-  console.log('currentTestCasesData', currentTestCasesData?.original);
   const [moduleDropdown, setModuleDropdown] = useState();
 
   const [subModuleDropdown, setSubModuleDropdown] = useState();
@@ -174,10 +176,7 @@ function EditTestCaseModal({
     expected_result:
       type === 'EDIT' ? currentTestCasesData?.original?.expected_result : ''
   };
-  console.log(
-    'currentTestCasesData',
-    currentTestCasesData?.original?.comment_id
-  );
+
   const handleEditTestCase = ({ formData }) => {
     if (disable) return;
     setDisable(true);
@@ -195,6 +194,12 @@ function EditTestCaseModal({
                     limit: 10,
                     page: 1,
                     filter_testcase_data: []
+                  })
+                );
+                dispatch(
+                  getExportByTestPlanIDListThunk({
+                    id: id,
+                    type: 'ALL'
                   })
                 );
               }
@@ -225,6 +230,12 @@ function EditTestCaseModal({
                         page: 1
                       })
                     );
+                  dispatch(
+                    getExportByTestPlanIDListThunk({
+                      id: id,
+                      type: 'ALL'
+                    })
+                  );
                 }
 
                 {
@@ -557,10 +568,7 @@ function EditTestCaseModal({
                     requiredField
                   />
                 </Col>
-                {console.log(
-                  'getFilterReviewCommentMasterList',
-                  getFilterReviewCommentMasterList
-                )}
+
                 {(payloadType === 'TestCaseReview' ||
                   payloadType === 'ReviewTestDraft') && (
                   <Col md={4} lg={4}>

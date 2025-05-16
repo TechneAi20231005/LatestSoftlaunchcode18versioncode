@@ -236,7 +236,6 @@ function TestCaseReviewDetails() {
       }
     });
   };
-  console.log('testPlanIdData', testPlanIdData);
   const [commentIdError, setCommentIdError] = useState('');
   const [changedRows, setChangedRows] = useState({});
   const handleSubmit = async (status) => {
@@ -391,9 +390,7 @@ function TestCaseReviewDetails() {
             localDispatch({ type: 'SET_SELECTED_ROWS', payload: [] });
             setRowData(testPlanIdData);
           },
-          onErrorHandler: () => {
-            console.log('hey');
-          }
+          onErrorHandler: () => {}
         })
       );
     }
@@ -1545,7 +1542,6 @@ function TestCaseReviewDetails() {
         const rowData = row.original;
         const selectedValue =
           comments[rowData.id] || rowData.comment_id || commonComment || '';
-        console.log('selectedValue', selectedValue);
         return (
           <div>
             <select
@@ -1885,7 +1881,6 @@ function TestCaseReviewDetails() {
   ];
 
   const handleFilterClick = (event, column, name, type, id) => {
-    console.log('column', column);
     if (clearData === true) {
       localDispatch({ type: 'SET_FILTERS', payload: [] });
     }
@@ -1912,9 +1907,7 @@ function TestCaseReviewDetails() {
       is_automation_script: 'is_automation_script'
     };
     const filteredData = filterTestPlanData[filterKeyMap[column]];
-    console.log('filteredData', filteredData);
     const columnId = moduleMapping[column];
-    console.log('columnId', columnId);
     localDispatch({ type: 'SET_FILTER_TYPE', payload: '' });
     localDispatch({ type: 'SET_COLUMN_NAME', payload: name });
     localDispatch({ type: 'SET_TYPE', payload: type });
@@ -2354,7 +2347,6 @@ function TestCaseReviewDetails() {
       })
     );
   }, [paginationData.pageSize, paginationData.pageIndex]);
-  console.log('sssss', status);
   useEffect(() => {
     if (!testPlanIdData) {
       navigate(-1);
@@ -2428,7 +2420,6 @@ function TestCaseReviewDetails() {
           className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
           highlightOnHover={true}
         /> */}
-        {console.log('data', allTestPlanIDData?.data?.total)}
         <MaterialTable
           columns={columns}
           data={rowData || []}

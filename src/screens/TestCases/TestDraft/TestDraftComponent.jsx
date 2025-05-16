@@ -163,7 +163,6 @@ export default function TestDraftComponent({}) {
   };
 
   const transformDataForReviewer = (data) => {
-    console.log(data,"data")
     return (
       data?.data?.length > 0 &&
       data?.data?.map((originalRows) => ({
@@ -464,7 +463,7 @@ export default function TestDraftComponent({}) {
             </div>
           </Modal.Body>
           <Modal.Footer>
-            <button
+            {/* <button
               type="submit"
               className="btn btn-primary text-white"
               style={{ backgroundColor: '#484C7F' }}
@@ -478,7 +477,34 @@ export default function TestDraftComponent({}) {
               }}
             >
               Submit
+            </button> */}
+            <button
+              type="submit"
+              className="btn btn-primary text-white"
+              style={{ backgroundColor: '#484C7F' }}
+              disabled={disable}
+              onClick={() => {
+                handleBulkModal({
+                  showModal: true,
+                  modalData: '',
+                  modalHeader: 'Bulk Upload Test Draft'
+                });
+              }}
+            >
+              {disable ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm me-2"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  Submitting...
+                </>
+              ) : (
+                'Submit'
+              )}
             </button>
+
             <button
               type="button"
               className="btn btn-danger text-white"
