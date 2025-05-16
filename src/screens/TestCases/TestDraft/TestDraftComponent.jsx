@@ -28,6 +28,7 @@ export default function TestDraftComponent({}) {
   const dispatch = useDispatch();
   const {
     allDraftTestListData,
+    getDraftTestListData,
     allReviewDraftTestListData,
     filterData,
     filterReviewedDraftTestList
@@ -162,9 +163,10 @@ export default function TestDraftComponent({}) {
   };
 
   const transformDataForReviewer = (data) => {
+    console.log(data,"data")
     return (
-      data?.length > 0 &&
-      data?.map((originalRows) => ({
+      data?.data?.length > 0 &&
+      data?.data?.map((originalRows) => ({
         'Test Plan ID': originalRows?.test_plan_id || '-',
         'Reviewer Name': `${originalRows.reviewer_name?.first_name || '-'} ${
           originalRows.reviewer_name?.last_name || '-'
@@ -356,7 +358,8 @@ export default function TestDraftComponent({}) {
               {currentTab === 'test_summary' && (
                 <ExportToExcel
                   className="btn btn-danger"
-                  apiData={transformDataForDraft(allDraftTestListData)}
+                  // apiData={transformDataForDraft(allDraftTestListData)}
+                  apiData={transformDataForDraft(getDraftTestListData)}
                   columns={exportColumns}
                   fileName={'Test Summary Records'}
                   disabled={allDraftTestListData?.length <= 0 ? true : false}

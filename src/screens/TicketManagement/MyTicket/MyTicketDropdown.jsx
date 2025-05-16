@@ -90,7 +90,7 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
         } else if (type === 'YourTask') {
           return true;
         } else if (type === 'DepartmentWise') {
-          return false;
+          return true;
         } else if (type === 'CreatedByMe') {
           return true;
         } else if (type === 'UnPassed') {

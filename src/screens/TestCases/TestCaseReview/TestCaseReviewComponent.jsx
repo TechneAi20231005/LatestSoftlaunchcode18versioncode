@@ -1057,7 +1057,11 @@ function TestCaseReviewComponent() {
       },
       Cell: ({ row }) => {
         const rowData = row?.original;
-        const isDisabled = rowData?.total_reviewed_testcases > 0;
+        const isDisabled =
+          rowData?.total_reviewed_testcases > 0 &&
+          rowData?.total_rejected_testcases +
+            rowData?.total_approved_testcases !==
+            rowData?.total_reviewed_testcases;
 
         return (
           <div className="d-flex align-items-center">

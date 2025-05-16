@@ -269,7 +269,8 @@ function TestCaseReviewDetails() {
             id: row?.id,
             tc_id: row?.tc_id,
             comment_id: comments[row?.id] || row?.comment_id || commonComment,
-            other_remark: remarks[row?.id] || row?.other_remark || commonRemark
+            other_remark: remarks[row?.id] || row?.other_remark || commonRemark,
+            created_by: row?.created_by?.id
           }));
       }
 
@@ -282,7 +283,8 @@ function TestCaseReviewDetails() {
           tc_id: row?.tc_id,
           comment_id:
             changedRows[id]?.comment_id || row?.comment_id || commonComment,
-          other_remark: changedRows[id]?.other_remark || row?.other_remark
+          other_remark: changedRows[id]?.other_remark || row?.other_remark,
+          created_by: row?.created_by?.id
         };
       });
 
@@ -1467,19 +1469,6 @@ function TestCaseReviewDetails() {
     {
       accessorFn: (originalRows) => `${originalRows?.testing_group || '--'} `,
       header: 'Testing Group',
-      Header: (
-        <span>
-          Testing Group
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'group_name', 'Testing Group', 'text')
-            }
-          />
-        </span>
-      ),
-      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1492,7 +1481,7 @@ function TestCaseReviewDetails() {
           <i
             className="icofont-filter ms-2 text-dark"
             style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'text')}
+            onClick={(e) => handleFilterClick(e, 'tc_id', 'tc_id', 'text')}
           />
         </span>
       ),
@@ -1523,23 +1512,6 @@ function TestCaseReviewDetails() {
       accessorFn: (originalRows) =>
         `${originalRows?.test_description || '--'} `,
       header: 'Test Description',
-      Header: (
-        <span>
-          Test Description
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(
-                e,
-                'test_description',
-                'Test Description',
-                'text'
-              )
-            }
-          />
-        </span>
-      ),
       // enableColumnFilter: false,
       size: 200,
       enableSorting: false
@@ -1547,36 +1519,12 @@ function TestCaseReviewDetails() {
     {
       accessorFn: (originalRows) => `${originalRows?.steps || '--'} `,
       header: 'Steps',
-      Header: (
-        <span>
-          Steps
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'steps', 'Steps', 'text')}
-          />
-        </span>
-      ),
-      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.expected_result || '--'} `,
       header: 'Expected Result',
-      Header: (
-        <span>
-          Expected Result
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'expected_result', 'Expected Result', 'text')
-            }
-          />
-        </span>
-      ),
-      // enableColumnFilter: false,
       size: 200,
       enableSorting: false
     },
@@ -1584,39 +1532,13 @@ function TestCaseReviewDetails() {
       accessorFn: (originalRows) =>
         `${originalRows?.tai_bc_status_conventions?.convention_name || '--'} `,
       header: 'Status',
-      Header: (
-        <span>
-          Status
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'status_name', 'Status', 'text')
-            }
-          />
-        </span>
-      ),
-      // enableColumnFilter: false,
-      size: 200,
+      size: 180,
       enableSorting: false
     },
 
     {
       accessorFn: (originalRow) => originalRow?.comment_id || '--',
       header: 'Reviewer comment',
-      Header: (
-        <span>
-          Reviewer comment
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) =>
-              handleFilterClick(e, 'comment_id', 'Reviewer comment', 'dropdown')
-            }
-          />
-        </span>
-      ),
-      // enableColumnFilter: false,
       enableSorting: true,
       size: 250,
       Cell: ({ row }) => {
@@ -1655,27 +1577,27 @@ function TestCaseReviewDetails() {
     {
       accessorFn: (originalRow) => originalRow?.remark || '--',
       header: 'Remark',
-      Header: (
-        <span>
-          Remark
-          <i
-            className="icofont-filter ms-2 text-dark"
-            style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'remark', 'Remark', 'text')}
-          />
-          {remarkErrors[rowData?.tc_id] &&
-            selectedRows?.includes(rowData?.tc_id) && (
-              <div className="col">
-                <span className="text-danger">
-                  {remarkErrors[rowData?.tc_id]}
-                </span>
-              </div>
-            )}
-        </span>
-      ),
+      // Header: (
+      //   <span>
+      //     Remark
+      //     <i
+      //       className="icofont-filter ms-2 text-dark"
+      //       style={{ cursor: 'pointer' }}
+      //       onClick={(e) => handleFilterClick(e, 'remark', 'Remark', 'text')}
+      //     />
+      //     {remarkErrors[rowData?.tc_id] &&
+      //       selectedRows?.includes(rowData?.tc_id) && (
+      //         <div className="col">
+      //           <span className="text-danger">
+      //             {remarkErrors[rowData?.tc_id]}
+      //           </span>
+      //         </div>
+      //       )}
+      //   </span>
+      // ),
       // enableColumnFilter: false,
       enableSorting: true,
-      size: 300,
+      size: 200,
       Cell: ({ row }) => {
         const rowData = row.original;
         const value =
@@ -1691,7 +1613,6 @@ function TestCaseReviewDetails() {
               name="other_remark"
               placeholder="Enter Remark"
               aria-label="default input example"
-              maxLength={100}
               value={value}
               onChange={(e) =>
                 handleRowChange(rowData.id, 'other_remark', e.target.value)
@@ -1964,6 +1885,7 @@ function TestCaseReviewDetails() {
   ];
 
   const handleFilterClick = (event, column, name, type, id) => {
+    console.log('column', column);
     if (clearData === true) {
       localDispatch({ type: 'SET_FILTERS', payload: [] });
     }
@@ -1974,7 +1896,7 @@ function TestCaseReviewDetails() {
       field: 'field',
       platform: 'platform',
       type_name: 'testing_type',
-      tc_id: 'ids',
+      tc_id: 'tc_id',
       test_description: 'test_descriptions',
 
       severity: 'severity',
@@ -1990,7 +1912,9 @@ function TestCaseReviewDetails() {
       is_automation_script: 'is_automation_script'
     };
     const filteredData = filterTestPlanData[filterKeyMap[column]];
+    console.log('filteredData', filteredData);
     const columnId = moduleMapping[column];
+    console.log('columnId', columnId);
     localDispatch({ type: 'SET_FILTER_TYPE', payload: '' });
     localDispatch({ type: 'SET_COLUMN_NAME', payload: name });
     localDispatch({ type: 'SET_TYPE', payload: type });
@@ -2029,8 +1953,10 @@ function TestCaseReviewDetails() {
     });
   };
 
-  const filteredResults = filterValues?.filter((item) =>
-    item?.name?.toLowerCase()?.includes(searchTerm.toLowerCase())
+  const filteredResults = filterValues?.filter(
+    (item) =>
+      item?.name &&
+      item?.name?.toString()?.toLowerCase()?.includes(searchTerm.toLowerCase())
   );
 
   const closeModal = () => {
