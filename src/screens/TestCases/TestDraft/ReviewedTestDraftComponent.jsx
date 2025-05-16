@@ -276,7 +276,7 @@ function ReviewedTestDraftComponent() {
       field: 'field',
       platform: 'platform',
       type_name: 'type_names',
-      tc_id: 'ids',
+      tc_id: 'tc_id',
       severity: 'severity',
       group_name: 'group_names',
       steps: 'steps',
@@ -524,8 +524,10 @@ function ReviewedTestDraftComponent() {
     } catch (error) {}
   };
 
-  const filteredResults = filterValues?.filter((item) =>
-    item.name.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredResults = filterValues?.filter(
+    (item) => (item) =>
+      item?.name &&
+      item?.name?.toString()?.toLowerCase()?.includes(searchTerm.toLowerCase())
   );
   const handleApplyButton = async () => {
     setClearData(false);
@@ -1589,7 +1591,7 @@ function ReviewedTestDraftComponent() {
           <i
             className="icofont-filter ms-2 text-dark"
             style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'text')}
+            onClick={(e) => handleFilterClick(e, 'tc_id', 'tc_id', 'text')}
           />
         </span>
       ),
