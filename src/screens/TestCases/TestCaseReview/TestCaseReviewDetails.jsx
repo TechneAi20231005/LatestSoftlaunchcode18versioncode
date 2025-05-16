@@ -281,7 +281,8 @@ function TestCaseReviewDetails() {
           tc_id: row?.tc_id,
           comment_id:
             changedRows[id]?.comment_id || row?.comment_id || commonComment,
-          other_remark: changedRows[id]?.other_remark || row?.other_remark
+          other_remark: changedRows[id]?.other_remark || row?.other_remark,
+          created_by: row?.created_by?.id
         };
       });
 
@@ -1471,7 +1472,7 @@ function TestCaseReviewDetails() {
           <i
             className="icofont-filter ms-2 text-dark"
             style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'text')}
+            onClick={(e) => handleFilterClick(e, 'tc_id', 'tc_id', 'text')}
           />
         </span>
       ),
@@ -1875,6 +1876,7 @@ function TestCaseReviewDetails() {
   ];
 
   const handleFilterClick = (event, column, name, type, id) => {
+    console.log('column', column);
     if (clearData === true) {
       localDispatch({ type: 'SET_FILTERS', payload: [] });
     }
@@ -1885,7 +1887,7 @@ function TestCaseReviewDetails() {
       field: 'field',
       platform: 'platform',
       type_name: 'testing_type',
-      tc_id: 'ids',
+      tc_id: 'tc_id',
       test_description: 'test_descriptions',
 
       severity: 'severity',
@@ -1901,7 +1903,9 @@ function TestCaseReviewDetails() {
       is_automation_script: 'is_automation_script'
     };
     const filteredData = filterTestPlanData[filterKeyMap[column]];
+    console.log('filteredData', filteredData);
     const columnId = moduleMapping[column];
+    console.log('columnId', columnId);
     localDispatch({ type: 'SET_FILTER_TYPE', payload: '' });
     localDispatch({ type: 'SET_COLUMN_NAME', payload: name });
     localDispatch({ type: 'SET_TYPE', payload: type });
@@ -1940,8 +1944,10 @@ function TestCaseReviewDetails() {
     });
   };
 
-  const filteredResults = filterValues?.filter((item) =>
-    item?.name?.toLowerCase()?.includes(searchTerm.toLowerCase())
+  const filteredResults = filterValues?.filter(
+    (item) =>
+      item?.name &&
+      item?.name?.toString()?.toLowerCase()?.includes(searchTerm.toLowerCase())
   );
 
   const closeModal = () => {
