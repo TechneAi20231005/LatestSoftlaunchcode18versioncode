@@ -1340,7 +1340,7 @@ function TestCaseReviewComponent() {
     },
     {
       header: 'Updated At',
-      accessorKey: 'updated_at',
+      accessorFn: (row) => row.updated_at|| '--',
       size: 180,
       enableSorting: false,
       enableColumnFilter: true,
@@ -1364,7 +1364,7 @@ function TestCaseReviewComponent() {
       accessorFn: (row) =>
         row.updated_by
           ? `${row.updated_by?.first_name} ${row.updated_by?.last_name}`
-          : '-',
+          : '--',
       size: 185,
       enableSorting: false,
       enableColumnFilter: true,
