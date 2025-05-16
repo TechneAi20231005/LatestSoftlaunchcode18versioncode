@@ -199,24 +199,6 @@ const DataTableCustom = React.memo(
         header: 'Created By',
         enableColumnFilter: false
       },
-      ...(type === 'UnPassed'
-        ? [
-            {
-              accessorFn: (row) => row.ticket_solved_date || '--',
-              header: 'Solved Date',
-              size: 190,
-              enableColumnFilter: false
-            },
-            {
-              accessorFn: (originalRows) =>
-                `${originalRows?.ticket_solved_by?.first_name || '--'} ${
-                  originalRows?.ticket_solved_by?.last_name || '--'
-                }`,
-              header: 'Solved By',
-              enableColumnFilter: false
-            }
-          ]
-        : [])
     ];
 
 
