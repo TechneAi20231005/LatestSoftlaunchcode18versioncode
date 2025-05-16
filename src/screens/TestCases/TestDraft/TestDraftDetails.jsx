@@ -1475,13 +1475,13 @@ function TestDraftDetails(props) {
   //       );
   //     },
   //     header: (column, sortDirection) => (
-    //       <div className="d-flex align-items-center">
-    //         <span>{column.name}</span>
-    //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
-    //       </div>
-    //     )
-    //   }
-    // ];
+  //       <div className="d-flex align-items-center">
+  //         <span>{column.name}</span>
+  //         <i className="icofont-history cp bg-warning rounded-circle ms-2" />
+  //       </div>
+  //     )
+  //   }
+  // ];
 
   const columns = [
     {
@@ -1522,8 +1522,8 @@ function TestDraftDetails(props) {
               }
             />
             <Link
-  to={`/${_base}/TestCaseHistoryComponent/${row?.original?.id}?type=testSummary`}
->
+              to={`/${_base}/TestCaseHistoryComponent/${row?.original?.id}?type=testSummary`}
+            >
               <i class="icofont-history cp btn btn-outline-secondary fw-bold  " />
             </Link>
           </div>
@@ -1644,7 +1644,7 @@ function TestDraftDetails(props) {
         <span>
           Submodule Name
           <i
-             className={`icofont-filter ms-2 ${
+            className={`icofont-filter ms-2 ${
               props.isFilterApplied['sub_module_name']
                 ? 'text-warning'
                 : 'text-dark'
@@ -1667,11 +1667,9 @@ function TestDraftDetails(props) {
         <span>
           Platform
           <i
-              className={`icofont-filter ms-2 ${
-                props.isFilterApplied['platform']
-                  ? 'text-warning'
-                  : 'text-dark'
-              }`}
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['platform'] ? 'text-warning' : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'platform', 'Platform', 'text')
@@ -1691,11 +1689,11 @@ function TestDraftDetails(props) {
         <span>
           Function Name
           <i
-              className={`icofont-filter ms-2 ${
-                props.isFilterApplied['function_name']
-                  ? 'text-warning'
-                  : 'text-dark'
-              }`}
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['function_name']
+                ? 'text-warning'
+                : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'function_name', 'Function Name', 'text')
@@ -1714,11 +1712,9 @@ function TestDraftDetails(props) {
         <span>
           Field
           <i
-              className={`icofont-filter ms-2 ${
-                props.isFilterApplied['field']
-                  ? 'text-warning'
-                  : 'text-dark'
-              }`}
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['field'] ? 'text-warning' : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) => handleFilterClick(e, 'field', 'Field', 'text')}
           />
@@ -1737,10 +1733,8 @@ function TestDraftDetails(props) {
         <span>
           Testing Type
           <i
-             className={`icofont-filter ms-2 ${
-              props.isFilterApplied['tyepe_name']
-                ? 'text-warning'
-                : 'text-dark'
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['tyepe_name'] ? 'text-warning' : 'text-dark'
             }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
@@ -1771,11 +1765,9 @@ function TestDraftDetails(props) {
         <span>
           Severity
           <i
-              className={`icofont-filter ms-2 ${
-                props.isFilterApplied['severity']
-                  ? 'text-warning'
-                  : 'text-dark'
-              }`}
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['severity'] ? 'text-warning' : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'severity', 'Severity', 'text')
@@ -1837,11 +1829,11 @@ function TestDraftDetails(props) {
         <span>
           Is Automation Script
           <i
-              className={`icofont-filter ms-2 ${
-                props.isFilterApplied['is_automation_script']
-                  ? 'text-warning'
-                  : 'text-dark'
-              }`}
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['is_automation_script']
+                ? 'text-warning'
+                : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(
@@ -1865,11 +1857,9 @@ function TestDraftDetails(props) {
         <span>
           Created At
           <i
-              className={`icofont-filter ms-2 ${
-                props.isFilterApplied['created_at']
-                  ? 'text-warning'
-                  : 'text-dark'
-              }`}
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['created_at'] ? 'text-warning' : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'created_at', 'Created At', 'text')
@@ -1892,11 +1882,9 @@ function TestDraftDetails(props) {
         <span>
           Created By
           <i
-              className={`icofont-filter ms-2 ${
-                props.isFilterApplied['created_by']
-                  ? 'text-warning'
-                  : 'text-dark'
-              }`}
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['created_by'] ? 'text-warning' : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'created_by', 'Created By', 'text')
@@ -1907,7 +1895,7 @@ function TestDraftDetails(props) {
 
       size: 200,
       enableSorting: false,
-      enableGrouping:false
+      enableGrouping: false
     },
     {
       accessorFn: (originalRows) => `${originalRows?.updated_at || '--'} `,
@@ -1916,11 +1904,9 @@ function TestDraftDetails(props) {
         <span>
           Updated At
           <i
-              className={`icofont-filter ms-2 ${
-                props.isFilterApplied['updated_at']
-                  ? 'text-warning'
-                  : 'text-dark'
-              }`}
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['updated_at'] ? 'text-warning' : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'updated_at', 'Updated At', 'text')
@@ -1942,11 +1928,9 @@ function TestDraftDetails(props) {
         <span>
           Updated By
           <i
-              className={`icofont-filter ms-2 ${
-                props.isFilterApplied['updated_by']
-                  ? 'text-warning'
-                  : 'text-dark'
-              }`}
+            className={`icofont-filter ms-2 ${
+              props.isFilterApplied['updated_by'] ? 'text-warning' : 'text-dark'
+            }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
               handleFilterClick(e, 'updated_by', 'Updated By', 'text')
@@ -2121,7 +2105,7 @@ function TestDraftDetails(props) {
   useEffect(() => {
     if (filterValues && searchTerm?.length === 0) {
       localDispatch({ type: 'SET_FILTER_VALUES', payload: filterValues });
-      if (props.isFilterApplied === false) {
+      if (state.isFilterApplied === false) {
         localDispatch({
           type: 'SET_SELECTED_FILTER',
           payload: filterValues.map((item) => item.name)
@@ -2325,7 +2309,7 @@ function TestDraftDetails(props) {
           errorMessage={errorMessage}
           setSelectedValue={setSelectedValue}
           selectedValue={selectedValue}
-          isFilterApplied={props.isFilterApplied}
+          isFilterApplied={state.isFilterApplied}
         />
       )}
     </>
