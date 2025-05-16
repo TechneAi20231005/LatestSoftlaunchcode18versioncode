@@ -268,7 +268,8 @@ function TestCaseReviewDetails() {
             id: row?.id,
             tc_id: row?.tc_id,
             comment_id: comments[row?.id] || row?.comment_id || commonComment,
-            other_remark: remarks[row?.id] || row?.other_remark || commonRemark
+            other_remark: remarks[row?.id] || row?.other_remark || commonRemark,
+            created_by: row?.created_by?.id
           }));
       }
 
