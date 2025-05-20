@@ -912,7 +912,8 @@ function ReviewedTestDraftDetails(props) {
 
   const columns = [
     {
-      accessorKey: 'test_plan_id',
+          accessorFn: (originalRows) =>
+        originalRows?.test_plan_id ? `TC_${originalRows?.test_plan_id}` : '--',
       header: 'Test Plan ID',
       size: 190,
       enableColumnFilter: true,
@@ -941,7 +942,7 @@ function ReviewedTestDraftDetails(props) {
             to={`/${_base}/ReviewedTestDraftComponent/${id}`}
             style={{ textDecoration: 'underline', color: '#1976d2' }}
           >
-            {testPlanId}
+            {`TC_${testPlanId}`}
           </Link>
         ) : null;
       }

@@ -1111,9 +1111,11 @@ function TestCaseReviewComponent() {
       }
     },
     {
-      header: 'Test Plan Id',
+         accessorFn: (originalRows) =>
+        originalRows?.test_plan_id ? `TC_${originalRows?.test_plan_id}` : '--',
       accessorKey: 'test_plan_id',
       size: 210,
+      header: "Test Plan ID",
       enableSorting: false,
       enableColumnFilter: true,
       Header: (
@@ -1144,13 +1146,13 @@ function TestCaseReviewComponent() {
             {rowData.test_plan_id && (
               <div>
                 {isDisabled ? (
-                  <span className="text-muted">{rowData.test_plan_id}</span>
+                  <span className="text-muted">{`TC_${rowData.test_plan_id}`}</span>
                 ) : (
                   <Link
                     to={`/${_base + '/TestCaseReviewDetails/' + rowData?.id}`}
                     className="link_underline_primary"
                   >
-                    {rowData.test_plan_id}
+                    {`TC_${rowData.test_plan_id}`}
                   </Link>
                 )}
               </div>
@@ -1539,6 +1541,7 @@ function TestCaseReviewComponent() {
               steps: item?.steps || '',
               expected_result: item?.expected_result || '',
               reviewer_comment: item?.reviewer_comment?.reviewer_comment || '',
+              reviewer_remark: item?.other_remark || '-',
               created_by: `${item?.created_by?.first_name || ''} ${
                 item?.created_by?.last_name || ''
               }`,
