@@ -205,6 +205,7 @@ class MainIndex extends React.Component {
 
         <div className="body d-flex py-lg-3 py-md-2">
           <Routes>
+            <Route exact path={`/${_base}/`} element={<Dashboard />} />
             <Route exact path={`/${_base}/Dashboard`} element={<Dashboard />} />
             <Route
               exact
