@@ -491,7 +491,7 @@ function EditDynamicForm() {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_update === 0) {
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
 

@@ -96,7 +96,7 @@ export default function HrDashboard(props) {
       localStorage.removeItem('jwt_token');
       localStorage.removeItem('jwt_token_expiration');
       localStorage.clear();
-      history(`${process.env.PUBLIC_URL}/`);
+      history(`/${process.env.REACT_APP_ROOT_URL}/`);
     }
   };
 
@@ -355,7 +355,7 @@ export default function HrDashboard(props) {
     const account_for = localStorage.getItem('account_for');
 
     if (account_for === 'CUSTOMER') {
-      window.location.href = `${process.env.PUBLIC_URL}/Ticket`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Ticket`;
     }
 
     loadData();

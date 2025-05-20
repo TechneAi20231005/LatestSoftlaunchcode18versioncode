@@ -70,7 +70,7 @@ export default function Header() {
     localStorage.clear();
     // localStorage.clear();
     sessionStorage.clear();
-    window.location.href = `${process.env.PUBLIC_URL}/`;
+    window.location.href = `/${process.env.REACT_APP_ROOT_URL}/`;
   }
 
   const handleMarkAllNotification = (e) => {
@@ -122,7 +122,7 @@ export default function Header() {
       if (res.status === 200 && res.data.status === 1) {
         setNotify({ type: 'success', message: res.data.message });
         setTimeout(() => {
-          window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+          window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
         }, 1000);
       } else {
         setNotify({ type: 'danger', message: res.data.message });
