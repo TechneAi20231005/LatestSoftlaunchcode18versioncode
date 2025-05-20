@@ -1,6 +1,6 @@
 {
   "name": "connectus3.0",
-  "homepage": "http://3.108.206.34/3_SoftLaunch/TechTicket/",
+  "homepage": "http://3.108.206.34/TechTicket/",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -45,6 +45,7 @@
     "react-table": "^7.8.0",
     "react-toastify": "^9.1.3",
     "react-tooltip": "^5.28.0",
+    "sass": "^1.89.0",
     "save-dev": "^0.0.1-security",
     "styled-components": "^6.1.2",
     "web-vitals": "^2.1.4",

@@ -124,6 +124,7 @@ function EditTestCaseModal({
       label: 'API'
     }
   ];
+  console.log(currentTestCasesData,"currentTestCasesData?.original?.tc_id")
   const testingGroupRef = useRef();
   const testCaseInitialValue = {
     project_id:
@@ -148,7 +149,7 @@ function EditTestCaseModal({
         ? currentTestCasesData?.original?.type_id?.toString()
         : '',
     tc_id:
-      type === 'EDIT' ? currentTestCasesData?.original?.tc_id?.toString() : '',
+      type === 'EDIT' ? `TC_${currentTestCasesData?.original?.tc_id}`.toString() : '',
     platform:
       type === 'EDIT'
         ? currentTestCasesData?.original?.platform?.toString()
