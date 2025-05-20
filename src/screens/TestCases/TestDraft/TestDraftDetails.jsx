@@ -1583,7 +1583,7 @@ function TestDraftDetails(props) {
               props.isFilterApplied['tc_id'] ? 'text-warning' : 'text-dark'
             }`}
             style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'text')}
+            onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'number')}
           />
         </span>
       ),
@@ -1865,7 +1865,7 @@ function TestDraftDetails(props) {
             }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
-              handleFilterClick(e, 'created_at', 'Created At', 'text')
+              handleFilterClick(e, 'created_at', 'Created At', 'number')
             }
           />
         </span>
@@ -1912,7 +1912,7 @@ function TestDraftDetails(props) {
             }`}
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
-              handleFilterClick(e, 'updated_at', 'Updated At', 'text')
+              handleFilterClick(e, 'updated_at', 'Updated At', 'number')
             }
           />
         </span>

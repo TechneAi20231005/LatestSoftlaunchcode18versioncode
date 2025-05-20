@@ -1305,7 +1305,7 @@ function TestCaseReviewComponent() {
           <i
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
-              handleFilterClick(e, 'created_at', 'created_at', 'text')
+              handleFilterClick(e, 'created_at', 'created_at', 'number')
             }
             className={`icofont-filter ms-2 ${
               isFilterApplied['created_at'] ? 'text-warning' : 'text-dark'
@@ -1340,7 +1340,7 @@ function TestCaseReviewComponent() {
     },
     {
       header: 'Updated At',
-      accessorFn: (row) => row.updated_at|| '--',
+      accessorFn: (row) => row.updated_at || '--',
       size: 180,
       enableSorting: false,
       enableColumnFilter: true,
@@ -1350,7 +1350,7 @@ function TestCaseReviewComponent() {
           <i
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
-              handleFilterClick(e, 'updated_at', 'updated_at', 'text')
+              handleFilterClick(e, 'updated_at', 'updated_at', 'number')
             }
             className={`icofont-filter ms-2 ${
               isFilterApplied['updated_at'] ? 'text-warning' : 'text-dark'

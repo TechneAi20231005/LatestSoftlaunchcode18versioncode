@@ -34,7 +34,7 @@ const CustomFilterModal = ({
   const searchRef = useRef(null);
   const containerRef = useRef(null);
 
-  const textFilterData = [
+  let textFilterData = [
     {
       value: 'equals',
       label: 'Equals'
@@ -69,6 +69,23 @@ const CustomFilterModal = ({
     }
   ];
 
+  if (
+    columnName?.toLowerCase() === 'testing group' ||
+    columnName?.toLowerCase() === 'test description' ||
+    columnName?.toLowerCase() === 'field' ||
+    columnName?.toLowerCase() === 'expected description'
+  ) {
+    textFilterData = [
+      {
+        value: 'contains',
+        label: 'Contains'
+      },
+      {
+        value: 'does not contain',
+        label: 'Does Not Contain'
+      }
+    ];
+  }
   const numberFilterData = [
     {
       value: 'equals',

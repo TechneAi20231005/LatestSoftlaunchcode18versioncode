@@ -1113,7 +1113,7 @@ function ReviewedTestDraftDetails(props) {
           <i
             style={{ cursor: 'pointer' }}
             onClick={(e, row) =>
-              handleFilterClick(e, 'created_at', 'created_at', 'text')
+              handleFilterClick(e, 'created_at', 'created_at', 'number')
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['created_at']
@@ -1152,7 +1152,7 @@ function ReviewedTestDraftDetails(props) {
       )
     },
     {
-      accessorFn: (row) =>row?.updated_at||'--',
+      accessorFn: (row) => row?.updated_at || '--',
       header: 'Updated At',
       size: 180,
       enableSorting: false,
@@ -1163,7 +1163,7 @@ function ReviewedTestDraftDetails(props) {
           <i
             style={{ cursor: 'pointer' }}
             onClick={(e, row) =>
-              handleFilterClick(e, 'updated_at', 'updated_at', 'text')
+              handleFilterClick(e, 'updated_at', 'updated_at', 'number')
             }
             className={`icofont-filter ms-2 ${
               props?.isFilterApplied['updated_at']

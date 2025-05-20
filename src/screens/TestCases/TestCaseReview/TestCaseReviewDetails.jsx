@@ -1478,7 +1478,7 @@ function TestCaseReviewDetails() {
           <i
             className="icofont-filter ms-2 text-dark"
             style={{ cursor: 'pointer' }}
-            onClick={(e) => handleFilterClick(e, 'tc_id', 'tc_id', 'text')}
+            onClick={(e) => handleFilterClick(e, 'tc_id', 'tc_id', 'number')}
           />
         </span>
       ),
@@ -1670,7 +1670,7 @@ function TestCaseReviewDetails() {
             className="icofont-filter ms-2 text-dark"
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
-              handleFilterClick(e, 'created_at', 'Created At', 'text')
+              handleFilterClick(e, 'created_at', 'Created At', 'number')
             }
           />
         </span>
@@ -1712,7 +1712,7 @@ function TestCaseReviewDetails() {
             className="icofont-filter ms-2 text-dark"
             style={{ cursor: 'pointer' }}
             onClick={(e) =>
-              handleFilterClick(e, 'updated_at', 'Updated At', 'text')
+              handleFilterClick(e, 'updated_at', 'Updated At', 'number')
             }
           />
         </span>
