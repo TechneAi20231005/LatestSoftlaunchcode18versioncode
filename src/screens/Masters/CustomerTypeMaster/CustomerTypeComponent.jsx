@@ -1,14 +1,9 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Modal } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
-
 import CustomerType from '../../../services/MastersService/CustomerTypeService';
 import PageHeader from '../../../components/Common/PageHeader';
 
 import { Astrick } from '../../../components/Utilities/Style';
-import * as Validation from '../../../components/Utilities/Validation';
-import Alert from '../../../components/Common/Alert';
-
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getCustomerTypeData,
@@ -20,17 +15,14 @@ import {
   handleModalClose,
   handleModalOpen
 } from './CustomerTypeComponentSlice';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
 import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
 import { Field, Form, Formik, ErrorMessage } from 'formik';
 import { errorHandler } from '../../../utils';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
 
 function CustomerTypeComponent() {
-  const isActive1Ref = useRef();
   const dispatch = useDispatch();
-  const [message, setMessage] = useState(null);
   const customerData = useSelector(
     (CustomerTypeComponentSlice) =>
       CustomerTypeComponentSlice.customerTypeMaster.getCustomerTypeData
@@ -40,53 +32,29 @@ function CustomerTypeComponent() {
     (CustomerTypeComponentSlice) =>
       CustomerTypeComponentSlice.customerTypeMaster.isLoading.customerTypeList
   );
-  const notify = useSelector(
-    (CustomerTypeComponentSlice) =>
-      CustomerTypeComponentSlice.customerTypeMaster.notify
-  );
-
-  const exportData = useSelector(
-    (CustomerTypeComponentSlice) =>
-      CustomerTypeComponentSlice.customerTypeMaster.exportCustomerData
-  );
 
   const modal = useSelector(
     (customerMasterSlice) => customerMasterSlice.customerTypeMaster.modal
   );
-  // const notify = useSelector(
-  //   (customerMasterSlice) => customerMasterSlice.customerTypeMaster.notify
-  // );
 
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 12)
   );
-
-  const isActive0Ref = useRef();
-
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(customerData, searchTerm);
-    setFilteredData(filteredList);
-  }, [customerData, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(customerData);
+  const [reset, setReset] = useState(false);
+  const clearFilters = () => {
+    setReset(true);
   };
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <button
             type="button"
@@ -97,7 +65,7 @@ function CustomerTypeComponent() {
               dispatch(
                 handleModalOpen({
                   showModal: true,
-                  modalData: row,
+                  modalData: row?.original,
                   modalHeader: 'Edit Customer Type'
                 })
               );
@@ -109,75 +77,83 @@ function CustomerTypeComponent() {
       )
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 120,
+      enableColumnFilter: false
     },
     {
-      name: 'Customer Type Name',
-      selector: (row) => row.type_name,
-      sortable: true,
-      width: '200px'
+      accessorFn: (originalRow) => originalRow.type_name || '--',
+      header: 'Customer Type Name',
+      size: 260,
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      width: '125px',
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      )
+      header: 'Status',
+      size: 160,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row?.original?.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
+      header: 'Created By',
+      size: 180
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By',
+      size: 190
     }
   ];
 
-  const loadData = async () => {
-    // setShowLoaderModal(null);
+  const exportDataKeys = {
+    type_name: 'Customer Type Name',
+    is_active: 'Status',
+    remark: 'Remark',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Customer Type Record'
   };
-  const handleIsActive = (e) => {
-    const value = e.target.value;
 
-    if (value === 1) {
-      // setIsActive(1);
-    } else {
-      // setIsActive(0);
-    }
-  };
   const handleForm = async (values, id, { setSubmitting }) => {
     setSubmitting(true);
     const formData = new FormData();
@@ -211,14 +187,9 @@ function CustomerTypeComponent() {
       errorHandler(error);
     } finally {
       setSubmitting(false);
+      clearFilters();
     }
   };
-
-  // const handleKeyDown = (event) => {
-  //   if (event.key === 'Enter') {
-  //     handleSearch();
-  //   }
-  // };
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -227,15 +198,6 @@ function CustomerTypeComponent() {
   }, [checkRole]);
 
   useEffect(() => {
-    setFilteredData(customerData);
-  }, [customerData]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
-
-  useEffect(() => {
-    loadData();
     dispatch(getCustomerTypeData());
 
     if (!customerData?.length) {
@@ -298,37 +260,17 @@ function CustomerTypeComponent() {
         }}
       />
 
-      <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by customer type name...."
-        exportFileName="Customer type Record"
-        exportData={exportData}
-        showExportButton={true}
-      />
-
       <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {customerData && (
-                <DataTable
-                  columns={columns}
-                  data={filteredData}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                  progressPending={isLoading}
-                  progressComponent={<TableLoadingSkelton />}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        {customerData && (
+          <MaterialTable
+            exportDataKeys={exportDataKeys}
+            isLoading={isLoading}
+            data={customerData}
+            columns={columns}
+            reset={reset}
+            setReset={setReset}
+          />
+        )}
       </div>
 
       <Modal centered show={modal.showModal}>
@@ -339,7 +281,6 @@ function CustomerTypeComponent() {
             handleForm(values, modal.modalData ? modal.modalData.id : '', {
               setSubmitting
             });
-            // setOtpModal(true);
           }}
         >
           {({ isSubmitting }) => (
@@ -373,9 +314,6 @@ function CustomerTypeComponent() {
                         className="form-control form-control-sm"
                         id="type_name"
                         name="type_name"
-                        // onKeyPress={(e) => Validation.CharactersNumbersOnly(e)}
-                        // onPaste={(e) => e.preventDefault()}
-                        // onCopy={(e) => e.preventDefault()}
                       />
                       <ErrorMessage
                         name="type_name"
@@ -501,22 +439,25 @@ function CustomerTypeDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new CustomerType().getCustomerType().then((res) => {
-      if (res.status === 200) {
-        let counter = 1;
-        const data = res.data.data;
-        for (const key in data) {
-          if (data[key].is_active === 1) {
-            tempData.push({
-              counter: counter++,
-              id: data[key].id,
-              type_name: data[key].type_name
-            });
+    new CustomerType()
+      .getCustomerType()
+      .then((res) => {
+        if (res?.status === 200) {
+          let counter = 1;
+          const data = res?.data?.data;
+          for (const key in data) {
+            if (data[key].is_active === 1) {
+              tempData.push({
+                counter: counter++,
+                id: data[key].id,
+                type_name: data[key].type_name
+              });
+            }
           }
+          setData(tempData);
         }
-        setData(tempData);
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   }, []);
 
   return (

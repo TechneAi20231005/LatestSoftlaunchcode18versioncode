@@ -1,9 +1,9 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice } from '@reduxjs/toolkit';
 import {
   addTestingGroupMasterThunk,
   editTestingGroupMasterThunk,
-  getTestingGroupMasterListThunk,
-} from "../../../services/testCases/testingGroupMaster";
+  getTestingGroupMasterListThunk
+} from '../../../services/testCases/testingGroupMaster';
 
 const initialState = {
   testingGroupMasterList: [],
@@ -12,16 +12,16 @@ const initialState = {
     getTestingGroupMasterList: false,
     addTestingGroupMaster: false,
     editTestingGroupMaster: false,
-    filterTestingGroupMasterList: false,
+    filterTestingGroupMasterList: false
   },
-  errorMsg: { getTestingGroupMasterList: "", filterTestingGroupMasterList: "" },
+  errorMsg: { getTestingGroupMasterList: '', filterTestingGroupMasterList: '' },
   successMsg: {
-    getTestingGroupMasterList: "",
-    filterTestingGroupMasterList: "",
-  },
+    getTestingGroupMasterList: '',
+    filterTestingGroupMasterList: ''
+  }
 };
 const testingGroupMasterSlice = createSlice({
-  name: "Testing Group master",
+  name: 'Testing Group master',
   initialState,
   reducers: {
     // ==> normal reducer functions go here
@@ -36,7 +36,7 @@ const testingGroupMasterSlice = createSlice({
         state.testingGroupMasterList = action?.payload?.data;
         state.filterTestingGroupMasterList = action?.payload?.data
           ?.filter((d) => d.is_active === 1)
-          .map((d) => ({ value: d.id, label: d.group_name }));
+          .map((d) => ({ value: d.group_name, label: d.group_name }));
         state.successMsg.getTestingGroupMasterList = action.payload.msg;
       })
       .addCase(getTestingGroupMasterListThunk.rejected, (state, action) => {
@@ -70,7 +70,7 @@ const testingGroupMasterSlice = createSlice({
         state.isLoading.editTestingGroupMaster = false;
         state.errorMsg.editTestingGroupMaster = action.error.message;
       });
-  },
+  }
 });
 
 export default testingGroupMasterSlice.reducer;

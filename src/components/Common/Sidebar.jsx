@@ -101,7 +101,7 @@ const Sidebar = ({ activekey }) => {
       }`}
     >
       <div className="d-flex flex-column h-100">
-        <a href="Dashboard" className="mb-0 brand-icon">
+        <Link to={`/${_base}/Dashboard`} className="mb-0 brand-icon">
           <span className="logo-icon">
             <svg
               width="35"
@@ -119,7 +119,7 @@ const Sidebar = ({ activekey }) => {
             </svg>
           </span>
           <span className="logo-text">My-Task</span>
-        </a>
+        </Link>
 
         <ul className="menu-list flex-grow-1 mt-3">
           {sidebarMenuList?.map((item, index) => {
@@ -130,9 +130,9 @@ const Sidebar = ({ activekey }) => {
 
             return (
               <li key={`menu-item-${index}`} className={`collapsed `}>
-                <a
+                <Link
                   className={`m-link`}
-                  href={hasChildren ? '#!' : `/${_base}/${item.routerLink[0]}`}
+                  to={hasChildren ? '#!' : `/${_base}/${item.routerLink[0]}`}
                   onClick={
                     hasChildren
                       ? (e) => {
@@ -147,7 +147,7 @@ const Sidebar = ({ activekey }) => {
                   {hasChildren && (
                     <span className="arrow icofont-dotted-down ms-auto text-end fs-5"></span>
                   )}
-                </a>
+                </Link>
                 {hasChildren && (
                   <ul
                     className="sub-menu collapse has-children"

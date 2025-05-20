@@ -656,7 +656,8 @@ const AuthorityMapping = () => {
                               id="user_id[]"
                               key={idx}
                               className="basic-multi-select"
-                              classNamePrefix="select"
+                              classNamePrefix="react-select"
+                              // classNamePrefix="select"
                               options={userData}
                               isDisabled={
                                 item.from_dateReadOnly ||
@@ -774,7 +775,7 @@ const AuthorityMapping = () => {
                                 isSearchable={true}
                                 name="user_id[]"
                                 className="basic-multi-select"
-                                classNamePrefix="select"
+                                classNamePrefix="react-select"
                                 options={userData}
                                 required
                                 style={{ zIndex: '100' }}

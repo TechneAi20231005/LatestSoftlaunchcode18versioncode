@@ -16,40 +16,40 @@ const ApproveRequestModal = (props) => {
   const NotificatinID = props.notificationId;
 
   const ticketIdName = props?.data && props.data[0]?.ticket_id_name;
-  const loadData = () => {
-    new getRegularizationTime(ticketId)
+  // const loadData = () => {
+  //   new getRegularizationTime(ticketId)
 
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.data) {
-            // Process the data
-            // const temp = res.data.data.map((d) => ({
-            //   id: d.id,
-            //   created_by_name: d.created_by_name,
-            //   from_date: d.from_date,
-            //   to_date: d.to_date,
-            //   from_time: d.from_time,
-            //   to_time: d.to_time,
-            //   remark: d.remark,
-            //   is_checked: 0,
-            //   regularization_time_status: d.regularization_time_status,
-            //   task_name: d.task_name,
-            //   ticket_id_name: d.ticket_id_name,
-            //   actual_time: d.actual_time,
-            //   task_hours: d.task_hours,
-            //   scheduled_time: d.scheduled_time,
-            //   status: d.status_remark
-            // }));
-            // Assuming setDataa is a function to set the state
-            // setDataa(temp);
-          } else {
-          }
-        }
-      })
-      .catch((error) => {
-        // Handle errors, e.g., show an error message to the user
-      });
-  };
+  //     .then((res) => {
+  //       if (res.status === 200) {
+  //         if (res.data.data) {
+  //           // Process the data
+  //           // const temp = res.data.data.map((d) => ({
+  //           //   id: d.id,
+  //           //   created_by_name: d.created_by_name,
+  //           //   from_date: d.from_date,
+  //           //   to_date: d.to_date,
+  //           //   from_time: d.from_time,
+  //           //   to_time: d.to_time,
+  //           //   remark: d.remark,
+  //           //   is_checked: 0,
+  //           //   regularization_time_status: d.regularization_time_status,
+  //           //   task_name: d.task_name,
+  //           //   ticket_id_name: d.ticket_id_name,
+  //           //   actual_time: d.actual_time,
+  //           //   task_hours: d.task_hours,
+  //           //   scheduled_time: d.scheduled_time,
+  //           //   status: d.status_remark
+  //           // }));
+  //           // Assuming setDataa is a function to set the state
+  //           // setDataa(temp);
+  //         } else {
+  //         }
+  //       }
+  //     })
+  //     .catch((error) => {
+  //       // Handle errors, e.g., show an error message to the user
+  //     });
+  // };
 
   const [selectAll, setSelectAll] = useState(false);
 
@@ -149,7 +149,7 @@ const ApproveRequestModal = (props) => {
   }, [props.data]);
 
   useEffect(() => {
-    loadData();
+    // loadData();
   }, [props?.data]);
 
   return (

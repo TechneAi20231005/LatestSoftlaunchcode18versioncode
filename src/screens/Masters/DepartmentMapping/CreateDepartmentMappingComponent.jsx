@@ -232,6 +232,7 @@ function CreateDepartmentMappingComponent() {
                   </div>
                   <div className="col-sm-3">
                     <Select
+                      classNamePrefix="react-select"
                       options={userData}
                       id="employee_id"
                       name="employee_id"
@@ -293,6 +294,7 @@ function CreateDepartmentMappingComponent() {
                               <td className="text-center">{idx + 1}</td>
                               <td>
                                 <Select
+                                  classNamePrefix="react-select"
                                   options={departmentData}
                                   id={`department_id_` + idx}
                                   name="department_id[]"
@@ -307,6 +309,7 @@ function CreateDepartmentMappingComponent() {
                               </td>
                               <td>
                                 <Select
+                                  classNamePrefix="react-select"
                                   options={options}
                                   id={`ticket_show_type_id_` + idx}
                                   name="ticket_show_type[]"

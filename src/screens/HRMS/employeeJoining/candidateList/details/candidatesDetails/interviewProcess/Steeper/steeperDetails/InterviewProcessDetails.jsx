@@ -120,6 +120,7 @@ function InterviewProcessDetails() {
               <Row>
                 <Col sm={12}>
                   <Field
+                    classNamePrefix="react-select"
                     component={CustomReactSelect}
                     options={remarkDropdown}
                     name="remark_id"
