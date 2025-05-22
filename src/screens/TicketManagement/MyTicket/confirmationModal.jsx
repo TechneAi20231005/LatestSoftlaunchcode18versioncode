@@ -66,6 +66,7 @@ function confirmationModal({
             name="remark"
             id="remark"
             rows="4"
+            maxLength={1000}
             className="form-control form-control-sm"
             required
           />

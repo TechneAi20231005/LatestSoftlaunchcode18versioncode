@@ -132,6 +132,7 @@ const Chatbox = (props) => {
                 <MentionsInput
                   className="mentions"
                   classNames={classNames}
+                  maxLength={1000}
                   value={message}
                   disabled={
                     props.statusName?.status_name === 'Solved' ||
