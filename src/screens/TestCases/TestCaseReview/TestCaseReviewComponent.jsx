@@ -1112,7 +1112,7 @@ function TestCaseReviewComponent() {
     },
     {
          accessorFn: (originalRows) =>
-        originalRows?.test_plan_id ? `TC_${originalRows?.test_plan_id}` : '--',
+        originalRows?.test_plan_id ? `${originalRows?.test_plan_id}` : '--',
       accessorKey: 'test_plan_id',
       size: 210,
       header: "Test Plan ID",
@@ -1146,13 +1146,13 @@ function TestCaseReviewComponent() {
             {rowData.test_plan_id && (
               <div>
                 {isDisabled ? (
-                  <span className="text-muted">{`TC_${rowData.test_plan_id}`}</span>
+                  <span className="text-muted">{`${rowData.test_plan_id}`}</span>
                 ) : (
                   <Link
                     to={`/${_base + '/TestCaseReviewDetails/' + rowData?.id}`}
                     className="link_underline_primary"
                   >
-                    {`TC_${rowData.test_plan_id}`}
+                    {`${rowData.test_plan_id}`}
                   </Link>
                 )}
               </div>
