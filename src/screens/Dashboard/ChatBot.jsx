@@ -31,7 +31,7 @@ function ChatBot() {
         <div className="chat-header">
           <div className="header-info">
             <ChatbotIcon />
-            <h2 className="logo-text">Chatbot</h2>
+            <h2 className="logo-text">Connect Ai</h2>
           </div>
 
           <IconButton onClick={() => setShowChatbot((prev) => !prev)}>
@@ -59,7 +59,7 @@ function ChatBot() {
         </div>
         {/* chatbot Footer */}
         <div className="chat-footer">
-          <ChatForm setChatHistory={setChatHistory} />
+          <ChatForm setChatHistory={setChatHistory} chatHistory={chatHistory} />
         </div>
       </div>
     </div>

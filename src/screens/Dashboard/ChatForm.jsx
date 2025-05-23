@@ -5,9 +5,16 @@ import CheckIcon from '@mui/icons-material/Check';
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import { useDispatch, useSelector } from 'react-redux';
+import { postBotMessages } from '../../redux/services/chatBot';
 
-function ChatForm({ setChatHistory }) {
+function ChatForm({ setChatHistory, chatHistory }) {
   const inputRef = useRef();
+  const dispatch = useDispatch();
+  const { chatBotList, isLoading } = useSelector(
+    (state) => state?.chatBotSlice
+  );
+  console.log(chatBotList, 'chatBotList');
   const [inputValue, setInputValue] = useState('');
   const [showSend, setShowSend] = useState(false);
   const [recognizing, setRecognizing] = useState(false);
@@ -83,14 +90,46 @@ function ChatForm({ setChatHistory }) {
     setInputValue('');
     setShowSend(false);
     if (inputRef.current) inputRef.current.style.height = '47px';
-
-    setTimeout(() => {
-      setChatHistory((history) => [
-        ...history,
-        { role: 'model', text: 'Thinking' }
-      ]);
-    }, 600);
+    dispatch(
+      postBotMessages({
+        formData: {
+          project_id: '683012a557b73eedd3b7a0d5',
+          question: userMessage
+        }
+      })
+    );
+    // setTimeout(() => {
+    //   setChatHistory((history) => [
+    //     ...history,
+    //     { role: 'model', text: 'Thinking' }
+    //   ]);
+    // }, 600);
   };
+
+  useEffect(() => {
+    if (chatBotList?.length > 0) {
+      if (chatBotList?.length === 1) {
+        setChatHistory((history) => [
+          ...history,
+          { role: 'model', text: chatBotList }
+        ]);
+      } else {
+        setChatHistory((history) => [
+          ...history,
+          { role: 'model', text: chatBotList?.[0] }
+        ]);
+      }
+    }
+
+    // setChatHistory((history) => [
+    //   ...history,
+    //   { role: 'model', text: 'Error occurred while sending message' }
+    // ]);
+  }, [chatBotList]);
+
+  useEffect(() => {
+    console.log(chatHistory, 'chatHistory');
+  }, [chatHistory]);
 
   const resizeTextarea = () => {
     const el = inputRef.current;
@@ -160,13 +199,13 @@ function ChatForm({ setChatHistory }) {
       />
 
       {showSend ? (
-        <Tooltip placement='top' title="Send Message" arrow>
+        <Tooltip placement="top" title="Send Message" arrow>
           <IconButton type="submit">
             <SendIcon fontSize="small" />
           </IconButton>
         </Tooltip>
       ) : (
-        <Tooltip placement='top' title="Voice Input" arrow>
+        <Tooltip placement="top" title="Voice Input" arrow>
           <IconButton
             sx={{ display: recognizing ? 'none' : 'block' }}
             type="button"
@@ -211,13 +250,13 @@ function ChatForm({ setChatHistory }) {
               ))}
             </div>
           )}
-          <Tooltip placement='top' title="Confirm" arrow>
+          <Tooltip placement="top" title="Confirm" arrow>
             <IconButton onClick={handleAcceptSpeech}>
               <CheckIcon color="success" fontSize="small" />
             </IconButton>
           </Tooltip>
 
-          <Tooltip placement='top' title="Cancel" arrow>
+          <Tooltip placement="top" title="Cancel" arrow>
             <IconButton onClick={handleRejectSpeech}>
               <CloseIcon color="error" fontSize="small" />
             </IconButton>
