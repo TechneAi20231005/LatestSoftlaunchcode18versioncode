@@ -380,7 +380,6 @@ function BillCheckingTransaction() {
                 </Link>
               )}
           </>
-
         );
       }
     },
@@ -1297,6 +1296,7 @@ function BillCheckingTransaction() {
                     <Select
                       id="vendor_name"
                       name="vendor_name[]"
+                      classNamePrefix="react-select"
                       isMulti
                       options={vendorDropdown}
                       ref={selectVendorNameRef}
@@ -1313,6 +1313,7 @@ function BillCheckingTransaction() {
                       id="bill_status"
                       name="bill_status[]"
                       isMulti
+                      classNamePrefix="react-select"
                       options={statusDropdown}
                       placeholder="bill_status"
                       ref={selectBillStatusRef}
@@ -1330,6 +1331,7 @@ function BillCheckingTransaction() {
                       isMulti
                       name="bill_type[]"
                       placeholder="Bill Type"
+                      classNamePrefix="react-select"
                       ref={selectBillTypeRef}
                     />
                   )}
@@ -1346,6 +1348,7 @@ function BillCheckingTransaction() {
                       name="assign_to[]"
                       isMulti
                       placeholder="Assign To"
+                      classNamePrefix="react-select"
                       ref={selectAssignToRef}
                     />
                   )}

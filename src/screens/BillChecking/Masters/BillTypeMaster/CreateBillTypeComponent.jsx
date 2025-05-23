@@ -582,6 +582,7 @@ const CreateBillTypeComponent = () => {
                   <Select
                     name="assign_employee_id[]"
                     id="assign_employee_id"
+                    classNamePrefix="react-select"
                     isMulti
                     ref={assignedUserRef}
                     options={userData && userData}
@@ -715,6 +716,7 @@ const CreateBillTypeComponent = () => {
                         <td>
                           {assignedUserData && (
                             <Select
+                              classNamePrefix="react-select"
                               ref={(el) => {
                                 if (!select1Refs.current[index]) {
                                   select1Refs.current[index] = [];
@@ -743,6 +745,7 @@ const CreateBillTypeComponent = () => {
                         <td>
                           {assignedUserData && (
                             <Select
+                              classNamePrefix="react-select"
                               key={rowIndex}
                               value={
                                 levelItem.required_users &&

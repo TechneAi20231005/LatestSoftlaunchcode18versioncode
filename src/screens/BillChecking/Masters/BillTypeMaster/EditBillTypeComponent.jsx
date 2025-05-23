@@ -700,6 +700,7 @@ const EditBillTypeComponent = ({ match }) => {
                 {userData && billTypeData && (
                   <Select
                     isMulti
+                    classNamePrefix="react-select"
                     name="assign_employee_id[]"
                     defaultValue={
                       billTypeData &&
@@ -905,6 +906,7 @@ const EditBillTypeComponent = ({ match }) => {
                             <td>
                               {assignedUserData && (
                                 <Select
+                                  classNamePrefix="react-select"
                                   key={rowIndex}
                                   ref={(el) => {
                                     if (!select1Refs.current[index]) {
@@ -933,6 +935,7 @@ const EditBillTypeComponent = ({ match }) => {
                             <td>
                               {assignedUserData && (
                                 <Select
+                                  classNamePrefix="react-select"
                                   key={rowIndex}
                                   value={
                                     levelItem.required_users &&

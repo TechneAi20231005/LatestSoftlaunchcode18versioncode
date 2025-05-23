@@ -520,7 +520,7 @@ const GraphWeekWise = () => {
               enabled: true,
               position: 'topRight',
               offsetX: 0,
-              offsetY: 40,
+              offsetY: 40
             },
             custom: ({ series, seriesIndex, dataPointIndex, w }) => {
               const taskDetail =
@@ -560,7 +560,9 @@ const GraphWeekWise = () => {
               <span className="mb-0"><strong>Actual Status:</strong> ${
                 taskDetail.task_actual_status || '--'
               }</span></br>
-                 <div style='text-wrap: ${taskDetail?.taskOwners?.length > 6 && 'wrap'};'><Strong>Task Owners:</Strong> ${taskOwners}</div></br>
+                 <div style='text-wrap: ${
+                   taskDetail?.taskOwners?.length > 6 && 'wrap'
+                 };'><Strong>Task Owners:</Strong> ${taskOwners}</div></br>
               </div>
             `;
             }
@@ -719,6 +721,7 @@ const GraphWeekWise = () => {
           </div>
           <div className="col-2 select-box ms-3 text-start">
             <Select
+              classNamePrefix="react-select"
               // className=""
               // name="sprint_data"
               // id="sprint_data"

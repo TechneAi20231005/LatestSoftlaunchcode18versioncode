@@ -930,6 +930,7 @@ function EditUserComponent({ match }) {
                           <div className="col-sm-3">
                             {customerData && (
                               <Select
+                                classNamePrefix="react-select"
                                 id="customer_id"
                                 name="customer_id"
                                 options={customerData}
@@ -1427,6 +1428,7 @@ function EditUserComponent({ match }) {
                         <div className="col-sm-3">
                           {roleDropdown && (
                             <Select
+                              classNamePrefix="react-select"
                               id="role_id"
                               name="role_id"
                               options={
@@ -1469,6 +1471,7 @@ function EditUserComponent({ match }) {
                         {designationDropdown && (
                           <div className="col-sm-3">
                             <Select
+                              classNamePrefix="react-select"
                               id="designation_id"
                               name="designation_id"
                               options={sortDesignationDropdown}
@@ -1505,6 +1508,7 @@ function EditUserComponent({ match }) {
                         {jobRoleMasterList && (
                           <div className="col-sm-3">
                             <Select
+                              classNamePrefix="react-select"
                               id="job_role"
                               name="job_role"
                               options={jobRoleDropDownValues}
@@ -1664,6 +1668,7 @@ function EditUserComponent({ match }) {
                         </label>
                         <div className="col-sm-4">
                           <Select
+                            classNamePrefix="react-select"
                             options={CountryData}
                             id="country_id"
                             name="country_id"
@@ -1687,6 +1692,7 @@ function EditUserComponent({ match }) {
                         </label>
                         <div className="col-sm-4">
                           <Select
+                            classNamePrefix="react-select"
                             options={
                               updateStatus.statedrp !== undefined
                                 ? stateDropdown
@@ -1715,6 +1721,7 @@ function EditUserComponent({ match }) {
                         {cityDropdown && (
                           <div className="col-sm-4">
                             <Select
+                              classNamePrefix="react-select"
                               options={
                                 updateStatus.citydrp !== undefined
                                   ? cityDropdown
@@ -1809,12 +1816,13 @@ function EditUserComponent({ match }) {
                               <td className="text-center">{idx + 1}</td>
                               <td>
                                 <Select
+                                  classNamePrefix="react-select"
                                   isSearchable={true}
                                   name="department_id[]"
                                   id={`department_id_` + idx}
                                   key={idx}
                                   className="basic-multi-select"
-                                  classNamePrefix="select"
+                                  // classNamePrefix="select"
                                   options={departmentDropdown}
                                   value={
                                     departmentDropdown &&
@@ -1835,6 +1843,7 @@ function EditUserComponent({ match }) {
                               <td>
                                 <Select
                                   options={options}
+                                  classNamePrefix="react-select"
                                   id={`ticket_show_type_id_` + idx}
                                   name="ticket_show_type_id[]"
                                   value={

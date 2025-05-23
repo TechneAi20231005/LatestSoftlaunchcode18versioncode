@@ -303,6 +303,7 @@ export default function BasketDetails(props) {
                     //   }
                     // />
                     <Select
+                      classNamePrefix="react-select"
                       options={user}
                       isClearable
                       id="basket_owner"

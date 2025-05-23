@@ -21144,8 +21144,11 @@ a {
 }
 
 .notifications {
+
   z-index: 100 !important;
+
 }
+z-index: 1000 !important;
 
 .notifications .pulse,
 .notifications .pulse:focus {
@@ -22271,7 +22274,7 @@ body.rtl_mode
 
 .btn.btn-outline-secondary:hover {
   color: #fff;
-  background-color: var(--secondary-color);
+  background-color: var(--secondary-color) !important;
 }
 
 .btn.btn-outline-secondary:hover i {
@@ -23368,7 +23371,9 @@ body.rtl_mode
   -webkit-transition: ease 0.1s;
   transition: ease 0.1s;
   background: var(--primary-color);
-  z-index: 99999;
+
+  z-index: 999;
+
   margin: 25px;
   height: calc(100vh - 50px);
   width: 260px;
@@ -23589,7 +23594,8 @@ body.rtl_mode
   text-align: center;
   padding: 1.5rem 0 !important;
   width: 100px;
-  z-index: 9999;
+  /* z-index: 9999; */
+  z-index: 1000;
 }
 
 @media only screen and (min-width: 1279px) {
@@ -24453,6 +24459,5 @@ abbr[title] {
     transform: rotate(360deg);
   }
 }
-
 
 /* Add more media queries for other screen sizes as needed */

@@ -1,10 +1,10 @@
 import React from 'react';
-
+//comment
 class AttechedCard extends React.Component {
   render() {
     const { data } = this.props;
     return (
-      <div className="card">
+      <div className="card ">
         <div className="card-body">
           <h6 className="fw-bold mb-3 text-danger">Bug Image Atteched</h6>
           <div className="flex-grow-1">

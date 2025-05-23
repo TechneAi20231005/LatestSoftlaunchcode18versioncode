@@ -184,6 +184,9 @@ import JobRoleComponent from './Masters/JobRoleMaster/JobRoleComponent';
 import MenuComponent from './Masters/MenuMaster/MenuComponent';
 import DeleteRequisition from './PO/deleteRequisition/DeleteRequisition';
 import ChatBot from './Dashboard/ChatBot';
+import MyTicketRefactored from './TicketManagement/MyTicket/MyTicketFilters';
+import TestPlanHistoryComponent from './TestCases/TestCaseReview/TestPlanHistoryComponent';
+import { QueryGroupMaster } from './Masters/QueryGroupMaster/QueryGroupMaster';
 
 class MainIndex extends React.Component {
   render() {
@@ -198,7 +201,7 @@ class MainIndex extends React.Component {
     // }
 
     return (
-      <div className="main px-lg-4 px-md-4">
+      <div className="main px-lg-2 px-md-2">
         <Header />
 
         <div className="body d-flex py-lg-3 py-md-2">
@@ -319,6 +322,11 @@ class MainIndex extends React.Component {
             <Route
               exact
               path={`/${_base}/QueryGroupMaster`}
+              element={<QueryGroupMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/QueryGroupMaster`}
               element={<QueryGroupMasterComponent />}
             />
             <Route
@@ -415,7 +423,7 @@ class MainIndex extends React.Component {
             <Route
               exact
               path={`/${_base}/Ticket`}
-              element={<MyTicketComponent />}
+              element={<MyTicketRefactored />}
             />
             <Route
               exact
@@ -947,6 +955,11 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/TestCaseHistoryComponent/:id`}
               element={<TestCaseHistoryComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/TestPlanHistoryComponent/:id`}
+              element={<TestPlanHistoryComponent />}
             />
             <Route
               exact

@@ -395,6 +395,9 @@ export default function HrDashboard(props) {
             {(historyModal.show || approveRequestModal.show) === false && (
               <Dropdown
                 className="notifications"
+
+                style={{ zIndex: 99 }}
+
                 onClick={() => {
                   loadNotifcation();
                 }}
@@ -402,6 +405,9 @@ export default function HrDashboard(props) {
                 <Dropdown.Toggle
                   as="a"
                   className="nav-link dropdown-toggle pulse"
+
+                  style={{ zIndex: 99 }}
+
                 >
                   <div className=" me-3" style={{ marginLeft: '28%' }}>
                     <div>

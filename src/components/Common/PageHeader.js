@@ -19,7 +19,7 @@ class PageHeader extends React.Component {
         // style={{ marginTop: '-40px' }}
       >
         <div className="border-0">
-          <div className="card-header no-bg bg-transparent d-md-flex align-items-center px-0 justify-content-between border-bottom flex-wrap">
+          <div className=" no-bg bg-transparent d-md-flex align-items-center px-0 justify-content-between  flex-wrap">
             <h3
               className={`fw-bold mb-0 text_primary ps-${paddingStart} d-flex align-items-center`}
             >

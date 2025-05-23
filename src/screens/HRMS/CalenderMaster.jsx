@@ -1,9 +1,9 @@
-import React, { useState } from "react";
-import Calendar from "react-calendar";
-import Chart from "react-apexcharts";
-import { Modal } from "react-bootstrap";
-import { Astrick } from "../../components/Utilities/Style";
-import Select from "react-select";
+import React, { useState } from 'react';
+import Calendar from 'react-calendar';
+import Chart from 'react-apexcharts';
+import { Modal } from 'react-bootstrap';
+import { Astrick } from '../../components/Utilities/Style';
+import Select from 'react-select';
 
 function CalenderMaster() {
   const [date, setDate] = useState(new Date());
@@ -13,51 +13,51 @@ function CalenderMaster() {
   };
 
   const LeaveType = [
-    { value: "Sick Leave", label: "Sick Leave" },
-    { value: "Annual Leave", label: "Annual Leave" },
-    { value: "Maternity Leave", label: "Maternity Leave" },
-    { value: "Common Leave", label: "Common  Leave" },
-    { value: "Other Leave", label: "Other  Leave" },
+    { value: 'Sick Leave', label: 'Sick Leave' },
+    { value: 'Annual Leave', label: 'Annual Leave' },
+    { value: 'Maternity Leave', label: 'Maternity Leave' },
+    { value: 'Common Leave', label: 'Common  Leave' },
+    { value: 'Other Leave', label: 'Other  Leave' }
   ];
 
   const options = [
-    { value: "Full Day", label: "Full Day" },
-    { value: "Half Day", label: "Half Day" },
+    { value: 'Full Day', label: 'Full Day' },
+    { value: 'Half Day', label: 'Half Day' }
   ];
 
   const Days = [
-    { value: "First Half (AM)", label: "First Half (AM)" },
-    { value: "Second Half (PM)", label: "Second Half (PM)" },
+    { value: 'First Half (AM)', label: 'First Half (AM)' },
+    { value: 'Second Half (PM)', label: 'Second Half (PM)' }
   ];
 
   const [modal, setModal] = useState({
     setModal: false,
-    modalData: "",
-    modalHeader: "",
+    modalData: '',
+    modalHeader: ''
   });
 
   const [chartData, setChartData] = useState({
     series: [40],
     Chart: {
-      height: "auto",
+      height: 'auto'
     },
     options: {
       chart: {
-        type: "donut",
+        type: 'donut'
       },
-      labels: ["Anuual Leave"],
+      labels: ['Anuual Leave'],
 
-      colors: ["#DC4C64", "#E4A11B", "#198754", "#FBFBFB"],
+      colors: ['#DC4C64', '#E4A11B', '#198754', '#FBFBFB'],
 
       dataLables: {
         showL: false,
         style: {
-          textColor: "white",
+          textColor: 'white',
 
-          colors: ["#a42c2c", "#fff"],
-        },
-      },
-    },
+          colors: ['#a42c2c', '#fff']
+        }
+      }
+    }
   });
 
   return (
@@ -70,7 +70,7 @@ function CalenderMaster() {
             handleModal({
               showModal: true,
               modalData: null,
-              modalHeader: "Apply Leave",
+              modalHeader: 'Apply Leave'
             });
           }}
         >
@@ -120,7 +120,7 @@ function CalenderMaster() {
               onChange={setDate}
               value={date}
               tileClassName={({ date }) =>
-                date.getDate() === 15 ? "react-calendar__tile--highlight" : ""
+                date.getDate() === 15 ? 'react-calendar__tile--highlight' : ''
               }
             />
           </div>
@@ -181,8 +181,8 @@ function CalenderMaster() {
           onHide={(e) => {
             handleModal({
               showModal: false,
-              modalData: "",
-              modalHeader: "",
+              modalData: '',
+              modalHeader: ''
             });
           }}
         >
@@ -202,6 +202,7 @@ function CalenderMaster() {
                     </label>
 
                     <Select
+                      classNamePrefix="react-select"
                       options={LeaveType}
                       name="from_department_id"
                       id="from_department_id"
@@ -221,7 +222,7 @@ function CalenderMaster() {
                       maxLength={25}
                       required
                       defaultValue={
-                        modal.modalData ? modal.modalData.state : ""
+                        modal.modalData ? modal.modalData.state : ''
                       }
                       // onKeyPress={(e) => {
                       //   Validation.CharacterWithSpace(e);
@@ -242,7 +243,12 @@ function CalenderMaster() {
                       Leave For
                       <Astrick color="red" size="13px" />
                     </label>
-                    <Select options={options} id="leave_for" name="leave_for" />
+                    <Select
+                      classNamePrefix="react-select"
+                      options={options}
+                      id="leave_for"
+                      name="leave_for"
+                    />
                   </div>
                 </div>
 
@@ -252,7 +258,12 @@ function CalenderMaster() {
                       First Half/Second Half
                       <Astrick color="red" size="13px" />
                     </label>
-                    <Select options={Days} id="leave_for" name="leave_for" />
+                    <Select
+                      classNamePrefix="react-select"
+                      options={Days}
+                      id="leave_for"
+                      name="leave_for"
+                    />
                   </div>
 
                   <div className="col-md-5 mt-4">
@@ -268,7 +279,7 @@ function CalenderMaster() {
                       maxLength={25}
                       required
                       defaultValue={
-                        modal.modalData ? modal.modalData.state : ""
+                        modal.modalData ? modal.modalData.state : ''
                       }
                       // onKeyPress={(e) => {
                       //   Validation.CharacterWithSpace(e);
@@ -290,7 +301,12 @@ function CalenderMaster() {
                         First Half/Second Half
                         <Astrick color="red" size="13px" />
                       </label>
-                      <Select options={Days} id="leave_for" name="leave_for" />
+                      <Select
+                        classNamePrefix="react-select"
+                        options={Days}
+                        id="leave_for"
+                        name="leave_for"
+                      />
                     </div>
 
                     <div className="col-md-5 mt-4">
@@ -306,7 +322,7 @@ function CalenderMaster() {
                         maxLength={25}
                         required
                         defaultValue={
-                          modal.modalData ? modal.modalData.state : ""
+                          modal.modalData ? modal.modalData.state : ''
                         }
                         // onKeyPress={(e) => {
                         //   Validation.CharacterWithSpace(e);
@@ -335,7 +351,7 @@ function CalenderMaster() {
                         maxLength={25}
                         required
                         defaultValue={
-                          modal.modalData ? modal.modalData.state : ""
+                          modal.modalData ? modal.modalData.state : ''
                         }
                         // onKeyPress={(e) => {
                         //   Validation.CharacterWithSpace(e);
@@ -433,7 +449,7 @@ function CalenderMaster() {
                 <button
                   type="submit"
                   className="btn btn-primary text-white"
-                  style={{ backgroundColor: "#484C7F" }}
+                  style={{ backgroundColor: '#484C7F' }}
                 >
                   Add
                 </button>
@@ -455,8 +471,8 @@ function CalenderMaster() {
                 onClick={() => {
                   handleModal({
                     showModal: false,
-                    modalData: "",
-                    modalHeader: "",
+                    modalData: '',
+                    modalHeader: ''
                   });
                 }}
               >

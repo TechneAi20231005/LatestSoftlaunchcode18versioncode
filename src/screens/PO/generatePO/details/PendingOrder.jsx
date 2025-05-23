@@ -277,6 +277,7 @@ function PendingOrder() {
             <Stack gap={3}>
               <div className="d-flex w-100">
                 <Field
+                  classNamePrefix="react-select"
                   component={CustomReactSelect}
                   options={categoryData}
                   styleData="w-100"
@@ -299,6 +300,7 @@ function PendingOrder() {
                 <Row className="align-items-end row_gap_3">
                   <Col md={5}>
                     <Field
+                      classNamePrefix="react-select"
                       component={CustomReactSelect}
                       options={weightRangeData}
                       styleData="w-100"
@@ -314,6 +316,7 @@ function PendingOrder() {
                   </Col>
                   <Col md={5}>
                     <Field
+                      classNamePrefix="react-select"
                       component={CustomReactSelect}
                       options={sizeRangeData}
                       styleData="w-100"
