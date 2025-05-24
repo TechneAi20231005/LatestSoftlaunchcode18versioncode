@@ -108,7 +108,7 @@
 
 .header-info .logo-text {
   color: #fff;
-  font-size: 1.31rem;
+  font-size: 1.1rem;
   font-weight: 600;
 }
 
@@ -119,7 +119,7 @@
   outline: none;
   color: #fff;
   cursor: pointer;
-  font-size: 1.9rem;
+  font-size: 0.5rem;
   padding-top: 2px;
   border-radius: 50%;
   margin-right: -10px;
@@ -134,7 +134,7 @@
 .chat-body {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
   height: 350px;
   margin-bottom: 82px;
   overflow-y: auto;
@@ -146,7 +146,7 @@
 .chat-body .message {
   display: flex;
   align-items: center;
-  gap: 11px;
+  gap: 9px;
 }
 
 .chat-body .bot-message svg {
@@ -156,7 +156,7 @@
   flex-shrink: 0;
   align-self: flex-end;
   fill: #fff;
-  margin-bottom: 2px;
+  // margin-bottom: 2px;
   background: #6d4fc2;
   border-radius: 50%;
 }
@@ -166,7 +166,7 @@
   max-width: 75%;
   word-wrap: break-word;
   white-space: pre-line;
-  font-size: 0.95rem;
+  font-size: 0.85rem;
 }
 .chat-body .bot-message .message-text {
   background: #f6f2ff;
@@ -182,6 +182,7 @@
   color: #fff;
   background: #6d4fc2;
   border-radius: 13px 13px 3px 13px;
+  margin-bottom: 0px! important;
 }
 
 .chat-footer {
@@ -267,5 +268,51 @@
   }
   .chat-footer {
     padding: 10px 15px 15px;
+  }
+}
+
+
+// Chatbot Typing Animation
+.chatbot-typing {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  height: 24px;
+  gap: 4px;
+   padding-left: 18px;
+}
+
+.dot {
+  width: 8px;
+  height: 8px;
+  background-color: #484c7f;
+  border-radius: 50%;
+
+  animation: blink 1.2s infinite;
+  opacity: 0.3;
+}
+
+.dot1 {
+  animation-delay: 0s;
+}
+.dot2 {
+  animation-delay: 0.2s;
+}
+.dot3 {
+  animation-delay: 0.4s;
+}
+
+@keyframes blink {
+  0% {
+    opacity: 0.3;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.3);
+  }
+  100% {
+    opacity: 0.3;
+    transform: scale(1);
   }
 }

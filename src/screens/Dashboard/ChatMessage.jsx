@@ -4,10 +4,12 @@ import ChatbotIcon from '../../components/Common/ChatbotIcon';
 function ChatMessage({ chat }) {
   return (
     <div
-      className={`message ${chat.role === 'model' ? 'bot' : 'user'}-message`}
+      className={`mb-0 message ${
+        chat.role === 'model' ? 'bot' : 'user'
+      }-message`}
     >
       {chat.role === 'model' && <ChatbotIcon />}
-      <p className="message-text">{chat.text}</p>
+      <span className="message-text ">{chat.text}</span>
     </div>
   );
 }

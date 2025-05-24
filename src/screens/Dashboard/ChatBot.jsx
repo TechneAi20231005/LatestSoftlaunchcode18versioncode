@@ -6,6 +6,7 @@ import ChatMessage from './ChatMessage';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import IconButton from '@mui/material/IconButton';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
+import ChatbotTypingDots from './ChatbotTypingDots';
 function ChatBot() {
   const [chatHistory, setChatHistory] = useState([]);
   const [showChatbot, setShowChatbot] = useState(false);
@@ -31,7 +32,7 @@ function ChatBot() {
         <div className="chat-header">
           <div className="header-info">
             <ChatbotIcon />
-            <h2 className="logo-text">Connect Ai</h2>
+            <h2 className="logo-text mb-0">Connect Ai</h2>
           </div>
 
           <IconButton onClick={() => setShowChatbot((prev) => !prev)}>
@@ -48,15 +49,20 @@ function ChatBot() {
         <div className="chat-body">
           <div className="message bot-message">
             <ChatbotIcon />
-            <p className="message-text">
+            <span className="message-text">
               Hey There 🤚 <br /> How can I help you today?
-            </p>
+            </span>
           </div>
-
           {chatHistory.map((chat, index) => (
             <ChatMessage key={index} chat={chat} />
           ))}
         </div>
+
+        {/* chatbot loader */}
+        {/* <div className="text-primary">
+          hello doits
+
+        </div> */}
         {/* chatbot Footer */}
         <div className="chat-footer">
           <ChatForm setChatHistory={setChatHistory} chatHistory={chatHistory} />

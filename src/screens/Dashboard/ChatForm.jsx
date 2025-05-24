@@ -7,6 +7,8 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useDispatch, useSelector } from 'react-redux';
 import { postBotMessages } from '../../redux/services/chatBot';
+import { use } from 'react';
+import ChatbotTypingDots from './ChatbotTypingDots';
 
 function ChatForm({ setChatHistory, chatHistory }) {
   const inputRef = useRef();
@@ -14,7 +16,7 @@ function ChatForm({ setChatHistory, chatHistory }) {
   const { chatBotList, isLoading } = useSelector(
     (state) => state?.chatBotSlice
   );
-  console.log(chatBotList, 'chatBotList');
+  // console.log(chatBotList, 'chatBotList');
   const [inputValue, setInputValue] = useState('');
   const [showSend, setShowSend] = useState(false);
   const [recognizing, setRecognizing] = useState(false);
@@ -38,15 +40,15 @@ function ChatForm({ setChatHistory, chatHistory }) {
     recognition.lang = 'en-IN';
 
     recognition.onstart = () => {
+      console.log('Speech recognition started');
       setRecognizing(true);
       setAwaitingConfirmation(true);
     };
 
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
-      setTempTranscript((prev) =>
-        prev ? `${prev} ${transcript}` : transcript
-      );
+      console.log('Speech recognized:', transcript);
+      setTempTranscript(transcript);
     };
 
     recognition.onerror = (event) => {
@@ -94,7 +96,10 @@ function ChatForm({ setChatHistory, chatHistory }) {
       postBotMessages({
         formData: {
           project_id: '683012a557b73eedd3b7a0d5',
-          question: userMessage
+          question: userMessage,
+          user_id: localStorage.getItem('id'),
+          user_name: localStorage.getItem('first_name') || 'Friend',
+          flagging: 1
         }
       })
     );
@@ -116,7 +121,7 @@ function ChatForm({ setChatHistory, chatHistory }) {
       } else {
         setChatHistory((history) => [
           ...history,
-          { role: 'model', text: chatBotList?.[0] }
+          { role: 'model', text: chatBotList }
         ]);
       }
     }
@@ -128,7 +133,7 @@ function ChatForm({ setChatHistory, chatHistory }) {
   }, [chatBotList]);
 
   useEffect(() => {
-    console.log(chatHistory, 'chatHistory');
+    // console.log(chatHistory, 'chatHistory');
   }, [chatHistory]);
 
   const resizeTextarea = () => {
@@ -154,6 +159,7 @@ function ChatForm({ setChatHistory, chatHistory }) {
   };
 
   const handleAcceptSpeech = () => {
+    console.log('Accepting speech:', tempTranscript);
     setInputValue(tempTranscript);
     setShowSend(tempTranscript.trim() !== '');
     setTempTranscript('');
@@ -172,98 +178,105 @@ function ChatForm({ setChatHistory, chatHistory }) {
   };
 
   return (
-    <form
-      className="chat-form"
-      onSubmit={handleFormSubmit}
-      style={{ display: 'flex', alignItems: 'center', gap: 8 }}
-    >
-      <textarea
-        ref={inputRef}
-        placeholder="Message..."
-        className="message-input"
-        value={inputValue}
-        onChange={handleInputChange}
-        rows={1}
-        style={{
-          width: '100%',
-          maxHeight: '120px',
-          resize: 'none',
-          overflowY: 'auto',
-          paddingTop: '13px',
-          fontSize: '0.95rem',
-          border: 'none',
-          outline: 'none',
-          background: 'transparent',
-          lineHeight: '1.4'
-        }}
-      />
+    <>
+      {isLoading?.chatBotList && <ChatbotTypingDots />}
 
-      {showSend ? (
-        <Tooltip placement="top" title="Send Message" arrow>
-          <IconButton type="submit">
-            <SendIcon fontSize="small" />
-          </IconButton>
-        </Tooltip>
-      ) : (
-        <Tooltip placement="top" title="Voice Input" arrow>
-          <IconButton
-            sx={{ display: recognizing ? 'none' : 'block' }}
-            type="button"
-            onClick={handleMicClick}
-          >
-            <MicIcon
-              fontSize="small"
-              color={recognizing ? 'primary' : 'inherit'}
-            />
-          </IconButton>
-        </Tooltip>
-      )}
-
-      {awaitingConfirmation && (
-        <div
+      <form
+        className="chat-form"
+        onSubmit={handleFormSubmit}
+        style={{ display: 'flex', alignItems: 'center', gap: 8 }}
+      >
+        <textarea
+          ref={inputRef}
+          placeholder="Message..."
+          className="message-input"
+          value={inputValue}
+          onChange={handleInputChange}
+          rows={1}
           style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            background: '#f5f5f5',
-            padding: '6px 12px',
-            borderRadius: '10px',
-            maxWidth: '80%',
-            overflowWrap: 'break-word',
-            minHeight: '40px'
+            width: '100%',
+            maxHeight: '120px',
+            resize: 'none',
+            overflowY: 'auto',
+            paddingTop: '13px',
+            fontSize: '0.95rem',
+            border: 'none',
+            outline: 'none',
+            background: 'transparent',
+            lineHeight: '1.4'
           }}
-        >
-          {recognizing && (
-            <div className="frequency-bars" style={{ display: 'flex', gap: 2 }}>
-              {[1, 2, 3, 4, 5].map((_, i) => (
-                <div
-                  key={i}
-                  className="bar"
-                  style={{
-                    width: 3,
-                    height: 13,
-                    background: '#1976d2',
-                    animation: `pulseBar 1s ease-in-out infinite`,
-                    animationDelay: `${i * 0.1}s`
-                  }}
-                />
-              ))}
-            </div>
-          )}
-          <Tooltip placement="top" title="Confirm" arrow>
-            <IconButton onClick={handleAcceptSpeech}>
-              <CheckIcon color="success" fontSize="small" />
-            </IconButton>
-          </Tooltip>
+        />
 
-          <Tooltip placement="top" title="Cancel" arrow>
-            <IconButton onClick={handleRejectSpeech}>
-              <CloseIcon color="error" fontSize="small" />
+        {showSend ? (
+          <Tooltip placement="top" title="Send Message" arrow>
+            <IconButton type="submit">
+              <SendIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-        </div>
-      )}
-    </form>
+        ) : (
+          <Tooltip placement="top" title="Voice Input" arrow>
+            <IconButton
+              sx={{ display: recognizing ? 'none' : 'block' }}
+              type="button"
+              onClick={handleMicClick}
+            >
+              <MicIcon
+                fontSize="small"
+                color={recognizing ? 'primary' : 'inherit'}
+              />
+            </IconButton>
+          </Tooltip>
+        )}
+
+        {awaitingConfirmation && (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: 6,
+              background: '#f5f5f5',
+              padding: '6px 12px',
+              borderRadius: '10px',
+              maxWidth: '80%',
+              overflowWrap: 'break-word',
+              minHeight: '40px'
+            }}
+          >
+            {recognizing && (
+              <div
+                className="frequency-bars"
+                style={{ display: 'flex', gap: 2 }}
+              >
+                {[1, 2, 3, 4, 5].map((_, i) => (
+                  <div
+                    key={i}
+                    className="bar"
+                    style={{
+                      width: 3,
+                      height: 13,
+                      background: '#1976d2',
+                      animation: `pulseBar 1s ease-in-out infinite`,
+                      animationDelay: `${i * 0.1}s`
+                    }}
+                  />
+                ))}
+              </div>
+            )}
+            <Tooltip placement="top" title="Confirm" arrow>
+              <IconButton onClick={handleAcceptSpeech}>
+                <CheckIcon color="success" fontSize="small" />
+              </IconButton>
+            </Tooltip>
+
+            <Tooltip placement="top" title="Cancel" arrow>
+              <IconButton onClick={handleRejectSpeech}>
+                <CloseIcon color="error" fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          </div>
+        )}
+      </form>
+    </>
   );
 }
 
