@@ -15,16 +15,13 @@ const chatBotSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(postBotMessages.pending, (state, action) => {
-        console.log('HELLOpayload');
         state.isLoading.chatBotList = true;
       })
       .addCase(postBotMessages.fulfilled, (state, action) => {
-        console.log(action?.payload, 'payload');
         state.chatBotList = action?.payload?.answer;
         state.isLoading.chatBotList = false;
       })
       .addCase(postBotMessages.rejected, (state, action) => {
-        console.log('reject');
         state.isLoading.chatBotList = false;
         state.chatBotList = ['Error occurred while sending message'];
       });

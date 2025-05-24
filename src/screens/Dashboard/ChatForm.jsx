@@ -9,7 +9,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { postBotMessages } from '../../redux/services/chatBot';
 import { use } from 'react';
 import ChatbotTypingDots from './ChatbotTypingDots';
-
+import StopCircleIcon from '@mui/icons-material/StopCircle';
 function ChatForm({ setChatHistory, chatHistory }) {
   const inputRef = useRef();
   const dispatch = useDispatch();
@@ -206,8 +206,13 @@ function ChatForm({ setChatHistory, chatHistory }) {
             lineHeight: '1.4'
           }}
         />
-
-        {showSend ? (
+        {isLoading?.chatBotList ? (
+          <Tooltip placement="top" title="Stop Message" arrow>
+            <IconButton type="submit">
+              <StopCircleIcon fontSize="small" />
+            </IconButton>
+          </Tooltip>
+        ) : showSend ? (
           <Tooltip placement="top" title="Send Message" arrow>
             <IconButton type="submit">
               <SendIcon fontSize="small" />

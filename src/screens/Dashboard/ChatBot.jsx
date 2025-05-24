@@ -6,6 +6,7 @@ import ChatMessage from './ChatMessage';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import IconButton from '@mui/material/IconButton';
 import ModeCommentIcon from '@mui/icons-material/ModeComment';
+import ChatIcon from '@mui/icons-material/Chat';
 import ChatbotTypingDots from './ChatbotTypingDots';
 function ChatBot() {
   const [chatHistory, setChatHistory] = useState([]);
@@ -17,7 +18,7 @@ function ChatBot() {
         id="chatbot-toggler"
       >
         <span>
-          <ModeCommentIcon />
+          <ChatIcon />
         </span>
       </IconButton>
       {/* <button
