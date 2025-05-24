@@ -818,6 +818,7 @@ export default function CreateTicketComponent() {
                   </label>
                   {userDepartments && (
                     <Select
+                      classNamePrefix="react-select"
                       defaultValue={
                         userDepartments?.length === 1
                           ? userDepartments[0]
@@ -853,6 +854,7 @@ export default function CreateTicketComponent() {
 
                   {queryGroupDropdown && (
                     <Select
+                      classNamePrefix="react-select"
                       id="query_group_id"
                       name="query_group_id"
                       required
@@ -871,6 +873,7 @@ export default function CreateTicketComponent() {
                       </b>
                     </label>
                     <Select
+                      classNamePrefix="react-select"
                       id="query_type_id"
                       name="query_type_id"
                       ref={queryTypeRef}
@@ -895,6 +898,7 @@ export default function CreateTicketComponent() {
 
                       {departmentDropdown && (
                         <Select
+                          classNamePrefix="react-select"
                           id="assign_to_department_id"
                           name="assign_to_department_id"
                           required
@@ -920,6 +924,7 @@ export default function CreateTicketComponent() {
 
                       {userDropdown && (
                         <Select
+                          classNamePrefix="react-select"
                           id="assign_to_user_id"
                           name="assign_to_user_id"
                           required
@@ -1105,7 +1110,6 @@ export default function CreateTicketComponent() {
         )}
 
         {data.ticket_uploading === 'REGULAR' && rows && rows?.length > 0 && (
-
           <div className="card mt-2">
             <div className="card-body">
               <div className="row">
@@ -1230,8 +1234,6 @@ export default function CreateTicketComponent() {
                             );
                           })
                         : ''}
-
-
 
                       {data?.inputType === 'checkbox' &&
                       data?.inputAddOn?.inputRadio

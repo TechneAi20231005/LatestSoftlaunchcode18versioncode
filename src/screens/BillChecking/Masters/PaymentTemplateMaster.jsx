@@ -689,6 +689,7 @@ function PaymentTemplateMaster() {
                       options={weeks.map((d) => ({ label: d, value: d }))}
                       id="payment_weekly"
                       name="payment_weekly[]"
+                      classNamePrefix="react-select"
                       required
                       isMulti
                       defaultValue={
@@ -717,6 +718,7 @@ function PaymentTemplateMaster() {
                         options={options}
                         id="bill_day"
                         name="bill_day[]"
+                        classNamePrefix="react-select"
                         isSearchable
                         ref={billDayRef}
                         isMulti
@@ -737,6 +739,7 @@ function PaymentTemplateMaster() {
                         options={options}
                         id="bill_day[]"
                         name="bill_day[]"
+                        classNamePrefix="react-select"
                         isSearchable
                         isMulti
                         isClearable

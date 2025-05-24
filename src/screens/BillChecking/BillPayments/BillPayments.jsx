@@ -386,6 +386,7 @@ const BillPayments = () => {
                         {billTypeDropdown && (
                           <Select
                             type="text"
+                            classNamePrefix="react-select"
                             options={billTypeDropdown}
                             isMulti
                             id="bill_type"

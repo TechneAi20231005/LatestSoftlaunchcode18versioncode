@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useState } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
-import DataTable from 'react-data-table-component';
 
 import DynamicFormService from '../../../services/MastersService/DynamicFormService';
 import PageHeader from '../../../components/Common/PageHeader';
@@ -9,12 +8,9 @@ import PageHeader from '../../../components/Common/PageHeader';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { dynamicFormData } from '../DynamicFormDropdown/Slices/DynamicFormDropDownAction';
-
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
+import { errorHandler } from '../../../utils';
 
 function DynamicFormComponent() {
   //initial state
@@ -30,153 +26,128 @@ function DynamicFormComponent() {
     (DynamicFormDropDownSlice) =>
       DynamicFormDropDownSlice.dynamicFormDropDown.getDynamicFormDropDownData
   );
-  const exportData = useSelector(
-    (DynamicFormDropDownSlice) =>
-      DynamicFormDropDownSlice.dynamicFormDropDown.getDynamicFormData
-  );
+
   const isLoading = useSelector(
     (DynamicFormDropDownSlice) =>
       DynamicFormDropDownSlice.dynamicFormDropDown.isLoading.dyanamicFormList
   );
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(data, searchTerm);
-    setFilteredData(filteredList);
-  }, [data, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(data);
+  const exportDataKeys = {
+    template_name: 'Form Name',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Dynamic Form Master'
   };
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
-        <div className="btn-group" role="group">
-          <Link
-            to={`/${_base}/DynamicForm/Edit/` + row.id}
-            className="btn btn-outline-secondary"
+      accessorKey: 'action', // Use a valid key
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+
+      Cell: ({ row }) => {
+        return (
+          <div className="btn-group" role="group">
+            <Link
+              to={`/${_base}/DynamicForm/Edit/` + row.original?.id}
+              className="btn btn-outline-secondary"
+            >
+              <i className="icofont-edit text-success"></i>
+            </Link>
+          </div>
+        );
+      }
+    },
+    {
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 90,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableColumnFilter: false
+    },
+    {
+      accessorKey: 'template_name',
+      header: 'Form Name',
+      size: 200,
+      filterVariant: 'autocomplete',
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
+    },
+
+    {
+      accessorKey: 'is_active',
+      header: 'Status',
+      size: 150,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
           >
-            <i className="icofont-edit text-success"></i>
-          </Link>
-        </div>
-      )
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
-    },
-
-    {
-      name: 'Form Name',
-      selector: (row) => row.template_name,
-      sortable: true,
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.template_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.template_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.template_name && row.template_name.length < 10
-                    ? row.template_name
-                    : row.template_name.substring(0, 10) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
-    },
-
-    {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: false,
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      )
+      header: 'Created At',
+      accessorKey: 'created_at',
+      filterVariant: 'date-range',
+      accessorFn: (row) => new Date(row.created_at),
+      Cell: ({ row }) =>
+        row.original.created_at
+          ? moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--',
+      size: 350
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
+      header: 'Created By'
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
+      accessorKey: 'updated_at',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      accessorFn: (row) => new Date(row.updated_at),
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
-    },
-    {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By',
+      size: 200
     }
   ];
 
-  // const loadData = async () => {
-  //   setShowLoaderModal(null);
-  // };
-
   useEffect(() => {
-    // loadData();
     dispatch(dynamicFormData());
-    dispatch(dynamicFormData());
-    if (location && location.state) {
-      // setNotify(location.state.alert);
-    }
+
     if (!checkRole.length) {
       dispatch(getRoles());
     }
     if (!data.length) {
     }
-    if (!exportData.length) {
-    }
-  }, [dispatch, data.length, exportData.length, location, checkRole.length]);
-
-  useEffect(() => {
-    setFilteredData(data);
-  }, [data]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
+  }, [dispatch, data.length, location, checkRole.length]);
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -205,30 +176,15 @@ function DynamicFormComponent() {
           );
         }}
       />
-      <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        searchTerm={searchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by form name...."
-        exportFileName="Dynamic form Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      />
 
       <div className="card mt-2">
         {data && (
-          <DataTable
+          <MaterialTable
+            isLoading={isLoading}
             columns={columns}
-            data={filteredData}
-            defaultSortField="title"
-            pagination
-            selectableRows={false}
-            progressPending={isLoading}
-            progressComponent={<TableLoadingSkelton />}
-            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-            highlightOnHover={true}
-          />
+            data={data}
+            exportDataKeys={exportDataKeys}
+          ></MaterialTable>
         )}
       </div>
     </div>
@@ -239,20 +195,23 @@ function DynamicFormDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new DynamicFormService().getDynamicForm().then((res) => {
-      if (res.status === 200) {
-        let counter = 1;
-        const data = res.data.data.data;
-        for (const key in data) {
-          tempData.push({
-            counter: counter++,
-            id: data[key].id,
-            template_name: data[key].template_name
-          });
+    new DynamicFormService()
+      .getDynamicForm()
+      .then((res) => {
+        if (res?.status === 200) {
+          let counter = 1;
+          const data = res?.data?.data?.data;
+          for (const key in data) {
+            tempData.push({
+              counter: counter++,
+              id: data[key].id,
+              template_name: data[key].template_name
+            });
+          }
+          setData(tempData);
         }
-        setData(tempData);
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   }, []);
 
   return (

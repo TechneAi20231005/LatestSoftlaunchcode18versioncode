@@ -514,6 +514,7 @@ export default function CreateCustomerMappingComponent() {
                         <Field name="customer_type_id">
                           {({ field, form }) => (
                             <Select
+                              classNamePrefix="react-select"
                               id="customer_type_id"
                               name="customer_type_id"
                               options={customerTypeDropdown}
@@ -559,6 +560,7 @@ export default function CreateCustomerMappingComponent() {
                         <Field name="query_type_id">
                           {({ field, form }) => (
                             <Select
+                              classNamePrefix="react-select"
                               id="query_type_id"
                               name="query_type_id"
                               options={queryTypeDropdown}
@@ -600,6 +602,7 @@ export default function CreateCustomerMappingComponent() {
                           <Field name="dynamic_form_id">
                             {({ field, form }) => (
                               <Select
+                                classNamePrefix="react-select"
                                 id="dynamic_form_id"
                                 name="dynamic_form_id"
                                 options={dynamicFormDropdown}
@@ -628,6 +631,7 @@ export default function CreateCustomerMappingComponent() {
                           <Field name="dynamic_form_id">
                             {({ field, form }) => (
                               <Select
+                                classNamePrefix="react-select"
                                 id="dynamic_form_id"
                                 name="dynamic_form_id"
                                 options={dynamicFormDropdown}
@@ -663,6 +667,7 @@ export default function CreateCustomerMappingComponent() {
                         <Field name="template_id">
                           {({ field, form }) => (
                             <Select
+                              classNamePrefix="react-select"
                               id="template_id"
                               name="template_id"
                               options={[
@@ -718,6 +723,7 @@ export default function CreateCustomerMappingComponent() {
                         <Field name="priority">
                           {({ field, form }) => (
                             <Select
+                              classNamePrefix="react-select"
                               id="priority"
                               name="priority"
                               isClearable
@@ -817,7 +823,7 @@ export default function CreateCustomerMappingComponent() {
                         </b>
                       </label>
                       <div className="col-sm-4">
-                        <Field name="approach">
+                        <Field classNamePrefix="react-select" name="approach">
                           {({ field, form }) => {
                             const options = [
                               { value: '', label: 'Select Approach' },
@@ -838,6 +844,7 @@ export default function CreateCustomerMappingComponent() {
                             ];
                             return (
                               <Select
+                                classNamePrefix="react-select"
                                 id="approach"
                                 name="approach"
                                 placeholder="Select Approach"
@@ -909,6 +916,7 @@ export default function CreateCustomerMappingComponent() {
                             <Field name="department_id">
                               {({ field, form }) => (
                                 <Select
+                                  classNamePrefix="react-select"
                                   id="department_id"
                                   name="department_id"
                                   options={departmentDropdown}
@@ -962,6 +970,7 @@ export default function CreateCustomerMappingComponent() {
                                   <Field name="user_id">
                                     {({ field, form }) => (
                                       <Select
+                                        classNamePrefix="react-select"
                                         id="user_id"
                                         name="user_id"
                                         options={userDropdown}

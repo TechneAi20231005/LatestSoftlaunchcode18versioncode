@@ -448,7 +448,10 @@ export default function CreateBillCheckingTransaction({ match }) {
         if (res.data.status == 1) {
           setDepartment(res.data.data?.data);
           setDepartmentDropdown(
-            res.data.data?.data?.map((d) => ({ value: d.id, label: d.department }))
+            res.data.data?.data?.map((d) => ({
+              value: d.id,
+              label: d.department
+            }))
           );
         }
       }
@@ -978,6 +981,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       {billTypeDropdown && (
                         <Select
                           type="text"
+                          classNamePrefix="react-select"
                           options={billTypeDropdown}
                           onChange={(e) => {
                             handleAssignToPerson(e);
@@ -1014,6 +1018,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           <Select
                             type="text"
                             id="assign_to"
+                            classNamePrefix="react-select"
                             options={userDropdown}
                             name="assign_to"
                             placeholder="Assign To"
@@ -1039,6 +1044,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                       </label>
                       {data && vendorDropdown && (
                         <Select
+                          classNamePrefix="react-select"
                           id="vendor_name"
                           name="vendor_name"
                           options={vendorDropdown}
@@ -1643,6 +1649,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         {sectionDropdown && (
                           <Select
                             type="text"
+                            classNamePrefix="react-select"
                             id="tds_section"
                             name="tds_section"
                             placeholder="select..."
@@ -1692,6 +1699,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                         <span>
                           {constitutionDropdown && data && (
                             <Select
+                              classNamePrefix="react-select"
                               id="tds_constitution"
                               name="tds_constitution"
                               options={constitutionDropdown}

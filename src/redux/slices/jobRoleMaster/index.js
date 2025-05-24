@@ -44,7 +44,13 @@ const jobRoleMasterSlice = createSlice({
       })
       .addCase(getJobRoleMasterListThunk.fulfilled, (state, action) => {
         state.isLoading.getJobRoleMasterList = false;
-        state.jobRoleMasterList = action?.payload?.data?.data;
+        let updatdData = action?.payload?.data?.data?.map((item, index) => {
+          return {
+            ...item,
+            counter: index + 1
+          };
+        });
+        state.jobRoleMasterList = updatdData;
         // state.filterJobRoleMasterList = action?.payload?.data?.filter((d) => d.is_active === 1).map((d) => ({ value: d.id, label: d.function_name }));
         state.successMsg.getJobRoleMasterList = action.payload.msg;
       })

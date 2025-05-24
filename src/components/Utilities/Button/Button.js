@@ -270,6 +270,7 @@ export function ReactSelectComponent(props) {
       id={props.id}
       name={props.name}
       options={options}
+      classNamePrefix="react-select"
       isMulti={props.isMulti} // Add the isMulti prop here
       onChange={(selectedOption) => {
         if (props.getInputValue) {

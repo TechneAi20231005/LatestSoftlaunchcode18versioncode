@@ -490,15 +490,14 @@ export const DashbordSlice = createSlice({
     });
 
     builder.addCase(getEmployeeData.fulfilled, (state, action) => {
-      state.isLoading.employeeDataList = false;
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let employeeData = payload.data.data?.data;
         state.getAllTesterDataList = payload?.data?.data?.data
-          .filter((d) => d?.role === 'Tester' || d?.role === 'Sr Tester')
+          ?.filter((d) => d?.is_active && d?.account_for === 'SELF')
           .map((i) => ({
-            value: i.id,
-            label: i.first_name + ' ' + i.last_name
+            value: i?.id,
+            label: i?.first_name + ' ' + i?.last_name + '(' + i?.id + ')'
           }));
 
         state.status = 'succeded';
@@ -512,6 +511,19 @@ export const DashbordSlice = createSlice({
           const lastName = employeeData[i].last_name || '';
           employeeData[i].name =
             `${firstName} ${middleName} ${lastName}`.trim();
+
+          employeeData[i]['Ticket_Show_Type'] = employeeData[i].department
+            ?.map((d) => d.ticket_show_type)
+            ?.join(',');
+
+          employeeData[i]['Ticket_Passing_Authority'] = employeeData[
+            i
+          ].department
+            ?.map((d) => (d.ticket_passing_authority ? 'Yes' : 'No'))
+            ?.join(',');
+          employeeData[i]['Make_Default'] = employeeData[i].department
+            ?.map((d) => (d.is_default ? 'Yes' : 'No'))
+            ?.join(',');
         }
 
         state.employeeData = [...employeeData];
@@ -556,6 +568,7 @@ export const DashbordSlice = createSlice({
           });
         }
         state.exportUserData = exportUserData;
+        state.isLoading.employeeDataList = false;
       }
     });
     builder.addCase(getEmployeeData.rejected, (state) => {
@@ -728,13 +741,13 @@ export const DashbordSlice = createSlice({
       // state.notify=null
     });
     builder.addCase(getCustomerData.fulfilled, (state, action) => {
-      state.isLoading.getCustomerList = false;
       const { payload } = action;
       if (payload?.status === 200 && payload?.data?.status === 1) {
         let getAllCustomerData = payload.data.data?.data;
         let getCustomerData = payload.data.data?.data
           .filter((d) => d.is_active == 1)
           .map((d) => ({ value: d.id, label: d.name }));
+
         state.status = 'succeded';
         state.showLoaderModal = false;
         let count = 1;
@@ -766,6 +779,7 @@ export const DashbordSlice = createSlice({
         });
       }
       state.exportCustomerData = exportCustomerData;
+      state.isLoading.getCustomerList = false;
     });
     builder.addCase(getCustomerData.rejected, (state) => {
       state.status = 'rejected';

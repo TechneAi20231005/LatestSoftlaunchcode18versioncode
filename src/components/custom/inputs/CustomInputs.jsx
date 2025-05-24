@@ -229,6 +229,7 @@ export const CustomReactSelect = ({
         placeholder={props.placeholder}
         options={props.addOtherOption ? optionsWithOther : options}
         isMulti={isMulti}
+        classNamePrefix="react-select"
         className={`form-control p-0 ${props.inputClassName} ${
           error && touch && 'is-invalid'
         }`}
