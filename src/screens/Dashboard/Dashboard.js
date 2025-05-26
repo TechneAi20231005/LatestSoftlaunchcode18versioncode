@@ -27,6 +27,7 @@ import CustomeLoaderDashboard, {
   ChartSkeleton
 } from '../../components/custom/loader/CustomeLoaderDashboard';
 import { Spinner } from 'react-bootstrap';
+import ChatBot from './ChatBot';
 
 export default function HrDashboard(props) {
   const history = useNavigate();
@@ -152,7 +153,7 @@ export default function HrDashboard(props) {
   };
 
   const loadNotifcation = (type) => {
-    if(type?.toLowerCase() === 'init'){
+    if (type?.toLowerCase() === 'init') {
       setIsLoading(true);
     }
     getNotification()
@@ -394,9 +395,7 @@ export default function HrDashboard(props) {
             {(historyModal.show || approveRequestModal.show) === false && (
               <Dropdown
                 className="notifications"
-
                 style={{ zIndex: 99 }}
-
                 onClick={() => {
                   loadNotifcation();
                 }}
@@ -404,9 +403,7 @@ export default function HrDashboard(props) {
                 <Dropdown.Toggle
                   as="a"
                   className="nav-link dropdown-toggle pulse"
-
                   style={{ zIndex: 99 }}
-
                 >
                   <div className=" me-3" style={{ marginLeft: '28%' }}>
                     <div>
@@ -1989,6 +1986,7 @@ export default function HrDashboard(props) {
                 </div>
               </div>
             )}
+            {/* <ChatBot /> */}
           </div>
         </>
       )}
