@@ -183,10 +183,10 @@ import PowerBidashboard from './Dashboard/PowerBidashboard';
 import JobRoleComponent from './Masters/JobRoleMaster/JobRoleComponent';
 import MenuComponent from './Masters/MenuMaster/MenuComponent';
 import DeleteRequisition from './PO/deleteRequisition/DeleteRequisition';
+import ChatBot from './Dashboard/ChatBot';
 import MyTicketRefactored from './TicketManagement/MyTicket/MyTicketFilters';
 import TestPlanHistoryComponent from './TestCases/TestCaseReview/TestPlanHistoryComponent';
 import { QueryGroupMaster } from './Masters/QueryGroupMaster/QueryGroupMaster';
-
 class MainIndex extends React.Component {
   render() {
     // if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
@@ -817,6 +817,7 @@ class MainIndex extends React.Component {
               path={`/${_base}/CandidateList/:id`}
               element={<EmployeeJoining />}
             />
+            <Route exact path={`/${_base}/ChatBot`} element={<ChatBot />} />
             <Route
               exact
               path={`/${_base}/InterviewMaster`}
@@ -971,6 +972,7 @@ class MainIndex extends React.Component {
             />
           </Routes>
         </div>
+        <ChatBot />
       </div>
     );
   }
