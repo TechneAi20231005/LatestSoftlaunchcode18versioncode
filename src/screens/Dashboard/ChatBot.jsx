@@ -19,6 +19,7 @@ function ChatBot() {
       behavior: 'smooth'
     });
   }, [chatHistory]);
+  let userName = localStorage.getItem('first_name') || 'Friend';
   return (
     <div className={`containers ${showChatbot ? 'show-chatbot' : ''}`}>
       <IconButton
@@ -59,7 +60,7 @@ function ChatBot() {
           <div className="message bot-message">
             <ChatbotIcon />
             <span className="message-text">
-              Hey There 🤚 <br /> How can I help you today?
+              Hey There {userName} 🤚 <br /> How can I help you today?
             </span>
           </div>
           {chatHistory.map((chat, index) => (
