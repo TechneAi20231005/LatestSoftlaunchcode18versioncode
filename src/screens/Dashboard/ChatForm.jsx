@@ -245,20 +245,20 @@ function ChatForm({ setChatHistory, chatHistory }) {
               <SendIcon fontSize="small" />
             </IconButton>
           </Tooltip>
-        ) : (
-          <Tooltip placement="top" title="Voice Input" arrow>
-            <IconButton
-              sx={{ display: recognizing ? 'none' : 'block' }}
-              type="button"
-              onClick={handleMicClick}
-            >
-              <MicIcon
-                fontSize="small"
-                color={recognizing ? 'primary' : 'inherit'}
-              />
-            </IconButton>
-          </Tooltip>
-        )}
+        ) : null
+        // <Tooltip placement="top" title="Voice Input" arrow>
+        //   <IconButton
+        //     sx={{ display: recognizing ? 'none' : 'block' }}
+        //     type="button"
+        //     onClick={handleMicClick}
+        //   >
+        //     <MicIcon
+        //       fontSize="small"
+        //       color={recognizing ? 'primary' : 'inherit'}
+        //     />
+        //   </IconButton>
+        // </Tooltip>
+        }
 
         {awaitingConfirmation && (
           <div
