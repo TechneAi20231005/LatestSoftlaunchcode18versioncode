@@ -100,7 +100,7 @@ function ChatForm({ setChatHistory, chatHistory }) {
     postBotDispatchRef.current = dispatch(
       postBotMessages({
         formData: {
-          project_id: '683012a557b73eedd3b7a0d5',
+          project_id: '683427ef2f7f99e363739011',
           question: userMessage,
           user_id: localStorage.getItem('id'),
           user_name: localStorage.getItem('first_name') || 'Friend',
@@ -233,31 +233,32 @@ function ChatForm({ setChatHistory, chatHistory }) {
             lineHeight: '1.4'
           }}
         />
-        {isLoading?.chatBotList ? (
-          <Tooltip placement="top" title="Stop Message" arrow>
-            <IconButton type="submit" onClick={handleStopMessage}>
-              <StopCircleIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        ) : showSend ? (
-          <Tooltip placement="top" title="Send Message" arrow>
-            <IconButton type="submit">
-              <SendIcon fontSize="small" />
-            </IconButton>
-          </Tooltip>
-        ) : null
-        // <Tooltip placement="top" title="Voice Input" arrow>
-        //   <IconButton
-        //     sx={{ display: recognizing ? 'none' : 'block' }}
-        //     type="button"
-        //     onClick={handleMicClick}
-        //   >
-        //     <MicIcon
-        //       fontSize="small"
-        //       color={recognizing ? 'primary' : 'inherit'}
-        //     />
-        //   </IconButton>
-        // </Tooltip>
+        {
+          isLoading?.chatBotList ? (
+            <Tooltip placement="top" title="Stop Message" arrow>
+              <IconButton type="submit" onClick={handleStopMessage}>
+                <StopCircleIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          ) : showSend ? (
+            <Tooltip placement="top" title="Send Message" arrow>
+              <IconButton type="submit">
+                <SendIcon fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          ) : null
+          // <Tooltip placement="top" title="Voice Input" arrow>
+          //   <IconButton
+          //     sx={{ display: recognizing ? 'none' : 'block' }}
+          //     type="button"
+          //     onClick={handleMicClick}
+          //   >
+          //     <MicIcon
+          //       fontSize="small"
+          //       color={recognizing ? 'primary' : 'inherit'}
+          //     />
+          //   </IconButton>
+          // </Tooltip>
         }
 
         {awaitingConfirmation && (
