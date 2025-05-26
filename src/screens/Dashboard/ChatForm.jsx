@@ -13,9 +13,12 @@ import StopCircleIcon from '@mui/icons-material/StopCircle';
 function ChatForm({ setChatHistory, chatHistory }) {
   const inputRef = useRef();
   const dispatch = useDispatch();
+  const postBotDispatchRef = useRef(null);
+
   const { chatBotList, isLoading } = useSelector(
     (state) => state?.chatBotSlice
   );
+
   // console.log(chatBotList, 'chatBotList');
   const [inputValue, setInputValue] = useState('');
   const [showSend, setShowSend] = useState(false);
@@ -48,7 +51,9 @@ function ChatForm({ setChatHistory, chatHistory }) {
     recognition.onresult = (event) => {
       const transcript = event.results[0][0].transcript;
       console.log('Speech recognized:', transcript);
-      setTempTranscript(transcript);
+      setTempTranscript((prev) =>
+        prev ? `${prev} ${transcript}` : transcript
+      );
     };
 
     recognition.onerror = (event) => {
@@ -92,7 +97,7 @@ function ChatForm({ setChatHistory, chatHistory }) {
     setInputValue('');
     setShowSend(false);
     if (inputRef.current) inputRef.current.style.height = '47px';
-    dispatch(
+    postBotDispatchRef.current = dispatch(
       postBotMessages({
         formData: {
           project_id: '683012a557b73eedd3b7a0d5',
@@ -103,6 +108,18 @@ function ChatForm({ setChatHistory, chatHistory }) {
         }
       })
     );
+
+    // dispatch(
+    //   postBotMessages({
+    //     formData: {
+    //       project_id: '683012a557b73eedd3b7a0d5',
+    //       question: userMessage,
+    //       user_id: localStorage.getItem('id'),
+    //       user_name: localStorage.getItem('first_name') || 'Friend',
+    //       flagging: 1
+    //     }
+    //   })
+    // );
     // setTimeout(() => {
     //   setChatHistory((history) => [
     //     ...history,
@@ -131,10 +148,6 @@ function ChatForm({ setChatHistory, chatHistory }) {
     //   { role: 'model', text: 'Error occurred while sending message' }
     // ]);
   }, [chatBotList]);
-
-  useEffect(() => {
-    // console.log(chatHistory, 'chatHistory');
-  }, [chatHistory]);
 
   const resizeTextarea = () => {
     const el = inputRef.current;
@@ -176,6 +189,20 @@ function ChatForm({ setChatHistory, chatHistory }) {
     manuallyStopped.current = true;
     recognitionRef.current?.stop();
   };
+  const handleStopMessage = () => {
+    if (postBotDispatchRef.current?.abort) {
+      postBotDispatchRef.current.abort();
+    }
+    setChatHistory((prevHistory) => {
+      if (
+        prevHistory.length &&
+        prevHistory[prevHistory.length - 1].role === 'user'
+      ) {
+        return prevHistory.slice(0, -1);
+      }
+      return prevHistory;
+    });
+  };
 
   return (
     <>
@@ -208,7 +235,7 @@ function ChatForm({ setChatHistory, chatHistory }) {
         />
         {isLoading?.chatBotList ? (
           <Tooltip placement="top" title="Stop Message" arrow>
-            <IconButton type="submit">
+            <IconButton type="submit" onClick={handleStopMessage}>
               <StopCircleIcon fontSize="small" />
             </IconButton>
           </Tooltip>
@@ -249,7 +276,7 @@ function ChatForm({ setChatHistory, chatHistory }) {
           >
             {recognizing && (
               <div
-                className="frequency-bars"
+                // className="frequency-bars"
                 style={{ display: 'flex', gap: 2 }}
               >
                 {[1, 2, 3, 4, 5].map((_, i) => (

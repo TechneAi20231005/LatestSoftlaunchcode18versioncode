@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './ChatBot.scss';
 import ChatbotIcon from '../../components/Common/ChatbotIcon';
 import ChatForm from './ChatForm';
@@ -11,6 +11,14 @@ import ChatbotTypingDots from './ChatbotTypingDots';
 function ChatBot() {
   const [chatHistory, setChatHistory] = useState([]);
   const [showChatbot, setShowChatbot] = useState(false);
+  const chatBodyRef = useRef();
+
+  useEffect(() => {
+    chatBodyRef.current.scrollTo({
+      top: chatBodyRef.current.scrollHeight,
+      behavior: 'smooth'
+    });
+  }, [chatHistory]);
   return (
     <div className={`containers ${showChatbot ? 'show-chatbot' : ''}`}>
       <IconButton
@@ -33,7 +41,7 @@ function ChatBot() {
         <div className="chat-header">
           <div className="header-info">
             <ChatbotIcon />
-            <h2 className="logo-text mb-0">Connect Ai</h2>
+            <h2 className="logo-text mb-0">Connect AI</h2>
           </div>
 
           <IconButton onClick={() => setShowChatbot((prev) => !prev)}>
@@ -47,7 +55,7 @@ function ChatBot() {
           </button> */}
         </div>
         {/* chatbot Body */}
-        <div className="chat-body">
+        <div ref={chatBodyRef} className="chat-body">
           <div className="message bot-message">
             <ChatbotIcon />
             <span className="message-text">

@@ -1,5 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { postBotMessages } from '../../services/chatBot/index';
+import { act } from 'react';
 
 const initialState = {
   chatBotList: [],
@@ -23,7 +24,11 @@ const chatBotSlice = createSlice({
       })
       .addCase(postBotMessages.rejected, (state, action) => {
         state.isLoading.chatBotList = false;
-        state.chatBotList = ['Error occurred while sending message'];
+        if (action?.error?.name?.toLowerCase() !== 'aborterror') {
+          state.chatBotList = ['Error occurred while sending message'];
+          return;
+        }
+        // state.chatBotList = ['Error occurred while sending message'];
       });
   }
 });
