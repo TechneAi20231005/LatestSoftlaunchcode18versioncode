@@ -84,6 +84,7 @@ function ChatForm({ setChatHistory, chatHistory }) {
     setInputValue(value);
     setShowSend(value.trim() !== '');
   };
+  const [responseCounter, setResponseCounter] = useState(0);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -107,7 +108,9 @@ function ChatForm({ setChatHistory, chatHistory }) {
           flagging: 1
         }
       })
-    );
+    ).then(() => {
+      setResponseCounter((prev) => prev + 1);
+    });
 
     // dispatch(
     //   postBotMessages({
@@ -128,26 +131,22 @@ function ChatForm({ setChatHistory, chatHistory }) {
     // }, 600);
   };
 
+  console.log(chatBotList, 'chatBotList');
+
   useEffect(() => {
+    console.log('hello');
     if (chatBotList?.length > 0) {
-      if (chatBotList?.length === 1) {
-        setChatHistory((history) => [
-          ...history,
-          { role: 'model', text: chatBotList }
-        ]);
-      } else {
-        setChatHistory((history) => [
-          ...history,
-          { role: 'model', text: chatBotList }
-        ]);
-      }
+      setChatHistory((history) => [
+        ...history,
+        { role: 'model', text: chatBotList }
+      ]);
     }
 
     // setChatHistory((history) => [
     //   ...history,
     //   { role: 'model', text: 'Error occurred while sending message' }
     // ]);
-  }, [chatBotList]);
+  }, [responseCounter]);
 
   const resizeTextarea = () => {
     const el = inputRef.current;
