@@ -20,21 +20,26 @@ function ChatMessage({ chat }) {
 
   const handleCopy = () => {
     if (chat.role === 'model' && chat.text) {
-      navigator.clipboard.writeText(chat.text)
-        .then(() => {
-          setIsCopied(true);
-          setTooltipMessage("Copied!");
+      const textArea = document.createElement('textarea');
+      textArea.value = chat.text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        setIsCopied(true);
+        setTooltipMessage("Copied!");
 
-          setTimeout(() => {
-            setIsCopied(false);
-            setTooltipMessage("Copy");
-          }, 2000);
-        })
-        .catch((err) => {
-          console.error('Failed to copy text: ', err);
-        });
+        setTimeout(() => {
+          setIsCopied(false);
+          setTooltipMessage("Copy");
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy text using execCommand: ', err);
+      }
+      document.body.removeChild(textArea);
     }
   };
+
 
   return (
     <>
