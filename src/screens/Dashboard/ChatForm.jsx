@@ -220,6 +220,12 @@ function ChatForm({ setChatHistory, chatHistory }) {
           className="message-input"
           value={inputValue}
           onChange={handleInputChange}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              handleFormSubmit(e);
+            }
+          }}
           rows={1}
           style={{
             width: '100%',
