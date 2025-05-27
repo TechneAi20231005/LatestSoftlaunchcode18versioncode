@@ -29,7 +29,7 @@ function ChatMessage({ chat }) {
         <div
           style={{ display: 'flex', gap: 0, paddingLeft: 50, marginTop: -4 }}
         >
-          <Tooltip title="Thumbs Up" arrow placement="top">
+          <Tooltip title="This answer worked for me" arrow placement="bottom">
             <IconButton
               onClick={() => handleThumbClick('up')}
               size="small"
@@ -43,7 +43,11 @@ function ChatMessage({ chat }) {
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Thumbs Down" arrow placement="top">
+          <Tooltip
+            title="This answer didn't solve my problem"
+            arrow
+            placement="bottom"
+          >
             <IconButton
               onClick={() => handleThumbClick('down')}
               size="small"

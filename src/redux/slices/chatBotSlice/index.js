@@ -17,6 +17,7 @@ const chatBotSlice = createSlice({
     builder
       .addCase(postBotMessages.pending, (state, action) => {
         state.isLoading.chatBotList = true;
+        state.chatBotList = [];
       })
       .addCase(postBotMessages.fulfilled, (state, action) => {
         state.chatBotList = action?.payload?.answer;
@@ -24,8 +25,9 @@ const chatBotSlice = createSlice({
       })
       .addCase(postBotMessages.rejected, (state, action) => {
         state.isLoading.chatBotList = false;
-        if (action?.error?.name?.toLowerCase() !== 'aborterror') {
-          state.chatBotList = ['Error occurred while sending message'];
+        console.error('Error in postBotMessages:', action?.payload);
+        if (action?.payload?.name?.toLowerCase() !== 'aborterror') {
+          state.chatBotList = 'Error occurred while sending message';
           return;
         }
         // state.chatBotList = ['Error occurred while sending message'];
