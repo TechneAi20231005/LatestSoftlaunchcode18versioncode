@@ -1,6 +1,6 @@
 import React, { useEffect, useReducer, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 import { Modal, PageItem } from 'react-bootstrap';
 import { Astrick } from '../../../components/Utilities/Style';
 import DownloadFormatFileModal from './DownloadFormatFileModal';
@@ -31,13 +31,15 @@ export default function TestDraftComponent({}) {
     getDraftTestListData,
     allReviewDraftTestListData,
     filterData,
-    filterReviewedDraftTestList
+    filterReviewedDraftTestList,
+    projectId
   } = useSelector((state) => state?.downloadFormat);
+
   const [currentTab, setCurrentTab] = useState(
     location.state ?? 'test_summary'
   );
   const [state, setState] = useState(location.state);
-
+  const { ticketId, taskId } = useParams();
   // const [paginationData, setPaginationData] = useReducer(
   //   (prevState, nextState) => {
   //     return { ...prevState, ...nextState };
@@ -103,6 +105,10 @@ export default function TestDraftComponent({}) {
     }
 
     const formData = new FormData();
+    formData.append('ticket_id', ticketId);
+
+    formData.append('task_id', taskId);
+
     formData.append('file_attachment', file);
     dispatch(
       importTestDraftThunk({
@@ -113,6 +119,8 @@ export default function TestDraftComponent({}) {
 
           dispatch(
             getDraftTestCaseList({
+              ticketId,
+              taskId,
               limit: paginationData.rowPerPage,
               page: paginationData.currentPage
             })
@@ -122,6 +130,8 @@ export default function TestDraftComponent({}) {
           setBulkModal({ showModal: false });
           dispatch(
             getDraftTestCaseList({
+              ticketId,
+              taskId,
               limit: paginationData.rowPerPage,
               page: paginationData.currentPage
             })
@@ -242,6 +252,8 @@ export default function TestDraftComponent({}) {
     currentTab === 'test_summary'
       ? dispatch(
           getDraftTestCaseList({
+            ticketId,
+            taskId,
             limit: 10,
             page: 1,
             filter_testcase_data: []
@@ -249,6 +261,8 @@ export default function TestDraftComponent({}) {
         )
       : dispatch(
           getAllReviewTestDraftList({
+            ticketId,
+            taskId,
             limit: paginationData.rowPerPage,
             page: paginationData.currentPage,
             filter_testcase_data: []
@@ -425,6 +439,9 @@ export default function TestDraftComponent({}) {
         <DownloadFormatFileModal
           show={downloadmodal}
           close={() => setDownloadModal(false)}
+          ticketId={ticketId}
+          taskId={taskId}
+          projectId={projectId}
         />
       )}
 

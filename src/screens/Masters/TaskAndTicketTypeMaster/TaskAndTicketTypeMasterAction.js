@@ -56,3 +56,16 @@ export const updateTaskAndTicketType = createAsyncThunk(
     }
   }
 );
+export const getClassificationTypes = createAsyncThunk(
+  'classificationTypes',
+  async (config, thunkapi) => {
+    try {
+      const service = new TaskTicketTypeService();
+      const response = await service.getClassificationTypes();
+
+      return response;
+    } catch (error) {
+      throw error;
+    }
+  }
+);

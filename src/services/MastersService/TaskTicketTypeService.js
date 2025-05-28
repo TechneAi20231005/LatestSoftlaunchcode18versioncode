@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { userSessionData } from '../../settings/constants';
+import { _rewampApiUrl, userSessionData } from '../../settings/constants';
 import { masterURL } from '../../settings/constants';
 
 const _URL = masterURL.taskTicketTypeMaster;
@@ -123,6 +123,19 @@ export default class TaskTicketTypeService {
     return axios.get(_getParent, config);
   }
 
+  getClassificationTypes() {
+    const token = localStorage.getItem('jwt_token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+
+    return axios.get(`${_rewampApiUrl}testCases/getTcClassificationType`, config);
+  }
   postType(payload) {
     const token = localStorage.getItem('jwt_token');
 
