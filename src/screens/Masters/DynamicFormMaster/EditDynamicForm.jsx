@@ -778,6 +778,7 @@ function EditDynamicForm() {
                                       name="inputDefaultValue"
                                       value={item.inputDefaultValue}
                                       onChange={handleChange(idx)}
+                                      max={100}
                                       className="form-control form-control-sm"
                                       onKeyPress={(e) => {
                                         item.inputType === 'number' ||
