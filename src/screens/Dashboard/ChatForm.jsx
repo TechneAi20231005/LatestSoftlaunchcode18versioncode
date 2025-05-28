@@ -85,6 +85,7 @@ function ChatForm({ setChatHistory, chatHistory }) {
     setShowSend(value.trim() !== '');
   };
   const [responseCounter, setResponseCounter] = useState(0);
+  const abortControllerRef = useRef(null);
 
   const handleFormSubmit = (e) => {
     e.preventDefault();
@@ -98,19 +99,21 @@ function ChatForm({ setChatHistory, chatHistory }) {
     setInputValue('');
     setShowSend(false);
     if (inputRef.current) inputRef.current.style.height = '47px';
-    postBotDispatchRef.current = dispatch(
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    dispatch(
       postBotMessages({
         formData: {
-          project_id: '683427ef2f7f99e363739011',
+          project_id: '6835498ba36d7260bd4ff6d5',
           question: userMessage,
           user_id: localStorage.getItem('id'),
           user_name: localStorage.getItem('first_name') || 'Friend',
           flagging: 1
-        }
+        },
+        signal: controller.signal
       })
-    ).then(() => {
-      setResponseCounter((prev) => prev + 1);
-    });
+    );
 
     // dispatch(
     //   postBotMessages({
@@ -146,7 +149,7 @@ function ChatForm({ setChatHistory, chatHistory }) {
     //   ...history,
     //   { role: 'model', text: 'Error occurred while sending message' }
     // ]);
-  }, [responseCounter]);
+  }, [chatBotList]);
 
   const resizeTextarea = () => {
     const el = inputRef.current;
@@ -189,9 +192,8 @@ function ChatForm({ setChatHistory, chatHistory }) {
     recognitionRef.current?.stop();
   };
   const handleStopMessage = () => {
-    if (postBotDispatchRef.current?.abort) {
-      postBotDispatchRef.current.abort();
-    }
+    abortControllerRef.current?.abort();
+
     setChatHistory((prevHistory) => {
       if (
         prevHistory.length &&
@@ -218,6 +220,12 @@ function ChatForm({ setChatHistory, chatHistory }) {
           className="message-input"
           value={inputValue}
           onChange={handleInputChange}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+              e.preventDefault();
+              handleFormSubmit(e);
+            }
+          }}
           rows={1}
           style={{
             width: '100%',

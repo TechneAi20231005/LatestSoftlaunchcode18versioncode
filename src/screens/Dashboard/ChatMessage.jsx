@@ -6,13 +6,40 @@ import ThumbUpIcon from '@mui/icons-material/ThumbUp';
 import ThumbDownIcon from '@mui/icons-material/ThumbDown';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import CheckIcon from '@mui/icons-material/Check';
 
 function ChatMessage({ chat }) {
   const [feedback, setFeedback] = useState(null); // 'up' | 'down' | null
-
+  const [isCopied, setIsCopied] = useState(false);
+  const [tooltipMessage, setTooltipMessage] = useState("Copy");
   const handleThumbClick = (type) => {
     setFeedback((prev) => (prev === type ? null : type));
   };
+
+
+  const handleCopy = () => {
+    if (chat.role === 'model' && chat.text) {
+      const textArea = document.createElement('textarea');
+      textArea.value = chat.text;
+      document.body.appendChild(textArea);
+      textArea.select();
+      try {
+        document.execCommand('copy');
+        setIsCopied(true);
+        setTooltipMessage("Copied!");
+
+        setTimeout(() => {
+          setIsCopied(false);
+          setTooltipMessage("Copy");
+        }, 2000);
+      } catch (err) {
+        console.error('Failed to copy text using execCommand: ', err);
+      }
+      document.body.removeChild(textArea);
+    }
+  };
+
 
   return (
     <>
@@ -29,7 +56,7 @@ function ChatMessage({ chat }) {
         <div
           style={{ display: 'flex', gap: 0, paddingLeft: 50, marginTop: -4 }}
         >
-          <Tooltip title="Thumbs Up" arrow placement="top">
+          <Tooltip title="This answer worked for me" arrow placement="bottom">
             <IconButton
               onClick={() => handleThumbClick('up')}
               size="small"
@@ -43,7 +70,11 @@ function ChatMessage({ chat }) {
             </IconButton>
           </Tooltip>
 
-          <Tooltip title="Thumbs Down" arrow placement="top">
+          <Tooltip
+            title="This answer didn't solve my problem"
+            arrow
+            placement="bottom"
+          >
             <IconButton
               onClick={() => handleThumbClick('down')}
               size="small"
@@ -53,6 +84,16 @@ function ChatMessage({ chat }) {
                 <ThumbDownIcon sx={{ fontSize: '15px' }} />
               ) : (
                 <ThumbDownOffAltIcon sx={{ fontSize: '15px' }} />
+              )}
+            </IconButton>
+
+          </Tooltip>
+          <Tooltip title={tooltipMessage} arrow placement="bottom">
+            <IconButton onClick={handleCopy}>
+              {isCopied ? (
+                <CheckIcon sx={{ fontSize: '15px', color: '#198754' }} />
+              ) : (
+                <ContentCopyIcon sx={{ fontSize: '15px' }} />
               )}
             </IconButton>
           </Tooltip>
