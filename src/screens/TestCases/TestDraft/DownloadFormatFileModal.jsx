@@ -17,9 +17,6 @@ import {
 } from '../../../redux/services/testCases/downloadFormatFile';
 
 function DownloadFormatFileModal({ show, close, ticketId, taskId, projectId }) {
-  console.log('task', taskId);
-  console.log('ticket', ticketId);
-  console.log('projectId', projectId);
   const {
     getProjectModuleListId,
     getModuleList,
@@ -27,8 +24,6 @@ function DownloadFormatFileModal({ show, close, ticketId, taskId, projectId }) {
     getModuleData,
     getSubModuleData
   } = useSelector((state) => state?.downloadFormat);
-
-  console.log('getProjectModuleListId', getProjectModuleListId);
 
   const dispatch = useDispatch();
 
@@ -51,7 +46,6 @@ function DownloadFormatFileModal({ show, close, ticketId, taskId, projectId }) {
   // }));
 
   const handleProjectChange = async (e, setFieldValue) => {
-    console.log('eeee', e.target.value);
     setFieldValue('project_id', e.target.value);
     setFieldValue('module_id', '');
     setFieldValue('submodule_id', '');
@@ -155,7 +149,6 @@ function DownloadFormatFileModal({ show, close, ticketId, taskId, projectId }) {
                     }
                     ref={moduleIdRef}
                   /> */}
-                  {console.log('moduleDropdown', moduleDropdown)}
                   <Field
                     classNamePrefix="react-select"
                     options={moduleDropdown}

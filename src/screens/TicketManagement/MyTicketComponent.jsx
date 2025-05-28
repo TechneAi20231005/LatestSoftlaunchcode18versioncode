@@ -2216,7 +2216,6 @@ export default function MyTicketComponent() {
   };
 
   const handleFilterForm = async (e) => {
-    console.log('hello');
     e.preventDefault();
     if (isLoading) return;
     setIsLoading(true);

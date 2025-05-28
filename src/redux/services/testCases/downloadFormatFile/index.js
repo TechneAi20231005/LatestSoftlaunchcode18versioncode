@@ -184,8 +184,6 @@ export const importTestDraftThunk = createAsyncThunk(
           // window.open(url, '_blank');
 
           onErrorHandler();
-          console.log('rrrr', response.data.data);
-          console.log('_rewampAttachmentUrl', _rewampAttachmentUrl);
 
           if (
             Array.isArray(response.data.data) &&

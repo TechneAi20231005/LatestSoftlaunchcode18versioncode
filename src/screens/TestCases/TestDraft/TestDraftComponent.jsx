@@ -24,7 +24,6 @@ import { Icon, Tab, Tabs } from '@mui/material';
 import DescriptionIcon from '@mui/icons-material/Description';
 import PreviewIcon from '@mui/icons-material/Preview';
 export default function TestDraftComponent({}) {
-  console.log('heyyy');
   const location = useLocation();
   const dispatch = useDispatch();
   const {
@@ -36,14 +35,11 @@ export default function TestDraftComponent({}) {
     projectId
   } = useSelector((state) => state?.downloadFormat);
 
-  console.log('projectId', projectId);
   const [currentTab, setCurrentTab] = useState(
     location.state ?? 'test_summary'
   );
   const [state, setState] = useState(location.state);
   const { ticketId, taskId } = useParams();
-  console.log('id', ticketId);
-  console.log('id', taskId);
   // const [paginationData, setPaginationData] = useReducer(
   //   (prevState, nextState) => {
   //     return { ...prevState, ...nextState };
