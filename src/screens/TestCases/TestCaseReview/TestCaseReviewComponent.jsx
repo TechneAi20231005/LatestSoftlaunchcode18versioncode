@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useState } from 'react';
 import { Container, Modal, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import DataTable from 'react-data-table-component';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import PageHeader from '../../../components/Common/PageHeader';
 import {
@@ -100,6 +100,8 @@ function localReducer(state, action) {
 
 function TestCaseReviewComponent() {
   const dispatch = useDispatch();
+  const { ticketId, taskId } = useParams();
+
   // const [paginationData, setPaginationData] = useReducer(
   //   (prevState, nextState) => {
   //     return { ...prevState, ...nextState };
@@ -421,6 +423,8 @@ function TestCaseReviewComponent() {
     try {
       dispatch(
         getTestCaseReviewListThunk({
+          ticketId,
+          taskId,
           limit: paginationData.pageSize,
           page: paginationData.pageIndex + 1,
           filter_testcase_data: updatedFilters,
@@ -447,6 +451,8 @@ function TestCaseReviewComponent() {
     try {
       dispatch(
         getTestCaseReviewListThunk({
+          ticketId,
+          taskId,
           limit: paginationData.pageSize,
           page: paginationData.pageIndex + 1,
           filter_testcase_data: updatedFilters,
@@ -496,6 +502,8 @@ function TestCaseReviewComponent() {
     try {
       dispatch(
         getTestCaseReviewListThunk({
+          ticketId,
+          taskId,
           limit: paginationData.pageSize,
           page: paginationData.pageIndex + 1,
           filter_testcase_data: updatedFilters,
@@ -1111,11 +1119,11 @@ function TestCaseReviewComponent() {
       }
     },
     {
-         accessorFn: (originalRows) =>
+      accessorFn: (originalRows) =>
         originalRows?.test_plan_id ? `TC_${originalRows?.test_plan_id}` : '--',
       accessorKey: 'test_plan_id',
       size: 210,
-      header: "Test Plan ID",
+      header: 'Test Plan ID',
       enableSorting: false,
       enableColumnFilter: true,
       Header: (
@@ -1342,7 +1350,7 @@ function TestCaseReviewComponent() {
     },
     {
       header: 'Updated At',
-      accessorFn: (row) => row.updated_at|| '--',
+      accessorFn: (row) => row.updated_at || '--',
       size: 180,
       enableSorting: false,
       enableColumnFilter: true,
@@ -1408,6 +1416,8 @@ function TestCaseReviewComponent() {
 
     dispatch(
       getTestCaseReviewListThunk({
+        ticketId,
+        taskId,
         limit: paginationData?.pageSize,
         page: paginationData?.pageIndex,
         filter_testcase_data: [],
@@ -1470,6 +1480,8 @@ function TestCaseReviewComponent() {
 
           dispatch(
             getTestCaseReviewListThunk({
+              ticketId,
+              taskId,
               limit: paginationData.pageSize,
               page: paginationData.pageIndex + 1,
               type: 'reviewer'
@@ -1631,6 +1643,8 @@ function TestCaseReviewComponent() {
       try {
         dispatch(
           getTestCaseReviewListThunk({
+            ticketId,
+            taskId,
             limit: paginationData.pageSize,
             page: paginationData.pageIndex + 1,
             filter_testcase_data: updatedFilters,
@@ -1668,6 +1682,8 @@ function TestCaseReviewComponent() {
     const updatedFilters = [...filters, newFilter];
     dispatch(
       getTestCaseReviewListThunk({
+        ticketId,
+        taskId,
         limit: paginationData.pageSize,
         page: paginationData.pageIndex + 1,
         filter_testcase_data:

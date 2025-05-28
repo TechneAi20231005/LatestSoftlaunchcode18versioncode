@@ -2,7 +2,7 @@ import React, { useEffect, useReducer, useState } from 'react';
 import { Container, OverlayTrigger, Tooltip } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { _base } from '../../../settings/constants';
 import CustomFilterModal from '../Modal/CustomFilterModal';
 import { getAllReviewTestDraftList } from '../../../redux/services/testCases/downloadFormatFile';
@@ -98,6 +98,7 @@ function ReviewedTestDraftDetails(props) {
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedValue, setSelectedValue] = useState('');
+  const { ticketId, taskId } = useParams();
 
   const {
     filterType,
@@ -387,6 +388,8 @@ function ReviewedTestDraftDetails(props) {
     try {
       dispatch(
         getAllReviewTestDraftList({
+          ticketId,
+          taskId,
           limit: props?.paginationData?.pageSize,
           page: props?.paginationData?.pageIndex + 1,
           filter_testcase_data: updatedFilters,
@@ -414,6 +417,8 @@ function ReviewedTestDraftDetails(props) {
     try {
       dispatch(
         getAllReviewTestDraftList({
+          ticketId,
+          taskId,
           limit: props?.paginationData?.pageSize,
           page: props?.paginationData?.pageIndex + 1,
           filter_testcase_data: updatedFilters,
@@ -474,6 +479,8 @@ function ReviewedTestDraftDetails(props) {
     try {
       dispatch(
         getAllReviewTestDraftList({
+          ticketId,
+          taskId,
           limit: props?.paginationData?.pageSize,
           page: props?.paginationData?.pageIndex + 1,
           filter_testcase_data: updatedFilters,
@@ -912,7 +919,7 @@ function ReviewedTestDraftDetails(props) {
 
   const columns = [
     {
-          accessorFn: (originalRows) =>
+      accessorFn: (originalRows) =>
         originalRows?.test_plan_id ? `TC_${originalRows?.test_plan_id}` : '--',
       header: 'Test Plan ID',
       size: 190,
@@ -1153,7 +1160,7 @@ function ReviewedTestDraftDetails(props) {
       )
     },
     {
-      accessorFn: (row) =>row?.updated_at||'--',
+      accessorFn: (row) => row?.updated_at || '--',
       header: 'Updated At',
       size: 180,
       enableSorting: false,
@@ -1252,6 +1259,8 @@ function ReviewedTestDraftDetails(props) {
       try {
         dispatch(
           getAllReviewTestDraftList({
+            ticketId,
+            taskId,
             limit: props?.paginationData?.pageSize,
             page: props?.paginationData?.pageIndex + 1,
             filter_testcase_data: updatedFilters,
@@ -1307,6 +1316,8 @@ function ReviewedTestDraftDetails(props) {
     const updatedFilters = getLatestConditions(updatedFiltersData);
     dispatch(
       getAllReviewTestDraftList({
+        ticketId,
+        taskId,
         limit: props?.paginationData?.pageSize,
         page: props?.paginationData?.pageIndex + 1,
         filter_testcase_data:

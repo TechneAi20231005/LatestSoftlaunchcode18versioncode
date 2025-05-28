@@ -13,7 +13,7 @@ export const getProjectModuleMasterThunk = createAsyncThunk(
   'projectModuleMaster/getProjectModuleMasterList',
   async () => {
     try {
-      const response = await customAxios.get(`projects/getAllProject`);
+      const response = await rewampAxios.get(`projects/getAllProject`);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };
@@ -32,7 +32,7 @@ export const getModuleMasterThunk = createAsyncThunk(
   'ModuleMaster/getModuleMasterList',
   async () => {
     try {
-      const response = await customAxios.get(`module/getAllModule`);
+      const response = await rewampAxios.get(`module/getAllModule`);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };
@@ -51,7 +51,7 @@ export const getSubModuleMasterThunk = createAsyncThunk(
   'subModuleMaster/getSubModuleMasterList',
   async () => {
     try {
-      const response = await customAxios.get(`submodule/getAllSubmodule`);
+      const response = await rewampAxios.get(`submodule/getAllSubmodule`);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };
@@ -108,12 +108,14 @@ export const downloadFormatFileThunk = createAsyncThunk(
 ////get draft test case  data
 export const getDraftTestCaseList = createAsyncThunk(
   'draftTestCase/getDraftTestCaseList',
-  async ({ limit, page, filter_testcase_data }) => {
+  async ({ ticketId, taskId, limit, page, filter_testcase_data }) => {
     try {
       const response = await rewampAxios.get(
         `testCases/getDraftTestCases/getTestCases`,
         {
           params: {
+            ticket_id: ticketId,
+            task_id: taskId,
             limit: limit,
             page: page,
             filter_testcase_data: JSON.stringify(filter_testcase_data)
@@ -126,10 +128,12 @@ export const getDraftTestCaseList = createAsyncThunk(
           return { data: response?.data, msg: response?.data?.message };
         } else {
           errorHandler(response);
+          return { data: response?.data, msg: response?.data?.message };
         }
       }
     } catch (error) {
       errorHandler(error?.response);
+
       return Promise.reject(error?.response?.data?.message);
     }
   }
@@ -310,12 +314,14 @@ export const addTestCaseThunk = createAsyncThunk(
 );
 export const getAllReviewTestDraftList = createAsyncThunk(
   'reviewDraftList/getAllReviewTestDraftList',
-  async ({ limit, page, filter_testcase_data, type }) => {
+  async ({ ticketId, taskId, limit, page, filter_testcase_data, type }) => {
     try {
       const response = await rewampAxios.get(
         `testCases/getCount/getTestDraft`,
         {
           params: {
+            ticket_id: ticketId,
+            task_id: taskId,
             limit: limit,
             page: page,
             filter_testcase_data: JSON.stringify(filter_testcase_data),

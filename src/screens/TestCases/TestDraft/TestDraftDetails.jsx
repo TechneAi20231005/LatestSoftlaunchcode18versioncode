@@ -1,5 +1,5 @@
 import React, { useEffect, useReducer, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { Container, Modal } from 'react-bootstrap';
 import DataTable from 'react-data-table-component';
 import Select from 'react-select';
@@ -102,6 +102,7 @@ function localReducer(state, action) {
 
 function TestDraftDetails(props) {
   const clearAllFilter = props.clearData;
+  const { ticketId, taskId } = useParams();
 
   const dispatch = useDispatch();
 
@@ -113,6 +114,7 @@ function TestDraftDetails(props) {
     filterData,
     testCasesStatusDataList
   } = useSelector((state) => state?.downloadFormat);
+
   const testerData = useSelector(
     (dashboardSlice) => dashboardSlice.dashboard.getAllTesterDataList
   );
@@ -493,6 +495,8 @@ function TestDraftDetails(props) {
     try {
       dispatch(
         getDraftTestCaseList({
+          ticketId,
+          taskId,
           limit: props?.paginationData.pageSize,
           page: props?.paginationData.pageIndex + 1,
           filter_testcase_data: updatedFilters
@@ -538,6 +542,8 @@ function TestDraftDetails(props) {
     try {
       dispatch(
         getDraftTestCaseList({
+          ticketId,
+          taskId,
           limit: props?.paginationData.pageSize,
           page: props?.paginationData.pageIndex,
           filter_testcase_data: updatedFilters
@@ -565,6 +571,8 @@ function TestDraftDetails(props) {
     try {
       dispatch(
         getDraftTestCaseList({
+          ticketId,
+          taskId,
           limit: props?.paginationData?.pageSize,
           page: props?.paginationData?.pageIndex,
           filter_testcase_data: updatedFilters
@@ -582,6 +590,8 @@ function TestDraftDetails(props) {
       if (pageSize && pageIndex) {
         dispatch(
           getDraftTestCaseList({
+            ticketId: ticketId || [],
+            taskId: taskId || [],
             limit: pageSize,
             page: pageIndex + 1,
             filter_testcase_data: []
@@ -1995,6 +2005,8 @@ function TestDraftDetails(props) {
 
           dispatch(
             getDraftTestCaseList({
+              ticketId,
+              taskId,
               limit: props?.paginationData.pageSize,
               page: props?.paginationData.pageIndex
             })
@@ -2055,6 +2067,8 @@ function TestDraftDetails(props) {
       try {
         dispatch(
           getDraftTestCaseList({
+            ticketId: ticketId ?? null,
+            taskId: taskId ?? null,
             limit: props?.paginationData.pageSize,
             page: props?.paginationData.pageIndex,
             filter_testcase_data: updatedFilters
@@ -2093,6 +2107,8 @@ function TestDraftDetails(props) {
       getDraftTestCaseList({
         // limit: props?.paginationData?.rowPerPage,
         // page: props?.paginationData?.currentPage,
+        ticketId,
+        taskId,
         limit: props?.paginationData?.pageSize,
         page: props?.paginationData?.pageIndex + 1,
         filter_testcase_data:

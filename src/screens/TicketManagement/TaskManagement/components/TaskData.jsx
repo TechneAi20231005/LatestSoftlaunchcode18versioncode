@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { _base } from '../../../../settings/constants';
 import Avatar from 'react-avatar';
 import { Dropdown } from 'react-bootstrap';
@@ -26,7 +26,7 @@ export default function TaskData(props) {
   const allData = props;
 
   const [loading, setLoading] = useState(false);
-
+  const navigate = useNavigate();
   if (data.priority === 'High') {
     priorityColor = 'bg-danger';
   }
@@ -593,6 +593,9 @@ export default function TaskData(props) {
                 </li>
               )}
 
+              {console.log('data', data.task_id)}
+              {console.log('dataT', data)}
+
               <li onClick={handleTaskHistoryModal}>
                 <button className="btn btn-sm btn-primary text-white w-100">
                   <i className="icofont-listing-number"></i> Task History
@@ -602,6 +605,37 @@ export default function TaskData(props) {
                 <button className="btn btn-sm btn-danger text-white w-100">
                   <i className="icofont-listing-number"></i> Task Regularization
                 </button>
+                {/* //// Test Cases */}
+                {data?.convention_name === 'Upload' && (
+                  <li
+                    onClick={() =>
+                      navigate(
+                        `/${_base}/TestDraft/${data?.ticket_id ?? 'null'}/${
+                          data?.task_id ?? 'null'
+                        }`
+                      )
+                    }
+                  >
+                    <button className="btn btn-sm btn-primary text-white w-100">
+                      <i className="icofont-listing-number"></i> Add Test Cases
+                    </button>
+                  </li>
+                )}
+
+                {data?.convention_name === 'Review' && (
+                  <li
+                    onClick={() =>
+                      navigate(
+                        `/${_base}/TestCaseReview/${data?.ticket_id}/${data?.task_id}`
+                      )
+                    }
+                  >
+                    <button className="btn btn-sm btn-primary text-white w-100">
+                      <i className="icofont-listing-number"></i> Review Test
+                      Cases
+                    </button>
+                  </li>
+                )}
               </li>
             </Dropdown.Menu>
           </Dropdown>

@@ -16,7 +16,10 @@ import {
   getSubModuleMasterThunk
 } from '../../../redux/services/testCases/downloadFormatFile';
 
-function DownloadFormatFileModal({ show, close }) {
+function DownloadFormatFileModal({ show, close, ticketId, taskId, projectId }) {
+  console.log('task', taskId);
+  console.log('ticket', ticketId);
+  console.log('projectId', projectId);
   const {
     getProjectModuleListId,
     getModuleList,
@@ -24,6 +27,8 @@ function DownloadFormatFileModal({ show, close }) {
     getModuleData,
     getSubModuleData
   } = useSelector((state) => state?.downloadFormat);
+
+  console.log('getProjectModuleListId', getProjectModuleListId);
 
   const dispatch = useDispatch();
 
@@ -39,6 +44,11 @@ function DownloadFormatFileModal({ show, close }) {
     module_id: [],
     submodule_id: []
   };
+  // console.log('modifiedProjectList', getProjectModuleListId);
+  // const modifiedProjectList = getProjectModuleListId.map((project) => ({
+  //   ...project,
+  //   isDisabled: project.value === projectId
+  // }));
 
   const handleProjectChange = async (e, setFieldValue) => {
     console.log('eeee', e.target.value);
