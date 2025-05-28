@@ -48,27 +48,36 @@ function StatusComponent() {
       enableGrouping: false,
       enableSorting: false,
       enableColumnFilter: false,
-      Cell: ({ row }) => (
-        <div className="btn-group" role="group">
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            data-bs-toggle="modal"
-            data-bs-target="#edit"
-            onClick={(e) => {
-              dispatch(
-                handleModalOpen({
-                  showModal: true,
-                  modalData: row?.original,
-                  modalHeader: 'Edit Status'
-                })
-              );
-            }}
-          >
-            <i className="icofont-edit text-success" />
-          </button>
-        </div>
-      )
+      Cell: ({ row }) => {
+        const disabledStatuses = {
+          unsolved: true,
+          'in progress': true,
+          solved: true
+        };
+
+        return (
+          <div className="btn-group" role="group">
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#edit"
+              onClick={(e) => {
+                dispatch(
+                  handleModalOpen({
+                    showModal: true,
+                    modalData: row?.original,
+                    modalHeader: 'Edit Status'
+                  })
+                );
+              }}
+              disabled={disabledStatuses[row?.original?.status?.toLowerCase()]}
+            >
+              <i className="icofont-edit text-success" />
+            </button>
+          </div>
+        );
+      }
     },
     {
       accessorKey: 'counter',
