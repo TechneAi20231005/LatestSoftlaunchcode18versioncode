@@ -1985,7 +1985,9 @@ function TestDraftDetails(props) {
         reviewer_id: reviewerId,
         status_id: testCasesStatusDataList?.find(
           (d) => d.convention_name === 'PENDING'
-        )?.id
+        )?.id,
+        ticket_id: ticketId,
+        task_id: taskId
       };
     }
     setDisable(true);
