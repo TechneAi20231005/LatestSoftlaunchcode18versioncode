@@ -13,7 +13,7 @@ export const getProjectModuleMasterThunk = createAsyncThunk(
   'projectModuleMaster/getProjectModuleMasterList',
   async () => {
     try {
-      const response = await rewampAxios.get(`projects/getAllProject`);
+      const response = await customAxios.get(`projects/getAllProject`);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };
@@ -32,7 +32,7 @@ export const getModuleMasterThunk = createAsyncThunk(
   'ModuleMaster/getModuleMasterList',
   async () => {
     try {
-      const response = await rewampAxios.get(`module/getAllModule`);
+      const response = await customAxios.get(`module/getAllModule`);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };
@@ -51,7 +51,7 @@ export const getSubModuleMasterThunk = createAsyncThunk(
   'subModuleMaster/getSubModuleMasterList',
   async () => {
     try {
-      const response = await rewampAxios.get(`submodule/getAllSubmodule`);
+      const response = await customAxios.get(`submodule/getAllSubmodule`);
       if (response?.status === 200 || response?.status === 201) {
         if (response?.data?.status === 1) {
           return { data: response?.data?.data, msg: response?.data?.message };
