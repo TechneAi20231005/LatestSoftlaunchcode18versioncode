@@ -933,11 +933,11 @@ function TaskAndTicketTypeMaster(props) {
     },
     {
       name: 'classification_type',
-      label: 'Classification Type',
-      required: modal?.modalData
-        ? modal?.modalData?.parent_name?.toLowerCase() === 'testcases' &&
-          (selectedOption?.toLowerCase() === 'testcases' || !selectedOption)
-        : selectedOption?.toLowerCase() === 'testcases'
+      label: 'Classification Type'
+      // required: modal?.modalData
+      //   ? modal?.modalData?.parent_name?.toLowerCase() === 'testcases' &&
+      //     (selectedOption?.toLowerCase() === 'testcases' || !selectedOption)
+      //   : selectedOption?.toLowerCase() === 'testcases'
     }
   ];
 
@@ -1045,7 +1045,7 @@ function TaskAndTicketTypeMaster(props) {
               })
             }
           >
-            {({ isSubmitting, setFieldValue, values,setValues }) => (
+            {({ isSubmitting, setFieldValue, values, setValues }) => (
               <Form>
                 <div className="deadline-form">
                   <div className="row g-3 mb-3">
@@ -1206,11 +1206,13 @@ function TaskAndTicketTypeMaster(props) {
                             >
                               <CustomMenuList
                                 options={transformedOptions}
-                                onSelect={(label, ID) =>{
-                                  setValues({ ...values, classification_type: '' });
-                                  handleSelect(label, ID)
-                                }
-                                }
+                                onSelect={(label, ID) => {
+                                  setValues({
+                                    ...values,
+                                    classification_type: ''
+                                  });
+                                  handleSelect(label, ID);
+                                }}
                                 closeAllDropdowns={closeAllDropdowns}
                                 isMenuOpen={isMenuOpen}
                                 onClick={(e) => handleSelectOptionClick(e)}
@@ -1253,39 +1255,39 @@ function TaskAndTicketTypeMaster(props) {
                           />
                         </div>
 
-                        {shouldShowTestcaseModule && (
-                          <div className="col-sm-12 mt-2">
-                            <label className="form-label font-weight-bold">
-                              Classification Name :
-                              <Astrick color="red" size="13px" />
-                            </label>
+                        {/* {shouldShowTestcaseModule && ( */}
+                        <div className="col-sm-12 mt-2">
+                          <label className="form-label font-weight-bold">
+                            Classification Name :
+                            {/* <Astrick color="red" size="13px" /> */}
+                          </label>
 
-                            <Field
-                              as="select"
-                              name="classification_type"
-                              className="form-select form-select-sm"
-                            >
-                              {!values?.classification_type && (
-                                <option value="" disabled selected>
-                                  --Select Classification Name--
-                                </option>
-                              )}
-                              {testCaseCollectionTypeData?.map((collection) => (
-                                <option
-                                  value={collection?.id}
-                                  key={collection?.id}
-                                >
-                                  {collection?.convention_name}
-                                </option>
-                              ))}
-                            </Field>
-                            <ErrorMessage
-                              name="classification_type"
-                              component="small"
-                              className="text-danger small"
-                            />
-                          </div>
-                        )}
+                          <Field
+                            as="select"
+                            name="classification_type"
+                            className="form-select form-select-sm"
+                          >
+                            {!values?.classification_type && (
+                              <option value="" disabled selected>
+                                --Select Classification Name--
+                              </option>
+                            )}
+                            {testCaseCollectionTypeData?.map((collection) => (
+                              <option
+                                value={collection?.id}
+                                key={collection?.id}
+                              >
+                                {collection?.convention_name}
+                              </option>
+                            ))}
+                          </Field>
+                          <ErrorMessage
+                            name="classification_type"
+                            component="small"
+                            className="text-danger small"
+                          />
+                        </div>
+                        {/* )} */}
                         <div className="col-sm-12 mt-2">
                           <label className="form-label font-weight-bold">
                             Remark :

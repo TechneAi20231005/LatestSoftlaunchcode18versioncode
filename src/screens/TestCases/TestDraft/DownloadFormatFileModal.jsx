@@ -35,15 +35,16 @@ function DownloadFormatFileModal({ show, close, ticketId, taskId, projectId }) {
   const subModuleIdRef = useRef();
 
   const downloadFormatInitialValue = {
-    project_id: '',
+    project_id: projectId || '',
     module_id: [],
     submodule_id: []
   };
-  // console.log('modifiedProjectList', getProjectModuleListId);
   // const modifiedProjectList = getProjectModuleListId.map((project) => ({
   //   ...project,
   //   isDisabled: project.value === projectId
   // }));
+
+  // console.log('modifiedProjectList', modifiedProjectList);
 
   const handleProjectChange = async (e, setFieldValue) => {
     setFieldValue('project_id', e.target.value);
@@ -55,6 +56,10 @@ function DownloadFormatFileModal({ show, close, ticketId, taskId, projectId }) {
       .map((d) => ({ value: d.id, label: d.module_name }));
     setModuleDropdown(filteredModules);
   };
+
+  const newModuleListAddData = getModuleData
+    ?.filter((d) => d.project_id === projectId)
+    ?.map((i) => ({ value: i.id, label: i.module_name }));
 
   // const handleModuleChange = (e, setFieldValue) => {
   //   console.log('eeee', e.target.value);
@@ -130,6 +135,7 @@ function DownloadFormatFileModal({ show, close, ticketId, taskId, projectId }) {
                     label="Project Name"
                     id="testdraft_projectname"
                     requiredField
+                    disabled={!ticketId ? false : true}
                     handleChange={(event) =>
                       handleProjectChange(event, setFieldValue)
                     }
@@ -149,9 +155,13 @@ function DownloadFormatFileModal({ show, close, ticketId, taskId, projectId }) {
                     }
                     ref={moduleIdRef}
                   /> */}
+
                   <Field
                     classNamePrefix="react-select"
-                    options={moduleDropdown}
+                    // options={moduleDropdown}
+                    options={
+                      !moduleDropdown ? newModuleListAddData : moduleDropdown
+                    }
                     component={CustomReactSelect}
                     name="module_id"
                     label="Module Name"
