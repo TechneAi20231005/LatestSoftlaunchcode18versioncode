@@ -1,9 +1,8 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { postBotMessages } from '../../services/chatBot/index';
-import { act } from 'react';
 
 const initialState = {
-  chatBotList: [],
+  chatBotList: null,
   isLoading: {
     chatBotList: false
   }
@@ -17,10 +16,11 @@ const chatBotSlice = createSlice({
     builder
       .addCase(postBotMessages.pending, (state, action) => {
         state.isLoading.chatBotList = true;
-        state.chatBotList = [];
+        state.chatBotList = null;
       })
       .addCase(postBotMessages.fulfilled, (state, action) => {
-        state.chatBotList = action?.payload?.answer;
+        console.log(action?.payload, 'action?.payload');
+        state.chatBotList = action?.payload;
         state.isLoading.chatBotList = false;
       })
       .addCase(postBotMessages.rejected, (state, action) => {

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ChatbotIcon from '../../components/Common/ChatbotIcon';
 import ThumbUpOffAltIcon from '@mui/icons-material/ThumbUpOffAlt';
 import ThumbDownOffAltIcon from '@mui/icons-material/ThumbDownOffAlt';
@@ -10,28 +10,40 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 
 function ChatMessage({ chat }) {
+  // console.log(chat, 'chat');
   const [feedback, setFeedback] = useState(null); // 'up' | 'down' | null
   const [isCopied, setIsCopied] = useState(false);
-  const [tooltipMessage, setTooltipMessage] = useState("Copy");
+  const [tooltipMessage, setTooltipMessage] = useState('Copy');
   const handleThumbClick = (type) => {
-    setFeedback((prev) => (prev === type ? null : type));
+    if (feedback === type) {
+      return;
+      // If already selected, toggle off
+      // setFeedback(null);
+    } else {
+      console.log(chat?.text?.chat_entry_uuid, 'id');
+      // Otherwise, set the new feedback type
+      setFeedback(type);
+    }
   };
 
+  // useEffect(() => {
+  //   console.log(feedback === 'up' ? 1 : 0);
+  // }, [feedback]);
 
   const handleCopy = () => {
-    if (chat.role === 'model' && chat.text) {
+    if (chat.role === 'model' && chat.text?.answer) {
       const textArea = document.createElement('textarea');
-      textArea.value = chat.text;
+      textArea.value = chat.text?.answer;
       document.body.appendChild(textArea);
       textArea.select();
       try {
         document.execCommand('copy');
         setIsCopied(true);
-        setTooltipMessage("Copied!");
+        setTooltipMessage('Copied!');
 
         setTimeout(() => {
           setIsCopied(false);
-          setTooltipMessage("Copy");
+          setTooltipMessage('Copy');
         }, 2000);
       } catch (err) {
         console.error('Failed to copy text using execCommand: ', err);
@@ -39,7 +51,6 @@ function ChatMessage({ chat }) {
       document.body.removeChild(textArea);
     }
   };
-
 
   return (
     <>
@@ -49,7 +60,9 @@ function ChatMessage({ chat }) {
         }-message`}
       >
         {chat.role === 'model' && <ChatbotIcon />}
-        <span className="message-text">{chat.text}</span>
+        <span className="message-text">
+          {chat?.role === 'model' ? chat.text?.answer : chat?.text}
+        </span>
       </div>
 
       {chat.role === 'model' && (
@@ -86,7 +99,6 @@ function ChatMessage({ chat }) {
                 <ThumbDownOffAltIcon sx={{ fontSize: '15px' }} />
               )}
             </IconButton>
-
           </Tooltip>
           <Tooltip title={tooltipMessage} arrow placement="bottom">
             <IconButton onClick={handleCopy}>

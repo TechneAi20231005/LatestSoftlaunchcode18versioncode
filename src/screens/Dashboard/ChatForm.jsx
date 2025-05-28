@@ -134,11 +134,10 @@ function ChatForm({ setChatHistory, chatHistory }) {
     // }, 600);
   };
 
-  console.log(chatBotList, 'chatBotList');
+  // console.log(chatBotList, 'chatBotList');
 
   useEffect(() => {
-    console.log('hello');
-    if (chatBotList?.length > 0) {
+    if (chatBotList?.answer) {
       setChatHistory((history) => [
         ...history,
         { role: 'model', text: chatBotList }
