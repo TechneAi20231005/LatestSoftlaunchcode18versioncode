@@ -1616,7 +1616,7 @@ function ReviewedTestDraftComponent() {
       enableSorting: false
     },
     {
-      accessorFn: (originalRows) => `${originalRows?.tc_id || '--'} `,
+      accessorFn: (originalRows) => `TC_${originalRows?.tc_id || '--'} `,
       header: 'Test Id',
       Header: (
         <span>
