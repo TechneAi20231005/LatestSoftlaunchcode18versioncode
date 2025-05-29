@@ -593,9 +593,6 @@ export default function TaskData(props) {
                 </li>
               )}
 
-              {console.log('data', data.task_id)}
-              {console.log('dataT', data)}
-
               <li onClick={handleTaskHistoryModal}>
                 <button className="btn btn-sm btn-primary text-white w-100">
                   <i className="icofont-listing-number"></i> Task History

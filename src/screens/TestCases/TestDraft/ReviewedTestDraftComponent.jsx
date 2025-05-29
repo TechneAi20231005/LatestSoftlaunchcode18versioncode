@@ -103,7 +103,7 @@ function localReducer(state, action) {
 }
 
 function ReviewedTestDraftComponent() {
-  const { id } = useParams();
+  const { id, ticketId, taskId } = useParams();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -2013,7 +2013,10 @@ function ReviewedTestDraftComponent() {
       reviewer_id: reviewerId,
       status_id: testCasesStatusDataList?.find(
         (d) => d.convention_name === 'MODIFIED'
-      )?.id
+      )?.id,
+
+      ticket_id: ticketId,
+      task_id: taskId
     };
 
     dispatch(

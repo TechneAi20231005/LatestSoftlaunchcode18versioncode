@@ -84,6 +84,8 @@ function localReducer(state, action) {
 
 function ReviewedTestDraftDetails(props) {
   const dispatch = useDispatch();
+  const { ticketId, taskId } = useParams();
+
   const clearAllFilter = props.clearData;
 
   const { allReviewDraftTestListData, isLoading, filterReviewedDraftTestList } =
@@ -98,7 +100,6 @@ function ReviewedTestDraftDetails(props) {
   const [state, localDispatch] = useReducer(localReducer, initialState);
   const [errorMessage, setErrorMessage] = useState('');
   const [selectedValue, setSelectedValue] = useState('');
-  const { ticketId, taskId } = useParams();
 
   const {
     filterType,
@@ -946,7 +947,7 @@ function ReviewedTestDraftDetails(props) {
         const id = row.original.id;
         return testPlanId ? (
           <Link
-            to={`/${_base}/ReviewedTestDraftComponent/${id}`}
+            to={`/${_base}/ReviewedTestDraftComponent/${id}/${ticketId}/${taskId}`}
             style={{ textDecoration: 'underline', color: '#1976d2' }}
           >
             {`${testPlanId}`}

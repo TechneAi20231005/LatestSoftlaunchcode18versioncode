@@ -917,12 +917,12 @@ class MainIndex extends React.Component {
             />
             <Route
               exact
-              path={`/${_base}/ReviewedTestDraftComponent/:id`}
+              path={`/${_base}/ReviewedTestDraftComponent/:id/:ticketId/:taskId`}
               element={<ReviewedTestDraftComponent />}
             />
             <Route
               exact
-              path={`/${_base}/ReviewedTestDraftDetails`}
+              path={`/${_base}/ReviewedTestDraftDetails/:ticketId/:taskId`}
               element={<ReviewedTestDraftDetails />}
             />
             <Route
@@ -937,7 +937,7 @@ class MainIndex extends React.Component {
             />
             <Route
               exact
-              path={`/${_base}/TestCaseReviewDetails/:id`}
+              path={`/${_base}/TestCaseReviewDetails/:id/:ticketId/:taskId`}
               element={<TestCaseReviewDetails />}
             />
             <Route

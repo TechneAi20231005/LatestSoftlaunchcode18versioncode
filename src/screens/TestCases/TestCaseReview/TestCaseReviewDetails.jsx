@@ -99,7 +99,7 @@ function localReducer(state, action) {
 }
 
 function TestCaseReviewDetails() {
-  const { id } = useParams();
+  const { id, ticketId, taskId } = useParams();
   const planID = id;
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -357,7 +357,9 @@ function TestCaseReviewDetails() {
         status: status,
         common_comment_id: commonComment,
         common_remark: commonRemark,
-        status_id: statusId
+        status_id: statusId,
+        ticket_id: ticketId,
+        task_id: taskId
       };
       dispatch(
         approveRejectByReviewerMasterThunk({
