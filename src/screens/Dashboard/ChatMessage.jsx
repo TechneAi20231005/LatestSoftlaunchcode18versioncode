@@ -10,30 +10,19 @@ import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
 
 function ChatMessage({ chat }) {
-  // console.log(chat, 'chat');
-  const [feedback, setFeedback] = useState(null); // 'up' | 'down' | null
+  const [feedback, setFeedback] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
   const [tooltipMessage, setTooltipMessage] = useState('Copy');
+
   const handleThumbClick = (type) => {
-    if (feedback === type) {
-      return;
-      // If already selected, toggle off
-      // setFeedback(null);
-    } else {
-      console.log(chat?.text?.chat_entry_uuid, 'id');
-      // Otherwise, set the new feedback type
-      setFeedback(type);
-    }
+    if (feedback === type) return;
+    setFeedback(type);
   };
 
-  // useEffect(() => {
-  //   console.log(feedback === 'up' ? 1 : 0);
-  // }, [feedback]);
-
   const handleCopy = () => {
-    if (chat.role === 'model' && chat.text?.answer) {
+    if (chat?.role === 'model' && chat?.text?.answer) {
       const textArea = document.createElement('textarea');
-      textArea.value = chat.text?.answer;
+      textArea.value = chat?.text?.answer;
       document.body.appendChild(textArea);
       textArea.select();
       try {
@@ -56,16 +45,16 @@ function ChatMessage({ chat }) {
     <>
       <div
         className={`mb-0 message ${
-          chat.role === 'model' ? 'bot' : 'user'
+          chat?.role === 'model' ? 'bot' : 'user'
         }-message`}
       >
-        {chat.role === 'model' && <ChatbotIcon />}
+        {chat?.role === 'model' && <ChatbotIcon />}
         <span className="message-text">
-          {chat?.role === 'model' ? chat.text?.answer : chat?.text}
+          {chat?.role === 'model' ? chat?.text.answer : chat.text}
         </span>
       </div>
 
-      {chat.role === 'model' && (
+      {chat?.role === 'model' && (
         <div
           style={{ display: 'flex', gap: 0, paddingLeft: 50, marginTop: -4 }}
         >
@@ -100,6 +89,7 @@ function ChatMessage({ chat }) {
               )}
             </IconButton>
           </Tooltip>
+
           <Tooltip title={tooltipMessage} arrow placement="bottom">
             <IconButton onClick={handleCopy}>
               {isCopied ? (
@@ -114,5 +104,4 @@ function ChatMessage({ chat }) {
     </>
   );
 }
-
 export default ChatMessage;
