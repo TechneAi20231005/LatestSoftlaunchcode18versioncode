@@ -366,6 +366,7 @@ function TestCaseReviewDetails() {
           onSuccessHandler: () => {
             // setCommonComment('');
             setCommonRemark('');
+            setChangedRows({});
             dispatch(
               getByTestPlanIDListThunk({
                 id: id,

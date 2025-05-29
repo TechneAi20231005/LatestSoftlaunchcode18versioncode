@@ -900,9 +900,19 @@ class MainIndex extends React.Component {
               path={`/${_base}/PODeleteRequisition`}
               element={<DeleteRequisition />}
             />
+            {/* <Route
+              exact
+              path={`/${_base}/TestDraft`}
+              element={<TestDraftComponent />}
+            /> */}
             <Route
               exact
               path={`/${_base}/TestDraft`}
+              element={<TestDraftComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/TestDraft/:ticketId/:taskId`}
               element={<TestDraftComponent />}
             />
             <Route
@@ -918,6 +928,11 @@ class MainIndex extends React.Component {
             <Route
               exact
               path={`/${_base}/TestCaseReview`}
+              element={<TestCaseReviewComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/TestCaseReview/:ticketId/:taskId?`}
               element={<TestCaseReviewComponent />}
             />
             <Route

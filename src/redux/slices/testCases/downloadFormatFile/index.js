@@ -23,6 +23,7 @@ import {
 const initialState = {
   getProjectModuleList: [],
   getModuleList: [],
+  projectId: null,
   getSubModuleList: [],
   getDraftTestListData: [],
   allDraftTestListData: [],
@@ -251,9 +252,12 @@ const downloadFormatSlice = createSlice({
         state.isLoading.getDraftTestListData = true;
       })
       .addCase(getDraftTestCaseList.fulfilled, (state, action) => {
+        console.log('state', action?.payload?.data?.project_id);
+
         state.isLoading.getDraftTestListData = false;
         state.successMsg.getDraftTestListData = action?.payload;
-
+        // console.log('projectid', action?.payload);
+        state.projectId = action?.payload?.data?.project_id;
         let data = !action?.payload?.data?.data?.data
           ? action?.payload?.data?.data?.data
           : action?.payload?.data?.data?.data?.filter(
@@ -267,6 +271,8 @@ const downloadFormatSlice = createSlice({
       })
       .addCase(getDraftTestCaseList.rejected, (state, action) => {
         state.isLoading.getDraftTestListData = false;
+        console.log('projectid', action);
+
         state.errorMsg.getDraftTestListData = action?.error?.message;
       })
 

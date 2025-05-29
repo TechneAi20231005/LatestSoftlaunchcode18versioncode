@@ -61,7 +61,7 @@ export default class DynamicFormDropdownMasterService {
       }
     };
 
-    return axios.get(_URL + '/getAllDropdown', config);
+    return axios.get(_URL + '/getAllDropdown?export=1', config);
   }
 
   getDropdownByName(payload) {

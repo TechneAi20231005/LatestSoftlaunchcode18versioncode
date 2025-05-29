@@ -65,6 +65,7 @@ import testCaseReviewSlice from '../slices/testCases/testCaseReview';
 import testBankSlice from '../slices/testCases/testBank';
 import sidebarSlice from '../slices/Sidebar';
 import jobRoleMaster from '../slices/jobRoleMaster';
+import  taskAndTicketTypeSlice  from '../../screens/Masters/TaskAndTicketTypeMaster/TaskAndTicketTypeMasterSlice';
 
 export const store = configureStore({
   reducer: {
@@ -90,6 +91,7 @@ export const store = configureStore({
     queryTypeMaster: QueryTypeComponetSlice,
     designationMaster: DesignationSlice,
     statusMaster: statusMasterSlice,
+    taskAndTicketType:taskAndTicketTypeSlice,
     projectMaster: ProjectMasterSlice,
     billChecking: BillCheckingTransactionSlice,
     vendorMaster: VendorMasterSlice,
