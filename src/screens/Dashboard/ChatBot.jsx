@@ -5,11 +5,13 @@ import ChatForm from './ChatForm';
 import ChatMessage from './ChatMessage';
 import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import IconButton from '@mui/material/IconButton';
-import ModeCommentIcon from '@mui/icons-material/ModeComment';
 import ChatIcon from '@mui/icons-material/Chat';
-import ChatbotTypingDots from './ChatbotTypingDots';
+import { useSelector } from 'react-redux';
 function ChatBot() {
-  const [chatHistory, setChatHistory] = useState([]);
+  // const [chatHistory, setChatHistory] = useState([]);
+  const chatHistory =
+    useSelector((state) => state?.chatBotSlice?.chatHistory) || [];
+
   const [showChatbot, setShowChatbot] = useState(false);
   const chatBodyRef = useRef();
 
@@ -30,13 +32,6 @@ function ChatBot() {
           <ChatIcon />
         </span>
       </IconButton>
-      {/* <button
-        onClick={() => setShowChatbot((prev) => !prev)}
-        id="chatbot-toggler"
-      >
-        <span className="material-symbols-rounded">mode_comment</span>
-        <span className="material-symbols-rounded">close</span>
-      </button> */}
       <div className="chatbot-popup">
         {/* chatbot Header */}
         <div className="chat-header">
@@ -50,10 +45,6 @@ function ChatBot() {
               <KeyboardArrowDownIcon fontSize="large" />
             </span>
           </IconButton>
-
-          {/* <button onClick={() => setShowChatbot((prev) => !prev)} className="material-symbols-rounded">
-            keyboard_arrow_down
-          </button> */}
         </div>
         {/* chatbot Body */}
         <div ref={chatBodyRef} className="chat-body">
@@ -63,19 +54,13 @@ function ChatBot() {
               Hey There {userName} 🤚 <br /> How can I help you today?
             </span>
           </div>
-          {chatHistory.map((chat, index) => (
+          {chatHistory?.map((chat, index) => (
             <ChatMessage key={index} chat={chat} />
           ))}
         </div>
-
-        {/* chatbot loader */}
-        {/* <div className="text-primary">
-          hello doits
-
-        </div> */}
         {/* chatbot Footer */}
         <div className="chat-footer">
-          <ChatForm setChatHistory={setChatHistory} chatHistory={chatHistory} />
+          <ChatForm chatHistory={chatHistory} />
         </div>
       </div>
     </div>

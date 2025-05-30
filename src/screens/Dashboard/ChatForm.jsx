@@ -7,10 +7,13 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import { useDispatch, useSelector } from 'react-redux';
 import { postBotMessages } from '../../redux/services/chatBot';
-import { use } from 'react';
+import {
+  addMessageToHistory,
+  removeLastMessage
+} from '../../redux/slices/chatBotSlice';
 import ChatbotTypingDots from './ChatbotTypingDots';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
-function ChatForm({ setChatHistory, chatHistory }) {
+function ChatForm({ chatHistory }) {
   const inputRef = useRef();
   const dispatch = useDispatch();
   const postBotDispatchRef = useRef(null);
@@ -92,10 +95,11 @@ function ChatForm({ setChatHistory, chatHistory }) {
     const userMessage = inputValue.trim();
     if (!userMessage) return;
 
-    setChatHistory((history) => [
-      ...history,
-      { role: 'user', text: userMessage }
-    ]);
+    // setChatHistory((history) => [
+    //   ...history,
+    //   { role: 'user', text: userMessage }
+    // ]);
+    dispatch(addMessageToHistory({ role: 'user', text: userMessage }));
     setInputValue('');
     setShowSend(false);
     if (inputRef.current) inputRef.current.style.height = '47px';
@@ -134,22 +138,21 @@ function ChatForm({ setChatHistory, chatHistory }) {
     // }, 600);
   };
 
-  console.log(chatBotList, 'chatBotList');
+  // console.log(chatBotList, 'chatBotList');
 
-  useEffect(() => {
-    console.log('hello');
-    if (chatBotList?.length > 0) {
-      setChatHistory((history) => [
-        ...history,
-        { role: 'model', text: chatBotList }
-      ]);
-    }
+  // useEffect(() => {
+  //   if (chatBotList?.answer) {
+  //     setChatHistory((history) => [
+  //       ...history,
+  //       { role: 'model', text: chatBotList }
+  //     ]);
+  //   }
 
-    // setChatHistory((history) => [
-    //   ...history,
-    //   { role: 'model', text: 'Error occurred while sending message' }
-    // ]);
-  }, [chatBotList]);
+  //   // setChatHistory((history) => [
+  //   //   ...history,
+  //   //   { role: 'model', text: 'Error occurred while sending message' }
+  //   // ]);
+  // }, [chatBotList]);
 
   const resizeTextarea = () => {
     const el = inputRef.current;
@@ -194,15 +197,10 @@ function ChatForm({ setChatHistory, chatHistory }) {
   const handleStopMessage = () => {
     abortControllerRef.current?.abort();
 
-    setChatHistory((prevHistory) => {
-      if (
-        prevHistory.length &&
-        prevHistory[prevHistory.length - 1].role === 'user'
-      ) {
-        return prevHistory.slice(0, -1);
-      }
-      return prevHistory;
-    });
+    const lastMessage = chatHistory[chatHistory.length - 1];
+    if (lastMessage?.role === 'user') {
+      dispatch(removeLastMessage());
+    }
   };
 
   return (
