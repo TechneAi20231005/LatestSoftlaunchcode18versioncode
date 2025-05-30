@@ -8,8 +8,11 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
+import { flagBotMessage } from '../../redux/services/chatBot';
+import { useDispatch } from 'react-redux';
 
 function ChatMessage({ chat }) {
+  const dispatch = useDispatch();
   const [feedback, setFeedback] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
   const [tooltipMessage, setTooltipMessage] = useState('Copy');
@@ -17,6 +20,15 @@ function ChatMessage({ chat }) {
   const handleThumbClick = (type) => {
     if (feedback === type) return;
     setFeedback(type);
+    dispatch(
+      flagBotMessage({
+        formData: {
+          project_id: '6835498ba36d7260bd4ff6d5',
+          uuid: chat?.text?.chat_entry_uuid || 0,
+          flagging: type === 'up' ? 1 : 0
+        }
+      })
+    );
   };
 
   const handleCopy = () => {
