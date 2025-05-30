@@ -917,7 +917,6 @@ function ReviewedTestDraftDetails(props) {
   //     )
   //   }
   // ];
-
   const columns = [
     {
       accessorFn: (originalRows) =>

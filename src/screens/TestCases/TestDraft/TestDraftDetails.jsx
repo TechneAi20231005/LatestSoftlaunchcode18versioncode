@@ -176,6 +176,7 @@ function TestDraftDetails(props) {
     platform: 'platform',
     type_name: 'type_id',
     tc_id: 'tc_id',
+    ticket_id: 'ticket_id',
     test_description: 'test_description',
     severity: 'severity',
     group_name: 'group_id',
@@ -233,6 +234,8 @@ function TestDraftDetails(props) {
       platform: 'platform',
       type_name: 'testing_type',
       tc_id: 'tc_id',
+      ticket_id: 'ticket_id',
+
       test_description: 'test_descriptions',
       is_automation_script: 'is_automation_script',
       severity: 'severity',
@@ -1595,6 +1598,29 @@ function TestDraftDetails(props) {
             style={{ cursor: 'pointer' }}
             onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'text')}
           />
+        </span>
+      ),
+
+      size: 180,
+      enableSorting: false
+    },
+    {
+      accessorFn: (originalRows) =>
+        originalRows?.ticket?.ticket_id
+          ? originalRows?.ticket?.ticket_id
+          : '--',
+
+      header: 'Ticket Id',
+      Header: (
+        <span>
+          Ticket Id
+          {/* <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'ticket_id', 'Ticket Id', 'text')
+            }
+          /> */}
         </span>
       ),
 

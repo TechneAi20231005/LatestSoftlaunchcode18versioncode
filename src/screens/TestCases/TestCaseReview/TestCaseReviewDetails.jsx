@@ -373,7 +373,9 @@ function TestCaseReviewDetails() {
               getByTestPlanIDListThunk({
                 id: id,
                 limit: paginationData.rowPerPage,
-                page: paginationData.currentPage
+                page: paginationData.currentPage,
+                ticket_id: ticketId,
+                task_id: taskId
               })
             );
             // dispatch(
@@ -1626,6 +1628,29 @@ function TestCaseReviewDetails() {
         );
       }
     },
+    {
+      accessorFn: (originalRows) =>
+        originalRows?.ticket?.ticket_id
+          ? originalRows?.ticket?.ticket_id
+          : '--',
+
+      header: 'Ticket Id',
+      Header: (
+        <span>
+          Ticket Id
+          {/* <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'ticket_id', 'Ticket Id', 'text')
+            }
+          /> */}
+        </span>
+      ),
+
+      size: 180,
+      enableSorting: false
+    },
 
     {
       accessorFn: (originalRows) =>
@@ -1766,6 +1791,8 @@ function TestCaseReviewDetails() {
     created_by: 'created_by',
     updated_at: 'updated_at',
     updated_by: 'updated_by',
+    ticket_id: 'ticket_id',
+
     is_automation_script: 'is_automation_script'
   };
 
@@ -1847,8 +1874,7 @@ function TestCaseReviewDetails() {
           originalRows?.reviewer_comment?.reviewer_comment || '-',
         platform: originalRows?.platform || '--',
         project_name: originalRows?.project?.project_name || '-',
-        'is Automation':
-          originalRows?.test_cases?.[0].is_automation_script || '--',
+        'is Automation': originalRows?.is_automation_script || '--',
         'Created By': `${originalRows?.created_by?.first_name || '-'} ${
           originalRows?.created_by?.last_name || '-'
         }`,
@@ -1896,6 +1922,7 @@ function TestCaseReviewDetails() {
       type_name: 'testing_type',
       tc_id: 'tc_id',
       test_description: 'test_descriptions',
+      ticket_id: 'ticket_id',
 
       severity: 'severity',
       group_name: 'group_names',
@@ -2129,7 +2156,9 @@ function TestCaseReviewDetails() {
           id: id,
           limit: paginationData.pageSize,
           page: paginationData.pageIndex,
-          filter_testcase_data: updatedFilters
+          filter_testcase_data: updatedFilters,
+          ticket_id: ticketId,
+          task_id: taskId
         })
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -2155,7 +2184,9 @@ function TestCaseReviewDetails() {
           id: id,
           limit: paginationData.pageSize,
           page: paginationData.pageIndex,
-          filter_testcase_data: updatedFilters
+          filter_testcase_data: updatedFilters,
+          ticket_id: ticketId,
+          task_id: taskId
         })
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -2204,7 +2235,9 @@ function TestCaseReviewDetails() {
           id: id,
           limit: paginationData.pageSize,
           page: paginationData.pageIndex,
-          filter_testcase_data: updatedFilters
+          filter_testcase_data: updatedFilters,
+          ticket_id: ticketId,
+          task_id: taskId
         })
       );
       localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -2231,7 +2264,9 @@ function TestCaseReviewDetails() {
         id: id,
         limit: paginationData.pageSize,
         page: paginationData.pageIndex,
-        filter_testcase_data: []
+        filter_testcase_data: [],
+        ticket_id: ticketId,
+        task_id: taskId
       })
     );
   };
@@ -2289,7 +2324,9 @@ function TestCaseReviewDetails() {
             id: id,
             limit: paginationData.pageSize,
             page: paginationData.pageIndex,
-            filter_testcase_data: updatedFilters
+            filter_testcase_data: updatedFilters,
+            ticket_id: ticketId,
+            task_id: taskId
           })
         );
         localDispatch({ type: 'SET_MODAL_IS_OPEN', payload: false });
@@ -2325,7 +2362,10 @@ function TestCaseReviewDetails() {
       getByTestPlanIDListThunk({
         id: id,
         limit: paginationData.pageSize,
+
         page: paginationData.pageIndex + 1,
+        ticket_id: ticketId,
+        task_id: taskId,
         filter_testcase_data:
           updatedFilters?.length === 1 &&
           updatedFilters[0]?.column === filterColumnId
@@ -2341,7 +2381,7 @@ function TestCaseReviewDetails() {
     );
     dispatch(getReviewCommentMasterListThunk());
   }, [paginationData.pageSize, paginationData.pageIndex]);
-
+  console.log('ticketId', ticketId);
   useEffect(() => {
     dispatch(
       getTestCaseStatusDataList({
