@@ -6,15 +6,17 @@ import Alert from '../Common/Alert';
 import { _base } from '../../settings/constants';
 import { postDataa } from '../../services/ForgetPasswordService/OtpService';
 import { postData } from '../../services/ForgetPasswordService/ForgotPasswordService';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../utils';
 
 export default function StepAuthentication() {
   const location = useLocation();
 
   const history = useNavigate();
-  const [notify, setNotify] = useState(null);
   const [userData, setUserData] = useState({ email: null });
   const [resendTimer, setResendTimer] = useState(60); // 60 seconds countdown
   const [resendDisabled, setResendDisabled] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
   const changeHandler = (e) => {
     const { name, value } = e.target;
     setUserData({
@@ -23,10 +25,13 @@ export default function StepAuthentication() {
     });
   };
 
-  const submitHandler = (e) => {
+  const submitHandler = async (e) => {
     if (e) {
       e.preventDefault();
-      postDataa(userData).then((res) => {
+      if (submitting) return;
+      setSubmitting(true);
+      try {
+        const res = await postDataa(userData);
         if (res.status === 200) {
           if (res.data.status === 1) {
             history(
@@ -36,34 +41,42 @@ export default function StepAuthentication() {
               { state: { email: userData.email, otp: userData.otp } }
             );
           } else {
-            setNotify();
-            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message);
           }
         }
-      });
+      } catch (error) {
+        errorHandler(error);
+      } finally {
+        setSubmitting(false);
+      }
     }
   };
 
-  const submitOtpHandler = (e) => {
+  const submitOtpHandler = async (e) => {
     e.preventDefault();
-    setNotify(null);
-    postData(userData).then((res) => {
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      const res = await postData(userData);
       if (res.status === 200) {
         if (res.data.status === 1) {
-          setNotify({ type: 'success', message: res.data.message });
+          toast.success(res.data.message);
         } else {
-          setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message);
         }
       } else {
-        setNotify();
-        setNotify({ type: 'danger', message: 'Request Error' });
+        toast.error('Request Error');
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
   const handleResendClick = () => {
     // Implement the logic to resend the verification code here
     // For now, let's just simulate a success message
-    setNotify({ type: 'success', message: 'New code sent successfully.' });
+    toast.success('New code sent successfully.');
     setResendDisabled(true);
   };
 
@@ -92,7 +105,6 @@ export default function StepAuthentication() {
 
   return (
     <div className="col-lg-6 d-flex justify-content-center align-items-center border-0 rounded-lg auth-h100">
-      {notify && <Alert alertData={notify} />}
       <div
         className="w-100 p-3 p-md-5 card border-0 bg-dark text-light"
         style={{ maxWidth: '32rem' }}
@@ -140,6 +152,7 @@ export default function StepAuthentication() {
               `Resend the code in ${resendTimer} seconds.`
             ) : (
               <button
+                disabled={submitting}
                 type="submit"
                 onClick={(e) => {
                   handleResendClick(e);

@@ -18,7 +18,7 @@ import {
 
 function DownloadFormatFileModal({ show, close }) {
   const {
-    getProjectModuleList,
+    getProjectModuleListId,
     getModuleList,
     getSubModuleList,
     getModuleData,
@@ -36,28 +36,41 @@ function DownloadFormatFileModal({ show, close }) {
 
   const downloadFormatInitialValue = {
     project_id: '',
-    module_id: '',
+    module_id: [],
     submodule_id: []
   };
 
   const handleProjectChange = async (e, setFieldValue) => {
+    console.log('eeee', e.target.value);
     setFieldValue('project_id', e.target.value);
     setFieldValue('module_id', '');
     setFieldValue('submodule_id', '');
     setModuleDropdown(null);
     const filteredModules = getModuleData
-      .filter((d) => d.project_id === parseInt(e.target.value))
+      .filter((d) => d.project_id == e.target.value)
       .map((d) => ({ value: d.id, label: d.module_name }));
-
     setModuleDropdown(filteredModules);
   };
 
-  const handleModuleChange = (e, setFieldValue) => {
-    setFieldValue('module_id', e.target.value);
-    setFieldValue('submodule_id', '');
+  // const handleModuleChange = (e, setFieldValue) => {
+  //   console.log('eeee', e.target.value);
+  //   setFieldValue('module_id', e.target.value);
+  //   setFieldValue('submodule_id', '');
 
+  //   const data = getSubModuleData
+  //     ?.filter((d) => d.module_name === e.target.value)
+  //     .map((d) => ({ value: d.sub_module_name, label: d.sub_module_name }));
+
+  //   setSubModuleDropdown(data);
+  // };
+
+  const handleModuleChange = (selectedOptions) => {
+    // selectedOptions is an array of selected { label, value } objects from react-select
+    const selectedModuleValues = selectedOptions?.map((opt) => opt.value) || [];
+
+    const selectedModuleNames = selectedOptions?.map((opt) => opt.value) || [];
     const data = getSubModuleData
-      ?.filter((d) => d.module_id === parseInt(e.target.value))
+      ?.filter((d) => selectedModuleNames.includes(d.module_id))
       .map((d) => ({ value: d.id, label: d.sub_module_name }));
 
     setSubModuleDropdown(data);
@@ -65,11 +78,12 @@ function DownloadFormatFileModal({ show, close }) {
 
   const handleDownloadFormatFile = ({ formData }) => {
     const { project_id, module_id, submodule_id } = formData;
+    // return false
     dispatch(
       downloadFormatFileThunk({
-        project_id,
-        module_id,
-        submodule_id
+        project_name: project_id,
+        module_name: module_id,
+        submodule_name: submodule_id
       })
     ).then((res) => {
       if (res?.meta?.requestStatus === 'fulfilled') {
@@ -79,7 +93,7 @@ function DownloadFormatFileModal({ show, close }) {
   };
 
   useEffect(() => {
-    if (!getProjectModuleList) {
+    if (!getProjectModuleListId) {
       dispatch(getProjectModuleMasterThunk());
     }
     if (!getModuleList) {
@@ -105,10 +119,12 @@ function DownloadFormatFileModal({ show, close }) {
               <Row className="row_gap_3">
                 <Col md={4} lg={4}>
                   <Field
-                    data={getProjectModuleList}
+                    classNamePrefix="react-select"
+                    data={getProjectModuleListId}
                     component={CustomDropdown}
                     name="project_id"
                     label="Project Name"
+                    id="testdraft_projectname"
                     requiredField
                     handleChange={(event) =>
                       handleProjectChange(event, setFieldValue)
@@ -116,24 +132,44 @@ function DownloadFormatFileModal({ show, close }) {
                   />
                 </Col>
                 <Col md={4} lg={4}>
-                  <Field
+                  {/* <Field
+                    classNamePrefix="react-select"
                     data={moduleDropdown}
                     component={CustomDropdown}
                     name="module_id"
                     label="Module Name"
+                    id="testdraft_modulename"
                     requiredField
                     handleChange={(event) =>
                       handleModuleChange(event, setFieldValue)
                     }
                     ref={moduleIdRef}
+                  /> */}
+                  {console.log('moduleDropdown', moduleDropdown)}
+                  <Field
+                    classNamePrefix="react-select"
+                    options={moduleDropdown}
+                    component={CustomReactSelect}
+                    name="module_id"
+                    label="Module Name"
+                    id="testdraft_modulename"
+                    placeholder="Select"
+                    ref={moduleIdRef}
+                    isMulti
+                    handleChange={(event) =>
+                      handleModuleChange(event, setFieldValue)
+                    }
+                    // required
                   />
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
+                    classNamePrefix="react-select"
                     options={subModuleDropdown}
                     component={CustomReactSelect}
                     name="submodule_id"
                     label="SubModule Name"
+                    id="testdraft_submodulename"
                     placeholder="Select"
                     ref={subModuleIdRef}
                     isMulti
@@ -148,7 +184,7 @@ function DownloadFormatFileModal({ show, close }) {
                 </button>
                 <button
                   type="button"
-                  className="btn btn bg-white shadow p-2 text-black"
+                  className="btn btn-danger text-white"
                   onClick={() => close()}
                 >
                   Cancel

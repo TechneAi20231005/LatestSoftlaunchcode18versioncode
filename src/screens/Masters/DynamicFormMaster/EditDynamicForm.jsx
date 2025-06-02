@@ -1,13 +1,10 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import ErrorLogService from '../../../services/ErrorLogService';
 import { Link } from 'react-router-dom';
-import { _base } from '../../../settings/constants';
+import { _base, reportUrl } from '../../../settings/constants';
 
 import DynamicFormService from '../../../services/MastersService/DynamicFormService';
 import DynamicFormDropdownMasterService from '../../../services/MastersService/DynamicFormDropdownMasterService';
-import Alert from '../../../components/Common/Alert';
-
 import { Astrick } from '../../../components/Utilities/Style';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -29,12 +26,16 @@ import UserService from '../../../services/MastersService/UserService';
 import { getDesignationDataListThunk } from '../DesignationMaster/DesignationAction';
 import { getStatusData } from '../StatusMaster/StatusComponentAction';
 import QueryTypeService from '../../../services/MastersService/QueryTypeService';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 function EditDynamicForm() {
   const { id } = useParams();
   const formId = id;
 
   const [data, setData] = useState();
+  const [message, setMessage] = useState('');
+  const [display, setDisplay] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -47,7 +48,6 @@ function EditDynamicForm() {
       DynamicFormDropDownSlice.dynamicFormDropDown.sortDropDown
   );
 
-  const [notify, setNotify] = useState(null);
   const mainJson = {
     inputWidth: null,
     inputType: null,
@@ -66,21 +66,9 @@ function EditDynamicForm() {
   };
 
   const [rows, setRows] = useState([mainJson]);
-
   const [formShow, setFormShow] = useState(false);
-
-  // const [inputDataSource, setInputDataSource] = useState();
-  // const [inputLabelValue, setInputLabelValue] = useState();
-
   const [labelErr, setLabelErr] = useState(null);
-  // const [selectedValueErr, setSelectedValueErr] = useState('');
-
   const [selectedValue, setSelectedValue] = useState();
-
-  // const [userData, setUserData] = useState(null);
-  // const [radioSelect, setRadioSelect] = useState();
-
-  // const [labelNames, setLabelNames] = useState([]);
 
   const roleDropdown = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getAllRoles
@@ -226,8 +214,10 @@ function EditDynamicForm() {
         rows[idx].inputAddOn.inputDateTime = e.target.value;
       } else if (e.target.name === 'inputFormat') {
         rows[idx].inputFormat = e.target.value;
+      } else if (e.target.name === 'inputOnChangeSource') {
+        rows[idx].inputAddOn.inputDataSource = e.target.value;
+        // rows[idx].inputAddOn.inputOnChangeSource = e.target.value;
       }
-
       if (e.target.name === 'inputDataSource' && e.target.value === 'user') {
         const tempUserData = [];
         const test1 = e.target.value;
@@ -259,7 +249,8 @@ function EditDynamicForm() {
               rows[idx].inputAddOn.inputDataSourceData = aa;
               // setInputDataSource(aa);
             }
-          });
+          })
+          .catch((error) => errorHandler(error));
       } else if (
         e.target.name === 'inputDataSource' &&
         e.target.value === 'city'
@@ -306,17 +297,20 @@ function EditDynamicForm() {
         e.target.name === 'inputDataSource' &&
         e.target.value === 'query'
       ) {
-        await new QueryTypeService().getQueryType().then((res) => {
-          if (res.status === 200) {
-            const data = res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({ value: d.id, label: d.query_type_name }));
+        await new QueryTypeService()
+          .getQueryType()
+          .then((res) => {
+            if (res.status === 200) {
+              const data = res.data.data
+                .filter((d) => d.is_active === 1)
+                .map((d) => ({ value: d.id, label: d.query_type_name }));
 
-            rows[idx].inputAddOn.inputDataSourceData = data;
+              rows[idx].inputAddOn.inputDataSourceData = data;
 
-            // setInputDataSource(data);
-          }
-        });
+              // setInputDataSource(data);
+            }
+          })
+          .catch((error) => errorHandler(error));
       }
 
       // else if (e.target.name == "inputRadio") {
@@ -343,7 +337,8 @@ function EditDynamicForm() {
                 // setInputDataSource(temp);
               }
             }
-          });
+          })
+          .catch((error) => errorHandler(error));
       }
     }
   };
@@ -403,10 +398,22 @@ function EditDynamicForm() {
     }
     setFormShow(formShow === true ? false : true);
   };
-
+  const [submitting, setSubmitting] = useState(false);
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    if (submitting) return;
+    setSubmitting(true);
+
+    if (!message.trim()) {
+      setDisplay('Form Name is Required');
+      setSubmitting(false);
+      return;
+    } else {
+      setDisplay('');
+    }
+
+    // return;
     const data = {
       template_name: e.target.template_name.value,
       is_active: e.target.is_active.value,
@@ -414,40 +421,26 @@ function EditDynamicForm() {
       data: JSON.stringify(rows)
     };
 
-    await new DynamicFormService()
-      .updateDynamicForm(formId, data)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            dispatch(dynamicFormData());
-            // history({
-            //   pathname: `/${_base}/DynamicForm`,
+    try {
+      const res = await new DynamicFormService().updateDynamicForm(
+        formId,
+        data
+      );
 
-            // },{ state: { alert: { type: "success", message: res.data.message } }}
-
-            // );
-
-            setNotify({ type: 'success', message: res.data.message });
-            setTimeout(() => {
-              navigate(`/${_base}/DynamicForm`, {
-                state: {
-                  alert: { type: 'success', message: res.data.message }
-                }
-              });
-            }, 3000);
-          } else {
-            setNotify({ type: 'danger', message: res.data.message });
-          }
+      if (res?.status === 200) {
+        if (res?.data?.status === 1) {
+          dispatch(dynamicFormData());
+          toast.success(res?.data?.message);
+          navigate(`/${_base}/DynamicForm`);
         } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'User',
-            'Create_User',
-            'INSERT',
-            res.message
-          );
+          toast.error(res?.data?.message);
         }
-      });
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const loadData = useCallback(async () => {
@@ -456,7 +449,8 @@ function EditDynamicForm() {
     const res = await dynamicFormService.getDynamicFormById(formId);
     if (res?.status === 200 && res?.data?.status === 1) {
       setData(res?.data?.data);
-      setRows(res?.data?.data?.data);
+      setMessage(res?.data?.data?.template_name);
+      setRows(res?.data?.data.data);
     }
   }, [dispatch, formId]);
 
@@ -516,7 +510,6 @@ function EditDynamicForm() {
                   <h2 className="mb-0 fw-bold "> Edit Dynamic Form</h2>
                 </div>
               </div>
-              {notify && <Alert alertData={notify} />}
               {/*************** TABLE ***************/}
               <div className="card mt-2">
                 <div className="card-body">
@@ -535,9 +528,18 @@ function EditDynamicForm() {
                           className="form-control form-control-sm"
                           name="template_name"
                           id="template_name"
-                          required
-                          defaultValue={data && data.template_name}
+                          // required
+                          onChange={(e) => {
+                            setMessage(e.target.value);
+                            setDisplay('');
+                          }}
+                          value={message}
+
+                          // defaultValue={data && data.template_name}
                         />
+                        {display && (
+                          <div className="text-danger mt-1">{display}</div>
+                        )}
                       </div>
                     </div>
 
@@ -676,7 +678,7 @@ function EditDynamicForm() {
                         </thead>
                         <tbody>
                           {rows &&
-                            rows.map((item, idx) => (
+                            rows?.map((item, idx) => (
                               <tr id={`addr_${idx}`} key={idx}>
                                 <td>{idx + 1}</td>
                                 <td>
@@ -791,7 +793,7 @@ function EditDynamicForm() {
                                   )}
                                 </td>
 
-                                <td>
+                                <td className="text-center">
                                   <input
                                     type="checkbox"
                                     name="inputMandatory"
@@ -801,7 +803,7 @@ function EditDynamicForm() {
                                   />
                                 </td>
 
-                                <td>
+                                <td className="text-center">
                                   {(item.inputType === 'select-master' ||
                                     item.inputType === 'checkbox' ||
                                     item.inputType === 'select') && (
@@ -907,7 +909,6 @@ function EditDynamicForm() {
                                       </select>
                                     </span>
                                   )}
-                                  {console.log(rows[idx].inputType)}
 
                                   {rows[idx].inputType === 'select-master' && (
                                     <span>
@@ -1221,7 +1222,11 @@ function EditDynamicForm() {
                     )}
 
                     <div className="pull-right">
-                      <button type="submit" className="btn btn-sm btn-primary">
+                      <button
+                        disabled={submitting}
+                        type="submit"
+                        className="btn btn-sm btn-primary"
+                      >
                         Update
                       </button>
                       <Link

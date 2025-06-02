@@ -27,7 +27,8 @@ function AddEditInterviewMasterModal({
   show,
   close,
   type,
-  currentInterviewData
+  currentInterviewData,
+  clearFilters
 }) {
   // // initial state
   const dispatch = useDispatch();
@@ -84,7 +85,6 @@ function AddEditInterviewMasterModal({
 
   const [employeesName, setEmployeesName] = useState({});
 
-
   const [selectedDesignationData, setSelectedDesignationData] = useState({
     id: '',
     designationFor: ''
@@ -130,6 +130,7 @@ function AddEditInterviewMasterModal({
         addInterviewMasterThunk({
           formData: openConfirmModal?.formData,
           onSuccessHandler: () => {
+            clearFilters();
             setOpenConfirmModal({ open: false });
             close();
             dispatch(getInterviewMasterListThunk());
@@ -145,6 +146,8 @@ function AddEditInterviewMasterModal({
           currentId: currentInterviewData?.id,
           formData: openConfirmModal?.formData,
           onSuccessHandler: () => {
+            clearFilters();
+
             setOpenConfirmModal({ open: false });
             close();
             dispatch(getInterviewMasterListThunk());
@@ -191,7 +194,6 @@ function AddEditInterviewMasterModal({
         );
         setEmployeesName(transformedEmployeeData);
       }
-
     } else {
       setSelectedDesignationData({ id: '', designationFor: '' });
       setEmployeesName({});
@@ -230,10 +232,12 @@ function AddEditInterviewMasterModal({
               <Row className="">
                 <Col md={4} lg={4}>
                   <Field
+                    classNamePrefix="react-select"
                     options={preferredDepartmentDropdown}
                     component={CustomReactSelect}
                     name="department_id"
                     label="Department"
+                    id="interview_department"
                     placeholder={
                       preferredDepartmentDropdownLoading === 'loading'
                         ? 'Loading...'
@@ -245,10 +249,12 @@ function AddEditInterviewMasterModal({
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
+                    classNamePrefix="react-select"
                     options={preferredDesignationDropdown}
                     component={CustomReactSelect}
                     name="designation_id"
                     label="Designation"
+                    id="interview_designation"
                     placeholder={
                       preferredDesignationDropdownLoading
                         ? 'Loading...'
@@ -260,10 +266,12 @@ function AddEditInterviewMasterModal({
                 </Col>
                 <Col md={4} lg={4}>
                   <Field
+                    classNamePrefix="react-select"
                     data={experienceLevel}
                     component={CustomDropdown}
                     name="experience_level"
                     label="Experience Level"
+                    id="interview_experience"
                     placeholder="Select"
                     requiredField
                     disabled={type === 'VIEW'}
@@ -343,6 +351,7 @@ function AddEditInterviewMasterModal({
                             component={CustomInput}
                             name={`step_details[${index}].step_title`}
                             label="Enter Step Title"
+                            id="interview_steptitle"
                             placeholder="Step Title"
                             requiredField
                             disabled={type === 'VIEW'}
@@ -350,10 +359,12 @@ function AddEditInterviewMasterModal({
                         </Col>
                         <Col sm={6} md={6} lg={3}>
                           <Field
+                            classNamePrefix="react-select"
                             options={preferredDesignationDropdown}
                             component={CustomReactSelect}
                             name={`step_details[${index}].designation_id`}
                             label="Designation"
+                            id="interview_designation"
                             placeholder={
                               preferredDesignationDropdownLoading
                                 ? 'Loading...'
@@ -372,10 +383,12 @@ function AddEditInterviewMasterModal({
                         </Col>
                         <Col sm={6} md={6} lg={3}>
                           <Field
+                            classNamePrefix="react-select"
                             options={employeesName?.[`step_details[${index}]`]}
                             component={CustomReactSelect}
                             name={`step_details[${index}].employee_id`}
                             label="Name"
+                            id="interview_name"
                             placeholder={
                               isEmployeeMasterList === 'loading'
                                 ? 'Loading...'
@@ -408,6 +421,7 @@ function AddEditInterviewMasterModal({
                             type="email"
                             name={`step_details[${index}].employee_email`}
                             label="Email"
+                            id="interview_email"
                             placeholder="Enter Email Address"
                             requiredField
                             disabled
@@ -424,6 +438,7 @@ function AddEditInterviewMasterModal({
                   component={CustomInput}
                   name="remark"
                   label="Remark"
+                  id="interview_remark"
                   placeholder="Enter Remark"
                   disabled={type === 'VIEW'}
                 />
@@ -438,6 +453,7 @@ function AddEditInterviewMasterModal({
                     type="radio"
                     name="is_active"
                     label="Active"
+                    id="interview_active"
                     value="1"
                     inputClassName="me-1"
                     disabled={type === 'VIEW'}
@@ -447,6 +463,7 @@ function AddEditInterviewMasterModal({
                     type="radio"
                     name="is_active"
                     label="Deactive"
+                    id="interview_deactive"
                     value="0"
                     inputClassName="me-1"
                     disabled={type === 'VIEW'}
@@ -465,15 +482,15 @@ function AddEditInterviewMasterModal({
                 ) : (
                   <>
                     <button
-                      className="btn btn-dark px-4"
+                      className="btn btn-primary px-4"
                       type="submit"
                       disabled={!dirty}
                     >
-                      {type === 'ADD' ? 'Save' : 'Update'}
+                      {type === 'ADD' ? 'Submit' : 'Update'}
                     </button>
                     <button
                       onClick={close}
-                      className="btn btn-shadow-light px-3"
+                      className="btn btn-danger px-3"
                       type="button"
                     >
                       Cancel

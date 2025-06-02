@@ -1,5 +1,6 @@
 import { createAsyncThunk } from '@reduxjs/toolkit';
 import { postData } from '../../../services/loginService';
+import { errorHandler } from '../../../utils';
 
 export const postLoginUser = createAsyncThunk(
   'postLoginUser',
@@ -8,14 +9,24 @@ export const postLoginUser = createAsyncThunk(
       const res = await postData(config);
 
       if (res?.status === 200 && res?.data?.status === 1) {
-        const data = res?.data?.data;
+        const data = res.data.data;
         const token = res?.data?.token;
-
+        if (data.departments && Array.isArray(data.departments)) {
+          data.departments = data.departments
+            .map((dept) => dept.department)
+            .join(', ');
+        }
         Object.keys(data).forEach((key) => {
-          sessionStorage.setItem(key, data[key]);
-          localStorage.setItem(key, data[key]);
+          const value = data[key];
+
+          if (typeof value === 'object' && value !== null) {
+            localStorage.setItem(key, JSON.stringify(value));
+          } else {
+            localStorage.setItem(key, value);
+          }
         });
-        sessionStorage.setItem('jwt_token', token);
+
+        // Store JWT token
         localStorage.setItem('jwt_token', token);
 
         return res.data;
@@ -23,6 +34,7 @@ export const postLoginUser = createAsyncThunk(
         return res.data.message;
       }
     } catch (error) {
+      errorHandler(error);
       throw error;
     }
   }

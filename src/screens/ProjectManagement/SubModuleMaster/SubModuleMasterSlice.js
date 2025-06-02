@@ -31,7 +31,7 @@ export const submoduleSlice = createSlice({
       const { payload } = action;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let subModuleMaster = payload.data.data;
+        let subModuleMaster = payload.data.data.data;
 
         state.status = 'succeded';
         state.showLoaderModal = false;
@@ -40,7 +40,7 @@ export const submoduleSlice = createSlice({
           subModuleMaster[i].counter = count++;
         }
 
-        let sortSubModuleData = payload.data.data.filter(
+        let sortSubModuleData = payload.data.data.data.filter(
           (d) => d.is_active === 1
         );
         state.sortSubModuleData = sortSubModuleData;

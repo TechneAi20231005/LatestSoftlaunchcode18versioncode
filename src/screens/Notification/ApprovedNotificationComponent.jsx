@@ -3,25 +3,30 @@ import PageHeader from '../../components/Common/PageHeader';
 import { getNotification } from '../../services/NotificationService/NotificationService';
 import { Link } from 'react-router-dom';
 import { _base } from '../../settings/constants';
+import { errorHandler } from '../../utils';
 
 export default function ApprovedNotificationComponent() {
   const [notifications, setNotifications] = useState();
 
   const loadNotifcation = () => {
-    getNotification().then((res) => {
-      if (res.status === 200) {
-        setNotifications(null);
-        if (res.data.data.for_me) {
-          var length = res.data.data.for_me.length;
+    getNotification()
+      .then((res) => {
+        if (res.status === 200) {
+          setNotifications(null);
+          if (res.data.data.for_me) {
+            var length = res.data.data.for_me.length;
 
-          setNotifications(res.data.data.for_me);
-          if (parseInt(length) > 0 && parseInt(length) <= 5) {
-          }
-          if (parseInt(length) > 5) {
+            setNotifications(res.data.data.for_me);
+            if (parseInt(length) > 0 && parseInt(length) <= 5) {
+            }
+            if (parseInt(length) > 5) {
+            }
           }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
   useEffect(() => {

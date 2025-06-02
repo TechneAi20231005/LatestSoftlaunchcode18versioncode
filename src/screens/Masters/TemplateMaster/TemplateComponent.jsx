@@ -1,22 +1,17 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import DataTable from 'react-data-table-component';
 import { _base } from '../../../settings/constants';
 
 import TemplateService from '../../../services/MastersService/TemplateService';
 import PageHeader from '../../../components/Common/PageHeader';
 
-import Alert from '../../../components/Common/Alert';
-
-import { OverlayTrigger, Tooltip } from 'react-bootstrap';
-
 import { useDispatch, useSelector } from 'react-redux';
-import { exportTempateData, templateData } from './TemplateComponetAction';
+import { templateData } from './TemplateComponetAction';
 import { getRoles } from '../../Dashboard/DashboardAction';
 
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import { errorHandler } from '../../../utils';
+import moment from 'moment';
 
 function TemplateComponent() {
   const location = useLocation();
@@ -24,48 +19,31 @@ function TemplateComponent() {
   const templatedata = useSelector(
     (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.templateData
   );
+
   const isLoading = useSelector(
     (TemplateComponetSlice) =>
       TemplateComponetSlice.tempateMaster.isLoading.templateDataList
   );
 
-  const exportData = useSelector(
-    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.exportData
-  );
-
-  const notify = useSelector(
-    (TemplateComponetSlice) => TemplateComponetSlice.tempateMaster.notify
-  );
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 15)
   );
 
-  const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(templatedata, searchTerm);
-    setFilteredData(filteredList);
-  }, [templatedata, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(templatedata);
-  };
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <Link
-            to={`/${_base}/Template/Edit/` + row.id}
+            to={`/${_base}/Template/Edit/` + row?.original?.id}
             className="btn btn-outline-secondary"
           >
             <i className="icofont-edit text-success"></i>
@@ -74,85 +52,93 @@ function TemplateComponent() {
       )
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '80px'
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 100,
+      enableColumnFilter: false
     },
 
     {
-      name: 'Template Name',
-      selector: (row) => row['Template Name'],
-      sortable: true,
-      width: '150px',
-      cell: (row) => (
-        <div
-          className="btn-group"
-          role="group"
-          aria-label="Basic outlined example"
-        >
-          {row.template_name && (
-            <OverlayTrigger overlay={<Tooltip>{row.template_name} </Tooltip>}>
-              <div>
-                <span className="ms-1">
-                  {' '}
-                  {row.template_name && row.template_name.length < 10
-                    ? row.template_name
-                    : row.template_name.substring(0, 10) + '....'}
-                </span>
-              </div>
-            </OverlayTrigger>
-          )}
-        </div>
-      )
-    },
-
-    {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: false,
-      width: '150px',
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary">Active</span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger">Deactive</span>
-          )}
-        </div>
-      )
+      accessorFn: (originalRow) => originalRow.template_name || '--',
+      header: 'Template Name',
+      size: 220,
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      header: 'Status',
+      size: 160,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '150px'
+      accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row?.original?.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
+      header: 'Created By',
+      size: 180
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '150px'
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
+    },
+    {
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By',
+      size: 190
     }
   ];
 
+  const exportDataKeys = {
+    template_name: 'Template Name',
+    calculate_from: 'Calculate From',
+    basket_name: 'Basket Name',
+    'Assign To': 'Assign To',
+    task: 'Task',
+    'Day Required': 'Day Required',
+    'Hours Required': 'Hours Required',
+    start_days: 'Start Days',
+    end_days: 'End Days',
+    remark: 'Remark',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Template Master Record'
+  };
   useEffect(() => {
-    dispatch(exportTempateData());
     dispatch(templateData());
-
     if (!templatedata.length) {
       dispatch(getRoles());
     }
@@ -170,13 +156,8 @@ function TemplateComponent() {
     setFilteredData(templatedata);
   }, [templatedata]);
 
-  useEffect(() => {
-    handleSearch();
-  }, [handleSearch, searchTerm]);
-
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader
         headerTitle="Template Master"
         renderRight={() => {
@@ -197,28 +178,13 @@ function TemplateComponent() {
         }}
       />
 
-      <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by template name...."
-        exportFileName="Template Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      />
-
       <div className="card mt-2">
-        {templatedata && (
-          <DataTable
-            columns={columns}
+        {filteredData && (
+          <MaterialTable
+            exportDataKeys={exportDataKeys}
+            isLoading={isLoading}
             data={filteredData}
-            defaultSortField="title"
-            pagination
-            selectableRows={false}
-            progressPending={isLoading}
-            progressComponent={<TableLoadingSkelton />}
-            className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-            highlightOnHover={true}
+            columns={columns}
           />
         )}
       </div>
@@ -230,20 +196,23 @@ function TemplateDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new TemplateService().getTemplate().then((res) => {
-      if (res.status === 200) {
-        const data = res.data.data;
-        for (const key in data) {
-          tempData.push({
-            id: data[key].id,
-            template_name: data[key].template_name,
-            created_at: data[key].created_at,
-            created_by: data[key].created_by
-          });
+    new TemplateService()
+      .getTemplate()
+      .then((res) => {
+        if (res?.status === 200) {
+          const data = res?.data?.data;
+          for (const key in data) {
+            tempData.push({
+              id: data[key].id,
+              template_name: data[key].template_name,
+              created_at: data[key].created_at,
+              created_by: data[key].created_by
+            });
+          }
+          setData(tempData);
         }
-        setData(tempData);
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   }, []);
 
   return (

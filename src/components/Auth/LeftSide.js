@@ -11,15 +11,15 @@ class LeftSide extends React.Component {
       fontWeight: 'bold'
     };
 
-    if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
-      for (var a in sessionStorage) {
-        localStorage.setItem(a, sessionStorage[a]);
-      }
-    } else {
-      for (var b in localStorage) {
-        sessionStorage.setItem(b, localStorage[b]);
-      }
-    }
+    // if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
+    //   for (var a in sessionStorage) {
+    //     localStorage.setItem(a, sessionStorage[a]);
+    //   }
+    // } else {
+    //   for (var b in localStorage) {
+    //     sessionStorage.setItem(b, localStorage[b]);
+    //   }
+    // }
     return (
       <div className="col-lg-6 d-none d-lg-flex justify-content-center align-items-center rounded-lg auth-h100">
         <div style={{ maxWidth: '25rem' }}>

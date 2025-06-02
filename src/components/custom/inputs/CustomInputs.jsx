@@ -229,6 +229,7 @@ export const CustomReactSelect = ({
         placeholder={props.placeholder}
         options={props.addOtherOption ? optionsWithOther : options}
         isMulti={isMulti}
+        classNamePrefix="react-select"
         className={`form-control p-0 ${props.inputClassName} ${
           error && touch && 'is-invalid'
         }`}
@@ -248,20 +249,25 @@ export const CustomRadioButton = ({
   const touch = getIn(touched, field.name);
   const error = getIn(errors, field.name);
   return (
-    <div className={`${props.styleData} space-y-10 custom_radio`}>
-      <div className="d-flex space-x-10 switch_item">
-        <label className={`${props.className} d-flex mx-2`}>
+    <div className={`${props.styleData}`}>
+      <div className="d-flex">
+        <label className={`${props.className} d-flex mx-2 cp`}>
           <input
             {...props}
             {...field}
             className={`${props.inputClassName} ${
               error && touch && 'is-invalid'
-            }`}
+            } cp`}
             id={props.label}
             onChange={(e) => {
               field.onChange(e);
               if (props.handleChange) {
-                props.handleChange(e);
+                props.handleChange(e); // Custom handleChange logic
+              }
+
+              // Otherwise, fallback to `onChange` if provided
+              else if (props.onChange) {
+                props.onChange(e); // New custom onChange logic
               }
             }}
           />
@@ -288,24 +294,25 @@ export const CustomCheckbox = ({
   const touch = getIn(touched, field.name);
   const error = getIn(errors, field.name);
   const { setFieldValue } = useFormikContext();
+
   return (
     <>
-      <div className="cp custom-checkbox wrapper justify-content-start">
+      <div className="cp custom-checkbox d-flex justify-content-start align-items-center">
         <input
-          name={props.name}
-          id={props.id}
+          {...props}
+          {...field}
           type="checkbox"
           className={`${error && touch && 'is-invalid'} ${
             props.checkboxclass
           } cp`}
-          checked={props.val}
+          checked={field.value}
           disabled={props.disabled}
           onChange={() => {
-            setFieldValue(field.name, !props.val);
+            setFieldValue(field.name, !field.value);
           }}
         />
         <label
-          className={`${props.inputClassName} d-flex`}
+          className={`${props.inputClassName} mb-0 ms-1`}
           htmlFor={props.id}
           style={{ userSelect: 'none' }}
         >

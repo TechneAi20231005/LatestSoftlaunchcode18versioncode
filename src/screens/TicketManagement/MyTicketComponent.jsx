@@ -28,9 +28,11 @@ import { useSelector, useDispatch } from 'react-redux';
 
 import { getRoles } from '../Dashboard/DashboardAction';
 import TableLoadingSkelton from '../../components/custom/loader/TableLoadingSkelton';
+import NotFound from '../../components/NotFound';
+import { errorHandler } from '../../utils';
+import { toast } from 'react-toastify';
 
 export default function MyTicketComponent() {
-  const [notify, setNotify] = useState(null);
   // const [data, setData] = useState(null);
   const [userDropdown, setUserDropdown] = useState(null);
   const [customerUserDropdown, setCustomerUserDropdown] = useState(null);
@@ -41,20 +43,21 @@ export default function MyTicketComponent() {
   const [userData, setUserData] = useState(null);
   const [departmentData, setDepartmentData] = useState(null);
 
-  const [searchResult, setSearchResult] = useState();
-  const [searchResultData, setSearchResultData] = useState();
+  const [searchResult, setSearchResult] = useState([]);
+  const [searchResultData, setSearchResultData] = useState([]);
 
-  const [searchResultExport, setSearchResultExport] = useState();
+  const [searchResultExport, setSearchResultExport] = useState([]);
+  const [disabled, setDisabled] = useState(true);
 
-  const [unpassedTickets, setUnpassedTickets] = useState(null);
+  const [unpassedTickets, setUnpassedTickets] = useState([]);
 
-  const [assignedToMe, setAssignedToMe] = useState(null);
+  const [assignedToMe, setAssignedToMe] = useState([]);
 
-  const [yourTask, setYourTask] = useState(null);
+  const [yourTask, setYourTask] = useState([]);
 
-  const [createdByMe, setCreatedByMe] = useState(null);
+  const [createdByMe, setCreatedByMe] = useState([]);
 
-  const [departmentwiseTicket, setDepartmentwiseTicket] = useState(null);
+  const [departmentwiseTicket, setDepartmentwiseTicket] = useState([]);
 
   const dispatch = useDispatch();
   const checkRole = useSelector((DashboardSlice) =>
@@ -88,14 +91,15 @@ export default function MyTicketComponent() {
   const [assignUserDropdown, setAssignUserDropdown] = useState(null);
   const [toDateRequired, setToDateRequired] = useState(false);
   const showLoaderModal = false;
-  // const [showLoaderModal, setShowLoaderModal] = useState(false);
   const [assignedToMeData, setAssignedToMeData] = useState();
   const [selectAllNames, setSelectAllNames] = useState(false);
   const [createdByMeData, setCreatedByMeData] = useState();
   const [departmentWiseData, setDepartmentWiseData] = useState();
   const [yourTaskData, setYourTaskData] = useState();
   const [unpassedData, setUnpassedData] = useState();
-
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [selectedDepartment, setSelectedDepartment] = useState([]);
+  const [selectedStatus, setSelectedStatus] = useState([]);
   const [selectedRows, setSelectedRows] = useState([]);
   const [selectedRowss, setSelectedRowss] = useState([]);
   const [statusValue, setStatusValue] = useState('');
@@ -107,7 +111,10 @@ export default function MyTicketComponent() {
   const [isLoading, setIsLoading] = useState(false);
   const [assignedDepartmentValue, setAssignedDepartment] = useState('');
   const [entryDepartment, setEntryDepartment] = useState();
-  const [key, setKey] = useState('Assigned_To_Me');
+  const [key, setKey] = useState(
+    account_for === 'SELF' ? 'Assigned_To_Me' : 'created_by_me'
+  );
+  const [found, setFound] = useState(false);
   const selectInputRef = useRef();
   const selectAssignUserRef = useRef();
   const selectEntryDeptRef = useRef();
@@ -172,28 +179,35 @@ export default function MyTicketComponent() {
 
   const handleSolveTicketModal = async (e) => {
     e.preventDefault();
+    if (isLoading) return;
+    setIsLoading(true);
     const form = new FormData(e.target);
-    setNotify(null);
 
     var id = form.get('id');
 
-    await new MyTicketService()
-      .verifyTicketConfirmationOtp(id, form)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            setNotify({ type: 'success', message: res.data.message });
-            setConfirmationModal({
-              showModal: false,
-              modalData: '',
-              modalHeader: ''
-            });
-            loadData();
-          } else {
-            setNotify({ type: 'danger', message: res.data.message });
-          }
+    try {
+      const res = await new MyTicketService().verifyTicketConfirmationOtp(
+        id,
+        form
+      );
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          toast.success(res.data.message);
+          setConfirmationModal({
+            showModal: false,
+            modalData: '',
+            modalHeader: ''
+          });
+          loadData();
+        } else {
+          toast.error(res.data.message);
         }
-      });
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleModal = (data) => {
@@ -218,12 +232,12 @@ export default function MyTicketComponent() {
               <i className="icofont-listine-dots"></i>
             </Dropdown.Toggle>
             <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {data.created_by === localStorage.getItem('id') ||
+              {data.created_by?.id === localStorage.getItem('id') ||
                 data.assign_to_user_id === localStorage.getItem('id') ||
-                (data.status_name !== 'Solved' &&
+                (data.status?.status !== 'Solved' &&
                   data.passed_status !== 'REJECT' &&
                   localStorage.getItem('account_for' === 'SELF')) ||
-                (data?.projectowner?.filter(
+                (data?.project?.owners?.filter(
                   (d) => d.user_id === localStorage.getItem('id')
                 ) && (
                   <li>
@@ -248,10 +262,10 @@ export default function MyTicketComponent() {
                 </Link>{' '}
               </li>
 
-              {data.created_by !== localStorage.getItem('id') &&
+              {data.created_by?.id !== localStorage.getItem('id') &&
                 data.basket_configured === 0 &&
                 localStorage.getItem('account_for') === 'SELF' &&
-                data.status_name !== 'Solved' &&
+                data?.status?.status !== 'Solved' &&
                 data.passed_status !== 'REJECT' &&
                 data.passed_status !== 'UNPASS' && (
                   <li>
@@ -265,11 +279,11 @@ export default function MyTicketComponent() {
                   </li>
                 )}
 
-              {(data.created_by !== localStorage.getItem('id') &&
+              {(data.created_by?.id !== localStorage.getItem('id') &&
                 data.basket_configured > 0 &&
-                data.status_name !== 'Solved' &&
+                data.status?.status !== 'Solved' &&
                 localStorage.getItem('account_for' === 'SELF')) ||
-                (data?.projectowner?.filter(
+                (data?.project?.owners?.filter(
                   (d) => d.user_id === localStorage.getItem('id')
                 ) && (
                   <li>
@@ -298,9 +312,9 @@ export default function MyTicketComponent() {
       } else {
         return (
           <div className="d-flex justify-content-between">
-            {data.created_by === sessionStorage.getItem('id') ||
-              (data.assign_to_user_id === sessionStorage.getItem('id') &&
-                data.status_name !== 'Solved' && (
+            {data?.created_by?.id === localStorage.getItem('id') ||
+              (data.assign_to_user_id === localStorage.getItem('id') &&
+                data?.status?.status !== 'Solved' && (
                   <Link
                     to={`/${_base}/Ticket/Edit/` + data.id}
                     className="btn btn-sm btn-warning text-white"
@@ -806,7 +820,12 @@ export default function MyTicketComponent() {
       cell: (row) => actionComponent(row, 'SEARCH_RESULT')
     },
 
-    { name: 'Sr', width: '4rem', cell: (row, index) => index + 1 },
+    {
+      name: 'Sr',
+      width: '4rem',
+      // cell: (row, index) => index + 1
+      cell: (row, index) => (currentPage - 1) * itemsPerPage + index + 1
+    },
     {
       name: 'Ticket Id',
       cell: (row) => (
@@ -888,16 +907,46 @@ export default function MyTicketComponent() {
       ),
       sortable: true
     },
-    { name: 'Type', cell: (row) => row.query_type_name, sortable: true },
-    { name: 'Passed Status', cell: (row) => row.passed_status, sortable: true },
-    { name: 'Status', cell: (row) => row.status_name, sortable: true },
     {
-      name: 'Assign To Dept',
-      cell: (row) => row.assign_to_department,
+      name: 'Type',
+      cell: (row) =>
+        row?.query_type ? row?.query_type?.query_type_name || '--' : '--',
       sortable: true
     },
-    { name: 'Assinged To', cell: (row) => row.assign_to_user, sortable: true },
-    { name: 'Created By', cell: (row) => row.created_by_name, sortable: true },
+    { name: 'Passed Status', cell: (row) => row.passed_status, sortable: true },
+    {
+      name: 'Status',
+      cell: (row) => (row?.status?.status ? row?.status?.status || '--' : '--'),
+      sortable: true
+    },
+    {
+      name: 'Assign To Dept',
+      cell: (row) =>
+        row?.assign_to_department
+          ? row?.assign_to_department?.department || '--'
+          : '--',
+      sortable: true
+    },
+    {
+      name: 'Assinged To',
+      cell: (row) =>
+        row?.assign_to_user
+          ? (row?.assign_to_user?.first_name || '--') +
+            ' ' +
+            (row?.assign_to_user?.last_name || '--')
+          : '--',
+      sortable: true
+    },
+    {
+      name: 'Created By',
+      cell: (row) =>
+        row?.created_by
+          ? (row?.created_by?.first_name || '--') +
+            ' ' +
+            (row?.created_by?.last_name || '--')
+          : '--',
+      sortable: true
+    },
     {
       name: 'Solved Date',
       maxWidth: 'auto',
@@ -907,7 +956,13 @@ export default function MyTicketComponent() {
     {
       name: 'Solved By',
       maxWidth: 'auto',
-      selector: (row) => row.ticket_solved_by,
+      selector: (row) =>
+        row?.ticket_solved_by
+          ? (row?.ticket_solved_by?.first_name || '--') +
+            ' ' +
+            (row?.ticket_solved_by?.last_name || '--')
+          : '--',
+
       sortable: true
     }
   ];
@@ -927,7 +982,7 @@ export default function MyTicketComponent() {
       name: 'Sr',
       width: '170px',
       center: true,
-      cell: (row, index) => index + 1
+      cell: (row, index) => (currentPage - 1) * itemsPerPage + index + 1
     },
     {
       name: 'Ticket Id',
@@ -1037,6 +1092,8 @@ export default function MyTicketComponent() {
     },
     { name: 'Created By', cell: (row) => row.created_by_name, sortable: true }
   ];
+  const [currentPage, setCurrentPage] = useState(1);
+  const [itemsPerPage, setItemsPerPage] = useState(10); // Adjust
 
   const assignedToMeColumns = [
     {
@@ -1049,7 +1106,12 @@ export default function MyTicketComponent() {
       }`,
       cell: (row) => actionComponent(row, 'ASSIGNED_TO_ME')
     },
-    { name: 'Sr', width: '80px', cell: (row, index) => index + 1 },
+    {
+      name: 'Sr',
+      width: '80px',
+      // cell: (row, index) => index + 1
+      cell: (row, index) => (currentPage - 1) * itemsPerPage + index + 1
+    },
     {
       name: 'Ticket Id',
       width: '150px',
@@ -1188,7 +1250,7 @@ export default function MyTicketComponent() {
       name: 'Sr',
       width: '150px',
       center: true,
-      cell: (row, index) => index + 1
+      cell: (row, index) => (currentPage - 1) * itemsPerPage + index + 1
     },
     {
       name: 'Ticket Id',
@@ -1373,7 +1435,7 @@ export default function MyTicketComponent() {
       name: 'Sr',
       width: '150px',
       center: true,
-      cell: (row, index) => index + 1
+      cell: (row, index) => (currentPage - 1) * itemsPerPage + index + 1
     },
     {
       name: 'Ticket Id',
@@ -1530,7 +1592,7 @@ export default function MyTicketComponent() {
       name: 'Sr',
       width: '170px',
       center: true,
-      cell: (row, index) => index + 1
+      cell: (row, index) => (currentPage - 1) * itemsPerPage + index + 1
     },
     {
       name: 'Ticket Id',
@@ -1646,72 +1708,64 @@ export default function MyTicketComponent() {
   const loadData = useCallback(async () => {
     setIsLoading(true);
     const inputRequired =
-      'id,employee_id,first_name,last_name,middle_name,is_active';
-
-    await new UserService()
-      .getUserForMyTickets(inputRequired)
-      .then((res) => {
-        if (res.status === 200) {
-          const tempData = [];
-          const temp = res.data.data.filter((d) => d.is_active === 1);
-          if (res.data.status === 1) {
-            // const data = res.data.data.filter(
-            //   (d) => d.is_active == 1 && d.account_for === 'SELF'
-            // );
-            setUser(temp);
-          }
-          for (const key in temp) {
-            tempData.push({
-              value: temp[key].id,
-              label: temp[key].first_name + ' ' + temp[key].last_name
-            });
-          }
-          const select = res.data.data
-            .filter((d) => d.is_active === 1 && d.account_for === 'SELF')
-            .map((d) => ({
-              value: d.id,
-              label: d.first_name + ' ' + d.last_name
-            }));
-
-          const select1 = res.data.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({
-              value: d.id,
-              label: d.first_name + ' ' + d.last_name
-            }));
-
-          const select2 = res.data.data
-            .filter((d) => d.is_active === 1 && d.account_for === 'CUSTOMER')
-            .map((d) => ({
-              value: d.id,
-              label: d.first_name + ' ' + d.last_name
-            }));
-
-          setUserData(null);
-          const aa = tempData.sort(function (a, b) {
-            return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
-          });
-          setUserData(aa);
-          setAssignUserDropdown(select);
-          setUserDropdown(select1);
-          setCustomerUserDropdown(select2);
-        }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'Status',
-          'Get_Status',
-          'INSERT',
-          errorObject.data.message
-        );
-      });
-
-    await new DepartmentService().getDepartment().then((res) => {
+      'id,employee_id,first_name,last_name,middle_name,is_active,department_id';
+    try {
+      const res = await new UserService().getUserForMyTickets(inputRequired);
       if (res.status === 200) {
         const tempData = [];
-        const temp = res.data.data;
+        const temp = res.data.data.data.filter((d) => d.is_active === 1);
+        if (res.data.status === 1) {
+          // const data = res.data.data.filter(
+          //   (d) => d.is_active == 1 && d.account_for === 'SELF'
+          // );
+          setUser(temp);
+        }
+        for (const key in temp) {
+          tempData.push({
+            value: temp[key].id,
+            label: temp[key].first_name + ' ' + temp[key].last_name
+          });
+        }
+        const select = res.data.data.data
+          .filter((d) => d.is_active === 1 && d.account_for === 'SELF')
+          .map((d) => ({
+            value: d.id,
+            label: d.first_name + ' ' + d.last_name
+          }));
+
+        const select1 = res.data.data.data
+          .filter((d) => d.is_active === 1)
+          .map((d) => ({
+            value: d.id,
+            label: d.first_name + ' ' + d.last_name
+          }));
+
+        const select2 = res.data.data.data
+          .filter((d) => d.is_active === 1 && d.account_for === 'CUSTOMER')
+          .map((d) => ({
+            value: d.id,
+            label: d.first_name + ' ' + d.last_name
+          }));
+
+        setUserData(null);
+        const aa = tempData.sort(function (a, b) {
+          return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
+        });
+        setUserData(aa);
+
+        setAssignUserDropdown(select);
+        setUserDropdown(select1);
+        setCustomerUserDropdown(select2);
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
+
+    try {
+      const res = await new DepartmentService().getDepartment();
+      if (res.status === 200) {
+        const tempData = [];
+        const temp = res.data.data.data;
         for (const key in temp) {
           if (temp[key].department) {
             tempData.push({
@@ -1723,15 +1777,18 @@ export default function MyTicketComponent() {
         setDepartmentData(null);
         setDepartmentData(tempData);
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    }
 
-    await new StatusService().getStatus().then((res) => {
+    try {
+      const res = await new StatusService().getStatus();
       if (res.status === 200) {
         const tempData = [];
-        const temp = res.data.data;
+        const temp = res.data.data.data;
 
         for (const key in temp) {
-          if (temp[key].id) {
+          if (temp[key].id && temp[key].is_active === 1) {
             tempData.push({
               value: temp[key].id,
               label: temp[key].status,
@@ -1743,46 +1800,57 @@ export default function MyTicketComponent() {
         setStatusData(null);
         setStatusData(tempData);
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    }
 
-    await new DepartmentMappingService()
-      .getDepartmentMappingByEmployeeId(localStorage.getItem('id'))
-      .then((res) => {
-        if (res.status === 200) {
-          setIsLoading(false);
+    try {
+      const res =
+        await new DepartmentMappingService().getDepartmentMappingByEmployeeId(
+          localStorage.getItem('id')
+        );
+      if (res.status === 200) {
+        setIsLoading(false);
 
-          if (res.data.status === 1) {
-            if (res.status === 200) {
-              if (res.data.status === 1) {
-                // setUserDepartment(res.data.data);
-              }
+        if (res.data.status === 1) {
+          if (res.status === 200) {
+            if (res.data.status === 1) {
+              // setUserDepartment(res.data.data);
             }
           }
         }
-        if (res.status === 200) {
-          setIsLoading(false);
+      }
+      if (res.status === 200) {
+        setIsLoading(false);
 
-          const tempData = [];
-          const temp = res.data.data;
-          for (const key in temp) {
-            if (temp[key].is_active === 1) {
-              tempData.push([temp[key].ticket_show_type]);
-            }
+        const tempData = [];
+        const temp = res.data.data;
+        for (const key in temp) {
+          if (temp[key].is_active === 1) {
+            tempData.push([temp[key].ticket_show_type]);
           }
-          // setTicketShowType(null);
-          // setTicketShowType(tempData);
         }
-      });
+        // setTicketShowType(null);
+        // setTicketShowType(tempData);
+      }
+    } catch (error) {
+      errorHandler(error);
+    }
 
-    await new MyTicketService().getUserTicketsTest().then((res) => {
+    try {
+      setFound(false);
+      const res = await new MyTicketService().getUserTicketsTestWithoutTypeOf();
       if (res.status === 200) {
         if (res?.data?.status === 1) {
           setAssignedToMeData(res.data.data);
           setAssignedToMe(
-            res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
+            Array.isArray(res?.data?.data?.data)
+              ? res?.data?.data?.data?.filter(
+                  (d) => d.passed_status !== 'REJECT'
+                )
+              : []
           );
           const dataAssignToMe = res.data.data.data;
-
           var counter = 1;
           var tempAssignToMeExport = [];
           for (const key in dataAssignToMe) {
@@ -1798,7 +1866,6 @@ export default function MyTicketComponent() {
               STATUS: dataAssignToMe[key].status_name,
               DESCRIPTION: dataAssignToMe[key].description,
               CREATED_BY: dataAssignToMe[key].created_by_name,
-
               Basket_Configured: dataAssignToMe[key].basket_configured,
               Confirmation_Required: dataAssignToMe[key].confirmation_required
                 ? 'YES'
@@ -1823,19 +1890,49 @@ export default function MyTicketComponent() {
               ticket_solved_by: dataAssignToMe[key].ticket_solved_by
             });
           }
-
-          setIsLoading(false);
         }
       }
-    });
+      setFound(true);
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setIsLoading(false);
+    }
+
+    if (account_for === 'CUSTOMER') {
+      const forms = {
+        limit: 10,
+        typeOf: 'CreatedByMe',
+        page: 1
+      };
+
+      try {
+        const res = await new MyTicketService().getUserTicketsTestWithoutTypeOf(
+          forms
+        );
+        if (res.status === 200) {
+          setCreatedByMeData(res.data.data);
+
+          setCreatedByMe(
+            Array.isArray(res?.data?.data?.data)
+              ? res?.data?.data?.data?.filter(
+                  (d) => d.passed_status !== 'REJECT'
+                )
+              : []
+          );
+        }
+      } catch (error) {
+        errorHandler(error);
+      }
+    }
     dispatch(getRoles());
   }, [dispatch]);
 
   const handlePassTicketForm = async (e) => {
     try {
       e.preventDefault();
-      setNotify(null);
-
+      if (isLoading) return;
+      setIsLoading(true);
       const formData = new FormData(e.target);
 
       if (remarkModal && Array.isArray(remarkModal.modalData)) {
@@ -1863,28 +1960,55 @@ export default function MyTicketComponent() {
             typeOf: 'UnPassed',
             page: 1
           };
-          setNotify({ type: 'success', message });
-          await new MyTicketService().getUserTicketsTest(forms).then((res) => {
+          toast.success(message);
+          try {
+            const res = await new MyTicketService().getUserTicketsTest(forms);
             if (res.status === 200) {
               if (res?.data?.status === 1) {
                 setUnpassedData(res.data.data);
-                setUnpassedTickets(res.data.data.data);
+                setUnpassedTickets(
+                  Array.isArray(res?.data?.data?.data) ? res.data.data.data : []
+                );
                 setIsLoading(false);
               }
             }
-          });
+          } catch (error) {
+            errorHandler(error);
+          }
         } else {
-          setNotify({ type: 'danger', message });
+          toast.error(message);
         }
       } else {
-        setNotify({ type: 'danger', message: 'Request Error !!!' });
+        toast.error('Request Error !!!');
       }
     } catch (error) {
-      setNotify({ type: 'danger', message: 'An error occurred.' });
+      errorHandler(error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
-  const handleForm = useCallback(async (e) => {
+  const [searchData, setSearchData] = useState([]);
+
+  const handleClearSearchedData = () => {
+    // document.getElementById("ticket_idd").reset();
+    setSelectedUsers([]); // Clear the selected users (empty array for multi-select)
+    setSelectedDepartment([]); // Clear the selected department
+    setSelectedStatus([]); // Clear the selected status
+    setTicketId(''); // Clear the ticket ID (empty string for text input)
+  };
+
+  const handleForm = async (e) => {
+    if (isLoading) return;
+    setIsLoading(true);
+    setDisabled(true);
+    const payload = {
+      assign_to_user_id: selectedUsers.map((user) => user.value),
+      department_id: selectedDepartment.map((user) => user.value),
+      status_id: selectedStatus.map((status) => status.value),
+      ticket_id: ticketId
+      // Add other form data here
+    };
     try {
       if (e) {
         e.preventDefault();
@@ -1903,6 +2027,7 @@ export default function MyTicketComponent() {
         // If no field is filled, show an alert
         if (!isAnyFieldFilled) {
           alert('Please fill at least one field.');
+          setIsLoading(false);
           return; // Exit the function early
         }
 
@@ -1912,95 +2037,131 @@ export default function MyTicketComponent() {
 
       if (e) {
         e.preventDefault();
-
         const form = document.getElementById('your_form_id');
         const formData = new FormData(form);
+        setSearchData(formData);
+        try {
+          const res = await new ReportService().getTicketReport(payload);
+          if (res.status === 200) {
+            if (res.data.status === 1) {
+              setSearchResult(null);
+              setIsLoading(false);
 
-        await new ReportService()
-          .getTicketReport(formData)
-          .then((res) => {
-            if (res.status === 200) {
-              if (res.data.status === 1) {
-                setSearchResult(null);
+              setSearchResult(res.data.data.data);
+              setSearchResultData(res.data.data);
+              setKey('Search_Result');
+              setKey('Search_Result');
+            } else {
+              setSearchResult([]);
+              setSearchResultData([]);
+              setKey('Search_Result');
+              setIsLoading(false);
+            }
+          } else {
+            toast.error(res.data.message);
+          }
+        } catch (error) {
+          errorHandler(error);
+        } finally {
+          setIsLoading(false);
+        }
+        // searched export data
+        // const exportFormData = new FormData(form);
+        // const exportFormData = payload;
 
-                setSearchResult(res.data.data.data);
-                setSearchResultData(res.data.data);
-                setKey('Search_Result');
-                setIsLoading(false);
+        // exportFormData.append('export', 'export');
+        const exportFormData = {
+          assign_to_user_id: selectedUsers.map((user) => user.value),
+          department_id: selectedDepartment.map((user) => user.value),
+          status_id: selectedStatus.map((status) => status.value),
+          ticket_id: ticketId,
+          export: 'export'
+          // Add other form data here
+        };
 
-                const temp = res.data.data;
+        try {
+          const res = await new ReportService().getTicketReport(exportFormData);
+          if (res.status === 200) {
+            if (res.data.status === 1) {
+              setDisabled(false);
 
-                var counter = 1;
-                var searchResultExport = [];
-                for (const key in temp) {
-                  searchResultExport.push({
-                    Sr: counter++,
-                    TICKET_ID: temp[key].ticket_id,
-                    TICKET_DATE: temp[key].ticket_date,
-                    EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
-                    ASSIGN_TO_DEPARTMENT: temp[key].assign_to_department,
-                    ASSIGN_TO_USER: temp[key].assign_to_user,
-                    QUERY_TYPE_NAME: temp[key].query_type_name,
-                    PRIORITY: temp[key].priority,
-                    STATUS: temp[key].status_name,
-                    DESCRIPTION: temp[key].description,
-                    CREATED_BY: temp[key].created_by_name,
-
-                    Basket_Configured: temp[key].basket_configured,
-                    Confirmation_Required: temp[key].confirmation_required
-                      ? 'YES'
-                      : 'NO',
-                    Ref_id: temp[key].cuid,
-                    from_department_name: temp[key].from_department_name,
-                    id: temp[key].id,
-                    Status: temp[key].is_active ? 'Active' : 'Deactive',
-                    module_name: temp[key].module_name,
-                    Passed_Status: temp[key].passed_status,
-                    Passed_Status_Changed_At:
-                      temp[key].passed_status_changed_at,
-                    Passed_Status_Changed_By_Name:
-                      temp[key].passed_status_changed_by_name,
-                    Passed_Status_Remark: temp[key].passed_status_remark,
-                    project_name: temp[key].project_name,
-                    Status_name: temp[key].status_name,
-                    sub_module_name: temp[key].sub_module_name,
-                    Template_id: temp[key].template_id,
-                    Tenant_id: temp[key].tenant_id,
-                    ticket_solved_date: temp[key].ticket_solved_date,
-                    ticket_solved_by: temp[key].ticket_solved_by
-                  });
-                }
-                setKey('Search_Result');
+              const temp = res?.data?.data;
+              var counter = 1;
+              var searchResultExport = [];
+              for (let key in temp) {
+                searchResultExport.push({
+                  Sr: counter++,
+                  TICKET_ID: temp[key].ticket_id,
+                  TICKET_DATE: temp[key].ticket_date,
+                  EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
+                  ASSIGN_TO_DEPARTMENT:
+                    temp[key].assign_to_department?.department,
+                  // ASSIGN_TO_USER: temp[key].assign_to_user ,
+                  ASSIGN_TO_USER:
+                    (temp[key].assign_to_user?.first_name || '--') +
+                    ' ' +
+                    (temp[key].assign_to_user?.last_name || '--'),
+                  QUERY_TYPE_NAME: temp[key].query_type?.query_type_name,
+                  PRIORITY: temp[key].priority,
+                  STATUS_NAME: temp[key].status?.status,
+                  DESCRIPTION: temp[key].description,
+                  CREATED_BY:
+                    (temp[key].created_by?.first_name || '--') +
+                    ' ' +
+                    (temp[key].created_by?.last_name || '--'),
+                  Basket_Configured: temp[key].basket_configured,
+                  Confirmation_Required: temp[key].confirmation_required
+                    ? 'YES'
+                    : 'NO',
+                  Ref_id: temp[key].cuid,
+                  from_department_name: temp[key].from_department?.department,
+                  id: temp[key].id,
+                  Status: temp[key].is_active ? 'Active' : 'Deactive',
+                  module_name: temp[key]?.module?.module_name,
+                  Passed_Status: temp[key].passed_status,
+                  Passed_Status_Changed_At: temp[key].passed_status_changed_at,
+                  Passed_Status_Changed_By_Name:
+                    temp[key].passed_status_changed_by_name,
+                  Passed_Status_Remark: temp[key].passed_status_remark,
+                  project_name: temp[key]?.project?.project_name || '--',
+                  // Status_name: temp[key].status_name,
+                  sub_module_name:
+                    temp[key]?.submodule?.sub_module_name || '--',
+                  Template_id: temp[key].template?.template_name,
+                  Tenant_id: temp[key].tenant_id,
+                  ticket_solved_date: temp[key].ticket_solved_date,
+                  ticket_solved_by:
+                    (temp[key].ticket_solved_by?.first_name || '--') +
+                    ' ' +
+                    (temp[key].ticket_solved_by?.last_name || '--')
+                });
                 setSearchResultExport(searchResultExport);
-              } else {
-                alert('No Data Found');
               }
             } else {
-              new ErrorLogService().sendErrorLog(
-                'UserTask',
-                'Get_UserTask',
-                'INSERT',
-                res.message
-              );
             }
-          })
-          .catch((error) => {
-            const { response } = error;
-            const { request, ...errorObject } = response;
+          } else {
             new ErrorLogService().sendErrorLog(
               'UserTask',
               'Get_UserTask',
               'INSERT',
-              errorObject.data.message
+              res.message
             );
-            setIsLoading(false);
-          });
+          }
+        } catch (error) {
+          errorHandler(error);
+        } finally {
+          setIsLoading(false);
+        }
       }
     } catch (error) {
+      errorHandler(error);
       // Handle errors that may occur during the getTicketReport call
       // You can add additional error handling logic here, such as displaying an error message to the user.
+    } finally {
+      setIsLoading(false);
     }
-  }, []);
+  };
+
   const passTicketHandler = () => {};
   const handleChangeStatus = (e) => {
     setStatusValue(e);
@@ -2055,9 +2216,34 @@ export default function MyTicketComponent() {
   };
 
   const handleFilterForm = async (e) => {
+    console.log('hello');
     e.preventDefault();
+    if (isLoading) return;
+    setIsLoading(true);
+    const payload = {
+      from_date: startDate,
+      to_date: toDate,
+      assign_to_department_id:
+        assignedDepartmentValue?.length > 0
+          ? assignedDepartmentValue?.map((user) => user.value)
+          : [],
+      assign_to_user_id:
+        assignedUser?.length > 0 ? assignedUser?.map((user) => user.value) : [],
+      // assign_to_user_id:
+      //   assignedDepartmentValue?.length > 0
+      //     ? assignedDepartmentValue?.map((user) => user.value)
+      //     : [],
+      department_id: entryDepartment?.map((user) => user.value),
+      status_id:
+        statusValue?.length > 0 ? statusValue?.map((user) => user.value) : [],
+      user_id:
+        entryUser?.length > 0 ? entryUser?.map((user) => user.value) : [],
+      ticket_id: ticket
+      // filter: 'filter'
+    };
 
     const formData = new FormData(e.target);
+    setSearchData(formData);
     let isAnyFieldFilled = false;
     for (let [value] of formData.entries()) {
       if (value) {
@@ -2078,100 +2264,204 @@ export default function MyTicketComponent() {
       alert('Please select Date After From date');
     } else {
       onClosePopup();
-      await new ReportService()
-        .getTicketReport(formData)
-        .then((res) => {
-          if (res?.status === 200) {
-            if (res?.data?.status === 1) {
-              setSearchResult(null);
-              setSearchResult(res.data.data.data);
-              setIsLoading(false);
-              const temp = res.data.data;
-              var counter = 1;
-              var searchResultExport = [];
-              for (const key in temp) {
-                searchResultExport.push({
-                  counter: counter++,
-                  Re_Id: temp[key].cuid,
-                  TICKET_DATE: temp[key].ticket_date,
-                  EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
-                  ASSIGN_TO_DEPARTMENT: temp[key].assign_to_department,
-                  ASSIGN_TO_USER: temp[key].assign_to_user,
-                  TYPE: temp[key].type_id,
-                  PRIORITY: temp[key].priority,
-                  STATUS: temp[key].status_name,
-                  DESCRIPTION: temp[key].description,
-                  CREATED_BY: temp[key].created_by_name,
-                  ticket_solved_date: temp[key].ticket_solved_date,
-                  ticket_solved_by: temp[key].ticket_solved_by
-                });
-              }
-              setKey('Search_Result');
+
+      try {
+        const res = await new ReportService().getTicketReport(payload);
+        if (res?.status === 200) {
+          if (res?.data?.status === 1) {
+            setSearchResult(null);
+            setSearchResult(res.data.data.data);
+            setSearchResultData(res.data.data);
+            setIsLoading(false);
+            const temp = res.data.data.data;
+            var counter = 1;
+            var searchResultExport = [];
+            for (const key in temp) {
+              searchResultExport.push({
+                counter: counter++,
+                Re_Id: temp[key].cuid,
+                TICKET_DATE: temp[key].ticket_date,
+                EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
+                ASSIGN_TO_DEPARTMENT: temp[key].assign_to_department,
+                ASSIGN_TO_USER: temp[key].assign_to_user,
+                TYPE: temp[key].type_id,
+                PRIORITY: temp[key].priority,
+                STATUS: temp[key].status_name,
+                DESCRIPTION: temp[key].description,
+                CREATED_BY: temp[key].created_by_name,
+                ticket_solved_date: temp[key].ticket_solved_date,
+                ticket_solved_by: temp[key].ticket_solved_by
+              });
+            }
+            setKey('Search_Result');
+            setSearchResultExport(searchResultExport);
+            setIsLoading(false);
+
+            for (const key in temp) {
+              filterExport.push({
+                Sr: counter++,
+                TICKET_ID: temp[key].ticket_id,
+                TICKET_DATE: temp[key].ticket_date,
+                EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
+                ASSIGN_TO_DEPARTMENT:
+                  temp[key].assign_to_department?.department,
+                // ASSIGN_TO_USER: temp[key].assign_to_user ,
+                ASSIGN_TO_USER:
+                  (temp[key].assign_to_user?.first_name || '--') +
+                  ' ' +
+                  (temp[key].assign_to_user?.last_name || '--'),
+                QUERY_TYPE_NAME: temp[key].query_type?.query_type_name,
+                PRIORITY: temp[key].priority,
+                STATUS_NAME: temp[key].status?.status,
+                DESCRIPTION: temp[key].description,
+                CREATED_BY:
+                  (temp[key].created_by?.first_name || '--') +
+                  ' ' +
+                  (temp[key].created_by?.last_name || '--'),
+                Basket_Configured: temp[key].basket_configured,
+                Confirmation_Required: temp[key].confirmation_required
+                  ? 'YES'
+                  : 'NO',
+                Ref_id: temp[key].cuid,
+                from_department_name: temp[key].from_department?.department,
+                id: temp[key].id,
+                Status: temp[key].is_active ? 'Active' : 'Deactive',
+                module_name: temp[key]?.module?.module_name,
+                Passed_Status: temp[key].passed_status,
+                Passed_Status_Changed_At: temp[key].passed_status_changed_at,
+                Passed_Status_Changed_By_Name:
+                  temp[key].passed_status_changed_by_name,
+                Passed_Status_Remark: temp[key].passed_status_remark,
+                project_name: temp[key].project_name,
+                // Status_name: temp[key].status_name,
+                sub_module_name: temp[key].sub_module_name,
+                Template_id: temp[key].template?.template_name,
+                Tenant_id: temp[key].tenant_id,
+                ticket_solved_date: temp[key].ticket_solved_date,
+                ticket_solved_by:
+                  (temp[key].ticket_solved_by?.first_name || '--') +
+                  ' ' +
+                  (temp[key].ticket_solved_by?.last_name || '--')
+              });
+            }
+            setKey('Search_Result');
+            setSearchResultExport(filterExport);
+          } else {
+            setIsLoading(false);
+            setSearchResult([]);
+            setKey('Search_Result');
+            setSearchResultData([]);
+            setSearchResultExport([]);
+          }
+        } else {
+          toast.error(res.message);
+        }
+      } catch (error) {
+        errorHandler(error);
+      } finally {
+        setIsLoading(false);
+      }
+      setDisabled(true);
+      try {
+        const payload = {
+          from_date: startDate,
+          to_date: toDate,
+          assign_to_department_id:
+            assignedDepartmentValue?.length > 0
+              ? assignedDepartmentValue?.map((user) => user.value)
+              : [],
+          assign_to_user_id:
+            assignedUser?.length > 0
+              ? assignedUser?.map((user) => user.value)
+              : [],
+          // assign_to_user_id:
+          //   assignedDepartmentValue?.length > 0
+          //     ? assignedDepartmentValue?.map((user) => user.value)
+          //     : [],
+          department_id: entryDepartment?.map((user) => user.value),
+          status_id:
+            statusValue?.length > 0
+              ? statusValue?.map((user) => user.value)
+              : [],
+          user_id:
+            entryUser?.length > 0 ? entryUser?.map((user) => user.value) : [],
+          ticket_id: ticket,
+          export: 'export'
+          // filter: 'filter'
+        };
+        const res = await new ReportService().getTicketReport(payload);
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            setDisabled(false);
+
+            const temp = res?.data?.data;
+            var counter = 1;
+            var searchResultExport = [];
+            for (let key in temp) {
+              searchResultExport.push({
+                Sr: counter++,
+                TICKET_ID: temp[key].ticket_id,
+                TICKET_DATE: temp[key].ticket_date,
+                EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
+                ASSIGN_TO_DEPARTMENT:
+                  temp[key].assign_to_department?.department,
+                // ASSIGN_TO_USER: temp[key].assign_to_user ,
+                ASSIGN_TO_USER:
+                  (temp[key].assign_to_user?.first_name || '--') +
+                  ' ' +
+                  (temp[key].assign_to_user?.last_name || '--'),
+                QUERY_TYPE_NAME: temp[key].query_type?.query_type_name,
+                PRIORITY: temp[key].priority,
+                STATUS_NAME: temp[key].status?.status,
+                DESCRIPTION: temp[key].description,
+                CREATED_BY:
+                  (temp[key].created_by?.first_name || '--') +
+                  ' ' +
+                  (temp[key].created_by?.last_name || '--'),
+                Basket_Configured: temp[key].basket_configured,
+                Confirmation_Required: temp[key].confirmation_required
+                  ? 'YES'
+                  : 'NO',
+                Ref_id: temp[key].cuid,
+                from_department_name: temp[key].from_department?.department,
+                id: temp[key].id,
+                Status: temp[key].is_active ? 'Active' : 'Deactive',
+                module_name: temp[key]?.module?.module_name,
+                Passed_Status: temp[key].passed_status,
+                Passed_Status_Changed_At: temp[key].passed_status_changed_at,
+                Passed_Status_Changed_By_Name:
+                  temp[key].passed_status_changed_by_name,
+                Passed_Status_Remark: temp[key].passed_status_remark,
+                project_name: temp[key]?.project?.project_name || '--',
+                // Status_name: temp[key].status_name,
+                sub_module_name: temp[key]?.submodule?.sub_module_name || '--',
+                Template_id: temp[key].template?.template_name,
+                Tenant_id: temp[key].tenant_id,
+                ticket_solved_date: temp[key].ticket_solved_date,
+                ticket_solved_by:
+                  (temp[key].ticket_solved_by?.first_name || '--') +
+                  ' ' +
+                  (temp[key].ticket_solved_by?.last_name || '--')
+              });
               setSearchResultExport(searchResultExport);
-              setIsLoading(false);
-
-              for (const key in temp) {
-                filterExport.push({
-                  Sr: counter++,
-                  TICKET_ID: temp[key].ticket_id,
-                  TICKET_DATE: temp[key].ticket_date,
-                  EXPECTED_SOLVE_DATE: temp[key].expected_solve_date,
-                  ASSIGN_TO_DEPARTMENT: temp[key].assign_to_department,
-                  ASSIGN_TO_USER: temp[key].assign_to_user,
-                  QUERY_TYPE_NAME: temp[key].query_type_name,
-                  PRIORITY: temp[key].priority,
-                  STATUS: temp[key].status_name,
-                  DESCRIPTION: temp[key].description,
-                  CREATED_BY: temp[key].created_by_name,
-
-                  Basket_Configured: temp[key].basket_configured,
-                  Confirmation_Required: temp[key].confirmation_required
-                    ? 'YES'
-                    : 'NO',
-                  Ref_id: temp[key].cuid,
-                  from_department_name: temp[key].from_department_name,
-                  id: temp[key].id,
-                  Status: temp[key].is_active ? 'Active' : 'Deactive',
-                  module_name: temp[key].module_name,
-                  Passed_Status: temp[key].passed_status,
-                  Passed_Status_Changed_At: temp[key].passed_status_changed_at,
-                  Passed_Status_Changed_By_Name:
-                    temp[key].passed_status_changed_by_name,
-                  Passed_Status_Remark: temp[key].passed_status_remark,
-                  project_name: temp[key].project_name,
-                  Status_name: temp[key].status_name,
-                  sub_module_name: temp[key].sub_module_name,
-                  Template_id: temp[key].template_id,
-                  ticket_solved_date: temp[key].ticket_solved_date,
-                  ticket_solved_by: temp[key].ticket_solved_by,
-                  Tenant_id: temp[key].tenant_id
-                });
-              }
-              setKey('Search_Result');
-              setSearchResultExport(filterExport);
             }
           } else {
-            new ErrorLogService().sendErrorLog(
-              'UserTask',
-              'Get_UserTask',
-              'INSERT',
-              res.message
-            );
           }
-        })
-        .catch((error) => {
-          const { response } = error;
-          const { request, ...errorObject } = response;
+        } else {
           new ErrorLogService().sendErrorLog(
             'UserTask',
             'Get_UserTask',
             'INSERT',
-            errorObject.data.message
+            res.message
           );
-        });
+        }
+      } catch (error) {
+        errorHandler(error);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
-
   const handleAssignedDepartment = (e) => {
     const deptAssignedUser = [];
     for (let i = 0; i < e.length; i++) {
@@ -2187,8 +2477,9 @@ export default function MyTicketComponent() {
     setAssignUserDropdown(deptAssignedUser);
     setAssignedDepartment(e);
   };
-
   const handleAssignedToMeTab = async (k, e) => {
+    setCurrentPage(null);
+    setItemsPerPage(null);
     setIsLoading(true);
     e.preventDefault();
     var form;
@@ -2199,50 +2490,73 @@ export default function MyTicketComponent() {
         page: 1,
         filter: ''
       };
-      await new MyTicketService().getUserTicketsTest(form).then((res) => {
+
+      try {
+        const res = await new MyTicketService().getUserTicketsTest(form);
         if (res.status === 200) {
           setIsLoading(false);
           if (res.data.status === 1) {
             setAssignedToMe(
-              res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
+              Array.isArray(res?.data?.data?.data)
+                ? res?.data?.data?.data?.filter(
+                    (d) => d.passed_status !== 'REJECT'
+                  )
+                : []
             );
           }
         }
-      });
+      } catch (error) {
+        errorHandler(error);
+      }
     } else if (k === 'created_by_me') {
       const forms = {
         limit: 10,
         typeOf: 'CreatedByMe',
         page: 1
       };
-      await new MyTicketService().getUserTicketsTest(forms).then((res) => {
+      try {
+        const res = await new MyTicketService().getUserTicketsTest(forms);
         if (res.status === 200) {
           setIsLoading(false);
           setCreatedByMeData(res.data.data);
 
           setCreatedByMe(
-            res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
+            Array.isArray(res?.data?.data?.data)
+              ? res?.data?.data?.data?.filter(
+                  (d) => d.passed_status !== 'REJECT'
+                )
+              : []
           );
         }
-      });
+      } catch (error) {
+        errorHandler(errorHandler);
+      }
     } else if (k === 'departmenyourTaskt') {
       const forms = {
         limit: 10,
         typeOf: 'DepartmentWise',
         page: 1
       };
-      await new MyTicketService().getUserTicketsTest(forms).then((res) => {
+
+      try {
+        const res = await new MyTicketService().getUserTicketsTest(forms);
         if (res.status === 200) {
           setIsLoading(false);
           if (res?.data?.status === 1) {
             setDepartmentWiseData(res.data.data);
 
             setDepartmentwiseTicket(
-              res?.data?.data?.data?.filter((d) => d.passed_status !== 'REJECT')
+              Array.isArray(res?.data?.data?.data)
+                ? res?.data?.data?.data?.filter(
+                    (d) => d.passed_status !== 'REJECT'
+                  )
+                : []
             );
           }
         }
-      });
+      } catch (error) {
+        errorHandler(error);
+      }
     } else if (k === 'your_task') {
       const forms = {
         limit: 10,
@@ -2250,7 +2564,8 @@ export default function MyTicketComponent() {
         page: 1
       };
 
-      await new MyTicketService().getUserTicketsTest(forms).then((res) => {
+      try {
+        const res = await new MyTicketService().getUserTicketsTest(forms);
         if (res.status === 200) {
           if (res.data.status === 1) {
             setYourTaskData(res.data.data);
@@ -2258,11 +2573,17 @@ export default function MyTicketComponent() {
             setYourTask();
             setIsLoading(false);
 
-            setYourTask(res.data.data.data);
+            setYourTask(
+              Array.isArray(res?.data?.data?.data) ? res.data.data.data : []
+            );
             // res?.data?.data?.data?.filter((d) => d.passed_status !== "REJECT")
           }
         }
-      });
+        setIsLoading(false);
+      } catch (error) {
+        errorHandler(error);
+        setIsLoading(false);
+      }
     } else if (k === 'unpassed_columns') {
       const forms = {
         limit: 10,
@@ -2270,16 +2591,23 @@ export default function MyTicketComponent() {
         page: 1
       };
 
-      await new MyTicketService().getUserTicketsTest(forms).then((res) => {
+      try {
+        const res = await new MyTicketService().getUserTicketsTest(forms);
         if (res.status === 200) {
           setIsLoading(false);
           if (res?.data?.status === 1) {
             setUnpassedData(res?.data?.data);
 
-            setUnpassedTickets(res?.data?.data?.data);
+            setUnpassedTickets(
+              Array.isArray(res?.data?.data?.data) ? res?.data?.data?.data : []
+            );
+          } else {
+            setUnpassedTickets([]);
           }
         }
-      });
+      } catch (error) {
+        errorHandler(error);
+      }
     } else if (k === 'Search_Result') {
       const forms = {
         limit: 10,
@@ -2288,7 +2616,8 @@ export default function MyTicketComponent() {
         ticket_id: ticketId
       };
 
-      await new ReportService().getTicketReport(forms).then((res) => {
+      try {
+        const res = await new ReportService().getTicketReport(forms);
         if (res.status === 200) {
           setIsLoading(false);
           if (res?.data?.status === 1) {
@@ -2297,7 +2626,9 @@ export default function MyTicketComponent() {
             setSearchResult(res?.data?.data?.data);
           }
         }
-      });
+      } catch (error) {
+        errorHandler(error);
+      }
     }
   };
 
@@ -2314,61 +2645,127 @@ export default function MyTicketComponent() {
     } else if (type === 'MINUS') {
       form = {
         typeOf: 'AssignToMe',
-        page: assignedToMeData.current_page - 1
+        page: assignedToMeData.current_page - 1,
+        limit: assignedToMeData.per_page
       };
     } else if (type === 'PLUS') {
       form = {
         typeOf: 'AssignToMe',
-        page: assignedToMeData.current_page + 1
+        page: assignedToMeData.current_page + 1,
+        limit: assignedToMeData.per_page
       };
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
+    try {
+      const res = await new MyTicketService().getUserTicketsTest(form);
       if (res.status === 200) {
         if (res.data.status === 1) {
           setAssignedToMe(
-            res?.data?.data?.data.filter((d) => d.passed_status !== 'REJECT')
+            Array.isArray(res?.data?.data?.data)
+              ? res?.data?.data?.data.filter(
+                  (d) => d.passed_status !== 'REJECT'
+                )
+              : []
           );
           setIsLoading(false);
           if (type === 'PLUS' && res.data.data.data.length > 0) {
-            setAssignedToMeData({
-              ...assignedToMeData,
-              current_page: assignedToMeData.current_page + 1
-            });
+            // setAssignedToMeData({
+            //   ...assignedToMeData,
+
+            //   current_page: assignedToMeData.current_page + 1
+            // });
+            setAssignedToMeData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'MINUS' && res.data.data.data.length > 0) {
+            // setAssignedToMeData({
+            //   ...assignedToMeData,
+
+            //   current_page: assignedToMeData.current_page + 1
+            // });
+            setAssignedToMeData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'LIMIT' && res.data.data.data.length > 0) {
+            // setAssignedToMeData({
+            //   ...assignedToMeData,
+
+            //   current_page: assignedToMeData.current_page + 1
+            // });
+            setAssignedToMeData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
           }
         }
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    }
   };
 
   const handleSearchChanged = async (e, type) => {
     e.preventDefault();
+    setIsLoading(true);
+
     var form;
+    const searchDataEntries = Object?.fromEntries(searchData?.entries());
+
+    const formatEntries = (entries) => {
+      return Object?.keys(entries)?.reduce((acc, key) => {
+        const value = entries[key];
+        const cleanKey = key?.replace('[]', '');
+
+        if (cleanKey === 'ticket_id') {
+          // If it's a 'ticket_id', keep the value as-is
+          acc[cleanKey] = value;
+        } else if (value && value?.trim() !== '') {
+          // If the value is non-empty, wrap it in an array
+          acc[cleanKey] = [value];
+        } else if (cleanKey === 'from_date' || cleanKey === 'to_date') {
+          // Specifically for 'from_date' and 'to_date', set it as an empty string
+          acc[cleanKey] = '';
+        } else {
+          // For other fields, set as an array with an empty string
+          acc[cleanKey] = [''];
+        }
+
+        return acc;
+      }, {});
+    };
+
+    const limit = parseInt(e.target.value);
     if (type === 'LIMIT') {
-      const limit = parseInt(e.target.value);
       form = {
         limit: limit,
         typeOf: 'SearchResult',
         page: 1,
-        ticket_id: ticketId
-
+        ticket_id: ticketId,
+        ...formatEntries(searchDataEntries)
         // Resetting to the first page when limit changes
       };
     } else if (type === 'MINUS') {
       form = {
         typeOf: 'SearchResult',
         page: searchResultData?.current_page - 1,
-        ticket_id: ticketId
+        ticket_id: ticketId,
+        ...formatEntries(searchDataEntries)
       };
     } else if (type === 'PLUS') {
       form = {
         typeOf: 'SearchResult',
         page: searchResultData?.current_page + 1,
-        ticket_id: ticketId
+        ticket_id: ticketId,
+        limit: searchResultData?.per_page,
+
+        // ...searchDataEntries
+        ...formatEntries(searchDataEntries)
       };
     }
 
-    await new ReportService().getTicketReport(form).then((res) => {
+    try {
+      const res = await new ReportService().getTicketReport(form);
       if (res.status === 200) {
         if (res.data.status === 1) {
           setSearchResult(
@@ -2376,18 +2773,48 @@ export default function MyTicketComponent() {
           );
           setIsLoading(false);
           if (type === 'PLUS' && res.data.data.data.length > 0) {
-            setSearchResultData({
-              ...searchResultData,
-              current_page: searchResultData.current_page + 1
-            });
+            // setSearchResultData({
+            //   ...searchResultData,
+            //   current_page: searchResultData.current_page + 1
+            // });
+            setSearchResultData(res.data.data);
+            setSearchResult(res.data.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+
+          if (type === 'MINUS' && res.data.data.data.length > 0) {
+            // setSearchResultData({
+            //   ...searchResultData,
+            //   current_page: searchResultData.current_page + 1
+            // });
+            setSearchResultData(res.data.data);
+            setSearchResult(res.data.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'LIMIT' && res.data.data.data.length > 0) {
+            // setSearchResultData({
+            //   ...searchResultData,
+            //   current_page: searchResultData.current_page + 1
+            // });
+            setSearchResultData(res.data.data);
+            setSearchResult(res.data.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
           }
         }
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleCreatedByMeRowChanged = async (e, type) => {
     e.preventDefault();
+    setIsLoading(true);
     var form;
     if (type === 'LIMIT') {
       const limit = parseInt(e.target.value);
@@ -2399,37 +2826,62 @@ export default function MyTicketComponent() {
     } else if (type === 'MINUS') {
       form = {
         typeOf: 'CreatedByMe',
-        page: createdByMeData.current_page - 1
+        page: createdByMeData.current_page - 1,
+        limit: createdByMeData.per_page
       };
     } else if (type === 'PLUS') {
       form = {
         typeOf: 'CreatedByMe',
-        page: createdByMeData.current_page + 1
+        page: createdByMeData.current_page + 1,
+        limit: createdByMeData.per_page
       };
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
+    try {
+      const res = await new MyTicketService().getUserTicketsTest(form);
       if (res.status === 200) {
         if (res.data.status === 1) {
           setCreatedByMe(
-            res?.data?.data?.data.filter((d) => d.passed_status !== 'REJECT')
+            Array.isArray(res?.data?.data?.data)
+              ? res?.data?.data?.data.filter(
+                  (d) => d.passed_status !== 'REJECT'
+                )
+              : []
           );
 
           setIsLoading(false);
 
           if (type === 'PLUS' && res.data.data.data.length > 0) {
-            setCreatedByMeData({
-              ...createdByMeData,
-              current_page: createdByMeData.current_page + 1
-            });
+            // setCreatedByMeData({
+            //   ...createdByMeData,
+            //   current_page: createdByMeData.current_page + 1
+            // });
+            setCreatedByMeData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'MINUS' && res.data.data.data.length > 0) {
+            setCreatedByMeData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'LIMIT' && res.data.data.data.length > 0) {
+            setCreatedByMeData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
           }
         }
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleDepartmentWiseRowChanged = async (e, type) => {
     e.preventDefault();
+    setIsLoading(true);
     var form;
     if (type === 'LIMIT') {
       const limit = parseInt(e.target.value);
@@ -2441,38 +2893,57 @@ export default function MyTicketComponent() {
     } else if (type === 'MINUS') {
       form = {
         typeOf: 'DepartmentWise',
-        page: departmentWiseData.current_page - 1
+        page: departmentWiseData.current_page - 1,
+        limit: departmentWiseData.per_page
       };
     } else if (type === 'PLUS') {
       form = {
         typeOf: 'DepartmentWise',
-        page: departmentWiseData.current_page + 1
+        page: departmentWiseData.current_page + 1,
+        limit: departmentWiseData.per_page
       };
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
+    try {
+      const res = await new MyTicketService().getUserTicketsTest(form);
       if (res.status === 200) {
         if (res.data.status === 1) {
           setDepartmentwiseTicket(
-            res.data.data.data.filter((d) => d.passed_status !== 'REJECT')
+            Array.isArray(res?.data?.data?.data)
+              ? res.data.data.data.filter((d) => d.passed_status !== 'REJECT')
+              : []
           );
           setIsLoading(false);
 
           if (type === 'PLUS' && res.data.data.data.length > 0) {
-            setDepartmentWiseData({
-              ...departmentWiseData,
-              current_page: departmentWiseData.current_page + 1
-            });
+            setDepartmentWiseData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'MINUS' && res.data.data.data.length > 0) {
+            setDepartmentWiseData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'LIMIT' && res.data.data.data.length > 0) {
+            setDepartmentWiseData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
           }
           setIsLoading(false);
         }
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleYourTaskRowChanged = async (e, type) => {
     e.preventDefault();
     var form;
+    setIsLoading(true);
     if (type === 'LIMIT') {
       const limit = parseInt(e.target.value);
       form = {
@@ -2483,35 +2954,58 @@ export default function MyTicketComponent() {
     } else if (type === 'MINUS') {
       form = {
         typeOf: 'YouTask',
-        page: yourTaskData.current_page - 1
+        page: yourTaskData.current_page - 1,
+        limit: yourTaskData.per_page
       };
     } else if (type === 'PLUS') {
       form = {
         typeOf: 'YouTask',
-        page: yourTaskData.current_page + 1
+        page: yourTaskData.current_page + 1,
+        limit: yourTaskData.per_page
       };
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
+    try {
+      const res = await new MyTicketService().getUserTicketsTest(form);
       if (res.status === 200) {
         if (res.data.status === 1) {
           setYourTask(
-            res.data.data.data.filter((d) => d.passed_status !== 'REJECT')
+            Array.isArray(res?.data?.data?.data)
+              ? res.data.data.data.filter((d) => d.passed_status !== 'REJECT')
+              : []
           );
           setIsLoading(false);
           if (type === 'PLUS' && res.data.data.data.length > 0) {
-            setYourTaskData({
-              ...yourTaskData,
-              current_page: yourTaskData.current_page + 1
-            });
+            // setYourTaskData({
+            //   ...yourTaskData,
+            //   current_page: yourTaskData.current_page + 1
+            // });
+            setYourTaskData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'MINUS' && res.data.data.data.length > 0) {
+            setYourTaskData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
+          }
+          if (type === 'LIMIT' && res.data.data.data.length > 0) {
+            setYourTaskData(res.data.data);
+            setCurrentPage(res.data.data.current_page);
+            setItemsPerPage(res.data.data.per_page);
           }
         }
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleUnpassedRowChanged = async (e, type) => {
     e.preventDefault();
+    setIsLoading(true);
     var form;
     if (type === 'LIMIT') {
       const limit = parseInt(e.target.value);
@@ -2523,29 +3017,58 @@ export default function MyTicketComponent() {
     } else if (type === 'MINUS') {
       form = {
         typeOf: 'UnPassed',
-        page: unpassedData.current_page - 1
+        page: unpassedData.current_page - 1,
+        limit: unpassedData.per_page
       };
     } else if (type === 'PLUS') {
       form = {
         typeOf: 'UnPassed',
-        page: unpassedData.current_page + 1
+        page: unpassedData.current_page + 1,
+        limit: unpassedData.per_page
       };
     } else {
       return;
     }
 
-    await new MyTicketService().getUserTicketsTest(form).then((res) => {
+    try {
+      const res = await new MyTicketService().getUserTicketsTest(form);
       if (res.status === 200) {
         if (res?.data?.status === 1) {
-          setUnpassedTickets(res.data.data.data);
+          setUnpassedTickets(
+            Array.isArray(res?.data?.data?.data) ? res.data.data.data : []
+          );
           setIsLoading(false);
-          setUnpassedData({
-            ...unpassedData,
-            current_page: res.data.data.current_page
-          });
+          // setUnpassedData({
+          //   ...unpassedData,
+          //   current_page: res.data.data.current_page
+          // });
+          setUnpassedData(res.data.data);
+        }
+        if (type === 'PLUS' && res.data.data.data.length > 0) {
+          // setYourTaskData({
+          //   ...yourTaskData,
+          //   current_page: yourTaskData.current_page + 1
+          // });
+          setUnpassedData(res.data.data);
+          setCurrentPage(res.data.data.current_page);
+          setItemsPerPage(res.data.data.per_page);
+        }
+        if (type === 'MINUS' && res.data.data.data.length > 0) {
+          setUnpassedData(res.data.data);
+          setCurrentPage(res.data.data.current_page);
+          setItemsPerPage(res.data.data.per_page);
+        }
+        if (type === 'LIMIT' && res.data.data.data.length > 0) {
+          setUnpassedData(res.data.data);
+          setCurrentPage(res.data.data.current_page);
+          setItemsPerPage(res.data.data.per_page);
         }
       }
-    });
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const customStyles = {
@@ -2581,7 +3104,6 @@ export default function MyTicketComponent() {
   }, [handleForm]);
 
   useEffect(() => {
-    setNotify(null);
     loadData();
   }, [loadData]);
 
@@ -2600,7 +3122,7 @@ export default function MyTicketComponent() {
       <PageHeader headerTitle="My Tickets" />
 
       {locationState && <Alert alertData={locationState} />}
-      {notify && <Alert alertData={notify} />}
+
       <div className="card mt-2 " style={{ zIndex: 10 }}>
         <div className="card-body">
           <form onSubmit={handleForm} id="your_form_id">
@@ -2614,6 +3136,7 @@ export default function MyTicketComponent() {
                   className="form-control form-control-sm"
                   id="ticket_idd"
                   name="ticket_id"
+                  value={ticketId}
                   onChange={(e) => {
                     setTicketId(e.target.value);
                   }}
@@ -2623,7 +3146,7 @@ export default function MyTicketComponent() {
                 />
               </div>
 
-              <div className="col-md-3">
+              {/* <div className="col-md-3">
                 <label className="">
                   <b>Select User :</b>
                 </label>
@@ -2632,11 +3155,15 @@ export default function MyTicketComponent() {
                     options={userData}
                     isMulti={true}
                     id="assign_to_user_id[]"
+                    value={selectedUsers}
                     name="assign_to_user_id[]"
+                    onChange={(selectedOptions) => {
+                      setSelectedUsers(selectedOptions);
+                    }}
                   />
                 )}
-              </div>
-              {localStorage.getItem('account_for') === 'SELF' && (
+              </div> */}
+              {/* {localStorage.getItem('account_for') === 'SELF' && (
                 <>
                   <div className="col-md-3">
                     <label className="">
@@ -2646,28 +3173,88 @@ export default function MyTicketComponent() {
                       <Select
                         options={departmentData}
                         isMulti={true}
+                        value={selectedDepartment}
                         id="assign_to_department_id[]"
                         name="assign_to_department_id[]"
+                        onChange={(selectedOptions) => {
+                          setSelectedDepartment(selectedOptions);
+                        }}
                       />
                     )}
                   </div>
                 </>
+              )} */}
+
+              {/* Select User - Only for SELF */}
+              {localStorage.getItem('account_for') === 'SELF' && (
+                <div className="col-md-3">
+                  <label>
+                    <b>Select User :</b>
+                  </label>
+                  {userData && (
+                    <Select
+                      classNamePrefix="react-select"
+                      options={userData}
+                      isMulti={true}
+                      id="assign_to_user_id[]"
+                      value={selectedUsers}
+                      name="assign_to_user_id[]"
+                      onChange={(selectedOptions) =>
+                        setSelectedUsers(selectedOptions)
+                      }
+                    />
+                  )}
+                </div>
               )}
 
+              {/* Select Department - Only for SELF */}
+              {localStorage.getItem('account_for') === 'SELF' && (
+                <div className="col-md-3">
+                  <label>
+                    <b>Select Department :</b>
+                  </label>
+                  {departmentData && (
+                    <Select
+                      classNamePrefix="react-select"
+                      options={departmentData}
+                      isMulti={true}
+                      value={selectedDepartment}
+                      id="assign_to_department_id[]"
+                      name="assign_to_department_id[]"
+                      onChange={(selectedOptions) =>
+                        setSelectedDepartment(selectedOptions)
+                      }
+                    />
+                  )}
+                </div>
+              )}
+
+              {/* Select Status */}
               <div className="col-md-3">
-                <label className="">
+                <label>
                   <b>Select Status :</b>
                 </label>
                 {statusData && (
                   <Select
+                    classNamePrefix="react-select"
                     options={statusData}
                     isMulti={true}
+                    value={selectedStatus}
                     id="status_id[]"
                     name="status_id[]"
+                    onChange={(selectedOptions) =>
+                      setSelectedStatus(selectedOptions)
+                    }
                   />
                 )}
               </div>
+            </div>
+            {localStorage.getItem('account_for') !== 'SELF' && (
+              <div className="row"></div>
+            )}
 
+            {/* Buttons */}
+            <div className="row mt-2">
               <div className="col-md-4">
                 <button
                   className="btn btn-sm btn-warning text-white"
@@ -2679,7 +3266,7 @@ export default function MyTicketComponent() {
                 <button
                   className="btn btn-sm btn-info text-white"
                   type="button"
-                  onClick={() => window.location.reload(false)}
+                  onClick={handleClearSearchedData}
                   style={{ marginTop: '20px', fontWeight: '600' }}
                 >
                   <i className="icofont-refresh text-white"></i> Reset
@@ -2689,14 +3276,13 @@ export default function MyTicketComponent() {
                   type="button"
                   id="openFilter"
                   styleName={
-                    account_for === 'CUSTOMER'
+                    account_for == 'CUSTOMER'
                       ? { display: 'none' }
                       : { display: 'block' }
                   }
                   onClick={handleShow}
                   style={{ marginTop: '20px', fontWeight: '600' }}
                 >
-                  {' '}
                   Filter <i className="icofont-filter" />
                 </button>
               </div>
@@ -2763,6 +3349,7 @@ export default function MyTicketComponent() {
                       </label>
                       {departmentData && (
                         <Select
+                          classNamePrefix="react-select"
                           options={departmentData}
                           isMulti={true}
                           ref={selectInputRef}
@@ -2778,6 +3365,7 @@ export default function MyTicketComponent() {
                         <b>Assigned User :</b>
                       </label>
                       <Select
+                        classNamePrefix="react-select"
                         options={assignUserDropdown}
                         isMulti={true}
                         id="assign_to_user_id[]"
@@ -2798,6 +3386,7 @@ export default function MyTicketComponent() {
                       </label>
                       {departmentData && (
                         <Select
+                          classNamePrefix="react-select"
                           options={departmentData}
                           isMulti={true}
                           id="department_id[]"
@@ -2814,6 +3403,7 @@ export default function MyTicketComponent() {
                         <b>Entry User :</b>
                       </label>
                       <Select
+                        classNamePrefix="react-select"
                         // options={ userDropdown}
                         options={
                           localStorage.getItem('account_for') === 'SELF'
@@ -2840,6 +3430,7 @@ export default function MyTicketComponent() {
                   </label>
                   {statusData && (
                     <Select
+                      classNamePrefix="react-select"
                       options={statusData}
                       isMulti={true}
                       id="status_id[]"
@@ -2865,9 +3456,9 @@ export default function MyTicketComponent() {
                       name="ticket_id"
                       defaultValue={ticket}
                       onChange={handleTicket}
-                      maxLength={30}
+                      // maxLength={30}
                       onKeyPress={(e) => {
-                        Validation.CharactersNumbersSpeicalOnly(e);
+                        Validation.CharactersNumbersSpeicalOnlyForTicket(e);
                       }}
                     />
                   </div>
@@ -2915,7 +3506,7 @@ export default function MyTicketComponent() {
                 }}
                 className=" tab-body-header rounded d-inline-flex"
               >
-                {searchResult && (
+                {key === 'Search_Result' && searchResult && (
                   <Tab
                     eventKey="Search_Result"
                     title="Search Result"
@@ -2923,113 +3514,51 @@ export default function MyTicketComponent() {
                   >
                     <div className="card mb-3 mt-3">
                       <div className="card-body">
-                        {searchResultExport && (
-                          <ExportToExcel
-                            className="btn btn-sm btn-danger mt-3"
-                            apiData={searchResultExport}
-                            typeOf="SearchResult"
-                            fileName={`Export Filter Result ${formattedDate} ${formattedTimeString}`}
-                          />
-                        )}
-                        {isLoading ? (
-                          <TableLoadingSkelton />
-                        ) : searchResult && searchResult?.length > 0 ? (
-                          <DataTable
-                            columns={searchResultColumns}
-                            data={searchResult}
-                            customStyles={customStyles}
-                            defaultSortField="title"
-                            paginations
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={'500px'}
-                            selectableRows={false}
-                            className="table msyDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                            highlightOnHover={true}
-                          />
-                        ) : (
-                          <div className="text-center mt-4">
-                            <p>No data found</p>
-                          </div>
-                        )}
-                      </div>
-                      <div className="back-to-top pull-right mt-2 mx-2 d-flex justify-content-end">
-                        <label className="mx-2">rows per page</label>
-                        <select
-                          onChange={(e) => {
-                            handleSearchChanged(e, 'LIMIT');
-                          }}
-                          className="mx-2"
-                        >
-                          <option value="10">10</option>
-                          <option value="20">20</option>
-                          <option value="30">30</option>
-                          <option value="40">40</option>
-                        </select>
-                        {searchResultData && (
-                          <small>
-                            {searchResultData.from}-{searchResultData.to} of{' '}
-                            {searchResultData.total}
-                          </small>
-                        )}
-                        <button
-                          onClick={(e) => {
-                            handleSearchChanged(e, 'MINUS');
-                          }}
-                          className="mx-2"
-                        >
-                          <i className="icofont-arrow-left"></i>
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            handleSearchChanged(e, 'PLUS');
-                          }}
-                        >
-                          <i className="icofont-arrow-right"></i>
-                        </button>
-                      </div>
-                    </div>
-                  </Tab>
-                )}
-                {localStorage.getItem('account_for') === 'SELF' && (
-                  <Tab eventKey="Assigned_To_Me" title="Assigned To me">
-                    <div className="card mb-3 mt-3">
-                      <div className="card-body">
-                        {assignedToMe && (
-                          <ExportAllTicketsToExcel
-                            className="btn btn-sm btn-danger mt-3"
-                            fileName="Assign To Me"
-                            typeOf="AssignToMe"
-                          />
-                        )}
-                        {isLoading && <TableLoadingSkelton />}
-
-                        {!isLoading &&
-                        assignedToMe &&
-                        assignedToMe?.length > 0 ? (
-                          <DataTable
-                            customStyles={customStyles}
-                            columns={assignedToMeColumns}
-                            data={assignedToMe}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={'500px'}
-                            selectableRows={false}
-                            highlightOnHover={true}
-                            responsive={true}
-                          />
-                        ) : (
-                          !isLoading && (
-                            <div className="text-center mt-4">
-                              <p>No data found</p>
-                            </div>
+                        {searchResult?.length > 0 &&
+                          searchResultExport?.length > 0 && (
+                            <ExportToExcel
+                              className="btn btn-sm btn-danger mt-3"
+                              apiData={searchResultExport}
+                              typeOf="SearchResult"
+                              disabled={disabled}
+                              fileName={`Export Filter Result ${formattedDate} ${formattedTimeString}`}
+                            />
+                          )}
+                        {
+                          isLoading ? (
+                            <TableLoadingSkelton />
+                          ) : (
+                            searchResult && (
+                              <DataTable
+                                columns={searchResultColumns}
+                                data={searchResult}
+                                // customStyles={customStyles}
+                                defaultSortField="title"
+                                paginations
+                                fixedHeader={true}
+                                noDataComponent={
+                                  <NotFound topMargin={0} maxHeight={250} />
+                                }
+                                // fixedHeaderScrollHeight={'500px'}
+                                selectableRows={false}
+                                className="table msyDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
+                                highlightOnHover={true}
+                              />
+                            )
                           )
-                        )}
-
-                        <div className="back-to-top pull-right mt-2 mx-2">
+                          //  : (
+                          //   <div className="text-center mt-4">
+                          //     <p>No data found</p>
+                          //   </div>
+                          // )
+                        }
+                      </div>
+                      {searchResult && searchResult?.length > 0 && (
+                        <div className="back-to-top pull-right mt-2 mx-2 d-flex justify-content-end">
                           <label className="mx-2">rows per page</label>
                           <select
                             onChange={(e) => {
-                              handleAssignedToMeRowChanged(e, 'LIMIT');
+                              handleSearchChanged(e, 'LIMIT');
                             }}
                             className="mx-2"
                           >
@@ -3038,28 +3567,116 @@ export default function MyTicketComponent() {
                             <option value="30">30</option>
                             <option value="40">40</option>
                           </select>
-                          {assignedToMeData && (
+                          {searchResultData && (
                             <small>
-                              {assignedToMeData.from}-{assignedToMeData.to} of{' '}
-                              {assignedToMeData.total}
+                              {searchResultData.from}-{searchResultData.to} of{' '}
+                              {searchResultData.total}
                             </small>
                           )}
                           <button
                             onClick={(e) => {
-                              handleAssignedToMeRowChanged(e, 'MINUS');
+                              handleSearchChanged(e, 'MINUS');
                             }}
+                            disabled={
+                              searchResultData?.from === 1 ? true : false
+                            }
                             className="mx-2"
                           >
                             <i className="icofont-arrow-left"></i>
                           </button>
                           <button
                             onClick={(e) => {
-                              handleAssignedToMeRowChanged(e, 'PLUS');
+                              handleSearchChanged(e, 'PLUS');
                             }}
                           >
                             <i className="icofont-arrow-right"></i>
                           </button>
                         </div>
+                      )}
+                    </div>
+                  </Tab>
+                )}
+                {localStorage.getItem('account_for') === 'SELF' && (
+                  <Tab eventKey="Assigned_To_Me" title="Assigned To me">
+                    <div className="card mb-3 mt-3">
+                      <div className="card-body">
+                        {assignedToMe?.length > 0 && (
+                          <ExportAllTicketsToExcel
+                            className="btn btn-sm btn-danger mt-3"
+                            fileName="Assign To Me"
+                            typeOf="AssignToMe"
+                          />
+                        )}
+                        {isLoading && <TableLoadingSkelton />}
+
+                        {
+                          found && !isLoading && assignedToMe && (
+                            <DataTable
+                              // customStyles={customStyles}
+                              columns={assignedToMeColumns}
+                              onChangeRowsPerPage={(newPerPage, page) => {
+                                setItemsPerPage(newPerPage); // Update items per page
+                                setCurrentPage(page); // Reset current page state when items per page changes
+                              }}
+                              data={assignedToMe}
+                              defaultSortField="title"
+                              fixedHeader={true}
+                              noDataComponent={
+                                <NotFound topMargin={0} maxHeight={250} />
+                              }
+                              // fixedHeaderScrollHeight={'500px'}
+                              selectableRows={false}
+                              highlightOnHover={true}
+                              responsive={true}
+                            />
+                          )
+                          //  : (
+                          // (
+                          //   !isLoading && (
+                          //     <div className="text-center mt-4">
+                          //       <p>No data found</p>
+                          //     </div>
+                          //   )
+                          // )
+                        }
+
+                        {assignedToMe && assignedToMe?.length > 0 && (
+                          <div className="back-to-top pull-right mt-2 mx-2">
+                            <label className="mx-2">rows per page</label>
+                            <select
+                              onChange={(e) => {
+                                handleAssignedToMeRowChanged(e, 'LIMIT');
+                              }}
+                              className="mx-2"
+                            >
+                              <option value="10">10</option>
+                              <option value="20">20</option>
+                              <option value="30">30</option>
+                              <option value="40">40</option>
+                            </select>
+                            {assignedToMeData && (
+                              <small>
+                                {assignedToMeData.from}-{assignedToMeData.to} of{' '}
+                                {assignedToMeData.total}
+                              </small>
+                            )}
+                            <button
+                              onClick={(e) => {
+                                handleAssignedToMeRowChanged(e, 'MINUS');
+                              }}
+                              className="mx-2"
+                            >
+                              <i className="icofont-arrow-left"></i>
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                handleAssignedToMeRowChanged(e, 'PLUS');
+                              }}
+                            >
+                              <i className="icofont-arrow-right"></i>
+                            </button>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </Tab>
@@ -3068,68 +3685,78 @@ export default function MyTicketComponent() {
                 <Tab eventKey="created_by_me" title="Created By Me">
                   <div className="card mb-3 mt-3">
                     <div className="card-body">
-                      {createdByMe && (
+                      {createdByMe?.length > 0 && (
                         <ExportAllTicketsToExcel
                           className="btn btn-sm btn-danger mt-3"
                           fileName="Created By Me"
                           typeOf="CreatedByMe"
                         />
                       )}
-                      {isLoading ? (
-                        <TableLoadingSkelton />
-                      ) : createdByMe && createdByMe?.length > 0 ? (
-                        <DataTable
-                          customStyles={customStyles}
-                          columns={createdByMeColumns}
-                          data={createdByMe}
-                          defaultSortField="title"
-                          fixedHeader={true}
-                          fixedHeaderScrollHeight={'500px'}
-                          selectableRows={false}
-                          highlightOnHover={true}
-                          responsive={true}
-                        />
-                      ) : (
-                        <div className="text-center">
-                          <p>No data found</p>
+                      {
+                        isLoading ? (
+                          <TableLoadingSkelton />
+                        ) : (
+                          createdByMe && (
+                            <DataTable
+                              // customStyles={customStyles}
+                              columns={createdByMeColumns}
+                              data={createdByMe}
+                              defaultSortField="title"
+                              fixedHeader={true}
+                              noDataComponent={
+                                <NotFound topMargin={0} maxHeight={250} />
+                              }
+                              // fixedHeaderScrollHeight={'500px'}
+                              selectableRows={false}
+                              highlightOnHover={true}
+                              responsive={true}
+                            />
+                          )
+                        )
+                        //  : (
+                        //   <div className="text-center">
+                        //     <p>No data found</p>
+                        //   </div>
+                        // )
+                      }
+
+                      {createdByMe && createdByMe?.length > 0 && (
+                        <div className="back-to-top pull-right mt-6 mx-2">
+                          <label className="mx-2">rows per page</label>
+                          <select
+                            onChange={(e) => {
+                              handleCreatedByMeRowChanged(e, 'LIMIT');
+                            }}
+                            className="mx-2"
+                          >
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                          </select>
+                          {createdByMeData && (
+                            <small>
+                              {createdByMeData.from}-{createdByMeData.to} of{' '}
+                              {createdByMeData.total}
+                            </small>
+                          )}
+                          <button
+                            onClick={(e) => {
+                              handleCreatedByMeRowChanged(e, 'MINUS');
+                            }}
+                            className="mx-2"
+                          >
+                            <i className="icofont-arrow-left"></i>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              handleCreatedByMeRowChanged(e, 'PLUS');
+                            }}
+                          >
+                            <i className="icofont-arrow-right"></i>
+                          </button>
                         </div>
                       )}
-
-                      <div className="back-to-top pull-right mt-6 mx-2">
-                        <label className="mx-2">rows per page</label>
-                        <select
-                          onChange={(e) => {
-                            handleCreatedByMeRowChanged(e, 'LIMIT');
-                          }}
-                          className="mx-2"
-                        >
-                          <option value="10">10</option>
-                          <option value="20">20</option>
-                          <option value="30">30</option>
-                          <option value="40">40</option>
-                        </select>
-                        {createdByMeData && (
-                          <small>
-                            {createdByMeData.from}-{createdByMeData.to} of{' '}
-                            {createdByMeData.total}
-                          </small>
-                        )}
-                        <button
-                          onClick={(e) => {
-                            handleCreatedByMeRowChanged(e, 'MINUS');
-                          }}
-                          className="mx-2"
-                        >
-                          <i className="icofont-arrow-left"></i>
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            handleCreatedByMeRowChanged(e, 'PLUS');
-                          }}
-                        >
-                          <i className="icofont-arrow-right"></i>
-                        </button>
-                      </div>
                     </div>
                   </div>
                 </Tab>
@@ -3140,7 +3767,7 @@ export default function MyTicketComponent() {
                   >
                     <div className="card mb-3 mt-3">
                       <div className="card-body">
-                        {departmentwiseTicket && (
+                        {departmentwiseTicket?.length > 0 && (
                           <ExportAllTicketsToExcel
                             className="btn btn-sm btn-danger mt-3"
                             fileName="Departmentwise Ticket"
@@ -3149,59 +3776,68 @@ export default function MyTicketComponent() {
                         )}
                         {isLoading ? (
                           <TableLoadingSkelton />
-                        ) : departmentwiseTicket &&
-                          departmentwiseTicket?.length > 0 ? (
-                          <DataTable
-                            columns={departmentwisetTicketColumns}
-                            customStyles={customStyles}
-                            data={departmentwiseTicket}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={'500px'}
-                            selectableRows={false}
-                            highlightOnHover={true}
-                          />
                         ) : (
-                          <div className="text-center">
-                            <p>No data found</p>
-                          </div>
+                          departmentwiseTicket && (
+                            <DataTable
+                              columns={departmentwisetTicketColumns}
+                              // customStyles={customStyles}
+                              data={departmentwiseTicket}
+                              defaultSortField="title"
+                              noDataComponent={
+                                <NotFound topMargin={0} maxHeight={250} />
+                              }
+                              fixedHeader={true}
+                              // fixedHeaderScrollHeight={'500px'}
+                              selectableRows={false}
+                              highlightOnHover={true}
+                            />
+                          )
                         )}
+                        {/* // : (
+                        //   <div className="text-center">
+                        //     <p>No data found</p>
+                        //   </div>
+                        // ) */}
 
-                        <div className="back-to-top pull-right mt-2 mx-2">
-                          <label className="mx-2">rows per page</label>
-                          <select
-                            onChange={(e) => {
-                              handleDepartmentWiseRowChanged(e, 'LIMIT');
-                            }}
-                            className="mx-2"
-                          >
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="40">40</option>
-                          </select>
-                          {departmentWiseData && (
-                            <small>
-                              {departmentWiseData.from}-{departmentWiseData.to}{' '}
-                              of {departmentWiseData.total}
-                            </small>
+                        {departmentwiseTicket &&
+                          departmentwiseTicket?.length > 0 && (
+                            <div className="back-to-top pull-right mt-2 mx-2">
+                              <label className="mx-2">rows per page</label>
+                              <select
+                                onChange={(e) => {
+                                  handleDepartmentWiseRowChanged(e, 'LIMIT');
+                                }}
+                                className="mx-2"
+                              >
+                                <option value="10">10</option>
+                                <option value="20">20</option>
+                                <option value="30">30</option>
+                                <option value="40">40</option>
+                              </select>
+                              {departmentWiseData && (
+                                <small>
+                                  {departmentWiseData.from}-
+                                  {departmentWiseData.to} of{' '}
+                                  {departmentWiseData.total}
+                                </small>
+                              )}
+                              <button
+                                onClick={(e) => {
+                                  handleDepartmentWiseRowChanged(e, 'MINUS');
+                                }}
+                                className="mx-2"
+                              >
+                                <i className="icofont-arrow-left"></i>
+                              </button>
+                              <button
+                                onClick={(e) => {
+                                  handleDepartmentWiseRowChanged(e, 'PLUS');
+                                }}
+                              >
+                                <i className="icofont-arrow-right"></i>
+                              </button>
+                            </div>
                           )}
-                          <button
-                            onClick={(e) => {
-                              handleDepartmentWiseRowChanged(e, 'MINUS');
-                            }}
-                            className="mx-2"
-                          >
-                            <i className="icofont-arrow-left"></i>
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              handleDepartmentWiseRowChanged(e, 'PLUS');
-                            }}
-                          >
-                            <i className="icofont-arrow-right"></i>
-                          </button>
-                        </div>
                       </div>
                     </div>
                   </Tab>
@@ -3211,67 +3847,77 @@ export default function MyTicketComponent() {
                   <Tab eventKey="your_task" title="Your Task">
                     <div className="card mb-3 mt-3">
                       <div className="card-body">
-                        {yourTask && (
+                        {yourTask?.length > 0 && (
                           <ExportAllTicketsToExcel
                             className="btn btn-sm btn-danger mt-3"
                             fileName="Your Task"
                             typeOf="YouTask"
                           />
                         )}
-                        {isLoading ? (
-                          <TableLoadingSkelton />
-                        ) : yourTask && yourTask.length > 0 ? (
-                          <DataTable
-                            columns={yourTaskColumns}
-                            data={yourTask}
-                            customStyles={customStyles}
-                            defaultSortField="title"
-                            fixedHeader={true}
-                            fixedHeaderScrollHeight={'500px'}
-                            selectableRows={false}
-                            highlightOnHover={true}
-                          />
-                        ) : (
-                          <div className="text-center">
-                            <p>No data found</p>
+                        {
+                          isLoading ? (
+                            <TableLoadingSkelton />
+                          ) : (
+                            yourTask && (
+                              <DataTable
+                                columns={yourTaskColumns}
+                                data={yourTask}
+                                // customStyles={customStyles}
+                                defaultSortField="title"
+                                fixedHeader={true}
+                                noDataComponent={
+                                  <NotFound topMargin={0} maxHeight={250} />
+                                }
+                                // fixedHeaderScrollHeight={'500px'}
+                                selectableRows={false}
+                                highlightOnHover={true}
+                              />
+                            )
+                          )
+                          // : (
+                          //   <div className="text-center">
+                          //     <p>No data found</p>
+                          //   </div>
+                          // )
+                        }
+
+                        {yourTask && yourTask?.length > 0 && (
+                          <div className="back-to-top pull-right mt-2 mx-2">
+                            <label className="mx-2">rows per page</label>
+                            <select
+                              onChange={(e) => {
+                                handleYourTaskRowChanged(e, 'LIMIT');
+                              }}
+                              className="mx-2"
+                            >
+                              <option value="10">10</option>
+                              <option value="20">20</option>
+                              <option value="30">30</option>
+                              <option value="40">40</option>
+                            </select>
+                            {yourTaskData && (
+                              <small>
+                                {yourTaskData.from}-{yourTaskData.to} of{' '}
+                                {yourTaskData.total}
+                              </small>
+                            )}
+                            <button
+                              onClick={(e) => {
+                                handleYourTaskRowChanged(e, 'MINUS');
+                              }}
+                              className="mx-2"
+                            >
+                              <i className="icofont-arrow-left"></i>
+                            </button>
+                            <button
+                              onClick={(e) => {
+                                handleYourTaskRowChanged(e, 'PLUS');
+                              }}
+                            >
+                              <i className="icofont-arrow-right"></i>
+                            </button>
                           </div>
                         )}
-
-                        <div className="back-to-top pull-right mt-2 mx-2">
-                          <label className="mx-2">rows per page</label>
-                          <select
-                            onChange={(e) => {
-                              handleYourTaskRowChanged(e, 'LIMIT');
-                            }}
-                            className="mx-2"
-                          >
-                            <option value="10">10</option>
-                            <option value="20">20</option>
-                            <option value="30">30</option>
-                            <option value="40">40</option>
-                          </select>
-                          {yourTaskData && (
-                            <small>
-                              {yourTaskData.from}-{yourTaskData.to} of{' '}
-                              {yourTaskData.total}
-                            </small>
-                          )}
-                          <button
-                            onClick={(e) => {
-                              handleYourTaskRowChanged(e, 'MINUS');
-                            }}
-                            className="mx-2"
-                          >
-                            <i className="icofont-arrow-left"></i>
-                          </button>
-                          <button
-                            onClick={(e) => {
-                              handleYourTaskRowChanged(e, 'PLUS');
-                            }}
-                          >
-                            <i className="icofont-arrow-right"></i>
-                          </button>
-                        </div>
                       </div>
                     </div>
                   </Tab>
@@ -3281,124 +3927,128 @@ export default function MyTicketComponent() {
                   <div className="card mb-3 mt-3">
                     <div className="card-body">
                       <div className="row">
-                        <div className="row">
-                          <div className="col-md-6 mb-1">
-                            {unpassedTickets && (
-                              <ExportAllTicketsToExcel
-                                className="btn btn-danger btn-block"
-                                fileName="Unpassed Ticket"
-                                typeOf="UnPassed"
-                              />
-                            )}
+                        <div className="col-md-6 mb-1">
+                          {unpassedTickets?.length > 0 && (
+                            <ExportAllTicketsToExcel
+                              className="btn btn-danger btn-block"
+                              fileName="Unpassed Ticket"
+                              typeOf="UnPassed"
+                            />
+                          )}
 
-                            {!isLoading && unpassedTickets && (
-                              <>
-                                <button
-                                  className="btn btn-success btn-block text-white"
-                                  onClick={(e) => {
-                                    passTicketHandler();
-                                    const selectedData = unpassedTickets.filter(
-                                      (row) => selectedRowss.includes(row.id)
-                                    );
-                                    handleRemarkModal({
-                                      showModal: true,
-                                      modalData: selectedData,
-                                      modalHeader: 'Enter Remark',
-                                      status: 'PASS'
-                                    });
-                                  }}
-                                  disabled={
-                                    !selectAllNames &&
-                                    selectedRowss?.length <= 0
-                                      ? true
-                                      : false
-                                  }
-                                >
-                                  <i className="icofont-checked"></i> Pass
-                                </button>
-                                <button
-                                  className="btn btn-danger btn-block text-white"
-                                  onClick={(e) => {
-                                    const selectedData = unpassedTickets.filter(
-                                      (row) => selectedRowss.includes(row.id)
-                                    );
-                                    handleRemarkModal({
-                                      showModal: true,
-                                      modalData: selectedData,
-                                      modalHeader: 'Enter Remark',
-                                      status: 'REJECT'
-                                    });
-                                  }}
-                                  disabled={
-                                    !selectAllNames &&
-                                    selectedRowss?.length <= 0
-                                      ? true
-                                      : false
-                                  }
-                                >
-                                  <i className="icofont-close-squared-alt"></i>{' '}
-                                  Reject
-                                </button>
-                              </>
-                            )}
-                          </div>
+                          {!isLoading && unpassedTickets && (
+                            <>
+                              <button
+                                className="btn btn-success btn-block text-white"
+                                onClick={(e) => {
+                                  passTicketHandler();
+                                  const selectedData = unpassedTickets.filter(
+                                    (row) => selectedRowss.includes(row.id)
+                                  );
+                                  handleRemarkModal({
+                                    showModal: true,
+                                    modalData: selectedData,
+                                    modalHeader: 'Enter Remark',
+                                    status: 'PASS'
+                                  });
+                                }}
+                                disabled={
+                                  !selectAllNames && selectedRowss?.length <= 0
+                                    ? true
+                                    : false
+                                }
+                              >
+                                <i className="icofont-checked"></i> Pass
+                              </button>
+                              <button
+                                className="btn btn-danger btn-block text-white"
+                                onClick={(e) => {
+                                  const selectedData = unpassedTickets.filter(
+                                    (row) => selectedRowss.includes(row.id)
+                                  );
+                                  handleRemarkModal({
+                                    showModal: true,
+                                    modalData: selectedData,
+                                    modalHeader: 'Enter Remark',
+                                    status: 'REJECT'
+                                  });
+                                }}
+                                disabled={
+                                  !selectAllNames && selectedRowss?.length <= 0
+                                    ? true
+                                    : false
+                                }
+                              >
+                                <i className="icofont-close-squared-alt"></i>{' '}
+                                Reject
+                              </button>
+                            </>
+                          )}
                         </div>
                       </div>
 
                       {isLoading ? (
                         <TableLoadingSkelton />
-                      ) : unpassedTickets && unpassedTickets?.length > 0 ? (
-                        <DataTable
-                          columns={unpassedColumns}
-                          data={unpassedTickets}
-                          customStyles={customStyles}
-                          defaultSortField="title"
-                          fixedHeader={true}
-                          fixedHeaderScrollHeight={'500px'}
-                          selectableRows={false}
-                          highlightOnHover={true}
-                        />
                       ) : (
-                        <div className="text-center mt-4">
-                          <p>No data found</p>
+                        unpassedTickets && (
+                          <DataTable
+                            columns={unpassedColumns}
+                            data={unpassedTickets}
+                            // customStyles={customStyles}
+                            defaultSortField="title"
+                            noDataComponent={
+                              <NotFound topMargin={0} maxHeight={250} />
+                            }
+                            fixedHeader={true}
+                            // fixedHeaderScrollHeight={'500px'}
+                            selectableRows={false}
+                            highlightOnHover={true}
+                          />
+                        )
+                      )}
+                      {/* // : (
+                      //   <div className="text-center mt-4">
+                      //     <p>No data found</p>
+                      //   </div>
+                      // ) */}
+
+                      {unpassedTickets && unpassedTickets?.length > 0 && (
+                        <div className="back-to-top pull-right mt-2 mx-2">
+                          <label className="mx-2">rows per page</label>
+                          <select
+                            onChange={(e) => {
+                              handleUnpassedRowChanged(e, 'LIMIT');
+                            }}
+                            className="mx-2"
+                          >
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                          </select>
+                          {unpassedData && (
+                            <small>
+                              {unpassedData.from}-{unpassedData.to} of{' '}
+                              {unpassedData.total}
+                            </small>
+                          )}
+                          <button
+                            onClick={(e) => {
+                              handleUnpassedRowChanged(e, 'MINUS');
+                            }}
+                            className="mx-2"
+                          >
+                            <i className="icofont-arrow-left"></i>
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              handleUnpassedRowChanged(e, 'PLUS');
+                            }}
+                          >
+                            <i className="icofont-arrow-right"></i>
+                          </button>
                         </div>
                       )}
-
-                      <div className="back-to-top pull-right mt-2 mx-2">
-                        <label className="mx-2">rows per page</label>
-                        <select
-                          onChange={(e) => {
-                            handleUnpassedRowChanged(e, 'LIMIT');
-                          }}
-                          className="mx-2"
-                        >
-                          <option value="10">10</option>
-                          <option value="20">20</option>
-                          <option value="30">30</option>
-                          <option value="40">40</option>
-                        </select>
-                        {unpassedData && (
-                          <small>
-                            {unpassedData.from}-{unpassedData.to} of{' '}
-                            {unpassedData.total}
-                          </small>
-                        )}
-                        <button
-                          onClick={(e) => {
-                            handleUnpassedRowChanged(e, 'MINUS');
-                          }}
-                          className="mx-2"
-                        >
-                          <i className="icofont-arrow-left"></i>
-                        </button>
-                        <button
-                          onClick={(e) => {
-                            handleUnpassedRowChanged(e, 'PLUS');
-                          }}
-                        >
-                          <i className="icofont-arrow-right"></i>
-                        </button>
-                      </div>
                     </div>
                   </div>
                 </Tab>
@@ -3432,7 +4082,7 @@ export default function MyTicketComponent() {
           {confirmationModal &&
             confirmationModal &&
             confirmationModal.modalsData && (
-              <form onSubmit={handleSolveTicketModal} method="POST">
+              <form onSubmit={handleSolveTicketModal}>
                 <Modal.Body>
                   <input
                     type="hidden"
@@ -3536,7 +4186,7 @@ export default function MyTicketComponent() {
             {remarkModal.status === 'PASS' ? 'PASS TICKET ' : 'REJECT TICKET'}
           </Modal.Title>
         </Modal.Header>
-        <form onSubmit={handlePassTicketForm} method="post">
+        <form onSubmit={handlePassTicketForm}>
           <Modal.Body>
             <div className="deadline-form">
               <input

@@ -4,6 +4,7 @@ import Select from 'react-select';
 import 'react-select-plus/dist/react-select-plus.css';
 
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { errorHandler } from '../../../utils';
 
 export default function ProjectDropdown(props) {
   const [data, setData] = useState([]);
@@ -14,22 +15,27 @@ export default function ProjectDropdown(props) {
   };
 
   const getData = async () => {
-    new ProjectService().getProject().then((res) => {
-      const data = [];
-      const defaultValue = [];
+    new ProjectService()
+      .getProject()
+      .then((res) => {
+        const data = [];
+        const defaultValue = [];
 
-      if (res.status === 200) {
-        const temp = res.data.data;
-        for (const key in temp) {
-          data.push({
-            labelKey: temp[key].id,
-            value: temp[key].project_name
-          });
+        if (res.status === 200) {
+          const temp = res.data.data;
+          for (const key in temp) {
+            data.push({
+              labelKey: temp[key].id,
+              value: temp[key].project_name
+            });
+          }
+          setData(data);
+          setValue(defaultValue);
         }
-        setData(data);
-        setValue(defaultValue);
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   };
 
   useEffect(() => {
@@ -42,6 +48,7 @@ export default function ProjectDropdown(props) {
         <span>
           Here
           <Select
+            classNamePrefix="react-select"
             defaultValue={value}
             options={data}
             id={props.id}
@@ -56,6 +63,7 @@ export default function ProjectDropdown(props) {
 
       {
         <Select
+          classNamePrefix="react-select"
           options={data}
           id={props.id}
           name={props.name}

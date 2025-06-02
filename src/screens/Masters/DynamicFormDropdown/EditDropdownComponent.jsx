@@ -16,6 +16,8 @@ import * as Validation from '../../../components/Utilities/Validation';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { dynamicFormDropDownData } from './Slices/DynamicFormDropDownAction';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 export default function EditDropdownComponent({ match }) {
   const history = useNavigate();
@@ -26,6 +28,8 @@ export default function EditDropdownComponent({ match }) {
 
   const dispatch = useDispatch();
 
+  const [message, setMessage] = useState('');
+  const [display, setDisplay] = useState('');
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 37)
   );
@@ -36,66 +40,62 @@ export default function EditDropdownComponent({ match }) {
       .then((res) => {
         if (res.status === 200) {
           if (res.data.status === 1) {
+            setMessage(res.data.data.master?.dropdown_name);
             setMaster(res.data.data.master);
             setData(res.data.data.dropdown);
           } else {
-            setNotify({ type: 'danger', message: res.data.message });
+            toast.error(res.data.message);
           }
         } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'User',
-            'Create_User',
-            'INSERT',
-            res.message
-          );
-        }
-      })
-      .catch((error) => {});
-  }, [id]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-
-    await new DynamicFormDropdownMasterService()
-      .updateDropdown(id, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            history(
-              {
-                pathname: `/${_base}/DynamicFormDropdown`
-              },
-              {
-                state: { alert: { type: 'success', message: res.data.message } }
-              }
-            );
-
-            dispatch(dynamicFormDropDownData());
-          } else {
-            setNotify({ type: 'danger', message: res.data.message });
-          }
-        } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'User',
-            'Create_User',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.message);
         }
       })
       .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        new ErrorLogService().sendErrorLog(
-          'Status',
-          'Get_Status',
-          'INSERT',
-          errorObject.data.message
-        );
+        errorHandler(error);
       });
+  }, [id]);
+  const [submitting, setSubmitting] = useState(false);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (submitting) return;
+    setSubmitting(true);
+    if (!message.trim()) {
+      setDisplay('Dropdown Name is Required');
+      setSubmitting(false);
+      return;
+    } else {
+      setDisplay(''); // Clear error
+    }
+    const formData = new FormData(e.target);
+    setSubmitting(true);
+    try {
+      const res = await new DynamicFormDropdownMasterService().updateDropdown(
+        id,
+        formData
+      );
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          history(
+            {
+              pathname: `/${_base}/DynamicFormDropdown`
+            },
+            {
+              state: { alert: toast.success(res.data.message) }
+            }
+          );
+
+          // dispatch(dynamicFormDropDownData());
+        } else {
+          toast.error(res.data.message);
+        }
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   const handleAddRow = () => {
@@ -130,7 +130,6 @@ export default function EditDropdownComponent({ match }) {
 
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader headerTitle="Edit Dropdown" />
 
       <div className="card mt-2">
@@ -162,9 +161,15 @@ export default function EditDropdownComponent({ match }) {
                   className="form-control form-control-sm"
                   name="dropdown_name"
                   id="dropdown_name"
-                  required
-                  defaultValue={master && master.dropdown_name}
+                  // required
+                  onChange={(e) => {
+                    setMessage(e.target.value);
+                    setDisplay('');
+                  }}
+                  value={message}
+                  // defaultValue={master && master.dropdown_name}
                 />
+                {display && <div className="text-danger mt-1">{display}</div>}
               </div>
             </div>
 

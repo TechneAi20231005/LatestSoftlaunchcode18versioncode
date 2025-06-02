@@ -42,16 +42,18 @@ import remarkMasterSlice from '../slices/hrms/employeeJoining/remarkMaster';
 import salaryMasterSlice from '../slices/hrms/employeeJoining/salaryMaster';
 import interviewMasterSlice from '../slices/hrms/employeeJoining/interviewListMaster';
 import candidatesMasterSlice from '../slices/hrms/employeeJoining/candidatesListMaster';
+import qrCodeListMasterSlice from '../slices/hrms/employeeJoining/qrCodeListMaster';
+import chatBotSlice from '../slices/chatBotSlice';
 import candidatesFollowUpSlice from '../slices/hrms/employeeJoining/followUp';
 import candidatesRemarkHistorySlice from '../slices/hrms/employeeJoining/remarkHistory';
 import interViewProcessDataSlice from '../slices/hrms/employeeJoining/interviewProcess';
 import candidateInterviewScheduleHistorySlice from '../slices/hrms/employeeJoining/interviewScheduleHistory';
-
 // // PO
 import poCommonSlice from '../slices/po/common';
 import generateRequisitionSlice from '../slices/po/generateRequisition';
 import generatePoSlice from '../slices/po/generatePo';
 import requisitionHistoryPoSlice from '../slices/po/history';
+import menuMaster from '../slices/menuMaster';
 
 // // Test Cases
 import reviewCommentMasterSlice from '../slices/testCases/reviewCommentMaster';
@@ -62,6 +64,8 @@ import downloadFormatSlice from '../slices/testCases/downloadFormatFile';
 import testCaseReviewSlice from '../slices/testCases/testCaseReview';
 import testBankSlice from '../slices/testCases/testBank';
 import sidebarSlice from '../slices/Sidebar';
+import jobRoleMaster from '../slices/jobRoleMaster';
+
 export const store = configureStore({
   reducer: {
     login: loginReducer,
@@ -95,6 +99,8 @@ export const store = configureStore({
     customerMaster: CustomerMappingSlice,
     dynamicFormDropDown: DynamicFormDropDownSlice,
     consolidatedData: ConsolidatedSlice,
+    jobRoleMaster: jobRoleMaster,
+    menuMaster: menuMaster,
 
     // // HRMS>>Employee Joining
     branchMaster: branchMasterSlice,
@@ -103,6 +109,8 @@ export const store = configureStore({
     salaryMaster: salaryMasterSlice,
     interviewMaster: interviewMasterSlice,
     candidatesMaster: candidatesMasterSlice,
+    qrCodeMaster: qrCodeListMasterSlice,
+    chatBotSlice: chatBotSlice,
     candidatesFollowUp: candidatesFollowUpSlice,
     candidatesRemarkHistory: candidatesRemarkHistorySlice,
     interViewProcess: interViewProcessDataSlice,

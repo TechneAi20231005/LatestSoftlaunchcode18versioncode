@@ -57,6 +57,7 @@ function BillCheckingTransaction() {
     (BillCheckingTransactionSlice) =>
       BillCheckingTransactionSlice.billChecking.billTypeDataDropDowm
   );
+
   const vendorDropdown = useSelector(
     (VendorMasterSlice) =>
       VendorMasterSlice.vendorMaster.vendorMasterDropDownNew
@@ -70,20 +71,15 @@ function BillCheckingTransaction() {
   const [searchTerm, setSearchTerm] = useState('');
   const [filteredData, setFilteredData] = useState([]);
 
-  //search function
-
   const handleSearch = useCallback(() => {
     const filteredList = customSearchHandler(data, searchTerm);
     setFilteredData(filteredList);
   }, [data, searchTerm]);
 
-  // Function to handle reset button click
   const handleReset = () => {
     setSearchTerm('');
     setFilteredData(data);
   };
-
-  //columns
 
   const selectInputRef = useRef();
   const selectVendorRef = useRef();
@@ -108,7 +104,6 @@ function BillCheckingTransaction() {
   const [isOriginalBillReceived, setIsOriginalBillReceived] = useState(false);
 
   const handleCheckboxChange = () => {
-    // Toggle the state of isOriginalBillReceived
     setIsOriginalBillReceived(!isOriginalBillReceived);
   };
 
@@ -122,6 +117,7 @@ function BillCheckingTransaction() {
     setIsToBillDateRequired(false);
     setIsToReceiveRequired(false);
     setIsPaymentRequired(false);
+    setData([]);
     if (selectInputRef.current.value != null) {
       selectToBillRef.current.value = '';
       document.getElementById('id').value = '';
@@ -192,6 +188,18 @@ function BillCheckingTransaction() {
     setIsOriginalBillReceived(false);
   };
 
+  const hasSpecialAuthority =
+    authorities?.All_Update_Bill === true ||
+    authorities?.Edit_In_Bill === true ||
+    authorities?.Original_Bill_Needed === true ||
+    authorities?.TCS_Applicable === true ||
+    authorities?.Received_Date === true ||
+    authorities?.Past_Financial_Year_Bill_Date === true ||
+    authorities?.External_Audit === true ||
+    authorities?.Internal_Audit === true ||
+    authorities?.Allow_Edit_Authorized_By_Management === true ||
+    authorities?.Allow_Edit_Authorized_By_HOD === true;
+
   const [userDropdown, setUserDropdown] = useState();
 
   const currentDate = new Date();
@@ -208,129 +216,170 @@ function BillCheckingTransaction() {
       sortable: false,
       cell: (row) => {
         return (
-          <Dropdown className="d-inline-flex m-1">
-            <Dropdown.Toggle
-              as="button"
-              variant=""
-              id={`${'dropdown-basic_' + data?.id}`}
-              className="btn btn-primary text-white"
-            >
-              <i className="icofont-listine-dots"></i>
-            </Dropdown.Toggle>
-            <Dropdown.Menu as="ul" className="border-0 shadow p-1">
-              {row &&
-                ((row.level == parseInt(row.total_level) &&
-                  row.is_assign_to == 1) ||
-                  row.is_editable_for_creator == 1 ||
-                  (row.is_rejected == 1 && row.is_editable_for_creator == 1) ||
-                  (authorities && authorities.All_Update_Bill === true) ||
-                  (row.level != parseInt(row.total_level) &&
-                    row.is_approver == 1)) && (
-                  <li>
-                    <Link
-                      to={`/${_base}/EditBillCheckingTransaction/` + row.id}
-                      className="btn btn-sm btn-primary text-white w-100"
-                    >
-                      <i className="icofont-edit"></i> Edit
-                    </Link>
-                  </li>
-                )}
+          <>
+            <Dropdown className="d-inline-flex m-1">
+              <Dropdown.Toggle
+                as="button"
+                variant=""
+                id={`${'dropdown-basic_' + data?.id}`}
+                className="btn btn-primary text-white"
+              >
+                <i className="icofont-listine-dots"></i>
+              </Dropdown.Toggle>
+              <Dropdown.Menu as="ul" className="border-0 shadow p-1">
+                {row &&
+                  (() => {
+                    const otherConditions =
+                      (row.level !== parseInt(row.total_level) &&
+                        row.is_assign_to === 1 &&
+                        ((authorities &&
+                          authorities.All_Update_Bill === true) ||
+                          authorities?.Edit_In_Bill === true ||
+                          authorities?.Original_Bill_Needed === true ||
+                          authorities?.TCS_Applicable === true ||
+                          authorities?.Received_Date === true ||
+                          authorities?.Past_Financial_Year_Bill_Date === true ||
+                          authorities?.External_Audit === true ||
+                          authorities?.Internal_Audit === true ||
+                          authorities?.Allow_Edit_Authorized_By_Management ===
+                            true ||
+                          authorities?.Allow_Edit_Authorized_By_HOD ===
+                            true)) ||
+                      (row.is_editable_for_creator === 1 &&
+                        ((authorities &&
+                          authorities.All_Update_Bill === true) ||
+                          authorities?.Edit_In_Bill === true ||
+                          authorities?.Original_Bill_Needed === true ||
+                          authorities?.TCS_Applicable === true ||
+                          authorities?.Received_Date === true ||
+                          authorities?.Past_Financial_Year_Bill_Date === true ||
+                          authorities?.External_Audit === true ||
+                          authorities?.Internal_Audit === true ||
+                          authorities?.Allow_Edit_Authorized_By_Management ===
+                            true ||
+                          authorities?.Allow_Edit_Authorized_By_HOD ===
+                            true)) ||
+                      (row?.is_rejected === 1 &&
+                        row?.is_editable_for_creator === 1 &&
+                        authorities &&
+                        authorities?.All_Update_Bill === true) ||
+                      (row.level !== parseInt(row.total_level) &&
+                        row.is_approver === 1 &&
+                        ((authorities &&
+                          authorities?.All_Update_Bill === true) ||
+                          authorities?.Edit_In_Bill === true ||
+                          authorities?.Original_Bill_Needed === true ||
+                          authorities?.TCS_Applicable === true ||
+                          authorities?.Received_Date === true ||
+                          authorities?.Past_Financial_Year_Bill_Date === true ||
+                          authorities?.External_Audit === true ||
+                          authorities?.Internal_Audit === true ||
+                          authorities?.Allow_Edit_Authorized_By_Management ===
+                            true ||
+                          authorities?.Allow_Edit_Authorized_By_HOD === true));
 
-              <li>
-                <Link
-                  to={`/${_base}/ViewBillTransaction/` + row?.id}
-                  className="btn btn-sm btn-info text-white w-100"
-                >
-                  <i className="icofont-eye"></i> View
-                </Link>
-              </li>
+                    return hasSpecialAuthority || otherConditions ? (
+                      <li>
+                        <Link
+                          to={`/${_base}/EditBillCheckingTransaction/` + row.id}
+                          className="btn btn-sm btn-primary text-white w-100"
+                        >
+                          <i className="icofont-edit"></i> Edit
+                        </Link>
+                      </li>
+                    ) : null;
+                  })()}
 
-
-              {(row &&
-                ((row.level == parseInt(row.total_level) &&
-                  row.is_assign_to == 1) ||
-                  row.is_editable_for_creator == 1 ||
-                  (row.is_rejected == 1 && row.is_editable_for_creator == 1) ||
-                  (authorities &&
-                    authorities.All_Update_Bill == true &&
-                    row.is_assign_to !== 1) ||
-                  (row.level !== parseInt(row.total_level) &&
-                    row.is_approver == 1)) &&
-                row.is_active == 1) ||
-                (row['Is cancelled'] == 0 && (
-                  <li>
-                    <Link
-                      to={`/${_base}/BillCheckingHistory/` + row.id}
-                      className="btn btn-sm btn-danger text-white w-100"
-                    >
-                      <i className="icofont-history"></i> History
-                    </Link>
-                  </li>
-
-                ))}
-
-              {((row.is_assign_to == 1 && row.level == row.total_level) ||
-                row.is_active == 0) && (
                 <li>
                   <Link
-                    to={`/${_base}/PaymentHistory/` + row.id}
-                    className="btn btn-sm btn-warning text-white"
-                    style={{ width: '100%', zIndex: 100 }}
+                    to={`/${_base}/ViewBillTransaction/` + row?.id}
+                    className="btn btn-sm btn-info text-white w-100"
                   >
-                    <i className="icofont-tasks"></i> Payment History
+                    <i className="icofont-eye"></i> View
                   </Link>
                 </li>
-              )}
 
+                <li>
+                  <Link
+                    to={`/${_base}/BillCheckingHistory/` + row.id}
+                    className="btn btn-sm btn-danger text-white w-100"
+                  >
+                    <i className="icofont-history"></i> History
+                  </Link>
+                </li>
 
-              {row.is_assign_to == 1 && row.level == row.total_level && (
-                <>
-                  <li>
-                    <Link
-                      to={`/${_base}/PaymentHistory/` + row.id}
-                      className="btn btn-sm btn-warning text-white w-100"
-                    >
-                      <i className="icofont-tasks"></i> Payment History
-                    </Link>
-                  </li>
+                {row.is_assign_to == 1 && row.level == row.total_level && (
+                  <>
+                    <li>
+                      <Link
+                        to={`/${_base}/PaymentHistory/` + row.id}
+                        className="btn btn-sm btn-warning text-white w-100"
+                      >
+                        <i className="icofont-tasks"></i> Payment History
+                      </Link>
+                    </li>
 
-                  <li>
-                    <Link
-                      to={`/${_base}/PaymentDetails/` + row.id}
-                      className="btn btn-sm btn-primary text-white w-100"
-                    >
-                      <i className="icofont-price"></i> Payment Details
-                    </Link>
-                  </li>
+                    <li>
+                      <Link
+                        to={`/${_base}/PaymentDetails/` + row.id}
+                        className="btn btn-sm btn-primary text-white w-100"
+                      >
+                        <i className="icofont-price"></i> Payment Details
+                      </Link>
+                    </li>
 
-                  <li>
-                    <Link
-                      to={`/${_base}/AssignedPerson/` + row.id}
-                      className="btn btn-sm btn-secondary text-white w-100"
-                    >
-                      <i className="icofont-user-suited"></i> Assigned Person{' '}
-                    </Link>
-                  </li>
-                </>
-              )}
-
-              {authorities &&
-                authorities.Is_Cancle_Bill == true &&
-                row.is_active == 1 && (
-                  <li>
-                    <button
-                      className="btn btn-sm btn-danger text-white"
-                      onClick={(e) => {
-                        handleCancelBill(e, row.id);
-                      }}
-                      style={{ width: '100%', zIndex: 100 }}
-                    >
-                      <i class="icofont-ui-close"></i> Cancel{' '}
-                    </button>
-                  </li>
+                    <li>
+                      <Link
+                        to={`/${_base}/AssignedPerson/` + row.id}
+                        className="btn btn-sm btn-secondary text-white w-100"
+                      >
+                        <i className="icofont-user-suited"></i> Assigned Person{' '}
+                      </Link>
+                    </li>
+                  </>
                 )}
-            </Dropdown.Menu>
-          </Dropdown>
+                {authorities &&
+                  authorities.Is_Cancle_Bill &&
+                  row?.full_or_partial_payment_done != 1 && (
+                    <li>
+                      <button
+                        className="btn btn-sm btn-danger text-white"
+                        onClick={(e) => {
+                          handleCancelBill(e, row.id);
+                        }}
+                        style={{ width: '100%', zIndex: 100 }}
+                      >
+                        <i class="icofont-ui-close"></i> Cancel{' '}
+                      </button>
+                    </li>
+                  )}
+              </Dropdown.Menu>
+            </Dropdown>
+
+            {row &&
+              ((row.level === parseInt(row.total_level) &&
+                row.is_assign_to === 1) ||
+                row.is_editable_for_creator === 1 ||
+                (row.is_rejected === 1 && row.is_editable_for_creator === 1) ||
+                (row.level !== parseInt(row.total_level) &&
+                  row.is_approver === 1) ||
+                (authorities &&
+                  authorities.All_Update_Bill === true &&
+                  ((row.level === parseInt(row.total_level) &&
+                    row.is_assign_to === 1) ||
+                    row.is_editable_for_creator === 1 ||
+                    (row.is_rejected === 1 &&
+                      row.is_editable_for_creator === 1) ||
+                    (row.level !== parseInt(row.total_level) &&
+                      row.is_approver === 1)))) && (
+                <Link
+                  to={`/${_base}/EditBillCheckingTransaction/` + row.id}
+                  className="btn btn-sm btn-primary text-white w-20"
+                >
+                  <i title="Edit" className="icofont-edit"></i>
+                </Link>
+              )}
+          </>
         );
       }
     },
@@ -834,6 +883,8 @@ function BillCheckingTransaction() {
             external_audit_remark: temp[key].external_audit_remark,
 
             levels_of_approval: temp[key].level + 1,
+            full_or_partial_payment_done:
+              temp[key].full_or_partial_payment_done,
 
             level_approver: temp[key].level_approver,
             is_editable_for_creator: temp[key].is_editable_for_creator,
@@ -901,7 +952,7 @@ function BillCheckingTransaction() {
         if (res.data.status === 1) {
           setIsLoading(false);
 
-          const temp = res.data.data;
+          const temp = res.data.data.data;
 
           setUserDropdown(
             temp.map((d) => ({
@@ -1007,8 +1058,16 @@ function BillCheckingTransaction() {
           setExportData(tempData);
           setData(tempData);
         } else {
+          setFilteredData([]);
           setNotify({ type: 'danger', message: res.data.message });
         }
+      })
+      .catch((error) => {
+        setFilteredData([]);
+        setNotify({
+          type: 'danger',
+          message: `An error occurred: ${error.message}`
+        });
       });
   };
 
@@ -1116,9 +1175,9 @@ function BillCheckingTransaction() {
   useEffect(() => {
     loadData();
 
-    if (location && location.state) {
-      setNotify(location.state.alert);
-    }
+    // if (location && location.state) {
+    //   setNotify(location.state.alert);
+    // }
   }, []);
 
   useEffect(() => {
@@ -1237,6 +1296,7 @@ function BillCheckingTransaction() {
                     <Select
                       id="vendor_name"
                       name="vendor_name[]"
+                      classNamePrefix="react-select"
                       isMulti
                       options={vendorDropdown}
                       ref={selectVendorNameRef}
@@ -1253,6 +1313,7 @@ function BillCheckingTransaction() {
                       id="bill_status"
                       name="bill_status[]"
                       isMulti
+                      classNamePrefix="react-select"
                       options={statusDropdown}
                       placeholder="bill_status"
                       ref={selectBillStatusRef}
@@ -1270,6 +1331,7 @@ function BillCheckingTransaction() {
                       isMulti
                       name="bill_type[]"
                       placeholder="Bill Type"
+                      classNamePrefix="react-select"
                       ref={selectBillTypeRef}
                     />
                   )}
@@ -1286,6 +1348,7 @@ function BillCheckingTransaction() {
                       name="assign_to[]"
                       isMulti
                       placeholder="Assign To"
+                      classNamePrefix="react-select"
                       ref={selectAssignToRef}
                     />
                   )}

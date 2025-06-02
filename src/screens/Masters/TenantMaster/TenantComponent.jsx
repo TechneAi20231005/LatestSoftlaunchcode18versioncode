@@ -6,11 +6,12 @@ import ErrorLogService from '../../../services/ErrorLogService';
 import TenantService from '../../../services/MastersService/TenantService';
 import ManageMenuService from '../../../services/MenuManagementService/ManageMenuService';
 import { _base } from '../../../settings/constants';
+import { errorHandler } from '../../../utils';
 
 function TenantComponent() {
   const [data, setData] = useState(null);
 
-  const roleId = sessionStorage.getItem('role_id');
+  const roleId = localStorage.getItem('role_id');
   const [checkRole, setCheckRole] = useState(null);
 
   const searchRef = useRef();
@@ -101,14 +102,19 @@ function TenantComponent() {
         );
       });
 
-    await new ManageMenuService().getRole(roleId).then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const getRoleId = sessionStorage.getItem('role_id');
-          setCheckRole(res.data.data.filter((d) => d.role_id === getRoleId));
+    await new ManageMenuService()
+      .getRole(roleId)
+      .then((res) => {
+        if (res.status === 200) {
+          if (res.data.status === 1) {
+            const getRoleId = localStorage.getItem('role_id');
+            setCheckRole(res.data.data.filter((d) => d.role_id === getRoleId));
+          }
         }
-      }
-    });
+      })
+      .catch((error) => {
+        errorHandler(error);
+      });
   }, [roleId]);
 
   useEffect(() => {

@@ -74,6 +74,18 @@ function PoHistory() {
       width: '120px'
     },
     {
+      name: 'PO number',
+      selector: (row) => row?.po_number || '---',
+      sortable: false,
+      width: '120px'
+    },
+    {
+      name: 'Remark',
+      selector: (row) => row?.remark || '---',
+      sortable: false,
+      width: '120px'
+    },
+    {
       sortable: false,
       name: 'Karagir 1',
       selector: (row) =>
@@ -174,6 +186,7 @@ function PoHistory() {
     return data?.map((row) => ({
       'Delivery Date': row?.delivery_date ?? '--',
       'Order Date': row?.order_date ?? '--',
+      'PO number': row?.po_number,
       'Karagir 1': row?.karagir ?? '--',
       Item: row?.item ?? '--',
       Category: row?.category ?? '--',
@@ -285,10 +298,12 @@ function PoHistory() {
               <Row className="align-items-md-end row_gap_3">
                 <Col sm={6} md={4} lg={3}>
                   <Field
+                    classNamePrefix="react-select"
                     component={CustomReactSelect}
                     options={venderData}
                     name="vender_name"
                     label="Vendor Name :"
+                    id="pohistory_vendorname"
                     placeholder={getVenderList ? 'Loading...' : 'Select'}
                     isSearchable
                     isMulti
@@ -300,6 +315,7 @@ function PoHistory() {
                     type="date"
                     name="order_date"
                     label="Order Date :"
+                    id="pohistory_orderdate"
                     placeholderText="dd/mm/yyyy"
                     dateFormat="dd/MM/yyy"
                     showMonthDropdown
@@ -317,6 +333,7 @@ function PoHistory() {
                     component={CustomReactDatePicker}
                     type="date"
                     name="delivery_date"
+                    id="pohistory_deliverydate"
                     placeholderText="dd/mm/yyyy"
                     dateFormat="dd/MM/yyy"
                     showMonthDropdown

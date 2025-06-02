@@ -14,12 +14,15 @@ import {
   getReviewCommentMasterListThunk
 } from '../../../../redux/services/testCases/reviewCommentMaster';
 import { RenderIf } from '../../../../utils';
+import { CustomValidation } from '../../../../components/custom/CustomValidation/CustomValidation';
 
 function AddEditReviewCommentMaster({
   show,
   close,
   type,
-  currentReviewCommentData
+  currentReviewCommentData,
+  reset,
+  setReset
 }) {
   const dispatch = useDispatch();
   const addEditReviewCommentInitialValue = {
@@ -30,24 +33,31 @@ function AddEditReviewCommentMaster({
       type === 'EDIT' ? currentReviewCommentData?.is_active?.toString() : 1
   };
 
-  // // local state
   const [openConfirmModal, setOpenConfirmModal] = useState({
     open: false,
     formData: ''
   });
-  // // function
-
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const clearFilters = () => {
+    setReset(true);
+  };
   const handelAddEditReviewComment = ({ formData }) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     if (type === 'ADD') {
       dispatch(
         addReviewCommentMasterThunk({
           formData: formData,
           onSuccessHandler: () => {
+            clearFilters();
+
+            setIsSubmitting(false);
             setOpenConfirmModal({ open: false });
             close();
             dispatch(getReviewCommentMasterListThunk());
           },
           onErrorHandler: () => {
+            setIsSubmitting(false);
             setOpenConfirmModal({ open: false });
           }
         })
@@ -58,17 +68,38 @@ function AddEditReviewCommentMaster({
           currentId: currentReviewCommentData?.id,
           formData: formData,
           onSuccessHandler: () => {
+            clearFilters();
+
+            setIsSubmitting(false);
             setOpenConfirmModal({ open: false });
             close();
             dispatch(getReviewCommentMasterListThunk());
           },
           onErrorHandler: () => {
+            setIsSubmitting(false);
             setOpenConfirmModal({ open: false });
           }
         })
       );
     }
   };
+  const fields = [
+    {
+      name: 'reviewer_comment',
+      label: 'Reviewer Comment Title',
+      min: 3,
+      max: 100,
+      required: true,
+      alphaBet: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 255
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
 
   return (
     <>
@@ -79,7 +110,7 @@ function AddEditReviewCommentMaster({
       >
         <Formik
           initialValues={addEditReviewCommentInitialValue}
-          validationSchema={addReviewCommentValidation}
+          validationSchema={validationSchema}
           onSubmit={(values) => {
             handelAddEditReviewComment({ formData: values });
           }}
@@ -92,6 +123,7 @@ function AddEditReviewCommentMaster({
                     component={CustomInput}
                     name="reviewer_comment"
                     label="Reviewer Comment Title"
+                    id="reviewcommentmaster_reviewercommenttitle"
                     placeholder="Enter Reviewer Comment Title"
                     requiredField
                   />
@@ -101,6 +133,7 @@ function AddEditReviewCommentMaster({
                     component={CustomInput}
                     name="remark"
                     label="Remark"
+                    id="reviewcommentmaster_remark"
                     placeholder="Enter Remark"
                   />
                 </Col>
@@ -115,6 +148,7 @@ function AddEditReviewCommentMaster({
                       type="radio"
                       name="is_active"
                       label="Active"
+                      id="reviewcommentmaster_active"
                       value="1"
                       inputClassName="me-1"
                     />
@@ -123,6 +157,7 @@ function AddEditReviewCommentMaster({
                       type="radio"
                       name="is_active"
                       label="Deactive"
+                      id="reviewcommentmaster_deactive"
                       value="0"
                       inputClassName="me-1"
                     />
@@ -132,15 +167,15 @@ function AddEditReviewCommentMaster({
 
               <div className="d-flex justify-content-end gap-2 mt-3">
                 <button
-                  className="btn btn-dark px-4"
+                  className="btn btn-primary px-4"
                   type="submit"
-                  disabled={!dirty}
+                  disabled={isSubmitting}
                 >
-                  {type === 'ADD' ? 'Save' : 'Update'}
+                  {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>
                 <button
                   onClick={() => close()}
-                  className="btn btn-shadow-light px-3"
+                  className="btn btn-danger px-3"
                   type="button"
                 >
                   Cancel

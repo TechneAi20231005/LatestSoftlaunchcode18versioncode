@@ -9,11 +9,11 @@ const ___URL = masterURL.state;
 
 const _getVendors = _URL + '/getVendorMaster/' + userSessionData.userId;
 const _updateVendors = _URL + '/updateVendorMaster/';
-const _getCity = URL + '/getAllCity/' + userSessionData.userId;
+const _getCity = URL + '/getData?export=1//' + userSessionData.userId;
 const _getPaymentTemplate =
   _URL + '/getPaymentTemplate/' + userSessionData.userId;
-const _getCountry = __URL + '/getAllCountry/' + userSessionData.userId;
-const _getState = ___URL + '/getAllState/' + userSessionData.userId;
+const _getCountry = __URL + '/getData?export=1/' + userSessionData.userId;
+const _getState = ___URL + '/getData?export=1/' + userSessionData.userId;
 const bulkUpload = _URL + '/bulkUploadVendor';
 const downloadFromat = _URL + '/bulkFormat';
 

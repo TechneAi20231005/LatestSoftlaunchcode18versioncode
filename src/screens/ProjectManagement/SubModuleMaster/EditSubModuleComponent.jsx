@@ -6,13 +6,16 @@ import ModuleService from '../../../services/ProjectManagementService/ModuleServ
 
 import { _base } from '../../../settings/constants';
 import ErrorLogService from '../../../services/ErrorLogService';
-import Alert from '../../../components/Common/Alert';
 import PageHeader from '../../../components/Common/PageHeader';
 import { Astrick } from '../../../components/Utilities/Style';
 import * as Validation from '../../../components/Utilities/Validation';
 import Select from 'react-select';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { useDispatch, useSelector } from 'react-redux';
+import { Formik, Form, Field, ErrorMessage } from 'formik';
+import { SubModuleMasterValidation } from './Validation/SubModuleMasterValidation';
+import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 export default function EditModuleComponent({ match }) {
   const history = useNavigate();
@@ -22,7 +25,6 @@ export default function EditModuleComponent({ match }) {
   const checkRole = useSelector((DashboardSlice) =>
     DashboardSlice.dashboard.getRoles.filter((d) => d.menu_id === 22)
   );
-  const [notify, setNotify] = useState(null);
 
   const { id } = useParams();
   const subModuleId = id;
@@ -42,7 +44,14 @@ export default function EditModuleComponent({ match }) {
           .map((d) => ({ value: d.id, label: d.module_name }))
     );
   };
-
+  const initialValue = {
+    project_id: data?.project_id ? data?.project_id : '',
+    module_id: data?.module_id ? data?.module_id : '',
+    sub_module_name: data?.sub_module_name ? data?.sub_module_name : '',
+    description: data?.description ? data?.description : '',
+    remark: data?.remark ? data?.remark : '',
+    is_active: String(data?.is_active) ?? '1'
+  };
   const loadData = async () => {
     await new SubModuleService()
       .getSubModuleById(subModuleId)
@@ -73,11 +82,26 @@ export default function EditModuleComponent({ match }) {
         );
       });
 
+    await new ModuleService().getModule().then((res) => {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          setModules(res.data.data?.data.filter((d) => d.is_active === 1));
+
+          // setModulesDropdown(
+          //   res.data.data &&
+          //     res.data.data?.data
+          //       .filter((d) => d.is_active === 1)
+          //       .map((d) => ({ value: d.id, label: d.module_name }))
+          // );
+        }
+      }
+    });
+
     await new ProjectService().getProject().then((res) => {
       if (res.status === 200) {
         if (res.data.status === 1) {
           setProjectdropdown(
-            res.data.data
+            res.data.data.data
               .filter((d) => d.is_active === 1)
               .map((d) => ({ value: d.id, label: d.project_name }))
           );
@@ -85,64 +109,58 @@ export default function EditModuleComponent({ match }) {
       }
     });
 
-    await new ModuleService().getModule().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          setModules(res.data.data.filter((d) => d.is_active === 1));
-          setModulesDropdown(
-            res.data.data &&
-              res.data.data
-                .filter((d) => d.is_active === 1)
-                .map((d) => ({ value: d.id, label: d.module_name }))
-          );
-        }
-      }
-    });
     dispatch(getRoles());
   };
 
-  const handleForm = async (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    setNotify(null);
+  useEffect(() => {
+    if (data && data?.project_id && modules?.length > 0) {
+      const filteredModules = modules.filter(
+        (d) => d.project_id === data.project_id
+      );
 
-    await new SubModuleService()
-      .updateSubModule(subModuleId, formData)
-      .then((res) => {
-        if (res.status === 200) {
-          if (res.data.status === 1) {
-            history(
-              {
-                pathname: `/${_base}/SubModule`
-              },
-              {
-                state: { alert: { type: 'success', message: res.data.message } }
-              }
-            );
-          } else {
-            setNotify({ type: 'danger', message: res.data.message });
-          }
+      setModulesDropdown(
+        filteredModules?.map((d) => ({
+          value: d.id,
+          label: d.module_name
+        }))
+      );
+    }
+  }, [data, modules]);
+
+  const handleForm = async (values, { setSubmitting }) => {
+    setSubmitting(true);
+    const formData = new FormData();
+    formData?.append('project_id', values?.project_id);
+    formData?.append('module_id', values?.module_id);
+    formData?.append('sub_module_name', values?.sub_module_name);
+
+    formData?.append('description', values?.description);
+    formData?.append('remark', values?.remark);
+    formData?.append('is_active', values?.is_active);
+    try {
+      const res = await new SubModuleService().updateSubModule(
+        subModuleId,
+        formData
+      );
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          toast.success(res.data.message);
+          setTimeout(() => {
+            history({
+              pathname: `/${_base}/SubModule`
+            });
+          }, 1000);
         } else {
-          setNotify({ type: 'danger', message: res.message });
-          new ErrorLogService().sendErrorLog(
-            'SubModule',
-            'Create_SubModule',
-            'INSERT',
-            res.message
-          );
+          toast.error(res.data.message);
         }
-      })
-      .catch((error) => {
-        const { response } = error;
-        const { request, ...errorObject } = response;
-        setNotify({ type: 'danger', message: errorObject.data.message });
-        new ErrorLogService().sendErrorLog(
-          'SubModule',
-          'Create_SubModule',
-          'INSERT',
-          errorObject.data.message
-        );
-      });
+      } else {
+        toast.error(res.message);
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   useState(() => {
@@ -158,11 +176,255 @@ export default function EditModuleComponent({ match }) {
   }, [checkRole]);
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
-
       <PageHeader headerTitle="Edit Sub-Module" />
 
       <div className="row clearfix g-3">
+        <div className="col-sm-12">
+          {data && (
+            <Formik
+              initialValues={initialValue}
+              validationSchema={SubModuleMasterValidation}
+              onSubmit={(values, { setSubmitting }) => {
+                handleForm(values, { setSubmitting });
+              }}
+            >
+              {({ values, setFieldValue, isSubmitting }) => (
+                <Form>
+                  <div className="card mt-2">
+                    <div className="card-body">
+                      {/* Project Dropdown */}
+                      <div className="form-group row mt-2">
+                        <label className="col-sm-2 col-form-label">
+                          <b>
+                            Select Project :{' '}
+                            <span style={{ color: 'red' }}>*</span>
+                          </b>
+                        </label>
+                        <div className="col-sm-4">
+                          <Field
+                            as="select"
+                            classNamePrefix="react-select"
+                            className="form-control form-control-sm"
+                            id="project_id"
+                            name="project_id"
+                            onChange={(e) => {
+                              setFieldValue('project_id', e?.target?.value);
+                              setFieldValue('module_id', null);
+                              setModulesDropdown(
+                                modules &&
+                                  modules
+                                    .filter(
+                                      (d) =>
+                                        d.project_id ===
+                                        parseInt(e.target.value)
+                                    )
+                                    .map((d) => ({
+                                      value: d.id,
+                                      label: d.module_name
+                                    }))
+                              );
+                            }} // Call handleChange on selection
+                            defaultValue={
+                              data &&
+                              Projectdropdown?.filter(
+                                (d) => d.value === data.project_id
+                              )
+                            }
+                          >
+                            <option value="" label="Select a project" />
+                            {Projectdropdown?.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </Field>
+                          <ErrorMessage
+                            name="project_id"
+                            component="small"
+                            className="text-danger"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Module Name */}
+                      <div className="form-group row mt-2">
+                        <label className="col-sm-2 col-form-label">
+                          <b>
+                            Select Module :{' '}
+                            <span style={{ color: 'red' }}>*</span>
+                          </b>
+                        </label>
+
+                        <div className="col-sm-4">
+                          <Field
+                            as="select"
+                            classNamePrefix="react-select"
+                            className="form-control form-control-sm"
+                            id="module_id"
+                            name="module_id"
+                            defaultValue={
+                              data &&
+                              modulesDropdown &&
+                              modulesDropdown?.filter(
+                                (d) => d.value === data.module_id
+                              )
+                            }
+                          >
+                            <option value="" label="Select a module" />
+                            {modulesDropdown?.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </Field>
+                          <ErrorMessage
+                            name="module_id"
+                            component="small"
+                            className="text-danger"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="form-group row mt-2">
+                        <label
+                          className="col-sm-2 col-form-label d-flex align-items-center"
+                          style={{ whiteSpace: 'nowrap' }}
+                        >
+                          <b>
+                            Sub Module Name :{' '}
+                            <span style={{ color: 'red' }}>*</span>
+                          </b>
+                        </label>
+                        <div className="col-sm-4">
+                          <Field
+                            type="text"
+                            className="form-control form-control-sm"
+                            id="sub_module_name"
+                            name="sub_module_name"
+                            // onKeyPress={(e) => {
+                            //   Validation.addressFieldOnly(e);
+                            // }}
+                            defaultValue={data.sub_module_name}
+                          />
+                          <ErrorMessage
+                            name="sub_module_name"
+                            component="small"
+                            className="text-danger"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Description */}
+                      <div className="form-group row mt-2">
+                        <label htmlFor="" className="col-sm-2 col-form-label">
+                          <b>
+                            Description : <Astrick color="red" size="13px" />
+                          </b>
+                        </label>
+                        <div className="col-sm-10">
+                          <Field
+                            as="textarea"
+                            className="form-control form-control-sm"
+                            name="description"
+                            rows="6"
+                            // onKeyPress={(e) => {
+                            //   Validation.addressFieldOnly(e);
+                            // }}
+                            defaultValue={data.description}
+                          />
+                          <ErrorMessage
+                            name="description"
+                            component="small"
+                            className="text-danger"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Remark */}
+                      <div className="form-group row mt-2">
+                        <label htmlFor="" className="col-sm-2 col-form-label">
+                          <b>Remark : </b>
+                        </label>
+                        <div className="col-sm-10">
+                          <Field
+                            type="text"
+                            className="form-control form-control-sm"
+                            name="remark"
+                            defaultValue={data.remark}
+                          />
+                          <ErrorMessage
+                            name="remark"
+                            component="small"
+                            className="text-danger"
+                          />
+                        </div>
+                      </div>
+
+                      {/* Status */}
+                      <div className="form-group row mt-3">
+                        <label className="col-sm-2 col-form-label">
+                          <b>
+                            Status : <Astrick color="red" size="13px" />{' '}
+                          </b>
+                        </label>
+                        <div className="col-sm-10">
+                          <div className="row">
+                            <div className="col-md-2">
+                              <label className="form-check-label">
+                                <Field
+                                  type="radio"
+                                  className="form-check-input"
+                                  name="is_active"
+                                  value="1"
+                                />
+                                Active
+                              </label>
+                            </div>
+                            <div className="col-md-2">
+                              <label className="form-check-label">
+                                <Field
+                                  type="radio"
+                                  className="form-check-input"
+                                  name="is_active"
+                                  value="0"
+                                />
+                                Deactive
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Buttons */}
+                  <div className="mt-3" style={{ textAlign: 'right' }}>
+                    {checkRole && checkRole[0]?.can_update === 1 ? (
+                      <button
+                        disabled={isSubmitting}
+                        type="submit"
+                        className="btn btn-sm btn-primary"
+                      >
+                        Update
+                      </button>
+                    ) : (
+                      ''
+                    )}
+                    <Link
+                      to={`/${_base}/SubModule`}
+                      className="btn btn-sm btn-danger text-white"
+                    >
+                      Cancel
+                    </Link>
+                  </div>
+                </Form>
+              )}
+            </Formik>
+          )}
+        </div>
+      </div>
+
+      {/* <div className="row clearfix g-3">
         <div className="col-sm-12">
           {data && (
             <form onSubmit={handleForm}>
@@ -199,19 +461,7 @@ export default function EditModuleComponent({ match }) {
                       </b>
                     </label>
 
-                    {/* {modulesDropdown && JSON.stringify(modulesDropdown)}
-                                                <hr/>
-                                        {data && JSON.stringify(data)} */}
-
                     <div className="col-sm-4">
-                      {/* <ModuleDropdown
-                                                id="module_id"
-                                                name="module_id"
-                                                required
-                                                projectId={data.project_id}
-                                                defaultValue={data.module_id}
-                                                onChange={handleDependent}
-                                            /> */}
                       {modulesDropdown && (
                         <Select
                           options={modulesDropdown}
@@ -337,9 +587,7 @@ export default function EditModuleComponent({ match }) {
                     </div>
                   </div>
                 </div>{' '}
-                {/* CARD BODY */}
               </div>
-              {/* CARD */}
 
               <div className="mt-3" style={{ textAlign: 'right' }}>
                 {checkRole && checkRole[0]?.can_update === 1 ? (
@@ -359,7 +607,7 @@ export default function EditModuleComponent({ match }) {
             </form>
           )}
         </div>
-      </div>
+      </div> */}
     </div>
   );
 }

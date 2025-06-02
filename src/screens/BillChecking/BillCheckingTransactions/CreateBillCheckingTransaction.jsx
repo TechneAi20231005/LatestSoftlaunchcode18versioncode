@@ -25,6 +25,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { toast } from 'react-toastify';
+import { errorHandler } from '../../../utils';
 
 export default function CreateBillCheckingTransaction({ match }) {
   const { id } = useParams();
@@ -199,7 +200,7 @@ export default function CreateBillCheckingTransaction({ match }) {
       if (res?.status === 200) {
         if (res.data.status === 1) {
           setAssignTo(res.data.message);
-          toast.success(res.data.message);
+          // toast.success(res.data.message);
           setAssignToDropdown(null);
           setAssignToDropdown(
             res.data.data.map((d) => ({ value: d.id, label: d.employee_name }))
@@ -216,23 +217,71 @@ export default function CreateBillCheckingTransaction({ match }) {
     setAssignToDropdown(null);
   };
 
+  // const currentDate = new Date();
+  // const year = currentDate.getFullYear();
+  // const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+  // const day = String(currentDate.getDate()).padStart(2, '0');
+  // const formattedDate = `${year}-${month}-${day}`;
+
+  // const endFinancialYear = new Date(currentDate.getFullYear(), 2, 31); // Month is zero-based (2 for March)
+
+  // const startFinancialYear = new Date(currentDate.getFullYear(), 3, 1);
+
+  // const startYear = startFinancialYear.getFullYear();
+  // const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
+  // const startDay = String(startFinancialYear.getDate()).padStart(2, '0');
+
+  // const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
+
   const currentDate = new Date();
+
   const year = currentDate.getFullYear();
+
   const month = String(currentDate.getMonth() + 1).padStart(2, '0');
+
   const day = String(currentDate.getDate()).padStart(2, '0');
-  const formattedDate = `${year}-${month}-${day}`;
 
-  const endFinancialYear = new Date(currentDate.getFullYear(), 2, 31); // Month is zero-based (2 for March)
+  // Determine the start of the financial year
 
-  const startFinancialYear = new Date(currentDate.getFullYear(), 3, 1);
+  let startFinancialYear;
+
+  if (month > 3) {
+    // April or later
+
+    startFinancialYear = new Date(year, 3, 1); // April 1 of the current year
+  } else {
+    startFinancialYear = new Date(year - 1, 3, 1); // April 1 of the previous year
+  }
+
+  // Determine the end of the financial year
+
+  const endFinancialYear = new Date(
+    startFinancialYear.getFullYear() + 1,
+
+    2,
+
+    31
+  ); // March 31 of the next year
+
+  // Format dates
 
   const startYear = startFinancialYear.getFullYear();
-  const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, '0'); // Adding 1 because months are zero-based
+
+  const startMonth = String(startFinancialYear.getMonth() + 1).padStart(2, '0');
+
   const startDay = String(startFinancialYear.getDate()).padStart(2, '0');
 
   const formattedStartDate = `${startYear}-${startMonth}-${startDay}`;
 
-  
+  const formattedDate = `${year}-${month}-${day}`;
+
+  const endYear = endFinancialYear.getFullYear();
+
+  const endMonth = String(endFinancialYear.getMonth() + 1).padStart(2, '0');
+
+  const endDay = String(endFinancialYear.getDate()).padStart(2, '0');
+
+  const formattedEndDate = `${endYear}-${endMonth}-${endDay}`;
 
   const handleReset = () => {};
   const handleFilter = async (e) => {
@@ -296,6 +345,9 @@ export default function CreateBillCheckingTransaction({ match }) {
             SetAuthorities(res.data.data);
           }
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
 
     // await new ManageMenuService().getRole(roleId).then((res) => {
@@ -330,11 +382,11 @@ export default function CreateBillCheckingTransaction({ match }) {
       .getVendorsDropdown()
       .then((res) => {
         const filterData = res?.data?.data.filter(
-          (d) => d.consider_in_payment === 'YES'
+          (d) => d.consider_in_payment?.toUpperCase() === 'YES'
         );
         if (res.status === 200) {
           if (res.data.status == 1) {
-            const temp = filterData.filter((d) => d.is_active == 1);
+            const temp = filterData?.filter((d) => d.is_active == 1);
             setVendor(res.data.data);
             setVendorDropdown(
               temp.map((d) => ({
@@ -349,9 +401,12 @@ export default function CreateBillCheckingTransaction({ match }) {
     await new DepartmentService().getDepartment().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          setDepartment(res.data.data);
+          setDepartment(res.data.data?.data);
           setDepartmentDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.department }))
+            res.data.data?.data.map((d) => ({
+              value: d.id,
+              label: d.department
+            }))
           );
         }
       }
@@ -361,8 +416,8 @@ export default function CreateBillCheckingTransaction({ match }) {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const temp = res.data.data.filter((d) => d.is_active == 1);
-          setUser(res.data.data);
+          const temp = res.data.data?.data?.filter((d) => d.is_active == 1);
+          setUser(res.data.data?.data);
           setUserDropdown(
             temp.map((d) => ({ value: d.id, label: d.user_name }))
           );
@@ -421,18 +476,27 @@ export default function CreateBillCheckingTransaction({ match }) {
 
       if (res.status === 200) {
         if (res.data.status === 1) {
+          toast.success(res.data.message, {
+            position: 'top-right'
+          });
           history(
             {
               pathname: `/${_base}/BillCheckingTransaction`
-            },
-            { state: { alert: { type: 'success', message: res.data.message } } }
+            }
+            // { state: { alert: { type: 'success', message: res.data.message } } }
           );
           loadData();
         } else {
-          setNotify({ type: 'danger', message: res.data.message });
+          // setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message, {
+            position: 'top-right'
+          });
         }
       } else {
-        setNotify({ type: 'danger', message: res.data.message });
+        // setNotify({ type: 'danger', message: res.data.message });
+        toast.error(res.data.message, {
+          position: 'top-right'
+        });
         new ErrorLogService().sendErrorLog(
           'BillCheckingTransaction',
           'BillCheckingTransaction',
@@ -443,7 +507,11 @@ export default function CreateBillCheckingTransaction({ match }) {
     } catch (error) {
       const { response } = error;
       const { request, ...errorObject } = response;
-      setNotify({ type: 'danger', message: 'Request Error !!!' });
+      // setNotify({ type: 'danger', message: 'Request Error !!!' });
+      toast.error('Request Error !!!', {
+        position: 'top-right'
+      });
+
       new ErrorLogService().sendErrorLog(
         'BillCheckingTransaction',
         'BillCheckingTransaction',
@@ -813,12 +881,14 @@ export default function CreateBillCheckingTransaction({ match }) {
                         // className="form-control form-control"
                         options={billTypeDropdown}
                         // onChange={(e) => handleAssignToPerson(e)}
+                        isClearable={true}
                         onChange={(e) => {
                           handleAssignToPerson(e);
                           handleBillTypeChange(e); // Call the function to clear the assign to field
                         }}
                         id="bill_type"
                         name="bill_type"
+                        classNamePrefix="react-select"
                         placeholder="Bill Type"
                         required
                       />
@@ -839,7 +909,9 @@ export default function CreateBillCheckingTransaction({ match }) {
                         id="assign_to"
                         name="assign_to"
                         placeholder="Assign To"
+                        classNamePrefix="react-select"
                         required
+                        isClearable={true}
                       />
                       {/* )} */}
                     </div>
@@ -857,7 +929,9 @@ export default function CreateBillCheckingTransaction({ match }) {
                         id="vendor_name"
                         name="vendor_name"
                         options={vendorDropdown}
+                        classNamePrefix="react-select"
                         required
+                        isClearable={true}
                       />
                     )}
                   </div>
@@ -1264,31 +1338,89 @@ export default function CreateBillCheckingTransaction({ match }) {
 
                     {isTcsApplicable == 1 ? (
                       <input
-                        type="number"
+                        type="text"
                         className="form-control form-control-sm"
                         id="tcs"
                         name="tcs"
                         step="any"
                         value={billAmountValues.tcs}
+                        maxLength={13}
                         onChange={handleInputChange}
                         required={isTcsApplicable == 1 ? true : false}
+                        // onKeyPress={(e) => {
+                        //   Validation.NumbersSpeicalOnlyDot(e);
+                        // }}
                         onKeyPress={(e) => {
-                          Validation.NumbersSpeicalOnlyDot(e);
+                          const inputValue = e.key;
+                          const currentInput = e.target.value;
+                          const decimalIndex = currentInput.indexOf('.');
+
+                          if (
+                            !/^\d$/.test(inputValue) &&
+                            inputValue !== '.' &&
+                            inputValue !== 'Backspace'
+                          ) {
+                            e.preventDefault();
+                          }
+
+                          if (
+                            decimalIndex !== -1 &&
+                            currentInput.length - decimalIndex > 2
+                          ) {
+                            e.preventDefault();
+                          }
+
+                          if (
+                            currentInput.length >= 10 &&
+                            inputValue !== '.' &&
+                            decimalIndex === -1
+                          ) {
+                            e.preventDefault();
+                          }
                         }}
                       />
                     ) : (
                       <input
-                        type="number"
+                        type="text"
                         className="form-control form-control-sm"
                         id="tcs"
                         name="tcs"
                         step="any"
                         value={0}
+                        maxLength={10}
                         readOnly={true}
                         onChange={handleInputChange}
                         required={isTcsApplicable == 1 ? true : false}
+                        // onKeyPress={(e) => {
+                        //   Validation.NumbersSpeicalOnlyDot(e);
+                        // }}
                         onKeyPress={(e) => {
-                          Validation.NumbersSpeicalOnlyDot(e);
+                          const inputValue = e.key;
+                          const currentInput = e.target.value;
+                          const decimalIndex = currentInput.indexOf('.');
+
+                          if (
+                            !/^\d$/.test(inputValue) &&
+                            inputValue !== '.' &&
+                            inputValue !== 'Backspace'
+                          ) {
+                            e.preventDefault();
+                          }
+
+                          if (
+                            decimalIndex !== -1 &&
+                            currentInput.length - decimalIndex > 2
+                          ) {
+                            e.preventDefault();
+                          }
+
+                          if (
+                            currentInput.length >= 10 &&
+                            inputValue !== '.' &&
+                            decimalIndex === -1
+                          ) {
+                            e.preventDefault();
+                          }
                         }}
                       />
                     )}
@@ -1394,6 +1526,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                           className="form-control form-control-sm"
                           id="tds_section"
                           name="tds_section"
+                          classNamePrefix="react-select"
                           options={sectionDropdown}
                           ref={sectionRef}
                           required
@@ -1416,6 +1549,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             <Select
                               id="tds_constitution"
                               name="tds_constitution"
+                              classNamePrefix="react-select"
                               options={
                                 constitutionDropdown
                                   ? constitutionDropdown
@@ -1433,6 +1567,7 @@ export default function CreateBillCheckingTransaction({ match }) {
                             <Select
                               type="text"
                               className="form-control form-control-sm"
+                              classNamePrefix="react-select"
                               id="tds_constitution"
                               name="tds_constitution"
                               isDisabled={

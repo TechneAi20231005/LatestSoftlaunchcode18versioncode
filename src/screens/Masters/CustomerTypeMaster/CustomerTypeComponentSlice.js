@@ -26,12 +26,15 @@ export const customerMasterSlice = createSlice({
   initialState,
   reducers: {
     loaderModal: (state, action) => {
+      state.notify = null;
       state.showLoaderModal = action.payload;
     },
     handleModalOpen: (state, action) => {
+      state.notify = null;
       state.modal = action.payload;
     },
     handleModalClose: (state, action) => {
+      state.notify = null;
       state.modal = action.payload;
     }
   },
@@ -45,7 +48,7 @@ export const customerMasterSlice = createSlice({
       state.isLoading.customerTypeList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        let getCustomerTypeData = payload.data.data;
+        let getCustomerTypeData = payload.data.data?.data;
         state.status = 'succeded';
         state.showLoaderModal = false;
         let count = 1;
@@ -96,7 +99,8 @@ export const customerMasterSlice = createSlice({
       state.isLoading.customerTypeList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: 'success', message: payload.data.message };
+        state.notify = null;
+
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
 
         let postCustomerData = payload.data.data;
@@ -105,7 +109,7 @@ export const customerMasterSlice = createSlice({
         state.showLoaderModal = false;
         state.postCustomerData = postCustomerData;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        state.notify = null;
       }
     });
     builder.addCase(postCustomerData.rejected, (state) => {
@@ -124,7 +128,8 @@ export const customerMasterSlice = createSlice({
       state.isLoading.customerTypeList = false;
 
       if (payload?.status === 200 && payload?.data?.status === 1) {
-        state.notify = { type: 'success', message: payload.data.message };
+        state.notify = null;
+
         state.modal = { showModal: false, modalData: null, modalHeader: '' };
 
         let updateCustomerData = payload.data.data;
@@ -132,7 +137,7 @@ export const customerMasterSlice = createSlice({
         state.showLoaderModal = false;
         state.updateCustomerData = updateCustomerData;
       } else {
-        state.notify = { type: 'danger', message: payload.data.message };
+        state.notify = null;
       }
     });
     builder.addCase(updateCustomerData.rejected, (state) => {

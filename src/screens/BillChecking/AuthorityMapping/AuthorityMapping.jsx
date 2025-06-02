@@ -221,12 +221,12 @@ const AuthorityMapping = () => {
       )
     },
 
-    {
-      name: 'Submodule Name',
-      selector: (row) => row.sub_module_name,
-      sortable: true,
-      width: '175px'
-    },
+    // {
+    //   name: 'Submodule Name',
+    //   selector: (row) => row.sub_module_name,
+    //   sortable: true,
+    //   width: '175px'
+    // },
 
     {
       name: ' Updated At ',
@@ -305,7 +305,7 @@ const AuthorityMapping = () => {
   };
 
   const handleRemoveSpecificRow = (index) => async () => {
-    const id = assign[index].id;
+    const id = assign[index]?.id;
 
     // Delete the item
     await new BillCheckingTransactionService()
@@ -314,7 +314,7 @@ const AuthorityMapping = () => {
         if (res.status === 200) {
           // Create a new array with the item removed
           const updatedAssign = [...assign];
-          updatedAssign.splice(index, 1);
+          updatedAssign?.splice(index, 1);
 
           // Update the state
           setAssign(updatedAssign);
@@ -323,17 +323,17 @@ const AuthorityMapping = () => {
   };
 
   const mainJson = {
-    updated_by: sessionStorage.getItem('id'),
+    updated_by: localStorage.getItem('id'),
     updated_at: new Date(),
     setting_id: modal?.modalData?.id,
 
     setting_value: 'Y',
     is_active: statusData,
 
-    user_details: assign.map((item) => ({
-      user_id: Array.isArray(item.user_id) ? item.user_id : [item.user_id],
-      from_date: item.from_date,
-      to_date: item.to_date
+    user_details: assign?.map((item) => ({
+      user_id: Array?.isArray(item?.user_id) ? item?.user_id : [item?.user_id],
+      from_date: item?.from_date,
+      to_date: item?.to_date
     }))
   };
 
@@ -434,7 +434,7 @@ const AuthorityMapping = () => {
       }
 
       dispatch(creteAuthority(mainJson));
-      loadData();
+      // loadData();
 
       function findOverlappingUserDetails(userDetails) {
         const overlappingRanges = [];
@@ -497,6 +497,7 @@ const AuthorityMapping = () => {
       />
       {/* SEARCH FILTER */}
       <SearchBoxHeader
+        searchTerm={searchTerm}
         setSearchTerm={setSearchTerm}
         handleSearch={handleSearch}
         handleReset={handleReset}
@@ -579,7 +580,7 @@ const AuthorityMapping = () => {
                   {error && <div style={{ color: 'red' }}>{error}</div>}
                 </div>
 
-                <div className="col-sm-4 ">
+                {/* <div className="col-sm-4 ">
                   <label className="form-label font-weight-bold">
                     Submodule Name :<Astrick color="red" size="13px" />
                   </label>
@@ -621,7 +622,7 @@ const AuthorityMapping = () => {
                       />
                     </>
                   )}
-                </div>
+                </div> */}
               </div>
 
               <table
@@ -655,7 +656,8 @@ const AuthorityMapping = () => {
                               id="user_id[]"
                               key={idx}
                               className="basic-multi-select"
-                              classNamePrefix="select"
+                              classNamePrefix="react-select"
+                              // classNamePrefix="select"
                               options={userData}
                               isDisabled={
                                 item.from_dateReadOnly ||
@@ -773,7 +775,7 @@ const AuthorityMapping = () => {
                                 isSearchable={true}
                                 name="user_id[]"
                                 className="basic-multi-select"
-                                classNamePrefix="select"
+                                classNamePrefix="react-select"
                                 options={userData}
                                 required
                                 style={{ zIndex: '100' }}

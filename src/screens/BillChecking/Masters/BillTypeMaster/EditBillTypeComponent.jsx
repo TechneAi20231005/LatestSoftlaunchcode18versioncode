@@ -10,6 +10,7 @@ import { Link, useNavigate, useParams } from 'react-router-dom';
 import Alert from '../../../../components/Common/Alert';
 import { _base } from '../../../../settings/constants';
 import './styles.css'; // Import your CSS file
+import { toast } from 'react-toastify';
 
 const EditBillTypeComponent = ({ match }) => {
   const history = useNavigate();
@@ -322,7 +323,9 @@ const EditBillTypeComponent = ({ match }) => {
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          const a = res.data.data.filter((d) => d.is_active == 1);
+          const a = res.data.data?.data?.filter(
+            (d) => d.is_active == 1 && d.account_for === 'SELF'
+          );
           setUserData(
             a.map((d) => ({
               value: d.id,
@@ -576,7 +579,7 @@ const EditBillTypeComponent = ({ match }) => {
 
     // Proceed with the API request
     formData.append('approverData', JSON.stringify(approverData));
-    formData.append('user_id', sessionStorage.getItem('id'));
+    formData.append('user_id', localStorage.getItem('id'));
     formData.append('bill_type', e.target.bill_type.value);
 
     try {
@@ -587,6 +590,9 @@ const EditBillTypeComponent = ({ match }) => {
 
       if (res.status === 200) {
         if (res.data.status === 1) {
+          toast.success(res.data.message, {
+            position: 'top-right'
+          });
           history(
             {
               pathname: `/${_base}/billTypeMaster`,
@@ -595,7 +601,10 @@ const EditBillTypeComponent = ({ match }) => {
             { state: { alert: { type: 'success', message: res.data.message } } }
           );
         } else {
-          setNotify({ type: 'danger', message: res.data.message });
+          toast.error(res.data.message, {
+            position: 'top-right'
+          });
+          // setNotify({ type: 'danger', message: res.data.message });
         }
       }
     } catch (error) {
@@ -659,7 +668,7 @@ const EditBillTypeComponent = ({ match }) => {
               <input
                 type="hidden"
                 id="user_id"
-                value={sessionStorage.getItem('id')}
+                value={localStorage.getItem('id')}
               />
 
               <div className="col-sm-4 ">
@@ -673,7 +682,7 @@ const EditBillTypeComponent = ({ match }) => {
                   required={true}
                   onChange={handlbillType}
                   defaultValue={billTypeData && billTypeData.bill_type}
-                  maxLength={20}
+                  maxLength={25}
                 />
                 <small
                   style={{
@@ -691,6 +700,7 @@ const EditBillTypeComponent = ({ match }) => {
                 {userData && billTypeData && (
                   <Select
                     isMulti
+                    classNamePrefix="react-select"
                     name="assign_employee_id[]"
                     defaultValue={
                       billTypeData &&
@@ -808,11 +818,20 @@ const EditBillTypeComponent = ({ match }) => {
                         type="number" // Change type to text
                         key={index}
                         value={item.amount ? item.amount : ''}
+                        // onKeyPress={(e) => {
+                        //   if (
+                        //     !/^[0-9]*(\.[0-9]{0,2})?$/.test(
+                        //       e.target.value + e.key
+                        //     ) ||
+                        //     e.target.value.length >= 10
+                        //   ) {
+                        //     e.preventDefault();
+                        //   }
+                        // }}
                         onKeyPress={(e) => {
+                          // Only allow digits (0-9) and limit the maximum length to 10
                           if (
-                            !/^[0-9]*(\.[0-9]{0,2})?$/.test(
-                              e.target.value + e.key
-                            ) ||
+                            !/^[0-9]*$/.test(e.key) ||
                             e.target.value.length >= 10
                           ) {
                             e.preventDefault();
@@ -887,6 +906,7 @@ const EditBillTypeComponent = ({ match }) => {
                             <td>
                               {assignedUserData && (
                                 <Select
+                                  classNamePrefix="react-select"
                                   key={rowIndex}
                                   ref={(el) => {
                                     if (!select1Refs.current[index]) {
@@ -915,6 +935,7 @@ const EditBillTypeComponent = ({ match }) => {
                             <td>
                               {assignedUserData && (
                                 <Select
+                                  classNamePrefix="react-select"
                                   key={rowIndex}
                                   value={
                                     levelItem.required_users &&

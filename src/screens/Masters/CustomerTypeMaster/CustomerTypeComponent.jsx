@@ -1,14 +1,9 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
 import { Modal } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
-
 import CustomerType from '../../../services/MastersService/CustomerTypeService';
 import PageHeader from '../../../components/Common/PageHeader';
 
 import { Astrick } from '../../../components/Utilities/Style';
-import * as Validation from '../../../components/Utilities/Validation';
-import Alert from '../../../components/Common/Alert';
-
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getCustomerTypeData,
@@ -20,12 +15,13 @@ import {
   handleModalClose,
   handleModalOpen
 } from './CustomerTypeComponentSlice';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { Field, Form, Formik, ErrorMessage } from 'formik';
+import { errorHandler } from '../../../utils';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
+import moment from 'moment';
 
 function CustomerTypeComponent() {
-  const isActive1Ref = useRef();
   const dispatch = useDispatch();
   const customerData = useSelector(
     (CustomerTypeComponentSlice) =>
@@ -37,48 +33,28 @@ function CustomerTypeComponent() {
       CustomerTypeComponentSlice.customerTypeMaster.isLoading.customerTypeList
   );
 
-  const exportData = useSelector(
-    (CustomerTypeComponentSlice) =>
-      CustomerTypeComponentSlice.customerTypeMaster.exportCustomerData
-  );
-
   const modal = useSelector(
     (customerMasterSlice) => customerMasterSlice.customerTypeMaster.modal
-  );
-  const notify = useSelector(
-    (customerMasterSlice) => customerMasterSlice.customerTypeMaster.notify
   );
 
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 12)
   );
-
-  const isActive0Ref = useRef();
-
-  const [searchTerm, setSearchTerm] = useState('');
-
-  const [filteredData, setFilteredData] = useState([]);
-
-  //search function
-
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(customerData, searchTerm);
-    setFilteredData(filteredList);
-  }, [customerData, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(customerData);
+  const [reset, setReset] = useState(false);
+  const clearFilters = () => {
+    setReset(true);
   };
 
   const columns = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
+      accessorKey: 'action',
+      header: 'Action',
+      size: 110,
+      enableColumnOrdering: false,
+      enableGrouping: false,
+      enableSorting: false,
+      enableColumnFilter: false,
+      Cell: ({ row }) => (
         <div className="btn-group" role="group">
           <button
             type="button"
@@ -89,7 +65,7 @@ function CustomerTypeComponent() {
               dispatch(
                 handleModalOpen({
                   showModal: true,
-                  modalData: row,
+                  modalData: row?.original,
                   modalHeader: 'Edit Customer Type'
                 })
               );
@@ -101,101 +77,119 @@ function CustomerTypeComponent() {
       )
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
+      accessorKey: 'counter',
+      header: 'Sr',
+      size: 120,
+      enableColumnFilter: false
     },
     {
-      name: 'Customer Type Name',
-      selector: (row) => row.type_name,
-      sortable: true,
-      width: '200px'
+      accessorFn: (originalRow) => originalRow.type_name || '--',
+      header: 'Customer Type Name',
+      size: 260,
+      muiTableBodyCellProps: () => ({
+        sx: {
+          color: '#f19828',
+          fontWeight: 400
+        }
+      })
     },
     {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      width: '125px',
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      )
+      header: 'Status',
+      size: 160,
+      accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+      filterFn: (row, id, filterValue) => {
+        const status = row.getValue(id);
+        return status.toLowerCase().includes(filterValue.toLowerCase());
+      },
+      Cell: ({ row }) => {
+        const isActive = row?.original?.is_active;
+        return (
+          <span
+            className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+            style={{ width: '4rem' }}
+          >
+            {isActive ? 'Active' : 'Deactive'}
+          </span>
+        );
+      }
     },
     {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => new Date(originalRow.created_at) || '--',
+      header: 'Created At',
+      filterVariant: 'date-range',
+      Cell: ({ row }) =>
+        row?.original?.created_at?.trim()
+          ? moment(row?.original?.created_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
+      header: 'Created By',
+      size: 180
     },
     {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => new Date(originalRow.updated_at) || '--',
+      header: 'Updated At',
+      filterVariant: 'date-range',
+      Cell: ({ row }) =>
+        row?.original?.updated_at?.trim()
+          ? moment(row?.original?.updated_at).format('MM/DD/YYYY HH:mm:ss')
+          : '--'
     },
     {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+      header: 'Updated By',
+      size: 190
     }
   ];
 
-  const loadData = async () => {
-    // setShowLoaderModal(null);
+  const exportDataKeys = {
+    type_name: 'Customer Type Name',
+    is_active: 'Status',
+    remark: 'Remark',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Customer Type Record'
   };
-  const handleIsActive = (e) => {
-    const value = e.target.value;
 
-    if (value === 1) {
-      // setIsActive(1);
-    } else {
-      // setIsActive(0);
+  const handleForm = async (values, id, { setSubmitting }) => {
+    setSubmitting(true);
+    const formData = new FormData();
+    formData.append('type_name', values.type_name);
+    formData.append('remark', values.remark);
+
+    const editFormData = new FormData();
+    editFormData.append('type_name', values.type_name);
+    editFormData.append('remark', values.remark);
+    editFormData.append('is_active', values.is_active);
+
+    try {
+      if (!id) {
+        await dispatch(postCustomerData(formData)).then((res) => {
+          if (res?.payload?.data?.status === 1) {
+            dispatch(getCustomerTypeData());
+          } else {
+          }
+        });
+      } else {
+        await dispatch(
+          updateCustomerData({ id: id, payload: editFormData })
+        ).then((res) => {
+          if (res?.payload?.data?.status === 1) {
+            dispatch(getCustomerTypeData());
+          } else {
+          }
+        });
+      }
+    } catch (error) {
+      errorHandler(error);
+    } finally {
+      setSubmitting(false);
+      clearFilters();
     }
   };
-  const handleForm = (id) => async (e) => {
-    e.preventDefault();
-
-    const form = new FormData(e.target);
-    if (!id) {
-      dispatch(postCustomerData(form)).then((res) => {
-        if (res?.payload?.data?.status === 1) {
-          dispatch(getCustomerTypeData());
-        } else {
-        }
-      });
-    } else {
-      dispatch(updateCustomerData({ id: id, payload: form })).then((res) => {
-        if (res?.payload?.data?.status === 1) {
-          dispatch(getCustomerTypeData());
-        } else {
-        }
-      });
-    }
-  };
-
-  // const handleKeyDown = (event) => {
-  //   if (event.key === 'Enter') {
-  //     handleSearch();
-  //   }
-  // };
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
@@ -204,15 +198,6 @@ function CustomerTypeComponent() {
   }, [checkRole]);
 
   useEffect(() => {
-    setFilteredData(customerData);
-  }, [customerData]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
-
-  useEffect(() => {
-    loadData();
     dispatch(getCustomerTypeData());
 
     if (!customerData?.length) {
@@ -220,9 +205,32 @@ function CustomerTypeComponent() {
     }
   }, [dispatch, customerData.length]);
 
+  const initialValues = {
+    type_name: modal.modalData?.type_name || '',
+    remark: modal.modalData?.remark || '',
+    is_active: String(modal?.modalData?.is_active) ?? '1'
+  };
+  const fields = [
+    {
+      name: 'type_name',
+      label: 'Customer Type name',
+      max: 100,
+      required: true,
+      alphaNumeric: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 255,
+      required: false,
+      alphaNumeric: true
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
+
   return (
     <div className="container-xxl">
-      {notify && <Alert alertData={notify} />}
       <PageHeader
         headerTitle="Customer Type Master"
         renderRight={() => {
@@ -252,210 +260,176 @@ function CustomerTypeComponent() {
         }}
       />
 
-      <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by customer type name...."
-        exportFileName="Customer type Record"
-        exportData={exportData}
-        showExportButton={true}
-      />
-
       <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {customerData && (
-                <DataTable
-                  columns={columns}
-                  data={filteredData}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                  progressPending={isLoading}
-                  progressComponent={<TableLoadingSkelton />}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        {customerData && (
+          <MaterialTable
+            exportDataKeys={exportDataKeys}
+            isLoading={isLoading}
+            data={customerData}
+            columns={columns}
+            reset={reset}
+            setReset={setReset}
+          />
+        )}
       </div>
 
       <Modal centered show={modal.showModal}>
-        <form
-          method="post"
-          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={(values, { setSubmitting }) => {
+            handleForm(values, modal.modalData ? modal.modalData.id : '', {
+              setSubmitting
+            });
+          }}
         >
-          <Modal.Header
-            closeButton
-            onClick={() => {
-              dispatch(
-                handleModalClose({
-                  showModal: false,
-                  modalData: '',
-                  modalHeader: ''
-                })
-              );
-            }}
-          >
-            <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="deadline-form">
-              <div className="row g-3 mb-3">
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Customer Type Name :<Astrick color="red" size="13px" />
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="type_name"
-                    name="type_name"
-                    required
-                    maxLength={30}
-                    defaultValue={
-                      modal.modalData ? modal.modalData.type_name : ''
-                    }
-                    onKeyPress={(e) => {
-                      Validation.CharactersNumbersOnly(e);
-                    }}
-                    onPaste={(e) => {
-                      e.preventDefault();
-                      return false;
-                    }}
-                    onCopy={(e) => {
-                      e.preventDefault();
-                      return false;
-                    }}
-                  />
-                </div>
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Remark :
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="remark"
-                    name="remark"
-                    maxLength={50}
-                    defaultValue={modal.modalData ? modal.modalData.remark : ''}
-                  />
-                </div>
-
-                {modal.modalData && (
-                  <div className="col-sm-12">
-                    <label className="form-label font-weight-bold">
-                      Status :<Astrick color="red" size="13px" />
-                    </label>
-                    <div className="row">
-                      <div className="col-md-2">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            onClick={(e) => {
-                              handleIsActive(e);
-                            }}
-                            id="is_active_1"
-                            ref={isActive1Ref}
-                            value="1"
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 1
-                                ? true
-                                : !modal.modalData
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_1"
-                          >
-                            Active
-                          </label>
-                        </div>
-                      </div>
-                      <div className="col-md-1">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_0"
-                            onClick={(e) => {
-                              handleIsActive(e);
-                            }}
-                            ref={isActive0Ref}
-                            value="0"
-                            readOnly={modal.modalData ? false : true}
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_0"
-                          >
-                            Deactive
-                          </label>
-                        </div>
-                      </div>
+          {({ isSubmitting }) => (
+            <Form>
+              <Modal.Header
+                closeButton
+                onClick={() =>
+                  dispatch(
+                    handleModalClose({
+                      showModal: false,
+                      modalData: '',
+                      modalHeader: ''
+                    })
+                  )
+                }
+              >
+                <Modal.Title className="fw-bold">
+                  {modal.modalHeader}
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="deadline-form">
+                  <div className="row g-3 mb-3">
+                    {/* Customer Type Name */}
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Customer Type Name :<Astrick color="red" size="13px" />
+                      </label>
+                      <Field
+                        type="text"
+                        className="form-control form-control-sm"
+                        id="type_name"
+                        name="type_name"
+                      />
+                      <ErrorMessage
+                        name="type_name"
+                        component="small"
+                        className="text-danger"
+                      />
                     </div>
+
+                    {/* Remark */}
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Remark :
+                      </label>
+                      <Field
+                        type="text"
+                        className="form-control form-control-sm"
+                        id="remark"
+                        name="remark"
+                      />
+                      <ErrorMessage
+                        name="remark"
+                        component="small"
+                        className="text-danger"
+                      />
+                    </div>
+
+                    {/* Status */}
+                    {modal.modalData && (
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Status :<Astrick color="red" size="13px" />
+                        </label>
+                        <div className="row">
+                          <div className="col-md-2">
+                            <div className="form-check">
+                              <Field
+                                className="form-check-input"
+                                type="radio"
+                                name="is_active"
+                                id="is_active_1"
+                                value="1"
+                              />
+                              <label
+                                className="form-check-label"
+                                htmlFor="is_active_1"
+                              >
+                                Active
+                              </label>
+                            </div>
+                          </div>
+                          <div className="col-md-1">
+                            <div className="form-check">
+                              <Field
+                                className="form-check-input"
+                                type="radio"
+                                name="is_active"
+                                id="is_active_0"
+                                value="0"
+                                disabled={!modal.modalData}
+                              />
+                              <label
+                                className="form-check-label"
+                                htmlFor="is_active_0"
+                              >
+                                Deactive
+                              </label>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                {/* Submit / Update Button */}
+                {!modal.modalData ? (
+                  <button
+                    disabled={isSubmitting}
+                    type="submit"
+                    className="btn btn-primary text-white"
+                  >
+                    Submit
+                  </button>
+                ) : (
+                  checkRole &&
+                  checkRole[0]?.can_update === 1 && (
+                    <button
+                      disabled={isSubmitting}
+                      type="submit"
+                      className="btn btn-primary text-white"
+                    >
+                      Update
+                    </button>
+                  )
                 )}
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            {!modal.modalData && (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{
-                  backgroundColor: '#484C7F',
-                  width: '80px',
-                  padding: '8px'
-                }}
-              >
-                Add
-              </button>
-            )}
-            {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{ backgroundColor: '#484C7F' }}
-              >
-                Update
-              </button>
-            ) : (
-              ''
-            )}
-            <button
-              type="button"
-              className="btn btn-danger text-white"
-              onClick={() => {
-                dispatch(
-                  handleModalClose({
-                    showModal: false,
-                    modalData: '',
-                    modalHeader: ''
-                  })
-                );
-              }}
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </form>
+                {/* Cancel Button */}
+                <button
+                  type="button"
+                  className="btn btn-danger text-white"
+                  onClick={() =>
+                    dispatch(
+                      handleModalClose({
+                        showModal: false,
+                        modalData: '',
+                        modalHeader: ''
+                      })
+                    )
+                  }
+                >
+                  Cancel
+                </button>
+              </Modal.Footer>
+            </Form>
+          )}
+        </Formik>
       </Modal>
     </div>
   );
@@ -465,22 +439,25 @@ function CustomerTypeDropdown(props) {
   const [data, setData] = useState(null);
   useEffect(() => {
     const tempData = [];
-    new CustomerType().getCustomerType().then((res) => {
-      if (res.status === 200) {
-        let counter = 1;
-        const data = res.data.data;
-        for (const key in data) {
-          if (data[key].is_active === 1) {
-            tempData.push({
-              counter: counter++,
-              id: data[key].id,
-              type_name: data[key].type_name
-            });
+    new CustomerType()
+      .getCustomerType()
+      .then((res) => {
+        if (res?.status === 200) {
+          let counter = 1;
+          const data = res?.data?.data;
+          for (const key in data) {
+            if (data[key].is_active === 1) {
+              tempData.push({
+                counter: counter++,
+                id: data[key].id,
+                type_name: data[key].type_name
+              });
+            }
           }
+          setData(tempData);
         }
-        setData(tempData);
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   }, []);
 
   return (

@@ -8,7 +8,7 @@ import {
 
 const initialState = {
   pendingOrderList: [],
-  userAddedPoDataList: JSON.parse(sessionStorage.getItem('poDataList')) || [],
+  userAddedPoDataList: JSON.parse(localStorage.getItem('poDataList')) || [],
   unixCodeListAgainstVendor: [],
   pendingOrderErrorFileData: [],
   pendingOrderErrorFileOnTheSportDownloadData: [],
@@ -60,7 +60,7 @@ const generatePoSlice = createSlice({
       });
 
       // Update local storage
-      sessionStorage.setItem(
+      localStorage.setItem(
         'poDataList',
         JSON.stringify(state.userAddedPoDataList)
       );
@@ -75,7 +75,7 @@ const generatePoSlice = createSlice({
         state.userAddedPoDataList[index].order_qty = order_qty;
 
         // Update local storage
-        sessionStorage.setItem(
+        localStorage.setItem(
           'poDataList',
           JSON.stringify(state.userAddedPoDataList)
         );
@@ -89,26 +89,29 @@ const generatePoSlice = createSlice({
       );
 
       // Update local storage
-      sessionStorage.setItem(
+      localStorage.setItem(
         'poDataList',
         JSON.stringify(state.userAddedPoDataList)
       );
     },
 
-    resetUserAddedOrderList(state, action) {
+    resetUserAddedOrderList(state) {
       state.userAddedPoDataList = [];
       state.pendingOrderErrorFileOnTheSportDownloadData = [];
-      sessionStorage.removeItem('poDataList');
+      localStorage.removeItem('poDataList');
     },
 
-    resetPendingOrderListData(state, action) {
+    resetPendingOrderListData(state) {
       state.pendingOrderList = [];
+    },
+    resetPoErrorFile(state) {
+      state.pendingOrderErrorFileData = [];
     }
   },
 
   extraReducers(builder) {
     builder
-      .addCase(getPendingOrderListThunk.pending, (state, action) => {
+      .addCase(getPendingOrderListThunk.pending, (state) => {
         state.isLoading.getPendingOrderList = true;
       })
       .addCase(getPendingOrderListThunk.fulfilled, (state, action) => {
@@ -123,7 +126,7 @@ const generatePoSlice = createSlice({
       })
 
       // // create pending order slices
-      .addCase(createPendingOrderThunk.pending, (state, action) => {
+      .addCase(createPendingOrderThunk.pending, (state) => {
         state.isLoading.createPendingOrder = true;
       })
       .addCase(createPendingOrderThunk.fulfilled, (state, action) => {
@@ -133,7 +136,7 @@ const generatePoSlice = createSlice({
           action?.payload?.data;
 
         // Clear local storage
-        sessionStorage.removeItem('poDataList');
+        localStorage.removeItem('poDataList');
       })
       .addCase(createPendingOrderThunk.rejected, (state, action) => {
         state.isLoading.createPendingOrder = false;
@@ -165,7 +168,7 @@ const generatePoSlice = createSlice({
       )
 
       // // get pending order error file data slices
-      .addCase(getPendingOrderErrorFileThunk.pending, (state, action) => {
+      .addCase(getPendingOrderErrorFileThunk.pending, (state) => {
         state.isLoading.getPendingOrderErrorFileData = true;
       })
       .addCase(getPendingOrderErrorFileThunk.fulfilled, (state, action) => {
@@ -186,6 +189,7 @@ export const {
   editUserPendingOrderRequest,
   deleteUserPendingOrderRequest,
   resetUserAddedOrderList,
-  resetPendingOrderListData
+  resetPendingOrderListData,
+  resetPoErrorFile
 } = generatePoSlice.actions;
 export default generatePoSlice.reducer;

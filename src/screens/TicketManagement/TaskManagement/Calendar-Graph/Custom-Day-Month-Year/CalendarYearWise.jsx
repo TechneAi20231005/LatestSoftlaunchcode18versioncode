@@ -83,7 +83,7 @@ export const CalendarYearWise = (props) => {
       TO_DO: '#C3F5FF',
       IN_PROGRESS: '#FFECB3',
       IN_TIME: '#9EFFB9',
-      DELAY: '#C3F5FF',
+      DELAY: '#FF8888',
       SLIGHTLY_DELAY: '#FFC581',
       HIGH_DELAY: '#484C7F'
     };

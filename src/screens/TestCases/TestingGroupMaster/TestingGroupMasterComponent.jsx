@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import DataTable from 'react-data-table-component';
 import PageHeader from '../../../components/Common/PageHeader';
 import { ExportToExcel } from '../../../components/Utilities/Table/ExportDataFile';
@@ -8,8 +8,12 @@ import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingS
 import { getTestingGroupMasterListThunk } from '../../../redux/services/testCases/testingGroupMaster';
 import AddTestingGroupModal from './AddTestingGroupModal';
 import { Col, Row } from 'react-bootstrap';
+import { Tooltip } from 'react-tooltip';
+import moment from 'moment';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 function TestingGroupMasterComponent() {
   const dispatch = useDispatch();
+  const [reset, setReset] = useState(false);
 
   // // redux state
   const { testingGroupMasterList, isLoading } = useSelector(
@@ -41,90 +45,140 @@ function TestingGroupMasterComponent() {
     setFilterTestingGroupMasterList(testingGroupMasterList);
   };
 
-  const columns = [
-    {
-      name: 'Sr. No.',
-      selector: (row, index) => index + 1,
-      sortable: false,
-      width: '70px'
-    },
-    {
-      name: 'Action',
-      selector: (row) => (
-        <i
-          className="icofont-edit text-primary cp"
-          onClick={() =>
-            setAddEditTestingGroupModal({
-              type: 'EDIT',
-              data: row,
-              open: true
-            })
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'counter',
+        header: 'Sr',
+        size: 90,
+        accessorFn: (row, index) => index + 1,
+        enableColumnOrdering: false,
+        enableGrouping: false
+      },
+      {
+        header: 'Action',
+        accessorKey: 'action',
+        size: 110,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableSorting: false,
+        Cell: ({ row }) => (
+          <i
+            className="icofont-edit text-primary cp"
+            onClick={() =>
+              setAddEditTestingGroupModal({
+                type: 'EDIT',
+                data: row?.original,
+                open: true
+              })
+            }
+          />
+        )
+      },
+
+      {
+        accessorKey: 'is_active',
+        header: 'Status',
+        size: 150,
+        accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+        filterFn: (row, id, filterValue) => {
+          const status = row.getValue(id);
+          return status.toLowerCase().includes(filterValue.toLowerCase());
+        },
+        Cell: ({ row }) => {
+          const isActive = row?.original?.is_active;
+          return (
+            <span
+              className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+              style={{ width: '4rem' }}
+            >
+              {isActive ? 'Active' : 'Deactive'}
+            </span>
+          );
+        }
+      },
+
+      {
+        header: 'Testing Group Title',
+        enableSorting: false,
+        size: 220,
+        muiTableBodyCellProps: () => ({
+          sx: {
+            color: '#f19828',
+            fontWeight: 400
           }
-        />
-      ),
-      sortable: false,
-      width: '70px'
-    },
+        }),
+        accessorKey: 'group_name'
+      },
+      {
+        accessorFn: (originalRows) =>
+          `${originalRows?.is_automation_script || '--'} `,
+        header: 'Is Automation Script',
+        Header: (
+          <span>
+            Is Automation Script
+            <i
+              className="icofont-filter ms-2 text-dark"
+              style={{ cursor: 'pointer' }}
+            />
+          </span>
+        ),
 
-    {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      cell: (row) => (
-        <div>
-          {row.is_active == 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active == 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      ),
-      width: '100px'
-    },
+        size: 250,
+        enableSorting: false
+      },
+      {
+        accessorKey: 'created_at',
+        header: 'Created At',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.created_at),
+        Cell: ({ row }) =>
+          row.original.created_at
+            ? moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--',
+        size: 350
+      },
+      {
+        accessorKey: 'created_by',
+        header: 'Created By',
+        accessorFn: (originalRow) => originalRow?.created_by?.trim() || '--',
+        size: 180
+      },
+      {
+        accessorKey: 'updated_at',
+        header: 'Updated At',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.updated_at),
+        Cell: ({ row }) =>
+          row?.original?.updated_at?.trim()
+            ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--'
+      },
+      {
+        id: 'updated_by',
+        accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+        header: 'Updated By',
+        size: 185
+      }
+    ],
+    []
+  );
 
-    {
-      name: 'Testing Group Title',
-      selector: (row) => row.group_name,
-      sortable: false,
-      width: '200px'
-    },
-
-    {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: false,
-      width: '175px'
-    },
-
-    {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: false,
-      width: '175px'
-    },
-    {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: false,
-      width: '175px'
-    },
-
-    {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: false,
-      width: '175px'
-    }
-  ];
-
+  const clearFilters = () => {
+    setReset(true);
+  };
   const transformDataForExport = (data) => {
     return data.map((row) => ({
       ...row,
+      created_by:
+        (row?.created_by?.first_name || '-' + ' ') +
+        ' ' +
+        (row?.created_by?.last_name || '-'),
+
+      updated_by:
+        (row?.updated_by?.first_name || '-' + ' ') +
+        ' ' +
+        (row?.updated_by?.last_name || '-'),
       status: row.is_active == 1 ? 'Active' : 'Deactive'
     }));
   };
@@ -133,15 +187,16 @@ function TestingGroupMasterComponent() {
     filteredTestingGroupMasterList
   );
 
-  const exportColumns = [
-    { title: 'Testing Group Title', field: 'group_name' },
-    { title: 'Status', field: 'status' },
-
-    { title: 'Created At', field: 'created_at' },
-    { title: 'Created By', field: 'created_by' },
-    { title: 'Updated At', field: 'updated_at' },
-    { title: 'Updated By', field: 'updated_by' }
-  ];
+  const exportDataKeys = {
+    group_name: 'Testing Group Title',
+    remark: 'Remark',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Testing Group Master Record'
+  };
 
   useEffect(() => {
     dispatch(getTestingGroupMasterListThunk());
@@ -159,9 +214,9 @@ function TestingGroupMasterComponent() {
 
   return (
     <div className="container-xxl">
-      <div className="d-flex justify-content-between">
+      <div className="d-flex justify-content-between gap-2 flex-wrap">
         <PageHeader headerTitle="Testing Group Master" />
-        <div style={{ marginTop: '-30px' }}>
+        <div>
           <button
             className="btn btn-primary text-white "
             onClick={() =>
@@ -178,63 +233,27 @@ function TestingGroupMasterComponent() {
         </div>
       </div>
 
-      <Row className="row_gap_3">
-        <Col xs={12} md={7} xxl={8}>
-          <input
-            type="search"
-            name="interview_search"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e?.target?.value)}
-            placeholder="Search testing group here..."
-            className="form-control"
+      {filteredTestingGroupMasterList && (
+        <div className="card mt-2">
+          <MaterialTable
+            columns={columns}
+            data={transformedData}
+            isLoading={isLoading?.getTestingGroupMasterList}
+            setReset={setReset}
+            reset={reset}
+            exportDataKeys={exportDataKeys}
+            muiPaginationProps={{
+              rowsPerPageOptions: [10, 30, 50, 100, 200, 500, 1000, 2000]
+            }}
           />
-        </Col>
-        <Col
-          xs={12}
-          md={5}
-          xxl={4}
-          className="d-flex justify-content-sm-end btn_container"
-        >
-          <button
-            className="btn btn-warning text-white"
-            type="button"
-            onClick={handleSearch}
-          >
-            <i className="icofont-search-1 " /> Search
-          </button>
-          <button
-            className="btn btn-info text-white"
-            type="button"
-            onClick={handleReset}
-          >
-            <i className="icofont-refresh text-white" /> Reset
-          </button>
-          <ExportToExcel
-            className="btn btn-danger"
-            apiData={transformedData}
-            columns={exportColumns}
-            fileName="Testing Group Master Records"
-            disabled={!filteredTestingGroupMasterList?.length}
-          />
-        </Col>
-      </Row>
-
-      <DataTable
-        columns={columns}
-        data={filteredTestingGroupMasterList}
-        defaultSortField="role_id"
-        pagination
-        selectableRows={false}
-        className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-        highlightOnHover={true}
-        progressPending={isLoading?.getTestingGroupMasterList}
-        progressComponent={<TableLoadingSkelton />}
-      />
+        </div>
+      )}
       <AddTestingGroupModal
         show={addEditTestingGroupModal?.open}
         type={addEditTestingGroupModal?.type}
         currentTestingGroupData={addEditTestingGroupModal?.data}
         close={(prev) => setAddEditTestingGroupModal({ ...prev, open: false })}
+        clearFilters={clearFilters}
       />
     </div>
   );

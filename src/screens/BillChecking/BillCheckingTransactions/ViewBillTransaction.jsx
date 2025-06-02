@@ -1,21 +1,21 @@
-import React, { useEffect, useState, useRef } from "react";
-import { Link, useNavigate, useParams } from "react-router-dom";
-import PageHeader from "../../../components/Common/PageHeader";
-import Alert from "../../../components/Common/Alert";
-import { Astrick } from "../../../components/Utilities/Style";
-import * as Validation from "../../../components/Utilities/Validation";
-import { _base } from "../../../settings/constants";
-import Select from "react-select";
-import DropdownService from "../../../services/Bill Checking/Bill Checking Transaction/DropdownService";
-import BillTransactionService from "../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService";
-import VendorMasterService from "../../../services/Bill Checking/Masters/VendorMasterService";
-import DepartmentService from "../../../services/MastersService/DepartmentService";
-import UserService from "../../../services/MastersService/UserService";
+import React, { useEffect, useState, useRef } from 'react';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import PageHeader from '../../../components/Common/PageHeader';
+import Alert from '../../../components/Common/Alert';
+import { Astrick } from '../../../components/Utilities/Style';
+import * as Validation from '../../../components/Utilities/Validation';
+import { _base } from '../../../settings/constants';
+import Select from 'react-select';
+import DropdownService from '../../../services/Bill Checking/Bill Checking Transaction/DropdownService';
+import BillTransactionService from '../../../services/Bill Checking/Bill Checking Transaction/BillTransactionService';
+import VendorMasterService from '../../../services/Bill Checking/Masters/VendorMasterService';
+import DepartmentService from '../../../services/MastersService/DepartmentService';
+import UserService from '../../../services/MastersService/UserService';
 
-import BillTypeService from "../../../services/Bill Checking/Masters/BillTypeMasterService";
+import BillTypeService from '../../../services/Bill Checking/Masters/BillTypeMasterService';
 
-import { _attachmentUrl } from "../../../settings/constants";
-import { da } from "date-fns/locale";
+import { _attachmentUrl } from '../../../settings/constants';
+import { da } from 'date-fns/locale';
 
 export default function ViewBillTransaction({ match }, props) {
   const { id } = useParams();
@@ -27,7 +27,7 @@ export default function ViewBillTransaction({ match }, props) {
   const [customerType, setCustomerType] = useState(null);
   const [dependent, setDependent] = useState({
     country_id: null,
-    state_id: null,
+    state_id: null
   });
 
   const [billType, setBillType] = useState(null);
@@ -65,7 +65,7 @@ export default function ViewBillTransaction({ match }, props) {
       setShowTdsFileds(e.target.checked);
     } else {
       setShowTdsFileds((e.target.checked = false));
-      sectionRef.current.value = "";
+      sectionRef.current.value = '';
       setTdsPercentage(0);
       setTdsAmount(0);
     }
@@ -82,7 +82,7 @@ export default function ViewBillTransaction({ match }, props) {
             setConstitutionDropdown(
               res.data.data.map((d) => ({
                 value: d.id,
-                label: d.constitution_name,
+                label: d.constitution_name
               }))
             );
           }
@@ -119,7 +119,7 @@ export default function ViewBillTransaction({ match }, props) {
           setVendorDropdown(
             res.data.data.map((d) => ({
               value: d.id,
-              label: d.vendor_name,
+              label: d.vendor_name
             }))
           );
         }
@@ -129,24 +129,27 @@ export default function ViewBillTransaction({ match }, props) {
     await new DepartmentService().getDepartment().then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          setDepartment(res.data.data);
+          setDepartment(res.data.data?.data);
           setDepartmentDropdown(
-            res.data.data.map((d) => ({ value: d.id, label: d.department }))
+            res.data.data?.data?.map((d) => ({
+              value: d.id,
+              label: d.department
+            }))
           );
         }
       }
     });
 
     const inputRequired =
-      "id,employee_id,first_name,last_name,middle_name,is_active";
+      'id,employee_id,first_name,last_name,middle_name,is_active';
     await new UserService().getUserForMyTickets(inputRequired).then((res) => {
       if (res.status === 200) {
         if (res.data.status == 1) {
-          setUser(res.data.data);
+          setUser(res.data.data?.data);
           setUserDropdown(
-            res.data.data.map((d) => ({
+            res.data.data?.data?.map((d) => ({
               value: d.id,
-              label: `${d.first_name} ${d.last_name}`,
+              label: `${d.first_name} ${d.last_name}`
             }))
           );
         }
@@ -173,7 +176,7 @@ export default function ViewBillTransaction({ match }, props) {
             setConstitutionDropdown(
               res.data.data.map((d) => ({
                 value: d.id,
-                label: d.constitution_name,
+                label: d.constitution_name
               }))
             );
           }
@@ -228,6 +231,7 @@ export default function ViewBillTransaction({ match }, props) {
                       </label>
                       {billTypeDropdown && (
                         <Select
+                          classNamePrefix="react-select"
                           type="text"
                           className="form-control form-control"
                           defaultValue={
@@ -254,6 +258,7 @@ export default function ViewBillTransaction({ match }, props) {
                       </label>
                       {userDropdown && data ? (
                         <Select
+                          classNamePrefix="react-select"
                           type="text"
                           className="form-control form-control-sm"
                           id="assign_to"
@@ -280,6 +285,7 @@ export default function ViewBillTransaction({ match }, props) {
                         <Select
                           className="form-control form-control-sm"
                           id="vendor_name"
+                          classNamePrefix="react-select"
                           name="vendor_name"
                           readOnly={true}
                           required
@@ -323,7 +329,7 @@ export default function ViewBillTransaction({ match }, props) {
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
                         <b>
-                          {" "}
+                          {' '}
                           Bill Date: <Astrick color="red" size="13px" />
                         </b>
                       </label>
@@ -335,14 +341,14 @@ export default function ViewBillTransaction({ match }, props) {
                         required
                         readOnly
                         defaultValue={data.bill_date}
-                        max={new Date().toISOString().split("T")[0]}
+                        max={new Date().toISOString().split('T')[0]}
                       />
                     </div>
 
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
                         <b>
-                          {" "}
+                          {' '}
                           Recieved Date: <Astrick color="red" size="13px" />
                         </b>
                       </label>
@@ -361,7 +367,7 @@ export default function ViewBillTransaction({ match }, props) {
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
                         <b>
-                          {" "}
+                          {' '}
                           Debit Advance: <Astrick color="red" size="13px" />
                         </b>
                       </label>
@@ -384,7 +390,7 @@ export default function ViewBillTransaction({ match }, props) {
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
                         <b>
-                          {" "}
+                          {' '}
                           Taxable Amount: <Astrick color="red" size="13px" />
                         </b>
                       </label>
@@ -413,7 +419,7 @@ export default function ViewBillTransaction({ match }, props) {
                         defaultChecked={
                           data.is_igst_applicable == 1 ? true : false
                         }
-                        style={{ marginRight: "8px" }}
+                        style={{ marginRight: '8px' }}
                         onKeyPress={(e) => {
                           Validation.NumbersSpeicalOnlyDot(e);
                         }}
@@ -465,7 +471,7 @@ export default function ViewBillTransaction({ match }, props) {
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
                         <b>
-                          {" "}
+                          {' '}
                           TCS: <Astrick color="red" size="13px" />
                         </b>
                       </label>
@@ -483,7 +489,7 @@ export default function ViewBillTransaction({ match }, props) {
                     <div className=" col-md-3 ">
                       <label className="col-form-label">
                         <b>
-                          {" "}
+                          {' '}
                           Bill Amount: <Astrick color="red" size="13px" />
                         </b>
                       </label>
@@ -501,7 +507,7 @@ export default function ViewBillTransaction({ match }, props) {
                       <input
                         className="sm-1"
                         type="checkbox"
-                        style={{ marginRight: "8px", marginLeft: "10px" }}
+                        style={{ marginRight: '8px', marginLeft: '10px' }}
                         id="is_tds_applicable"
                         name="is_tds_applicable"
                         disabled
@@ -518,7 +524,7 @@ export default function ViewBillTransaction({ match }, props) {
                       <input
                         className="sm-1"
                         type="checkbox"
-                        style={{ marginRight: "8px", marginLeft: "10px" }}
+                        style={{ marginRight: '8px', marginLeft: '10px' }}
                         id="is_tcs_applicable"
                         name="is_tcs_applicable"
                         defaultChecked={
@@ -538,7 +544,7 @@ export default function ViewBillTransaction({ match }, props) {
                       <input
                         className="sm-1"
                         type="checkbox"
-                        style={{ marginRight: "8px", marginLeft: "10px" }}
+                        style={{ marginRight: '8px', marginLeft: '10px' }}
                         id="is_original_bill_needed"
                         name="is_original_bill_needed"
                         disabled
@@ -560,6 +566,7 @@ export default function ViewBillTransaction({ match }, props) {
                           type="text"
                           id="tds_section"
                           name="tds_section"
+                          classNamePrefix="react-select"
                           isDisabled
                           defaultValue={
                             data &&
@@ -584,6 +591,7 @@ export default function ViewBillTransaction({ match }, props) {
                           <Select
                             id="tds_constitution"
                             name="tds_constitution"
+                            classNamePrefix="react-select"
                             readOnly
                             options={constitutionDropdown}
                             isDisabled
@@ -638,7 +646,7 @@ export default function ViewBillTransaction({ match }, props) {
                     <div className=" col-md-3 ">
                       <label className=" col-form-label">
                         <b>
-                          {" "}
+                          {' '}
                           Net Payment : <Astrick color="red" size="13px" />
                         </b>
                       </label>
@@ -652,11 +660,11 @@ export default function ViewBillTransaction({ match }, props) {
                       />
                       <span
                         className="fw-bold"
-                        style={{ fontStyle: "italic", color: "red" }}
+                        style={{ fontStyle: 'italic', color: 'red' }}
                       >
                         {data && data.bill_amount_in_words
                           ? data.bill_amount_in_words
-                          : ""}
+                          : ''}
                       </span>
                     </div>
                     <div className=" col-md-4 ">
@@ -685,7 +693,7 @@ export default function ViewBillTransaction({ match }, props) {
                           readOnly
                           rows="4"
                           defaultValue={
-                            data.remark_history ? data.remark_history : ""
+                            data.remark_history ? data.remark_history : ''
                           }
                         />
                       </div>
@@ -721,7 +729,7 @@ export default function ViewBillTransaction({ match }, props) {
                       <input
                         className="sm-1"
                         type="checkbox"
-                        style={{ marginRight: "8px", marginLeft: "10px" }}
+                        style={{ marginRight: '8px', marginLeft: '10px' }}
                         id="authorized_by_management"
                         name="authorized_by_management"
                         defaultChecked={
@@ -738,7 +746,7 @@ export default function ViewBillTransaction({ match }, props) {
                       <input
                         className="sm-1"
                         type="checkbox"
-                        style={{ marginRight: "8px", marginLeft: "10px" }}
+                        style={{ marginRight: '8px', marginLeft: '10px' }}
                         id="authorized_by_hod"
                         name="authorized_by_hod"
                         disabled={true}
@@ -756,7 +764,7 @@ export default function ViewBillTransaction({ match }, props) {
                     {data && data.attachment && (
                       <div
                         className="d-flex justify-content-start mt-2"
-                        style={{ overflowX: "auto" }}
+                        style={{ overflowX: 'auto' }}
                       >
                         {data &&
                           data.attachment.map((attach, index) => {
@@ -764,17 +772,17 @@ export default function ViewBillTransaction({ match }, props) {
                               <div
                                 className="justify-content-start"
                                 style={{
-                                  marginRight: "5px",
-                                  padding: "0px",
-                                  width: "auto",
+                                  marginRight: '5px',
+                                  padding: '0px',
+                                  width: 'auto'
                                 }}
                               >
                                 <div
                                   className="card"
-                                  style={{ backgroundColor: "#EBF5FB" }}
+                                  style={{ backgroundColor: '#EBF5FB' }}
                                 >
                                   <div className="card-header">
-                                    <p style={{ fontSize: "12px" }}>
+                                    <p style={{ fontSize: '12px' }}>
                                       <b>{attach.name}</b>
                                     </p>
                                     <div className="d-flex justify-content-end p-0">
@@ -787,8 +795,8 @@ export default function ViewBillTransaction({ match }, props) {
                                         <i
                                           className="icofont-download"
                                           style={{
-                                            fontSize: "10px",
-                                            height: "15px",
+                                            fontSize: '10px',
+                                            height: '15px'
                                           }}
                                           disabled
                                         ></i>
@@ -801,7 +809,7 @@ export default function ViewBillTransaction({ match }, props) {
                                       >
                                         <i
                                           className="icofont-ui-delete"
-                                          style={{ fontSize: "12px" }}
+                                          style={{ fontSize: '12px' }}
                                         ></i>
                                       </button>
                                     </div>
@@ -828,48 +836,48 @@ export default function ViewBillTransaction({ match }, props) {
                               <tr>
                                 <th
                                   className="text-center"
-                                  style={{ width: "100px" }}
+                                  style={{ width: '100px' }}
                                 >
-                                  {" "}
-                                  Total Approval Level Count{" "}
+                                  {' '}
+                                  Total Approval Level Count{' '}
                                 </th>
                                 <th
                                   className="text-center"
-                                  style={{ width: "100px" }}
+                                  style={{ width: '100px' }}
                                 >
-                                  {" "}
-                                  Level{" "}
-                                </th>
-
-                                <th
-                                  className="text-center"
-                                  style={{ width: "300px" }}
-                                >
-                                  {" "}
-                                  Approvals Name{" "}
+                                  {' '}
+                                  Level{' '}
                                 </th>
 
                                 <th
                                   className="text-center"
-                                  style={{ width: "300px" }}
+                                  style={{ width: '300px' }}
                                 >
-                                  {" "}
+                                  {' '}
+                                  Approvals Name{' '}
+                                </th>
+
+                                <th
+                                  className="text-center"
+                                  style={{ width: '300px' }}
+                                >
+                                  {' '}
                                   Approvals Required Name
                                 </th>
                                 <th
                                   className="text-center"
-                                  style={{ width: "300px" }}
+                                  style={{ width: '300px' }}
                                 >
-                                  {" "}
-                                  Approved By{" "}
+                                  {' '}
+                                  Approved By{' '}
                                 </th>
 
                                 <th
                                   className="text-center"
-                                  style={{ width: "300px" }}
+                                  style={{ width: '300px' }}
                                 >
-                                  {" "}
-                                  Rejected By{" "}
+                                  {' '}
+                                  Rejected By{' '}
                                 </th>
                               </tr>
                             </thead>
@@ -899,7 +907,7 @@ export default function ViewBillTransaction({ match }, props) {
                     )}
                 </div>
 
-                <div className="mt-3" style={{ textAlign: "right" }}>
+                <div className="mt-3" style={{ textAlign: 'right' }}>
                   <Link
                     to={`/${_base}/BillCheckingTransaction`}
                     className="btn btn-danger text-white"

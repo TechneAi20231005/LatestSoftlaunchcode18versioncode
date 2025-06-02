@@ -156,7 +156,9 @@ import SourceMaster from './HRMS/employeeJoining/sourceMaster/SourceMaster';
 import RemarkMaster from './HRMS/employeeJoining/remarkMaster/RemarkMaster';
 import SalaryMaster from './HRMS/employeeJoining/salaryMaster/SalaryMaster';
 import EmployeeJoining from './HRMS/employeeJoining/candidateList/details/EmployeeJoining';
-
+import GenerateFormAndQrMaster from './HRMS/employeeJoining/generateFormAndQrMaster/GenerateFormAndQrMaster';
+import GenerateQrList from './HRMS/employeeJoining/generateFormAndQrMaster/GenerateQrList';
+import ViewQrList from './HRMS/employeeJoining/generateFormAndQrMaster/ViewQrList';
 // // // PO
 import GenerateRequisition from './PO/generateRequisition/GenerateRequisition';
 import GeneratePo from './PO/generatePO/GeneratePo';
@@ -176,22 +178,29 @@ import FunctionMasterComponent from './TestCases/FunctionMaster/FunctionMasterCo
 import TestCaseHistoryComponent from './TestCases/TestDraft/TestCaseHistoryComponent';
 import TestDraftComponent from './TestCases/TestDraft/TestDraftComponent';
 import TestBankComponent from './TestCases/TestBank/TestBankComponent';
-
-
-
+import ProjectWiseModuleHistory from './ConsolidatedView/ProjectWiseModuleHistory';
+import PowerBidashboard from './Dashboard/PowerBidashboard';
+import JobRoleComponent from './Masters/JobRoleMaster/JobRoleComponent';
+import MenuComponent from './Masters/MenuMaster/MenuComponent';
+import DeleteRequisition from './PO/deleteRequisition/DeleteRequisition';
+import ChatBot from './Dashboard/ChatBot';
+import MyTicketRefactored from './TicketManagement/MyTicket/MyTicketFilters';
+import TestPlanHistoryComponent from './TestCases/TestCaseReview/TestPlanHistoryComponent';
+import { QueryGroupMaster } from './Masters/QueryGroupMaster/QueryGroupMaster';
 class MainIndex extends React.Component {
   render() {
-    if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
-      for (var a in sessionStorage) {
-        localStorage.setItem(a, sessionStorage[a]);
-      }
-    } else {
-      for (var b in localStorage) {
-        sessionStorage.setItem(a, localStorage[b]);
-      }
-    }
+    // if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
+    //   for (var a in sessionStorage) {
+    //     localStorage.setItem(a, sessionStorage[a]);
+    //   }
+    // } else {
+    //   for (var b in localStorage) {
+    //     sessionStorage.setItem(a, localStorage[b]);
+    //   }
+    // }
+
     return (
-      <div className="main px-lg-4 px-md-4">
+      <div className="main px-lg-2 px-md-2">
         <Header />
 
         <div className="body d-flex py-lg-3 py-md-2">
@@ -223,6 +232,11 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/Customer`}
               element={<CustomerComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/SmartPerformance`}
+              element={<PowerBidashboard />}
             />
             <Route
               exact
@@ -258,6 +272,10 @@ class MainIndex extends React.Component {
             />
             <Route path={`/${_base}/State`} element={<StateComponent />} />
             <Route path={`/${_base}/City`} element={<CityComponent />} />
+            <Route
+              path={`/${_base}/JobRoleMaster`}
+              element={<JobRoleComponent />}
+            />
             <Route
               exact
               path={`/${_base}/Designation`}
@@ -299,6 +317,11 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/QueryType`}
               element={<QueryTypeComponent />}
+            />
+            <Route
+              exact
+              path={`/${_base}/QueryGroupMaster`}
+              element={<QueryGroupMaster />}
             />
             <Route
               exact
@@ -399,7 +422,7 @@ class MainIndex extends React.Component {
             <Route
               exact
               path={`/${_base}/Ticket`}
-              element={<MyTicketComponent />}
+              element={<MyTicketRefactored />}
             />
             <Route
               exact
@@ -589,8 +612,14 @@ class MainIndex extends React.Component {
             />
             <Route
               exact
-              path={`/${_base}/ConsolidatedView/ProjectwiseModule/:projectId/:moduleId`}
+              // path={`/${_base}/ConsolidatedView/ProjectwiseModule/:projectId/:moduleId`}
+              path={`/${_base}/ConsolidatedView/ProjectwiseModule/:projectId/:moduleId?`}
               element={<ProjectwiseModule />}
+            />
+            <Route
+              exact
+              path={`/${_base}/ProjectWiseModuleHistory/:id`}
+              element={<ProjectWiseModuleHistory />}
             />
             <Route
               exact
@@ -731,8 +760,6 @@ class MainIndex extends React.Component {
               path={`/${_base}/SpecialDayMaster`}
               element={<SpecialDayMasterComponent />}
             />
-
-
             <Route
               exact
               path={`/${_base}/rotationalShiftMaster`}
@@ -757,42 +784,6 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/CalendarMaster`}
               element={<CalenderMaster />}
-            />
-            {/* HRMS>> Employee Joining routes */}
-            <Route
-              exact
-              path={`/${_base}/InterviewMaster`}
-              element={<InterviewMaster />}
-            />
-            <Route
-              exact
-              path={`/${_base}/CandidateList`}
-              element={<CandidateList />}
-            />
-            <Route
-              exact
-              path={`/${_base}/CandidateList/:id`}
-              element={<EmployeeJoining />}
-            />
-            <Route
-              exact
-              path={`/${_base}/BranchMaster`}
-              element={<BranchMaster />}
-            />
-            <Route
-              exact
-              path={`/${_base}/SourceMaster`}
-              element={<SourceMaster />}
-            />
-            <Route
-              exact
-              path={`/${_base}/RemarkMaster`}
-              element={<RemarkMaster />}
-            />
-            <Route
-              exact
-              path={`/${_base}/SalaryMaster`}
-              element={<SalaryMaster />}
             />
             {/* <Route
               exact
@@ -820,7 +811,13 @@ class MainIndex extends React.Component {
               element={<CalenderMaster />}
             />
 
-            {/* Employee Joining routes */}
+             {/* HRMS>> Employee Joining routes */}
+            <Route
+              exact
+              path={`/${_base}/CandidateList/:id`}
+              element={<EmployeeJoining />}
+            />
+            <Route exact path={`/${_base}/ChatBot`} element={<ChatBot />} />
             <Route
               exact
               path={`/${_base}/InterviewMaster`}
@@ -850,6 +847,21 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/SalaryMaster`}
               element={<SalaryMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/qr-generator`}
+              element={<GenerateQrList />}
+            />
+            <Route
+              exact
+              path={`/${_base}/qr-generator/:id`}
+              element={<ViewQrList />}
+            />
+            <Route
+              exact
+              path={`/${_base}/create-qr-generator`}
+              element={<GenerateFormAndQrMaster />}
             />
             {/* PO */}
             <Route
@@ -882,6 +894,11 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/POOrderQuanitityReport`}
               element={<OrderQuantityReport />}
+            />
+            <Route
+              exact
+              path={`/${_base}/PODeleteRequisition`}
+              element={<DeleteRequisition />}
             />
             <Route
               exact
@@ -940,11 +957,22 @@ class MainIndex extends React.Component {
             />
             <Route
               exact
+              path={`/${_base}/TestPlanHistoryComponent/:id`}
+              element={<TestPlanHistoryComponent />}
+            />
+            <Route
+              exact
               path={`/${_base}/TestBank`}
               element={<TestBankComponent />}
             />
+            <Route
+              exact
+              path={`/${_base}/menuMaster`}
+              element={<MenuComponent />}
+            />
           </Routes>
         </div>
+        <ChatBot />
       </div>
     );
   }

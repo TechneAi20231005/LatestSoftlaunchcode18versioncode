@@ -1,14 +1,9 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Modal } from 'react-bootstrap';
-import DataTable from 'react-data-table-component';
 
 import DepartmentService from '../../../services/MastersService/DepartmentService';
-
+import { Formik, Form, Field, ErrorMessage } from 'formik';
 import PageHeader from '../../../components/Common/PageHeader';
-
-import { Astrick } from '../../../components/Utilities/Style';
-import * as Validation from '../../../components/Utilities/Validation';
-import Alert from '../../../components/Common/Alert';
 
 import { useDispatch, useSelector } from 'react-redux';
 import {
@@ -19,9 +14,10 @@ import {
 
 import { getRoles } from '../../Dashboard/DashboardAction';
 import { handleModalClose, handleModalOpen } from './DepartmentMasterSlice';
-import TableLoadingSkelton from '../../../components/custom/loader/TableLoadingSkelton';
-import SearchBoxHeader from '../../../components/Common/SearchBoxHeader ';
-import { customSearchHandler } from '../../../utils/customFunction';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
+import moment from 'moment';
+import MaterialTable from '../../../components/custom/MUI Table/MaterialTable';
 
 function DepartmentComponent() {
   //initial state
@@ -42,134 +38,185 @@ function DepartmentComponent() {
   const modal = useSelector(
     (DashboardSlice) => DashboardSlice.department.modal
   );
-  const Notify = useSelector(
-    (DepartmentMasterSlice) => DepartmentMasterSlice.department.notify
-  );
-  const exportData = useSelector(
-    (DepartmentMasterSlice) =>
-      DepartmentMasterSlice.department.exportDepartmentData
-  );
 
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filteredData, setFilteredData] = useState([]);
-
+  const [reset, setReset] = useState(false);
   //search function
 
-  const handleSearch = useCallback(() => {
-    const filteredList = customSearchHandler(department, searchTerm);
-    setFilteredData(filteredList);
-  }, [department, searchTerm]);
-
-  // Function to handle reset button click
-  const handleReset = () => {
-    setSearchTerm('');
-    setFilteredData(department);
+  const clearFilters = () => {
+    setReset(true);
   };
+  const columns = useMemo(
+    () => [
+      {
+        accessorKey: 'action',
+        header: 'Action',
+        size: 110,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableSorting: false,
+        enableColumnFilter: false,
+        Cell: ({ row }) => (
+          <div className="btn-group" role="group">
+            <button
+              type="button"
+              className="btn btn-outline-secondary"
+              data-bs-toggle="modal"
+              data-bs-target="#edit"
+              onClick={(e) => {
+                dispatch(
+                  handleModalOpen({
+                    showModal: true,
+                    modalData: row?.original,
+                    modalHeader: 'Edit Department'
+                  })
+                );
+              }}
+            >
+              <i className="icofont-edit text-success"></i>
+            </button>
+          </div>
+        )
+      },
+      {
+        accessorKey: 'counter',
+        header: 'Sr',
+        size: 90,
+        enableColumnOrdering: false,
+        enableGrouping: false,
+        enableColumnFilter: false
+      },
+      {
+        accessorKey: 'department',
+        header: 'Department',
+        filterVariant: 'autocomplete',
+        muiTableBodyCellProps: () => ({
+          sx: {
+            color: '#f19828',
+            fontWeight: 400
+          }
+        }),
+        size: 185
+      },
+      {
+        accessorKey: 'is_active',
+        header: 'Status',
+        size: 150,
+        accessorFn: (row) => (row.is_active === 1 ? 'Active' : 'Deactive'),
+        filterFn: (row, id, filterValue) => {
+          const status = row.getValue(id);
+          return status.toLowerCase().includes(filterValue.toLowerCase());
+        },
+        Cell: ({ row }) => {
+          const isActive = row?.original?.is_active;
+          return (
+            <span
+              className={`badge ${isActive ? 'bg-primary' : 'bg-danger'}`}
+              style={{ width: '4rem' }}
+            >
+              {isActive ? 'Active' : 'Deactive'}
+            </span>
+          );
+        }
+      },
+      {
+        header: 'Created At',
+        accessorKey: 'created_at',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.created_at),
+        Cell: ({ row }) =>
+          row.original.created_at
+            ? moment(row.original.created_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--',
+        size: 350
+      },
+      {
+        accessorFn: (originalRow) => originalRow.created_by?.trim() || '--',
+        header: 'Created By',
+        size: 180
+      },
+      {
+        accessorKey: 'updated_at',
+        header: 'Updated At',
+        filterVariant: 'date-range',
+        accessorFn: (row) => new Date(row.updated_at),
+        Cell: ({ row }) =>
+          row?.original?.updated_at?.trim()
+            ? moment(row.original.updated_at).format('MM/DD/YYYY HH:mm:ss')
+            : '--'
+      },
+      {
+        accessorFn: (originalRow) => originalRow?.updated_by?.trim() || '--',
+        header: 'Updated By',
+        size: 185
+      }
+    ],
+    [dispatch]
+  );
 
-  const columns = [
+  const fields = [
     {
-      name: 'Action',
-      selector: (row) => {},
-      sortable: false,
-      width: '80px',
-      cell: (row) => (
-        <div className="btn-group" role="group">
-          <button
-            type="button"
-            className="btn btn-outline-secondary"
-            data-bs-toggle="modal"
-            data-bs-target="#edit"
-            onClick={(e) => {
-              dispatch(
-                handleModalOpen({
-                  showModal: true,
-                  modalData: row,
-                  modalHeader: 'Edit Department'
-                })
-              );
-            }}
-          >
-            <i className="icofont-edit text-success"></i>
-          </button>
-        </div>
-      )
+      name: 'department',
+      label: 'Department name',
+      max: 100,
+      required: true,
+      alphaNumeric: true
     },
     {
-      name: 'Sr',
-      selector: (row) => row.counter,
-      sortable: true,
-      width: '60px'
-    },
-    {
-      name: 'Department',
-      selector: (row) => row.department,
-      sortable: true,
-      width: '175px'
-    },
-    {
-      name: 'Status',
-      selector: (row) => row.is_active,
-      sortable: true,
-      width: '150px',
-      cell: (row) => (
-        <div>
-          {row.is_active === 1 && (
-            <span className="badge bg-primary" style={{ width: '4rem' }}>
-              Active
-            </span>
-          )}
-          {row.is_active === 0 && (
-            <span className="badge bg-danger" style={{ width: '4rem' }}>
-              Deactive
-            </span>
-          )}
-        </div>
-      )
-    },
-    {
-      name: 'Created At',
-      selector: (row) => row.created_at,
-      sortable: true,
-      width: '175px'
-    },
-    {
-      name: 'Created By',
-      selector: (row) => row.created_by,
-      sortable: true,
-      width: '175px'
-    },
-    {
-      name: 'Updated At',
-      selector: (row) => row.updated_at,
-      sortable: true,
-      width: '175px'
-    },
-    {
-      name: 'Updated By',
-      selector: (row) => row.updated_by,
-      sortable: true,
-      width: '175px'
+      name: 'remark',
+      label: 'Remark',
+      max: 255,
+      required: false
     }
   ];
 
-  const handleForm = (id) => async (e) => {
-    e.preventDefault();
+  const exportDataKeys = {
+    department: 'Department',
+    remark: 'Remark',
+    is_active: 'Status',
+    created_at: 'Created At',
+    created_by: 'Created By',
+    updated_at: 'Updated At',
+    updated_by: 'Updated By',
+    fileName: 'Department Master Record'
+  };
 
-    const form = new FormData(e.target);
-    if (!id) {
-      dispatch(postdepartment(form)).then((res) => {
-        if (res?.payload?.data?.status === 1) {
+  const validationSchema = CustomValidation(fields);
+
+  const initialValues = {
+    department: modal.modalData?.department || '',
+    remark: modal.modalData?.remark || '',
+    is_active: String(modal.modalData?.is_active) ?? '1'
+  };
+
+  const handleForm = async (values, id, { setSubmitting }) => {
+    setSubmitting(true);
+    const formData = new FormData();
+    formData.append('department', values.department);
+    formData.append('remark', values.remark);
+
+    const editformdata = new FormData();
+    editformdata.append('department', values.department);
+    editformdata.append('remark', values.remark);
+    editformdata.append('is_active', values.is_active);
+    try {
+      if (!id) {
+        await dispatch(postdepartment(formData));
+        setTimeout(() => {
           dispatch(departmentData());
-        } else {
-        }
-      });
-    } else {
-      dispatch(updateDepartment({ id: id, payload: form })).then((res) => {
-        if (res?.payload?.data?.status === 1) {
+          clearFilters();
+        }, 500);
+      } else {
+        await dispatch(updateDepartment({ id: id, payload: editformdata }));
+        setTimeout(() => {
           dispatch(departmentData());
-        } else {
-        }
-      });
+          clearFilters();
+        }, 500);
+      }
+    } catch (eror) {
+      errorHandler(eror);
+      clearFilters();
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -180,18 +227,8 @@ function DepartmentComponent() {
     }
   }, [dispatch, department.length]);
 
-  useEffect(() => {
-    setFilteredData(department);
-  }, [department]);
-
-  useEffect(() => {
-    handleSearch();
-  }, [searchTerm, handleSearch]);
-
   return (
     <div className="container-xxl">
-      {Notify && <Alert alertData={Notify} />}
-
       <PageHeader
         headerTitle="Department Master"
         renderRight={() => {
@@ -221,201 +258,165 @@ function DepartmentComponent() {
         }}
       />
 
-      <SearchBoxHeader
-        setSearchTerm={setSearchTerm}
-        handleSearch={handleSearch}
-        handleReset={handleReset}
-        placeholder="Search by department name...."
-        exportFileName="Department Master Record"
-        exportData={exportData}
-        showExportButton={true}
-      />
-
       <div className="card mt-2">
-        <div className="card-body">
-          <div className="row clearfix g-3">
-            <div className="col-sm-12">
-              {department && (
-                <DataTable
-                  columns={columns}
-                  data={filteredData}
-                  defaultSortField="title"
-                  pagination
-                  selectableRows={false}
-                  className="table myDataTable table-hover align-middle mb-0 d-row nowrap dataTable no-footer dtr-inline"
-                  highlightOnHover={true}
-                  progressPending={isLoading}
-                  progressComponent={<TableLoadingSkelton />}
-                />
-              )}
-            </div>
-          </div>
-        </div>
+        {department && (
+          <MaterialTable
+            data={department}
+            columns={columns}
+            isLoading={isLoading}
+            reset={reset}
+            setReset={setReset}
+            exportDataKeys={exportDataKeys}
+          />
+        )}
       </div>
 
       <Modal centered show={modal.showModal}>
-        <form
-          method="post"
-          onSubmit={handleForm(modal.modalData ? modal.modalData.id : '')}
+        <Formik
+          initialValues={initialValues}
+          validationSchema={validationSchema}
+          onSubmit={(value, { setSubmitting }) =>
+            handleForm(value, modal.modalData ? modal.modalData.id : '', {
+              setSubmitting
+            })
+          }
         >
-          <Modal.Header
-            closeButton
-            onClick={() => {
-              dispatch(
-                handleModalClose({
-                  showModal: false,
-                  modalData: '',
-                  modalHeader: ''
-                })
-              );
-            }}
-          >
-            <Modal.Title className="fw-bold">{modal.modalHeader}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body>
-            <div className="deadline-form">
-              <div className="row g-3 mb-3">
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Department Name :<Astrick color="red" size="13px" />
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="department"
-                    name="department"
-                    required
-                    maxLength={30}
-                    defaultValue={
-                      modal.modalData ? modal.modalData.department : ''
-                    }
-                    onKeyPress={(e) => {
-                      Validation.CharacterWithSpace(e);
-                    }}
-                    onPaste={(e) => {
-                      e.preventDefault();
-                      return false;
-                    }}
-                    onCopy={(e) => {
-                      e.preventDefault();
-                      return false;
-                    }}
-                  />
-                </div>
-                <div className="col-sm-12">
-                  <label className="form-label font-weight-bold">
-                    Remark :
-                  </label>
-                  <input
-                    type="text"
-                    className="form-control form-control-sm"
-                    id="remark"
-                    name="remark"
-                    maxLength={50}
-                    defaultValue={modal.modalData ? modal.modalData.remark : ''}
-                  />
-                </div>
-                {modal.modalData && (
-                  <div className="col-sm-12">
-                    <label className="form-label font-weight-bold">
-                      Status :<Astrick color="red" size="13px" />
-                    </label>
-                    <div className="row">
-                      <div className="col-md-2">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_1"
-                            value="1"
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 1
-                                ? true
-                                : !modal.modalData
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_1"
-                          >
-                            Active
-                          </label>
-                        </div>
-                      </div>
-                      <div className="col-md-1">
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="is_active"
-                            id="is_active_0"
-                            value="0"
-                            readOnly={modal.modalData ? false : true}
-                            defaultChecked={
-                              modal.modalData && modal.modalData.is_active === 0
-                                ? true
-                                : false
-                            }
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="is_active_0"
-                          >
-                            Deactive
-                          </label>
-                        </div>
-                      </div>
+          {({ isSubmitting }) => (
+            <Form>
+              <Modal.Header
+                closeButton
+                onClick={() =>
+                  dispatch(
+                    handleModalClose({
+                      showModal: false,
+                      modalData: null,
+                      modalHeader: ''
+                    })
+                  )
+                }
+              >
+                <Modal.Title className="fw-bold">
+                  {modal.modalHeader}
+                </Modal.Title>
+              </Modal.Header>
+              <Modal.Body>
+                <div className="deadline-form">
+                  <div className="row g-3 mb-3">
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Department Name: <span style={{ color: 'red' }}>*</span>
+                      </label>
+                      <Field
+                        type="text"
+                        id="department"
+                        name="department"
+                        className="form-control form-control-sm"
+                      />
+                      <ErrorMessage
+                        name="department"
+                        component="small"
+                        className="text-danger small"
+                      />
                     </div>
+
+                    <div className="col-sm-12">
+                      <label className="form-label font-weight-bold">
+                        Remark:
+                      </label>
+                      <Field
+                        type="text"
+                        name="remark"
+                        id="remark"
+                        className="form-control form-control-sm"
+                      />
+                      <ErrorMessage
+                        name="remark"
+                        component="small"
+                        className="text-danger small"
+                      />
+                    </div>
+
+                    {modal.modalData && (
+                      <div className="col-sm-12">
+                        <label className="form-label font-weight-bold">
+                          Status: <span style={{ color: 'red' }}>*</span>
+                        </label>
+                        <div className="row">
+                          <div className="col-md-2">
+                            <label className="form-check">
+                              <Field
+                                type="radio"
+                                name="is_active"
+                                id="is_active_1"
+                                value="1"
+                                className="form-check-input"
+                              />
+                              Active
+                            </label>
+                          </div>
+                          <div className="col-md-2">
+                            <label className="form-check">
+                              <Field
+                                type="radio"
+                                name="is_active"
+                                value="0"
+                                id="is_active_0"
+                                className="form-check-input"
+                              />
+                              Deactive
+                            </label>
+                          </div>
+                        </div>
+                        <ErrorMessage
+                          name="is_active"
+                          component="small"
+                          className="text-danger small"
+                        />
+                      </div>
+                    )}
                   </div>
+                </div>
+              </Modal.Body>
+              <Modal.Footer>
+                {!modal.modalData && (
+                  <button
+                    type="submit"
+                    className="btn btn-primary text-white"
+                    disabled={isSubmitting}
+                  >
+                    Submit
+                  </button>
                 )}
-              </div>
-            </div>
-          </Modal.Body>
-          <Modal.Footer>
-            {!modal.modalData && (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{
-                  backgroundColor: '#484C7F',
-                  width: '80px',
-                  padding: '8px'
-                }}
-              >
-                Add
-              </button>
-            )}
-            {modal.modalData && checkRole && checkRole[0]?.can_update === 1 ? (
-              <button
-                type="submit"
-                className="btn btn-primary text-white"
-                style={{ backgroundColor: '#484C7F' }}
-              >
-                Update
-              </button>
-            ) : (
-              ''
-            )}
-            <button
-              type="button"
-              className="btn btn-danger text-white"
-              onClick={() => {
-                dispatch(
-                  handleModalClose({
-                    showModal: false,
-                    modalData: '',
-                    modalHeader: ''
-                  })
-                );
-              }}
-            >
-              Cancel
-            </button>
-          </Modal.Footer>
-        </form>
+                {modal.modalData &&
+                  checkRole &&
+                  checkRole[0]?.can_update === 1 && (
+                    <button
+                      type="submit"
+                      className="btn btn-primary text-white"
+                      disabled={isSubmitting}
+                    >
+                      Update
+                    </button>
+                  )}
+                <button
+                  type="button"
+                  className="btn btn-danger text-white"
+                  onClick={() =>
+                    dispatch(
+                      handleModalClose({
+                        showModal: false,
+                        modalData: null,
+                        modalHeader: ''
+                      })
+                    )
+                  }
+                >
+                  Cancel
+                </button>
+              </Modal.Footer>
+            </Form>
+          )}
+        </Formik>
       </Modal>
     </div>
   );

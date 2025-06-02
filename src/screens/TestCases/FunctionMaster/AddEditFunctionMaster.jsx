@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Field, Form, Formik } from 'formik';
 import { Col, Row } from 'react-bootstrap';
 import { useDispatch } from 'react-redux';
@@ -14,11 +14,20 @@ import {
   editFunctionMasterThunk,
   getFunctionMasterListThunk
 } from '../../../redux/services/testCases/functionMaster';
-import { addFunctionMasterValidation } from './Validation/AddFunctionMaster';
-import CustomModal from '../../../components/custom/modal/CustomModal';
 
-function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
+import CustomModal from '../../../components/custom/modal/CustomModal';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+
+function AddEditFunctionMaster({
+  show,
+  close,
+  type,
+  currentFunctionData,
+  clearFilters
+}) {
   const dispatch = useDispatch();
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
   const addEditFunctionInitialValue = {
     function_name: type === 'EDIT' ? currentFunctionData?.function_name : '',
     remark: type === 'EDIT' ? currentFunctionData?.remark || '' : '',
@@ -28,15 +37,21 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
   // // function
 
   const handleAddEditFunction = ({ formData }) => {
+    if (isSubmitting) return;
+    setIsSubmitting(true);
     if (type === 'ADD') {
       dispatch(
         addFunctionMasterThunk({
           formData: formData,
           onSuccessHandler: () => {
+            setIsSubmitting(false);
             close();
             dispatch(getFunctionMasterListThunk());
+            clearFilters();
           },
-          onErrorHandler: () => {}
+          onErrorHandler: () => {
+            setIsSubmitting(false);
+          }
         })
       );
     } else {
@@ -45,14 +60,36 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
           currentId: currentFunctionData?.id,
           formData: formData,
           onSuccessHandler: () => {
+            setIsSubmitting(false);
             close();
             dispatch(getFunctionMasterListThunk());
+            clearFilters();
           },
-          onErrorHandler: () => {}
+          onErrorHandler: () => {
+            setIsSubmitting(false);
+          }
         })
       );
     }
   };
+
+  const fields = [
+    {
+      name: 'function_name',
+      label: 'Function Title',
+      min: 3,
+      max: 100,
+      required: true,
+      alphaBet: true
+    },
+    {
+      name: 'remark',
+      label: 'Remark',
+      max: 255
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
 
   return (
     <>
@@ -63,7 +100,7 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
       >
         <Formik
           initialValues={addEditFunctionInitialValue}
-          validationSchema={addFunctionMasterValidation}
+          validationSchema={validationSchema}
           onSubmit={(values) => {
             handleAddEditFunction({ formData: values });
           }}
@@ -76,6 +113,7 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
                     component={CustomInput}
                     name="function_name"
                     label="Function Title"
+                    id="functionmaster_functiontitle"
                     placeholder="Enter Function Title"
                     requiredField
                   />
@@ -85,6 +123,7 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
                     component={CustomInput}
                     name="remark"
                     label="Remark"
+                    id="functionmaster_remark"
                     placeholder="Enter Remark"
                   />
                 </Col>
@@ -99,6 +138,7 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
                       type="radio"
                       name="is_active"
                       label="Active"
+                      id="functionmaster_active"
                       value="1"
                       inputClassName="me-1"
                     />
@@ -107,6 +147,7 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
                       type="radio"
                       name="is_active"
                       label="Deactive"
+                      id="functionmaster_deactive"
                       value="0"
                       inputClassName="me-1"
                     />
@@ -116,15 +157,15 @@ function AddEditFunctionMaster({ show, close, type, currentFunctionData }) {
 
               <div className="d-flex justify-content-end gap-2 mt-3">
                 <button
-                  className="btn btn-dark px-4"
+                  className="btn btn-primary px-4"
                   type="submit"
-                  disabled={!dirty}
+                  disabled={!dirty || isSubmitting}
                 >
-                  {type === 'ADD' ? 'Save' : 'Update'}
+                  {type === 'ADD' ? 'Submit' : 'Update'}
                 </button>
                 <button
                   onClick={() => close()}
-                  className="btn btn-shadow-light px-3"
+                  className="btn btn-danger px-3"
                   type="button"
                 >
                   Cancel

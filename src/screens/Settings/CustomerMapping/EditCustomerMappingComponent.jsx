@@ -21,6 +21,10 @@ import UserService from '../../../services/MastersService/UserService';
 import Table from 'react-bootstrap/Table';
 import { useDispatch, useSelector } from 'react-redux';
 import { getRoles } from '../../Dashboard/DashboardAction';
+import { ErrorMessage, Field, Form, Formik } from 'formik';
+import { CustomValidation } from '../../../components/custom/CustomValidation/CustomValidation';
+import { errorHandler } from '../../../utils';
+import LoadingScreen from '../../../components/custom/LoadingScreen';
 
 export function getDateTime() {
   var now = new Date();
@@ -39,24 +43,12 @@ export function getDateTime() {
 export default function EditCustomerMappingComponentBackup({ match }) {
   const history = useNavigate();
   const dispatch = useDispatch();
-  const customerDetail = useRef();
-  const queryTypeDetail = useRef();
-  const dynamicDetail = useRef();
-  const templateDetail = useRef();
-  const priorityDetail = useRef();
-
-  const approachDetail = useRef();
-  const statusDtail = useRef();
-  const userNameDetail = useRef();
-  const userRatioDetail = useRef();
-
-  const departmentDropdownRef = useRef();
 
   const useridDetail = useRef(null);
+  const [approach, setApproach] = useState('');
 
   const { id } = useParams();
   const mappingId = id;
-  const [notify, setNotify] = useState();
 
   const [customerTypeDropdown, setCustomerTypeDropdown] = useState();
 
@@ -81,6 +73,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   const checkRole = useSelector((DashbordSlice) =>
     DashbordSlice.dashboard.getRoles.filter((d) => d.menu_id === 32)
   );
+  const [loading, setLoading] = useState(false);
 
   const [data, setData] = useState({
     approach: [],
@@ -115,6 +108,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
 
   const [statusData, setstatusData] = useState('');
   const [ratioData, setRatioData] = useState([]);
+  const [queryTypeId, setQueryTypeId] = useState('');
 
   const handleConfirmationChange = (e) => {
     setConfirmationRequired(Number(e?.target?.value));
@@ -124,19 +118,70 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     setstatusData(e?.target?.value);
   };
 
+  const fields = [
+    {
+      name: 'query_type_id',
+      label: 'Query Type',
+      required: true
+    },
+    {
+      name: 'dynamic_form_id',
+      label: 'Dynamic Form'
+    },
+    {
+      name: 'priority',
+      label: 'Priority',
+      required: true
+    },
+    {
+      name: 'confirmation_required',
+      label: 'Confirmation Required',
+      required: true
+    },
+    {
+      name: 'approach',
+      label: 'approach',
+      required: true
+    },
+    {
+      name: 'department_id',
+      label: 'department_id',
+      required: approach !== 'AU' && approach !== 'SELF' ? true : false
+    }
+  ];
+
+  const validationSchema = CustomValidation(fields);
+
+  const valueof = data
+    ? queryTypeDropdown?.find((d) => data.query_type_id === d.value)
+    : '';
+
   const loadData = useCallback(async () => {
+    setLoading(true);
     var tempData = '';
     await new CustomerMappingService()
       .getCustomerMappingById(mappingId)
       .then((res) => {
         if (res.status === 200) {
-          if (res.data.status === 1) {
+          if (res?.data?.status === 1) {
             tempData = res.data.data;
+            setApproach(tempData.approach);
+            // setSelectedCustomer(tempData?.customer_type_id?.length || 0)
+            setSelectedCustomer(tempData?.customer_type_id?.length || 0);
+            setQueryTypeId(tempData.query_type_id);
             setRatioData(
-              tempData?.user_policy2?.map((d) => ({
+              tempData?.user_policy?.map((d) => ({
                 user_id: d.user_id,
                 ratio: d.ratio
-              }))
+              })) || []
+            );
+            setUserData(
+              tempData?.user_policy2
+                ? tempData?.user_policy2?.map((d) => ({
+                    user_id: d.user_id,
+                    ratio: d.ratio
+                  }))
+                : []
             );
             setData({
               approach: tempData.approach,
@@ -169,65 +214,89 @@ export default function EditCustomerMappingComponentBackup({ match }) {
             setConfirmationRequired(res?.data?.data?.confirmation_required);
 
             setstatusData(res?.data?.data?.is_active === 1 ? 1 : 0);
+          } else {
+            toast.error(res?.data?.message);
           }
         }
+      })
+      .catch((error) => {
+        errorHandler(error);
       });
     dispatch(getRoles());
 
-    await new CustomerTypeService().getCustomerType().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const select = res.data.data
-            .filter((d) => d.is_active)
-            .map((d) => ({ value: d.id, label: d.type_name }));
+    await new CustomerTypeService()
+      .getCustomerType()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+            const select = res.data.data.data
+              .filter((d) => d.is_active)
+              .map((d) => ({ value: d.id, label: d.type_name }));
 
-          setCustomerTypeDropdown(select);
+            setCustomerTypeDropdown(select);
+          } else {
+            toast.error(res?.data?.message);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
 
-    await new CustomerMappingService().getPriorityDropdown().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
+    await new CustomerMappingService()
+      .getPriorityDropdown()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+          }
+        } else {
+          toast.error(res?.data?.message);
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
 
-    await new QueryTypeService().getQueryType().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const data = res.data.data.filter((d) => d.is_active === 1);
+    await new QueryTypeService()
+      .getQueryType()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+            const data = res.data.data.data.filter((d) => d.is_active === 1);
 
-          setQueryType(data);
-          setQueryTypeDropdown(
-            res.data.data
-              .filter((d) => d.is_active === 1)
-              .map((d) => ({ value: d.id, label: d.query_type_name }))
-          );
+            setQueryType(data);
+            setQueryTypeDropdown(
+              res.data.data.data
+                .filter((d) => d.is_active === 1)
+                .map((d) => ({ value: d.id, label: d.query_type_name }))
+            );
+          } else {
+            toast.error(res?.data?.message);
+          }
         }
-      }
-    });
-
+      })
+      .catch((error) => errorHandler(error));
     await getDynamicForm();
 
-    await new TemplateService().getTemplate().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const select = res.data.data.map((d) => ({
-            value: d.id,
-            label: d.template_name
-          }));
+    await new TemplateService()
+      .getTemplate()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+            const select = res.data.data.data.map((d) => ({
+              value: d.id,
+              label: d.template_name
+            }));
 
-          setTemplateDropdown(select);
+            setTemplateDropdown(select);
+          } else {
+            toast.error(res?.data?.message);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
     await getDepartment();
 
     setUserDropdown(null);
 
     if (tempData.approach === 'RW' && tempData.user_policy) {
-      tempData.user_policy.forEach((d, i) => {
+      tempData?.user_policy?.forEach((d, i) => {
         var x = d.split(':');
         if (x.length > 1) {
           ratiowiseData[i] = parseInt(x[1]);
@@ -236,50 +305,59 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       var sum = ratiowiseData?.reduce((result, number) => result + number, 0);
       setRatioTotal(sum);
     }
-    await new UserService().getUserWithMultipleDepartment().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          var defaultValue = [{ value: '', label: 'Select User' }];
+    await new UserService()
+      .getUserWithMultipleDepartment()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+            var placeholderOption = [{ value: ' ', label: 'Select User' }];
 
-          const dropdown = res.data.data
-            .filter((d) => d.is_active === 1)
-            .filter((d) =>
-              d.multiple_department_id.includes(tempData.department_id)
-            )
-            .map((d) => ({
-              value: d.id,
-              label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
-            }));
+            const dropdown = res.data.data
+              .filter((d) => d.is_active === 1)
+              .filter((d) =>
+                d.multiple_department_id.includes(tempData.department_id)
+              )
+              .map((d) => ({
+                value: d.id,
+                label: d.first_name + ' ' + d.last_name + ' (' + d.id + ')'
+              }));
 
-          if (tempData.approach === 'RW') {
-            defaultValue = dropdown;
+            const finalDropdown =
+              tempData.approach === 'RW' ? dropdown : [...dropdown];
+
+            setUserDropdown(finalDropdown);
           } else {
-            defaultValue = [...defaultValue, ...dropdown];
+            toast.error(res?.data?.message);
           }
-          setUserDropdown(defaultValue);
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
+    setLoading(false);
   }, [dispatch, mappingId, ratiowiseData]);
 
   const getDynamicForm = async () => {
-    await new DynamicFormService().getDynamicForm().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          const data = res.data.data.filter((d) => d.is_active === 1);
-          const select = res.data.data.map((d) => ({
-            value: d.id,
-            label: d.template_name
-          }));
-          setDynamicForm(data);
-          setDynamicFormDropdown(select);
+    await new DynamicFormService()
+      .getDynamicForm()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+            const data = res.data.data.data.filter((d) => d.is_active === 1);
+            const select = res.data.data.data.map((d) => ({
+              value: d.id,
+              label: d.template_name
+            }));
+            setDynamicForm(data);
+            setDynamicFormDropdown(select);
+          } else {
+            toast.error(res?.data?.message);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   };
 
   const handleQueryType = async (e) => {
-    setNotify(null);
+    if (!e || Object.entries(e).length === 0) return;
     setDynamicForm(null);
     setDynamicFormDropdown(null);
     setSelectedDynamicForm(null);
@@ -288,8 +366,8 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     const queryTypeTemp = queryType.filter((d) => d.id === e.value);
 
     const dynamicFormDropdownTemp = dynamicForm
-      .filter((d) => d.id === queryTypeTemp[0].form_id)
-      .map((d) => ({ value: d.id, label: d.template_name }));
+      ?.filter((d) => d.id === queryTypeTemp[0]?.form_id)
+      ?.map((d) => ({ value: d.id, label: d.template_name }));
 
     if (dynamicFormDropdownTemp.length > 0) {
       setData((prev) => {
@@ -299,30 +377,32 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       });
       setSelectedDynamicForm(dynamicFormDropdownTemp);
     } else {
-      setNotify({
-        type: 'warning',
-        message: 'No Form is mapped but still you can map new form'
-      });
+      toast.warning('No Form is mapped but still you can map new form');
     }
   };
 
   const getDepartment = async () => {
-    await new DepartmentService().getDepartment().then((res) => {
-      if (res.status === 200) {
-        if (res.data.status === 1) {
-          var defaultValue = [{ value: 0, label: 'Select Department' }];
-          var dropwdown = res.data.data
-            .filter((d) => d.is_active === 1)
-            .map((d) => ({ value: d.id, label: d.department }));
-          defaultValue = [...defaultValue, ...dropwdown];
-          setDepartmentDropdown(defaultValue);
+    await new DepartmentService()
+      .getDepartment()
+      .then((res) => {
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+            var defaultValue = [{ value: 0, label: 'Select Department' }];
+            var dropwdown = res.data.data.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({ value: d.id, label: d.department }));
+            defaultValue = [...defaultValue, ...dropwdown];
+            setDepartmentDropdown(defaultValue);
+          } else {
+            toast.error(res?.data?.message);
+          }
         }
-      }
-    });
+      })
+      .catch((error) => errorHandler(error));
   };
 
-  //MAIN METHOD TO HANDLE CHANGES IN STATE DATA
   const handleAutoChanges = async (e, type, nameField) => {
+    // if (!e || Object.entries(e).length === 0) return;
     if (type === 'Select2' && nameField === 'customer_type_id') {
       setSelectedCustomer(e?.length);
     }
@@ -378,6 +458,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       if (res.status === 200) {
         if (res?.data?.status === 1) {
           const dropdown = res.data.data
+
             .filter((d) => {
               if (additional_id) {
                 return (
@@ -422,7 +503,7 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     }
   };
 
-  const handleRatioInput = (index) => async (e) => {
+  const handleRatioInput = (index) => (e) => {
     e.preventDefault();
     const value = parseInt(e?.target?.value) || 0;
 
@@ -432,16 +513,20 @@ export default function EditCustomerMappingComponentBackup({ match }) {
       toast.error('Cannot Enter More than 100 !!!');
     } else {
       ratiowiseData[index] = value;
-      const sum = ratiowiseData?.reduce((result, number) => result + number, 0);
+
+      const sum = ratiowiseData.reduce(
+        (result, number) => result + (number || 0),
+        0
+      );
 
       if (sum > 100) {
         e.target.value = 0;
         ratiowiseData[index] = 0;
         toast.error('Ratio Total Must Be 100 !!!');
       } else {
-        const newData = ratiowiseData?.map((ratio, idx) => ({
-          user_id: userDropdown[idx]?.value || null,
-          ratio: ratio
+        const newData = userDropdown.map((ele, idx) => ({
+          user_id: ele?.value || null,
+          ratio: ratiowiseData[idx] || 0
         }));
 
         setUserData(newData);
@@ -450,112 +535,99 @@ export default function EditCustomerMappingComponentBackup({ match }) {
     }
   };
 
-  const handleForm = async (e) => {
-    e.preventDefault();
+  const handleForm = async (values) => {
+    if (loading) return;
+    setLoading(true);
+
+    let userIds;
+    if (Array?.isArray(values?.user_id)) {
+      // Check if the first item is an object
+      if (
+        values?.user_id.length > 0 &&
+        typeof values?.user_id[0] === 'object'
+      ) {
+        userIds = values?.user_id.map((user) => user?.user_id); // Extract user_id from objects
+      } else {
+        userIds = values?.user_id; // Already an array of IDs
+      }
+    } else {
+      userIds = []; // Default to an empty array if values.user_id is not an array
+    }
+
     let userIDs;
     if (Array.isArray(useridDetail?.current?.props?.value)) {
-      userIDs = useridDetail?.current?.props?.value.map((item) => item.value);
+      userIDs = useridDetail?.current?.props?.value?.map((item) => item.value);
     } else {
       const value = useridDetail?.current?.props?.value?.value;
       userIDs = value ? [value] : [];
     }
 
     const getUserData = () => {
-      // Get an array of user IDs
       const userIds = userDropdown?.map((ele) => ele?.value);
       return userIds;
     };
 
     const RwuserID = getUserData();
 
-    const customerID = customerDetail?.current?.props?.value;
-    const queryTypeid = queryTypeDetail?.current?.props?.value[0]?.value
-      ? queryTypeDetail?.current?.props?.value[0]?.value
-      : queryTypeDetail?.current?.props?.value?.value;
-    const dynamicFormid = dynamicDetail?.current?.props?.value[0]?.value
-      ? dynamicDetail?.current?.props?.value[0]?.value
-      : dynamicDetail?.current?.props?.value?.value;
-    const templateid = templateDetail?.current?.props?.value[0]?.value
-      ? templateDetail?.current?.props?.value[0]?.value
-      : templateDetail?.current?.props?.value?.value;
-    const priorityID = priorityDetail?.current?.value;
-    const confirmationId = confirmationRequired;
-    const approachId = approachDetail?.current?.value;
-
-    const departmentId = departmentDropdownRef?.current?.props?.value[0]?.value
-      ? departmentDropdownRef?.current?.props?.value[0]?.value
-      : departmentDropdownRef?.current?.props?.value?.value;
-    const userID = userIDs;
-
-    const statusID = statusData;
-
-    let arrayOfId = [];
-    for (let i = 0; i < customerID?.length; i++) {
-      arrayOfId.push(customerID[i]?.value);
-    }
-    const form = {};
-    form.customer_type_id = arrayOfId;
-    form.query_type_id = queryTypeid;
-    form.dynamic_form_id = dynamicFormid;
-    form.template_id = templateid ? templateid : null;
-    form.priority = priorityID;
-    form.confirmation_required = confirmationId;
-    form.approach = approachId;
-    form.department_id = departmentId;
-    if (data.approach === 'RW') {
-      form.user_id = RwuserID;
-      // form.ratio = ratiosToSend;
-      form.userData = userData?.length > 0 ? userData : ratioData;
+    if (values.approach === 'RW') {
+      values.user_id = RwuserID;
+      values.userData = userData;
     } else {
-      form.user_id = userID;
+      values.user_id = userIds;
     }
+    if (values.approach != 'AU') {
+      values.department_id = values?.department_id;
+    }
+    values.tenant_id = localStorage.getItem('tenant_id');
+    values.created_by = userSessionData.userId;
+    values.created_at = getDateTime();
+    values.query_type_id = queryTypeId;
 
-    form.status = statusID;
-
-    form.tenant_id = sessionStorage.getItem('tenant_id');
-    form.updated_by = userSessionData.userId;
-    form.updated_at = getDateTime();
-
-    // const form = new FormData(e.target);
-    var flag = 1;
-    if (data.approach === 'RW') {
-      if (ratioTotal !== 100) {
+    // if (!values.department_id) {
+    //   delete values.department_id;
+    // }
+    // if(values?.user_id?.length === 0){
+    //   delete values.user_id;
+    // }
+    let flag = 1;
+    if (values?.approach === 'RW') {
+      if (!ratioTotal || ratioTotal !== 100) {
         alert('Sum Must Be 100');
         flag = 0;
       }
     }
 
     if (flag === 1) {
-      await new CustomerMappingService()
-        .updateCustomerMapping(mappingId, form)
-        .then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              history(
-                {
-                  pathname: `/${_base}/CustomerMapping`
-                },
-                {
-                  state: {
-                    alert: { type: 'success', message: res.data.message }
-                  }
+      try {
+        const res = await new CustomerMappingService().updateCustomerMapping(
+          mappingId,
+          values
+        );
+        if (res.status === 200) {
+          if (res?.data?.status === 1) {
+            history(
+              {
+                pathname: `/${_base}/CustomerMapping`
+              },
+              {
+                state: {
+                  alert: toast.success(res?.data?.message)
                 }
-              );
-            } else {
-              setNotify({ type: 'danger', message: res.data.message });
-            }
-          } else {
-            setNotify({ type: 'danger', message: res.message });
-            new ErrorLogService().sendErrorLog(
-              'Customer',
-              'Create_Customer',
-              'INSERT',
-              res.message
+              }
             );
+          } else {
+            toast.error(res?.data?.message);
           }
-        })
-        .catch((error) => {});
+        } else {
+          toast.error(res.message);
+        }
+      } catch (error) {
+        errorHandler(error);
+      } finally {
+        setLoading(false);
+      }
     }
+    setLoading(false);
   };
 
   useEffect(() => {
@@ -568,469 +640,765 @@ export default function EditCustomerMappingComponentBackup({ match }) {
   }, [checkRole]);
 
   useEffect(() => {
-    const initialData = userDropdown?.map((ele) => {
-      const userPolicy = Array.isArray(data?.user_policy)
-        ? data.user_policy.find((policy) =>
-            policy?.user_name?.startsWith(`${ele.value}:`)
-          )
-        : null;
+    if (userDropdown?.length > 0) {
+      const initialRatios = userDropdown?.map(
+        (_, i) => userData[i]?.ratio || 0
+      );
+      setRatioTotal(initialRatios?.reduce((sum, ratio) => sum + ratio, 0));
+      setRatiowiseData(initialRatios);
+    }
+  }, [userDropdown, userData]);
 
-      return userPolicy ? parseInt(userPolicy.user_name.split(':')[1]) : 0;
-    });
-
-    setRatiowiseData(initialData);
-  }, [userDropdown, data.user_policy]);
   return (
     <div className="container-xxl">
       <PageHeader headerTitle="Edit Customer Mapping" />
-      {notify && <Alert alertData={notify} />}
       <div className="row clearfix g-3">
         <div className="col-sm-12">
           <div className="card mt-2">
-            <div className="card-body">
-              {data && (
-                <form
-                  onSubmit={handleForm}
-                  method="post"
-                  encType="multipart/form-data"
-                >
-                  <div className="form-group row mt-3">
-                    <label className="col-sm-2 col-form-label">
-                      <b>Select Customer Type :</b>
-                    </label>
-                    <div className="col-sm-4">
-                      {customerTypeDropdown && data && (
-                        <Select
-                          id="customer_type_id[]"
-                          name="customer_type_id[]"
-                          ref={customerDetail}
-                          options={customerTypeDropdown}
-                          isMulti
-                          defaultValue={
-                            data &&
-                            customerTypeDropdown.filter((d) =>
-                              data.customer_type_id.includes(d.value)
-                            )
-                          }
-                          onChange={(e) =>
-                            handleAutoChanges(e, 'Select2', 'customer_type_id')
-                          }
-                        />
-                      )}
-                    </div>
-                  </div>
+            {data && (
+              <Formik
+                enableReinitialize
+                initialValues={
+                  data?.approach !== 'AU'
+                    ? {
+                        customer_type_id: data.customer_type_id
+                          ? data.customer_type_id
+                          : [],
+                        query_type_id: data.query_type_id
+                          ? data.query_type_id
+                          : '',
+                        dynamic_form_id: data.dynamic_form_id
+                          ? data.dynamic_form_id
+                          : '',
+                        template_id: data.template_id ? data.template_id : '',
+                        priority: data?.priority ? data.priority : '',
+                        confirmation_required:
+                          data?.confirmation_required !== undefined
+                            ? String(data?.confirmation_required)
+                            : '1',
+                        approach: data.approach ? data.approach : '',
+                        department_id: data.department_id
+                          ? data.department_id
+                          : '',
+                        user_id: data.user_policy ? data.user_policy : [],
+                        is_active:
+                          data?.is_active !== undefined
+                            ? String(data?.is_active)
+                            : '1'
+                      }
+                    : {
+                        customer_type_id: data.customer_type_id
+                          ? data.customer_type_id
+                          : [],
+                        query_type_id: data.query_type_id
+                          ? data.query_type_id
+                          : '',
+                        dynamic_form_id: data.dynamic_form_id
+                          ? data.dynamic_form_id
+                          : '',
+                        template_id: data.template_id ? data.template_id : '',
+                        priority: data?.priority ? data.priority : '',
+                        confirmation_required:
+                          data?.confirmation_required !== undefined
+                            ? String(data?.confirmation_required)
+                            : '1',
+                        approach: data.approach ? data.approach : '',
+                        // department_id: data.department_id ? data.department_id : '',
+                        // user_id: data.user_policy ? data.user_policy : [],
+                        is_active:
+                          data?.is_active !== undefined
+                            ? String(data?.is_active)
+                            : '1'
+                      }
+                }
+                // validationSchema={validationSchema}
+                validationSchema={(values) => {
+                  // if (data?.approach !== 'AU') {
+                  //   fields.push({
+                  //     name: 'department_id',
+                  //     label: 'Department ID',
+                  //     required: true
+                  //   });
+                  // }
 
-                  <div className="form-group row mt-3">
-                    <label className="col-sm-2 col-form-label">
-                      <b>
-                        Select Query Type :<Astrick color="red" size="13px" />
-                      </b>
-                    </label>
-                    <div className="col-sm-4">
-                      {queryTypeDropdown && (
-                        <Select
-                          id="query_type_id"
-                          name="query_type_id"
-                          options={queryTypeDropdown}
-                          ref={queryTypeDetail}
-                          defaultValue={queryTypeDropdown.filter(
-                            (d) => data.query_type_id === d.value
+                  // Generate validation schema dynamically
+                  return CustomValidation(fields);
+                }}
+                onSubmit={(values) => {
+                  handleForm(values);
+                }}
+              >
+                {({
+                  setFieldValue,
+                  values,
+                  handleBlur,
+                  handleChange,
+                  form,
+                  touched,
+                  errors
+                }) => (
+                  <Form>
+                    <div className="card-body">
+                      <div className="form-group row mt-3">
+                        <label className="col-sm-2 col-form-label">
+                          <b>Select Customer Type :</b>
+                        </label>
+
+                        <div className="col-sm-4">
+                          {data && customerTypeDropdown && (
+                            <Field name="customer_type_id">
+                              {({ field, form }) => (
+                                <Select
+                                  classNamePrefix="react-select"
+                                  id="customer_type_id"
+                                  name="customer_type_id"
+                                  options={customerTypeDropdown}
+                                  isMulti
+                                  defaultValue={
+                                    data?.customer_type_id
+                                      ? customerTypeDropdown.filter((d) =>
+                                          data.customer_type_id?.includes(
+                                            d.value
+                                          )
+                                        )
+                                      : []
+                                  }
+                                  onChange={(selectedOptions) => {
+                                    const values = selectedOptions
+                                      ? selectedOptions.map(
+                                          (option) => option.value
+                                        )
+                                      : [];
+                                    data?.approach === 'SELF' &&
+                                      setTimeout(() => {
+                                        form.setFieldValue('approach', null);
+                                      }, 0);
+
+                                    form.setFieldValue(
+                                      'customer_type_id',
+                                      values
+                                    );
+
+                                    handleAutoChanges(
+                                      selectedOptions,
+                                      'Select2',
+                                      'customer_type_id'
+                                    );
+                                  }}
+                                />
+                              )}
+                            </Field>
                           )}
-                          onChange={(e) => {
-                            handleAutoChanges(e, 'Select2', 'query_type_id');
-                            handleQueryType(e);
-                          }}
-                        />
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="form-group row mt-3">
-                    <label className="col-sm-2 col-form-label">
-                      <b>Select Form :</b>
-                    </label>
-                    <div className="col-sm-4">
-                      {!selectedDynamicForm && dynamicFormDropdown && (
-                        <Select
-                          id="dynamic_form_id"
-                          name="dynamic_form_id"
-                          ref={dynamicDetail}
-                          options={dynamicFormDropdown}
-                          defaultValue={dynamicFormDropdown.filter(
-                            (d) => data?.dynamic_form_id === d.value
-                          )}
-                          onChange={(e) =>
-                            handleAutoChanges(e, 'Select2', 'dynamic_form_id')
-                          }
-                        />
-                      )}
-                      {selectedDynamicForm && dynamicFormDropdown && 'H' && (
-                        <Select
-                          id="dynamic_form_id"
-                          name="dynamic_form_id"
-                          ref={dynamicDetail}
-                          defaultValue={selectedDynamicForm}
-                          options={
-                            dynamicFormDropdown ? dynamicFormDropdown : ''
-                          }
-                          onChange={(e) =>
-                            handleAutoChanges(e, 'Select2', 'dynamic_form_id')
-                          }
-                        />
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="form-group row mt-3">
-                    <label className="col-sm-2 col-form-label">
-                      <b>Select Template :</b>
-                    </label>
-                    <div className="col-sm-4">
-                      {templateDropdown && (
-                        <Select
-                          id="template_id"
-                          name="template_id"
-                          options={templateDropdown}
-                          ref={templateDetail}
-                          defaultValue={templateDropdown.filter(
-                            (d) => data.template_id === d.value
-                          )}
-                          onChange={(e) =>
-                            handleAutoChanges(e, 'Select2', 'template_id')
-                          }
-                        />
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="form-group row mt-3">
-                    <label className="col-sm-2 col-form-label">
-                      <b>
-                        Priority :<Astrick color="red" size="13px" />
-                      </b>
-                    </label>
-                    <div className="col-sm-4">
-                      <select
-                        className="form-control form-control-sm"
-                        id="priority"
-                        name="priority"
-                        ref={priorityDetail}
-                        required={true}
-                        onChange={(e) =>
-                          handleAutoChanges(e, 'Select', 'priority')
-                        }
-                        value={data.priority}
-                      >
-                        <option value="">Select Priority</option>
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                        <option value="Very High">Very High</option>
-                      </select>
-                    </div>
-                  </div>
-
-                  <div className="form-group row mt-3">
-                    <label className="col-sm-2 col-form-label">
-                      <b>Status :</b>
-                    </label>
-                    <div className="col-sm-4">
-                      <div className="row">
-                        <div className="col-md-2">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="is_active"
-                              id="is_active_1"
-                              value="1"
-                              ref={statusDtail}
-                              defaultChecked={statusData === 1 ? true : false}
-                              onChange={handleStatusChange}
-                              key={Math.random()}
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="is_active_1"
-                            >
-                              Active{' '}
-                            </label>
-                          </div>
-                        </div>
-
-                        <div className="col-md-1">
-                          <div className="form-check">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              name="is_active"
-                              id="is_active_0"
-                              value="0"
-                              ref={statusDtail}
-                              onChange={handleStatusChange}
-                              defaultChecked={statusData === 0 ? true : false}
-                              key={Math.random()}
-                            />
-                            <label
-                              className="form-check-label"
-                              htmlFor="is_active_0"
-                            >
-                              Deactive
-                            </label>
-                          </div>
+                          <ErrorMessage
+                            name="customer_type_id"
+                            component="small"
+                            className="text-danger"
+                          />
                         </div>
                       </div>
-                    </div>
-                  </div>
 
-                  <div className="row mt-2">
-                    <div className="col-sm-2">
-                      <label className="col-form-label">
-                        <b>Confirmation Required :</b>
-                        <Astrick color="red" size="13px" />
-                      </label>
-                    </div>
-
-                    <div className="col-sm-1" style={{ textAlign: 'left' }}>
-                      <div
-                        className="form-group mt-2 text-left d-flex justify-content-between"
-                        style={{ textAlign: 'left' }}
-                      >
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="confirmation_required"
-                            id="confirmation_required_yes"
-                            value="1"
-                            // ref={confirmationRequiredDetail}
-                            // defaultChecked={confirmationRequired == 1}
-                            checked={confirmationRequired === 1}
-                            onChange={handleConfirmationChange}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="confirmation_required_yes"
-                          >
-                            Yes
-                          </label>
-                        </div>
-
-                        <div className="form-check">
-                          <input
-                            className="form-check-input"
-                            type="radio"
-                            name="confirmation_required"
-                            id="confirmation_required_no"
-                            value="0"
-                            // ref={confirmationRequiredDetail}
-                            checked={confirmationRequired === 0}
-                            onChange={handleConfirmationChange}
-                          />
-                          <label
-                            className="form-check-label"
-                            htmlFor="confirmation_required_no"
-                          >
-                            No
-                          </label>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="form-group row mt-3">
-                    <label className="col-sm-2 col-form-label">
-                      <b>
-                        Approach :<Astrick color="red" size="13px" />
-                      </b>
-                    </label>
-                    <div className="col-sm-4">
-                      <select
-                        className="form-control form-control-sm"
-                        id="approach"
-                        name="approach"
-                        ref={approachDetail}
-                        required={true}
-                        onChange={(e) => {
-                          handleAutoChanges(e, 'Select', 'approach');
-                        }}
-                        value={data.approach}
-                      >
-                        <option value="">Select Approach</option>
-                        <option value="RR">Departmentwise Round Robin</option>
-                        <option value="HLT">User Having Less Ticket</option>
-                        <option value="SP">Single Person</option>
-                        <option value="RW">Ratio Wise</option>
-                        {selectedCustomer === 0 && (
-                          <option value="SELF">Self</option>
-                        )}
-                        <option value="AU">Assign to user</option>
-                      </select>
-                    </div>
-                  </div>
-                  {data.approach !== 'SELF' && data.approach !== 'AU' && (
-                    <div className="form-group row mt-3">
-                      <label className="col-sm-2 col-form-label">
-                        <b>
-                          Select Department :<Astrick color="red" size="13px" />
-                        </b>
-                      </label>
-                      <div className="col-sm-4">
-                        {departmentDropdown && (
-                          <Select
-                            id="department_id"
-                            name="department_id"
-                            defaultValue={departmentDropdown.filter(
-                              (d) => data.department_id === d.value
-                            )}
-                            options={departmentDropdown}
-                            ref={departmentDropdownRef}
-                            onChange={(e) => {
-                              handleAutoChanges(e, 'Select2', 'department_id');
-                              handleGetDepartmentUsers(e);
-                            }}
-                          />
-                        )}
-                      </div>
-                    </div>
-                  )}
-
-                  {data.approach !== 'SELF' &&
-                    data.approach !== 'AU' &&
-                    userDropdown?.length > 0 && (
                       <div className="form-group row mt-3">
                         <label className="col-sm-2 col-form-label">
                           <b>
-                            Select User :<Astrick color="red" size="13px" />
+                            Select Query Type :
+                            <Astrick color="red" size="13px" />
                           </b>
                         </label>
-                        {data &&
-                          userDropdown &&
-                          userDropdown?.length > 0 &&
-                          data.approach !== 'RW' &&
-                          data.approach && (
-                            <div className="col-sm-4">
-                              <Select
-                                isMulti={data.approach !== 'SP'}
-                                isSearchable={true}
-                                name="user_id[]"
-                                className="basic-multi-select"
-                                classNamePrefix="select"
-                                ref={useridDetail}
-                                defaultValue={
-                                  data && data.approach === 'SP'
-                                    ? userDropdown.filter(
-                                        (d) =>
-                                          d.value === data.user_policy?.user_id
-                                      )
-                                    : data.user_policy?.map((d) => ({
-                                        value: d.user_id,
-                                        label: d.user_name
-                                      }))
-                                }
-                                options={userDropdown}
-                                required
-                                style={{ zIndex: '100' }}
-                              />
-                            </div>
+                        <div className="col-sm-4">
+                          {data?.query_type_id && queryTypeDropdown && (
+                            <Field name="query_type_id">
+                              {({ field, form }) => (
+                                <Select
+                                  classNamePrefix="react-select"
+                                  options={queryTypeDropdown}
+                                  id="query_type_id"
+                                  name="query_type_id"
+                                  isClearable={true}
+                                  onChange={(selectedOption) => {
+                                    const values = selectedOption
+                                      ? selectedOption?.value
+                                      : '';
+                                    setQueryTypeId(values);
+                                    form.setFieldValue('query_type_id', values);
+                                    handleQueryType(selectedOption);
+                                  }}
+                                  defaultValue={
+                                    data.query_type_id
+                                      ? queryTypeDropdown?.find(
+                                          (d) => d.value === data.query_type_id
+                                        )
+                                      : null
+                                  }
+                                />
+                              )}
+                            </Field>
                           )}
 
-                        {userDropdown &&
-                          data.approach === 'RW' &&
-                          data.department_id && (
-                            <div className="col-sm-6">
-                              <Table bordered className="mt-2" id="table">
-                                <thead>
-                                  <tr className="text-center">
-                                    <th>#</th>
-                                    <th>Selected User</th>
-                                    <th>Enter Ratio</th>
-                                  </tr>
-                                </thead>
-                                <tbody>
-                                  {userDropdown.map((ele, i) => {
-                                    // Find the corresponding user policy in user_policy array
-                                    const userPolicy = data.user_policy?.find(
-                                      (policy) =>
-                                        policy.startsWith(`${ele.value}:`)
+                          <ErrorMessage
+                            name="query_type_id"
+                            component="small"
+                            className="text-danger"
+                          />
+                        </div>
+                      </div>
+                      <div className="form-group row mt-3">
+                        <label className="col-sm-2 col-form-label">
+                          <b>Select Form :</b>
+                        </label>
+                        <div className="col-sm-4">
+                          {!selectedDynamicForm && dynamicFormDropdown && (
+                            <Field name="dynamic_form_id">
+                              {({ field, form }) => (
+                                <Select
+                                  classNamePrefix="react-select"
+                                  id="dynamic_form_id"
+                                  name="dynamic_form_id"
+                                  options={dynamicFormDropdown}
+                                  isClearable
+                                  defaultValue={dynamicFormDropdown?.filter(
+                                    (d) => data.dynamic_form_id === d.value
+                                  )}
+                                  onChange={(selectedOption) => {
+                                    const value = selectedOption
+                                      ? selectedOption.value
+                                      : '';
+                                    form.setFieldValue(
+                                      'dynamic_form_id',
+                                      value
                                     );
-                                    // Extract the ratio value from the user policy
-                                    const defaultRatio = userPolicy
-                                      ? parseInt(userPolicy.split(':')[1])
-                                      : 0;
-                                    return (
+                                    handleAutoChanges(
+                                      selectedOption,
+                                      'Select2',
+                                      'dynamic_form_id'
+                                    );
+                                  }}
+                                />
+                              )}
+                            </Field>
+                          )}
+                          {selectedDynamicForm &&
+                            dynamicFormDropdown &&
+                            'H' && (
+                              <Field name="dynamic_form_id">
+                                {({ field, form }) => (
+                                  <Select
+                                    classNamePrefix="react-select"
+                                    id="dynamic_form_id"
+                                    name="dynamic_form_id"
+                                    options={dynamicFormDropdown}
+                                    isClearable
+                                    defaultValue={dynamicFormDropdown?.filter(
+                                      (d) => data.dynamic_form_id === d.value
+                                    )}
+                                    onChange={(selectedOption) => {
+                                      const value = selectedOption
+                                        ? selectedOption.value
+                                        : '';
+                                      form.setFieldValue(
+                                        'dynamic_form_id',
+                                        value
+                                      );
+                                      handleAutoChanges(
+                                        selectedOption,
+                                        'Select2',
+                                        'dynamic_form_id'
+                                      );
+                                    }}
+                                  />
+                                )}
+                              </Field>
+                            )}
+                        </div>
+                      </div>
+
+                      <div className="form-group row mt-3">
+                        <label className="col-sm-2 col-form-label">
+                          <b>Select Template :</b>
+                        </label>
+                        <div className="col-sm-4">
+                          {templateDropdown && (
+                            <Field name="template_id">
+                              {({ field, form }) => (
+                                <Select
+                                  classNamePrefix="react-select"
+                                  options={templateDropdown}
+                                  id="template_id"
+                                  name="template_id"
+                                  isClearable={true}
+                                  onChange={(selectedOption) => {
+                                    form.setFieldValue(
+                                      'template_id',
+                                      selectedOption?.value || ''
+                                    );
+                                  }}
+                                  defaultValue={
+                                    data?.template_id
+                                      ? templateDropdown?.find(
+                                          (d) => d.value === data.template_id
+                                        )
+                                      : null
+                                  }
+                                />
+                              )}
+                            </Field>
+                          )}
+                          <ErrorMessage
+                            name="template_id"
+                            component="small"
+                            className="text-danger"
+                          />{' '}
+                        </div>
+                      </div>
+
+                      <div className="form-group row mt-3">
+                        <label className="col-sm-2 col-form-label">
+                          <b>
+                            Priority :<Astrick color="red" size="13px" />
+                          </b>
+                        </label>
+                        <div className="col-sm-4">
+                          {data?.priority && (
+                            <Field
+                              name="priority"
+                              classNamePrefix="react-select"
+                            >
+                              {({ field, form }) => {
+                                const options = [
+                                  { value: '', label: 'Select Priority' },
+                                  { value: 'Low', label: 'Low' },
+                                  { value: 'Medium', label: 'Medium' },
+                                  { value: 'High', label: 'High' },
+                                  { value: 'Very High', label: 'Very High' }
+                                ];
+                                const defaultOption = data?.priority
+                                  ? options.find(
+                                      (d) => d.value === data.priority
+                                    )
+                                  : null;
+                                return (
+                                  <Select
+                                    classNamePrefix="react-select"
+                                    key={data.priority}
+                                    id="priority"
+                                    name="priority"
+                                    options={options}
+                                    defaultValue={options.filter(
+                                      (d) => data?.priority === d.value
+                                    )}
+                                    isClearable
+                                    onChange={(selectedOption) => {
+                                      const value = selectedOption
+                                        ? selectedOption.value
+                                        : '';
+                                      form.setFieldValue('priority', value);
+                                      handleAutoChanges(
+                                        selectedOption,
+                                        'Select2',
+                                        'priority'
+                                      );
+                                    }}
+                                  />
+                                );
+                              }}
+                            </Field>
+                          )}
+
+                          <ErrorMessage
+                            name="priority"
+                            component="small"
+                            className="text-danger"
+                          />
+                        </div>
+                      </div>
+                      <div className="form-group row mt-3">
+                        <label className="col-sm-2 col-form-label">
+                          <b>Status :</b>
+                        </label>
+                        <div className="col-sm-4">
+                          <div className="col-sm-12">
+                            <div className="row">
+                              <div className="col-md-2">
+                                <div className="form-check">
+                                  <Field
+                                    className="form-check-input"
+                                    type="radio"
+                                    name="is_active"
+                                    id="is_active_1"
+                                    value="1"
+                                    defaultChecked={
+                                      data?.is_active === 1
+                                        ? true
+                                        : !data
+                                        ? true
+                                        : false
+                                    }
+                                  />
+                                  <label
+                                    className="form-check-label"
+                                    htmlFor="is_active_1"
+                                  >
+                                    Active
+                                  </label>
+                                </div>
+                              </div>
+                              <div className="col-md-2">
+                                <div className="form-check">
+                                  <Field
+                                    className="form-check-input"
+                                    type="radio"
+                                    name="is_active"
+                                    id="is_active_0"
+                                    value="0"
+                                    defaultChecked={
+                                      data?.is_active === 0
+                                        ? true
+                                        : !data
+                                        ? true
+                                        : false
+                                    }
+                                  />
+                                  <label
+                                    className="form-check-label"
+                                    htmlFor="is_active_0"
+                                  >
+                                    Deactive
+                                  </label>
+                                </div>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="row mt-2">
+                        <div className="col-sm-2">
+                          <label className="col-form-label">
+                            <b>
+                              Confirmation Required :{' '}
+                              <Astrick color="red" size="13px" />
+                            </b>
+                          </label>
+                        </div>
+
+                        <div className="col-sm-1">
+                          <div className="form-group mt-2 text-left d-flex justify-content-between">
+                            <div className="form-check">
+                              <Field
+                                type="radio"
+                                name="confirmation_required"
+                                id="confirmation_required_yes"
+                                className="form-check-input"
+                                value="1"
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                checked={values.confirmation_required === '1'}
+                              />
+                              <label
+                                className="form-check-label"
+                                htmlFor="confirmation_required_yes"
+                              >
+                                Yes
+                              </label>
+                            </div>
+
+                            <div className="form-check mx-2">
+                              <Field
+                                type="radio"
+                                name="confirmation_required"
+                                id="confirmation_required_no"
+                                className="form-check-input"
+                                value="0"
+                                onChange={handleChange}
+                                onBlur={handleBlur}
+                                checked={values.confirmation_required === '0'}
+                              />
+                              <label
+                                className="form-check-label"
+                                htmlFor="confirmation_required_no"
+                              >
+                                No
+                              </label>
+                            </div>
+                            {touched.confirmation_required &&
+                              errors.confirmation_required && (
+                                <small className="text-danger">
+                                  {errors.confirmation_required}
+                                </small>
+                              )}
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="form-group row mt-3">
+                        <label className="col-sm-2 col-form-label">
+                          <b>
+                            Approach :<Astrick color="red" size="13px" />
+                          </b>
+                        </label>
+                        <div className="col-sm-4">
+                          <Field classNamePrefix="react-select" name="approach">
+                            {({ field, form }) => {
+                              const options = [
+                                { value: '', label: 'Select Approach' },
+                                {
+                                  value: 'RR',
+                                  label: 'Departmentwise Round Robin'
+                                },
+                                {
+                                  value: 'HLT',
+                                  label: 'User Having Less Ticket'
+                                },
+                                { value: 'SP', label: 'Single Person' },
+                                { value: 'RW', label: 'Ratio Wise' },
+                                ...(selectedCustomer === 0
+                                  ? [{ value: 'SELF', label: 'Self' }]
+                                  : []),
+                                { value: 'AU', label: 'Assign to user' }
+                              ];
+
+                              return (
+                                <Select
+                                  classNamePrefix="react-select"
+                                  key={data.approach}
+                                  id="approach"
+                                  name="approach"
+                                  options={options}
+                                  defaultValue={options.filter(
+                                    (d) => data?.approach === d.value || null
+                                  )}
+                                  value={
+                                    values?.approach
+                                      ? options.filter(
+                                          (item) =>
+                                            item.value === values.approach
+                                        )
+                                      : null
+                                  }
+                                  isClearable={true}
+                                  onChange={(selectedOption) => {
+                                    setFieldValue('department_id', '');
+                                    setApproach(selectedOption.value);
+                                    const value = selectedOption
+                                      ? selectedOption?.value
+                                      : '';
+                                    form.setFieldValue('approach', value);
+                                    handleAutoChanges(
+                                      selectedOption,
+                                      'Select2',
+                                      'approach'
+                                    );
+                                  }}
+                                />
+                              );
+                            }}
+                          </Field>
+
+                          <ErrorMessage
+                            name="approach"
+                            component="small"
+                            className="text-danger"
+                          />
+                        </div>
+                      </div>
+
+                      {data.approach !== 'SELF' && data.approach !== 'AU' && (
+                        <div className="form-group row mt-3">
+                          <label className="col-sm-2 col-form-label">
+                            <b>
+                              Select Department :
+                              <Astrick color="red" size="13px" />
+                            </b>
+                          </label>
+                          <div className="col-sm-4">
+                            {departmentDropdown && (
+                              <Field name="department_id">
+                                {({ field, form }) => (
+                                  <Select
+                                    classNamePrefix="react-select"
+                                    id="department_id"
+                                    name="department_id"
+                                    options={departmentDropdown}
+                                    isClearable
+                                    defaultValue={
+                                      departmentDropdown?.find(
+                                        (option) => option.value === field.value
+                                      ) || null
+                                    }
+                                    onChange={(selectedOption) => {
+                                      const values = selectedOption
+                                        ? selectedOption.value
+                                        : null;
+                                      form.setFieldValue(
+                                        'department_id',
+                                        values
+                                      );
+                                      handleAutoChanges(
+                                        selectedOption,
+                                        'Select2',
+                                        'department_id'
+                                      );
+                                      handleGetDepartmentUsers(selectedOption);
+                                    }}
+                                  />
+                                )}
+                              </Field>
+                            )}
+                            {departmentDropdown && (
+                              <ErrorMessage
+                                name="department_id"
+                                component="small"
+                                className="text-danger"
+                              />
+                            )}
+                          </div>
+                        </div>
+                      )}
+
+                      {data.approach !== 'SELF' &&
+                        data.approach !== 'AU' &&
+                        userDropdown?.length > 0 && (
+                          <div className="form-group row mt-3">
+                            <label className="col-sm-2 col-form-label">
+                              <b>
+                                Select User :<Astrick color="red" size="13px" />
+                              </b>
+                            </label>
+
+                            <>
+                              {userDropdown && data.approach !== 'RW' && (
+                                <div className="col-sm-4">
+                                  <Field name="user_id">
+                                    {({ field, form }) => (
+                                      <Select
+                                        classNamePrefix="react-select"
+                                        id="user_id"
+                                        name="user_id"
+                                        options={userDropdown}
+                                        isMulti
+                                        defaultValue={
+                                          data &&
+                                          userDropdown?.filter(
+                                            (dropdownOption) =>
+                                              data.user_policy?.some(
+                                                (policy) =>
+                                                  policy.user_id ===
+                                                  dropdownOption.value
+                                              )
+                                          )
+                                        }
+                                        onChange={(selectedOptions) => {
+                                          const values = selectedOptions
+                                            ? selectedOptions?.map(
+                                                (option) => option.value
+                                              )
+                                            : [];
+
+                                          form.setFieldValue('user_id', values);
+
+                                          handleAutoChanges(
+                                            selectedOptions,
+                                            'Select2',
+                                            'user_id'
+                                          );
+                                        }}
+                                      />
+                                    )}
+                                  </Field>
+                                  <ErrorMessage
+                                    name="user_id"
+                                    component="small"
+                                    className="text-danger"
+                                  />
+                                </div>
+                              )}
+                            </>
+
+                            {userDropdown && data.approach === 'RW' && (
+                              <div className="col-sm-6">
+                                <Table bordered className="mt-2" id="table">
+                                  <thead>
+                                    <tr className="text-center">
+                                      <th>#</th>
+                                      <th>Selected User</th>
+                                      <th>Enter Ratio</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {userDropdown?.map((ele, i) => (
                                       <tr key={ele.value}>
                                         <td>{i + 1}</td>
                                         <td>
                                           <input
                                             type="hidden"
-                                            className="form-control form-control-sm"
-                                            id={`index_` + Math.random()}
-                                            name="user_id[]"
-                                            value={ele.value}
-                                            ref={useridDetail}
+                                            name={`user_id[${i}]`}
+                                            value={ele?.value}
                                             readOnly
                                           />
                                           <input
                                             type="text"
-                                            className="form-control form-control-sm"
-                                            id={`index_` + Math.random()}
-                                            name="user_name[]"
-                                            value={ele.label}
-                                            ref={userNameDetail}
+                                            name={`user_name[${i}]`}
+                                            value={ele?.label}
                                             readOnly
+                                            className="form-control form-control-sm"
                                           />
                                         </td>
-
                                         <td>
                                           <input
-                                            type="text"
+                                            type="number"
                                             className="form-control col-sm-2"
-                                            name="ratio[]"
-                                            defaultValue={defaultRatio}
-                                            ref={userRatioDetail}
-                                            onInput={handleRatioInput(i)}
+                                            name={`ratio[${i}]`}
+                                            defaultValue={
+                                              userData[i]?.ratio || 0
+                                            }
+                                            onChange={handleRatioInput(i)}
                                           />
                                         </td>
                                       </tr>
-                                    );
-                                  })}
-                                  <tr>
-                                    <td colSpan={2} className="text-right">
-                                      <b>TOTAL</b>
-                                    </td>
+                                    ))}
+                                    <tr>
+                                      <td colSpan={2} className="text-right">
+                                        <b>TOTAL</b>
+                                      </td>
+                                      <td>
+                                        <input
+                                          type="text"
+                                          className="form-control col-sm-2"
+                                          name="ratioTotal"
+                                          value={ratioTotal}
+                                          readOnly
+                                        />
+                                      </td>
+                                    </tr>
+                                  </tbody>
+                                </Table>
+                              </div>
+                            )}
+                          </div>
+                        )}
 
-                                    <td>
-                                      <input
-                                        type="text"
-                                        className="form-control col-sm-2"
-                                        id={`index_` + Math.random()}
-                                        value={ratioTotal}
-                                      />
-                                    </td>
-                                  </tr>
-                                </tbody>
-                              </Table>
-                            </div>
-                          )}
+                      {loading && <LoadingScreen showLoaderModal={loading} />}
+
+                      <div className="mt-3 d-flex justify-content-end">
+                        <button
+                          disabled={loading}
+                          type="submit"
+                          className="btn btn-primary btn-sm"
+                        >
+                          Update
+                        </button>
+
+                        <Link
+                          to={`/${_base}/CustomerMapping`}
+                          className="btn btn-danger btn-sm text-white"
+                        >
+                          Cancel
+                        </Link>
                       </div>
-                    )}
-
-                  <div className="mt-3" style={{ textAlign: 'right' }}>
-                    <button type="submit" className="btn btn-primary btn-sm">
-                      Update
-                    </button>
-
-                    <Link
-                      to={`/${_base}/CustomerMapping`}
-                      className="btn btn-danger btn-sm text-white"
-                    >
-                      Cancel
-                    </Link>
-                  </div>
-                </form>
-              )}
-            </div>
+                    </div>
+                  </Form>
+                )}
+              </Formik>
+            )}
           </div>
         </div>
       </div>

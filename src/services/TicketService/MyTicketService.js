@@ -4,17 +4,20 @@ import { ticketUrl, _apiUrl } from '../../settings/constants';
 
 const _URL = ticketUrl.ticket;
 const _getAllTicket = _URL + '/getAllTicket/' + userSessionData.userId;
-const _getAllTicketTest = _URL + '/getAllTicketTest';
+// const _getAllTicketTest = `${_URL}/getAllTicket`;
+
+const _getAllTicketTestWithoutTypeOF = _URL + '/getAllTicket';
+
 const _getAllTicketNew = _URL + '/getAllTicketNew';
 
-const _createTicket = _URL + '/createTicket';
+const _createTicket = _URL + '/postData';
 const _updateTicket = _URL + '/updateTicket/';
 const _getTicketById = _URL + '/getTicketById/';
 const _createComment = _URL + '/comment/createComment';
 const _getAllComment = _URL + '/comment/getAllComment/';
 const _createGanttChart = _apiUrl + 'hoursWiseTaskRecord/';
 
-const _passTicket = _URL + "/passTicket";
+const _passTicket = _URL + '/passTicket';
 // const _passBulkTicket = _URL + "/bulkpassTicket";
 
 export default class MyTicketService {
@@ -41,9 +44,22 @@ export default class MyTicketService {
         'Content-Type': 'application/json'
       }
     };
-    return axios.post(_getAllTicketTest, payload, config);
+
+    return axios.post(`${_URL}/getAllTicket`, payload, config);
   }
 
+  getUserTicketsTestWithoutTypeOf(payload) {
+    const token = localStorage.getItem('jwt_token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+    return axios.post(_getAllTicketTestWithoutTypeOF, payload, config);
+  }
   getExpectedSolveDate(cuMappingId) {
     const token = localStorage.getItem('jwt_token');
 
@@ -99,7 +115,6 @@ export default class MyTicketService {
         'Content-Type': 'application/json'
       }
     };
-    console.log('_getTicketById', _getTicketById);
     return axios.get(_getTicketById + id, config);
   }
 
@@ -121,22 +136,52 @@ export default class MyTicketService {
     return axios.post(_updateTicket + id, payload, config);
   }
 
+  // postComment(payload) {
+  //   payload = {
+  //     ...payload,
+  //     created_by: userSessionData.userId,
+  //     created_at: userSessionData.time
+  //   };
+
+  //   const token = localStorage.getItem('jwt_token');
+
+  //   const config = {
+  //     headers: {
+  //       Authorization: `Bearer ${token}`,
+  //       Accept: 'application/json',
+  //       'Content-Type': 'application/json'
+  //     }
+  //   };
+  //   return axios.post(_createComment, payload, config);
+  // }
   postComment(payload) {
-    payload = {
-      ...payload,
-      created_by: userSessionData.userId,
-      created_at: userSessionData.time
-    };
+    // Check if payload is FormData
+    if (payload instanceof FormData) {
+      // Append extra fields to FormData
+      payload.append('created_by', userSessionData.userId);
+      payload.append('created_at', userSessionData.time);
+    } else {
+      // If it's not FormData, proceed as usual (for non-file cases)
+      payload = {
+        ...payload,
+        created_by: userSessionData.userId,
+        created_at: userSessionData.time
+      };
+    }
 
     const token = localStorage.getItem('jwt_token');
 
+    // Configuration for Axios request
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
         Accept: 'application/json',
-        'Content-Type': 'application/json'
+        'Content-Type': 'multipart/form-data'
+        // Remove 'Content-Type' header so Axios can set it automatically
+        // when using FormData, it will be set to multipart/form-data
       }
     };
+
     return axios.post(_createComment, payload, config);
   }
 

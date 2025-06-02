@@ -11,6 +11,7 @@ import {
   getPendingOrderErrorFileThunk,
   getUnixCodeAgainstVendorForErrorFileThunk
 } from '../../../redux/services/po/generatePo';
+import { resetPoErrorFile } from '../../../redux/slices/po/generatePo';
 import { exportToExcelCustomHandler } from '../../../utils/customFunction';
 
 function GeneratePoErrorFileModal({ open, close }) {
@@ -94,6 +95,7 @@ function GeneratePoErrorFileModal({ open, close }) {
   useEffect(() => {
     if (pendingOrderErrorFileData?.length) {
       transformPoErrorDataForExport();
+      dispatch(resetPoErrorFile());
     }
   }, [pendingOrderErrorFileData]);
 
@@ -119,10 +121,12 @@ function GeneratePoErrorFileModal({ open, close }) {
               <Row className="row_gap_3">
                 <Col sm={12}>
                   <Field
+                    classNamePrefix="react-select"
                     component={CustomReactSelect}
                     options={venderData}
                     name="vender_name"
                     label="Vendor Name :"
+                    id="generatepoerror_vendorname"
                     placeholder={getVenderList ? 'Loading...' : 'Select'}
                     requiredField
                     isSearchable
@@ -130,10 +134,12 @@ function GeneratePoErrorFileModal({ open, close }) {
                 </Col>
                 <Col sm={12}>
                   <Field
+                    classNamePrefix="react-select"
                     component={CustomReactSelect}
                     options={venderUnixCode}
                     name="unix_code"
                     label="Error File Date :"
+                    id="generatepoerror_errorfiledate"
                     placeholder={
                       getUnixCodeAgainstVendor ? 'Loading...' : 'Select'
                     }
@@ -144,7 +150,7 @@ function GeneratePoErrorFileModal({ open, close }) {
                 </Col>
               </Row>
 
-              <div className="d-flex justify-content-md-end mt-3 btn_container">
+              <div className="d-flex justify-content-md-end mt-3">
                 <button
                   className="btn btn-dark col-6"
                   type="submit"
