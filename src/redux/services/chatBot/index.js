@@ -8,7 +8,7 @@ export const postBotMessages = createAsyncThunk(
   async ({ formData, signal }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        `http://10.2.9.154:8000/chatbot/`,
+        `http://35.154.197.8:8000/chatbot/`,
         formData,
         { signal }
       );
@@ -44,7 +44,7 @@ export const flagBotMessage = createAsyncThunk(
         }
       };
       const response = await axios.post(
-        `http://10.2.9.154:8000/update-flagging`,
+        `http://35.154.197.8:8000/update-flagging`,
         formData,
         config
       );

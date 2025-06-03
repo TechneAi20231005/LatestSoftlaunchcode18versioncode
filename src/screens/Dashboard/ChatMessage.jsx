@@ -23,7 +23,7 @@ function ChatMessage({ chat }) {
     dispatch(
       flagBotMessage({
         formData: {
-          project_id: '6835498ba36d7260bd4ff6d5',
+          project_id: '683d3fca862043edcb8ebe1d',
           uuid: chat?.text?.chat_entry_uuid || 0,
           flagging: type === 'up' ? 1 : 0
         }
