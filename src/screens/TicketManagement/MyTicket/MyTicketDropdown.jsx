@@ -14,7 +14,8 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
   const tickedtAssignedto = data.assign_to_user_id === currentUser;
 
   const checkNotSolvedAndNotReject =
-    data.status_name !== 'Solved' && data.passed_status !== 'REJECT';
+    data.status?.status !== 'Solved' && data.passed_status !== 'REJECT';
+
   const userAccountFor = localStorage.getItem('account_for');
   // const isUserProjectOwner = data.projectowner.find(
   //   (item) => item.user_id === currentUser
@@ -61,14 +62,14 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
         if (type === 'AssignToMe') {
           return (
             ticketCreatedBy ||
-            tickedtAssignedto ||
-            (checkNotSolvedAndNotReject && userAccountFor === 'SELF') ||
-            isUserProjectOwner
+            (tickedtAssignedto &&
+              checkNotSolvedAndNotReject &&
+              userAccountFor === 'SELF')
           );
         } else if (type === 'YourTask') {
           return ticketCreatedBy || tickedtAssignedto;
         } else if (type === 'DepartmentWise') {
-          return true;
+          return ticketCreatedBy || tickedtAssignedto;
         } else if (type === 'CreatedByMe') {
           return false;
         } else if (type === 'UnPassed') {
