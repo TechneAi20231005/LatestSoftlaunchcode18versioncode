@@ -8,7 +8,7 @@ export const postBotMessages = createAsyncThunk(
   async ({ formData, signal }, { rejectWithValue }) => {
     try {
       const response = await axios.post(
-        `http://10.2.9.154:8000/chatbot/`,
+        `http://35.154.197.8:8000/chatbot/`,
         formData,
         { signal }
       );
@@ -29,6 +29,30 @@ export const postBotMessages = createAsyncThunk(
       return rejectWithValue(
         error?.response?.data?.message || 'Request failed'
       );
+    }
+  }
+);
+
+export const flagBotMessage = createAsyncThunk(
+  'chatBot/flagBotMessage',
+  async ({ formData }) => {
+    try {
+      const token = localStorage.getItem('jwt_token');
+      const config = {
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      };
+      const response = await axios.post(
+        `http://35.154.197.8:8000/update-flagging`,
+        formData,
+        config
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        return response?.data?.data;
+      }
+    } catch (error) {
+      return Promise.reject(error?.response?.data?.message);
     }
   }
 );

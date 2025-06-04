@@ -119,7 +119,7 @@ export const ExportAllTicketsToExcel = ({
           }`,
           Confirmation_Required: item.confirmation_required ? 'YES' : 'NO',
           Ref_id: item.cuid || '--',
-          from_department_name: item.from_department_name || '--',
+          from_department_name: item.from_department?.department || '--',
           module_name: item?.module?.module_name || '--',
           Passed_Status: item.passed_status || '--',
           Passed_Status_Changed_At: item.passed_status_changed_at || '--',
