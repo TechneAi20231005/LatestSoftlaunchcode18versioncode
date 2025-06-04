@@ -197,7 +197,9 @@ function TestDraftDetails(props) {
     if (newSelectAllNames) {
       const draftRowIds = getDraftTestListData
         ?.filter(
-          (row) => row?.tai_bc_status_conventions?.convention_name === 'DRAFT'
+          (row) =>
+            row?.tai_bc_status_conventions?.convention_name?.toUpperCase() ===
+            'DRAFT'
         )
         ?.map((row) => row?.id);
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
@@ -1517,11 +1519,11 @@ function TestDraftDetails(props) {
           <div className="d-flex align-items-center">
             <i
               disabled={
-                row?.original?.tai_bc_status_conventions?.convention_name !==
+                row?.original?.tai_bc_status_conventions?.convention_name?.toUpperCase() !==
                 'DRAFT'
               }
               className={`icofont-edit text-primary btn btn-outline-secondary cp  ${
-                row?.original?.tai_bc_status_conventions?.convention_name !==
+                row?.original?.tai_bc_status_conventions?.convention_name?.toUpperCase() !==
                 'DRAFT'
                   ? 'disabled-icon'
                   : ''
@@ -1578,7 +1580,8 @@ function TestDraftDetails(props) {
             checked={selectedRows.includes(rowData.id)}
             onChange={() => handleCheckboxChange(rowData)}
             disabled={
-              rowData?.tai_bc_status_conventions?.convention_name !== 'DRAFT'
+              rowData?.tai_bc_status_conventions?.convention_name?.toUpperCase() !==
+              'DRAFT'
             }
           />
         );
@@ -2010,7 +2013,7 @@ function TestDraftDetails(props) {
         testcase_id: testCasesData,
         reviewer_id: reviewerId,
         status_id: testCasesStatusDataList?.find(
-          (d) => d.convention_name === 'PENDING'
+          (d) => d.convention_name?.toUpperCase() === 'PENDING'
         )?.id,
         ticket_id: ticketId,
         task_id: taskId

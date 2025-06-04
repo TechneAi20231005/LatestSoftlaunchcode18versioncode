@@ -347,10 +347,10 @@ function TestCaseReviewDetails() {
       const statusId =
         status === 'RESEND'
           ? testCasesStatusDataList?.find(
-              (d) => d?.convention_name === 'RESEND'
+              (d) => d?.convention_name?.toUpperCase() === 'RESEND'
             )
           : testCasesStatusDataList?.find(
-              (d) => d?.convention_name === 'REJECTED'
+              (d) => d?.convention_name?.toUpperCase() === 'REJECTED'
             )?.id;
       const formData = {
         review_testcase_data: updatedRows,

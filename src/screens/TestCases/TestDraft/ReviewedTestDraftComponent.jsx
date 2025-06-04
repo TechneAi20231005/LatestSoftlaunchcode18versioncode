@@ -2042,7 +2042,7 @@ function ReviewedTestDraftComponent() {
       testcase_id: selectedRows,
       reviewer_id: reviewerId,
       status_id: testCasesStatusDataList?.find(
-        (d) => d.convention_name === 'MODIFIED'
+        (d) => d.convention_name?.toUpperCase() === 'MODIFIED'
       )?.id,
 
       ticket_id: ticketId,
