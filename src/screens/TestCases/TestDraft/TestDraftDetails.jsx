@@ -176,6 +176,7 @@ function TestDraftDetails(props) {
     platform: 'platform',
     type_name: 'type_id',
     tc_id: 'tc_id',
+    ticket_id: 'ticket_id',
     test_description: 'test_description',
     severity: 'severity',
     group_name: 'group_id',
@@ -196,7 +197,9 @@ function TestDraftDetails(props) {
     if (newSelectAllNames) {
       const draftRowIds = getDraftTestListData
         ?.filter(
-          (row) => row?.tai_bc_status_conventions?.convention_name === 'DRAFT'
+          (row) =>
+            row?.tai_bc_status_conventions?.convention_name?.toUpperCase() ===
+            'DRAFT'
         )
         ?.map((row) => row?.id);
       localDispatch({ type: 'SET_SELECTED_ROWS', payload: draftRowIds });
@@ -233,6 +236,8 @@ function TestDraftDetails(props) {
       platform: 'platform',
       type_name: 'testing_type',
       tc_id: 'tc_id',
+      ticket_id: 'ticket_id',
+
       test_description: 'test_descriptions',
       is_automation_script: 'is_automation_script',
       severity: 'severity',
@@ -1514,11 +1519,11 @@ function TestDraftDetails(props) {
           <div className="d-flex align-items-center">
             <i
               disabled={
-                row?.original?.tai_bc_status_conventions?.convention_name !==
+                row?.original?.tai_bc_status_conventions?.convention_name?.toUpperCase() !==
                 'DRAFT'
               }
               className={`icofont-edit text-primary btn btn-outline-secondary cp  ${
-                row?.original?.tai_bc_status_conventions?.convention_name !==
+                row?.original?.tai_bc_status_conventions?.convention_name?.toUpperCase() !==
                 'DRAFT'
                   ? 'disabled-icon'
                   : ''
@@ -1575,7 +1580,8 @@ function TestDraftDetails(props) {
             checked={selectedRows.includes(rowData.id)}
             onChange={() => handleCheckboxChange(rowData)}
             disabled={
-              rowData?.tai_bc_status_conventions?.convention_name !== 'DRAFT'
+              rowData?.tai_bc_status_conventions?.convention_name?.toUpperCase() !==
+              'DRAFT'
             }
           />
         );
@@ -1595,6 +1601,29 @@ function TestDraftDetails(props) {
             style={{ cursor: 'pointer' }}
             onClick={(e) => handleFilterClick(e, 'tc_id', 'Test Id', 'text')}
           />
+        </span>
+      ),
+
+      size: 180,
+      enableSorting: false
+    },
+    {
+      accessorFn: (originalRows) =>
+        originalRows?.ticket?.ticket_id
+          ? originalRows?.ticket?.ticket_id
+          : '--',
+
+      header: 'Ticket Id',
+      Header: (
+        <span>
+          Ticket Id
+          {/* <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'ticket_id', 'Ticket Id', 'text')
+            }
+          /> */}
         </span>
       ),
 
@@ -1984,7 +2013,7 @@ function TestDraftDetails(props) {
         testcase_id: testCasesData,
         reviewer_id: reviewerId,
         status_id: testCasesStatusDataList?.find(
-          (d) => d.convention_name === 'PENDING'
+          (d) => d.convention_name?.toUpperCase() === 'PENDING'
         )?.id,
         ticket_id: ticketId,
         task_id: taskId

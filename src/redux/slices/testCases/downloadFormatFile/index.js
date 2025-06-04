@@ -261,7 +261,9 @@ const downloadFormatSlice = createSlice({
         let data = !action?.payload?.data?.data?.data
           ? action?.payload?.data?.data?.data
           : action?.payload?.data?.data?.data?.filter(
-              (d) => d?.tai_bc_status_conventions?.convention_name === 'DRAFT'
+              (d) =>
+                d?.tai_bc_status_conventions?.convention_name?.toUpperCase() ===
+                'DRAFT'
             );
 
         state.getDraftTestListData = data;

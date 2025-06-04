@@ -36,13 +36,15 @@ export const getTestCaseReviewListThunk = createAsyncThunk(
 
 export const getByTestPlanIDListThunk = createAsyncThunk(
   'testPlanID/getByTestPlanIDListThunk',
-  async ({ id, limit, page, filter_testcase_data }) => {
+  async ({ id, ticket_id, task_id, limit, page, filter_testcase_data }) => {
     try {
       const response = await rewampAxios.get(
         `testCases/getDraftTestCases/getTestCases/${id}`,
         {
           params: {
             // id: id,
+            ticket_id: ticket_id,
+            task_id: task_id,
             limit: limit,
             page: page,
             filter_testcase_data: JSON.stringify(filter_testcase_data)
