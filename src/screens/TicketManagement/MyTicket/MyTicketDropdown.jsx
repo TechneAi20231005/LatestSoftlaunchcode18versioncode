@@ -122,7 +122,7 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
             data?.basket_configured?.length > 0
           );
         } else if (type === 'DepartmentWise') {
-          return true;
+          return false;
         } else if (type === 'CreatedByMe') {
           return (
             data?.created_by?.id !== currentUser &&
