@@ -593,9 +593,6 @@ export default function TaskData(props) {
                 </li>
               )}
 
-              {console.log('data', data.task_id)}
-              {console.log('dataT', data)}
-
               <li onClick={handleTaskHistoryModal}>
                 <button className="btn btn-sm btn-primary text-white w-100">
                   <i className="icofont-listing-number"></i> Task History
@@ -606,7 +603,7 @@ export default function TaskData(props) {
                   <i className="icofont-listing-number"></i> Task Regularization
                 </button>
                 {/* //// Test Cases */}
-                {data?.convention_name === 'Upload' && (
+                {data?.convention_name?.toUpperCase() === 'UPLOAD' && (
                   <li
                     onClick={() =>
                       navigate(
@@ -622,7 +619,7 @@ export default function TaskData(props) {
                   </li>
                 )}
 
-                {data?.convention_name === 'Review' && (
+                {data?.convention_name?.toUpperCase() === 'REVIEW' && (
                   <li
                     onClick={() =>
                       navigate(

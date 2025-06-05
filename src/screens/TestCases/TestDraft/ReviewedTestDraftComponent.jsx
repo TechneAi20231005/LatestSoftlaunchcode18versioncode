@@ -103,7 +103,7 @@ function localReducer(state, action) {
 }
 
 function ReviewedTestDraftComponent() {
-  const { id } = useParams();
+  const { id, ticketId, taskId } = useParams();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -512,8 +512,11 @@ function ReviewedTestDraftComponent() {
       dispatch(
         getByTestPlanIDReviewedListThunk({
           id: id,
+          ticket_id: ticketId,
+          task_id: taskId,
           limit: paginationData.pageSize,
           page: paginationData.pageIndex + 1,
+
           filter_testcase_data: updatedFilters
         })
       );
@@ -546,6 +549,8 @@ function ReviewedTestDraftComponent() {
       dispatch(
         getByTestPlanIDReviewedListThunk({
           id: id,
+          ticket_id: ticketId,
+          task_id: taskId,
           limit: paginationData.pageSize,
           page: paginationData.pageIndex + 1,
           filter_testcase_data: updatedFilters
@@ -584,6 +589,8 @@ function ReviewedTestDraftComponent() {
       dispatch(
         getByTestPlanIDReviewedListThunk({
           id: id,
+          ticket_id: ticketId,
+          task_id: taskId,
           limit: paginationData.pageSize,
           page: paginationData.pageIndex + 1,
           filter_testcase_data: updatedFilters
@@ -1840,6 +1847,29 @@ function ReviewedTestDraftComponent() {
         );
       }
     },
+    {
+      accessorFn: (originalRows) =>
+        originalRows?.ticket?.ticket_id
+          ? originalRows?.ticket?.ticket_id
+          : '--',
+
+      header: 'Ticket Id',
+      Header: (
+        <span>
+          Ticket Id
+          {/* <i
+            className="icofont-filter ms-2 text-dark"
+            style={{ cursor: 'pointer' }}
+            onClick={(e) =>
+              handleFilterClick(e, 'ticket_id', 'Ticket Id', 'text')
+            }
+          /> */}
+        </span>
+      ),
+
+      size: 180,
+      enableSorting: false
+    },
 
     {
       accessorFn: (originalRows) =>
@@ -2012,8 +2042,11 @@ function ReviewedTestDraftComponent() {
       testcase_id: selectedRows,
       reviewer_id: reviewerId,
       status_id: testCasesStatusDataList?.find(
-        (d) => d.convention_name === 'MODIFIED'
-      )?.id
+        (d) => d.convention_name?.toUpperCase() === 'MODIFIED'
+      )?.id,
+
+      ticket_id: ticketId,
+      task_id: taskId
     };
 
     dispatch(
@@ -2040,6 +2073,8 @@ function ReviewedTestDraftComponent() {
           dispatch(
             getByTestPlanIDReviewedListThunk({
               id: id,
+              ticket_id: ticketId,
+              task_id: taskId,
               limit: paginationData.pageSize,
               page: paginationData.pageIndex + 1
             })
@@ -2093,8 +2128,11 @@ function ReviewedTestDraftComponent() {
     dispatch(
       getByTestPlanIDReviewedListThunk({
         id: id,
+        ticket_id: ticketId,
+        task_id: taskId,
         limit: paginationData.pageSize,
         page: paginationData.pageIndex + 1,
+
         filter_testcase_data:
           updatedFilters?.length === 1 &&
           updatedFilters[0]?.column === filterColumnId
@@ -2116,6 +2154,8 @@ function ReviewedTestDraftComponent() {
     dispatch(
       getByTestPlanIDReviewedListThunk({
         id: id,
+        ticket_id: ticketId,
+        task_id: taskId,
         limit: 10,
         page: 1
       })
@@ -2171,6 +2211,8 @@ function ReviewedTestDraftComponent() {
         dispatch(
           getByTestPlanIDReviewedListThunk({
             id: id,
+            ticket_id: ticketId,
+            task_id: taskId,
             limit: paginationData.pageSize,
             page: paginationData.pageIndex + 1,
             filter_testcase_data: updatedFilters
@@ -2182,7 +2224,6 @@ function ReviewedTestDraftComponent() {
       } catch (error) {}
     }
   }, [sortOrder]);
-
   useEffect(() => {
     dispatch(
       getExportAllReviewTestDraftList({
@@ -2234,6 +2275,7 @@ function ReviewedTestDraftComponent() {
     localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: filteredIds });
     // }
   }, [searchTerm, localDispatch]);
+  console.log('tttt');
 
   return (
     <div className="container-xxl">
