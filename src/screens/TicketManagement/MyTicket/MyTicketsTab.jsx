@@ -94,48 +94,51 @@ const MyTicketsTab = () => {
     await Promise.all(fetchPromises);
   };
 
-  const tabList = useMemo(() => [
-    {
-      id: 2,
-      name: 'AssignToMe',
-      label: 'Assign To Me',
-      color: 'primary',
-      user: user
-    },
-    {
-      id: 3,
-      name: 'CreatedByMe',
-      label: 'Created By Me',
-      color: 'secondary'
-    },
-    {
-      id: 4,
-      name: 'DepartmentWise',
-      label: 'Department Wise',
-      color: 'success',
-      user: user
-    },
-    {
-      id: 5,
-      name: 'YourTask',
-      label: 'Your Task',
-      color: 'error',
-      user: user
-    },
-    {
-      id: 6,
-      name: 'UnPassed',
-      label: 'UnPassed',
-      color: 'warning'
-    }
-  ], [allTicketsData, user]);
+  const tabList = useMemo(
+    () => [
+      {
+        id: 2,
+        name: 'AssignToMe',
+        label: 'Assign To Me',
+        color: 'primary',
+        user: user
+      },
+      {
+        id: 3,
+        name: 'CreatedByMe',
+        label: 'Created By Me',
+        color: 'secondary'
+      },
+      {
+        id: 4,
+        name: 'DepartmentWise',
+        label: 'Department Wise',
+        color: 'success',
+        user: user
+      },
+      {
+        id: 5,
+        name: 'YourTask',
+        label: 'Your Task',
+        color: 'error',
+        user: user
+      },
+      {
+        id: 6,
+        name: 'UnPassed',
+        label: 'UnPassed',
+        color: 'warning'
+      }
+    ],
+    [allTicketsData, user]
+  );
 
   const handleTabChange = async (event, newValue) => {
     setActiveTab(newValue);
     setColumnFilters([]);
     setReset(true);
     setPagination({ pageIndex: 0, pageSize: 10 });
-    setMessage("");
+    setMessage('');
   };
 
   useEffect(() => {
@@ -148,7 +151,6 @@ const MyTicketsTab = () => {
   const debouncedTicketId = useDebounce(ticketIdValue, 1000);
   useEffect(() => {
     const getData = async () => {
-
       // if (isLoading) return;
       setIsLoading(true);
       const fromDateRaw = columnFilters.find((f) => f.id === 'ticket_date')
@@ -156,13 +158,13 @@ const MyTicketsTab = () => {
       const toDateRaw = columnFilters.find((f) => f.id === 'ticket_date')
         ?.value?.[1];
 
-        if (toDateRaw && fromDateRaw && moment(toDateRaw).isBefore(fromDateRaw)) {
-          setMessage("Ticket To Date Cannot Be Earlier Than From Date");
-          setIsLoading(false);
-          return;
-        }else{
-          setMessage("");
-        }
+      if (toDateRaw && fromDateRaw && moment(toDateRaw).isBefore(fromDateRaw)) {
+        setMessage('Ticket To Date Cannot Be Earlier Than From Date');
+        setIsLoading(false);
+        return;
+      } else {
+        setMessage('');
+      }
 
       const hasColumnFilters = columnFilters?.some((filter) => {
         const value = filter?.value;
@@ -184,9 +186,8 @@ const MyTicketsTab = () => {
       const payload = hasColumnFilters
         ? {
             department_id:
-              columnFilters.find(
-                (filter) => filter.id === "Assign To Dept"
-              )?.value || [],
+              columnFilters.find((filter) => filter.id === 'Assign To Dept')
+                ?.value || [],
             status_id:
               columnFilters.find((filter) => filter.id === 'Status')?.value ||
               [],
@@ -255,6 +256,7 @@ const MyTicketsTab = () => {
         textColor="secondary"
         indicatorColor="secondary"
         aria-label="ticket tabs"
+        variant="scrollable"
       >
         {tabList
           ?.filter((item) => item?.user !== false)
