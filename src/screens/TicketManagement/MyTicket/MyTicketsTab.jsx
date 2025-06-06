@@ -256,7 +256,6 @@ const MyTicketsTab = () => {
         textColor="secondary"
         indicatorColor="secondary"
         aria-label="ticket tabs"
-        variant="scrollable"
       >
         {tabList
           ?.filter((item) => item?.user !== false)
