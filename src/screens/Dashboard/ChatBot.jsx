@@ -48,7 +48,10 @@ function ChatBot() {
         </div>
         {/* chatbot Body */}
         <div ref={chatBodyRef} className="chat-body">
-          <div className="message bot-message">
+          <div
+            style={{ animationDelay: '0.9s' }}
+            className="message bot-message"
+          >
             <ChatbotIcon />
             <span className="message-text">
               Hey There {userName} 🤚 <br /> How can I help you today?
