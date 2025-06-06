@@ -1487,6 +1487,7 @@ export default function TaskModal(props) {
         size="lg"
         show={props.show}
         onHide={handleClose}
+        backdrop="static"
         dialogClassName="modal-100w"
         aria-labelledby="example-custom-modal-styling-title"
       >
