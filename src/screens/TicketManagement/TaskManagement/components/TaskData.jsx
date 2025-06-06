@@ -24,6 +24,7 @@ export default function TaskData(props) {
   const date = props.date;
   const isRegularisedData = props.data.regularized_data;
   const allData = props;
+  const [isPlannerDataLoading, setIsPlannerDataLoading] = useState(false);
 
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -90,17 +91,21 @@ export default function TaskData(props) {
     ticket_id
   ) => {
     if (taskId) {
-      await getTaskPlanner(taskId).then((res) => {
-        if (res.status === 200) {
-          setPlannerData(null);
-          setPlannerData({
-            taskId: taskId,
-            ticket_basket_id: ticket_basket_id,
-            ticket_id: ticket_id,
-            data: res.data.data
-          });
-        }
-      });
+      setIsPlannerDataLoading(true);
+      await getTaskPlanner(taskId)
+        .then((res) => {
+          if (res.status === 200) {
+            setPlannerData(null);
+            setIsPlannerDataLoading(false);
+            setPlannerData({
+              taskId: taskId,
+              ticket_basket_id: ticket_basket_id,
+              ticket_id: ticket_id,
+              data: res.data.data
+            });
+          }
+        })
+        .finally(() => setIsPlannerDataLoading(false));
     }
     setShowPlannerModal(true);
   };
@@ -593,9 +598,6 @@ export default function TaskData(props) {
                 </li>
               )}
 
-              {console.log('data', data.task_id)}
-              {console.log('dataT', data)}
-
               <li onClick={handleTaskHistoryModal}>
                 <button className="btn btn-sm btn-primary text-white w-100">
                   <i className="icofont-listing-number"></i> Task History
@@ -647,6 +649,7 @@ export default function TaskData(props) {
           handleClose={handleClosePlannerModal}
           plannerData={plannerData}
           moduleSetting={moduleSetting}
+          isLoading={isPlannerDataLoading}
         />
       )}
       {subtaskModal && (
