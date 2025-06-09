@@ -246,7 +246,7 @@ function ChatForm({ chatHistory, project_id }) {
         {
           isLoading?.chatBotList ? (
             <Tooltip placement="top" title="Stop Message" arrow>
-              <IconButton type="submit" onClick={handleStopMessage}>
+              <IconButton type="button" onClick={handleStopMessage}>
                 <StopCircleIcon fontSize="small" />
               </IconButton>
             </Tooltip>
