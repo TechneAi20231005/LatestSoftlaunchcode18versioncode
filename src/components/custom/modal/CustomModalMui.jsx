@@ -25,12 +25,14 @@ const CustomDialog = ({
       open={open}
       onClose={onClose}
       slots={{ transition: Grow }}
-      PaperProps={{
-        sx: {
-          width: { xs: '100%', sm: '80%', md: '60%', lg: '38%' },
-          borderRadius: 3,
-          padding: 2,
-          backgroundColor: '#f5f5f5'
+      slotProps={{
+        paper: {
+          sx: {
+            width: { xs: '100%', sm: '80%', md: '60%', lg: '38%' },
+            borderRadius: 3,
+            padding: 2,
+            backgroundColor: '#f5f5f5'
+          }
         }
       }}
     >
