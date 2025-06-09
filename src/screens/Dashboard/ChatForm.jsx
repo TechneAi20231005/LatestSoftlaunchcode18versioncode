@@ -13,7 +13,7 @@ import {
 } from '../../redux/slices/chatBotSlice';
 import ChatbotTypingDots from './ChatbotTypingDots';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
-function ChatForm({ chatHistory }) {
+function ChatForm({ chatHistory, project_id }) {
   const inputRef = useRef();
   const dispatch = useDispatch();
   const postBotDispatchRef = useRef(null);
@@ -109,7 +109,7 @@ function ChatForm({ chatHistory }) {
     dispatch(
       postBotMessages({
         formData: {
-          project_id: '683d3fca862043edcb8ebe1d',
+          project_id: project_id,
           question: userMessage,
           user_id: localStorage.getItem('id'),
           user_name: localStorage.getItem('first_name') || 'Friend',

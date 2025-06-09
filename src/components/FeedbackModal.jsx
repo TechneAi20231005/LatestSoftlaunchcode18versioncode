@@ -15,13 +15,29 @@ import {
   Divider,
   Grow
 } from '@mui/material';
+import { useDispatch } from 'react-redux';
+import { flagBotMessage } from '.././redux/services/chatBot';
 
-const FeedbackModal = ({ open, onClose, setFeedback }) => {
+const FeedbackModal = ({ open, onClose, setFeedback, chat, project_id }) => {
   const [issueType, setIssueType] = useState('');
   const [details, setDetails] = useState('');
   const [submitted, setSubmitted] = useState(false);
+  const dispatch = useDispatch();
 
   const handleSubmit = () => {
+    dispatch(
+      flagBotMessage({
+        formData: {
+          project_id: project_id,
+          // uuid: chat?.text?.chat_entry_uuid || 0,
+          flagging: {
+            flag_id: chat?.text?.chat_entry_uuid || 0,
+            type: issueType || '',
+            remarks: details || ''
+          }
+        }
+      })
+    );
     setSubmitted(true);
     setTimeout(() => {
       setFeedback('down');
@@ -29,7 +45,7 @@ const FeedbackModal = ({ open, onClose, setFeedback }) => {
       setDetails('');
       setSubmitted(false);
       onClose();
-    }, 1500);
+    }, 1000);
   };
 
   const handleCancel = () => {

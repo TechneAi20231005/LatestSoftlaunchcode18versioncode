@@ -12,7 +12,7 @@ import { flagBotMessage } from '../../redux/services/chatBot';
 import { useDispatch } from 'react-redux';
 import FeedbackModal from '../../components/FeedbackModal';
 
-function ChatMessage({ chat }) {
+function ChatMessage({ chat, project_id }) {
   const dispatch = useDispatch();
   const [feedback, setFeedback] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
@@ -26,7 +26,7 @@ function ChatMessage({ chat }) {
       dispatch(
         flagBotMessage({
           formData: {
-            project_id: '683d3fca862043edcb8ebe1d',
+            project_id: project_id,
             uuid: chat?.text?.chat_entry_uuid || 0,
             flagging: type === 'up' ? 1 : 0
           }
@@ -124,6 +124,8 @@ function ChatMessage({ chat }) {
           onClose={() => setFeedbackModal(false)}
           open={feedbackModal}
           setFeedback={setFeedback}
+          chat={chat}
+          project_id={project_id}
         />
       )}
     </>
