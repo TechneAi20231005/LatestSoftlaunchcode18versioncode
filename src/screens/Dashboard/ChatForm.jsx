@@ -194,7 +194,8 @@ function ChatForm({ chatHistory, project_id }) {
     manuallyStopped.current = true;
     recognitionRef.current?.stop();
   };
-  const handleStopMessage = () => {
+  const handleStopMessage = (e) => {
+    e.preventDefault();
     abortControllerRef.current?.abort();
 
     const lastMessage = chatHistory[chatHistory.length - 1];
@@ -209,7 +210,9 @@ function ChatForm({ chatHistory, project_id }) {
 
       <form
         className="chat-form"
-        onSubmit={handleFormSubmit}
+        onSubmit={
+          !isLoading?.chatBotList ? handleFormSubmit : (e) => e.preventDefault()
+        }
         style={{ display: 'flex', alignItems: 'center', gap: 8 }}
       >
         <textarea
@@ -221,7 +224,9 @@ function ChatForm({ chatHistory, project_id }) {
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();
-              handleFormSubmit(e);
+              if (!isLoading?.chatBotList) {
+                handleFormSubmit(e);
+              }
             }
           }}
           rows={1}
