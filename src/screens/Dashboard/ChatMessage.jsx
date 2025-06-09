@@ -17,7 +17,7 @@ function ChatMessage({ chat, project_id }) {
   const [feedback, setFeedback] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
   const [tooltipMessage, setTooltipMessage] = useState('Copy');
-  const [feedbackModal, setFeedbackModal] = React.useState(false);
+  const [feedbackModal, setFeedbackModal] = useState(false);
 
   const handleThumbClick = (type) => {
     if (feedback === type) return;
