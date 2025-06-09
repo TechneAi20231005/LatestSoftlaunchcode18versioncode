@@ -54,7 +54,7 @@ const FeedbackWrapper = ({ open, onClose, chat, setFeedback, project_id }) => {
       open={open}
       onClose={onClose}
       onSubmit={handleSubmit}
-      dialogTitle="Feedback"
+      dialogTitle="Help us improve"
       submitted={submitted}
     >
       <Box sx={{ mb: 2 }}>
