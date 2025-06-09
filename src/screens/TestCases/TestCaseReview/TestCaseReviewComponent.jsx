@@ -1157,7 +1157,15 @@ function TestCaseReviewComponent() {
                   <span className="text-muted">{`${rowData.test_plan_id}`}</span>
                 ) : (
                   <Link
-                    to={`/${_base + '/TestCaseReviewDetails/' + rowData?.id}`}
+                    to={`/${
+                      _base +
+                      '/TestCaseReviewDetails/' +
+                      rowData?.id +
+                      '/' +
+                      ticketId +
+                      '/' +
+                      taskId
+                    }`}
                     className="link_underline_primary"
                   >
                     {`${rowData.test_plan_id}`}
@@ -1465,7 +1473,9 @@ function TestCaseReviewComponent() {
     // }
 
     formData = {
-      reviewer_id: reviewerId
+      reviewer_id: reviewerId,
+      ticket_id: ticketId,
+      task_id: taskId
     };
     setDisable(true);
     dispatch(

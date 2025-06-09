@@ -340,7 +340,7 @@ function EditTestCaseModal({
             formData.append(
               'status_id',
               testCasesStatusDataList?.find(
-                (d) => d.convention_name === 'PENDING'
+                (d) => d.convention_name?.toUpperCase() === 'PENDING'
               )?.id
             );
             // Now call the handler
