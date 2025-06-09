@@ -425,12 +425,25 @@ function PlannerModal(props) {
     setSubmitting(false);
   };
 
-  const handleChange = (value, index) => {
+  const handleChange = (value, index, userId) => {
     const sumHoras = [0, 0];
     setPlannerData((prev) => {
       const newPrev = { ...prev };
-      newPrev.data[index].total_hours = value;
-      return newPrev;
+      const userData = newPrev?.data?.filter((item) => item?.user_id == userId);
+
+      if (userData && userData[index]) {
+        userData[index].total_hours = value;
+      }
+
+      const updatedData = newPrev.data.map((item) => {
+        const match = userData.find((u) => u.id === item.id);
+        return match ? { ...item, total_hours: match.total_hours } : item;
+      });
+
+      return {
+        ...newPrev,
+        data: updatedData
+      };
     });
 
     for (let i = 0; i < plannerData.data.length; i++) {

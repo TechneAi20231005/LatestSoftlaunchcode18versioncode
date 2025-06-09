@@ -1,7 +1,7 @@
 import { Box, Skeleton } from '@mui/material';
-import React from 'react';
 import { Table } from 'react-bootstrap';
 import TimeRangePicker from '../../../../../components/Common/TimePicker';
+import { formatTime24Hour } from '../../../../../utils/formatTime24Hour';
 
 const PlannerCollapseTable = ({
   isLoading,
@@ -11,13 +11,18 @@ const PlannerCollapseTable = ({
   setSelected,
   times,
   taskUsers,
-  handleTimeChange,
-  setOpen
+  setOpen,
+  handleChange
 }) => {
   const dataforUser = data?.filter(
     (item) =>
       item?.username?.toLowerCase() === row.original.username?.toLowerCase()
   );
+
+  const handleTimeChange = (time, index) => {
+    const finalTime = formatTime24Hour(new Date(time));
+    handleChange(finalTime, index, dataforUser?.[0]?.user_id);
+  };
 
   return isLoading ? (
     <Box sx={{ p: 2 }}>

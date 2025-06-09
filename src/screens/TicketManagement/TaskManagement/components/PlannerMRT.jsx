@@ -48,14 +48,6 @@ const PlannerMRT = ({
     setBulkUser('');
   }, []);
 
-  const handleTimeChange = useCallback(
-    (time, index) => {
-      const finalTime = formatTime24Hour(new Date(time));
-      handleChange(finalTime, index);
-    },
-    [handleChange]
-  );
-
   const result = useMemo(() => {
     if (!data || isLoading) return [];
     const uniqueData = {};
@@ -94,9 +86,8 @@ const PlannerMRT = ({
       setTimeError(false);
       const finalTime = formatTime24Hour(new Date(time));
       setHour(finalTime);
-      result.forEach((_, i) => handleChange(finalTime, i));
     },
-    [handleChange, result]
+    [result]
   );
   const columns = useMemo(
     () => [
@@ -165,13 +156,13 @@ const PlannerMRT = ({
         <PlannerCollapseTable
           data={data}
           row={row}
-          handleTimeChange={handleTimeChange}
           isLoading={isLoading}
           selected={selected}
           setSelected={setSelected}
           setOpen={setOpen}
           times={times}
           taskUsers={taskUsers}
+          handleChange={handleChange}
         />
       );
     },
