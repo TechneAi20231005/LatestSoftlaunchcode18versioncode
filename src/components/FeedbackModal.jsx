@@ -1,4 +1,3 @@
-// Example usage in your page or container component
 import React, { useState } from 'react';
 import {
   Box,
