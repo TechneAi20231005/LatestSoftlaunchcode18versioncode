@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useMemo, useState, useCallback } from 'react';
 import {
   MaterialReactTable,
   useMaterialReactTable
@@ -6,18 +6,18 @@ import {
 import {
   Skeleton,
   Box,
-  Dialog,
   DialogTitle,
   DialogContent,
   MenuItem,
   Select,
   FormControl,
-  InputLabel
+  IconButton
 } from '@mui/material';
-import { Table } from 'react-bootstrap';
-
+import CloseIcon from '@mui/icons-material/Close';
 import { formatTime24Hour } from '../../../../utils/formatTime24Hour';
 import TimeRangePicker from '../../../../components/Common/TimePicker';
+import PlannerCollapseTable from './Planner-Sections/PlannerCollapseTable';
+import { Modal } from 'react-bootstrap';
 
 const PlannerMRT = ({
   data,
@@ -29,12 +29,80 @@ const PlannerMRT = ({
   isLoading,
   handleBulkSubmit
 }) => {
+  const [open, setOpen] = useState(false);
+  const [bulkUser, setBulkUser] = useState('');
+  const [timeError, setTimeError] = useState(false);
+  const [hour, setHour] = useState(null);
+
+  const taskUserOptions = useMemo(() => {
+    return taskUsers?.map((user) => (
+      <MenuItem key={user.userId} value={user.userId}>
+        {user.taskUsers}
+      </MenuItem>
+    ));
+  }, [taskUsers]);
+
+  const handleClose = useCallback(() => {
+    setOpen(false);
+    setHour(null);
+    setBulkUser('');
+  }, []);
+
+  const handleTimeChange = useCallback(
+    (time, index) => {
+      const finalTime = formatTime24Hour(new Date(time));
+      handleChange(finalTime, index);
+    },
+    [handleChange]
+  );
+
+  const result = useMemo(() => {
+    if (!data || isLoading) return [];
+    const uniqueData = {};
+
+    data.forEach((item) => {
+      const username = item?.username;
+      const [itemHrs, itemMins] = item?.total_hours?.split(':')?.map(Number);
+      if (!uniqueData[username]) {
+        uniqueData[username] = {
+          username,
+          date: item?.date,
+          total_hours: item?.total_hours || '00:00'
+        };
+      } else {
+        const [existingHrs, existingMins] = uniqueData[username].total_hours
+          .split(':')
+          .map(Number);
+        let totalMinutes = itemMins + existingMins;
+        let totalHours = itemHrs + existingHrs + Math.floor(totalMinutes / 60);
+        totalMinutes %= 60;
+        uniqueData[username].total_hours = `${String(totalHours).padStart(
+          2,
+          '0'
+        )}:${String(totalMinutes).padStart(2, '0')}`;
+      }
+    });
+    return Object.values(uniqueData);
+  }, [data, isLoading]);
+
+  const handleBulkTimeChange = useCallback(
+    (time) => {
+      if (!time) {
+        setTimeError(true);
+        return;
+      }
+      setTimeError(false);
+      setHour(time);
+      const finalTime = formatTime24Hour(new Date(time));
+      result.forEach((_, i) => handleChange(finalTime, i));
+    },
+    [handleChange, result]
+  );
   const columns = useMemo(
     () => [
       {
         accessorKey: 'username',
         header: 'Assigned User',
-
         Cell: ({ cell }) =>
           isLoading ? <Skeleton variant="text" width={100} /> : cell.getValue()
       },
@@ -50,7 +118,6 @@ const PlannerMRT = ({
             const [h, m] = timeStr.split(':').map(Number);
             return h * 60 + m;
           };
-
           return (
             getMinutes(rowA.getValue('total_hours')) -
             getMinutes(rowB.getValue('total_hours'))
@@ -70,72 +137,11 @@ const PlannerMRT = ({
     [isLoading]
   );
 
-  const result = useMemo(() => {
-    if (!data || isLoading) return [];
-
-    const uniqueData = {};
-
-    data.forEach((item) => {
-      const username = item?.username;
-      const [itemHrs, itemMins] = item?.total_hours?.split(':').map(Number);
-
-      if (!uniqueData[username]) {
-        uniqueData[username] = {
-          username,
-          date: item?.date,
-          total_hours: item?.total_hours || '00:00'
-        };
-      } else {
-        const [existingHrs, existingMins] = uniqueData[username].total_hours
-          .split(':')
-          .map(Number);
-
-        let totalMinutes = itemMins + existingMins;
-        let totalHours = itemHrs + existingHrs + Math.floor(totalMinutes / 60);
-        totalMinutes %= 60;
-
-        const paddedHours = String(totalHours).padStart(2, '0');
-        const paddedMinutes = String(totalMinutes).padStart(2, '0');
-
-        uniqueData[username].total_hours = `${paddedHours}:${paddedMinutes}`;
-      }
-    });
-
-    return Object.values(uniqueData);
-  }, [data, isLoading]);
-
-  const [open, setOpen] = useState(false);
-  const handleClose = () => {
-    setOpen(false);
-  };
-  const handleTimeChange = (time, index) => {
-    const finalTime = formatTime24Hour(new Date(time));
-    handleChange(finalTime, index);
-  };
-  const [timeError, setTimeError] = useState(false);
-  const [hour, setHour] = useState(null);
-  const handleBulkTimeChange = (time, index = null) => {
-    if (!time) {
-      setTimeError(true);
-      return;
-    }
-    setTimeError(false);
-    setHour(time);
-    const finalTime = formatTime24Hour(new Date(time));
-    if (!index) {
-      for (let i = 0; i < result.length; i++) {
-        handleChange(finalTime, i);
-      }
-    }
-  };
-
   const table = useMaterialReactTable({
     columns,
     data: result,
     enableExpandAll: false,
-    state: {
-      isLoading: isLoading
-    },
+    state: { isLoading },
     muiDetailPanelProps: () => ({
       sx: (theme) => ({
         backgroundColor:
@@ -155,233 +161,98 @@ const PlannerMRT = ({
       }
     }),
     renderDetailPanel: ({ row }) => {
-      const dataforUser = data?.filter(
-        (item) =>
-          item?.username?.toLowerCase() === row.original.username?.toLowerCase()
-      );
-
-      if (isLoading) {
-        return (
-          <Box sx={{ p: 2 }}>
-            <Skeleton height={30} />
-            <Skeleton height={30} />
-            <Skeleton height={30} />
-          </Box>
-        );
-      }
-
       return (
-        <>
-          <Table bordered size="sm">
-            <thead>
-              <tr className="p-1">
-                <th className="p-1 text-center" style={{ fontSize: '15px' }}>
-                  Sr No
-                </th>
-                <th className="p-1 text-center" style={{ fontSize: '15px' }}>
-                  <input
-                    type="checkbox"
-                    name="selectAll"
-                    checked={
-                      dataforUser.length > 0 &&
-                      dataforUser.every((ele) =>
-                        selected.some((sel) => sel.id === ele.id)
-                      )
-                    }
-                    onChange={() => {
-                      const allSelected = dataforUser.every((ele) =>
-                        selected.some((sel) => sel.id === ele.id)
-                      );
-                      setSelected(allSelected ? [] : dataforUser);
-                    }}
-                  />
-                </th>
-                <th className="p-1 text-center" style={{ fontSize: '15px' }}>
-                  Assigned User
-                </th>
-                <th className="p-1 text-center" style={{ fontSize: '15px' }}>
-                  Date
-                </th>
-                <th className="p-1 text-center" style={{ fontSize: '15px' }}>
-                  Hours
-                </th>
-              </tr>
-            </thead>
-            <tbody>
-              {dataforUser.map((ele, index) => (
-                <tr className="p-1" key={ele.id}>
-                  <td className="p-1 text-center">
-                    {index + 1}
-                    <input type="hidden" name="id[]" defaultValue={ele.id} />
-                  </td>
-                  <td className="p-1 text-center">
-                    <input
-                      type="checkbox"
-                      name="selected[]"
-                      checked={selected.some((sel) => sel.id === ele.id)}
-                      onChange={() => {
-                        setSelected((prevSelected) => {
-                          const alreadySelected = prevSelected.find(
-                            (sel) => sel.id === ele.id
-                          );
-                          if (alreadySelected) {
-                            return prevSelected.filter(
-                              (sel) => sel.id !== ele.id
-                            );
-                          } else {
-                            return [...prevSelected, ele];
-                          }
-                        });
-                      }}
-                    />
-                  </td>
-                  <td className="p-1">
-                    <select
-                      className="form-control form-control-sm"
-                      name="user_id[]"
-                      defaultValue={ele.user_id}
-                    >
-                      {taskUsers &&
-                        taskUsers.map((user) => (
-                          <option key={user.userId} value={user.userId}>
-                            {user.taskUsers}
-                          </option>
-                        ))}
-                    </select>
-                  </td>
-                  <td className="p-1">
-                    <input
-                      type="date"
-                      className="form-control form-control-sm"
-                      readOnly={true}
-                      name="date[]"
-                      defaultValue={ele.date}
-                    />
-                  </td>
-                  <td className="p-1" style={{ width: '12rem' }}>
-                    <TimeRangePicker
-                      handleTimeChange={handleTimeChange}
-                      ind={index}
-                      defaultValue={
-                        times?.length > 0
-                          ? times?.find((d) => d.value === ele.total_hours)
-                          : ''
-                      }
-                    />
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </Table>
-
-          <button
-            className="btn btn-primary"
-            type="button"
-            onClick={() => {
-              setOpen(true);
-            }}
-            disabled={selected?.length === 0}
-          >
-            Apply Bulk Operations
-          </button>
-          <Dialog
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="form-dialog-title"
-            slotProps={{
-              paper: {
-                sx: {
-                  width: '400px',
-                  borderRadius: '12px'
-                }
-              }
-            }}
-            sx={{
-              padding: '5rem'
-            }}
-          >
-            <DialogTitle id="form-dialog-title">
-              Apply Bulk Operations
-            </DialogTitle>
-            <DialogContent>
-              <div className="d-flex gap-3 justify-content-end align-items-start flex-column">
-                <FormControl size="small" required fullWidth>
-                  <Select
-                    labelId="bulk-user-label"
-                    id="bulk-user"
-                    value={bulkUser || ''}
-                    onChange={(e) => {
-                      setBulkUser(e.target.value);
-                    }}
-                    name="user_id[]"
-                    displayEmpty
-                    sx={{
-                      height: '2.5rem',
-                      '& .MuiSelect-select': {
-                        paddingTop: '8px',
-                        paddingBottom: '8px'
-                      }
-                    }}
-                  >
-                    <MenuItem value="" disabled>
-                      --Select User--
-                    </MenuItem>
-                    {taskUsers?.map((user, ind) => (
-                      <MenuItem key={ind} value={user.userId}>
-                        {user.taskUsers}
-                      </MenuItem>
-                    ))}
-                  </Select>
-                </FormControl>
-
-                <div className="form-group w-100">
-                  <TimeRangePicker
-                    handleTimeChange={handleBulkTimeChange}
-                    ind={null}
-                  />
-                  {timeError && (
-                    <small className="text-danger">Time is required</small>
-                  )}
-                </div>
-
-                <div className="form-group" style={{ width: '100%' }}>
-                  <button
-                    type="button"
-                    className="btn btn-primary btn-sm w-100"
-                    disabled={!hour || !bulkUser}
-                    onClick={() => {
-                      handleBulkSubmit();
-                      setOpen(false);
-                    }}
-                    style={{ height: '2.5rem' }}
-                  >
-                    Bulk Update
-                  </button>
-                </div>
-              </div>
-            </DialogContent>
-          </Dialog>
-        </>
+        <PlannerCollapseTable
+          data={data}
+          row={row}
+          handleTimeChange={handleTimeChange}
+          isLoading={isLoading}
+          selected={selected}
+          setSelected={setSelected}
+          setOpen={setOpen}
+          times={times}
+          taskUsers={taskUsers}
+        />
       );
-    },
-    muiSkeletonProps: {
-      animation: 'wave',
-      sx: {
-        backgroundColor: 'rgba(8, 2, 2, 0.5)'
-      }
     },
     enableDensityToggle: false
   });
 
-  const [bulkUser, setBulkUser] = useState('');
-
   return (
-    <MaterialReactTable
-      table={table}
-      state={{
-        isLoading: isLoading
-      }}
-    />
+    <>
+      <MaterialReactTable table={table} />
+      <Modal
+        show={open}
+        onHide={handleClose}
+        backdrop="static"
+        centered
+        contentClassName="mui-like-modal"
+      >
+        <Modal.Body style={{ padding: 0 }}>
+          <DialogTitle sx={{ px: 3, pt: 2, position: 'relative' }}>
+            Apply Bulk Operations
+            <IconButton
+              aria-label="close"
+              onClick={handleClose}
+              sx={{
+                position: 'absolute',
+                right: 8,
+                top: 8,
+                color: (theme) => theme.palette.grey[500]
+              }}
+              size="small"
+            >
+              <CloseIcon />
+            </IconButton>
+          </DialogTitle>
+
+          <DialogContent sx={{ px: 3, pt: 1, pb: 3 }}>
+            <Box display="flex" flexDirection="column" gap={2}>
+              <FormControl size="small" required fullWidth>
+                <Select
+                  value={bulkUser || ''}
+                  onChange={(e) => setBulkUser(e.target.value)}
+                  name="user_id[]"
+                  displayEmpty
+                  fullWidth
+                  sx={{
+                    height: '2.5rem',
+                    fontSize: '0.875rem'
+                  }}
+                >
+                  <MenuItem value="" disabled>
+                    --Select User--
+                  </MenuItem>
+                  {taskUserOptions}
+                </Select>
+              </FormControl>
+
+              <TimeRangePicker
+                handleTimeChange={handleBulkTimeChange}
+                ind={null}
+              />
+
+              {timeError && (
+                <small className="text-danger">Time is required</small>
+              )}
+
+              <button
+                type="button"
+                className="btn btn-primary btn-sm w-100"
+                disabled={!hour || !bulkUser}
+                onClick={() => {
+                  handleBulkSubmit(bulkUser, hour);
+                  handleClose();
+                }}
+                style={{ height: '2.5rem' }}
+              >
+                Bulk Update
+              </button>
+            </Box>
+          </DialogContent>
+        </Modal.Body>
+      </Modal>
+    </>
   );
 };
 

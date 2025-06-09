@@ -464,14 +464,12 @@ function PlannerModal(props) {
   };
   const [selected, setSelected] = useState([]);
   const formref = useRef(null);
-  const handleBulkSubmit = async () => {
+  const handleBulkSubmit = async (bulkUser, bulkTime) => {
     const data = new FormData(formref?.current);
 
     const existingUsers = data.getAll('user_id[]');
     const existingIds = data.getAll('id[]');
     const existingHours = data?.getAll('total_hours[]');
-    const bulkUser = existingUsers?.[existingUsers?.length - 1];
-    const bulkTime = existingHours?.[existingHours?.length - 1];
 
     data.delete('user_id[]');
 
