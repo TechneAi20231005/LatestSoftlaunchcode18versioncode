@@ -92,8 +92,8 @@ const PlannerMRT = ({
         return;
       }
       setTimeError(false);
-      setHour(time);
       const finalTime = formatTime24Hour(new Date(time));
+      setHour(finalTime);
       result.forEach((_, i) => handleChange(finalTime, i));
     },
     [handleChange, result]

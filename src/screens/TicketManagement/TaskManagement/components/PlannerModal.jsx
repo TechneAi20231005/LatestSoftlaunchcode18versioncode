@@ -472,6 +472,7 @@ function PlannerModal(props) {
     const existingHours = data?.getAll('total_hours[]');
 
     data.delete('user_id[]');
+    data.delete('total_hours[]');
 
     existingUsers.forEach((userId, index) => {
       const id = existingIds[index];
