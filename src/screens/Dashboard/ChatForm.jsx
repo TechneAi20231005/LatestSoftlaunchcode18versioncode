@@ -13,7 +13,7 @@ import {
 } from '../../redux/slices/chatBotSlice';
 import ChatbotTypingDots from './ChatbotTypingDots';
 import StopCircleIcon from '@mui/icons-material/StopCircle';
-function ChatForm({ chatHistory }) {
+function ChatForm({ chatHistory, project_id }) {
   const inputRef = useRef();
   const dispatch = useDispatch();
   const postBotDispatchRef = useRef(null);
@@ -109,7 +109,7 @@ function ChatForm({ chatHistory }) {
     dispatch(
       postBotMessages({
         formData: {
-          project_id: '683d3fca862043edcb8ebe1d',
+          project_id: project_id,
           question: userMessage,
           user_id: localStorage.getItem('id'),
           user_name: localStorage.getItem('first_name') || 'Friend',
@@ -194,7 +194,8 @@ function ChatForm({ chatHistory }) {
     manuallyStopped.current = true;
     recognitionRef.current?.stop();
   };
-  const handleStopMessage = () => {
+  const handleStopMessage = (e) => {
+    e.preventDefault();
     abortControllerRef.current?.abort();
 
     const lastMessage = chatHistory[chatHistory.length - 1];
@@ -209,7 +210,9 @@ function ChatForm({ chatHistory }) {
 
       <form
         className="chat-form"
-        onSubmit={handleFormSubmit}
+        onSubmit={
+          !isLoading?.chatBotList ? handleFormSubmit : (e) => e.preventDefault()
+        }
         style={{ display: 'flex', alignItems: 'center', gap: 8 }}
       >
         <textarea
@@ -221,7 +224,9 @@ function ChatForm({ chatHistory }) {
           onKeyDown={(e) => {
             if (e.key === 'Enter' && !e.shiftKey) {
               e.preventDefault();
-              handleFormSubmit(e);
+              if (!isLoading?.chatBotList) {
+                handleFormSubmit(e);
+              }
             }
           }}
           rows={1}
@@ -241,7 +246,7 @@ function ChatForm({ chatHistory }) {
         {
           isLoading?.chatBotList ? (
             <Tooltip placement="top" title="Stop Message" arrow>
-              <IconButton type="submit" onClick={handleStopMessage}>
+              <IconButton type="button" onClick={handleStopMessage}>
                 <StopCircleIcon fontSize="small" />
               </IconButton>
             </Tooltip>

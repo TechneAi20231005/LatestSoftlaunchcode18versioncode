@@ -15,6 +15,8 @@ function ChatBot() {
   const [showChatbot, setShowChatbot] = useState(false);
   const chatBodyRef = useRef();
 
+  const project_id = '684a7955231b7e483636c6ec';
+
   useEffect(() => {
     chatBodyRef.current.scrollTo({
       top: chatBodyRef.current.scrollHeight,
@@ -48,19 +50,22 @@ function ChatBot() {
         </div>
         {/* chatbot Body */}
         <div ref={chatBodyRef} className="chat-body">
-          <div className="message bot-message">
+          <div
+            style={{ animationDelay: '0.9s' }}
+            className="message bot-message"
+          >
             <ChatbotIcon />
             <span className="message-text">
               Hey There {userName} 🤚 <br /> How can I help you today?
             </span>
           </div>
           {chatHistory?.map((chat, index) => (
-            <ChatMessage key={index} chat={chat} />
+            <ChatMessage key={index} chat={chat} project_id={project_id} />
           ))}
         </div>
         {/* chatbot Footer */}
         <div className="chat-footer">
-          <ChatForm chatHistory={chatHistory} />
+          <ChatForm chatHistory={chatHistory} project_id={project_id} />
         </div>
       </div>
     </div>

@@ -8,27 +8,21 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
-import { flagBotMessage } from '../../redux/services/chatBot';
-import { useDispatch } from 'react-redux';
+import FeedbackModal from '../../components/FeedbackModal';
 
-function ChatMessage({ chat }) {
-  const dispatch = useDispatch();
+function ChatMessage({ chat, project_id }) {
   const [feedback, setFeedback] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
   const [tooltipMessage, setTooltipMessage] = useState('Copy');
+  const [feedbackModal, setFeedbackModal] = useState(false);
 
   const handleThumbClick = (type) => {
     if (feedback === type) return;
-    setFeedback(type);
-    dispatch(
-      flagBotMessage({
-        formData: {
-          project_id: '683d3fca862043edcb8ebe1d',
-          uuid: chat?.text?.chat_entry_uuid || 0,
-          flagging: type === 'up' ? 1 : 0
-        }
-      })
-    );
+    if (type === 'up') {
+      setFeedback(type);
+    } else {
+      setFeedbackModal(true);
+    }
   };
 
   const handleCopy = () => {
@@ -112,6 +106,15 @@ function ChatMessage({ chat }) {
             </IconButton>
           </Tooltip>
         </div>
+      )}
+      {feedbackModal && (
+        <FeedbackModal
+          onClose={() => setFeedbackModal(false)}
+          open={feedbackModal}
+          setFeedback={setFeedback}
+          chat={chat}
+          project_id={project_id}
+        />
       )}
     </>
   );

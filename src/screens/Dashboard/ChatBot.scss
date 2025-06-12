@@ -119,7 +119,7 @@
   outline: none;
   color: #fff;
   cursor: pointer;
-  font-size: 0.5rem;
+  font-size: 2rem;
   padding-top: 2px;
   border-radius: 50%;
   margin-right: -10px;
@@ -168,10 +168,26 @@
   white-space: pre-line;
   font-size: 0.85rem;
  box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
+   transition: transform 0.3s ease-in-out;
 }
 .chat-body .bot-message .message-text {
   background: #f6f2ff;
   border-radius: 13px 13px 13px 13px;
+}
+.chat-body .message .message-text:hover {
+  transform: scale(1.02);
+}
+.bot-message {
+  animation: fadeInUp 0.7s ease forwards;
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+@keyframes fadeInUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .chat-body .user-message {
@@ -192,7 +208,7 @@ box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px;
   bottom: 0;
   width: 100%;
   background: #fff;
-  padding: 15px 22px 20px;
+  padding: 8px 22px 20px;
 }
 
 .chat-footer .chat-form {
