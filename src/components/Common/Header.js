@@ -161,7 +161,7 @@ export default function Header() {
             <i className="fa fa-bars" />
           </button>
 
-          <div className="d-flex gap-2 align-items-center">
+          <div className="d-flex gap-3 align-items-center">
             <NotificationSystem />
             {/* notification and modal */}
             {/* <Dropdown

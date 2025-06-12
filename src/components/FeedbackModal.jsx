@@ -17,24 +17,21 @@ const FeedbackWrapper = ({ open, onClose, chat, setFeedback, project_id }) => {
   const [details, setDetails] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
-  const issueTypes = [
-    'Incorrect Information',
-    'Harmful Content',
-    'Poor Response Quality',
-    'Technical Issue',
-    'Other'
-  ];
+  const issueTypes = ['Incorrect Information', 'Feature Deprecation', 'Other'];
 
   const handleSubmit = () => {
+    if (!issueType) {
+      return;
+    }
     dispatch(
       flagBotMessage({
         formData: {
           project_id: project_id,
-          uuid: chat?.text?.chat_entry_uuid || 0,
+          chat_entry_id: chat?.text?.chat_entry_uuid || 0,
           flagging: {
             flag_id: 0,
-            type: issueType,
-            remarks: details
+            type: issueType || '',
+            remarks: details || ''
           }
         }
       })
@@ -68,6 +65,7 @@ const FeedbackWrapper = ({ open, onClose, chat, setFeedback, project_id }) => {
           <Select
             displayEmpty
             value={issueType}
+            required
             onChange={(e) => setIssueType(e.target.value)}
             sx={{
               height: '42px',

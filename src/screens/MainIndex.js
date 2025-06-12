@@ -101,6 +101,7 @@ import PendingTicket from './ConsolidatedView/ModulewiseModule/PendingTicket';
 import CompletedTicket from './ConsolidatedView/ModulewiseModule/CompletedTicket';
 import PendingTask from './ConsolidatedView/ModulewiseModule/PendingTask';
 import MenuManagement from './MenuManagement/ManageMenu';
+import CustomerFeedback from './ConsolidatedView/CustomerFeedback';
 // import TestBankComponent from './TicketManagement/TaskManagement/components/TestBankComponent';
 
 import { VendorMaster } from './BillChecking/Masters/VendorMaster';
@@ -885,6 +886,11 @@ class MainIndex extends React.Component {
               element={<PoPreview />}
             />
             <Route exact path={`/${_base}/POHistory`} element={<PoHistory />} />
+            <Route
+              exact
+              path={`/${_base}/CustomerFeedback`}
+              element={<CustomerFeedback />}
+            />
             <Route
               exact
               path={`/${_base}/POVendorExportReport`}

@@ -8,12 +8,9 @@ import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
 import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import CheckIcon from '@mui/icons-material/Check';
-import { flagBotMessage } from '../../redux/services/chatBot';
-import { useDispatch } from 'react-redux';
 import FeedbackModal from '../../components/FeedbackModal';
 
 function ChatMessage({ chat, project_id }) {
-  const dispatch = useDispatch();
   const [feedback, setFeedback] = useState(null);
   const [isCopied, setIsCopied] = useState(false);
   const [tooltipMessage, setTooltipMessage] = useState('Copy');
@@ -23,15 +20,6 @@ function ChatMessage({ chat, project_id }) {
     if (feedback === type) return;
     if (type === 'up') {
       setFeedback(type);
-      dispatch(
-        flagBotMessage({
-          formData: {
-            project_id: project_id,
-            uuid: chat?.text?.chat_entry_uuid || 0,
-            flagging: type === 'up' ? 1 : 0
-          }
-        })
-      );
     } else {
       setFeedbackModal(true);
     }

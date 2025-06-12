@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import './notifications.scss';
-import { Link } from 'react-router-dom';
+import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { Divider } from '@mui/material';
+import { _base } from '../../settings/constants';
 
 const NotificationSystem = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -25,32 +26,32 @@ const NotificationSystem = () => {
       timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
       read: false,
       type: 'success'
+    },
+    {
+      id: 3,
+      title: 'Reminder',
+      message: "Don't forget to check your dashboard for important updates.",
+      timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
+      read: true,
+      type: 'warning'
+    },
+    {
+      id: 4,
+      title: 'New Feature Available',
+      message:
+        "We've added a new notification system with improved animations and accessibility.",
+      timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
+      read: true,
+      type: 'info'
+    },
+    {
+      id: 5,
+      title: 'Maintenance Notice',
+      message: 'Scheduled maintenance will occur this weekend from 2-4 AM EST.',
+      timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
+      read: true,
+      type: 'warning'
     }
-    // {
-    //   id: 3,
-    //   title: 'Reminder',
-    //   message: "Don't forget to check your dashboard for important updates.",
-    //   timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-    //   read: true,
-    //   type: 'warning'
-    // },
-    // {
-    //   id: 4,
-    //   title: 'New Feature Available',
-    //   message:
-    //     "We've added a new notification system with improved animations and accessibility.",
-    //   timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-    //   read: true,
-    //   type: 'info'
-    // },
-    // {
-    //   id: 5,
-    //   title: 'Maintenance Notice',
-    //   message: 'Scheduled maintenance will occur this weekend from 2-4 AM EST.',
-    //   timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-    //   read: true,
-    //   type: 'warning'
-    // }
   ]);
 
   const [ticketNotifications] = useState([
@@ -121,6 +122,7 @@ const NotificationSystem = () => {
         return 'ℹ';
     }
   };
+  const navigate = useNavigate();
 
   // Close notifications when clicking outside
   useEffect(() => {
@@ -250,7 +252,10 @@ const NotificationSystem = () => {
                     <div className="notification-icon">
                       {getTypeIcon(notification.type)}
                     </div>
-                    <div className="notification-content">
+                    <div
+                      onClick={() => navigate(`${_base}/CustomerFeedback`)}
+                      className="notification-content"
+                    >
                       <div className="notification-title">
                         {notification.title}
                       </div>

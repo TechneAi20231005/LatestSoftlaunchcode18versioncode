@@ -21142,13 +21142,12 @@ a {
   -webkit-appearance: none;
   -moz-appearance: none;
 }
-
+/*
 .notifications {
 
   z-index: 100 !important;
 
-}
-z-index: 1000 !important;
+} */
 
 .notifications .pulse,
 .notifications .pulse:focus {
