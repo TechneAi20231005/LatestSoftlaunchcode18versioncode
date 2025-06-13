@@ -22,6 +22,7 @@ import ManageMenuService from '../../services/MenuManagementService/ManageMenuSe
 import DemoProfileImg from '../../assets/images/profile_av.png';
 import './style.scss';
 import { errorHandler } from '../../utils';
+import NotificationSystem from '../../screens/NotificationBot/NotificationSystem';
 
 export default function Header() {
   // // initial state
@@ -133,6 +134,7 @@ export default function Header() {
   // // life cycle
   useEffect(() => {
     loadData();
+
     const interval = setInterval(loadNotifcation(), 5000);
     return () => clearInterval(interval);
   }, []);
@@ -160,9 +162,16 @@ export default function Header() {
             <i className="fa fa-bars" />
           </button>
 
-          <div className="d-flex gap-2 align-items-center">
+          <div className="d-flex gap-3 align-items-center">
+            <NotificationSystem
+              loadNotifcation={loadNotifcation}
+              setNotifications={setNotifications}
+              notifications={notifications}
+              handleReadNotification={handleReadNotification}
+              handleMarkAllNotification={handleMarkAllNotification}
+            />
             {/* notification and modal */}
-            <Dropdown
+            {/* <Dropdown
               className="notifications"
               onClick={() => {
                 loadNotifcation();
@@ -250,14 +259,11 @@ export default function Header() {
                   </div>
                 </div>
               </Dropdown.Menu>
-            </Dropdown>
+            </Dropdown> */}
 
-            {/* profile and modal */}
             <Dropdown
               className="dropdown-animation dropdown d-flex align-items-center"
-
               style={{ zIndex: 100 }}
-
             >
               <p className="mb-0 text-end line-height-sm fw-bolder me-2 d-none d-sm-block">
                 {`${localStorage.getItem('first_name')} ${localStorage.getItem(
