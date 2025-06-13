@@ -186,7 +186,7 @@ const NotificationSystem = ({
             <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
           </svg>
         </div>
-        {notifications?.length >= 0 && (
+        {notifications?.length > 0 && (
           <span
             className="notification-badge"
             aria-label={`${notifications?.length} unread notifications`}
