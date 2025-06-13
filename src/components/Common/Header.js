@@ -134,6 +134,7 @@ export default function Header() {
   // // life cycle
   useEffect(() => {
     loadData();
+
     const interval = setInterval(loadNotifcation(), 5000);
     return () => clearInterval(interval);
   }, []);
@@ -162,7 +163,13 @@ export default function Header() {
           </button>
 
           <div className="d-flex gap-3 align-items-center">
-            <NotificationSystem />
+            <NotificationSystem
+              loadNotifcation={loadNotifcation}
+              setNotifications={setNotifications}
+              notifications={notifications}
+              handleReadNotification={handleReadNotification}
+              handleMarkAllNotification={handleMarkAllNotification}
+            />
             {/* notification and modal */}
             {/* <Dropdown
               className="notifications"

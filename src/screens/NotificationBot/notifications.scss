@@ -3,7 +3,7 @@
   display: inline-block;
 }
 
-/* Notification Button Styles */
+
 .notification-button {
   position: relative;
   background: rgba(255, 255, 255, 0.2);
@@ -41,7 +41,7 @@
   transform: rotate(15deg);
 }
 
-/* Notification Badge */
+
 .notification-badge {
   position: absolute;
   top: -4px;
@@ -59,7 +59,7 @@
   animation: pulse 2s infinite;
 }
 
-/* Notification Panel */
+
 .notification-panel {
   position: absolute;
   top: calc(100% + 12px);
@@ -97,7 +97,7 @@
   transform: rotate(45deg);
 }
 
-/* Notification Header */
+
 .notification-header {
   padding: 1rem 1.25rem;
   border-bottom: 1px solid #e2e8f0;
@@ -140,7 +140,6 @@
   box-shadow: 0 0 0 2px #3b82f6;
 }
 
-/* Notification Tabs */
 .notification-tabs {
   display: flex;
   background: #f8fafc;
@@ -188,7 +187,7 @@
   font-weight: 600;
 }
 
-/* Notification List */
+
 .notification-list {
   max-height: 350px;
   overflow-y: auto;
@@ -212,7 +211,7 @@
   background: #94a3b8;
 }
 
-/* Notification Items */
+
 .notification-item {
   padding: 1rem 1.25rem;
   display: flex;
@@ -337,7 +336,7 @@
   margin-top: 0.5rem;
 }
 
-/* Empty State */
+
 .empty-state {
   padding: 3rem 1.25rem;
   text-align: center;
@@ -349,7 +348,7 @@
   font-size: 0.9rem;
 }
 
-/* Notification Footer */
+
 .notification-footer {
   padding: 1rem 1.25rem;
   border-top: 1px solid #e2e8f0;
@@ -396,7 +395,7 @@
   box-shadow: 0 0 0 2px #3b82f6, 0 0 0 4px rgba(59, 130, 246, 0.1);
 }
 
-/* Overlay */
+
 .notification-overlay {
   position: fixed;
   top: 0;
@@ -408,7 +407,7 @@
   animation: fadeIn 0.3s ease;
 }
 
-/* Animations */
+
 @keyframes ring {
   0%, 100% {
     transform: rotate(0deg);
@@ -439,7 +438,7 @@
   }
 }
 
-/* Responsive Design */
+
 @media (max-width: 768px) {
   .notification-panel {
     width: 360px;
@@ -483,14 +482,14 @@
   }
 }
 
-/* Focus and accessibility styles */
+
 .notification-item:focus {
   outline: none;
   background: #f0f9ff;
   box-shadow: inset 0 0 0 2px #3b82f6;
 }
 
-/* High contrast mode support */
+
 @media (prefers-contrast: high) {
   .notification-panel {
     border: 2px solid #000;
@@ -505,7 +504,7 @@
   }
 }
 
-/* Reduced motion support */
+
 @media (prefers-reduced-motion: reduce) {
   .notification-button.has-notifications .bell-icon {
     animation: none;

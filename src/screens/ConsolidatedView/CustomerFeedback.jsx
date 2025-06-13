@@ -51,7 +51,11 @@ const CustomerFeedback = () => {
             {!isSubmitted ? (
               <form onSubmit={handleSubmit} className="feedback-form">
                 <div className="form-group">
-                  <label htmlFor="reviewer-feedback" className="form-label">
+                  <label
+                    htmlFor="reviewer-feedback"
+                    style={{ fontWeight: 600, fontSize: '0.9rem' }}
+                    className="form-label"
+                  >
                     Your Assessment and Recommendations
                   </label>
                   <p className="form-instructions">
