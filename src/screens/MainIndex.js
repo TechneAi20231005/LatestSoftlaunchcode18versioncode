@@ -188,6 +188,7 @@ import ChatBot from './Dashboard/ChatBot';
 import MyTicketRefactored from './TicketManagement/MyTicket/MyTicketFilters';
 import TestPlanHistoryComponent from './TestCases/TestCaseReview/TestPlanHistoryComponent';
 import { QueryGroupMaster } from './Masters/QueryGroupMaster/QueryGroupMaster';
+import ChatbotLayout from './Dashboard/ChatbotLayout';
 class MainIndex extends React.Component {
   render() {
     // if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
@@ -886,6 +887,11 @@ class MainIndex extends React.Component {
               element={<PoPreview />}
             />
             <Route exact path={`/${_base}/POHistory`} element={<PoHistory />} />
+            <Route
+              exact
+              path={`/${_base}/ChatBotLayout`}
+              element={<ChatbotLayout />}
+            />
             {/* <Route
               exact
               path={`/${_base}/CustomerFeedback`}

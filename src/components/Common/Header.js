@@ -140,7 +140,7 @@ export default function Header() {
   }, []);
 
   return (
-    <div className="header">
+    <div style={{ display: 'none' }} className="header">
       <nav className="navbar pt-4">
         <div className="container-xxl">
           {notify && <Alert alertData={notify} />}
