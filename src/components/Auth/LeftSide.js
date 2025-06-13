@@ -28,7 +28,7 @@ class LeftSide extends React.Component {
               style={{ fontFamily: 'Georgia, serif' }}
               className="color-900 text-center"
             >
-              My-Task
+              Connect Us
             </h1>
             <h2 style={inlineStyles}>Let's Manage Better</h2>
           </div>
