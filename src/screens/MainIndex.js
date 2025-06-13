@@ -886,11 +886,11 @@ class MainIndex extends React.Component {
               element={<PoPreview />}
             />
             <Route exact path={`/${_base}/POHistory`} element={<PoHistory />} />
-            <Route
+            {/* <Route
               exact
               path={`/${_base}/CustomerFeedback`}
               element={<CustomerFeedback />}
-            />
+            /> */}
             <Route
               exact
               path={`/${_base}/POVendorExportReport`}
