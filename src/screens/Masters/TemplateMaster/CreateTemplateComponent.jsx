@@ -119,6 +119,7 @@ const CreateTemplateComponent = () => {
     setSelectedOptions(selectedOptions === label ? null : label);
     setSelectedOptionId(label);
     setIsMenuOpen(!isMenuOpen);
+    setParentTaskName('');
   };
   const handleSelectOptionClick = () => {
     setIsMenuOpen(!isMenuOpen);
@@ -396,63 +397,70 @@ const CreateTemplateComponent = () => {
       setSubmitting(false);
     }
   };
+  const [parentTaskName, setParentTaskName] = useState(null);
 
   const addTask = (e) => {
     e.preventDefault();
-    if (submitting) return;
-    setSubmitting(true);
-    const hoursInput = document.getElementById('hours_add');
-    const enteredValue = hoursInput.value.trim();
-    const timeRegex = /^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/;
+    if (!selectedOptions) {
+      setParentTaskName('Please select a parent task type.');
+    } else {
+      setParentTaskName(''); // Clear the error message if present
 
-    if (!timeRegex.test(enteredValue)) {
-      // If the format is invalid, show an alert or handle it accordingly
-      alert("Invalid time format. Please use 'HH:mm' format");
-      return; // Prevent further execution of the function
-    }
+      if (submitting) return;
+      setSubmitting(true);
+      const hoursInput = document.getElementById('hours_add');
+      const enteredValue = hoursInput.value.trim();
+      const timeRegex = /^(?:2[0-3]|[01][0-9]):[0-5][0-9]$/;
 
-    var form = new FormData(e.target);
-    var temp = {
-      task_name: form.get('taskName'),
+      if (!timeRegex.test(enteredValue)) {
+        // If the format is invalid, show an alert or handle it accordingly
+        alert("Invalid time format. Please use 'HH:mm' format");
+        return; // Prevent further execution of the function
+      }
 
-      total_time: form.get('hours'),
-      days: form.get('days'),
-      start_days: form.get('start_days'),
-      task_type_id: selectedOptionId
-    };
+      var form = new FormData(e.target);
+      var temp = {
+        task_name: form.get('taskName'),
 
-    var basket_id = form.get('basket_id');
+        total_time: form.get('hours'),
+        days: form.get('days'),
+        start_days: form.get('start_days'),
+        task_type_id: selectedOptionId
+      };
 
-    var tempData = rows;
-    tempData.template_data[basket_id].basket_task.push(temp);
+      var basket_id = form.get('basket_id');
 
-    setRows(null);
-    setRows(tempData);
+      var tempData = rows;
+      tempData.template_data[basket_id].basket_task.push(temp);
 
-    for (
-      var i = 0;
-      i < document.getElementsByClassName('taskField').length;
-      i++
-    ) {
-      document.getElementsByClassName('taskField')[i].value = '';
+      setRows(null);
+      setRows(tempData);
+
+      for (
+        var i = 0;
+        i < document.getElementsByClassName('taskField').length;
+        i++
+      ) {
+        document.getElementsByClassName('taskField')[i].value = '';
+      }
+      if (typeRef && typeRef?.current?.commonProps?.hasValue === true) {
+        typeRef.current.clearValue();
+      }
+      if (document.getElementById('task_add').value !== '') {
+        document.getElementById('task_add').value = '';
+      }
+      if (document.getElementById('days_add').value !== '') {
+        document.getElementById('days_add').value = '';
+      }
+      if (document.getElementById('hours_add').value !== '') {
+        document.getElementById('hours_add').value = '';
+      }
+      if (document.getElementById('start_days').value !== '') {
+        document.getElementById('start_days').value = '';
+      }
+      setShow(false);
+      setSubmitting(false);
     }
-    if (typeRef && typeRef?.current?.commonProps?.hasValue === true) {
-      typeRef.current.clearValue();
-    }
-    if (document.getElementById('task_add').value !== '') {
-      document.getElementById('task_add').value = '';
-    }
-    if (document.getElementById('days_add').value !== '') {
-      document.getElementById('days_add').value = '';
-    }
-    if (document.getElementById('hours_add').value !== '') {
-      document.getElementById('hours_add').value = '';
-    }
-    if (document.getElementById('start_days').value !== '') {
-      document.getElementById('start_days').value = '';
-    }
-    setShow(false);
-    setSubmitting(false);
   };
 
   const handleCancelTask = (e) => {
@@ -679,6 +687,7 @@ const CreateTemplateComponent = () => {
                         type="button"
                         class="btn btn-sm btn-primary"
                         onClick={(e) => {
+                          setSelectedOptions(null);
                           showHandler();
                           setSelectedBasket(null);
                           setSelectedBasket(basketIndex);
@@ -1183,7 +1192,17 @@ const CreateTemplateComponent = () => {
                                     />
                                   </div>
                                 )}
+                                {parentTaskName && (
+                                  <small
+                                    style={{
+                                      color: 'red'
+                                    }}
+                                  >
+                                    {parentTaskName}
+                                  </small>
+                                )}
                               </div>
+
                               {/* </div> */}
 
                               {/* <label>
