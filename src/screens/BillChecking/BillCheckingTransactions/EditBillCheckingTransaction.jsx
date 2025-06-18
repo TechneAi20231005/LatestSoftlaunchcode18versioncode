@@ -830,7 +830,7 @@ export default function CreateBillCheckingTransaction({ match }) {
     if (checkRole && checkRole[0]?.can_update === 0) {
       // alert("Rushi")
 
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
     return () => {};
   }, [checkRole]);

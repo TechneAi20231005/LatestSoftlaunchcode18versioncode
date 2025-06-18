@@ -35,19 +35,18 @@ export default function EditModuleComponent({ match }) {
   const [Projectdropdown, setProjectdropdown] = useState([]);
 
   const loadData = useCallback(async () => {
-
-      await new ProjectService().getProject().then((res) => {
-          if (res.status === 200) {
-            if (res.data.status === 1) {
-              console.log(res.data.data.data, ">>>>>");
-              setProjectdropdown(
-                res.data.data.data
-                  .filter((d) => d.is_active === 1)
-                  .map((d) => ({ value: d.id, label: d.project_name }))
-              );
-            }
-          }
-        });
+    await new ProjectService().getProject().then((res) => {
+      if (res.status === 200) {
+        if (res.data.status === 1) {
+          console.log(res.data.data.data, '>>>>>');
+          setProjectdropdown(
+            res.data.data.data
+              .filter((d) => d.is_active === 1)
+              .map((d) => ({ value: d.id, label: d.project_name }))
+          );
+        }
+      }
+    });
     try {
       const res = await new ManageMenuService().getRole(roleId);
       if (res.status === 200) {
@@ -129,7 +128,7 @@ export default function EditModuleComponent({ match }) {
     if (checkRole && checkRole[0]?.can_update === 0) {
       // alert("Rushi")
 
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
 
@@ -158,35 +157,35 @@ export default function EditModuleComponent({ match }) {
                             Select Project : <Astrick color="red" size="13px" />
                           </b>
                         </label>
-                           <div className="col-sm-4">
-                                                  <Field
-                                                    as="select"
-                                                    className="form-control form-control-sm"
-                                                    id="project_id"
-                                                    name="project_id"
-                                                    onChange={(e) => {
-                                                      setFieldValue('project_id', e?.target?.value);
-                                                    }} // Call handleChange on selection
-                                                    defaultValue={
-                                                      data &&
-                                                      Projectdropdown?.filter(
-                                                        (d) => d.value === data.project_id
-                                                      )
-                                                    }
-                                                  >
-                                                    <option value="" label="Select a project" />
-                                                    {Projectdropdown?.map((option) => (
-                                                      <option key={option.value} value={option.value}>
-                                                        {option.label}
-                                                      </option>
-                                                    ))}
-                                                  </Field>
-                                                  <ErrorMessage
-                                                    name="project_id"
-                                                    component="small"
-                                                    className="text-danger"
-                                                  />
-                                                </div>
+                        <div className="col-sm-4">
+                          <Field
+                            as="select"
+                            className="form-control form-control-sm"
+                            id="project_id"
+                            name="project_id"
+                            onChange={(e) => {
+                              setFieldValue('project_id', e?.target?.value);
+                            }} // Call handleChange on selection
+                            defaultValue={
+                              data &&
+                              Projectdropdown?.filter(
+                                (d) => d.value === data.project_id
+                              )
+                            }
+                          >
+                            <option value="" label="Select a project" />
+                            {Projectdropdown?.map((option) => (
+                              <option key={option.value} value={option.value}>
+                                {option.label}
+                              </option>
+                            ))}
+                          </Field>
+                          <ErrorMessage
+                            name="project_id"
+                            component="small"
+                            className="text-danger"
+                          />
+                        </div>
                         {/* <div className="col-sm-4">
                           <Field name="project_id">
                             {({ field, form }) => (

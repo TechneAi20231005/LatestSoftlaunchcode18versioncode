@@ -740,7 +740,7 @@ function CreateUserComponent({ match }) {
     if (checkRole && checkRole[0]?.can_create === 0) {
       // alert("Rushi")
 
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
 

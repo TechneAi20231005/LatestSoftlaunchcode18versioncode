@@ -11,7 +11,7 @@ const withTokenExpirationCheck = (WrappedComponent) => {
     // Check token expiration during each render
     if (checkTokenExpiration()) {
       localStorage.clear(); // Clear the session data
-      window.location.href = `${process.env.PUBLIC_URL}/`; // Redirect to login page
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/`; // Redirect to login page
       return null; // Return null to prevent rendering of the WrappedComponent
     }
 
