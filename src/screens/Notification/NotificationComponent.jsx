@@ -125,8 +125,8 @@ const NotificationComponent = () => {
                         color: '#212529',
                         fontWeight: 600,
                         fontSize: '0.9rem',
-                        whiteSpace: 'normal', // ✅ allow wrapping
-                        wordBreak: 'break-word', // ✅ breaks long words
+                        whiteSpace: 'normal',
+                        wordBreak: 'break-word',
                         overflowWrap: 'break-word'
                       }}
                     >
