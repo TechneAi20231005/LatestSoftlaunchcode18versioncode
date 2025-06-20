@@ -8,7 +8,8 @@
 
 .feedback-container {
   max-width: 100%;
-  margin: 0 auto;
+  // margin: 0 auto;
+    margin: 0 10px;
   background: white;
   border-radius: 12px;
   box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
@@ -50,7 +51,11 @@
 
 
 .feedback-main {
+  height: 36rem;
+  overflow: auto;
   padding: 30px 24px;
+   scrollbar-width: thin;
+  scrollbar-color: #484c7f transparent;
 }
 
 
@@ -180,7 +185,7 @@
   gap: 8px;
 }
 
-.avatar {
+.avatars {
   width: 28px;
   height: 28px;
   border-radius: 50%;

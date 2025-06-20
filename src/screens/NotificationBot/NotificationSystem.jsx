@@ -3,6 +3,12 @@ import './notifications.scss';
 import { Link, Navigate, useNavigate } from 'react-router-dom';
 import { Divider } from '@mui/material';
 import { _base } from '../../settings/constants';
+import { useDispatch, useSelector } from 'react-redux';
+import { reviewerNotificationList } from '../../redux/services/chatBot/';
+import MessageIcon from '@mui/icons-material/Message';
+import moment from 'moment/moment';
+import { masterUser } from '../../hooks/masterUser';
+import { project_id } from '../../settings/constants';
 
 const NotificationSystem = ({
   loadNotifcation,
@@ -13,122 +19,23 @@ const NotificationSystem = ({
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [activeTab, setActiveTab] = useState('ticket');
-
-  const [reviewerNotifications] = useState([
-    // {
-    //   id: 1,
-    //   title: 'Welcome Message',
-    //   message:
-    //     'Welcome to our notification system! You can view all your important updates here.',
-    //   timestamp: new Date(Date.now() - 2 * 60 * 1000), // 2 minutes ago
-    //   is_read: false,
-    //   type: 'info'
-    // },
-    // {
-    //   id: 2,
-    //   title: 'System Update',
-    //   message:
-    //     'The system has been updated with new features and improvements.',
-    //   timestamp: new Date(Date.now() - 30 * 60 * 1000), // 30 minutes ago
-    //   is_read: false,
-    //   type: 'success'
-    // }
-    // {
-    //   id: 3,
-    //   title: 'Reminder',
-    //   message: "Don't forget to check your dashboard for important updates.",
-    //   timestamp: new Date(Date.now() - 2 * 60 * 60 * 1000), // 2 hours ago
-    //   read: true,
-    //   type: 'warning'
-    // },
-    // {
-    //   id: 4,
-    //   title: 'New Feature Available',
-    //   message:
-    //     "We've added a new notification system with improved animations and accessibility.",
-    //   timestamp: new Date(Date.now() - 24 * 60 * 60 * 1000), // 1 day ago
-    //   read: true,
-    //   type: 'info'
-    // },
-    // {
-    //   id: 5,
-    //   title: 'Maintenance Notice',
-    //   message: 'Scheduled maintenance will occur this weekend from 2-4 AM EST.',
-    //   timestamp: new Date(Date.now() - 3 * 24 * 60 * 60 * 1000), // 3 days ago
-    //   read: true,
-    //   type: 'warning'
-    // }
-  ]);
-
-  // const [ticketNotifications] = useState([
-  //   {
-  //     id: 1,
-  //     ticketId: 'KO20726',
-  //     message: 'Some changes have been made by ticket owner Amreen Shaikh',
-  //     date: '2025-06-11',
-  //     time: '11:00:14',
-  //     is_read: false
-  //   },
-  //   {
-  //     id: 2,
-  //     ticketId: 'KO20726',
-  //     message: 'Some changes have been made by ticket owner Amreen Shaikh',
-  //     date: '2025-06-11',
-  //     time: '11:00:14',
-  //     is_read: false
-  //   },
-  //   {
-  //     id: 3,
-  //     ticketId: 'KO20726',
-  //     message: 'Some changes have been made by ticket owner Amreen Shaikh',
-  //     date: '2025-06-11',
-  //     time: '11:00:14',
-  //     is_read: true
-  //   }
-  // ]);
+  const dispatch = useDispatch();
+  const reviewerNotification = useSelector(
+    (state) => state?.chatBotSlice?.reviewerNotificationList || []
+  );
+  const isMasterUser = masterUser();
 
   const notificationRef = useRef(null);
   const buttonRef = useRef(null);
-
-  const reviewerUnreadCount = reviewerNotifications.filter(
-    (n) => !n.read
-  ).length;
-  // const ticketUnreadCount = ticketNotifications.filter((n) => !n.read).length;
   const totalUnreadCount = 0;
 
   const toggleNotifications = () => {
     loadNotifcation();
+    isMasterUser &&
+      dispatch(reviewerNotificationList({ project_id: project_id }));
     setIsOpen(!isOpen);
   };
 
-  const formatTimestamp = (timestamp) => {
-    const now = new Date();
-    const diff = now - timestamp;
-    const minutes = Math.floor(diff / (1000 * 60));
-    const hours = Math.floor(diff / (1000 * 60 * 60));
-    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-
-    if (minutes < 60) {
-      return `${minutes}m ago`;
-    } else if (hours < 24) {
-      return `${hours}h ago`;
-    } else {
-      return `${days}d ago`;
-    }
-  };
-
-  const getTypeIcon = (type) => {
-    switch (type) {
-      case 'success':
-        return '✓';
-      case 'warning':
-        return '⚠';
-      case 'error':
-        return '✗';
-      default:
-        return 'ℹ';
-    }
-  };
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -156,7 +63,9 @@ const NotificationSystem = ({
   };
 
   const currentNotifications =
-    activeTab === 'reviewer' ? reviewerNotifications : notifications;
+    activeTab === 'reviewer'
+      ? reviewerNotification?.flagged_entries || []
+      : notifications;
 
   return (
     <div className="notification-system">
@@ -186,12 +95,14 @@ const NotificationSystem = ({
             <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
           </svg>
         </div>
-        {notifications?.length > 0 && (
+        {(notifications?.length > 0 ||
+          reviewerNotification?.flagged_entries?.length > 0) && (
           <span
             className="notification-badge"
-            aria-label={`${notifications?.length} unread notifications`}
+            aria-label={`${notifications?.length} ticket notifications and ${reviewerNotification?.flagged_entries?.length} reviewer notifications`}
           >
-            {notifications?.length || 0}
+            {notifications?.length +
+              (reviewerNotification?.flagged_entries?.length || 0)}
           </span>
         )}
       </button>
@@ -216,15 +127,6 @@ const NotificationSystem = ({
         </div>
 
         <div className="notification-tabs">
-          {/* <button
-            className={`tab-button ${activeTab === 'reviewer' ? 'active' : ''}`}
-            onClick={() => setActiveTab('reviewer')}
-          >
-            Reviewer
-            {reviewerUnreadCount > 0 && (
-              <span className="tab-badge">{reviewerUnreadCount}</span>
-            )}
-          </button> */}
           <button
             className={`tab-button ${activeTab === 'ticket' ? 'active' : ''}`}
             onClick={() => setActiveTab('ticket')}
@@ -234,42 +136,71 @@ const NotificationSystem = ({
               <span className="tab-badge">{notifications?.length}</span>
             )}
           </button>
+          {isMasterUser && (
+            <button
+              className={`tab-button ${
+                activeTab === 'reviewer' ? 'active' : ''
+              }`}
+              onClick={() => setActiveTab('reviewer')}
+            >
+              Reviewer
+              {reviewerNotification?.flagged_entries?.length >= 0 && (
+                <span className="tab-badge">
+                  {reviewerNotification?.flagged_entries?.length || '0'}
+                </span>
+              )}
+            </button>
+          )}
         </div>
 
         <div className="notification-list">
-          {notifications?.length === 0 ? (
+          {currentNotifications?.length === 0 ? (
             <div className="empty-state">
               <p>No notifications yet</p>
             </div>
           ) : (
-            currentNotifications?.map((notification) => {
+            currentNotifications?.map((notification, i) => {
               const date = notification?.created_at?.split(' ')[0];
               const time = notification?.created_at?.split(' ')[1];
+              const isValid =
+                notification?.timestamp &&
+                moment(notification?.timestamp).isValid();
+              const timeAgo = moment(notification?.timestamp).fromNow();
               return (
                 <div
-                  key={notification.id}
+                  key={notification.id || i}
                   className={`notification-item ${
                     !notification.is_read ? 'unread' : ''
-                  } ${activeTab === 'reviewer' ? notification.type : 'ticket'}`}
+                  } ${activeTab === 'reviewer' ? 'success' : 'ticket'}`}
                   role="listitem"
                 >
                   {activeTab === 'reviewer' ? (
                     <>
                       <div className="notification-icon">
-                        {getTypeIcon(notification.type)}
+                        <MessageIcon fontSize="small" />
+                        {/* {getTypeIcon(notification.type)} */}
                       </div>
                       <div
-                        onClick={() => navigate(`${_base}/CustomerFeedback`)}
+                        onClick={() => {
+                          navigate(
+                            `${_base}/CustomerFeedback?id=${reviewerNotification?.project_id}&chat_id=${notification?.uuid}`
+                          );
+                          setIsOpen(false);
+                        }}
                         className="notification-content"
                       >
-                        <div className="notification-title">
-                          {notification.title}
+                        <div
+                          title="Project Name"
+                          className="notification-title"
+                        >
+                          {reviewerNotification?.project_name || ''}
                         </div>
-                        <div className="notification-message">
-                          {notification.message}
+                        <div title="Question" className="notification-message">
+                          {notification.question || ''}
                         </div>
                         <div className="notification-timestamp">
-                          {formatTimestamp(notification.timestamp)}
+                          {isValid ? timeAgo : '1 hours ago'}
+                          {/* {formatTimestamp(notification.timestamp)} */}
                         </div>
                       </div>
                       {!notification.is_read && (
@@ -335,28 +266,30 @@ const NotificationSystem = ({
           )}
         </div>
 
-        {currentNotifications.length > 0 && (
+        {currentNotifications?.length > 0 && (
           <div className="notification-footer">
             <div className="footer-buttons">
-              {
-                <button
-                  onClick={() => {
-                    navigate(`/${_base}/Notification`);
-                    setIsOpen(false);
-                  }}
-                  className="view-all-button"
-                >
-                  View All Notifications
-                </button>
-              }
               <button
-                onClick={(e) => {
-                  handleMarkAllNotification(e);
+                onClick={() => {
+                  activeTab === 'ticket'
+                    ? navigate(`/${_base}/Notification`)
+                    : navigate(`/${_base}/ReviewerNotificationList`);
+                  setIsOpen(false);
                 }}
-                className="mark-all-read"
+                className="view-all-button"
               >
-                Mark All As Read
+                View All Notifications
               </button>
+              {activeTab === 'ticket' && (
+                <button
+                  onClick={(e) => {
+                    handleMarkAllNotification(e);
+                  }}
+                  className="mark-all-read"
+                >
+                  Mark All As Read
+                </button>
+              )}
             </div>
           </div>
         )}

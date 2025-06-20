@@ -5,7 +5,8 @@ import {
   REACT_APP_ATTACHMENT_URL,
   REACT_APP_ROOT_URL,
   REACT_APP_API_REWAMP_BASE_URL,
-  REACT_APP_API_REWAMP_ATTACHMENT_URL
+  REACT_APP_API_REWAMP_ATTACHMENT_URL,
+  REACT_APP_CHAT_BOT_URL
 } from '../config/envConfig';
 
 export const _ErrorMsg = 'Try After Some Time !!!';
@@ -18,13 +19,14 @@ export const _rewampApiUrl = REACT_APP_API_REWAMP_BASE_URL;
 export const _attachmentUrl = REACT_APP_ATTACHMENT_URL;
 export const _rewampAttachmentUrl = REACT_APP_API_REWAMP_ATTACHMENT_URL;
 export const _pincodeUrl = REACT_APP_PIN_CODE_API_URL;
-
+export const _chatbotUrl = REACT_APP_CHAT_BOT_URL;
 export const loginURL = _rewampApiUrl + 'login';
 export const fpURL = _rewampApiUrl + 'reset/forgetPasswordOtp';
 export const otpURL = _rewampApiUrl + 'reset/sendOtp';
 export const rpURL = _rewampApiUrl + 'reset/resetPassword';
 
 export const attachmentUrl = _rewampApiUrl + 'attachment';
+export const project_id = '68401ea8e94cbae892048773';
 
 export const userSessionData = {
   tenantId: localStorage.getItem('tenant_id'),

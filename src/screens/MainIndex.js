@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { _base } from '../settings/constants';
 import Header from '../components/Common/Header';
 import Dashboard from './Dashboard/Dashboard';
@@ -188,8 +188,14 @@ import ChatBot from './Dashboard/ChatBot';
 import MyTicketRefactored from './TicketManagement/MyTicket/MyTicketFilters';
 import TestPlanHistoryComponent from './TestCases/TestCaseReview/TestPlanHistoryComponent';
 import { QueryGroupMaster } from './Masters/QueryGroupMaster/QueryGroupMaster';
+import AllReviewerNotificationList from './Dashboard/AllReviewerNotificationList';
+import { masterUser } from '../hooks/masterUser';
 class MainIndex extends React.Component {
   render() {
+    const PrivateRoute = ({ children }) => {
+      const isMasterUser = masterUser();
+      return isMasterUser ? children : <Navigate to={`/${_base}/Dashboard`} />;
+    };
     // if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
     //   for (var a in sessionStorage) {
     //     localStorage.setItem(a, sessionStorage[a]);
@@ -886,11 +892,24 @@ class MainIndex extends React.Component {
               element={<PoPreview />}
             />
             <Route exact path={`/${_base}/POHistory`} element={<PoHistory />} />
-            {/* <Route
+            <Route
               exact
               path={`/${_base}/CustomerFeedback`}
-              element={<CustomerFeedback />}
-            /> */}
+              element={
+                <PrivateRoute>
+                  <CustomerFeedback />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              exact
+              path={`/${_base}/ReviewerNotificationList`}
+              element={
+                <PrivateRoute>
+                  <AllReviewerNotificationList />
+                </PrivateRoute>
+              }
+            />
             <Route
               exact
               path={`/${_base}/POVendorExportReport`}
