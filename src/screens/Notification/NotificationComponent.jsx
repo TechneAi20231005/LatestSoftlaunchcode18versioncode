@@ -58,12 +58,7 @@ const NotificationComponent = () => {
       >
         <CircularProgress color="inherit" />
       </Backdrop>
-      <Box
-        display="flex"
-        alignItems="center"
-        mb={3}
-        // px={2} // Add horizontal padding
-      >
+      <Box display="flex" alignItems="center" mb={3}>
         <PageHeader
           headerTitle={`Your Notifications (${notifications?.length || 0})`}
         />
