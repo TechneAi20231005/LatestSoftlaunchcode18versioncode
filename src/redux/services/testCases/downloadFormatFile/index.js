@@ -73,13 +73,13 @@ export const downloadFormatFileThunk = createAsyncThunk(
 
       // Append submodule_id parameters if they are provided
 
-      if (module_name && module_name.length >= 0) {
+      if (module_name && module_name.length > 0) {
         const moduleQueryParam = module_name
           .map((id) => `module_name[]=${id}`)
           .join('&');
         endpoint += `&${moduleQueryParam}`;
       }
-      if (submodule_name && submodule_name.length >= 0) {
+      if (submodule_name && submodule_name.length > 0) {
         const submoduleQueryParam = submodule_name
           .map((id) => `submodule_name[]=${id}`)
           .join('&');
