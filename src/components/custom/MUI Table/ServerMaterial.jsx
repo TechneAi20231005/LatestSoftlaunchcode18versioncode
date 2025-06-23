@@ -229,10 +229,9 @@ function ServerMaterial({
                     marginY: 'auto'
                   }}
                 >
-
                   <div className="message-wrapper">
                     <span
-                       className={`text-danger fade ${message ? 'show' : ''}`}
+                      className={`text-danger fade ${message ? 'show' : ''}`}
                     >
                       {message && `Note:- ${message}`}
                     </span>
@@ -381,6 +380,7 @@ function ServerMaterial({
           setPagination={setPagination}
           setColumnFilters={setColumnFilters}
           setRowSelection={setRowSelection}
+          pagination={pagination}
         />
       )}
     </>
