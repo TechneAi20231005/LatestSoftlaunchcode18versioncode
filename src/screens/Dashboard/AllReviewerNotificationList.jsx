@@ -106,32 +106,33 @@ const AllReviewerNotificationList = () => {
           >
             <NotificationsIcon sx={{ fontSize: 36, mr: 2, color: '#484c7f' }} />
             <PageHeader headerTitle="Reviewer Notifications"></PageHeader>
-            {dataLoaded && reviewerNotification?.length > 0 && (
-              <Box
-                title="This count includes all projects and their associated review questions."
-                sx={{
-                  backgroundColor: '#e0f2fe',
-                  color: '#0369a1',
-                  fontSize: '0.8rem',
-                  ml: 1.8,
-                  fontWeight: 600,
-                  px: 1.5,
-                  py: 0.5,
-                  borderRadius: '999px',
-                  animation: 'fadeIn 0.5s ease-in-out',
-                  '@keyframes fadeIn': {
-                    from: { opacity: 0, transform: 'scale(0.8)' },
-                    to: { opacity: 1, transform: 'scale(1)' }
-                  }
-                }}
-              >
-                {totalCount || '0'} Projects
-              </Box>
-            )}
+            {dataLoaded &&
+              reviewerNotification?.[0]?.flagged_entries?.length > 0 && (
+                <Box
+                  title="This count includes all projects and their associated review questions."
+                  sx={{
+                    backgroundColor: '#e0f2fe',
+                    color: '#0369a1',
+                    fontSize: '0.8rem',
+                    ml: 1.8,
+                    fontWeight: 600,
+                    px: 1.5,
+                    py: 0.5,
+                    borderRadius: '999px',
+                    animation: 'fadeIn 0.5s ease-in-out',
+                    '@keyframes fadeIn': {
+                      from: { opacity: 0, transform: 'scale(0.8)' },
+                      to: { opacity: 1, transform: 'scale(1)' }
+                    }
+                  }}
+                >
+                  {totalCount || '0'} Projects
+                </Box>
+              )}
           </Box>
         </Box>
-
-        {isLoading ? null : dataLoaded && reviewerNotification?.length > 0 ? (
+        {isLoading ? null : dataLoaded &&
+          reviewerNotification?.[0]?.flagged_entries?.length > 0 ? (
           <Box>
             {reviewerNotification?.map((project) => (
               <StyledAccordion
