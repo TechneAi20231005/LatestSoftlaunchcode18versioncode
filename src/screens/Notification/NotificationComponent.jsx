@@ -7,7 +7,6 @@ import {
   Container,
   Grid,
   Chip,
-  Divider,
   ButtonBase,
   Backdrop,
   CircularProgress
@@ -48,10 +47,10 @@ const NotificationComponent = () => {
 
   return (
     <Container
+      maxWidth="sm"
       sx={{
         marginLeft: 0
       }}
-      maxWidth="md"
     >
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
@@ -61,21 +60,21 @@ const NotificationComponent = () => {
       </Backdrop>
       <Box
         display="flex"
-        // justifyContent="space-between"
         alignItems="center"
         mb={3}
+        // px={2} // Add horizontal padding
       >
         <PageHeader
           headerTitle={`Your Notifications (${notifications?.length || 0})`}
         />
       </Box>
 
-      <Grid container spacing={2}>
+      <Grid container spacing={2} sx={{ width: '100%', margin: 0 }}>
         {notifications?.map((ele, i) => {
           const [date, time] = ele.created_at.split(' ');
 
           return (
-            <Grid item xs={12} key={ele.id}>
+            <Grid item xs={12} key={ele.id} sx={{ width: '100%' }}>
               <ButtonBase
                 onClick={() => handleReadNotification(ele.id)}
                 component={Link}
@@ -85,12 +84,12 @@ const NotificationComponent = () => {
                 <Card
                   variant="outlined"
                   sx={{
+                    width: '100%',
                     borderRadius: 2,
                     borderLeft:
                       ele.is_read === 0
                         ? '4px solid #3b82f6'
                         : '4px solid transparent',
-                    // backgroundColor: ele.is_read === 0 ? '#f0f9ff' : '#fff',
                     transition: 'all 0.3s',
                     boxShadow: 'rgba(99, 99, 99, 0.1) 0px 2px 8px 0px',
                     '&:hover': {
@@ -105,11 +104,15 @@ const NotificationComponent = () => {
                       justifyContent="space-between"
                       alignItems="center"
                       mb={1}
+                      flexWrap="wrap" // Allow items to wrap on small screens
                     >
                       <Chip
                         label={`Date: ${date}`}
-                        // color="primary"
-                        sx={{ background: '#484c7f', color: '#fff' }}
+                        sx={{
+                          background: '#484c7f',
+                          color: '#fff',
+                          mb: { xs: 1, sm: 0 }
+                        }}
                         size="small"
                       />
                       <Chip
@@ -120,14 +123,12 @@ const NotificationComponent = () => {
                     </Box>
 
                     <Typography
-                      // variant="body1"
                       sx={{
                         color: '#212529',
                         fontWeight: 600,
                         fontSize: '0.9rem',
                         whiteSpace: 'normal',
-                        wordBreak: 'break-word',
-                        overflowWrap: 'break-word'
+                        wordBreak: 'break-word'
                       }}
                     >
                       {ele?.message}
