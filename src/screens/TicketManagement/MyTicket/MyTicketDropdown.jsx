@@ -7,11 +7,15 @@ import ConfirmationModal from './confirmationModal';
 
 const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
   // Edit Button
-
   const currentUser = Number(localStorage.getItem('id'));
   const ticketCreatedBy = Number(data.created_by?.id) === currentUser;
-
   const tickedtAssignedto = data.assign_to_user_id === currentUser;
+  const doUserHaveBasket =
+    data?.basket_configured?.length > 0
+      ? data?.basket_configured.find(
+          (item) => item.basket_owner === currentUser
+        )
+      : false;
 
   const checkNotSolvedAndNotReject =
     data.status?.status !== 'Solved' && data.passed_status !== 'REJECT';
@@ -111,6 +115,7 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
         if (type === 'AssignToMe') {
           return (
             ((data?.created_by?.id !== currentUser &&
+              doUserHaveBasket &&
               data?.basket_configured?.length > 0) ||
               (tickedtAssignedto && data?.basket_configured?.length > 0)) &&
             userAccountFor === 'SELF'
@@ -145,10 +150,9 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
       conditions: (type) => {
         if (type === 'AssignToMe') {
           return (
-            ((data?.created_by?.id !== currentUser &&
-              Number(data?.basket_configured?.length === 0)) ||
-              (tickedtAssignedto &&
-                Number(data?.basket_configured?.length) === 0)) &&
+            data?.created_by?.id !== currentUser &&
+            data?.basket_configured?.length === 0 &&
+            tickedtAssignedto &&
             userAccountFor === 'SELF'
           );
         } else if (type === 'YourTask') {
