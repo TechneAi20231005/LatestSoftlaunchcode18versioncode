@@ -851,7 +851,7 @@ function EditDynamicForm() {
                                           defaultValue={
                                             rows &&
                                             rows[idx]?.inputAddOn
-                                              ?.inputOnChangeSource
+                                              ?.inputDataSource
                                           }
                                         >
                                           <option>Select Data Source</option>
@@ -864,7 +864,7 @@ function EditDynamicForm() {
                                                     parseInt(
                                                       rows &&
                                                         rows[idx]?.inputAddOn
-                                                          ?.inputOnChangeSource
+                                                          ?.inputDataSource
                                                     ) === d.id
                                                   }
                                                 >

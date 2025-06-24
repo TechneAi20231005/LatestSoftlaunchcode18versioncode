@@ -5,7 +5,13 @@ import { Menu, MenuItem, Button } from '@mui/material';
 import UnPassModal from './UnPassModal';
 import ConfirmationModal from './confirmationModal';
 
-const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
+const MyTicketDropdown = ({
+  type,
+  data,
+  setPagination,
+  setColumnFilters,
+  pagination
+}) => {
   // Edit Button
   const currentUser = Number(localStorage.getItem('id'));
   const ticketCreatedBy = Number(data.created_by?.id) === currentUser;
@@ -331,6 +337,7 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
           handleRemarkModal={handleRemarkModal}
           setPagination={setPagination}
           setColumnFilters={setColumnFilters}
+          pagination={pagination}
         />
       )}
       {confirmationModal.showModal && (
@@ -339,6 +346,7 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
           handleConfirmationModal={handleConfirmationModal}
           setPagination={setPagination}
           setColumnFilters={setColumnFilters}
+          pagination={pagination}
         />
       )}
     </>

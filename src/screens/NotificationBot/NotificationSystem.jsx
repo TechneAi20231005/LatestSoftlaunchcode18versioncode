@@ -191,7 +191,7 @@ const NotificationSystem = ({
             className="notification-badge"
             aria-label={`${notifications?.length} unread notifications`}
           >
-            {notifications?.length || 0}
+            {notifications?.length > 99 ? '99+' : notifications?.length}
           </span>
         )}
       </button>
