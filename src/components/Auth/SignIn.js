@@ -34,7 +34,7 @@ export default function SignIn() {
           const token = localStorage.getItem('jwt_token');
           const tokenExpirationTime = decodeToken(token).exp * 1000;
           localStorage.setItem('jwt_token_expiration', tokenExpirationTime);
-          window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+          window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
         } else {
           setIsLoading(false);
         }
@@ -66,7 +66,7 @@ export default function SignIn() {
       localStorage.removeItem('jwt_token');
       localStorage.removeItem('jwt_token_expiration');
       localStorage.clear();
-      // history(`${process.env.PUBLIC_URL}/`);
+      // history(`/${process.env.REACT_APP_ROOT_URL}/`);
     }
   };
 
@@ -81,7 +81,7 @@ export default function SignIn() {
   };
   useEffect(() => {
     if (shouldNavigate) {
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
       setShouldNavigate(false); // Reset flag to prevent multiple navigations
     }
   }, [shouldNavigate, navigate]);

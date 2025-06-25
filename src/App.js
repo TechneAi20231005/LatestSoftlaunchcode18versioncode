@@ -29,7 +29,7 @@ const App = () => {
       setToken(null);
       setCheckUrl(null);
       setCheckUrl(false);
-      window.location.href = `${process.env.PUBLIC_URL}/`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/`;
     } else {
       setCheckUrl(true);
     }
@@ -51,7 +51,7 @@ const App = () => {
         localStorage.removeItem('jwt_token_expiration');
         localStorage.clear();
         // Redirect user to the login page
-        window.location.href = `${process.env.PUBLIC_URL}/`;
+        window.location.href = `/${process.env.REACT_APP_ROOT_URL}/`;
       }
     };
 
