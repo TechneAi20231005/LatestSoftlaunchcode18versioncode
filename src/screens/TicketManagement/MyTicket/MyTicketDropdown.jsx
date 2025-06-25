@@ -249,13 +249,13 @@ const MyTicketDropdown = ({
       isModal: true,
       conditions: (type) => {
         if (type === 'CreatedByMe') {
-          return true;
+          return ticketCreatedBy ? true : false;
         } else if (type === 'AssignToMe') {
-          return false;
+          return ticketCreatedBy ? true : false;
         } else if (type === 'YourTask') {
-          return false;
+          return ticketCreatedBy ? true : false;
         } else if (type === 'DepartmentWise') {
-          return false;
+          return ticketCreatedBy ? true : false;
         } else if (type === 'UnPassed') {
           return false;
         }
