@@ -46,7 +46,8 @@ import {
   reviewerNotificationList,
   reviewerNotificationListByChatId,
   getAllReviewerNotificationList,
-  getAllProject
+  getAllProject,
+  getAllHistoryByProjectId
 } from '../../services/chatBot/index';
 
 const initialState = {
@@ -56,13 +57,15 @@ const initialState = {
     reviewerNotificationList: false,
     reviewerNotificationListByChatId: false,
     getAllReviewerNotificationList: false,
-    getAllProject: false
+    getAllProject: false,
+    getAllHistoryByProjectId: false
   },
   chatHistory: [],
   reviewerNotificationList: [],
   reviewerNotificationListByChatId: [],
   getAllReviewerNotificationList: [],
-  getAllProject: []
+  getAllProject: [],
+  getAllHistoryByProjectId: []
 };
 
 const chatBotSlice = createSlice({
@@ -158,6 +161,20 @@ const chatBotSlice = createSlice({
         state.isLoading.getAllProject = false;
         console.error('Error in postBotMessages:', action.payload);
         state.getAllProject = [];
+      })
+
+      //getAllHistoryByProjectId
+      .addCase(getAllHistoryByProjectId.pending, (state) => {
+        state.isLoading.getAllHistoryByProjectId = true;
+      })
+      .addCase(getAllHistoryByProjectId.fulfilled, (state, action) => {
+        state.getAllHistoryByProjectId = action.payload?.data || [];
+        state.isLoading.getAllHistoryByProjectId = false;
+      })
+      .addCase(getAllHistoryByProjectId.rejected, (state, action) => {
+        state.isLoading.getAllHistoryByProjectId = false;
+        console.error('Error in postBotMessages:', action.payload);
+        state.getAllHistoryByProjectId = [];
       });
   }
 });
