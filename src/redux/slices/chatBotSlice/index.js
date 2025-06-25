@@ -41,14 +41,25 @@
 // export default chatBotSlice.reducer;
 
 import { createSlice } from '@reduxjs/toolkit';
-import { postBotMessages } from '../../services/chatBot/index';
+import {
+  postBotMessages,
+  reviewerNotificationList,
+  reviewerNotificationListByChatId,
+  getAllReviewerNotificationList
+} from '../../services/chatBot/index';
 
 const initialState = {
   chatBotList: null,
   isLoading: {
-    chatBotList: false
+    chatBotList: false,
+    reviewerNotificationList: false,
+    reviewerNotificationListByChatId: false,
+    getAllReviewerNotificationList: false
   },
-  chatHistory: []
+  chatHistory: [],
+  reviewerNotificationList: [],
+  reviewerNotificationListByChatId: [],
+  getAllReviewerNotificationList: []
 };
 
 const chatBotSlice = createSlice({
@@ -87,6 +98,49 @@ const chatBotSlice = createSlice({
             }
           });
         }
+      })
+
+      //notification list
+      .addCase(reviewerNotificationList.pending, (state) => {
+        state.isLoading.reviewerNotificationList = true;
+      })
+      .addCase(reviewerNotificationList.fulfilled, (state, action) => {
+        state.reviewerNotificationList = action.payload?.data || [];
+        state.isLoading.reviewerNotificationList = false;
+      })
+      .addCase(reviewerNotificationList.rejected, (state, action) => {
+        state.isLoading.reviewerNotificationList = false;
+        console.error('Error in postBotMessages:', action.payload);
+        state.reviewerNotificationList = [];
+      })
+
+      //getNotifiCationByChatId
+      .addCase(reviewerNotificationListByChatId.pending, (state) => {
+        state.isLoading.reviewerNotificationListByChatId = true;
+      })
+      .addCase(reviewerNotificationListByChatId.fulfilled, (state, action) => {
+        state.reviewerNotificationListByChatId = action.payload?.data || [];
+        state.isLoading.reviewerNotificationListByChatId = false;
+      })
+      .addCase(reviewerNotificationListByChatId.rejected, (state, action) => {
+        state.isLoading.reviewerNotificationListByChatId = false;
+        console.error('Error in postBotMessages:', action.payload);
+        state.reviewerNotificationListByChatId = [];
+      })
+
+      //getAllNotificationList
+      .addCase(getAllReviewerNotificationList.pending, (state) => {
+        state.isLoading.getAllReviewerNotificationList = true;
+      })
+      .addCase(getAllReviewerNotificationList.fulfilled, (state, action) => {
+        console.log(action.payload?.data, 'action.payload?.data');
+        state.getAllReviewerNotificationList = action.payload?.data || [];
+        state.isLoading.getAllReviewerNotificationList = false;
+      })
+      .addCase(getAllReviewerNotificationList.rejected, (state, action) => {
+        state.isLoading.getAllReviewerNotificationList = false;
+        console.error('Error in postBotMessages:', action.payload);
+        state.getAllReviewerNotificationList = [];
       });
   }
 });

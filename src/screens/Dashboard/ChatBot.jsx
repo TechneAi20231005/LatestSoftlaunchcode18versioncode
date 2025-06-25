@@ -7,6 +7,7 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import IconButton from '@mui/material/IconButton';
 import ChatIcon from '@mui/icons-material/Chat';
 import { useSelector } from 'react-redux';
+import { project_id } from '../../settings/constants';
 function ChatBot() {
   // const [chatHistory, setChatHistory] = useState([]);
   const chatHistory =
@@ -14,8 +15,6 @@ function ChatBot() {
 
   const [showChatbot, setShowChatbot] = useState(false);
   const chatBodyRef = useRef();
-
-  const project_id = '684a7955231b7e483636c6ec';
 
   useEffect(() => {
     chatBodyRef.current.scrollTo({
