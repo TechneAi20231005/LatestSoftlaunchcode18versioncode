@@ -45,7 +45,8 @@ import {
   postBotMessages,
   reviewerNotificationList,
   reviewerNotificationListByChatId,
-  getAllReviewerNotificationList
+  getAllReviewerNotificationList,
+  getAllProject
 } from '../../services/chatBot/index';
 
 const initialState = {
@@ -54,12 +55,14 @@ const initialState = {
     chatBotList: false,
     reviewerNotificationList: false,
     reviewerNotificationListByChatId: false,
-    getAllReviewerNotificationList: false
+    getAllReviewerNotificationList: false,
+    getAllProject: false
   },
   chatHistory: [],
   reviewerNotificationList: [],
   reviewerNotificationListByChatId: [],
-  getAllReviewerNotificationList: []
+  getAllReviewerNotificationList: [],
+  getAllProject: []
 };
 
 const chatBotSlice = createSlice({
@@ -141,6 +144,20 @@ const chatBotSlice = createSlice({
         state.isLoading.getAllReviewerNotificationList = false;
         console.error('Error in postBotMessages:', action.payload);
         state.getAllReviewerNotificationList = [];
+      })
+
+      //getAllProject
+      .addCase(getAllProject.pending, (state) => {
+        state.isLoading.getAllProject = true;
+      })
+      .addCase(getAllProject.fulfilled, (state, action) => {
+        state.getAllProject = action.payload?.data || [];
+        state.isLoading.getAllProject = false;
+      })
+      .addCase(getAllProject.rejected, (state, action) => {
+        state.isLoading.getAllProject = false;
+        console.error('Error in postBotMessages:', action.payload);
+        state.getAllProject = [];
       });
   }
 });

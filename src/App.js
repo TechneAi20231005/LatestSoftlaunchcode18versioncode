@@ -75,7 +75,7 @@ const App = () => {
           checkUrl === true &&
           localStorage.length > 6 && (
             <>
-              <Sidebar />
+              {/* <Sidebar /> */}
               <MainIndex />
             </>
           )}
