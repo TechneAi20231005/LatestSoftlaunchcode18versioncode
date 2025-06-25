@@ -114,8 +114,6 @@ function Chattile(props) {
     dispatch(getAllProject());
   }, []);
 
-  // dispatch(getAllReviewerNotificationList());
-
   return (
     <div className="col-12 d-flex">
       <div
