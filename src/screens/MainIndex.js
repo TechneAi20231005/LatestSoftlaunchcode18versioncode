@@ -895,6 +895,7 @@ class MainIndex extends React.Component {
             />
             <Route exact path={`/${_base}/POHistory`} element={<PoHistory />} />
             <Route exact path={`/${_base}/ChatApp`} element={<ChatApp />} />
+            <Route exact path={`/${_base}/ChatApp/:projectId`} element={<ChatApp />} />
             <Route
               exact
               path={`/${_base}/CustomerFeedback`}

@@ -1,15 +1,31 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
 import DemoProfileImg from '../assets/images/profile_av.png';
-import { useDispatch } from 'react-redux';
-import { getAllProject } from '../redux/services/chatBot';
+import { useDispatch, useSelector } from 'react-redux';
+import {
+  getAllHistoryByProjectId,
+  getAllProject,
+  postBotMessages
+} from '../redux/services/chatBot';
+import { Link, useNavigate, useParams } from 'react-router-dom';
+import { resetChatHistryByProjectId } from '../redux/slices/chatBotSlice';
+import { _base } from '../settings/constants';
 
 function Chattile(props) {
   const { data } = props;
+  const navigate = useNavigate();
   const dispatch = useDispatch();
+  const { projectId } = useParams();
   const [chatData, setChatData] = useState([...data]);
   const [activeChatIndex, setActiveChatIndex] = useState(0);
+  const abortControllerRef = useRef(null);
   const [txtMessage, setTxtMessage] = useState('');
+  const chatProjects = useSelector(
+    (state) => state?.chatBotSlice?.getAllProject
+  );
+  const chatHistory = useSelector(
+    (state) => state?.chatBotSlice?.getAllHistoryByProjectId
+  );
 
   useEffect(() => {
     setTimeout(() => {
@@ -19,6 +35,28 @@ function Chattile(props) {
       });
     }, 10);
   }, []);
+
+  useEffect(() => {
+    if (projectId) {
+      dispatch(
+        getAllHistoryByProjectId({
+          project_id: projectId,
+          user_id: localStorage.getItem('id') || 14
+        })
+      );
+    }else{
+      if(chatProjects?.length > 0){
+        dispatch(
+          getAllHistoryByProjectId({
+            project_id: chatProjects[0]?.project_id,
+            user_id: localStorage.getItem('id') || 14
+          })
+        );
+      }
+    }
+  }, [projectId, dispatch,chatProjects]);
+
+
 
   const onChangeMessageText = (e) => {
     setTxtMessage(e);
@@ -39,6 +77,28 @@ function Chattile(props) {
         time: `${d.getHours()}:${d.getMinutes()} ${am_pm}`
       });
       setChatData([...dd]);
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+      dispatch(
+        postBotMessages({
+          formData: {
+            project_id: projectId || chatProjects[0]?.project_id,
+            question: txtMessage,
+            user_id: localStorage.getItem('id'),
+            user_name: localStorage.getItem('first_name') || 'Friend',
+            flagging: 1
+          },
+          signal: controller.signal
+        })
+      ).then((res) => {
+        dispatch(
+          getAllHistoryByProjectId({
+            project_id: projectId,
+            user_id: localStorage.getItem('id') || 14
+          })
+        );
+      });
+
       setTxtMessage('');
       setTimeout(() => {
         document.getElementById('chatHistory').scrollTo({
@@ -112,15 +172,29 @@ function Chattile(props) {
 
   useEffect(() => {
     dispatch(getAllProject());
-  }, []);
+  }, [dispatch]);
 
+  const transformedChatHistory = chatHistory?.chat_entries?.flatMap((entry) => [
+    {
+      type: 'send',
+      message: entry.question,
+      time: new Date(entry.timestamp).toLocaleTimeString(),
+      images: []
+    },
+    {
+      type: 'received',
+      message: entry.answer,
+      time: new Date(entry.timestamp).toLocaleTimeString(),
+      images: []
+    }
+  ]);
   return (
     <div className="col-12 d-flex">
       <div
         id="chatMenuList"
         className="card card-chat border-right border-top-0 border-bottom-0 order-0 w380 "
       >
-        <div className="px-4 py-3 py-md-4">
+        <div className="px-4 pt-3 pt-md-4">
           <div className="input-group mb-3">
             <input
               type="text"
@@ -131,11 +205,11 @@ function Chattile(props) {
           </div>
 
           <div
-            className="nav nav-pills justify-content-between text-center"
+            className="nav nav-pills justify-content-between text-center d-none"
             role="tablist"
           >
             <a
-              className="flex-fill rounded border-0 nav-link active"
+              className="flex-fill rounded border-0 nav-link active invisible"
               data-bs-toggle="tab"
               id="tab1"
               href="#!"
@@ -149,7 +223,7 @@ function Chattile(props) {
               Chat
             </a>
             <a
-              className="flex-fill rounded border-0 nav-link"
+              className="flex-fill rounded border-0 nav-link invisible"
               data-bs-toggle="tab"
               id="tab2"
               href="#!"
@@ -163,7 +237,7 @@ function Chattile(props) {
               Groups
             </a>
             <a
-              className="flex-fill rounded border-0 nav-link"
+              className="flex-fill rounded border-0 nav-link invisible"
               data-bs-toggle="tab"
               id="tab3"
               href="#!"
@@ -185,21 +259,17 @@ function Chattile(props) {
             role="tabpanel"
           >
             <ul className="list-unstyled list-group list-group-custom list-group-flush mb-0">
-              {chatData.map((d, i) => {
+              {chatProjects?.map((d, i) => {
                 return (
                   <li
                     key={'545' + i}
-                    className={`list-group-item px-md-4 py-3 py-md-4 ${
+                    className={`list-group-item px-md-4 pb-3 pb-md-4 ${
                       activeChatIndex === i ? 'open' : ''
                     }`}
                   >
-                    <a
-                      href="#!"
+                    <Link
+                      to={`/${_base}/ChatApp/${d.project_id}`}
                       className="d-flex"
-                      onClick={(e) => {
-                        e.preventDefault();
-                        setActiveChatIndex(i);
-                      }}
                     >
                       <img
                         className="avatar rounded-circle"
@@ -209,16 +279,16 @@ function Chattile(props) {
                       />
                       <div className="flex-fill ms-3 text-truncate">
                         <h6 className="d-flex justify-content-between mb-0">
-                          <span>{d.Name}</span>{' '}
+                          <span>{d.project_name}</span>{' '}
                           <small className="msg-time">{d.lastSeen}</small>
                         </h6>
-                        <span className="text-muted">
+                        {/* <span className="text-muted">
                           {d.messages.length > 0
                             ? d.messages[d.messages.length - 1].message
                             : ''}
-                        </span>
+                        </span> */}
                       </div>
-                    </a>
+                    </Link>
                   </li>
                 );
               })}
@@ -369,9 +439,17 @@ function Chattile(props) {
       <div className="card card-chat-body border-0 order-1 w-100 px-4 px-md-5 py-3 py-md-4">
         <div className="chat-header d-flex justify-content-between align-items-center border-bottom pb-3">
           <div className="d-flex">
-            <a href="hr-dashboard" title="Home">
+            <div
+              onClick={() => {
+                if (projectId) {
+                  navigate(-1);
+                }
+              }}
+              role="button"
+              className="cursor-pointer"
+            >
               <i className="icofont-arrow-left fs-4"></i>
-            </a>
+            </div>
             <a href="#!" title="">
               <img
                 className="avatar rounded"
@@ -381,10 +459,12 @@ function Chattile(props) {
               />
             </a>
             <div className="ms-3">
-              <h6 className="mb-0">{chatData[activeChatIndex].Name}</h6>
-              <small className="text-muted">
+              <h6 className="mb-0">
+                {chatHistory?.project_name || 'Connect 2.0 - Ticketing system'}
+              </h6>
+              {/* <small className="text-muted">
                 Last seen: {chatData[activeChatIndex].lastSeen}
-              </small>
+              </small> */}
             </div>
           </div>
           <div className="d-flex">
@@ -454,101 +534,102 @@ function Chattile(props) {
           id="chatHistory"
           className="chat-history list-unstyled mb-0 py-lg-5 py-md-4 py-3 flex-grow-1"
         >
-          {chatData[activeChatIndex].messages.map((data, i) => {
-            return (
-              <li
-                key={'messages' + i}
-                className={
-                  data.type === 'received'
-                    ? 'mb-3 d-flex flex-row align-items-end'
-                    : 'mb-3 d-flex flex-row-reverse align-items-end'
-                }
-              >
-                <div
-                  className={`max-width-70 ${
-                    data.type === 'received' ? '' : 'text-end'
-                  }`}
+          {transformedChatHistory?.length > 0 &&
+            transformedChatHistory?.map((data, i) => {
+              return (
+                <li
+                  key={'messages' + i}
+                  className={
+                    data.type === 'received'
+                      ? 'mb-3 d-flex flex-row align-items-end'
+                      : 'mb-3 d-flex flex-row-reverse align-items-end'
+                  }
                 >
-                  <div className="user-info mb-1">
-                    {data.type === 'received' ? (
-                      <img
-                        className="avatar sm rounded-circle me-1"
-                        // src={chatData[activeChatIndex].image}
-                        src={DemoProfileImg}
-                        alt="avatar"
-                      />
-                    ) : null}
-                    <span className="text-muted small">{data.time}</span>
-                  </div>
                   <div
-                    style={{
-                      background: data?.type === 'send' && '#484c7f'
-                    }}
-                    // className={`card border-0 p-3 ${
-                    //   data.type === 'received' ? '' : 'color-bg-100 text-light'
-                    // }`}
-                    className={`card border-0 p-3`}
+                    className={`max-width-70 ${
+                      data.type === 'received' ? '' : 'text-end'
+                    }`}
                   >
+                    <div className="user-info mb-1">
+                      {data.type === 'received' ? (
+                        <img
+                          className="avatar sm rounded-circle me-1"
+                          // src={chatData[activeChatIndex].image}
+                          src={DemoProfileImg}
+                          alt="avatar"
+                        />
+                      ) : null}
+                      <span className="text-muted small">{data.time}</span>
+                    </div>
                     <div
-                      style={{ color: data?.type === 'send' && '#fff' }}
-                      className="message"
+                      style={{
+                        background: data?.type === 'send' && '#484c7f'
+                      }}
+                      // className={`card border-0 p-3 ${
+                      //   data.type === 'received' ? '' : 'color-bg-100 text-light'
+                      // }`}
+                      className={`card border-0 p-3`}
                     >
-                      {data.message}
-                      <p className="mb-0">
-                        {data.images.map((d, i) => {
-                          return (
-                            <img
-                              key={'images' + i}
-                              className="w120 img-thumbnail"
-                              src={d}
-                              alt=""
-                            />
-                          );
-                        })}
-                      </p>
+                      <div
+                        style={{ color: data?.type === 'send' && '#fff' }}
+                        className="message"
+                      >
+                        {data.message}
+                        <p className="mb-0">
+                          {data.images.map((d, i) => {
+                            return (
+                              <img
+                                key={'images' + i}
+                                className="w120 img-thumbnail"
+                                src={d}
+                                alt=""
+                              />
+                            );
+                          })}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="btn-group">
-                  <Dropdown className="hide-toggle">
-                    <Dropdown.Toggle
-                      as="a"
-                      variant=""
-                      id=""
-                      className="nav-link py-2 px-3 text-muted"
-                    >
-                      <i className="fa fa-ellipsis-v"></i>
-                    </Dropdown.Toggle>
+                  <div className="btn-group">
+                    <Dropdown className="hide-toggle">
+                      <Dropdown.Toggle
+                        as="a"
+                        variant=""
+                        id=""
+                        className="nav-link py-2 px-3 text-muted"
+                      >
+                        <i className="fa fa-ellipsis-v"></i>
+                      </Dropdown.Toggle>
 
-                    <Dropdown.Menu as="ul" className="border-0 shadow">
-                      <li>
-                        <a className="dropdown-item" href="#!">
-                          Edit
-                        </a>
-                      </li>
-                      <li>
-                        <a className="dropdown-item" href="#!">
-                          Share
-                        </a>
-                      </li>
-                      <li>
-                        <a
-                          className="dropdown-item"
-                          href="#!"
-                          onClick={(e) => {
-                            e.preventDefault();
-                            onDeleteMessage(i);
-                          }}
-                        >
-                          Delete
-                        </a>
-                      </li>
-                    </Dropdown.Menu>
-                  </Dropdown>
-                </div>
-              </li>
-            );
-          })}
+                      <Dropdown.Menu as="ul" className="border-0 shadow">
+                        <li>
+                          <a className="dropdown-item" href="#!">
+                            Edit
+                          </a>
+                        </li>
+                        <li>
+                          <a className="dropdown-item" href="#!">
+                            Share
+                          </a>
+                        </li>
+                        <li>
+                          <a
+                            className="dropdown-item"
+                            href="#!"
+                            onClick={(e) => {
+                              e.preventDefault();
+                              onDeleteMessage(i);
+                            }}
+                          >
+                            Delete
+                          </a>
+                        </li>
+                      </Dropdown.Menu>
+                    </Dropdown>
+                  </div>
+                </li>
+              );
+            })}
         </ul>
         <div className="chat-message">
           <textarea
