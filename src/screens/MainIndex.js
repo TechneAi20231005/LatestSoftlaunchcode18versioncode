@@ -190,6 +190,7 @@ import TestPlanHistoryComponent from './TestCases/TestCaseReview/TestPlanHistory
 import { QueryGroupMaster } from './Masters/QueryGroupMaster/QueryGroupMaster';
 import AllReviewerNotificationList from './Dashboard/AllReviewerNotificationList';
 import { masterUser } from '../hooks/masterUser';
+import ChatApp from './ChatApp/ChatApp';
 class MainIndex extends React.Component {
   render() {
     const PrivateRoute = ({ children }) => {
@@ -893,6 +894,8 @@ class MainIndex extends React.Component {
               element={<PoPreview />}
             />
             <Route exact path={`/${_base}/POHistory`} element={<PoHistory />} />
+            <Route exact path={`/${_base}/ChatApp`} element={<ChatApp />} />
+            <Route exact path={`/${_base}/ChatApp/:projectId`} element={<ChatApp />} />
             <Route
               exact
               path={`/${_base}/CustomerFeedback`}

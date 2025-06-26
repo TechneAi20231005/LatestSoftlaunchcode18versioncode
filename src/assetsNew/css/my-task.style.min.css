@@ -23885,7 +23885,7 @@ body.rtl_mode
 
 .card-chat,
 .card-chat-body {
-  height: 100vh;
+  height: 80dvh;
 }
 
 .chatlist-toggle {

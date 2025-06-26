@@ -146,3 +146,39 @@ export const submitFeedback = createAsyncThunk(
     }
   }
 );
+
+export const getAllProject = createAsyncThunk(
+  'chatBot/getAllProject',
+  async () => {
+    try {
+      const response = await axios.get(`${_chatbotUrl}projects`);
+      if (response?.status === 200 || response?.status === 201) {
+        return { data: response?.data, msg: response?.data?.message };
+      } else {
+        // errorHandler(response);
+      }
+    } catch (error) {
+      // errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
+);
+
+export const getAllHistoryByProjectId = createAsyncThunk(
+  'chatBot/getAllHistoryByProjectId',
+  async ({ project_id, user_id }) => {
+    try {
+      const response = await axios.get(
+        `${_chatbotUrl}user-chats/${project_id}/${user_id}`
+      );
+      if (response?.status === 200 || response?.status === 201) {
+        return { data: response?.data, msg: response?.data?.message };
+      } else {
+        // errorHandler(response);
+      }
+    } catch (error) {
+      // errorHandler(error?.response);
+      return Promise.reject(error?.response?.data?.message);
+    }
+  }
+);

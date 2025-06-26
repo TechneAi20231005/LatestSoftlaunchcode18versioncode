@@ -96,6 +96,12 @@
   align-items: center;
 }
 
+ .header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px; // space between fullscreen and arrow down icon
+  }
+
 .header-info svg {
   height: 35px;
   width: 35px;
