@@ -25,7 +25,9 @@ import {
   postCustomerData,
   updateCustomerData,
   getAllUserById,
-  getEmployeeDataById
+  getEmployeeDataById,
+  getPreferredShift,
+
 } from './DashboardAction';
 
 import { all } from 'axios';
@@ -84,7 +86,8 @@ const initialState = {
     stateDataList: false
   },
   customerTypeData: [],
-  getUserById: []
+  getUserById: [],
+  getShiftData: [],
 };
 
 export const DashbordSlice = createSlice({
@@ -902,6 +905,29 @@ export const DashbordSlice = createSlice({
     });
     builder.addCase(getAllUserById.rejected, (state) => {
       state.status = 'rejected';
+    });
+
+    // _____________________getPreferredData__________________
+
+    builder.addCase(getPreferredShift.pending, (state) => {
+      state.status = 'loading';
+      state.notify = null;
+    });
+
+    builder.addCase(getPreferredShift.fulfilled, (state, action) => {
+      const { payload } = action;
+      console.log('payload', payload)
+      state.notify = null;
+      if (payload?.status === 200) {
+        let getShifts = payload?.data?.data;
+        state.getShiftData = getShifts
+      } else {
+        toast.error(payload.data.message);
+      }
+    });
+    builder.addCase(getPreferredShift.rejected, (state) => {
+      state.status = 'rejected';
+      state.getShiftData = [];
     });
   }
 });

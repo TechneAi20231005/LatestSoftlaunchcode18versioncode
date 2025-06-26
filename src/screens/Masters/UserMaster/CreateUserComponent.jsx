@@ -23,7 +23,8 @@ import {
   getStateData,
   getStateDataSort,
   postUserData,
-  getEmployeeData
+  getEmployeeData,
+  getPreferredShift
 } from '../../Dashboard/DashboardAction';
 
 import { getDesignationDataListThunk } from '../DesignationMaster/DesignationAction';
@@ -32,12 +33,45 @@ import { departmentData } from '../DepartmentMaster/DepartmentMasterAction';
 import { getRoleData } from '../RoleMaster/RoleMasterAction';
 import { toast } from 'react-toastify';
 import { getJobRoleMasterListThunk } from '../../../redux/services/jobRoleMaster';
+import { getBranchMasterListThunk } from '../../../redux/services/hrms/employeeJoining/branchMaster';
 
 function CreateUserComponent({ match }) {
   const [tabKey, setTabKey] = useState('All_Tickets');
   const roleDropdown = useSelector(
     (RoleMasterSlice) => RoleMasterSlice.rolemaster.getRoleData
   );
+  const employeeData = useSelector(
+    (employeeSlice) => employeeSlice?.dashboard?.employeeData
+  );
+
+  const branchData = useSelector(
+    (branchSlice) => branchSlice?.branchMaster?.branchMasterList
+  );
+
+  const getShiftData = useSelector(
+    (shiftSlice) => shiftSlice.dashboard.getShiftData
+  );
+  const getshiftDataArray = [getShiftData].map((item) => {
+    return {
+      value: item.id,
+      label: item.shift_name
+    };
+  });
+
+  const branchMasterData = branchData
+    ?.filter((d) => d.is_active === 1)
+    ?.map((branch) => ({
+      value: branch.id,
+      label: branch.location_name
+    }));
+
+  const reportingToData = employeeData
+    ?.filter((d) => d.is_active === 1)
+    ?.map((user) => ({
+      value: user.id,
+      label: user.name
+    }));
+
   const departmentDropdown = useSelector(
     (DepartmentMasterSlice) =>
       DepartmentMasterSlice.department.sortDepartmentData
@@ -69,7 +103,6 @@ function CreateUserComponent({ match }) {
     (DesignationSlice) =>
       DesignationSlice.designationMaster.sortedDesignationData
   );
-  console.log('designationDropdown', designationDropdown);
   const sortDesignationDropdown = [...designationDropdown].sort((a, b) => {
     if (a.label < b.label) return -1;
     if (a.label > b.label) return 1;
@@ -162,8 +195,11 @@ function CreateUserComponent({ match }) {
     roleErr: '',
     designationErr: '',
     departmentErr: '',
-    jobRoleErr: ''
+    jobRoleErr: '',
+    reportingToErr: '',
+    branchErr: ''
   });
+
   function checkingValidation(form) {
     var selectFirstName = form.getAll('first_name')[0];
     var selectMiddleName = form.getAll('middle_name')[0];
@@ -176,6 +212,8 @@ function CreateUserComponent({ match }) {
     var selectRole = form.getAll('role_id')[0];
     var selectJobRole = form.getAll('job_role')[0];
     var selectDesignation = form.getAll('designation_id')[0];
+    // var selectReportingTo = form.getAll('reporting_to');
+    var selectBranch = form.getAll('hired_branch_id')[0];
 
     let flag = 0;
     if (selectFirstName === '') {
@@ -245,6 +283,12 @@ function CreateUserComponent({ match }) {
     } else if (whatsappValid === true) {
       flag = 1;
     } else if (mailError === true) {
+      flag = 1;
+    } else if (selectReportingTo.length === 0) {
+      setInputState({ ...state, reportingToErr: 'Please Select Reporting To' });
+      flag = 1;
+    } else if (selectBranch.length === '') {
+      setInputState({ ...state, branchErr: 'Please Select Branch' });
       flag = 1;
     }
     return flag;
@@ -367,6 +411,8 @@ function CreateUserComponent({ match }) {
 
   const [selectRole, setSelctRole] = useState(null);
   const [selectJobRole, setSelcJobtRole] = useState(null);
+  const [selectReportingTo, setSelectReportingTo] = useState([]);
+  const [selectBranch, setSelectBranch] = useState(null);
 
   const handleSelectRole = (e) => {
     const newValue = e;
@@ -393,6 +439,19 @@ function CreateUserComponent({ match }) {
     }
 
     var selectDepartment = form.getAll('department_id[]');
+
+    if (selectReportingTo.length > 0) {
+      // First selected user → reporting_to (single)
+      form.append('reporting_to', selectReportingTo[0].value);
+      const reportingManagers = selectReportingTo
+        .slice(1)
+        .map((item) => item.value);
+
+      reportingManagers.forEach((id) => {
+        form.append('reporting_manager[]', id);
+      });
+    }
+
     if (selectDepartment === '') {
       setInputState({ ...state, departmentErr: ' Please Select Department' });
       setLoading(false); // Reset loading state
@@ -581,7 +640,6 @@ function CreateUserComponent({ match }) {
   const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
-  // console.log(orderedCustomerRoleData, "orderedCustomerRoleData")
 
   const customerRolesData = [
     {
@@ -678,6 +736,12 @@ function CreateUserComponent({ match }) {
       : '';
     setCopyData(text1);
   }
+
+  useEffect(() => {
+    dispatch(getEmployeeData());
+    dispatch(getBranchMasterListThunk());
+    dispatch(getPreferredShift());
+  }, []);
 
   useEffect(() => {
     whatsappRef.current.value = copyData;
@@ -1348,6 +1412,129 @@ function CreateUserComponent({ match }) {
                             }}
                           >
                             {inputState.jobRoleErr}
+                          </small>
+                        )}
+                      </div>
+
+                      <label
+                        className="col-sm-3 col-form-label text-end"
+                        style={{ textAlign: 'right' }}
+                      >
+                        <b>
+                          Reporting To : <Astrick color="red" />
+                        </b>
+                      </label>
+                      <div className="col-sm-3">
+                        <Select
+                          classNamePrefix="react-select"
+                          id="reporting_to"
+                          // name="reporting_to"
+                          value={selectReportingTo || []}
+                          options={reportingToData}
+                          isMulti={true}
+                          onChange={(selectedOptions) => {
+                            setSelectReportingTo(selectedOptions || []);
+                            if (
+                              !selectedOptions ||
+                              Object.entries(selectedOptions).length === 0
+                            )
+                              return;
+                            if (selectedOptions.length === 0) {
+                              setInputState({
+                                ...state,
+                                reportingToErr: 'Please Select Reporting To'
+                              });
+                            } else {
+                              setInputState({
+                                ...state,
+                                reportingToErr: ''
+                              });
+                            }
+                          }}
+                          isClearable={true}
+                        />
+                        {inputState && (
+                          <small
+                            style={{
+                              color: 'red',
+                              position: 'relative'
+                            }}
+                          >
+                            {inputState.reportingToErr}
+                          </small>
+                        )}
+                      </div>
+                    </div>
+                    <div
+                      className="form-group row mt-4"
+                      style={{ position: 'relative', display: 'flex' }}
+                    >
+                      <label className="col-sm-2 col-form-label">
+                        <b>
+                          Preferred shift: <Astrick color="red" />
+                        </b>
+                      </label>
+                      <div className="col-sm-3">
+                        <Select
+                          classNamePrefix="react-select"
+                          id="preferred_shift"
+                          name="shift_type_id"
+                          isClearable={true}
+                          options={getshiftDataArray}
+                        />
+                        {inputState && (
+                          <small
+                            style={{
+                              color: 'red',
+                              position: 'relative'
+                            }}
+                          >
+                            {/* {inputState.jobRoleErr} */}
+                          </small>
+                        )}
+                      </div>
+
+                      <label
+                        className="col-sm-3 col-form-label text-end"
+                        style={{ textAlign: 'right' }}
+                      >
+                        <b>
+                          Branch : <Astrick color="red" />
+                        </b>
+                      </label>
+                      <div className="col-sm-3">
+                        <Select
+                          classNamePrefix="react-select"
+                          id="branch"
+                          name="hired_branch_id"
+                          value={selectBranch}
+                          options={branchMasterData}
+                          onChange={(selectedOption) => {
+                            setSelectBranch(selectedOption || '');
+                            if (
+                              !selectedOption ||
+                              Object.entries(selectedOption).length === 0
+                            )
+                              return;
+                            if (selectedOption.value === '') {
+                              setInputState({
+                                ...state,
+                                branchErr: 'Please Select Branch'
+                              });
+                            } else {
+                              setInputState({ ...state, branchErr: '' });
+                            }
+                          }}
+                          isClearable={true}
+                        />
+                        {inputState && (
+                          <small
+                            style={{
+                              color: 'red',
+                              position: 'relative'
+                            }}
+                          >
+                            {inputState.branchErr}
                           </small>
                         )}
                       </div>

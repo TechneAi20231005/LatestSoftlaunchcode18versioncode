@@ -114,9 +114,9 @@ export default class UserService {
     if (departmentId) {
       return axios.get(
         _rewampApiUrl +
-          'employeeMaster/' +
-          'getEmployeeWithMultipleDepartment/' +
-          departmentId,
+        'employeeMaster/' +
+        'getEmployeeWithMultipleDepartment/' +
+        departmentId,
         config
       );
     } else
@@ -228,5 +228,43 @@ export default class UserService {
     };
 
     return axios.post(_URL + '/updatePasswordDetails/' + id, payload, config);
+  }
+  getPreferredShift() {
+    const token = localStorage.getItem('jwt_token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+
+    return axios.get(
+      _rewampApiUrl + 'getShiftMaster/1',
+      config
+    );
+  }
+
+  updatePreferredShift(payload) {
+    payload.append('created_by', localStorage.getItem('id'));
+    payload.append('created_at', getDateTime());
+    // return axios.post(_URL, payload);
+
+    const token = localStorage.getItem('jwt_token');
+
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+        'Content-Type': 'application/json'
+      }
+    };
+
+    return axios.post(
+      _rewampApiUrl + 'postPreferredShift',
+      payload,
+      config
+    );
   }
 }
