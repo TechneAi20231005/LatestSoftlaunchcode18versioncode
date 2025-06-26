@@ -11,7 +11,15 @@ import CustomDialog from '../components/custom/modal/CustomModalMui';
 import { useDispatch } from 'react-redux';
 import { flagBotMessage } from '../redux/services/chatBot';
 
-const FeedbackWrapper = ({ open, onClose, chat, setFeedback, project_id }) => {
+const FeedbackWrapper = ({
+  open,
+  onClose,
+  chat,
+  setFeedback = () => {},
+  project_id,
+  setFeedbackStates = () => {},
+  setSelectedFeedbackMessage = () => {}
+}) => {
   const dispatch = useDispatch();
   const [issueType, setIssueType] = useState('');
   const [details, setDetails] = useState('');
@@ -39,6 +47,11 @@ const FeedbackWrapper = ({ open, onClose, chat, setFeedback, project_id }) => {
     setSubmitted(true);
     setTimeout(() => {
       setFeedback('down');
+      setFeedbackStates((prev) => ({
+        ...prev,
+        [chat?.text?.chat_entry_uuid]: 'down'
+      }));
+      setSelectedFeedbackMessage(null);
       setIssueType('');
       setDetails('');
       setSubmitted(false);
