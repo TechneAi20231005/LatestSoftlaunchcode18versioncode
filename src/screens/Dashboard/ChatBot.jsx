@@ -14,8 +14,8 @@ function ChatBot() {
   // const [chatHistory, setChatHistory] = useState([]);
   const navigate = useNavigate();
   const location = useLocation();
-  const pathSegments = location?.pathname?.split('/');
-  const lastSegment = pathSegments?.filter(Boolean)?.pop();
+  const pathSegments = location?.pathname?.split('/')?.filter(Boolean);
+  const shouldHideChatbot = pathSegments?.includes('ChatApp');
   const chatHistory =
     useSelector((state) => state?.chatBotSlice?.chatHistory) || [];
 
@@ -30,7 +30,7 @@ function ChatBot() {
   }, [chatHistory]);
   let userName = localStorage.getItem('first_name') || 'Friend';
 
-  if (lastSegment === 'ChatApp') {
+  if (shouldHideChatbot) {
     return null;
   }
   return (
