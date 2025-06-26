@@ -525,7 +525,6 @@ function EditUserComponent({ match }) {
   const orderedCustomerRoleData = filterCutomerRole?.sort(function (a, b) {
     return a.label > b.label ? 1 : b.label > a.label ? -1 : 0;
   });
-  // console.log("orderedCustomerRoleData", orderedCustomerRoleData)
 
   const [selectRole, setSelctRole] = useState(null);
   const handleSelectRole = (e) => {
@@ -635,6 +634,31 @@ function EditUserComponent({ match }) {
               roleDropdown &&
                 roleDropdown.filter((d) => d.value === temp?.role_id)
             );
+
+            setAccountFor(temp.account_for);
+            setIsReadOnly();
+
+            // Set reporting data
+            const reportingData = [];
+            if (temp.reporting_to_id) {
+              reportingData.push({
+                value: temp.reporting_to_id,
+                label: temp.reporting_to_name
+              });
+            }
+            if (
+              temp.reporting_to_mangers &&
+              temp.reporting_to_mangers.length > 0
+            ) {
+              temp.reporting_to_mangers.forEach((manager) => {
+                reportingData.push({
+                  value: manager.id,
+                  label: manager.name
+                });
+              });
+            }
+            setReporting(reportingData);
+            setSelectReportingTo(reportingData);
 
             setAccountFor(temp.account_for);
             setIsReadOnly();
@@ -897,26 +921,6 @@ function EditUserComponent({ match }) {
   useEffect(() => {
     setSelectShift(allShiftData);
   }, [getShiftData]);
-
-  // useEffect(() => {
-  //   const dataforUser = reportingToData?.find((item) => item?.id == id);
-  //   console.log(localStorage.getItem('id'));
-  //   console.log('reportinguser', reportingToData);
-  //   console.log('dataForUser', dataforUser);
-  //   let resportedData;
-  //   if (dataforUser?.reporting_to_mangers) {
-  //     resportedData = dataforUser?.reporting_to_mangers?.unshift({
-  //       id: dataforUser?.reporting_to_id,
-  //       name: dataforUser?.reporting_to_name
-  //     });
-  //   }
-  //   console.log('resportdata', resportedData);
-  //   setReporting(
-  //     resportedData?.map((item) => {
-  //       return { value: item.id, label: item.name };
-  //     })
-  //   );
-  // }, [reportingToData?.length]);
 
   const [copyData, setCopyData] = useState(null);
 
@@ -1638,7 +1642,6 @@ function EditUserComponent({ match }) {
                             onChange={(selectedOptions) => {
                               setReporting(selectedOptions);
                               setSelectReportingTo(selectedOptions || []);
-                              console.log(selectedOptions, 'selectedOptions');
 
                               if (
                                 !selectedOptions ||
