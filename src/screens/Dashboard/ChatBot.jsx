@@ -15,7 +15,7 @@ function ChatBot() {
   const navigate = useNavigate();
   const location = useLocation();
   const pathSegments = location?.pathname?.split('/');
-  const lastSegment = pathSegments?.filter(Boolean).pop();
+  const lastSegment = pathSegments?.filter(Boolean)?.pop();
   const chatHistory =
     useSelector((state) => state?.chatBotSlice?.chatHistory) || [];
 
