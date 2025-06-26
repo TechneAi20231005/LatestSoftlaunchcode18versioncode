@@ -168,9 +168,11 @@ export const getAllHistoryByProjectId = createAsyncThunk(
   'chatBot/getAllHistoryByProjectId',
   async ({ project_id, user_id }) => {
     try {
-      const response = await axios.get(
-        `${_chatbotUrl}user-chats/${project_id}/${user_id}`
-      );
+      const baseUrl = `${_chatbotUrl}user-chats`;
+      const url = project_id
+        ? `${baseUrl}?project_id=${project_id}&user_id=${user_id}`
+        : `${baseUrl}?user_id=${user_id}`;
+      const response = await axios.get(url);
       if (response?.status === 200 || response?.status === 201) {
         return { data: response?.data, msg: response?.data?.message };
       } else {
