@@ -197,6 +197,7 @@ function CreateUserComponent({ match }) {
     departmentErr: '',
     jobRoleErr: '',
     reportingToErr: '',
+    shiftErr: '',
     branchErr: ''
   });
 
@@ -212,6 +213,7 @@ function CreateUserComponent({ match }) {
     var selectRole = form.getAll('role_id')[0];
     var selectJobRole = form.getAll('job_role')[0];
     var selectDesignation = form.getAll('designation_id')[0];
+    var selectShift = form.getAll('shift_type_id')[0];
     // var selectReportingTo = form.getAll('reporting_to');
     var selectBranch = form.getAll('hired_branch_id')[0];
 
@@ -287,7 +289,10 @@ function CreateUserComponent({ match }) {
     } else if (selectReportingTo.length === 0) {
       setInputState({ ...state, reportingToErr: 'Please Select Reporting To' });
       flag = 1;
-    } else if (selectBranch.length === '') {
+    } else if (selectShift === '') {
+      setInputState({ ...state, shiftErr: ' Please Select Shift' });
+      flag = 1;
+    } else if (selectBranch === '') {
       setInputState({ ...state, branchErr: 'Please Select Branch' });
       flag = 1;
     }
@@ -412,6 +417,7 @@ function CreateUserComponent({ match }) {
   const [selectRole, setSelctRole] = useState(null);
   const [selectJobRole, setSelcJobtRole] = useState(null);
   const [selectReportingTo, setSelectReportingTo] = useState([]);
+  const [selectShift, setSelectShift] = useState(null);
   const [selectBranch, setSelectBranch] = useState(null);
 
   const handleSelectRole = (e) => {
@@ -1481,6 +1487,19 @@ function CreateUserComponent({ match }) {
                           name="shift_type_id"
                           isClearable={true}
                           options={getshiftDataArray}
+                          value={selectShift}
+                          onChange={(e) => {
+                            setSelectShift(e);
+                            if (!e || Object.entries(e).length === 0) return;
+                            if (e.value === '') {
+                              setInputState({
+                                ...state,
+                                shiftErr: 'Please Select Job Role'
+                              });
+                            } else {
+                              setInputState({ ...state, shiftErr: '' });
+                            }
+                          }}
                         />
                         {inputState && (
                           <small
@@ -1489,7 +1508,7 @@ function CreateUserComponent({ match }) {
                               position: 'relative'
                             }}
                           >
-                            {/* {inputState.jobRoleErr} */}
+                            {inputState.shiftErr}
                           </small>
                         )}
                       </div>
@@ -1509,17 +1528,13 @@ function CreateUserComponent({ match }) {
                           name="hired_branch_id"
                           value={selectBranch}
                           options={branchMasterData}
-                          onChange={(selectedOption) => {
-                            setSelectBranch(selectedOption || '');
-                            if (
-                              !selectedOption ||
-                              Object.entries(selectedOption).length === 0
-                            )
-                              return;
-                            if (selectedOption.value === '') {
+                          onChange={(e) => {
+                            setSelectBranch(e);
+                            if (!e || Object.entries(e).length === 0) return;
+                            if (e.value === '') {
                               setInputState({
                                 ...state,
-                                branchErr: 'Please Select Branch'
+                                branchErr: 'Please Select Job Role'
                               });
                             } else {
                               setInputState({ ...state, branchErr: '' });
