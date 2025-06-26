@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Dropdown } from 'react-bootstrap';
-import DemoProfileImg from '../assets/images/profile_av.png';
 import { useDispatch, useSelector } from 'react-redux';
 import {
   getAllHistoryByProjectId,
@@ -8,20 +7,21 @@ import {
   postBotMessages
 } from '../redux/services/chatBot';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { resetChatHistryByProjectId } from '../redux/slices/chatBotSlice';
 import { _base } from '../settings/constants';
+import { CircularProgress, IconButton, Stack } from '@mui/material';
+import SendIcon from '@mui/icons-material/Send';
 
-function Chattile(props) {
-  const { data } = props;
+function Chattile() {
+  // const { data } = props;
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { projectId } = useParams();
-  const [chatData, setChatData] = useState([...data]);
-  const [activeChatIndex, setActiveChatIndex] = useState(0);
+  //const [chatData, setChatData] = useState([...data]);
+  //const [activeChatIndex, setActiveChatIndex] = useState(0);
   const abortControllerRef = useRef(null);
   const [txtMessage, setTxtMessage] = useState('');
-  const chatProjects = useSelector(
-    (state) => state?.chatBotSlice?.getAllProject
+  const { getAllProject: chatProjects, isLoading } = useSelector(
+    (state) => state?.chatBotSlice
   );
   const chatHistory = useSelector(
     (state) => state?.chatBotSlice?.getAllHistoryByProjectId
@@ -44,19 +44,17 @@ function Chattile(props) {
           user_id: localStorage.getItem('id') || 14
         })
       );
-    }else{
-      if(chatProjects?.length > 0){
-        dispatch(
-          getAllHistoryByProjectId({
-            project_id: chatProjects[0]?.project_id,
-            user_id: localStorage.getItem('id') || 14
-          })
-        );
-      }
+    } else {
+      // if (chatProjects?.length > 0) {
+      dispatch(
+        getAllHistoryByProjectId({
+          project_id: chatProjects[0]?.project_id,
+          user_id: localStorage.getItem('id') || 14
+        })
+      );
+      //}
     }
-  }, [projectId, dispatch,chatProjects]);
-
-
+  }, [projectId, dispatch, chatProjects]);
 
   const onChangeMessageText = (e) => {
     setTxtMessage(e);
@@ -64,19 +62,19 @@ function Chattile(props) {
 
   const onMessgeSend = () => {
     if (txtMessage !== '') {
-      var dd = chatData;
-      var d = new Date();
-      var am_pm = 'AM';
-      if (d.getHours() >= 12) {
-        am_pm = 'PM';
-      }
-      dd[activeChatIndex].messages.push({
-        message: txtMessage,
-        type: 'send',
-        images: [],
-        time: `${d.getHours()}:${d.getMinutes()} ${am_pm}`
-      });
-      setChatData([...dd]);
+      //    var dd = chatData;
+      //    var d = new Date();
+      //    var am_pm = 'AM';
+      //    if (d.getHours() >= 12) {
+      //      am_pm = 'PM';
+      //    }
+      //  dd[activeChatIndex].messages.push({
+      //     message: txtMessage,
+      //     type: 'send',
+      //     images: [],
+      //     time: `${d.getHours()}:${d.getMinutes()} ${am_pm}`
+      //     });
+      // setChatData([...dd]);
       const controller = new AbortController();
       abortControllerRef.current = controller;
       dispatch(
@@ -93,7 +91,7 @@ function Chattile(props) {
       ).then((res) => {
         dispatch(
           getAllHistoryByProjectId({
-            project_id: projectId,
+            project_id: projectId || chatProjects[0]?.project_id,
             user_id: localStorage.getItem('id') || 14
           })
         );
@@ -108,7 +106,7 @@ function Chattile(props) {
       }, 10);
 
       setTimeout(() => {
-        onBackMessage();
+        //onBackMessage();
         document.getElementById('chatHistory').scrollTo({
           top: document.getElementById('chatHistory').scrollHeight + 100,
           behavior: 'smooth'
@@ -117,7 +115,8 @@ function Chattile(props) {
     }
   };
 
-  const onBackMessage = () => {
+  {
+    /* const onBackMessage = () => {
     var dd = chatData;
     var d = new Date();
     var am_pm = 'AM';
@@ -132,14 +131,17 @@ function Chattile(props) {
     });
 
     setChatData([...dd]);
-  };
+  };*/
+  }
 
-  const onDeleteMessage = (index) => {
+  {
+    /*  const onDeleteMessage = (index) => {
     var dd = chatData;
     dd[activeChatIndex].messages.splice(index, 1);
 
     setChatData([...dd]);
-  };
+  };*/
+  }
 
   function tabEvents(e, id) {
     e.preventDefault();
@@ -170,24 +172,47 @@ function Chattile(props) {
     }
   }
 
+  const onSearchHandler = (searchTerm) => {
+    if (searchTerm?.trim() !== '') {
+      setFilteredChatProjects(
+        chatProjects?.filter((item) =>
+          item?.project_name
+            ?.toLowerCase()
+            .startsWith(searchTerm?.toLowerCase())
+        )
+      );
+    } else {
+      setFilteredChatProjects(chatProjects);
+    }
+  };
+
   useEffect(() => {
     dispatch(getAllProject());
   }, [dispatch]);
 
-  const transformedChatHistory = chatHistory?.chat_entries?.flatMap((entry) => [
-    {
-      type: 'send',
-      message: entry.question,
-      time: new Date(entry.timestamp).toLocaleTimeString(),
-      images: []
-    },
-    {
-      type: 'received',
-      message: entry.answer,
-      time: new Date(entry.timestamp).toLocaleTimeString(),
-      images: []
-    }
-  ]);
+  const transformedChatHistory =
+    chatHistory?.chat_entries?.flatMap((entry) => [
+      {
+        type: 'send',
+        message: entry.question,
+        time: new Date(entry.timestamp).toLocaleTimeString(),
+        images: []
+      },
+      {
+        type: 'received',
+        message: entry.answer,
+        time: new Date(entry.timestamp).toLocaleTimeString(),
+        images: []
+      }
+    ]) || [];
+
+  const [filteredChatProjects, setFilteredChatProjects] =
+    useState(chatProjects);
+
+  useEffect(() => {
+    setFilteredChatProjects(chatProjects);
+  }, [chatProjects]);
+
   return (
     <div className="col-12 d-flex">
       <div
@@ -201,15 +226,18 @@ function Chattile(props) {
               style={{ background: '#EEEEEE' }}
               className="form-control mb-1"
               placeholder="Search..."
+              onChange={(e) => {
+                onSearchHandler(e.target.value);
+              }}
             />
           </div>
 
           <div
-            className="nav nav-pills justify-content-between text-center d-none"
+            className="nav nav-pills justify-content-between text-center"
             role="tablist"
           >
             <a
-              className="flex-fill rounded border-0 nav-link active invisible"
+              className="flex-fill rounded border-0 nav-link active"
               data-bs-toggle="tab"
               id="tab1"
               href="#!"
@@ -223,7 +251,7 @@ function Chattile(props) {
               Chat
             </a>
             <a
-              className="flex-fill rounded border-0 nav-link invisible"
+              className="flex-fill rounded border-0 nav-link"
               data-bs-toggle="tab"
               id="tab2"
               href="#!"
@@ -231,13 +259,14 @@ function Chattile(props) {
                 e.preventDefault();
                 tabEvents(e, 2);
               }}
+              style={{ pointerEvents: 'none' }}
               role="tab"
               aria-selected="false"
             >
               Groups
             </a>
             <a
-              className="flex-fill rounded border-0 nav-link invisible"
+              className="flex-fill rounded border-0 nav-link"
               data-bs-toggle="tab"
               id="tab3"
               href="#!"
@@ -245,6 +274,7 @@ function Chattile(props) {
                 e.preventDefault();
                 tabEvents(e, 3);
               }}
+              style={{ pointerEvents: 'none' }}
               role="tab"
               aria-selected="false"
             >
@@ -259,39 +289,81 @@ function Chattile(props) {
             role="tabpanel"
           >
             <ul className="list-unstyled list-group list-group-custom list-group-flush mb-0">
-              {chatProjects?.map((d, i) => {
-                return (
+              {isLoading?.getAllProject ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <li
+                    key={'skeleton-' + i}
+                    className="list-group-item px-md-4 py-3 py-md-4"
+                  >
+                    <div className="d-flex">
+                      <div
+                        className="avatar rounded-circle bg-secondary placeholder"
+                        style={{ width: 40, height: 40 }}
+                      />
+                      <div className="flex-fill ms-3 w-100">
+                        <div className="d-flex justify-content-between mb-2">
+                          <div
+                            className="placeholder bg-secondary"
+                            style={{ width: '40%', height: '14px' }}
+                          ></div>
+                          <div
+                            className="placeholder bg-secondary"
+                            style={{ width: '20%', height: '12px' }}
+                          ></div>
+                        </div>
+                        <div
+                          className="placeholder bg-secondary"
+                          style={{ width: '60%', height: '12px' }}
+                        ></div>
+                      </div>
+                    </div>
+                  </li>
+                ))
+              ) : filteredChatProjects?.length === 0 ? (
+                <li className="list-group-item text-center py-5 text-muted">
+                  No chat projects found.
+                </li>
+              ) : (
+                filteredChatProjects?.map((d, i) => (
                   <li
                     key={'545' + i}
-                    className={`list-group-item px-md-4 pb-3 pb-md-4 ${
-                      activeChatIndex === i ? 'open' : ''
-                    }`}
+                    className={`list-group-item px-md-4 py-3 py-md-4 open`}
+                    style={{
+                      opacity: i !== 0 ? 0.5 : 1,
+                      cursor: i !== 0 ? 'not-allowed' : 'auto'
+                    }}
+                    title={i !== 0 ? 'Coming soon' : ''}
                   >
                     <Link
-                      to={`/${_base}/ChatApp/${d.project_id}`}
+                      to={i === 0 ? `/${_base}/ChatApp/${d.project_id}` : '/#'}
                       className="d-flex"
+                      style={{
+                        pointerEvents: i !== 0 ? 'none' : 'auto',
+                        alignItems: 'center',
+                        textDecoration: 'none',
+                        color: 'inherit'
+                      }}
                     >
-                      <img
-                        className="avatar rounded-circle"
-                        // src={d.image}
-                        src={DemoProfileImg}
-                        alt=""
-                      />
+                      <i className="icofont-files-stack"></i>
                       <div className="flex-fill ms-3 text-truncate">
                         <h6 className="d-flex justify-content-between mb-0">
-                          <span>{d.project_name}</span>{' '}
-                          <small className="msg-time">{d.lastSeen}</small>
+                          <span
+                            className={`fw-bold ${i !== 0 ? 'text-muted' : ''}`}
+                          >
+                            {d.project_name}
+                          </span>
+                          <small
+                            className="msg-time text-muted"
+                            style={{ fontSize: '0.7rem' }}
+                          >
+                            {d.lastSeen || '10:45AM'}
+                          </small>
                         </h6>
-                        {/* <span className="text-muted">
-                          {d.messages.length > 0
-                            ? d.messages[d.messages.length - 1].message
-                            : ''}
-                        </span> */}
                       </div>
                     </Link>
                   </li>
-                );
-              })}
+                ))
+              )}
             </ul>
           </div>
           <div className="tab-pane fade" id="tab-conatain2" role="tabpanel">
@@ -438,7 +510,7 @@ function Chattile(props) {
       </div>
       <div className="card card-chat-body border-0 order-1 w-100 px-4 px-md-5 py-3 py-md-4">
         <div className="chat-header d-flex justify-content-between align-items-center border-bottom pb-3">
-          <div className="d-flex">
+          <div className="d-flex align-items-center">
             <div
               onClick={() => {
                 if (projectId) {
@@ -450,55 +522,44 @@ function Chattile(props) {
             >
               <i className="icofont-arrow-left fs-4"></i>
             </div>
-            <a href="#!" title="">
-              <img
-                className="avatar rounded"
-                // src={chatData[activeChatIndex].image}
-                src={DemoProfileImg}
-                alt="avatar"
-              />
-            </a>
             <div className="ms-3">
-              <h6 className="mb-0">
-                {chatHistory?.project_name || 'Connect 2.0 - Ticketing system'}
-              </h6>
+              <div className="d-flex align-items-center gap-2 text-truncate">
+                <i className="icofont-files-stack"></i>
+                <h6
+                  className="mb-0 fw-bolder"
+                  style={{
+                    fontSize: '0.9rem'
+                  }}
+                >
+                  {chatHistory?.project_name ||
+                    'Connect 2.0 - Ticketing system'}
+                </h6>
+              </div>
               {/* <small className="text-muted">
                 Last seen: {chatData[activeChatIndex].lastSeen}
               </small> */}
             </div>
           </div>
           <div className="d-flex">
-            <a
-              className="nav-link py-2 px-3 text-muted d-none d-lg-block"
-              href="#!"
-            >
+            <a className="nav-link py-2 px-3 text-muted d-none" href="#!">
               <i className="fa fa-camera"></i>
             </a>
-            <a
-              className="nav-link py-2 px-3 text-muted d-none d-lg-block"
-              href="#!"
-            >
+            <a className="nav-link py-2 px-3 text-muted d-none " href="#!">
               <i className="fa fa-video-camera"></i>
             </a>
-            <a
-              className="nav-link py-2 px-3 text-muted d-none d-lg-block"
-              href="#!"
-            >
+            <a className="nav-link py-2 px-3 text-muted d-none" href="#!">
               <i className="fa fa-gear"></i>
             </a>
             <a
               className="nav-link py-2 px-3 text-muted d-none d-lg-block"
               href="#!"
+              data-bs-toggle="tooltip"
+              data-bs-placement="top"
+              title="We are Still Working on It!."
             >
               <i className="fa fa-info-circle"></i>
             </a>
-            <a
-              className="nav-link py-2 px-3 d-block d-xl-none chatlist-toggle"
-              href="!#"
-              onClick={(e) => onClickToggle(e)}
-            >
-              <i className="fa fa-bars"></i>
-            </a>
+
             <div className="nav-item list-inline-item d-block d-xl-none">
               <Dropdown className="hide-toggle">
                 <Dropdown.Toggle as="a" className="nav-link text-muted">
@@ -534,117 +595,153 @@ function Chattile(props) {
           id="chatHistory"
           className="chat-history list-unstyled mb-0 py-lg-5 py-md-4 py-3 flex-grow-1"
         >
-          {transformedChatHistory?.length > 0 &&
-            transformedChatHistory?.map((data, i) => {
-              return (
-                <li
-                  key={'messages' + i}
-                  className={
-                    data.type === 'received'
-                      ? 'mb-3 d-flex flex-row align-items-end'
-                      : 'mb-3 d-flex flex-row-reverse align-items-end'
-                  }
+          {isLoading?.getAllHistoryByProjectId ? (
+            <Stack alignItems={'center'}>
+              <CircularProgress size={25} />
+            </Stack>
+          ) : transformedChatHistory?.length === 0 ? (
+            <li className="text-center text-muted py-5">
+              <i className="fa fa-comment-slash mb-2 fs-3 d-block"></i>
+              <div>No messages found</div>
+            </li>
+          ) : (
+            transformedChatHistory?.map((data, i) => (
+              <li
+                key={'messages' + i}
+                className={
+                  data.type === 'received'
+                    ? 'mb-3 d-flex flex-row align-items-end'
+                    : 'mb-3 d-flex flex-row-reverse align-items-end'
+                }
+              >
+                <div
+                  className={`max-width-70 ${
+                    data.type === 'received' ? '' : 'text-end'
+                  }`}
                 >
+                  <div className="user-info mb-1 d-flex gap-2 align-items-center">
+                    {data.type === 'received' && (
+                      <>
+                        {/* <img
+                        className="avatar sm rounded-circle me-1"
+                        src={DemoProfileImg}
+                        alt="avatar"
+                      />*/}
+                        <i className="icofont-files-stack"></i>
+                      </>
+                    )}
+                    <span className="text-muted small">{data.time}</span>
+                  </div>
                   <div
-                    className={`max-width-70 ${
-                      data.type === 'received' ? '' : 'text-end'
-                    }`}
+                    style={{
+                      background: data?.type === 'send' && '#484c7f'
+                    }}
+                    className="card border-0 p-3"
                   >
-                    <div className="user-info mb-1">
-                      {data.type === 'received' ? (
-                        <img
-                          className="avatar sm rounded-circle me-1"
-                          // src={chatData[activeChatIndex].image}
-                          src={DemoProfileImg}
-                          alt="avatar"
-                        />
-                      ) : null}
-                      <span className="text-muted small">{data.time}</span>
-                    </div>
                     <div
+                      className="message"
                       style={{
-                        background: data?.type === 'send' && '#484c7f'
+                        color: data?.type === 'send' && 'white',
+                        textAlign: 'center'
                       }}
-                      // className={`card border-0 p-3 ${
-                      //   data.type === 'received' ? '' : 'color-bg-100 text-light'
-                      // }`}
-                      className={`card border-0 p-3`}
                     >
-                      <div
-                        style={{ color: data?.type === 'send' && '#fff' }}
-                        className="message"
-                      >
-                        {data.message}
-                        <p className="mb-0">
-                          {data.images.map((d, i) => {
-                            return (
-                              <img
-                                key={'images' + i}
-                                className="w120 img-thumbnail"
-                                src={d}
-                                alt=""
-                              />
-                            );
-                          })}
-                        </p>
-                      </div>
+                      {data.message}
+                      <p className="mb-0">
+                        {data.images.map((d, i) => (
+                          <img
+                            key={'images' + i}
+                            className="w120 img-thumbnail"
+                            src={d}
+                            alt=""
+                          />
+                        ))}
+                      </p>
                     </div>
                   </div>
-                  <div className="btn-group">
-                    <Dropdown className="hide-toggle">
-                      <Dropdown.Toggle
-                        as="a"
-                        variant=""
-                        id=""
-                        className="nav-link py-2 px-3 text-muted"
-                      >
-                        <i className="fa fa-ellipsis-v"></i>
-                      </Dropdown.Toggle>
-
-                      <Dropdown.Menu as="ul" className="border-0 shadow">
-                        <li>
-                          <a className="dropdown-item" href="#!">
-                            Edit
-                          </a>
-                        </li>
-                        <li>
-                          <a className="dropdown-item" href="#!">
-                            Share
-                          </a>
-                        </li>
-                        <li>
-                          <a
-                            className="dropdown-item"
-                            href="#!"
-                            onClick={(e) => {
-                              e.preventDefault();
-                              onDeleteMessage(i);
-                            }}
-                          >
-                            Delete
-                          </a>
-                        </li>
-                      </Dropdown.Menu>
-                    </Dropdown>
-                  </div>
-                </li>
-              );
-            })}
+                </div>
+                <div
+                  className="btn-group"
+                  style={{
+                    pointerEvents: 'none'
+                  }}
+                >
+                  <Dropdown className="hide-toggle">
+                    <Dropdown.Toggle
+                      as="a"
+                      variant=""
+                      className="nav-link py-2 px-3 text-muted"
+                    >
+                      <i className="fa fa-ellipsis-v"></i>
+                    </Dropdown.Toggle>
+                    <Dropdown.Menu as="ul" className="border-0 shadow">
+                      <li>
+                        <a className="dropdown-item" href="#!">
+                          Edit
+                        </a>
+                      </li>
+                      <li>
+                        <a className="dropdown-item" href="#!">
+                          Share
+                        </a>
+                      </li>
+                      <li>
+                        <a
+                          className="dropdown-item"
+                          href="#!"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            //  onDeleteMessage(i);
+                          }}
+                        >
+                          Delete
+                        </a>
+                      </li>
+                    </Dropdown.Menu>
+                  </Dropdown>
+                </div>
+              </li>
+            ))
+          )}
         </ul>
-        <div className="chat-message">
+
+        <div
+          className="chat-message position-relative"
+          style={{ maxWidth: '100%' }}
+        >
           <textarea
             type="text"
-            style={{ background: '#EEEEEE' }}
+            style={{
+              background: '#EEEEEE',
+              paddingRight: '70px',
+              resize: 'none'
+            }} // paddingRight prevents overlap with button
             className="form-control"
+            rows={2}
             value={txtMessage}
-            placeholder="Enter text here..."
-            onChange={(e) => {
-              onChangeMessageText(e.target.value);
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+
+                onMessgeSend(e);
+              }
             }}
+            placeholder="Enter text here..."
+            onChange={(e) => onChangeMessageText(e.target.value)}
           ></textarea>
-          <button className="btn btn-dark" type="button" onClick={onMessgeSend}>
-            Send
-          </button>
+
+          <IconButton
+            className=" position-absolute"
+            type="button"
+            style={{
+              bottom: '12px',
+              right: '10px',
+              zIndex: 1
+              // background: '#484c7f'
+            }}
+            onClick={onMessgeSend}
+          >
+            <SendIcon sx={{ color: '#484c7f' }} />
+          </IconButton>
         </div>
       </div>
     </div>

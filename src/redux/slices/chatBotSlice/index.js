@@ -159,7 +159,7 @@ const chatBotSlice = createSlice({
       })
       .addCase(getAllProject.rejected, (state, action) => {
         state.isLoading.getAllProject = false;
-        console.error('Error in postBotMessages:', action.payload);
+        console.error('Error in getAllProject:', action.payload);
         state.getAllProject = [];
       })
 
