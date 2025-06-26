@@ -223,8 +223,8 @@ function EditUserComponent({ match }) {
     ticketTypeShowErr: '',
     PinCodeErr: '',
     reportingToErr: '',
-    branchErr: '',
-    shiftErr: ''
+    shiftErr: '',
+    branchErr: ''
   });
   const [submitting, setSubmitting] = useState(false);
   function checkingValidation(form) {
@@ -240,8 +240,8 @@ function EditUserComponent({ match }) {
     var selectJobRole = form.getAll('job_role')[0];
     var selectDesignation = form.getAll('designation_id')[0];
     var confirm_password = form.getAll('confirm_password')[0];
-    var selectBranch = form.getAll('branch')[0];
-    var selectShift = form.getAll('shift')[0];
+    var selectShift = form.getAll('shift_type_id')[0];
+    var selectBranch = form.getAll('hired_branch_id')[0];
 
     let flag = 0;
     if (selectFirstName === '') {
@@ -291,11 +291,12 @@ function EditUserComponent({ match }) {
     } else if (selectReportingTo.length === 0) {
       setInputState({ ...state, reportingToErr: 'Please Select Reporting To' });
       flag = 1;
+    } else if (selectShift === '') {
+      setInputState({ ...state, shiftErr: ' Please Select Shift' });
+      flag = 1;
     } else if (selectBranch === '') {
       setInputState({ ...state, branchErr: 'Please Select Branch' });
       flag = 1;
-    } else if (selectShift === '') {
-      setInputState({ ...state, shiftErr: 'Please Select Shift' });
     }
     // else if (selectPassword === '') {
     //   setInputState({ ...state, passwordErr: 'Please enter Password' });
@@ -1685,8 +1686,16 @@ function EditUserComponent({ match }) {
                             name="shift_type_id"
                             isClearable={true}
                             onChange={(e) => {
-                              console.log(e);
                               setSelectShift(e);
+                              if (!e || Object.entries(e).length === 0) return;
+                              if (e.value === '') {
+                                setInputState({
+                                  ...state,
+                                  shiftErr: 'Please Select Shift'
+                                });
+                              } else {
+                                setInputState({ ...state, shiftErr: '' });
+                              }
                             }}
                             options={allShiftData || []}
                             value={selectShift}
@@ -1716,7 +1725,7 @@ function EditUserComponent({ match }) {
                             classNamePrefix="react-select"
                             id="branch"
                             name="hired_branch_id"
-                            value={defaultBranch}
+                            value={selectBranch}
                             options={branchMasterData}
                             onChange={(e) => {
                               setSelectBranch(e);

@@ -1494,7 +1494,7 @@ function CreateUserComponent({ match }) {
                             if (e.value === '') {
                               setInputState({
                                 ...state,
-                                shiftErr: 'Please Select Job Role'
+                                shiftErr: 'Please Select Shift'
                               });
                             } else {
                               setInputState({ ...state, shiftErr: '' });
@@ -1534,7 +1534,7 @@ function CreateUserComponent({ match }) {
                             if (e.value === '') {
                               setInputState({
                                 ...state,
-                                branchErr: 'Please Select Job Role'
+                                branchErr: 'Please Select Branch'
                               });
                             } else {
                               setInputState({ ...state, branchErr: '' });
