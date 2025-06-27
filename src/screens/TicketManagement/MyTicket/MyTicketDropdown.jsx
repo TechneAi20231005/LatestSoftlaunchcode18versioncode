@@ -156,10 +156,11 @@ const MyTicketDropdown = ({
       conditions: (type) => {
         if (type === 'AssignToMe') {
           return (
-            data?.created_by?.id !== currentUser &&
-            data?.basket_configured?.length === 0 &&
-            tickedtAssignedto &&
-            userAccountFor === 'SELF'
+            (data?.created_by?.id !== currentUser &&
+              data?.basket_configured?.length === 0) ||
+            (tickedtAssignedto &&
+              userAccountFor === 'SELF' &&
+              data?.basket_configured?.length === 0)
           );
         } else if (type === 'YourTask') {
           return false;
