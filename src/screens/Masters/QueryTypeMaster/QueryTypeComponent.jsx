@@ -434,7 +434,7 @@ function QueryTypeComponent() {
       label: 'Group name',
       required: true,
       alphaNumeric: true,
-      max: 50,
+      max: 100,
       min: 3
     }
   ];
@@ -784,6 +784,7 @@ function QueryTypeComponent() {
                       name="group_name"
                       component="small"
                       className="text-danger small"
+                      maxLength={100}
                     />
                   </div>
                 </div>

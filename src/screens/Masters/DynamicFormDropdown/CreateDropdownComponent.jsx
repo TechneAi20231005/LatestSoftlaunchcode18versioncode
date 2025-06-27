@@ -162,6 +162,7 @@ export default function CreateDropdownComponent() {
                               required={message?.trim()}
                               id={`dropdown_values_${idx}`}
                               className="form-control form-control-sm"
+                              maxlength="100"
                               onKeyPress={(e) => {
                                 Validation.CharactersNumbersSpeicalOnly(e);
                               }}
