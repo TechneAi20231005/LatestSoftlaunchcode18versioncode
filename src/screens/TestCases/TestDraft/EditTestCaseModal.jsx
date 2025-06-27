@@ -151,10 +151,7 @@ function EditTestCaseModal({
       type === 'EDIT'
         ? `TC_${currentTestCasesData?.original?.tc_id}`.toString()
         : '',
-    platform:
-      type === 'EDIT'
-        ? currentTestCasesData?.original?.platform?.toString()
-        : '',
+    platform: currentTestCasesData?.original?.platform?.toUpperCase() || '',
     // tc_id: type === 'EDIT' ? currentTestCasesData?.tc_id?.toString() : '',
     testing_group:
       type === 'EDIT'
@@ -178,7 +175,6 @@ function EditTestCaseModal({
     expected_result:
       type === 'EDIT' ? currentTestCasesData?.original?.expected_result : ''
   };
-
   const handleEditTestCase = ({ formData }) => {
     if (disable) return;
     setDisable(true);
