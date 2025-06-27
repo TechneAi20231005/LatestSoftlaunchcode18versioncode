@@ -95,7 +95,7 @@ export default function CreateDropdownComponent() {
   }, [checkRole.length, dispatch]);
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_create === 0) {
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
 
@@ -162,6 +162,7 @@ export default function CreateDropdownComponent() {
                               required={message?.trim()}
                               id={`dropdown_values_${idx}`}
                               className="form-control form-control-sm"
+                              maxlength="100"
                               onKeyPress={(e) => {
                                 Validation.CharactersNumbersSpeicalOnly(e);
                               }}

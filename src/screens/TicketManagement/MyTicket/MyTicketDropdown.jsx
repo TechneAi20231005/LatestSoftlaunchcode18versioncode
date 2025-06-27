@@ -5,13 +5,23 @@ import { Menu, MenuItem, Button } from '@mui/material';
 import UnPassModal from './UnPassModal';
 import ConfirmationModal from './confirmationModal';
 
-const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
+const MyTicketDropdown = ({
+  type,
+  data,
+  setPagination,
+  setColumnFilters,
+  pagination
+}) => {
   // Edit Button
-
   const currentUser = Number(localStorage.getItem('id'));
   const ticketCreatedBy = Number(data.created_by?.id) === currentUser;
-
   const tickedtAssignedto = data.assign_to_user_id === currentUser;
+  const doUserHaveBasket =
+    data?.basket_configured?.length > 0
+      ? data?.basket_configured.find(
+          (item) => item.basket_owner === currentUser
+        )
+      : false;
 
   const checkNotSolvedAndNotReject =
     data.status?.status !== 'Solved' && data.passed_status !== 'REJECT';
@@ -111,6 +121,7 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
         if (type === 'AssignToMe') {
           return (
             ((data?.created_by?.id !== currentUser &&
+              doUserHaveBasket &&
               data?.basket_configured?.length > 0) ||
               (tickedtAssignedto && data?.basket_configured?.length > 0)) &&
             userAccountFor === 'SELF'
@@ -145,11 +156,11 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
       conditions: (type) => {
         if (type === 'AssignToMe') {
           return (
-            ((data?.created_by?.id !== currentUser &&
-              Number(data?.basket_configured?.length === 0)) ||
-              (tickedtAssignedto &&
-                Number(data?.basket_configured?.length) === 0)) &&
-            userAccountFor === 'SELF'
+            (data?.created_by?.id !== currentUser &&
+              data?.basket_configured?.length === 0) ||
+            (tickedtAssignedto &&
+              userAccountFor === 'SELF' &&
+              data?.basket_configured?.length === 0)
           );
         } else if (type === 'YourTask') {
           return false;
@@ -239,13 +250,13 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
       isModal: true,
       conditions: (type) => {
         if (type === 'CreatedByMe') {
-          return true;
+          return ticketCreatedBy ? true : false;
         } else if (type === 'AssignToMe') {
-          return false;
+          return ticketCreatedBy ? true : false;
         } else if (type === 'YourTask') {
-          return false;
+          return ticketCreatedBy ? true : false;
         } else if (type === 'DepartmentWise') {
-          return false;
+          return ticketCreatedBy ? true : false;
         } else if (type === 'UnPassed') {
           return false;
         }
@@ -327,6 +338,7 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
           handleRemarkModal={handleRemarkModal}
           setPagination={setPagination}
           setColumnFilters={setColumnFilters}
+          pagination={pagination}
         />
       )}
       {confirmationModal.showModal && (
@@ -335,6 +347,7 @@ const MyTicketDropdown = ({ type, data, setPagination, setColumnFilters }) => {
           handleConfirmationModal={handleConfirmationModal}
           setPagination={setPagination}
           setColumnFilters={setColumnFilters}
+          pagination={pagination}
         />
       )}
     </>

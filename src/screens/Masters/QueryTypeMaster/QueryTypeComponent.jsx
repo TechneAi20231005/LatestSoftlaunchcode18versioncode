@@ -379,7 +379,7 @@ function QueryTypeComponent() {
 
   useEffect(() => {
     if (checkRole && checkRole[0]?.can_read === 0) {
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
 
@@ -434,7 +434,7 @@ function QueryTypeComponent() {
       label: 'Group name',
       required: true,
       alphaNumeric: true,
-      max: 50,
+      max: 100,
       min: 3
     }
   ];
@@ -784,6 +784,7 @@ function QueryTypeComponent() {
                       name="group_name"
                       component="small"
                       className="text-danger small"
+                      maxLength={100}
                     />
                   </div>
                 </div>

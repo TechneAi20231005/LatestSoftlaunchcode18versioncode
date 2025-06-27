@@ -24,7 +24,7 @@ const DataTableCustom = React.memo(
     columnFilters,
     reset = false,
     setReset = () => {},
-    message = '',
+    message = ''
   }) => {
     let tabType = type;
     const [modal, setModal] = useState({
@@ -42,6 +42,7 @@ const DataTableCustom = React.memo(
         setPagination={setPagination}
         type={tabType}
         data={row.original}
+        pagination={pagination}
       />
     );
     const columns = [
@@ -102,16 +103,17 @@ const DataTableCustom = React.memo(
         size: 160,
         enableColumnFilter: false,
         sortingFn: (rowA, rowB, columnId) => {
-
           const priorityOrder = {
             Low: 1,
             Medium: 2,
             High: 3,
-            'Very High': 4,
+            'Very High': 4
           };
           const priorityA = rowA.getValue(columnId);
           const priorityB = rowB.getValue(columnId);
-          return (priorityOrder[priorityA] || 0) - (priorityOrder[priorityB] || 0);
+          return (
+            (priorityOrder[priorityA] || 0) - (priorityOrder[priorityB] || 0)
+          );
         },
         Cell: ({ cell }) => {
           const priority = cell.getValue();
@@ -146,19 +148,19 @@ const DataTableCustom = React.memo(
             }
           ]
         : []),
-        {
-          accessorFn: (originalRow) => originalRow?.status?.status || '--',
-          id: 'Status',
-          header: 'Status',
-          size: 158,
-          Filter: ({ column }) => (
-            <AutocompleteMultiFilter
-              column={column}
-              options={allStatusData?.selectData || []}
-              placeholder="Filter Status"
-            />
-          ),
-        },
+      {
+        accessorFn: (originalRow) => originalRow?.status?.status || '--',
+        id: 'Status',
+        header: 'Status',
+        size: 158,
+        Filter: ({ column }) => (
+          <AutocompleteMultiFilter
+            column={column}
+            options={allStatusData?.selectData || []}
+            placeholder="Filter Status"
+          />
+        )
+      },
       {
         accessorFn: (originalRows) =>
           originalRows?.assign_to_department?.department || '--',
@@ -171,7 +173,7 @@ const DataTableCustom = React.memo(
             options={allDepartmentData?.selectData || []}
             placeholder="Filter Department"
           />
-        ),
+        )
         // filterSelectOptions: allDepartmentData?.selectData
       },
       {
@@ -188,7 +190,7 @@ const DataTableCustom = React.memo(
             options={allUsersData?.selectData || []}
             placeholder="Filter Assigned To"
           />
-        ),
+        )
         // filterSelectOptions: allUsersData?.selectData
       },
       {
@@ -198,9 +200,8 @@ const DataTableCustom = React.memo(
           }`,
         header: 'Created By',
         enableColumnFilter: false
-      },
+      }
     ];
-
 
     return (
       <React.Fragment>

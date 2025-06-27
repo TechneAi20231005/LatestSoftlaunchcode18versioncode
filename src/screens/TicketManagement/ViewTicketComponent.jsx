@@ -155,12 +155,15 @@ export default function ViewTicketComponent({ match }) {
     if (checkRole && checkRole[0]?.can_read === 0) {
       // alert("Rushi")
 
-      window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+      window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
     }
   }, [checkRole]);
   return (
     <div className="container-xxl">
-      <PageHeader showBackBtn headerTitle={`Ticket - ${data ? data.ticket_id : ''}`} />
+      <PageHeader
+        showBackBtn
+        headerTitle={`Ticket - ${data ? data.ticket_id : ''}`}
+      />
 
       {/* {notify && <Alert alertData={notify} />}   */}
 
@@ -367,9 +370,7 @@ export default function ViewTicketComponent({ match }) {
                                         : ''
                                     }
                                     required={
-                                      data.inputMandatory == true
-                                        ? true
-                                        : false
+                                      data.inputMandatory == true ? true : false
                                     }
                                     disabled
                                     checked={d.value == data.inputDefaultValue}

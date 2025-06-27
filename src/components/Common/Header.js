@@ -23,10 +23,14 @@ import DemoProfileImg from '../../assets/images/profile_av.png';
 import './style.scss';
 import { errorHandler } from '../../utils';
 import NotificationSystem from '../../screens/NotificationBot/NotificationSystem';
+import { useDispatch } from 'react-redux';
+import { reviewerNotificationList } from '../../redux/services/chatBot';
+import { project_id } from '../../settings/constants';
 
 export default function Header() {
   // // initial state
   const userId = userSessionData.userId;
+  const dispatch = useDispatch();
 
   // // local state
   const [tenantId, setTenantId] = useState();
@@ -71,7 +75,7 @@ export default function Header() {
     localStorage.clear();
     // localStorage.clear();
     sessionStorage.clear();
-    window.location.href = `${process.env.PUBLIC_URL}/`;
+    window.location.href = `/${process.env.REACT_APP_ROOT_URL}/`;
   }
 
   const handleMarkAllNotification = (e) => {
@@ -123,7 +127,7 @@ export default function Header() {
       if (res.status === 200 && res.data.status === 1) {
         setNotify({ type: 'success', message: res.data.message });
         setTimeout(() => {
-          window.location.href = `${process.env.PUBLIC_URL}/Dashboard`;
+          window.location.href = `/${process.env.REACT_APP_ROOT_URL}/Dashboard`;
         }, 1000);
       } else {
         setNotify({ type: 'danger', message: res.data.message });
@@ -134,7 +138,7 @@ export default function Header() {
   // // life cycle
   useEffect(() => {
     loadData();
-
+    dispatch(reviewerNotificationList({ project_id: project_id }));
     const interval = setInterval(loadNotifcation(), 5000);
     return () => clearInterval(interval);
   }, []);

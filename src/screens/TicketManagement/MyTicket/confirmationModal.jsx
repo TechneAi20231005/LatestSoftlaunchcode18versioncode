@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal } from 'react-bootstrap';
+import { Modal, Pagination } from 'react-bootstrap';
 import MyTicketService from '../../../services/TicketService/MyTicketService';
 import { toast } from 'react-toastify';
 import { errorHandler } from '../../../utils';
@@ -8,7 +8,8 @@ function confirmationModal({
   confirmationModal,
   handleConfirmationModal,
   setColumnFilters,
-  setPagination
+  setPagination,
+  pagination
 }) {
   const handleSolveTicketModal = async (e) => {
     e.preventDefault();
@@ -29,8 +30,8 @@ function confirmationModal({
           });
           setColumnFilters([]);
           setPagination({
-            pageIndex: 0,
-            pageSize: 10
+            pageIndex: pagination?.pageIndex,
+            pageSize: pagination?.pageSize
           });
         } else {
           toast.error(res.data.message);
