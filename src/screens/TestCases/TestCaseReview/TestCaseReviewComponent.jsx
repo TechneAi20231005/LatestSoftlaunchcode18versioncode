@@ -1141,20 +1141,19 @@ function TestCaseReviewComponent() {
         </span>
       ),
       Cell: ({ cell }) => {
-        const rowData = cell.row.original;
+        const rowData = cell?.row?.original;
         const reviewerId = localStorage.getItem('id');
         const isDisabled = rowData?.reviewer_id !== parseInt(reviewerId);
-
         return (
           <div
             className="btn-group"
             role="group"
             aria-label="Basic outlined example"
           >
-            {rowData.test_plan_id && (
+            {rowData?.test_plan_id && (
               <div>
                 {isDisabled ? (
-                  <span className="text-muted">{`${rowData.test_plan_id}`}</span>
+                  <span className="text-muted">{`${rowData?.test_plan_id}`}</span>
                 ) : (
                   <Link
                     to={`/${

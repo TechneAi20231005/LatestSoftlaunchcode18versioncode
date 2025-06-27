@@ -253,6 +253,7 @@ export default function EditDropdownComponent({ match }) {
                             onKeyPress={(e) => {
                               Validation.CharactersNumbersSpeicalOnly(e);
                             }}
+                            maxLength={'100'}
                             value={item.value}
                             onChange={(e) => {
                               const updatedData = [...data];

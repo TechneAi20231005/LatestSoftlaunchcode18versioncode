@@ -417,7 +417,9 @@ function TestCaseReviewDetails() {
     // if (testPlanIdData) {
     //   setRowData(testPlanIdData);
     // }
-    setRowData(testPlanIdData);
+    {
+      testPlanIdData && testPlanIdData && setRowData(testPlanIdData);
+    }
   }, [testPlanIdData]);
   // const columns = [
   //   {
@@ -1388,7 +1390,7 @@ function TestCaseReviewDetails() {
         </span>
       ),
       // enableColumnFilter: false,
-      size: 220,
+      size: 225,
       enableSorting: false
     },
     {
@@ -1427,7 +1429,7 @@ function TestCaseReviewDetails() {
         </span>
       ),
       // enableColumnFilter: false,
-      size: 200,
+      size: 225,
       enableSorting: false
     },
     {
@@ -2381,7 +2383,6 @@ function TestCaseReviewDetails() {
     );
     dispatch(getReviewCommentMasterListThunk());
   }, [paginationData.pageSize, paginationData.pageIndex]);
-  console.log('ticketId', ticketId);
   useEffect(() => {
     dispatch(
       getTestCaseStatusDataList({

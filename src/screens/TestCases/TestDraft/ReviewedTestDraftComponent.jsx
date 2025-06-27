@@ -1523,7 +1523,7 @@ function ReviewedTestDraftComponent() {
         </span>
       ),
       enableColumnFilter: false,
-      size: 220,
+      size: 225,
       enableSorting: false
     },
     {
@@ -1562,7 +1562,7 @@ function ReviewedTestDraftComponent() {
         </span>
       ),
       enableColumnFilter: false,
-      size: 200,
+      size: 225,
       enableSorting: false
     },
     {
@@ -2030,6 +2030,7 @@ function ReviewedTestDraftComponent() {
     { title: 'Severity', field: 'severity' },
     { title: 'Expected Result', field: 'expected_result' },
     { title: 'Status', field: 'status' },
+    { title: 'Remark', field: 'other_remark' },
     { title: 'Project', field: 'project_name' },
     { title: 'is Automation', field: 'is Automation' },
     { title: 'Created At', field: 'created_at' },
@@ -2275,7 +2276,6 @@ function ReviewedTestDraftComponent() {
     localDispatch({ type: 'SET_SELECTED_FILTER_IDS', payload: filteredIds });
     // }
   }, [searchTerm, localDispatch]);
-  console.log('tttt');
 
   return (
     <div className="container-xxl">
