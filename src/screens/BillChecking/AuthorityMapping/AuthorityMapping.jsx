@@ -135,14 +135,7 @@ const AuthorityMapping = () => {
             data-bs-toggle="modal"
             data-bs-target="#depedit"
             onClick={(e) => {
-              handleData(e, row);
-              dispatch(
-                handleModalOpen({
-                  showModal: true,
-                  modalData: row,
-                  modalHeader: 'Assign Authority'
-                })
-              );
+              handleData(e, row, 'assign authority');
             }}
             style={{ marginRight: '10px' }}
           >
@@ -154,14 +147,6 @@ const AuthorityMapping = () => {
             data-bs-target="#depedit"
             onClick={(e) => {
               handleData(e, row);
-
-              dispatch(
-                handleModalOpen({
-                  showModal: true,
-                  modalData: row,
-                  modalHeader: 'Details'
-                })
-              );
             }}
             className="btn btn-sm btn-primary text-white"
             style={{ borderRadius: '50%', height: '30px', marginLeft: '5px' }}
@@ -354,7 +339,7 @@ const AuthorityMapping = () => {
     setUserErrors(updatedUserErrors);
   };
 
-  const handleData = async (e, row) => {
+  const handleData = async (e, row, type) => {
     if (row.id) {
       await new BillCheckingTransactionService()
 
@@ -362,6 +347,23 @@ const AuthorityMapping = () => {
 
         .then((res) => {
           if (res.status === 200) {
+            if (type === 'assign authority') {
+              dispatch(
+                handleModalOpen({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: 'Assign Authority'
+                })
+              );
+            } else {
+              dispatch(
+                handleModalOpen({
+                  showModal: true,
+                  modalData: row,
+                  modalHeader: 'Details'
+                })
+              );
+            }
             if (res.data.status === 1) {
               const updatedAssign = res.data.data.map((item) => {
                 const from_dateReadOnly =
