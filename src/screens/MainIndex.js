@@ -1,5 +1,5 @@
 import React from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Navigate, Route, Routes } from 'react-router-dom';
 import { _base } from '../settings/constants';
 import Header from '../components/Common/Header';
 import Dashboard from './Dashboard/Dashboard';
@@ -153,6 +153,7 @@ import GraphWeekWise from './TicketManagement/TaskManagement/Calendar-Graph/Cust
 import InterviewMaster from './HRMS/employeeJoining/interviewMaster/InterviewMaster';
 import CandidateList from './HRMS/employeeJoining/candidateList/CandidateList';
 import BranchMaster from './HRMS/employeeJoining/branchMaster/BranchMaster';
+import ShiftMaster from './HRMS/employeeJoining/shiftMaster/ShiftMaster';
 import SourceMaster from './HRMS/employeeJoining/sourceMaster/SourceMaster';
 import RemarkMaster from './HRMS/employeeJoining/remarkMaster/RemarkMaster';
 import SalaryMaster from './HRMS/employeeJoining/salaryMaster/SalaryMaster';
@@ -189,8 +190,16 @@ import MyTicketRefactored from './TicketManagement/MyTicket/MyTicketFilters';
 import TestPlanHistoryComponent from './TestCases/TestCaseReview/TestPlanHistoryComponent';
 import { QueryGroupMaster } from './Masters/QueryGroupMaster/QueryGroupMaster';
 import MonthlyAttendance from './HRMS/MonthlyAttendance/MonthlyAttendance';
+import AllReviewerNotificationList from './Dashboard/AllReviewerNotificationList';
+import { masterUser } from '../hooks/masterUser';
+import ChatApp from './ChatApp/ChatApp';
+
 class MainIndex extends React.Component {
   render() {
+    const PrivateRoute = ({ children }) => {
+      const isMasterUser = masterUser();
+      return isMasterUser ? children : <Navigate to={`/${_base}/Dashboard`} />;
+    };
     // if (Object.keys(localStorage).length < Object.keys(sessionStorage).length) {
     //   for (var a in sessionStorage) {
     //     localStorage.setItem(a, sessionStorage[a]);
@@ -838,6 +847,11 @@ class MainIndex extends React.Component {
             />
             <Route
               exact
+              path={`/${_base}/ShiftMaster`}
+              element={<ShiftMaster />}
+            />
+            <Route
+              exact
               path={`/${_base}/SourceMaster`}
               element={<SourceMaster />}
             />
@@ -893,11 +907,26 @@ class MainIndex extends React.Component {
               element={<PoPreview />}
             />
             <Route exact path={`/${_base}/POHistory`} element={<PoHistory />} />
-            {/* <Route
+            <Route exact path={`/${_base}/ChatApp`} element={<ChatApp />} />
+            <Route exact path={`/${_base}/ChatApp/:projectId`} element={<ChatApp />} />
+            <Route
               exact
               path={`/${_base}/CustomerFeedback`}
-              element={<CustomerFeedback />}
-            /> */}
+              element={
+                <PrivateRoute>
+                  <CustomerFeedback />
+                </PrivateRoute>
+              }
+            />
+            <Route
+              exact
+              path={`/${_base}/ReviewerNotificationList`}
+              element={
+                <PrivateRoute>
+                  <AllReviewerNotificationList />
+                </PrivateRoute>
+              }
+            />
             <Route
               exact
               path={`/${_base}/POVendorExportReport`}

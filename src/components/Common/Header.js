@@ -23,10 +23,14 @@ import DemoProfileImg from '../../assets/images/profile_av.png';
 import './style.scss';
 import { errorHandler } from '../../utils';
 import NotificationSystem from '../../screens/NotificationBot/NotificationSystem';
+import { useDispatch } from 'react-redux';
+import { reviewerNotificationList } from '../../redux/services/chatBot';
+import { project_id } from '../../settings/constants';
 
 export default function Header() {
   // // initial state
   const userId = userSessionData.userId;
+  const dispatch = useDispatch();
 
   // // local state
   const [tenantId, setTenantId] = useState();
@@ -134,7 +138,7 @@ export default function Header() {
   // // life cycle
   useEffect(() => {
     loadData();
-
+    dispatch(reviewerNotificationList({ project_id: project_id }));
     const interval = setInterval(loadNotifcation(), 5000);
     return () => clearInterval(interval);
   }, []);

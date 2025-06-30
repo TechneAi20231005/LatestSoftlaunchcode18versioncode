@@ -7,23 +7,32 @@ import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import IconButton from '@mui/material/IconButton';
 import ChatIcon from '@mui/icons-material/Chat';
 import { useSelector } from 'react-redux';
+import { _base, project_id } from '../../settings/constants';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import { useLocation, useNavigate } from 'react-router-dom';
 function ChatBot() {
   // const [chatHistory, setChatHistory] = useState([]);
+  const navigate = useNavigate();
+  const location = useLocation();
+  const pathSegments = location?.pathname?.split('/')?.filter(Boolean);
+  const shouldHideChatbot = pathSegments?.includes('ChatApp');
   const chatHistory =
     useSelector((state) => state?.chatBotSlice?.chatHistory) || [];
 
   const [showChatbot, setShowChatbot] = useState(false);
   const chatBodyRef = useRef();
 
-  const project_id = '684a7955231b7e483636c6ec';
-
   useEffect(() => {
-    chatBodyRef.current.scrollTo({
-      top: chatBodyRef.current.scrollHeight,
+    chatBodyRef?.current?.scrollTo({
+      top: chatBodyRef?.current?.scrollHeight,
       behavior: 'smooth'
     });
   }, [chatHistory]);
   let userName = localStorage.getItem('first_name') || 'Friend';
+
+  if (shouldHideChatbot) {
+    return null;
+  }
   return (
     <div className={`containers ${showChatbot ? 'show-chatbot' : ''}`}>
       <IconButton
@@ -42,12 +51,22 @@ function ChatBot() {
             <h2 className="logo-text mb-0">Connect AI</h2>
           </div>
 
-          <IconButton onClick={() => setShowChatbot((prev) => !prev)}>
-            <span>
+          <div className="header-actions">
+            <IconButton
+              title="redirect to full screen chat"
+              onClick={() => {
+                setShowChatbot(false);
+                navigate(`${_base}/ChatApp`);
+              }}
+            >
+              <FullscreenIcon fontSize="large" />
+            </IconButton>
+            <IconButton onClick={() => setShowChatbot((prev) => !prev)}>
               <KeyboardArrowDownIcon fontSize="large" />
-            </span>
-          </IconButton>
+            </IconButton>
+          </div>
         </div>
+
         {/* chatbot Body */}
         <div ref={chatBodyRef} className="chat-body">
           <div
