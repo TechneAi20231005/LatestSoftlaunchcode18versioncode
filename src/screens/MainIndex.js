@@ -189,9 +189,11 @@ import ChatBot from './Dashboard/ChatBot';
 import MyTicketRefactored from './TicketManagement/MyTicket/MyTicketFilters';
 import TestPlanHistoryComponent from './TestCases/TestCaseReview/TestPlanHistoryComponent';
 import { QueryGroupMaster } from './Masters/QueryGroupMaster/QueryGroupMaster';
+import MonthlyAttendance from './HRMS/MonthlyAttendance/MonthlyAttendance';
 import AllReviewerNotificationList from './Dashboard/AllReviewerNotificationList';
 import { masterUser } from '../hooks/masterUser';
 import ChatApp from './ChatApp/ChatApp';
+
 class MainIndex extends React.Component {
   render() {
     const PrivateRoute = ({ children }) => {
@@ -877,6 +879,11 @@ class MainIndex extends React.Component {
               exact
               path={`/${_base}/create-qr-generator`}
               element={<GenerateFormAndQrMaster />}
+            />
+            <Route
+              exact
+              path={`/${_base}/MonthlyAttendance`}
+              element={<MonthlyAttendance />}
             />
             {/* PO */}
             <Route
